@@ -45,6 +45,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.Templates
 			return MicrosoftTemplateEngine.CreateProjectTemplate (templateId, scanPath);
 		}
 
-		static MonoDevelop.Core.Instrumentation.Counter TemplateCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Template Instantiated", "Project Model", id: "Core.Template.Instantiated");
+		static Counter<TemplateMetadata> TemplateCounter = InstrumentationService.CreateCounter<TemplateMetadata> ("Template Instantiated", "Project Model", id: "Core.Template.Instantiated");
 
 		public async Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
@@ -108,11 +109,12 @@ namespace MonoDevelop.Ide.Templates
 					workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), fullPath));
 			}
 
-			var metadata = new Dictionary<string, string> ();
-			metadata ["Id"] = templateInfo.Identity;
-			metadata ["Name"] = templateInfo.Name;
-			metadata ["Language"] = template.Language;
-			metadata ["Platform"] = string.Join(";", templateInfo.Classifications);
+			var metadata = new TemplateMetadata {
+				Id = templateInfo.Identity,
+				Name = templateInfo.Name,
+				Language = template.Language,
+				Platform = string.Join(";", templateInfo.Classifications)
+			};
 			TemplateCounter.Inc (1, null, metadata);
 
 			MicrosoftTemplateEngineProcessedTemplateResult processResult;
@@ -185,6 +187,33 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return TemplateParameter.CreateParameters (parameters)
 				.Where (parameter => parameter.IsValid);
+		}
+	}
+
+	class TemplateMetadata : CounterMetadata
+	{
+		public TemplateMetadata ()
+		{
+		}
+
+		public string Id {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Name {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Language {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Platform {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
 		}
 	}
 }

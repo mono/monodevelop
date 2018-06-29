@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -109,20 +111,29 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public ITimeTracker BeginTiming ()
 		{
-			return BeginTiming (null, null);
+			return BeginTiming (null, (IDictionary<string, object>)null);
 		}
 
 		public ITimeTracker BeginTiming (string message)
 		{
-			return BeginTiming (message, null);
+			return BeginTiming (message, (IDictionary<string, object>)null);
 		}
 
+		[Obsolete ("Use BeginTiming (string, IDictionary<string,object>) instead")]
 		public ITimeTracker BeginTiming (IDictionary<string, string> metadata)
 		{
-			return BeginTiming (null, metadata);
+			var converted = metadata.ToDictionary (k => k.Key, k => (object)(k.Value));
+			return BeginTiming (null, converted);
 		}
 
+		[Obsolete ("Use BeginTiming (string, IDictionary<string, object>) instead")]
 		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
+		{
+			var converted = metadata.ToDictionary (k => k.Key, k => (object)(k.Value));
+			return BeginTiming (message, converted);
+		}
+
+		public ITimeTracker BeginTiming (string message, IDictionary<string, object> metadata)
 		{
 			return BeginTiming (message, metadata != null ? new CounterMetadata (metadata) : null, CancellationToken.None);
 		}
@@ -213,32 +224,30 @@ namespace MonoDevelop.Core.Instrumentation
 
 	public class CounterMetadata
 	{
-		readonly IDictionary<string, string> properties;
+		readonly IDictionary<string, object> properties;
 
-		internal protected IDictionary<string, string> Properties => properties;
+		internal protected IDictionary<string, object> Properties => properties;
 
 		public CounterMetadata ()
 		{
-			properties = new Dictionary<string, string> ();
+			properties = new Dictionary<string, object> ();
 		}
 
-		public CounterMetadata (IDictionary<string, string> properties)
+		public CounterMetadata (IDictionary<string, object> properties)
 		{
 			this.properties = properties;
 		}
 
 		public CounterResult Result {
 			get {
-				if (!properties.TryGetValue (nameof(Result), out var result) || !Enum.TryParse (result, out CounterResult res))
-					return CounterResult.Unspecified;
-				return res;
+				var rs = GetProperty<string> ();
+				if (Enum.TryParse<CounterResult> (rs, out var result)) {
+					return result;
+				}
+
+				return CounterResult.Unspecified;
 			}
-			set {
-				if (value == CounterResult.Unspecified)
-					properties.Remove (nameof (Result));
-				else
-					SetProperty (value.ToString ());
-			}
+			set => SetProperty (value.ToString ());
 		}
 
 		public void SetUserFault () => Result = CounterResult.UserFault;
@@ -246,22 +255,21 @@ namespace MonoDevelop.Core.Instrumentation
 		public void SetSuccess () => Result = CounterResult.Success;
 		public void SetUserCancel () => Result = CounterResult.UserCancel;
 
-		protected void SetProperty (string value, [CallerMemberName]string name = null)
-			=> properties[name] = value;
-
 		protected void SetProperty (object value, [CallerMemberName]string name = null)
-			=> properties[name] = Convert.ToString (value, CultureInfo.InvariantCulture);
-
-		protected string GetProperty ([CallerMemberName]string name = null)
-		{
-			properties.TryGetValue (name, out var result);
-			return result;
-		}
+			=> properties[name] = value;
 
 		protected T GetProperty<T> ([CallerMemberName]string name = null)
 		{
 			properties.TryGetValue (name, out var result);
-			return (T) Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
+			if (!(result is T)) {
+				throw new IncorrectPropertyTypeException ($"{name} is of type {result.GetType ()}, not {typeof (T)}");
+			}
+			return (T)result;
+		}
+
+		protected bool ContainsProperty ([CallerMemberName]string propName = null)
+		{
+			return properties.ContainsKey (propName);
 		}
 	}
 
@@ -274,5 +282,11 @@ namespace MonoDevelop.Core.Instrumentation
 		UserFault
 	}
 
+	public class IncorrectPropertyTypeException : Exception
+	{
+		public IncorrectPropertyTypeException (string message) : base (message)
+		{
+		}
+	}
 }
 

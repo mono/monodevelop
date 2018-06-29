@@ -126,16 +126,16 @@ namespace MonoDevelop.CSharp.Refactoring
 			using (var timer = Navigation.Counters.NavigateTo.BeginTiming (metadata)) {
 				var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
 				if (sym == null) {
-					Navigation.Counters.UpdateUserFault (metadata);
+					metadata.SetUserFault ();
 					return;
 				}
 
 				using (var source = new CancellationTokenSource ()) {
 					try {
 						await FindDerivedSymbols (sym, source);
-						Navigation.Counters.UpdateNavigateResult (metadata, true);
+						metadata.SetResult (true);
 					} finally {
-						Navigation.Counters.UpdateUserCancellation (metadata, source.Token);
+						metadata.UpdateUserCancellation (source.Token);
 					}
 				}
 			}
