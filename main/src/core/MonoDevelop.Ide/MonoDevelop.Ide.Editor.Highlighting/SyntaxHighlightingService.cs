@@ -47,20 +47,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public static class SyntaxHighlightingService
 	{
-		static LanguageBundle builtInBundle = new LanguageBundle ("default", null);
-		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null);
-		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null);
+		static LanguageBundle builtInBundle = new LanguageBundle ("default", null) { BuiltInBundle = true };
+		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null) { BuiltInBundle = true };
+		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null) { BuiltInBundle = true };
 		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
 
 		internal static IEnumerable<LanguageBundle> AllBundles {
 			get {
 				return languageBundles;
-			}
-		}
-
-		internal static IEnumerable<LanguageBundle> LanguageBundles {
-			get {
-				return languageBundles.Skip (1);
 			}
 		}
 
