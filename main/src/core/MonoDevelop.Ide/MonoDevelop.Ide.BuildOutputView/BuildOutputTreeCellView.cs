@@ -673,7 +673,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (node);
 
-			if (status.TaskLinkRenderRectangle.Contains (args.Position) || status.ErrorsRectangle.Contains (args.Position) || status.WarningsRectangle.Contains (args.Position)) {
+			var containsClickableElement = status.TaskLinkRenderRectangle.Contains (args.Position) || status.ErrorsRectangle.Contains (args.Position) || status.WarningsRectangle.Contains (args.Position);
+			if (containsClickableElement) {
 				ParentWidget.Cursor = CursorType.Hand;
 			} else {
 				ParentWidget.Cursor = CursorType.Arrow;
@@ -688,10 +689,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 					selectionEnd = pos;
 					QueueDraw ();
 				}
-			} else {
-				if (insideText) {
-					ParentWidget.Cursor = CursorType.IBeam;
-				}
+			} else if (insideText && !containsClickableElement)  {
+				ParentWidget.Cursor = CursorType.IBeam;
 			}
 		}
 
