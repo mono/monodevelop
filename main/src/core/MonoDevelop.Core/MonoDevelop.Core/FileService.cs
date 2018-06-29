@@ -55,9 +55,6 @@ namespace MonoDevelop.Core
 
 		static FileServiceErrorHandler errorHandler;
 
-		static FileSystemExtension fileSystemChain;
-		static readonly FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
-
 		static readonly EventQueue eventQueue = new EventQueue ();
 
 		static readonly string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
@@ -67,32 +64,40 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		static FileService()
+		static class FileSystemExtensions
 		{
-			AddinManager.ExtensionChanged += delegate (object sender, ExtensionEventArgs args) {
-				if (args.PathChanged (addinFileSystemExtensionPath))
-					UpdateExtensions ();
-			};
-			UpdateExtensions ();
-		}
+			public static FileSystemExtension Chain => fileSystemChain;
 
-		static void UpdateExtensions ()
-		{
-			if (!Runtime.Initialized) {
-				fileSystemChain = defaultExtension;
-				return;
+			static FileSystemExtension fileSystemChain;
+			static readonly FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
+
+			static FileSystemExtensions ()
+			{
+				AddinManager.ExtensionChanged += delegate (object sender, ExtensionEventArgs args) {
+					if (args.PathChanged (addinFileSystemExtensionPath))
+						UpdateExtensions ();
+				};
+				UpdateExtensions ();
 			}
 
-			var extensions = AddinManager.GetExtensionObjects (addinFileSystemExtensionPath, typeof(FileSystemExtension)).Cast<FileSystemExtension> ().ToArray ();
-			for (int n=0; n<extensions.Length - 1; n++) {
-				extensions [n].Next = extensions [n + 1];
-			}
+			static void UpdateExtensions ()
+			{
+				if (!Runtime.Initialized) {
+					fileSystemChain = defaultExtension;
+					return;
+				}
 
-			if (extensions.Length > 0) {
-				extensions [extensions.Length - 1].Next = defaultExtension;
-				fileSystemChain = extensions [0];
-			} else {
-				fileSystemChain = defaultExtension;
+				var extensions = AddinManager.GetExtensionObjects (addinFileSystemExtensionPath, typeof (FileSystemExtension)).Cast<FileSystemExtension> ().ToArray ();
+				for (int n = 0; n < extensions.Length - 1; n++) {
+					extensions [n].Next = extensions [n + 1];
+				}
+
+				if (extensions.Length > 0) {
+					extensions [extensions.Length - 1].Next = defaultExtension;
+					fileSystemChain = extensions [0];
+				} else {
+					fileSystemChain = defaultExtension;
+				}
 			}
 		}
 
@@ -353,7 +358,7 @@ namespace MonoDevelop.Core
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
-			FileSystemExtension nx = fileSystemChain;
+			FileSystemExtension nx = FileSystemExtensions.Chain;
 			while (nx != null && !nx.CanHandlePath (path, isDirectory))
 				nx = nx.Next;
 			return nx;
