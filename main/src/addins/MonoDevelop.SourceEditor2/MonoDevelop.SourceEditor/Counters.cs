@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core.Instrumentation;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -34,6 +35,6 @@ namespace MonoDevelop.SourceEditor
 		public static Counter EditorsInMemory = InstrumentationService.CreateCounter ("Editors in Memory", "Text Editor");
 		public static Counter SourceViewsInMemory = InstrumentationService.CreateCounter ("Source Views in Memory", "Text Editor");
 		public static Counter LoadedEditors = InstrumentationService.CreateCounter ("Loaded Editors", "Text Editor");
-		public static Counter Typing = InstrumentationService.CreateCounter ("Typing", "Text Editor", id: "TextEditor.Typing");
+		public static Counter<TypingTimingMetadata> Typing = InstrumentationService.CreateCounter<TypingTimingMetadata> ("Typing", "Text Editor", id: "TextEditor.Typing");
 	}
 }
