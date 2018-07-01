@@ -43,6 +43,7 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Policies;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.RoslynServices.Options
 {
@@ -104,7 +105,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					value = Deserialize (serializedValue, optionKey.Option.Type);
 					return true;
 				} catch (Exception ex) {
-					LoggingService.LogError ($"Failed to deserialize key: {storageKey} type: {optionKey.Option.Type} value: {serializedValue}", ex);
+					LoggingService.LogError ($"Failed to deserialize option: '{storageKey}' Type: '{optionKey.Option.Type}' value: '{serializedValue}'", ex);
 				}
 			}
 
@@ -208,28 +209,31 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 		static object Deserialize (object value, Type optionType)
 		{
-			if (optionType.IsEnum && value != null && optionType.IsEnumDefined (value))
-				return Enum.ToObject (optionType, value);
+			if (optionType.IsValueType) {
+				// check if we have a nullable, then returning null is ok
+				var isNullable = optionType.IsGenericType && optionType.GetGenericTypeDefinition () == typeof (Nullable<>);
 
-			if (RoslynPreferences.TryGetSerializationMethods<object> (optionType, out var serializer, out var deserializer) && value is string serializedValue) {
-				return deserializer (serializedValue);
-			}
-				
-			if (optionType == typeof (bool)) {
-				// TypeScript used to store some booleans as integers. We now handle them properly for legacy sync scenarios.
-				if (value is int intValue)
-					return intValue != 0;
-
-				if (value is long longValue)
-					return longValue != 0;
+				if (value == null) {
+					if (!isNullable)
+						throw new SerializationException ();
+				} else {
+					if (isNullable && optionType.GenericTypeArguments [0] == value.GetType ())
+						optionType = value.GetType ();
+				}
 			}
 
-			if (optionType == typeof (bool?)) {
-				// code uses object to hold onto any value which will use boxing on value types.
-				// see boxing on nullable types - https://msdn.microsoft.com/en-us/library/ms228597.aspx
-				if (!(value is bool) && value != null)
-					throw new SerializationException ();
-			} else if (value != null && optionType != value.GetType ()) {
+			if (optionType.IsEnum) {
+				if (value != null && optionType.IsEnumDefined (value))
+					return Enum.ToObject (optionType, value);
+				throw new SerializationException ();
+			}
+
+			if (RoslynPreferences.TryGetSerializationMethods<object> (optionType, out var serializer, out var deserializer)) {
+				if (value is string serializedValue)
+					return deserializer (serializedValue);
+			}
+
+			if (value != null && optionType != value.GetType ()) {
 				// We got something back different than we expected, so fail to deserialize
 				throw new SerializationException ();
 			}
