@@ -45,10 +45,14 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			propertyKey = key.GetPropertyName ();
 			if (propertyKey != null) {
 				var defaultValue = key.Option.DefaultValue;
-				if (TryGetSerializationMethods<object> (key.Option.Type, out var serializer, out var deserializer))
-					defaultValue = serializer (defaultValue);
+				var type = key.Option.Type;
 
-				value = PropertyService.Get (propertyKey, defaultValue);
+				if (TryGetSerializationMethods<object> (type, out var serializer, out var deserializer)) {
+					defaultValue = serializer (defaultValue);
+					type = typeof (object);
+				}
+
+				value = PropertyService.GlobalInstance.Get (propertyKey, defaultValue, type);
 				return true;
 			}
 
