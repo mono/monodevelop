@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Core;
@@ -54,6 +55,26 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				Assert.AreEqual (false, PropertyService.Get<bool> (option.GetPropertyName ()));
 				Assert.AreEqual (false, prop.Value);
 			}
+		}
+
+		[Test]
+		public void TestRoslynPropertyWithMultipleKeys ()
+		{
+			var (preferences, persister) = Setup ();
+
+			var option = new PerLanguageOption<bool> ("test", "name", false, new RoamingProfileStorageLocation ("feature.%LANGUAGE%.test"), new RoamingProfileStorageLocation ("feature.test"));
+			var optionKey = new OptionKey (option, LanguageNames.CSharp);
+
+			var propertyNames = optionKey.GetPropertyNames ().ToArray ();
+			Assert.AreEqual (2, propertyNames.Length);
+			Assert.AreEqual ("feature.CSharp.test", propertyNames [0]);
+			Assert.AreEqual ("feature.test", propertyNames [1]);
+
+			PropertyService.Set (propertyNames [1], true);
+
+			var success = persister.TryFetch (optionKey, out object value);
+			Assert.AreEqual (true, success);
+			Assert.AreEqual (true, value);
 		}
 	}
 }
