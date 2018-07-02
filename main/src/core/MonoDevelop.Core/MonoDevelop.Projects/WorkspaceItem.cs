@@ -199,7 +199,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Returns the root directories associated that should be watched by the file watcher.
 		/// </summary>
-		internal IEnumerable<FilePath> GetRootDirectories ()
+		internal HashSet<FilePath> GetRootDirectories ()
 		{
 			if (rootDirectories != null)
 				return rootDirectories;
