@@ -72,8 +72,6 @@ namespace MonoDevelop.Projects
 
 		static Task UpdateWatchersAsync ()
 		{
-			// All the tasks will work on the same task completion source.
-			// The task is only finished when one and only one reaches the end.
 			cancellationTokenSource.Cancel ();
 			cancellationTokenSource = new CancellationTokenSource ();
 			CancellationToken token = cancellationTokenSource.Token;
