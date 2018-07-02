@@ -40,7 +40,13 @@ namespace MonoDevelop.FSW
 
 		public IEnumerable<PathTreeNode> Normalize (int maxLeafs)
 		{
-			Queue<PathTreeNode> queue = new Queue<PathTreeNode>();
+			// We want to use an algorithm similar to BFS by using the following logic:
+			// If the node is live, we can return it
+			// Otherwise, we keep looking for live nodes in a node's children.
+			// If the amount of children a node has exceeds the maximum amount of leaves
+			// we want, we just return the node itself, even if it's not live.
+
+			var queue = new Queue<PathTreeNode>();
 
 			int yielded = 0;
 			var child = rootNode.FirstChild;
@@ -158,7 +164,6 @@ namespace MonoDevelop.FSW
 				var nodeToRemove = result;
 
 				while (nodeToRemove != rootNode && IsDeadSubtree (nodeToRemove)) {
-
 					parent.ChildrenCount -= 1;
 
 					if (parent.FirstChild == nodeToRemove)
@@ -184,7 +189,8 @@ namespace MonoDevelop.FSW
 
 		bool IsDeadSubtree (PathTreeNode node)
 		{
-			// We look for the first live child
+			// We do a DFS here, looking for any live node in a tree.
+			// We know that leaves are live, so DFS works better here.
 			var stack = new Stack<PathTreeNode> ();
 			stack.Push (node);
 
