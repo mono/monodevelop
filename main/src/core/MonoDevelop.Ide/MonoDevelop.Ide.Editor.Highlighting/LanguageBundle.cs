@@ -63,6 +63,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public string FileName { get; private set; }
 
+		internal bool BuiltInBundle { get; set; }
+
 		public LanguageBundle (string name, string fileName)
 		{
 			Name = name;

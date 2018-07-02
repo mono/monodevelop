@@ -85,6 +85,7 @@
 		{ "name": "Html Comment", "fore": "aluminium4" },
 		{ "name": "Html Element Name", "fore": "skyblue3" },
 		{ "name": "Html Operator", "fore": "skyblue3" },
+		{ "name": "Html Server-Side Script", "fore": "black", "back": "#FFFF33" },
 
 		{ "name": "Keyword(Access)", "fore": "skyblue2" },
 		{ "name": "Keyword(Type)", "fore": "skyblue2" },

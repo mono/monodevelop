@@ -227,7 +227,7 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
-    <Condition id="ItemType" value="IFileItem">
+    <Condition id="FileType" fileExtensions=".fs,.fsi,.fsx,.fsscript">
       <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptInternal"/>
       <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptExternal"/>
     </Condition>

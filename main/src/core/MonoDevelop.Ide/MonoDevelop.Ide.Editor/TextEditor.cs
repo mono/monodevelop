@@ -1180,14 +1180,19 @@ namespace MonoDevelop.Ide.Editor
 			
 			TextEditorExtension last = null;
 			foreach (var ext in extensions) {
-				if (ext.IsValidInContext (documentContext)) {
-					if (last != null) {
-						last.Next = ext;
+				try {
+					if (ext.IsValidInContext (documentContext)) {
+						ext.Initialize (this, documentContext);
+						//if either call to ext throws, it will be omitted from the chain
+						if (last != null) {
+							last.Next = ext;
+						} else {
+							textEditorImpl.EditorExtension = ext;
+						}
 						last = ext;
-					} else {
-						textEditorImpl.EditorExtension = last = ext;
 					}
-					ext.Initialize (this, documentContext);
+				} catch (Exception e) {
+					LoggingService.LogError ($"Error while initializing text editor extension: {ext.GetType ().FullName}", e);
 				}
 			}
 			DocumentContext = documentContext;

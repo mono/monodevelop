@@ -1,13 +1,11 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-
-//
-// DebuggerExpressionResolver.cs
+﻿//
+// CSharpCompletionTextEditorExtension.IDebuggerExpressionResolver.cs
 //
 // Author:
 //       David Karlaš <david.karlas@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
-
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,76 +24,69 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
-using System.Linq;
+
+
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
-using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Debugger;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 
-namespace MonoDevelop.CSharp.Resolver
+namespace MonoDevelop.CSharp.Completion
 {
-	static class DebuggerExpressionResolver
+	partial class CSharpCompletionTextEditorExtension : IDebuggerExpressionResolver
 	{
-		public static async Task<DebugDataTipInfo> ResolveAsync (IReadonlyTextDocument editor, DocumentContext document, int offset, CancellationToken cancellationToken)
+		async Task<DebugDataTipInfo> IDebuggerExpressionResolver.ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken)
 		{
-			var analysisDocument = document.AnalysisDocument;
-			DebugDataTipInfo result;
-			CompilationUnitSyntax compilationUnit = null;
-			if (analysisDocument == null) {
-				compilationUnit = SyntaxFactory.ParseCompilationUnit (editor.Text);
-				result = GetInfo (compilationUnit, null, offset, default(CancellationToken));
-			} else {
-				compilationUnit = await analysisDocument.GetCSharpSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-				var semantic = await analysisDocument.GetSemanticModelAsync (cancellationToken);
-				result = GetInfo (compilationUnit, semantic, offset, default(CancellationToken));
-			}
-			if (result.IsDefault || !result.Span.Contains(offset)) {
-				return new DebugDataTipInfo (result.Span, null);
-			} else if (result.Text == null) {
-				return new DebugDataTipInfo (result.Span, compilationUnit.GetText ().ToString (result.Span));
-			} else {
-				return result;
-			}
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return default (DebugDataTipInfo);
+			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
+			if (debugInfoService == null)
+				return default (DebugDataTipInfo);
+
+			var tipInfo = await debugInfoService.GetDataTipInfoAsync (analysisDocument, offset, cancellationToken).ConfigureAwait (false);
+			var text = tipInfo.Text;
+			if (text == null && !tipInfo.IsDefault)
+				text = editor.GetTextAt (tipInfo.Span.Start, tipInfo.Span.Length);
+
+			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var root = await semanticModel.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			var syntaxNode = root.FindNode (tipInfo.Span);
+			if (syntaxNode == null)
+				return new DebugDataTipInfo (tipInfo.Span, text);
+			return GetInfo (root, semanticModel, syntaxNode, text, cancellationToken);
 		}
 
-		static DebugDataTipInfo GetInfo (CompilationUnitSyntax root, SemanticModel semanticModel, int position, CancellationToken cancellationToken)
+		static DebugDataTipInfo GetInfo (SyntaxNode root, SemanticModel semanticModel, SyntaxNode node, string textOpt, CancellationToken cancellationToken)
 		{
-			var token = root.FindToken (position);
-			string textOpt = null;
-
-			var expression = token.Parent as ExpressionSyntax;
+			var expression = node as ExpressionSyntax;
 			if (expression == null) {
-				if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind (token, SyntaxKind.IdentifierToken)) {
-					if (token.Parent is MethodDeclarationSyntax) {
-						return default(DebugDataTipInfo);
-					}
-					if (semanticModel != null) {
-						if (token.Parent is PropertyDeclarationSyntax) {
-							var propertySymbol = semanticModel.GetDeclaredSymbol ((PropertyDeclarationSyntax)token.Parent);
-							if (propertySymbol.IsStatic) {
-								textOpt = propertySymbol.ContainingType.GetFullName () + "." + propertySymbol.Name;
-							}
-						} else if (token.GetAncestor<FieldDeclarationSyntax> () != null) {
-							var fieldSymbol = semanticModel.GetDeclaredSymbol (token.GetAncestor<VariableDeclaratorSyntax> ());
-							if (fieldSymbol.IsStatic) {
-								textOpt = fieldSymbol.ContainingType.GetFullName () + "." + fieldSymbol.Name;
-							}
+				if (node is MethodDeclarationSyntax) {
+					return default (DebugDataTipInfo);
+				}
+				if (semanticModel != null) {
+					if (node is PropertyDeclarationSyntax) {
+						var propertySymbol = semanticModel.GetDeclaredSymbol ((PropertyDeclarationSyntax)node);
+						if (propertySymbol.IsStatic) {
+							textOpt = propertySymbol.ContainingType.GetFullName () + "." + propertySymbol.Name;
+						}
+					} else if (node.GetAncestor<FieldDeclarationSyntax> () != null) {
+						var fieldSymbol = semanticModel.GetDeclaredSymbol (node.GetAncestorOrThis<VariableDeclaratorSyntax> ());
+						if (fieldSymbol.IsStatic) {
+							textOpt = fieldSymbol.ContainingType.GetFullName () + "." + fieldSymbol.Name;
 						}
 					}
-
-					return new DebugDataTipInfo (token.Span, text: textOpt);
-				} else {
-					return default(DebugDataTipInfo);
 				}
+
+				return new DebugDataTipInfo (node.Span, text: textOpt);
 			}
 
 			if (expression.IsAnyLiteralExpression ()) {
@@ -105,19 +96,13 @@ namespace MonoDevelop.CSharp.Resolver
 				// of a literal can always easily be determined.
 				var type = semanticModel?.GetTypeInfo (expression, cancellationToken).Type;
 				return type == null
-					? default(DebugDataTipInfo)
+					? default (DebugDataTipInfo)
 						: new DebugDataTipInfo (expression.Span, type.GetFullName ());
 			}
 
 			// Check if we are invoking method and if we do return null so we don't invoke it
-			if (expression.Parent is InvocationExpressionSyntax ||
-				(semanticModel != null &&
-				  expression.Parent is MemberAccessExpressionSyntax &&
-				  expression.Parent.Parent is InvocationExpressionSyntax &&
-				  semanticModel.GetSymbolInfo (token).Symbol is IMethodSymbol))
-			{
-				return default(DebugDataTipInfo);
-			}
+			if (expression.Parent is InvocationExpressionSyntax || semanticModel.GetSymbolInfo (expression).Symbol is IMethodSymbol) 
+				return default (DebugDataTipInfo);
 
 			if (expression.IsRightSideOfDotOrArrow ()) {
 				var curr = expression;
@@ -167,4 +152,3 @@ namespace MonoDevelop.CSharp.Resolver
 		}
 	}
 }
-

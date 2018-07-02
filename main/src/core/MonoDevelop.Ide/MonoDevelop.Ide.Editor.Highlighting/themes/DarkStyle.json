@@ -154,7 +154,7 @@
 		{ "name": "Html Element Name", "fore": "skyblue1" },
 		{ "name": "Html Entity", "fore": "skyblue1" },
 		{ "name": "Html Operator", "fore": "aluminium1" },
-		{ "name": "Html Server-Side Script", "fore": "butter2", "back": "black" },
+		{ "name": "Html Server-Side Script", "fore": "black", "back": "#d2d295" },
 		{ "name": "Html Tag Delimiter", "fore": "aluminium1" },
 		{ "name": "Razor Code", "fore": "aluminium1", "back": "aluminium7" },
 

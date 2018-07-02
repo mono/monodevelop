@@ -183,7 +183,7 @@ module Refactoring =
                                    |> ignore
                 | None -> ()
             ()
-        } |> Async.Start
+        } |> Async.StartAndLogException
 
     let findDeclarationSymbol documentationIdString (symbols: FSharpSymbolUse seq) =
         symbols
@@ -277,9 +277,12 @@ module Refactoring =
           |> List.map (fun p -> p.FileName.ToString() )
       with _ -> []
 
+    let disposeMonitor (monitor:SearchProgressMonitor) =
+        Runtime.RunInMainThread(fun() -> monitor.Dispose()) |> ignore
+
     let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
             let dependentProjects = getDependentProjects ctx.Project symbolUse
            
             let! symbolrefs =
@@ -293,13 +296,11 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
 
     let findDerivedReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
             let dependentProjects = getDependentProjects ctx.Project symbolUse
 
             let! symbolrefs =
@@ -313,13 +314,11 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
 
     let findOverloads (editor:TextEditor, _ctx:DocumentContext, symbolUse:FSharpSymbolUse, _lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
             //let dependentProjects = getDependentProjects ctx.Project symbolUse
             let overrides = languageService.GetOverridesForSymbol(symbolUse.Symbol)
 
@@ -339,13 +338,11 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
 
     let findExtensionMethods (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async {
+        async {
             let dependentProjects = getDependentProjects ctx.Project symbolUse
 
             let! symbolrefs =
@@ -359,9 +356,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
 
     module Operations =
         let canRename (symbolUse:FSharpSymbolUse) fileName project =

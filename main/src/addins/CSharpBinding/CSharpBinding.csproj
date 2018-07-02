@@ -225,7 +225,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParsedDocument.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\DebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.JSon\JSonIndentationTracker.cs" />
     <Compile Include="MonoDevelop.JSon\JSonIndentEngine.cs" />
@@ -337,6 +336,10 @@
     <Compile Include="Gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferenceUsagesProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\CSharpLanguageDebugInfoService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\LocationInfoGetter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\DataTipInfoGetter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerExpressionResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
