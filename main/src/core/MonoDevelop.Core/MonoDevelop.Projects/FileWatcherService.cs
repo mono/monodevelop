@@ -191,9 +191,6 @@ namespace MonoDevelop.Projects
 			if (set.Count > 0) {
 				monitoredDirectories [id] = set;
 				foreach (var path in set) {
-					if (path.IsNullOrEmpty)
-						continue;
-
 					tree.AddNode (path, id);
 				}
 
