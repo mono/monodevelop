@@ -126,16 +126,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, doc.AnalysisDocument.Project.Solution, documents, default (CancellationToken))) {
 				foreach (var loc in mref.Locations) {
-					TextSpan span = loc.Location.SourceSpan;
-					var root = loc.Location.SourceTree.GetRoot ();
-					var node = root.FindNode (loc.Location.SourceSpan);
-					var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
-					if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
-						span = node.Span;
-					}
-					if (span.Start != loc.Location.SourceSpan.Start) {
-						span = loc.Location.SourceSpan;
-					}
+					var span = loc.Location.SourceSpan;
 					var segment = new TextSegment (span.Start, span.Length);
 					if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment);
