@@ -26,17 +26,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.FSW;
 
 namespace MonoDevelop.Projects
 {
 	public static class FileWatcherService
 	{
+		// We don't want more than 8 threads for FileSystemWatchers.
+		const int maxWatchers = 8;
+
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
 		static readonly List<WorkspaceItem> workspaceItems = new List<WorkspaceItem> ();
 		static readonly Dictionary<object, List<FilePath>> monitoredDirectories = new Dictionary<object, List<FilePath>> ();
@@ -153,20 +156,21 @@ namespace MonoDevelop.Projects
 			List<WorkspaceItem> currentWorkspaceItems,
 			Dictionary<object, List<FilePath>> currentMonitoredDirectories)
 		{
+			var tree = new PathTree ();
 			var directories = new HashSet<FilePath> ();
 
 			foreach (WorkspaceItem item in currentWorkspaceItems) {
 				foreach (FilePath directory in item.GetRootDirectories ()) {
-					directories.Add (directory);
+					tree.AddNode (directory, item);
 				}
 			}
 
 			foreach (var kvp in currentMonitoredDirectories) {
 				foreach (var directory in kvp.Value)
-					directories.Add (directory);
+					tree.AddNode (directory, kvp.Key);
 			}
 
-			return Normalize (directories);
+			return tree.Normalize(maxWatchers).Select(x => (FilePath)x.FullPath);
 		}
 
 		static void Remove (FilePath directory)
@@ -176,15 +180,6 @@ namespace MonoDevelop.Projects
 				watcher.Dispose ();
 				watchers.Remove (directory);
 			}
-		}
-
-		internal static IEnumerable<FilePath> Normalize (IEnumerable<FilePath> directories)
-		{
-			var directorySet = new HashSet<FilePath> (directories);
-
-			return directorySet.Where (d => {
-				return directorySet.All (other => !d.IsChildPathOf (other));
-			});
 		}
 
 		public static Task WatchDirectories (object id, IEnumerable<FilePath> directories)
