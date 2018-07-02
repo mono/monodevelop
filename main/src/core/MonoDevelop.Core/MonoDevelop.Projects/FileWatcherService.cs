@@ -186,12 +186,14 @@ namespace MonoDevelop.Projects
 				return modified;
 
 			// Apply new ones if we have any
-			if (!(directories is HashSet<FilePath> set))
-				set = new HashSet<FilePath> (directories.Where (directory => !directory.IsNullOrEmpty));
+			var set = new HashSet<FilePath> (directories.Where(x => !x.IsNullOrEmpty));
 
 			if (set.Count > 0) {
 				monitoredDirectories [id] = set;
 				foreach (var path in set) {
+					if (path.IsNullOrEmpty)
+						continue;
+
 					tree.AddNode (path, id);
 				}
 
