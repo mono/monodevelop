@@ -1390,6 +1390,10 @@ namespace MonoDevelop.Projects
 			metadata.ProjectType = TypeGuid;
 			metadata.ProjectFlavor = FlavorGuids.FirstOrDefault () ?? TypeGuid;
 
+			var capabilities = GetProjectCapabilities ();
+			if (capabilities.Any ())
+				metadata.Capabilities = string.Join (" ", capabilities);
+
 			var c = GetConfiguration (configuration);
 			if (c != null) {
 				metadata.Configuration = c.Id;
