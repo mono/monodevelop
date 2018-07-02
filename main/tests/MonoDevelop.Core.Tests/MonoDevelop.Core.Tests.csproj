@@ -109,6 +109,8 @@
     <Compile Include="MonoDevelop.Projects\DotNetCoreFileWatcherTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherTests.cs" />
     <Compile Include="MonoDevelop.Core\InstrumentationTests.cs" />
+    <Compile Include="MonoDevelop.FSW\PathTreeNodeTests.cs" />
+    <Compile Include="MonoDevelop.FSW\PathTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />
@@ -143,6 +145,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.FSW\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
