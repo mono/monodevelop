@@ -197,10 +197,12 @@ namespace Mono.TextEditor
 				cr.ResetClip ();
 				break;
 			case MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.DottedLine:
+				cr.Save ();
 				cr.MoveTo (@from, y + editor.LineHeight - editor.Options.Zoom - 0.5);
 				cr.LineTo (to, y + editor.LineHeight - editor.Options.Zoom - 0.5);
 				cr.SetDash (new double [] { 2 * editor.Options.Zoom, 2 * editor.Options.Zoom }, 0);
 				cr.Stroke ();
+				cr.Restore ();
 				break;
 			case MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.Underline:
 				cr.MoveTo (@from, y + editor.LineHeight - editor.Options.Zoom - 0.5);
