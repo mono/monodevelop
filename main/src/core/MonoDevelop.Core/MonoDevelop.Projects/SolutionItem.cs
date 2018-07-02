@@ -900,11 +900,6 @@ namespace MonoDevelop.Projects
 			return metadata;
 		}
 
-		public void UpdateProjectEventMetadata (ProjectEventMetadata metadata)
-		{
-			OnGetProjectEventMetadata (metadata);
-		}
-
 		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
 		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
 		{
