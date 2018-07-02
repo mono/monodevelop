@@ -88,11 +88,10 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		async void RequestPopup (Xwt.Rectangle rect)
+		void RequestPopup (Xwt.Rectangle rect)
 		{
 			var token = popupSrc.Token;
-
-			diff = await Task.Run (async delegate {
+			Task.Run (async delegate {
 				try {
 					foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
 						var ac = op as ApplyChangesOperation;
@@ -111,25 +110,27 @@ namespace MonoDevelop.Refactoring
 						}
 
 					}
-				} catch (OperationCanceledException) {}
+				} catch (OperationCanceledException) { }
 				return new List<DiffHunk> ();
-			});
-			if (diff.Count > 0 && !token.IsCancellationRequested) {
-				var pos = PopupPosition.Left;
-				if (Platform.IsMac) {
-					var screenRect = GtkUtil.ToScreenCoordinates (IdeApp.Workbench.RootWindow, IdeApp.Workbench.RootWindow.GdkWindow, rect.ToGdkRectangle ());
-					var geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (screenRect.X, screenRect.Y));
-					var request = SizeRequest ();
-					if (screenRect.X - geometry.X < request.Width) {
-						pos = PopupPosition.Top;
-						if (geometry.Bottom - screenRect.Bottom < request.Height)
-							pos = PopupPosition.Bottom;
-					} else {
-						pos = PopupPosition.Right;
+			}).ContinueWith (t => {
+				diff = t.Result;
+				if (diff.Count > 0 && !token.IsCancellationRequested) {
+					var pos = PopupPosition.Left;
+					if (Platform.IsMac) {
+						var screenRect = GtkUtil.ToScreenCoordinates (IdeApp.Workbench.RootWindow, IdeApp.Workbench.RootWindow.GdkWindow, rect.ToGdkRectangle ());
+						var geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (screenRect.X, screenRect.Y));
+						var request = SizeRequest ();
+						if (screenRect.X - geometry.X < request.Width) {
+							pos = PopupPosition.Top;
+							if (geometry.Bottom - screenRect.Bottom < request.Height)
+								pos = PopupPosition.Bottom;
+						} else {
+							pos = PopupPosition.Right;
+						}
 					}
+					ShowPopup (rect, pos);
 				}
-				ShowPopup (rect, pos);
-			}
+			}, Runtime.MainTaskScheduler);
 		}
 
 
