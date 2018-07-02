@@ -74,8 +74,6 @@ namespace MonoDevelop.Debugger
 		{
 			session.TargetReady -= TargetReady;
 			ProcessId = (int)(session.GetProcesses().FirstOrDefault()?.Id ?? 0);
-
-			Counters.DebuggerStart.EndTiming ();
 		}
 
 		public void Cleanup ()

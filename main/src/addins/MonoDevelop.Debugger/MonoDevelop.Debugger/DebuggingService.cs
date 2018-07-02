@@ -1009,8 +1009,10 @@ namespace MonoDevelop.Debugger
 				// PausedEventHandlers may queue additional UI events that can cause a freeze.
 				// Ensure those UI events have completed before we stop tracking the time.
 				Runtime.RunInMainThread (() => {
-					sessionManager.ActionTimeTracker.Dispose ();
-					sessionManager.TrackActionTelemetry = false;
+					if (sessionManager.TrackActionTelemetry) {
+						sessionManager.ActionTimeTracker.Dispose ();
+						sessionManager.TrackActionTelemetry = false;
+					}
 				});
 			});
 		}
