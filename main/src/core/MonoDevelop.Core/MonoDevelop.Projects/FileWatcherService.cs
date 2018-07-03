@@ -88,23 +88,15 @@ namespace MonoDevelop.Projects
 				if (token.IsCancellationRequested)
 					return;
 
-				var newPathsToWatch = tree.Normalize (maxWatchers).Select (x => (FilePath)x.FullPath).ToList ();
-				var newWatchers = newPathsToWatch.Count > 0 ? new HashSet<FilePath> () : null;
-
-				foreach (FilePath directory in newPathsToWatch) {
-					if (!Directory.Exists (directory))
-						continue;
-
-					newWatchers.Add (directory);
-				}
-
-				if (newWatchers == null && watchers.Count == 0) {
+				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.FullPath);
+				var newWatchers = new HashSet<FilePath> (newPathsToWatch.Where (dir => Directory.Exists (dir)));
+				if (newWatchers.Count == 0 && watchers.Count == 0) {
 					// Unchanged.
 					return;
 				}
 
 				List<FilePath> toRemove;
-				if (newWatchers == null)
+				if (newWatchers.Count == 0)
 					toRemove = watchers.Keys.ToList ();
 				else {
 					toRemove = new List<FilePath> ();
@@ -118,14 +110,14 @@ namespace MonoDevelop.Projects
 				// After this point, the watcher update is real and a destructive operation, so do not use the token.
 				if (token.IsCancellationRequested)
 					return;
-
+				
 				// First remove the watchers, so we don't spin too many threads.
 				foreach (var directory in toRemove) {
 					RemoveWatcher_NoLock (directory);
 				}
 
 				// Add the new ones.
-				if (newWatchers == null)
+				if (newWatchers.Count == 0)
 					return;
 
 				foreach (var path in newWatchers) {
