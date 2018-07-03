@@ -76,6 +76,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var result = new Dictionary<string, string> {
 				{ "foreground", style.Foreground.ToPangoString () }
 			};
+			if (!style.TransparentBackground) {
+				result.Add ("background", style.Background.ToPangoString ());
+			}
 			if (style.FontStyle != Xwt.Drawing.FontStyle.Normal || 
 			    style.FontWeight != Xwt.Drawing.FontWeight.Normal) {
 				var fontStyle = StringBuilderCache.Allocate ();
@@ -282,6 +285,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("HTML Comment", new List<string> { "comment.block.html" }, ConvertChunkStyle (colorScheme.HtmlComment)));
 			settings.Add (new ThemeSetting ("HTML Element Name", new List<string> { "entity.name.tag.html" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("HTML Entity", new List<string> { "constant.character.entity.html" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
+			settings.Add (new ThemeSetting ("HTML Server-Side Script", new List<string> { "source.server.html" }, ConvertChunkStyle (colorScheme.HtmlServerSideScript)));
 
 			var style = ConvertChunkStyle (colorScheme.PlainText);
 			style ["fontStyle"] = "bold";

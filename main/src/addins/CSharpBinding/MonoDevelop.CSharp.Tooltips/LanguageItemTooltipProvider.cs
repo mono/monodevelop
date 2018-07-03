@@ -69,11 +69,13 @@ namespace MonoDevelop.SourceEditor
 				} catch (ArgumentOutOfRangeException) {
 					return null;
 				}
-				if (!syntaxToken.Span.IntersectsWith (offset))
+				if (!syntaxToken.Span.Contains (offset))
 					return null;
 				var node = GetBestFitResolveableNode (syntaxToken.Parent);
 				var symbolInfo = unit.GetSymbolInfo (node, token);
-				var symbol = symbolInfo.Symbol ?? unit.GetDeclaredSymbol (node, token);
+				var symbol = symbolInfo.Symbol;
+				if (symbol == null && syntaxToken.IsKind (SyntaxKind.IdentifierToken))
+					symbol = unit.GetDeclaredSymbol (node, token);
 				var tooltipInformation = await CreateTooltip (symbol, syntaxToken, caretOffset, theme, ctx, offset);
 				if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 					return null;

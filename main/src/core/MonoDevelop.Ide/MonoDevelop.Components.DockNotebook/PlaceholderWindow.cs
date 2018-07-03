@@ -407,13 +407,19 @@ namespace MonoDevelop.Components.DockNotebook
 			Child.ShowAll ();
 		}
 
-		Xwt.Drawing.Image RenderWidget (Widget w)
+		static Xwt.Drawing.Image RenderWidget (Widget w)
 		{
 			Gdk.Window win = w.GdkWindow;
-			if (win != null && win.IsViewable)
-				return Xwt.Toolkit.CurrentEngine.WrapImage (Gdk.Pixbuf.FromDrawable (win, Colormap.System, w.Allocation.X, w.Allocation.Y, 0, 0, w.Allocation.Width, w.Allocation.Height));
-			else
+			if (win == null || !win.IsViewable) {
 				return null;
+			}
+
+#if MAC
+			//WORKAROUND: Pixbuf.FromDrawable (and by extension XWT's RenderWidget) is broken on Mac
+			return Xwt.Toolkit.NativeEngine.WrapImage (Mac.GtkMacInterop.RenderGtkWidget (w));
+#else
+			return Xwt.Toolkit.CurrentEngine.RenderWidget (Xwt.Toolkit.CurrentEngine.WrapWidget (w));
+#endif
 		}
 
 		public void SetDectorated (bool decorated)

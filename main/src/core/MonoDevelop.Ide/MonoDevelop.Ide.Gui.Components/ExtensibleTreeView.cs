@@ -32,20 +32,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-
 using Mono.Addins;
-using MonoDevelop.Core;
 using MonoDevelop.Components;
-using MonoDevelop.Components.AtkCocoaHelper;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
-using System.Linq;
-using MonoDevelop.Ide.Tasks;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -1981,6 +1977,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			} else {
 				ExtensionContext ctx = AddinManager.CreateExtensionContext ();
 				ctx.RegisterCondition ("ItemType", new ItemTypeCondition (tnav.DataItem.GetType (), contextMenuTypeNameAliases));
+				if (tnav.DataItem is MonoDevelop.Projects.IFileItem fileItem) {
+					var fileTypeCondition = new FileTypeCondition ();
+					fileTypeCondition.SetFileName (fileItem.FileName);
+					ctx.RegisterCondition ("FileType", fileTypeCondition);
+				}
+
 				CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
 				eset.AddItem (Command.Separator);
