@@ -80,10 +80,8 @@ namespace MonoDevelop.FSW
 		public void JustSlash ()
 		{
 			var (node, leaf) = PathTreeNode.CreateSubTree (Path.DirectorySeparatorChar.ToString (), 0);
-			Assert.IsNotNull (node);
-			Assert.AreSame (node, leaf);
-			Assert.AreEqual ("", node.Segment);
-			Assert.AreEqual (Path.DirectorySeparatorChar.ToString (), node.FullPath);
+			Assert.IsNull (node);
+			Assert.IsNull (leaf);
 		}
 	}
 }
