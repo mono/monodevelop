@@ -681,7 +681,6 @@ namespace MonoDevelop.Debugger
 		{
 			// Start assuming success, update on failure
 			var metadata = new DebuggerStartMetadata {
-				Name = factory.Name,
 				Result = CounterResult.Success
 			};
 			var timer = Counters.DebuggerStart.BeginTiming (metadata);
@@ -694,6 +693,8 @@ namespace MonoDevelop.Debugger
 					throw new InvalidOperationException ("Unsupported command: " + cmd);
 				}
 			}
+
+			metadata.Name = factory.Name;
 
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
 			startInfo.UseExternalConsole = c is ExternalConsole;
