@@ -532,11 +532,13 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.LockGui ();
 			metadata = GetOpenWorkspaceItemMetadata (metadata);
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
+
 			try {
 				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
 				return await oper;
 			} finally {
 				timer.End ();
+
 				monitor.Dispose ();
 				IdeApp.Workbench.UnlockGui ();
 			}

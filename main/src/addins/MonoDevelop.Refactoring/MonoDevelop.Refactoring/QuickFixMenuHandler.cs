@@ -41,25 +41,31 @@ namespace MonoDevelop.Refactoring
 			var ext = editor?.GetContent<CodeActionEditorExtension> ();
 			if (ext == null)
 				return;
-			try {
-				info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
-				var currentFixes = await ext.GetCurrentFixesAsync (cancelToken);
-				var menu = CodeFixMenuService.CreateFixMenu (editor, currentFixes, cancelToken);
-				info.Clear ();
-				foreach (var item in menu.Items) {
-					AddItem (info, item);
-				}
-				if (menu.Items.Count == 0) {
-					info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
-				}
-				info.NotifyChanged ();
-			} catch (OperationCanceledException) {
 				
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while creating quick fix menu.", e); 
-				info.Clear ();
-				info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
-				info.NotifyChanged ();
+			var metadata = new Counters.FixesMenuMetadata ();
+			using (var timer = Counters.FixesMenu.BeginTiming ("Quick Fix menu", metadata)) {
+				try {
+					info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
+					var currentFixes = await ext.GetCurrentFixesAsync (cancelToken);
+					var menu = CodeFixMenuService.CreateFixMenu (editor, currentFixes, cancelToken);
+					info.Clear ();
+					foreach (var item in menu.Items) {
+						AddItem (info, item);
+					}
+					if (menu.Items.Count == 0) {
+						info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+					}
+					metadata.SetSuccess ();
+					info.NotifyChanged ();
+				} catch (OperationCanceledException) {
+					metadata.SetUserCancel ();
+				} catch (Exception e) {
+					metadata.SetFailure ();
+					LoggingService.LogError ("Error while creating quick fix menu.", e); 
+					info.Clear ();
+					info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+					info.NotifyChanged ();
+				}
 			}
 		}
 

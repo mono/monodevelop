@@ -173,31 +173,33 @@ namespace MonoDevelop.CodeActions
 
 		async void PopupQuickFixMenu (Gdk.EventButton evt, Action<CodeFixMenu> menuAction)
 		{
-			var token = quickFixCancellationTokenSource.Token;
+			using (Counters.FixesMenu.BeginTiming ("Show quick fixes menu")) {
+				var token = quickFixCancellationTokenSource.Token;
 
-			var fixes = await GetCurrentFixesAsync (token);
-			if (token.IsCancellationRequested)
-				return;
+				var fixes = await GetCurrentFixesAsync (token);
+				if (token.IsCancellationRequested)
+					return;
 
-			var menu = CodeFixMenuService.CreateFixMenu (Editor, fixes, token);
-			if (token.IsCancellationRequested)
-				return;
+				var menu = CodeFixMenuService.CreateFixMenu (Editor, fixes, token);
+				if (token.IsCancellationRequested)
+					return;
 
-			if (menu.Items.Count == 0) {
-				return;
+				if (menu.Items.Count == 0) {
+					return;
+				}
+
+				Editor.SuppressTooltips = true;
+				if (menuAction != null)
+					menuAction (menu);
+
+				var p = Editor.LocationToPoint (Editor.OffsetToLocation (currentSmartTagBegin));
+				Widget widget = Editor;
+				var rect = new Gdk.Rectangle (
+					(int)p.X + widget.Allocation.X,
+					(int)p.Y + widget.Allocation.Y, 0, 0);
+
+				ShowFixesMenu (widget, rect, menu);
 			}
-
-			Editor.SuppressTooltips = true;
-			if (menuAction != null)
-				menuAction (menu);
-
-			var p = Editor.LocationToPoint (Editor.OffsetToLocation (currentSmartTagBegin));
-			Widget widget = Editor;
-			var rect = new Gdk.Rectangle (
-				(int)p.X + widget.Allocation.X,
-				(int)p.Y + widget.Allocation.Y, 0, 0);
-
-			ShowFixesMenu (widget, rect, menu);
 		}
 
 		bool ShowFixesMenu (Widget parent, Gdk.Rectangle evt, CodeFixMenu entrySet)
@@ -224,6 +226,7 @@ namespace MonoDevelop.CodeActions
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while context menu popup.", ex);
 			}
+
 			return true;
 		}
 
@@ -365,6 +368,7 @@ namespace MonoDevelop.CodeActions
 		{
 			if (!AnalysisOptions.EnableFancyFeatures || currentSmartTag == null) {
 				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
+
 				currentSmartTagBegin = Editor.CaretOffset;
 				PopupQuickFixMenu (null, null);
 				return;

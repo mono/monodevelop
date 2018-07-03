@@ -1075,6 +1075,11 @@ namespace MonoDevelop.Ide
 
 		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, ConfigurationSelector configuration, RunConfiguration runConfiguration, bool buildBeforeExecuting)
 		{
+			var metadata = new CounterMetadata ();
+			metadata.SetSuccess ();
+			Counters.BuildAndDeploy.BeginTiming ("Execute", metadata);
+			Counters.TrackingBuildAndDeploy = true;
+
 			if (configuration == null)
 				configuration = IdeApp.Workspace.ActiveConfiguration;
 			
@@ -1082,14 +1087,22 @@ namespace MonoDevelop.Ide
 			var rt = entry as IRunTarget;
 			if (bth != null && rt != null) {
 				var h = await bth.Configure (rt, context, configuration, runConfiguration);
-				if (h == null)
+				if (h == null) {
+					metadata.SetFailure ();
+					Counters.TrackingBuildAndDeploy = false;
+					Counters.BuildAndDeploy.EndTiming ();
 					return;
+				}
 				context = new ExecutionContext (h, context.ConsoleFactory, context.ExecutionTarget);
 			}
 			
 			if (buildBeforeExecuting) {
-				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration))
+				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration)) {
+					metadata.SetFailure ();
+					Counters.TrackingBuildAndDeploy = false;
+					Counters.BuildAndDeploy.EndTiming ();
 					return;
+				}
 			}
 
 			ProgressMonitor monitor = new ProgressMonitor (cs);
@@ -1103,8 +1116,12 @@ namespace MonoDevelop.Ide
 			await t;
 
 			var error = monitor.Errors.FirstOrDefault ();
-			if (error != null)
+			if (error != null) {
 				IdeApp.Workbench.StatusBar.ShowError (error.DisplayMessage);
+				metadata.SetFailure ();
+				Counters.TrackingBuildAndDeploy = false;
+				Counters.BuildAndDeploy.EndTiming ();
+			}
 			currentRunOperationOwners.Remove (entry);
 		}
 		
