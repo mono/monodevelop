@@ -68,7 +68,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			var accessor = property.GetMethod ?? property.SetMethod;
 
-			if (((MethodAttributes.Private | MethodAttributes.Assembly) & accessor.Attributes) != 0)
+			if (!accessor.IsPublic)
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon (property));

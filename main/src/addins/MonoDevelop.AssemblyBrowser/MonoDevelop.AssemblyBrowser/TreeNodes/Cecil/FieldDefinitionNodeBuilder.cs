@@ -58,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var field = (FieldDefinition)dataObject;
 			nodeInfo.Label = field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field);
 
-			if (((FieldAttributes.Private | FieldAttributes.Assembly) & field.Attributes) != 0)
+			if (!field.IsPublic)
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(field));
 		}
