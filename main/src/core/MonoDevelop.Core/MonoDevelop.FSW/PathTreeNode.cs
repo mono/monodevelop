@@ -45,16 +45,19 @@ namespace MonoDevelop.FSW
 			while (start < path.Length) {
 				var nextSep = path.IndexOf (Path.DirectorySeparatorChar, start);
 				int length = nextSep == -1 ? path.Length - start : nextSep - start;
-				var node = new PathTreeNode (path, start, length);
 
-				if (lastNode != null) {
-					lastNode.FirstChild = node;
-					node.Parent = lastNode;
-					lastNode.ChildrenCount = 1;
-				} else
-					rootNode = node;
+				if (length != 0) {
+					var node = new PathTreeNode (path, start, length);
 
-				lastNode = node;
+					if (lastNode != null) {
+						lastNode.FirstChild = node;
+						node.Parent = lastNode;
+						lastNode.ChildrenCount = 1;
+					} else
+						rootNode = node;
+
+					lastNode = node;
+				}
 
 				start = start + length + 1;
 			}
