@@ -924,16 +924,6 @@ namespace MonoDevelop.Debugger
 		{
 			nextStatementLocations.Clear ();
 
-			if (currentSession == null) {
-				if (!sessions.TryGetValue ((DebuggerSession)s, out var sessionManager)) {
-					return;
-				}
-
-				sessionManager.StartTimer?.Metadata.SetSuccess ();
-				sessionManager.StartTimer?.Dispose ();
-				sessionManager.StartTimer = null;
-			}
-
 			if (currentSession?.Session == s) {
 				currentBacktrace = null;
 				currentSession = null;
@@ -956,6 +946,7 @@ namespace MonoDevelop.Debugger
 				return;
 			nextStatementLocations.Clear ();
 
+			SessionManager sessionManager = null;
 			try {
 				switch (args.Type) {
 				case TargetEventType.TargetExited:
@@ -971,7 +962,6 @@ namespace MonoDevelop.Debugger
 				case TargetEventType.UnhandledException:
 				case TargetEventType.ExceptionThrown:
 					var action = new Func<bool> (delegate {
-						SessionManager sessionManager;
 						if (!sessions.TryGetValue (session, out sessionManager))
 							return false;
 
@@ -994,6 +984,16 @@ namespace MonoDevelop.Debugger
 					} else {
 						action ();
 					}
+					break;
+				case TargetEventType.TargetReady:
+					if (!sessions.TryGetValue (session, out sessionManager)) {
+						return;
+					}
+
+					sessionManager.StartTimer?.Metadata.SetSuccess ();
+
+					sessionManager.StartTimer?.Dispose ();
+					sessionManager.StartTimer = null;
 					break;
 				}
 			} catch (Exception ex) {
