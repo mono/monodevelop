@@ -50,22 +50,22 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		T Convert<T> (object o, Type type)
+		object Convert (object o, Type converterType)
 		{
-			TypeConverter converter = GetConverter (type);
+			TypeConverter converter = GetConverter (converterType);
 
 			if (o is string) {
 				try {
-					return (T)converter.ConvertFromInvariantString (o.ToString ());
+					return converter.ConvertFromInvariantString (o.ToString ());
 				} catch (Exception) {
-					return default(T);
+					return null;
 				}
 			}
-			
+
 			try {
-				return (T)converter.ConvertFrom (o);
+				return converter.ConvertFrom (o);
 			} catch (Exception) {
-				return default(T);
+				return null;
 			}
 		}
 		
@@ -101,18 +101,13 @@ namespace MonoDevelop.Core
 		
 		public T Get<T> (string property, T defaultValue)
 		{
-			if (!defaultValues.ContainsKey (property))
-				defaultValues = defaultValues.SetItem (property, defaultValue);
-			if (GetPropertyValue (property, out T value))
-				return value;
-			properties = properties.SetItem (property, defaultValue);
-			return defaultValue;
+			return (T)Get (property, defaultValue, typeof (T));
 		}
 		
 		public T Get<T> (string property)
 		{
-			if (GetPropertyValue (property, out T value))
-				return value;
+			if (GetPropertyValue (property, out object value, typeof(T)))
+				return (T)value;
 			if (defaultValues.TryGetValue (property, out object defaultValue))
 				return (T) defaultValue;
 			return default (T);
@@ -120,44 +115,35 @@ namespace MonoDevelop.Core
 
 		object Get (string property, Type type)
 		{
-			if (GetPropertyValue (property, out object value, type))
-				return value;
-			return null;
+			return GetPropertyValue (property, out object value, type) ? value : null;
 		}
 
-		bool GetPropertyValue<T> (string property, out T val, Type type = null)
+		bool GetPropertyValue (string property, out object val, Type type)
 		{
 			if (!properties.TryGetValue (property, out object o)) {
-				val = default (T);
+				val = null;
 				return false;
 			}
 
-			if (type != null) {
-				if (type.IsInstanceOfType (o)) {
-					val = (T)o;
-					return true;
-				}
-			} else {
-				if (o is T t) {
-					val = t;
-					return true;
-				}
+			if (o == null) {
+				val = null;
+				return true;
 			}
 
-			if (o == null) {
-				val = default (T);
+			if (type.IsInstanceOfType (o)) {
+				val = o;
 				return true;
 			}
 
 			if (o is LazyXmlDeserializer ser) {
 				// Deserialize the data and store it in the dictionary, so
 				// following calls return the same object
-				val = ser.Deserialize<T> (type ?? typeof(T));
+				val = ser.Deserialize (type);
 				properties = properties.SetItem (property, val);
 				return true;
 			}
 
-			val = Convert<T> (o, type ?? typeof(T));
+			val = Convert (o, type);
 			properties = properties.SetItem (property, val);
 			return true;
 		}
@@ -332,23 +318,23 @@ namespace MonoDevelop.Core
 				this.xml  = xml;
 			}
 			
-			public T Deserialize<T> (Type type)
+			public object Deserialize (Type type)
 			{
 				try {
 					if (typeof(ICustomXmlSerializer).IsAssignableFrom (type)) {
 						using (XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" )))) {
-							return (T)((ICustomXmlSerializer)type.Assembly.CreateInstance (type.FullName)).ReadFrom (reader);
+							return ((ICustomXmlSerializer)type.Assembly.CreateInstance (type.FullName)).ReadFrom (reader);
 						}
 					}
 					
 					XmlSerializer serializer = new XmlSerializer (type);
 					using (StreamReader sr = new StreamReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes (xml)))) {
-						return (T)serializer.Deserialize (sr);
+						return serializer.Deserialize (sr);
 					}
 
 				} catch (Exception e) {
 					LoggingService.LogWarning ("Caught exception while deserializing:" + type, e);
-					return default(T);
+					return null;
 				}
 			}
 		}
