@@ -49,6 +49,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -743,7 +744,7 @@ namespace MonoDevelop.Debugger
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
-			internal readonly ITimeTracker<DebuggerStartMetadata> startTimer;
+			internal ITimeTracker<DebuggerStartMetadata> StartTimer { get; set; }
 
 			internal bool TrackActionTelemetry { get; set; }
 			internal DebuggerActionMetadata.ActionType CurrentAction { get; set; }
@@ -756,7 +757,7 @@ namespace MonoDevelop.Debugger
 				session.ExceptionHandler = ExceptionHandler;
 				session.AssemblyLoaded += OnAssemblyLoaded;
 				this.console = console;
-				startTimer = timeTracker;
+				StartTimer = timeTracker;
 
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
@@ -765,7 +766,7 @@ namespace MonoDevelop.Debugger
 			void Cancel ()
 			{
 				Session.Exit ();
-				startTimer?.Metadata.SetUserCancel ();
+				StartTimer?.Metadata.SetUserCancel ();
 				Cleanup (this);
 			}
 
@@ -809,7 +810,7 @@ namespace MonoDevelop.Debugger
 				cancelRegistration?.Dispose ();
 				cancelRegistration = null;
 
-				startTimer?.Dispose ();
+				StartTimer?.Dispose ();
 			}
 
 			bool sessionError;
@@ -821,7 +822,7 @@ namespace MonoDevelop.Debugger
 				get => sessionError;
 				set {
 					sessionError = value;
-					startTimer?.Metadata.SetFailure ();
+					StartTimer?.Metadata.SetFailure ();
 				}
 			}
 
@@ -922,6 +923,17 @@ namespace MonoDevelop.Debugger
 		static void OnStarted (object s, EventArgs a)
 		{
 			nextStatementLocations.Clear ();
+
+			if (currentSession == null) {
+				if (!sessions.TryGetValue ((DebuggerSession)s, out var sessionManager)) {
+					return;
+				}
+
+				sessionManager.StartTimer?.Metadata.SetSuccess ();
+				sessionManager.StartTimer?.Dispose ();
+				sessionManager.StartTimer = null;
+			}
+
 			if (currentSession?.Session == s) {
 				currentBacktrace = null;
 				currentSession = null;
