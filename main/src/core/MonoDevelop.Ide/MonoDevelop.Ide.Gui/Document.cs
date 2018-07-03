@@ -615,7 +615,7 @@ namespace MonoDevelop.Ide.Gui
 			// Unsubscribe project events
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
-			window.ViewsChanged += HandleViewsChanged;
+			window.ViewsChanged -= HandleViewsChanged;
 			window.ViewContent.ContentNameChanged -= OnContentNameChanged;
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
