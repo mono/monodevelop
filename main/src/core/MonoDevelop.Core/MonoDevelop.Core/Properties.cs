@@ -101,7 +101,8 @@ namespace MonoDevelop.Core
 		
 		public T Get<T> (string property, T defaultValue)
 		{
-			return (T)Get (property, defaultValue, typeof (T));
+			var result = Get (property, defaultValue, typeof (T));
+			return result != null ? (T)result : default (T);
 		}
 		
 		public T Get<T> (string property)
@@ -163,7 +164,7 @@ namespace MonoDevelop.Core
 
 		public void Set (string key, object val)
 		{
-			object old = Get (key, val?.GetType ());
+			object old = Get (key, val?.GetType () ?? typeof(object));
 			if (val == null) {
 				//avoid emitting the event if not necessary
 				if (old == null)
