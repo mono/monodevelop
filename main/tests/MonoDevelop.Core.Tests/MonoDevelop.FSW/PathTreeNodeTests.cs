@@ -37,10 +37,13 @@ namespace MonoDevelop.FSW
 			Path.DirectorySeparatorChar.ToString(),
 		};
 
+		static readonly string prefix = Core.Platform.IsWindows ? "C:" : "/";
+		static string MakePath (params string [] segments) => Path.Combine (prefix, Path.Combine (segments));
+
 		[TestCaseSource (nameof (seps))]
 		public void CreateSubTree (string sep)
 		{
-			var path = Path.Combine ("a", "b", "c") + sep;
+			var path = MakePath ("a", "b", "c") + sep;
 
 			var (a, leaf) = PathTreeNode.CreateSubTree (path, 0);
 			AssertPathTreeSubtree (a, "a");
