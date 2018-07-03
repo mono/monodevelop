@@ -146,13 +146,8 @@ namespace MonoDevelop.FSW
 
 			// At this point, we need to create a new node.
 			var (first, leaf) = PathTreeNode.CreateSubTree(path, lastIndex);
-
-			if (leaf == null) {
-				// This is a workaround to something trying to monitor the root
-				// directory. If we end up monitoring that, we have bigger problems
-				// than not having it monitored.
+			if (leaf == null)
 				return null;
-			}
 
 			if (id != null)
 				leaf.RegisterId(id);
@@ -164,7 +159,15 @@ namespace MonoDevelop.FSW
 
 		public PathTreeNode RemoveNode(string path, object id)
 		{
-			if (!TryFind(path, out var result, out var parent, out var previousNode, out _))
+			PathTreeNode result;
+
+			if (path == Path.DirectorySeparatorChar.ToString ()) {
+				result = rootNode;
+				rootNode.UnregisterId (id);
+				return result;
+			}
+
+			if (!TryFind(path, out result, out var parent, out var previousNode, out _))
 				return null;
 
 			if (result.UnregisterId(id) && !result.IsLive)
