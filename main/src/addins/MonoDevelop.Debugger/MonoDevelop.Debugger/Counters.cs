@@ -42,6 +42,11 @@ namespace MonoDevelop.Debugger
 		public DebuggerStartMetadata ()
 		{
 		}
+
+		public string Name {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
 	}
 
 	class DebuggerActionMetadata : CounterMetadata

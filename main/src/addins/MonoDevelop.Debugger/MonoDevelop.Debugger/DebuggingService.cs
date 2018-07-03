@@ -681,6 +681,7 @@ namespace MonoDevelop.Debugger
 		{
 			// Start assuming success, update on failure
 			var metadata = new DebuggerStartMetadata {
+				Name = factory.Name,
 				Result = CounterResult.Success
 			};
 			var timer = Counters.DebuggerStart.BeginTiming (metadata);
