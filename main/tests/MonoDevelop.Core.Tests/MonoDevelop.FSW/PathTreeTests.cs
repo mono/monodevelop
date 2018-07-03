@@ -442,5 +442,22 @@ namespace MonoDevelop.FSW
 			tree.RemoveNode (MakePath ("a", "b", "c"), id1);
 			Assert.IsNull (a.FirstChild);
 		}
+
+		[Test]
+		public void CreateTreeAndRegisterRoot ()
+		{
+			var tree = new PathTree ();
+
+			tree.AddNode (prefix, id);
+			tree.RemoveNode (prefix, id);
+
+			var node = tree.FindNode (prefix);
+			if (Core.Platform.IsWindows) {
+				Assert.IsNull (node);
+			} else {
+				Assert.IsNotNull (node);
+				Assert.AreEqual (false, node.IsLive);
+			}
+		}
 	}
 }

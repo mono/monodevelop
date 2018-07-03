@@ -131,7 +131,7 @@ namespace MonoDevelop.FSW
 				lastIndex = currentIndex + 1;
 
 				// We found the node already, register the ID.
-				if (currentIndex == -1)
+				if (currentIndex == -1 || lastIndex == path.Length)
 				{
 					result = currentNode;
 					return true;
