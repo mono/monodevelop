@@ -48,6 +48,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -606,7 +608,7 @@ namespace MonoDevelop.Debugger
 		{
 			var session = debugger.CreateSession ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
-			var sessionManager = new SessionManager (session, monitor.Console, debugger);
+			var sessionManager = new SessionManager (session, monitor.Console, debugger, null);
 			SetupSession (sessionManager);
 			session.TargetExited += delegate {
 				monitor.Dispose ();
@@ -677,11 +679,22 @@ namespace MonoDevelop.Debugger
 
 		internal static ProcessAsyncOperation InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
 		{
+			// Start assuming success, update on failure
+			var metadata = new DebuggerStartMetadata {
+				Result = CounterResult.Success
+			};
+			var timer = Counters.DebuggerStart.BeginTiming (metadata);
+
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
-				if (factory == null)
+				if (factory == null) {
+					metadata.SetFailure ();
+					timer.Dispose ();
 					throw new InvalidOperationException ("Unsupported command: " + cmd);
+				}
 			}
+
+			metadata.Name = factory.Name;
 
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
 			startInfo.UseExternalConsole = c is ExternalConsole;
@@ -694,9 +707,9 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory);
+				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory, timer);
 			else
-				sessionManager = new SessionManager (session, c, factory);
+				sessionManager = new SessionManager (session, c, factory, timer);
 			SetupSession (sessionManager);
 
 			SetDebugLayout ();
@@ -707,6 +720,7 @@ namespace MonoDevelop.Debugger
 			} catch {
 				sessionManager.SessionError = true;
 				Cleanup (sessionManager);
+				metadata.SetFailure ();
 				throw;
 			}
 			return sessionManager.debugOperation;
@@ -732,14 +746,21 @@ namespace MonoDevelop.Debugger
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
+			internal ITimeTracker<DebuggerStartMetadata> StartTimer { get; set; }
 
-			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine)
+			internal bool TrackActionTelemetry { get; set; }
+			internal DebuggerActionMetadata.ActionType CurrentAction { get; set; }
+			internal ITimeTracker ActionTimeTracker { get; set; }
+
+			public SessionManager (DebuggerSession session, OperationConsole console, DebuggerEngine engine, ITimeTracker<DebuggerStartMetadata> timeTracker)
 			{
 				Engine = engine;
 				Session = session;
 				session.ExceptionHandler = ExceptionHandler;
 				session.AssemblyLoaded += OnAssemblyLoaded;
 				this.console = console;
+				StartTimer = timeTracker;
+
 				cancelRegistration = console.CancellationToken.Register (Cancel);
 				debugOperation = new DebugAsyncOperation (session);
 			}
@@ -747,6 +768,7 @@ namespace MonoDevelop.Debugger
 			void Cancel ()
 			{
 				Session.Exit ();
+				StartTimer?.Metadata.SetUserCancel ();
 				Cleanup (this);
 			}
 
@@ -789,13 +811,22 @@ namespace MonoDevelop.Debugger
 				debugOperation.Cleanup ();
 				cancelRegistration?.Dispose ();
 				cancelRegistration = null;
+
+				StartTimer?.Dispose ();
 			}
 
+			bool sessionError;
 			/// <summary>
 			/// Indicates whether the debug session failed to an exception or any debugger
 			/// operation failed and was reported to the user.
 			/// </summary>
-			public bool SessionError { get; set; }
+			public bool SessionError {
+				get => sessionError;
+				set {
+					sessionError = value;
+					StartTimer?.Metadata.SetFailure ();
+				}
+			}
 
 			void UpdateDebugSessionCounter ()
 			{
@@ -894,6 +925,7 @@ namespace MonoDevelop.Debugger
 		static void OnStarted (object s, EventArgs a)
 		{
 			nextStatementLocations.Clear ();
+
 			if (currentSession?.Session == s) {
 				currentBacktrace = null;
 				currentSession = null;
@@ -916,6 +948,7 @@ namespace MonoDevelop.Debugger
 				return;
 			nextStatementLocations.Clear ();
 
+			SessionManager sessionManager = null;
 			try {
 				switch (args.Type) {
 				case TargetEventType.TargetExited:
@@ -931,21 +964,42 @@ namespace MonoDevelop.Debugger
 				case TargetEventType.UnhandledException:
 				case TargetEventType.ExceptionThrown:
 					var action = new Func<bool> (delegate {
-						SessionManager sessionManager;
 						if (!sessions.TryGetValue (session, out sessionManager))
 							return false;
+
+						if (sessionManager.TrackActionTelemetry) {
+							var metadata = new DebuggerActionMetadata () {
+								Type = sessionManager.CurrentAction
+							};
+							sessionManager.ActionTimeTracker = Counters.DebuggerAction.BeginTiming ("Debugger action", metadata);
+						}
 						Breakpoints.RemoveRunToCursorBreakpoints ();
 						currentSession = sessionManager;
 						ActiveThread = args.Thread;
-						NotifyPaused ();
+						NotifyPaused (currentSession);
 						NotifyException (args);
 						return true;
 					});
 					if (currentSession != null && currentSession != sessions [session]) {
 						StopsQueue.Enqueue (action);
-						NotifyPaused ();//Notify about pause again, so ThreadsPad can update, to show all processes
+						NotifyPaused (null);//Notify about pause again, so ThreadsPad can update, to show all processes
 					} else {
 						action ();
+					}
+					break;
+				case TargetEventType.TargetReady:
+					if (!sessions.TryGetValue (session, out sessionManager)) {
+						return;
+					}
+
+					sessionManager.StartTimer?.Metadata.SetSuccess ();
+
+					sessionManager.StartTimer?.Dispose ();
+					sessionManager.StartTimer = null;
+
+					if (Ide.Counters.TrackingBuildAndDeploy) {
+						Ide.Counters.BuildAndDeploy.EndTiming ();
+						Ide.Counters.TrackingBuildAndDeploy = false;
 					}
 					break;
 				}
@@ -961,7 +1015,7 @@ namespace MonoDevelop.Debugger
 				handler (null, e);
 		}
 
-		static void NotifyPaused ()
+		static void NotifyPaused (SessionManager sessionManager)
 		{
 			Runtime.RunInMainThread (delegate {
 				stepSwitchCts?.Cancel ();
@@ -969,6 +1023,16 @@ namespace MonoDevelop.Debugger
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 				IdeApp.Workbench.GrabDesktopFocus ();
+
+			}).ContinueWith ((arg) => {
+				// PausedEventHandlers may queue additional UI events that can cause a freeze.
+				// Ensure those UI events have completed before we stop tracking the time.
+				Runtime.RunInMainThread (() => {
+					if (sessionManager.TrackActionTelemetry) {
+						sessionManager.ActionTimeTracker.Dispose ();
+						sessionManager.TrackActionTelemetry = false;
+					}
+				});
 			});
 		}
 
@@ -1017,10 +1081,15 @@ namespace MonoDevelop.Debugger
 
 		public static void StepInto ()
 		{
+
 			Runtime.AssertMainThread ();
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
+
+			currentSession.TrackActionTelemetry = true;
+			currentSession.CurrentAction = DebuggerActionMetadata.ActionType.StepInto;
+
 			currentSession.Session.StepLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
@@ -1032,6 +1101,10 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
+
+			currentSession.TrackActionTelemetry = true;
+			currentSession.CurrentAction = DebuggerActionMetadata.ActionType.StepOver;
+
 			currentSession.Session.NextLine ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
@@ -1043,6 +1116,10 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
+
+			currentSession.TrackActionTelemetry = true;
+			currentSession.CurrentAction = DebuggerActionMetadata.ActionType.StepOut;
+
 			currentSession.Session.Finish ();
 			NotifyLocationChanged ();
 			DelayHandleStopQueue ();
