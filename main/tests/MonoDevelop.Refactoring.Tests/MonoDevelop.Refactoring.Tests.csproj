@@ -131,6 +131,10 @@
   <ItemGroup>
     <Compile Include="ResultsEditorExtensionTestBase.cs" />
     <Compile Include="CodeActionEditorExtensionTestBase.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RenameRefactoringTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Refactoring\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
