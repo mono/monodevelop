@@ -70,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var type = (TypeDefinition)dataObject;
 			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (CSharpLanguage.Instance.FormatTypeName (type));
-			if (IsNonPublic(type))
+			if (!type.IsPublic)
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(type));
 		}
@@ -113,11 +113,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		bool IsNonPublic (TypeDefinition type)
-		{
-			return (type.Attributes & (TypeAttributes.Public | TypeAttributes.NestedPublic)) == 0;
-		}
-
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var type = (TypeDefinition)dataObject;
@@ -127,33 +122,35 @@ namespace MonoDevelop.AssemblyBrowser
 			bool publicOnly = Widget.PublicApiOnly;
 
 			foreach (var nestedType in type.NestedTypes.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && IsNonPublic (nestedType))
+				if (publicOnly && !nestedType.IsPublic)
 					continue;
 				builder.AddChild (nestedType);
 			}
 
 			foreach (var field in type.Fields.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && ((FieldAttributes.Private | FieldAttributes.Assembly) & field.Attributes) != 0)
+				if (publicOnly && !field.IsPublic)
 					continue;
 				builder.AddChild (field);
 			}
 
 			foreach (var property in type.Properties.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
 				var accessor = property.GetMethod ?? property.SetMethod;
-				if (publicOnly && ((MethodAttributes.Private | MethodAttributes.Assembly) & accessor.Attributes) != 0)
+				if (publicOnly && !accessor.IsPublic)
 					continue;
 				builder.AddChild (property);
 			}
 
 			foreach (var evt in type.Events.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
 				var accessor = evt.AddMethod ?? evt.RemoveMethod;
-				if (publicOnly && ((MethodAttributes.Private | MethodAttributes.Assembly) & accessor.Attributes) != 0)
+				if (publicOnly && !accessor.IsPublic)
 					continue;
 				builder.AddChild (evt);
 			}
 
 			var accessorMethods = type.GetAccessorMethods ();
 			foreach (var method in type.Methods.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
+				if (publicOnly && !method.IsPublic)
+					continue;
 				if (!accessorMethods.Contains (method)) {
 					builder.AddChild (method);
 				}
