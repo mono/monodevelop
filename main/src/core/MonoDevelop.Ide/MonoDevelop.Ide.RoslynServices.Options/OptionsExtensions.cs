@@ -48,20 +48,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			}
 		}
 
-		public static string GetPropertyName (this OptionKey optionKey)
-		{
-			// Prevent NRE being thrown on iteration.
-			if (optionKey.Option.StorageLocations.IsDefaultOrEmpty)
-				return null;
-
-			foreach (var storageLocation in optionKey.Option.StorageLocations) {
-				if (storageLocation is RoamingProfileStorageLocation roamingLocation)
-					return roamingLocation.GetKeyNameForLanguage (optionKey.Language);
-				if (storageLocation is LocalUserProfileStorageLocation userLocation)
-					return userLocation.KeyName;
-			}
-			return null;
-		}
+		public static string GetPropertyName (this OptionKey optionKey) => GetPropertyNames (optionKey).FirstOrDefault ();
 
 		public static TextStylePolicy GetTextStylePolicy (this OptionKey optionKey)
 		{
