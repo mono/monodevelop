@@ -49,23 +49,26 @@ namespace MonoDevelop.Ide.Editor
 			var content = new TestViewContentWithDocumentReloadPresenter ();
 			window.ViewContent = content;
 			var doc = new Document (window);
-			content.Document = doc;
-			await content.Load (fileName);
 
-			bool reloadWarningDisplayed = false;
-			content.OnShowFileChangeWarning = multiple => {
-				reloadWarningDisplayed = true;
-			};
-			doc.Editor.Text = "class rename {}";
-			doc.IsDirty = true; // Refactor leaves file unsaved in text editor.
-			FilePath newFileName = fileName.ChangeName ("renamed");
-			FileService.RenameFile (fileName, newFileName);
-			// Simulate DefaultWorkbench which updates the view content name when the FileService
-			// fires the rename event.
-			content.ContentName = newFileName;
-			FileService.NotifyFileChanged (newFileName);
+			using (var testCase = new TextEditorExtensionTestCase (doc, content, window, null, false)) {
+				content.Document = doc;
+				await content.Load (fileName);
 
-			Assert.IsFalse (reloadWarningDisplayed);
+				bool reloadWarningDisplayed = false;
+				content.OnShowFileChangeWarning = multiple => {
+					reloadWarningDisplayed = true;
+				};
+				doc.Editor.Text = "class rename {}";
+				doc.IsDirty = true; // Refactor leaves file unsaved in text editor.
+				FilePath newFileName = fileName.ChangeName ("renamed");
+				FileService.RenameFile (fileName, newFileName);
+				// Simulate DefaultWorkbench which updates the view content name when the FileService
+				// fires the rename event.
+				content.ContentName = newFileName;
+				FileService.NotifyFileChanged (newFileName);
+
+				Assert.IsFalse (reloadWarningDisplayed);
+			}
 		}
 
 		class TestViewContentWithDocumentReloadPresenter : TestViewContent, IDocumentReloadPresenter
