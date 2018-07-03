@@ -880,7 +880,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (entry is SolutionFolder) {
-				ArrayList ens = new ArrayList ();
+				var ens = new List<SolutionFolderItem> ();
 				foreach (SolutionFolderItem ce in ((SolutionFolder)entry).Items)
 					ens.Add (ce);
 				foreach (SolutionFolderItem ce in ens)

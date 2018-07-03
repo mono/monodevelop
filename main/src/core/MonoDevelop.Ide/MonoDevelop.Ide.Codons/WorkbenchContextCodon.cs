@@ -30,7 +30,7 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Mono.Addins;
 
@@ -44,13 +44,13 @@ namespace MonoDevelop.Ide.Codons
 		public ContextPadCodon[] Pads {
 			get {
 				if (pads == null) {
-					ArrayList bs = new ArrayList ();
+					var bs = new List<ContextPadCodon> ();
 					foreach (ExtensionNode ob in ChildNodes) {
 						ContextPadCodon spad = ob as ContextPadCodon;
 						if (spad != null)
 							bs.Add (spad);
 					}
-					pads = (ContextPadCodon[]) bs.ToArray (typeof(ContextPadCodon));
+					pads = bs.ToArray ();
 				}
 				return pads;
 			}
