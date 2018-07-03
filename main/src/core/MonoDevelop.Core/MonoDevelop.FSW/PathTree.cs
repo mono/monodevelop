@@ -146,6 +146,14 @@ namespace MonoDevelop.FSW
 
 			// At this point, we need to create a new node.
 			var (first, leaf) = PathTreeNode.CreateSubTree(path, lastIndex);
+
+			if (leaf == null) {
+				// This is a workaround to something trying to monitor the root
+				// directory. If we end up monitoring that, we have bigger problems
+				// than not having it monitored.
+				return null;
+			}
+
 			if (id != null)
 				leaf.RegisterId(id);
 
