@@ -67,6 +67,9 @@ namespace MonoDevelop.Ide
 		internal static Counter CodeCompletionStats = InstrumentationService.CreateCounter ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
 		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
 
+		internal static bool TrackingBuildAndDeploy;
+		internal static TimerCounter<CounterMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<CounterMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
+
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
 			public static TimerCounter ObjectSerialized = InstrumentationService.CreateTimerCounter ("Object serialized", "Parser Service");
