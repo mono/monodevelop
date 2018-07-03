@@ -25,12 +25,23 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.FSW
 {
 	class PathTree
 	{
-		internal readonly PathTreeNode rootNode = new PathTreeNode("", 0, 0);
+		internal readonly PathTreeNode rootNode;
+
+		public PathTree ()
+		{
+			rootNode = new PathTreeNode ("", 0, 1);
+			if (!Platform.IsWindows) {
+				rootNode.FirstChild = new PathTreeNode ("/", 0, 0) {
+					Parent = rootNode,
+				};
+			}
+		}
 
 		public PathTreeNode FindNode (string path)
 		{
@@ -146,9 +157,6 @@ namespace MonoDevelop.FSW
 
 			// At this point, we need to create a new node.
 			var (first, leaf) = PathTreeNode.CreateSubTree(path, lastIndex);
-			if (leaf == null)
-				return null;
-
 			if (id != null)
 				leaf.RegisterId(id);
 
@@ -159,22 +167,15 @@ namespace MonoDevelop.FSW
 
 		public PathTreeNode RemoveNode(string path, object id)
 		{
-			PathTreeNode result;
-
-			if (path == Path.DirectorySeparatorChar.ToString ()) {
-				result = rootNode;
-				rootNode.UnregisterId (id);
-				return result;
-			}
-
-			if (!TryFind(path, out result, out var parent, out var previousNode, out _))
+			if (!TryFind (path, out PathTreeNode result, out var parent, out var previousNode, out _))
 				return null;
 
 			if (result.UnregisterId(id) && !result.IsLive)
 			{
 				var nodeToRemove = result;
+				var lastToRemove = Platform.IsWindows ? rootNode : rootNode.FirstChild;
 
-				while (nodeToRemove != rootNode && IsDeadSubtree (nodeToRemove)) {
+				while (nodeToRemove != lastToRemove && IsDeadSubtree (nodeToRemove)) {
 					parent.ChildrenCount -= 1;
 
 					if (parent.FirstChild == nodeToRemove)
