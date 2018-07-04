@@ -66,7 +66,7 @@ namespace MonoDevelop.AssemblyBrowser
 			nodeInfo.Label = evt.Name + " : " + CSharpLanguage.Instance.TypeToString (evt.EventType, false, evt);
 			var accessor = evt.AddMethod ?? evt.RemoveMethod;
 
-			if (((MethodAttributes.Private | MethodAttributes.Assembly) & accessor.Attributes) != 0)
+			if (!accessor.IsPublic)
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon (evt));

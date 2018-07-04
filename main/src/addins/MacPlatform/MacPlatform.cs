@@ -273,9 +273,8 @@ namespace MonoDevelop.MacIntegration
 
 			var nc = NSNotificationCenter.DefaultCenter;
 			nc.AddObserver ((NSString)"AtkCocoaAccessibilityEnabled", (NSNotification) => {
-				Console.WriteLine ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
+				LoggingService.LogInfo ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
 				if (!IdeTheme.AccessibilityEnabled) {
-					Console.WriteLine ("Showing notice");
 					ShowVoiceOverNotice ();
 				}
 			}, NSApplication.SharedApplication);
@@ -599,6 +598,7 @@ namespace MonoDevelop.MacIntegration
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
+						IdeApp.ReportTimeToCode = true;
 						IdeApp.OpenFiles (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
 						);
@@ -609,6 +609,7 @@ namespace MonoDevelop.MacIntegration
 
 				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
 					GLib.Timeout.Add (10, delegate {
+						IdeApp.ReportTimeToCode = true;
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
 						IdeApp.OpenFiles (e.Urls.Select (url => {
@@ -1145,14 +1146,9 @@ namespace MonoDevelop.MacIntegration
 			proc.Start ();
 		}
 
-		MacTelemetryDetails details;
-		internal override IPlatformTelemetryDetails PlatformTelemetryDetails ()
+		internal override IPlatformTelemetryDetails CreatePlatformTelemetryDetails ()
 		{
-			if (details == null) {
-				details = MacTelemetryDetails.CreateTelemetryDetails ();
-			}
-
-			return details;
+			return MacTelemetryDetails.CreateTelemetryDetails ();
 		}
 
 		internal override MemoryMonitor CreateMemoryMonitor () => new MacMemoryMonitor ();

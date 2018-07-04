@@ -91,10 +91,12 @@ namespace MonoDevelop.Projects
 			AssertCanWrite ();
 
 			list = ImmutableList<T>.Empty.AddRange (items);
-			if (newItems.Any ())
-				OnItemsAdded (newItems);
+			// Remove items first before adding in case there are common filenames to prevent
+			// items being removed from the ProjectFileCollection's files lookup list.
 			if (removedItems.Any ())
 				OnItemsRemoved (removedItems);
+			if (newItems.Any ())
+				OnItemsAdded (newItems);
 		}
 
 		IEnumerable<T> ReuseExistingItems (IEnumerable<T> items)

@@ -36,6 +36,7 @@ using Microsoft.Build.Utilities;
 using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Globalization;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Exceptions;
 using MonoDevelop.Projects.Extensions;
 using System.Collections;
 
@@ -48,6 +49,7 @@ namespace MonoDevelop.Projects.MSBuild
 		readonly HashSet<string> propertiesWithTransforms;
 		readonly List<string> propertiesWithTransformsSorted;
 		List<ImportSearchPathExtensionNode> searchPaths;
+		HashSet<string> nestedImportFiles;
 
 		public Dictionary<string, bool> ExistsEvaluationCache { get; }
 
@@ -69,6 +71,7 @@ namespace MonoDevelop.Projects.MSBuild
 			propertiesWithTransforms = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 			propertiesWithTransformsSorted = new List<string> ();
 			envVars = Environment.GetEnvironmentVariables ();
+			nestedImportFiles = new HashSet<string> ();
 		}
 
 		public MSBuildEvaluationContext (MSBuildEvaluationContext parentContext)
@@ -81,6 +84,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.propertiesWithTransforms = parentContext.propertiesWithTransforms;
 			this.propertiesWithTransformsSorted = parentContext.propertiesWithTransformsSorted;
 			this.envVars = parentContext.envVars;
+			this.nestedImportFiles = parentContext.nestedImportFiles;
 		}
 
 		internal void InitEvaluation (MSBuildProject project)
@@ -1063,6 +1067,21 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			foreach (var v in allProps.OrderBy (s => s))
 				Log.LogMessage (string.Format ($"{v,-30} = {GetPropertyValue (v)}"));
+		}
+
+		/// <summary>
+		/// Registers imports to check for circular dependencies. Once the import has been
+		/// evaluated it should be removed using RemoveImport.
+		/// </summary>
+		public void AddImport (string file)
+		{
+			if (!nestedImportFiles.Add (file))
+				throw new InvalidProjectFileException (GettextCatalog.GetString ("Importing the file \"{0}\" into the file \"{1}\" results in a circular dependency.", file, FullFileName));
+		}
+
+		public void RemoveImport (string file)
+		{
+			nestedImportFiles.Remove (file);
 		}
 	}
 }

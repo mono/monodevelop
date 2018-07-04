@@ -57,6 +57,8 @@ namespace Mono.TextEditor
 	{
 
 		TextEditorData textEditorData;
+
+		TextEditorKeyPressTimings keyPressTimings = new TextEditorKeyPressTimings ();
 		
 		protected IconMargin       iconMargin;
 		protected ActionMargin     actionMargin;
@@ -999,6 +1001,12 @@ namespace Mono.TextEditor
 		{
 			if (popupWindow != null)
 				popupWindow.Destroy ();
+
+			if (keyPressTimings != null) {
+				keyPressTimings.ReportTimings (Document);
+				keyPressTimings = null;
+			}
+
 			this.Options = null;
 			Gtk.Key.SnooperRemove (snooperID);
 			HideTooltip ();
@@ -1239,62 +1247,76 @@ namespace Mono.TextEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
 			if (currentFocus == FocusMargin.TextView) {
-				Gdk.Key key;
-				Gdk.ModifierType mod;
-				KeyboardShortcut[] accels;
-				GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
-				//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
-				if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
-					OnPopupMenu ();
-					return true;
-				}
-
-				if (key == Gdk.Key.Tab && mod.HasFlag (ModifierType.Mod1Mask)) {
-					currentFocus = FocusMargin.None;
-					return FocusNextMargin (Gtk.DirectionType.TabForward);
-				}
-
-				uint keyVal = (uint)key;
-				CurrentMode.SelectValidShortcut (accels, out key, out mod);
-				if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
-					var p = LocationToPoint (Caret.Location);
-					ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
-					return true;
-				}
-				if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
-					textViewMargin.OpenCodeSegmentEditor ();
-					return true;
-				}
-				
-				//FIXME: why are we doing this?
-				if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
-					mod = Gdk.ModifierType.None;
-				
-				uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
-				
-				if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
-					ResetIMContext ();
-					//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
-					SimulateKeyPress (key, unicodeChar, mod);
-					return true;
-				}
-				bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
-				if (filter) {
-					imContextNeedsReset = false;
-					ResetIMContext ();
-					return true;
-				}
-
-				//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
-				if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
-					return true;
+				keyPressTimings.StartTimer (evt);
+				return HandleTextKey (evt);
 			} else if (currentFocus != FocusMargin.None) {
 				return HandleMarginKeyCommand (evt);
 			}
 
 			return base.OnKeyPressEvent (evt);
 		}
-		
+
+		bool HandleTextKey (EventKey evt)
+		{
+			Gdk.Key key;
+			Gdk.ModifierType mod;
+			KeyboardShortcut[] accels;
+			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
+			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
+			if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
+				OnPopupMenu ();
+				keyPressTimings.EndTimer ();
+				return true;
+			}
+
+			if (key == Gdk.Key.Tab && mod.HasFlag (ModifierType.Mod1Mask)) {
+				currentFocus = FocusMargin.None;
+				keyPressTimings.EndTimer ();
+				return FocusNextMargin (Gtk.DirectionType.TabForward);
+			}
+
+			uint keyVal = (uint)key;
+			CurrentMode.SelectValidShortcut (accels, out key, out mod);
+			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
+				var p = LocationToPoint (Caret.Location);
+				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
+				keyPressTimings.EndTimer ();
+				return true;
+			}
+			if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
+				textViewMargin.OpenCodeSegmentEditor ();
+				keyPressTimings.EndTimer ();
+				return true;
+			}
+
+			//FIXME: why are we doing this?
+			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+				mod = Gdk.ModifierType.None;
+
+			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
+
+			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
+				ResetIMContext ();
+				//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
+				SimulateKeyPress (key, unicodeChar, mod);
+				keyPressTimings.EndTimer ();
+				return true;
+			}
+			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
+			if (filter) {
+				imContextNeedsReset = false;
+				ResetIMContext ();
+				return true;
+			}
+
+			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
+			// Don't need to end the timer because the key will be drawn onscreen and the timer will end then
+			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+				return true;
+
+			return base.OnKeyPressEvent (evt);
+		}
+
 		bool HandleMarginKeyCommand (EventKey evnt)
 		{
 			var cm = GetMargin (currentFocus);
@@ -1700,7 +1722,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			var location = textViewMargin.PointToLocation (x - startPos, y, snapCharacters: true);
+			var location = textViewMargin.PointToLocation (x - startPos, y);
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
 
@@ -2273,6 +2295,7 @@ namespace Mono.TextEditor
 				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
 			}
 
+			keyPressTimings.EndTimer (true);
 			return base.OnExposeEvent (e);
 		}
 

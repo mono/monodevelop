@@ -144,5 +144,10 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public bool IsImplicit { get; internal set; }
+
+		public string Version {
+			get { return Metadata.GetValue ("Version"); }
+			set { Metadata.SetValue ("Version", value); }
+		}
 	}
 }

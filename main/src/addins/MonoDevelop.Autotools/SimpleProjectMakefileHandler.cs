@@ -140,19 +140,10 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences;
 				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
 
-				DotNetProject dotnetProject = entry as DotNetProject;
-				if (dotnetProject != null)
-				{
-					string resgen = "resgen";
-					if (System.Environment.Version.Major >= 2) {
-						switch (dotnetProject.TargetFramework.ClrVersion) {
-							case ClrVersion.Net_1_1: resgen = "resgen1"; break;
-							default: resgen = "resgen2"; break;
-						}
-					}
-					templateEngine.Variables ["RESGEN"] = resgen;
+				if (entry is DotNetProject dotnetProject) {
+					templateEngine.Variables ["RESGEN"] = "resgen";
 				}
-				
+
 				string pfpath = null;
 				foreach (ProjectFile projectFile in project.Files) 
 				{

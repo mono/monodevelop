@@ -231,8 +231,6 @@ namespace MonoDevelop.Refactoring.GenerateType
 			this.Width = 400;
 			this.Height = 421;
 			this.Resizable = false;
-
-			Show ();
 		}
 
 		void PopulateDocumentList ()

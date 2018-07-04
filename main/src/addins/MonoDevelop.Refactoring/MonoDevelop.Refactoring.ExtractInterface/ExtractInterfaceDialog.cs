@@ -192,8 +192,6 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			this.Width = 400;
 			this.Height = 421;
 			this.Resizable = false;
-
-			Show ();
 		}
 
 		static SymbolDisplayFormat memberDisplayFormat = new SymbolDisplayFormat (

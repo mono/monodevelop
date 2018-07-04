@@ -1,38 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{174E6044-DD3A-49AB-9A5C-2A1F341B7B4F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.Debugger.Tests</RootNamespace>
-    <AssemblyName>MonoDevelop.Debugger.Tests</AssemblyName>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\build\tests</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,15 +61,13 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-	
   <Target Name="AfterBuild">
-      <PropertyGroup>
-        <UnitTestsDir>..\..\..\..\external\debugger-libs\UnitTests</UnitTestsDir>
-      </PropertyGroup>
-      <ItemGroup>
-          <TestProjectFiles Include="$(UnitTestsDir)\**" Exclude="$(UnitTestsDir)\Mono.Debugging.Tests\**;$(UnitTestsDir)\**\.DS_Store" />
-      </ItemGroup>
-      <Copy SourceFiles="@(TestProjectFiles)" DestinationFolder="$(OutputPath)\DebuggerTestProjects\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <PropertyGroup>
+      <UnitTestsDir>..\..\..\..\external\debugger-libs\UnitTests</UnitTestsDir>
+    </PropertyGroup>
+    <ItemGroup>
+        <TestProjectFiles Include="$(UnitTestsDir)\**" Exclude="$(UnitTestsDir)\Mono.Debugging.Tests\**;$(UnitTestsDir)\**\.DS_Store" />
+    </ItemGroup>
+    <Copy SourceFiles="@(TestProjectFiles)" DestinationFolder="$(OutputPath)\DebuggerTestProjects\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
-
 </Project>

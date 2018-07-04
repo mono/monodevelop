@@ -55,7 +55,9 @@ namespace MonoDevelop.Platform
 		}
 		
 		struct GnomeVfsApp {
+			#pragma warning disable 649 // never assigned
 			public string Id, DisplayName, Command;
+			#pragma warning restore 649
 		}
 
 		protected override string OnGetMimeTypeDescription (string mt)

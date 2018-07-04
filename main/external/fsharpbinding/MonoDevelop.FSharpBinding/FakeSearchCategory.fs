@@ -81,4 +81,4 @@ type FakeSearchCategory() =
                                                | true -> Some (solution, x, rank, launcherScriptPath)
                                                | _ -> None)
                         |> Seq.iter addResult }
-              |> Async.Start ), token)
+              |> Async.StartAndLogException ), token)

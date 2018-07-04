@@ -96,7 +96,7 @@ namespace MonoDevelop.DotNetCore
 			globalPropertyGroup.RemoveProperty ("TargetFrameworkVersion");
 
 			if (!IsOutputTypeDefined)
-				globalPropertyGroup.RemoveProperty ("OutputType");
+				RemoveOutputTypeIfHasDefaultValue (project, globalPropertyGroup);
 
 			RemoveMSBuildProjectNameDerivedProperties (globalPropertyGroup);
 
@@ -114,6 +114,16 @@ namespace MonoDevelop.DotNetCore
 
 			if (HasSdk) {
 				project.ToolsVersion = ToolsVersion;
+			}
+		}
+
+		static void RemoveOutputTypeIfHasDefaultValue (MSBuildProject project, MSBuildPropertyGroup globalPropertyGroup)
+		{
+			string outputType = project.EvaluatedProperties.GetValue ("OutputType");
+			if (string.IsNullOrEmpty (outputType)) {
+				globalPropertyGroup.RemoveProperty ("OutputType");
+			} else {
+				globalPropertyGroup.RemovePropertyIfHasDefaultValue ("OutputType", outputType);
 			}
 		}
 
@@ -154,6 +164,7 @@ namespace MonoDevelop.DotNetCore
 			else
 				targetFrameworks[0] = shortFrameworkName;
 
+			targetFrameworkMoniker = framework;
 			project.UpdateTargetFrameworks (targetFrameworks);
 		}
 

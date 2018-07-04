@@ -19,6 +19,7 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessWrapper ()
 		{
+			EnableRaisingEvents = true;
 			Exited += OnExited;
 		}
 
@@ -30,20 +31,44 @@ namespace MonoDevelop.Core.Execution
 		public new void Start ()
 		{
 			CheckDisposed ();
+
 			base.Start ();
 
 			var cs = new CancellationTokenSource ();
-			operation = new ProcessAsyncOperation (Task, cs);
+			cs.Token.Register (() => taskCompletionSource.TrySetResult (operation.ExitCode));
 			cs.Token.Register (Cancel);
 
+			// We need these wrappers, as the alternatives are not good enough.
+			// OutputDataReceived does not persist newlines.
 			if (OutputStreamChanged != null) {
-				Task.Run (CaptureOutput);
+				Task.Run (CaptureOutput, cs.Token);
 			}
 
 			if (ErrorStreamChanged != null) {
-				Task.Run (CaptureError);
+				Task.Run (CaptureError, cs.Token);
 			}
-			operation.ProcessId = Id;
+
+			operation = new ProcessAsyncOperation (Task, cs) {
+				ProcessId = Id,
+			};
+		}
+
+		async Task CaptureOutput ()
+		{
+			char [] buffer = new char [1024];
+			int nr;
+			while ((nr = await StandardOutput.ReadAsync (buffer, 0, buffer.Length).ConfigureAwait (false)) > 0) {
+				OutputStreamChanged?.Invoke (this, new string (buffer, 0, nr));
+			}
+		}
+
+		async Task CaptureError ()
+		{
+			char [] buffer = new char [1024];
+			int nr;
+			while ((nr = await StandardError.ReadAsync (buffer, 0, buffer.Length).ConfigureAwait (false)) > 0) {
+				ErrorStreamChanged?.Invoke (this, new string (buffer, 0, nr));
+			}
 		}
 
 		public void SetCancellationToken (CancellationToken cancelToken)
@@ -60,29 +85,6 @@ namespace MonoDevelop.Core.Execution
 		public void WaitForOutput ()
 		{
 			WaitForOutput (-1);
-		}
-		
-		private async Task CaptureOutput ()
-		{
-			try {
-				char[] buffer = new char [1024];
-				int nr;
-				while ((nr = await StandardOutput.ReadAsync (buffer, 0, buffer.Length).ConfigureAwait (false)) > 0) {
-					OutputStreamChanged?.Invoke (this, new string (buffer, 0, nr));
-				}
-			} catch (ThreadAbortException) {
-				// There is no need to keep propagating the abort exception
-				Thread.ResetAbort ();
-			}
-		}
-
-		private async Task CaptureError ()
-		{
-			char [] buffer = new char [1024];
-			int nr;
-			while ((nr = await StandardError.ReadAsync (buffer, 0, buffer.Length).ConfigureAwait (false)) > 0) {
-				ErrorStreamChanged?.Invoke (this, new string (buffer, 0, nr));
-			}
 		}
 		
 		protected override void Dispose (bool disposing)
@@ -128,7 +130,7 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (!HasExited)
 					WaitForExit ();
-				taskCompletionSource.SetResult (operation.ExitCode = ExitCode);
+				taskCompletionSource.TrySetResult (operation.ExitCode = ExitCode);
 			} catch {
 				// Ignore
 			}

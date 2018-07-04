@@ -9,7 +9,7 @@
     <AssemblyName>MonoDevelop.Core.Tests</AssemblyName>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -111,10 +111,6 @@
     <Compile Include="MonoDevelop.Core\InstrumentationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Core\" />
-    <Folder Include="MonoDevelop.Core.Assemblies\" />
-    <Folder Include="MonoDevelop.Projects\" />
-    <Folder Include="MonoDevelop.Core.Execution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

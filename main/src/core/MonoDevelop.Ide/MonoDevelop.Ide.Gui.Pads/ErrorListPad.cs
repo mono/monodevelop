@@ -55,6 +55,7 @@ using MonoDevelop.Components.AutoTest;
 using System.ComponentModel;
 using MonoDevelop.Ide.BuildOutputView;
 using System.Threading.Tasks;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -65,11 +66,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		PadTreeView view;
 		BuildOutputViewContent buildOutputViewContent;
 		BuildOutput buildOutput;
+		LogView logView;
 		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
 		ToggleButton errorBtn, warnBtn, msgBtn;
-		Button logBtn;
+		Button buildLogBtn;
+		ToggleButton logBtn;
 		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
@@ -77,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int errorCount;
 		int warningCount;
 		int infoCount;
+		bool initialLogShow = true;
 
 		Clipboard clipboard;
 
@@ -89,6 +93,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
 		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
 		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
+		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
+		public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -170,7 +176,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn = MakeButton (Stock.Error, "toggleErrors", ShowErrors, out errorBtnLbl);
 			errorBtn.Accessible.Name = "ErrorPad.ErrorButton";
 
-			errorBtn.Toggled += new EventHandler (FilterChanged);
+			errorBtn.Toggled += FilterChanged;
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			errorBtn.Accessible.Description = GettextCatalog.GetString ("Show Errors");
 			UpdateErrorsNum ();
@@ -178,7 +184,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			warnBtn = MakeButton (Stock.Warning, "toggleWarnings", ShowWarnings, out warnBtnLbl);
 			warnBtn.Accessible.Name = "ErrorPad.WarningButton";
-			warnBtn.Toggled += new EventHandler (FilterChanged);
+			warnBtn.Toggled += FilterChanged;
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			warnBtn.Accessible.Description = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum ();
@@ -186,7 +192,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			msgBtn = MakeButton (Stock.Information, "toggleMessages", ShowMessages, out msgBtnLbl);
 			msgBtn.Accessible.Name = "ErrorPad.MessageButton";
-			msgBtn.Toggled += new EventHandler (FilterChanged);
+			msgBtn.Toggled += FilterChanged;
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			msgBtn.Accessible.Description = GettextCatalog.GetString ("Show Messages");
 			UpdateMessagesNum ();
@@ -196,16 +202,25 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sep.Accessible.SetShouldIgnore (true);
 			toolbar.Add (sep);
 
-			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
+			logBtn = MakeButton ("md-message-log", "toggleBuildOutput", false, out logBtnLbl);
 			logBtn.Accessible.Name = "ErrorPad.LogButton";
-			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
-			logBtn.Accessible.Description = GettextCatalog.GetString ("Show build output");
-
+			logBtn.TooltipText = GettextCatalog.GetString ("Build Output");
+			logBtn.Accessible.Description = GettextCatalog.GetString ("Build Output");
 			logBtnLbl.Text = GettextCatalog.GetString ("Build Output");
 			logBtn.Accessible.SetTitle (logBtnLbl.Text);
-
-			logBtn.Clicked += HandleLogBtnClicked;
+			logBtn.Toggled += HandleTextLogToggled;
 			toolbar.Add (logBtn);
+
+			buildLogBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
+			buildLogBtn.Accessible.Name = "ErrorPad.BuildLogButton";
+			buildLogBtn.TooltipText = GettextCatalog.GetString ("Structured Build Output");
+			buildLogBtn.Accessible.Description = GettextCatalog.GetString ("Structured Build Output");
+
+			logBtnLbl.Text = GettextCatalog.GetString ("Structured Build Output");
+			buildLogBtn.Accessible.SetTitle (logBtnLbl.Text);
+
+			buildLogBtn.Clicked += HandleBinLogClicked;
+			toolbar.Add (buildLogBtn);
 
 			buildOutput = new BuildOutput ();
 
@@ -282,7 +297,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 
-			view.RowActivated += new RowActivatedHandler (OnRowActivated);
+			view.RowActivated += OnRowActivated;
 
 			iconWarning = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			iconError = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
@@ -291,19 +306,46 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.Add1 (sw);
 
+			logView = new LogView { Name = "buildOutput" };
+			control.Add2 (logView);
+
 			control.ShowAll ();
+
+			control.SizeAllocated += HandleControlSizeAllocated;
+			sw.SizeAllocated += HandleSwSizeAllocated;
+
+			if (OutputViewVisible) {
+				logView.Visible = true;
+				logBtn.Active = true;
+			} else {
+				logBtn.Active = false;
+			}
 
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
+
+			control.FocusChain = new Gtk.Widget [] { logView };
 		}
 
 		public override void Dispose ()
 		{
+			errorBtn.Toggled -= FilterChanged;
+			warnBtn.Toggled -= FilterChanged;
+			msgBtn.Toggled -= FilterChanged;
+			logBtn.Toggled -= HandleTextLogToggled;
+			buildLogBtn.Clicked -= HandleBinLogClicked;
+			searchEntry.Entry.Changed -= searchPatternChanged;
+
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
+
+			TaskService.Errors.TasksRemoved -= ShowResults;
+			TaskService.Errors.TasksAdded -= TaskAdded;
+			TaskService.Errors.TasksChanged -= TaskChanged;
+			TaskService.Errors.CurrentLocationTaskChanged -= HandleTaskServiceErrorsCurrentLocationTaskChanged;
 
 			buildOutput?.Dispose ();
 			buildOutputViewContent?.Dispose ();
@@ -311,18 +353,48 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			// Set the model to null as it makes Gtk clean up faster
 			if (view != null) {
+				view.RowActivated -= OnRowActivated;
 				view.Model = null;
 			}
 
+			if (control != null) {
+				control.SizeAllocated -= HandleControlSizeAllocated;
+			}
+
+			if (sw != null) {
+				sw.SizeAllocated -= HandleSwSizeAllocated;
+			}
+
 			base.Dispose ();
+		}
+
+		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (!initialLogShow && OutputViewVisible) {
+				var val = (double)((double)control.Position / (double)control.Allocation.Width);
+				LogSeparatorPosition.Value = val;
+			}
+		}
+
+		[GLib.ConnectBefore]
+		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (initialLogShow && OutputViewVisible) {
+				SetInitialOutputViewSize (args.Allocation.Width);
+				initialLogShow = false;
+			}
 		}
 
 		public ProgressMonitor GetBuildProgressMonitor ()
 		{ 
 			if (control == null)
 				CreateControl ();
-			
-			return buildOutput.GetProgressMonitor ();
+
+			var monitor = new AggregatedProgressMonitor ();
+			monitor.AddFollowerMonitor (buildOutput.GetProgressMonitor ());
+			monitor.AddFollowerMonitor (logView.GetProgressMonitor ());
+
+			return monitor;
 		}
 
 		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
@@ -950,11 +1022,28 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		internal void FocusOutputView ()
 		{
-			HandleLogBtnClicked (this, EventArgs.Empty);
+			HandleBinLogClicked (this, EventArgs.Empty);
+		}
+
+		void HandleTextLogToggled (object sender, EventArgs e)
+		{
+			var visible = logBtn.Active;
+			OutputViewVisible.Value = visible;
+			logView.Visible = visible;
+
+			SetInitialOutputViewSize (control.Allocation.Width);
+		}
+
+		void SetInitialOutputViewSize (int controlWidth)
+		{
+			double relPos = LogSeparatorPosition;
+			int pos = (int)(controlWidth * relPos);
+			pos = Math.Max(30, Math.Min(pos, controlWidth - 30));
+			control.Position = pos;
 		}
 
 		Document buildOutputDoc;
-		void HandleLogBtnClicked (object sender, EventArgs e)
+		void HandleBinLogClicked (object sender, EventArgs e)
 		{
 			OpenBuildOutputViewDocument ();
 		}
@@ -973,6 +1062,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void BuildOutputDocClosed (object sender, EventArgs e)
 		{
 			buildOutputViewContent?.Dispose ();
+			buildOutputDoc.Closed -= BuildOutputDocClosed;
 			buildOutputViewContent = null;
 			buildOutputDoc = null;
 		}

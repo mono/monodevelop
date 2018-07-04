@@ -53,6 +53,7 @@ namespace MonoDevelop.Refactoring
 	{
 		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
 		static ImmutableList<FindReferencesProvider> findReferencesProvider = ImmutableList<FindReferencesProvider>.Empty;
+		static ImmutableList<FindReferenceUsagesProvider> findReferenceUsagesProviders = ImmutableList<FindReferenceUsagesProvider>.Empty;
 		static List<JumpToDeclarationHandler> jumpToDeclarationHandler = new List<JumpToDeclarationHandler> ();
 
 		static RefactoringService ()
@@ -65,6 +66,18 @@ namespace MonoDevelop.Refactoring
 					break;
 					case ExtensionChange.Remove:
 					findReferencesProvider = findReferencesProvider.Remove (provider);
+					break;
+				}
+			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/FindReferenceUsagesProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				var provider  = (FindReferenceUsagesProvider) args.ExtensionObject;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					findReferenceUsagesProviders = findReferenceUsagesProviders.Add (provider);
+					break;
+				case ExtensionChange.Remove:
+					findReferenceUsagesProviders = findReferenceUsagesProviders.Remove (provider);
 					break;
 				}
 			});
@@ -270,6 +283,19 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
+		public static async Task FindReferenceUsagesAsync(Projects.ProjectReference projectReference)
+		{
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				try {
+					foreach (var provider in findReferenceUsagesProviders) {
+						await provider.FindReferences(projectReference, monitor);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error finding reference usages", ex);
+				}
+			}
+		}
+
 		public static async Task FindAllReferencesAsync (string documentIdString, Projects.Project hintProject = null)
 		{
 			if (hintProject == null)
@@ -338,6 +364,7 @@ namespace MonoDevelop.Refactoring
 	internal static class Counters
 	{
 		public static TimerCounter FindReferences = InstrumentationService.CreateTimerCounter ("Find references", "Code Navigation", id: "CodeNavigation.FindReferences");
+		public static TimerCounter<FixesMenuMetadata> FixesMenu = InstrumentationService.CreateTimerCounter<FixesMenuMetadata> ("Show fixes", "Code Actions", id: "CodeActions.ShowFixes");
 
 		public static IDictionary<string, string> CreateFindReferencesMetadata ()
 		{
@@ -354,6 +381,18 @@ namespace MonoDevelop.Refactoring
 		public static void SetUserCancel (IDictionary<string, string> metadata)
 		{
 			metadata ["Result"] = "UserCancel";
+		}
+
+		public class FixesMenuMetadata : CounterMetadata
+		{
+			public FixesMenuMetadata ()
+			{
+			}
+
+			public bool TriggeredBySmartTag {
+				get => GetProperty<bool> ();
+				set => SetProperty (value);
+			}
 		}
 	}
 }

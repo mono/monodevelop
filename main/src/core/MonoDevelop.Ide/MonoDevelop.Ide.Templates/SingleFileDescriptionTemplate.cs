@@ -44,6 +44,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using MonoDevelop.Core.StringParsing;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Text;
+using Gtk;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -465,13 +467,14 @@ namespace MonoDevelop.Ide.Templates
 
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			var formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
-			
+
 			if (formatter != null) {
-				var formatted = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);
+				var document = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content), fileName);
+				var formatted = formatter.Format (policyParent?.Policies, document);
 				if (formatted != null)
-					content = formatted;
+					content = formatted.Text;
 			}
-			
+
 			var ms = new MemoryStream ();
 			Encoding encoding = null; 
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (mime ?? "text/plain")
@@ -502,8 +505,17 @@ namespace MonoDevelop.Ide.Templates
 			
 
 			byte[] eolMarkerBytes = encoding.GetBytes (eolMarker);
-			
-			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
+			bool convertTabsToSpaces = textPolicy.TabsToSpaces;
+			int tabWidth = textPolicy.TabWidth;
+
+			if (ctx != null) {
+				if (ctx.CurrentConventions.UniversalConventions.TryGetIndentStyle (out Microsoft.VisualStudio.CodingConventions.IndentStyle result))
+					convertTabsToSpaces = result == Microsoft.VisualStudio.CodingConventions.IndentStyle.Spaces;
+				if (ctx.CurrentConventions.UniversalConventions.TryGetTabWidth (out int editorConfigTabWidth))
+					tabWidth = editorConfigTabWidth;
+			}
+			var tabToSpaces = convertTabsToSpaces ? new string (' ', tabWidth) : null;
+
 			IDocumentLine lastLine = null;
 			foreach (var line in doc.GetLines ()) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);

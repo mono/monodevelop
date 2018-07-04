@@ -50,12 +50,18 @@ module highlightUnusedCode =
 type HighlightUnusedCode() =
     inherit TextEditorExtension()
     let mutable previousUnused = []
+    let mutable parsedSubscription = None
+
     override x.Initialize() =
-        let parsed = x.DocumentContext.DocumentParsed
-        parsed.Add(fun _ ->
-            async {
-                let! unused = highlightUnusedCode.getUnusedCode x.DocumentContext x.Editor
-                unused |> Option.iter(fun unused' ->
-                    highlightUnusedCode.highlightUnused x.Editor unused' previousUnused
-                    previousUnused <- unused')
-            } |> Async.Start)
+        parsedSubscription <-
+            x.DocumentContext.DocumentParsed.Subscribe
+                (fun _ ->
+                    async {
+                        let! unused = highlightUnusedCode.getUnusedCode x.DocumentContext x.Editor
+                        unused |> Option.iter(fun unused' ->
+                            highlightUnusedCode.highlightUnused x.Editor unused' previousUnused
+                            previousUnused <- unused')
+                    } |> Async.StartAndLogException) |> Some
+
+    override x.Dispose() =
+        parsedSubscription |> Option.iter(fun sub -> sub.Dispose())

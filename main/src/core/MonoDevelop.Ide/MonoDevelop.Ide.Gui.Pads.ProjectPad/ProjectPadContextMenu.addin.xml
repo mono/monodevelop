@@ -6,6 +6,9 @@
 	<ConditionType id="ItemType" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
 		<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 	</ConditionType>
+	<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
+		<Description>Type of the file.</Description>
+	</ConditionType>
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
