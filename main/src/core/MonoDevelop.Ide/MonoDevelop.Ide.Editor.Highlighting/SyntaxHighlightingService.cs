@@ -351,9 +351,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static System.Text.RegularExpressions.Regex fileTypesRegex = new System.Text.RegularExpressions.Regex ("\\s*\"fileTypes\"");
 		static System.Text.RegularExpressions.Regex fileTypesEndRegex = new System.Text.RegularExpressions.Regex ("\\],");
 
-		enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
+		internal enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
 
-		static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format, out List<string> fileTypes, out string scopeName)
+		internal static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format, out List<string> fileTypes, out string scopeName)
 		{
 			name = null;
 			scopeName = null;
