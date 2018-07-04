@@ -400,8 +400,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						break;
 					if (readFileTypes) {
 						line = line.Trim ();
-						if (line.Length > 3) {
-							var fileType = line.Substring (1, line.Length - 3);
+						if (line.Length > 3 && line[0] == '"' && line[line.Length - 1] == '"') {
+							int start = 1;
+
+							// the . is optional, some extensions mention it and some don't
+							if (line[1] == '.') {
+								start = 2;
+							}
+
+							string fileType = line.Substring (start, line.Length - start - 1);
 							fileTypes.Add (fileType);
 						}
 					}
