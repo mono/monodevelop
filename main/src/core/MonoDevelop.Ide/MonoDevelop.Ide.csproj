@@ -9830,6 +9830,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopErrorReportingService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopInfoBarService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\InfoBar.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopAddMetadataReferenceCodeActionOperationFactoryWorkspaceService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
