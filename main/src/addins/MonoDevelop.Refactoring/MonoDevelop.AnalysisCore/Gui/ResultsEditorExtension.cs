@@ -284,7 +284,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (cancellationToken.IsCancellationRequested)
 					return;
 				if (id != null)
-					ext.tasks.Remove (id);
+					lock (ext.tasks) {
+						ext.tasks.Remove (id);
+					}
 				GLib.Idle.Add (IdleHandler);
 			}
 
@@ -329,7 +331,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 							editor.RemoveMarker (markerQueue.Value.Dequeue ());
 					}
 					ext.markers.Clear ();
-					ext.tasks.Clear ();
+					lock (ext.tasks)
+						ext.tasks.Clear ();
 					ext.OnTasksUpdated (EventArgs.Empty);
 					return false;
 				}
@@ -345,7 +348,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 				//add in the new markers
 				for (int i = 0; i < UPDATE_COUNT; i++) {
 					if (!enumerator.MoveNext ()) {
-						ext.tasks [id] = builder.ToImmutable ();
+						lock (ext.tasks)
+							ext.tasks [id] = builder.ToImmutable ();
 						ext.OnTasksUpdated (EventArgs.Empty);
 						// remove remaining old markers
 						while (oldMarkers > 0) {
@@ -415,7 +419,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		#region IQuickTaskProvider implementation
-		Dictionary<object, ImmutableArray<QuickTask>> tasks = new Dictionary<object, ImmutableArray<QuickTask>> ();
+		readonly Dictionary<object, ImmutableArray<QuickTask>> tasks = new Dictionary<object, ImmutableArray<QuickTask>>();
 
 		public event EventHandler TasksUpdated;
 
@@ -428,7 +432,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public ImmutableArray<QuickTask> QuickTasks {
 			get {
-				return tasks.SelectMany(x => x.Value).AsImmutable ();
+				lock (tasks)
+					return tasks.SelectMany(x => x.Value).AsImmutable ();
 			}
 		}
 		

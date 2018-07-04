@@ -9749,6 +9749,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopInfoBarService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\InfoBar.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopAddMetadataReferenceCodeActionOperationFactoryWorkspaceService.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentSupportsFeatureService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

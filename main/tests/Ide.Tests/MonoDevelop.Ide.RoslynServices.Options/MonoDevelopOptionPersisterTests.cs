@@ -63,8 +63,10 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			// Serialized value is transformed.
 			public static SerializationTestCase Ok<T> (T value, object serializedValue) => new SerializationTestCaseT<T> (value, serializedValue, true, typeof (T));
 
+			public static SerializationTestCase Fail<T> (T value, object serializedValue) => new SerializationTestCaseT<T> (value, serializedValue, false, typeof (T));
+
 			// It fails, whatever happens.
-			public static SerializationTestCase Fail<T> (object value, object serializedValue) => new SerializationTestCaseT<T> (value, serializedValue, false, typeof (T));
+			public static SerializationTestCase Fail<T> (object serializedValue) => new SerializationTestCaseT<T> (null, serializedValue, false, typeof (T));
 
 			public string Feature => "feature";
 			public string Name => "name";
@@ -109,7 +111,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			SerializationTestCase.Ok (stringOption, stringOption.ToXElement ().ToString ()),
 			SerializationTestCase.Ok (namingOption, namingOption.CreateXElement ().ToString ()),
 			SerializationTestCase.Ok ("string"),
-			SerializationTestCase.Fail<CodeStyleOption<MyCustomClass>> (classOption, stringOption.ToXElement ().ToString ()),
+			SerializationTestCase.Fail (classOption, stringOption.ToXElement ().ToString ()),
 		};
 
 		[TestCaseSource (nameof (SerializationTestCases))]
@@ -138,19 +140,28 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		}
 
 		SerializationTestCase [] DeserializationTestCases = {
-			SerializationTestCase.Ok(true, 3),
-			SerializationTestCase.Ok(true, 2L),
-			SerializationTestCase.Ok(false, 0),
-			SerializationTestCase.Ok(false, 0L),
-			SerializationTestCase.Ok<bool?>(true, true),
-			SerializationTestCase.Ok<bool?>(false, false),
+			// Simple types
+			SerializationTestCase.Ok(true, "True"),
+			SerializationTestCase.Ok(false, "False"),
+			SerializationTestCase.Ok<bool?>(true, "True"),
+			SerializationTestCase.Ok<bool?>(false, "False"),
 			SerializationTestCase.Ok<bool?>(null, null),
-			SerializationTestCase.Fail<PlatformID> (-1, 1.0),
-			SerializationTestCase.Fail<PlatformID> (-1, ulong.MaxValue),
+			SerializationTestCase.Ok<string>("test", "test"),
+			SerializationTestCase.Ok(1, "1"),
+			SerializationTestCase.Ok(1L, "1"),
+			SerializationTestCase.Ok(1U, "1"),
+			SerializationTestCase.Ok(1D, "1"),
+			SerializationTestCase.Ok(1F, "1"),
+			SerializationTestCase.Ok(ExpressionBodyPreference.Never, "Never"),
+			SerializationTestCase.Ok<int?>(1, "1"),
+			SerializationTestCase.Fail<bool>(0),
+			SerializationTestCase.Fail<bool>(0L),
+			SerializationTestCase.Fail<ExpressionBodyPreference> (1.0),
+			SerializationTestCase.Fail<ExpressionBodyPreference> (ulong.MaxValue),
 			SerializationTestCase.Ok(namingOption, namingOption.CreateXElement ().ToString()),
 			SerializationTestCase.Ok(boolOption, boolOption.ToXElement ().ToString()),
 			SerializationTestCase.Ok(enumOption, enumOption.ToXElement ().ToString()),
-			SerializationTestCase.Fail<CodeStyleOption<MyCustomClass>>(classOption, stringOption.ToXElement ().ToString()),
+			SerializationTestCase.Fail<CodeStyleOption<MyCustomClass>>(stringOption.ToXElement ().ToString()),
 		};
 
 		[TestCaseSource (nameof (DeserializationTestCases))]
@@ -164,13 +175,9 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 				// Set the value and deserialize it
 				PropertyService.Set (property, testCase.SerializedValue);
-				Assert.AreEqual (testCase.Success, persister.TryFetch (optionKey, out var deserialized));
-				if (!testCase.Success) {
-					Assert.IsNull (deserialized);
-					return;
-				}
-
-				Assert.AreEqual (testCase.Value, deserialized);
+				var success = persister.TryFetch (optionKey, out var deserialized);
+				Assert.AreEqual (testCase.Success, success);
+				Assert.AreEqual (testCase.Value, deserialized, $"Could not convert {testCase.SerializedValue} to {testCase.Value}");
 			}
 		}
 

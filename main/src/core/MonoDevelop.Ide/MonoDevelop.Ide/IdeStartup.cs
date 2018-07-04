@@ -64,10 +64,13 @@ namespace MonoDevelop.Ide
 	public class IdeStartup: IApplication
 	{
 		Socket listen_socket   = null;
-		ArrayList errorsList = new ArrayList ();
+		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
 		static readonly int ipcBasePort = 40000;
 		static Stopwatch startupTimer = new Stopwatch ();
+		static Stopwatch timeToCodeTimer = new Stopwatch ();
+
+		static TimeToCodeMetadata ttcMetadata;
 		
 		Task<int> IApplication.Run (string[] args)
 		{
@@ -233,7 +236,6 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				ImageService.Initialize ();
-				LocalizationService.Initialize ();
 
 				// If we display an error dialog before the main workbench window on OS X then a second application menu is created
 				// which is then replaced with a second empty Apple menu.
@@ -242,7 +244,7 @@ namespace MonoDevelop.Ide
 				IdeApp.Initialize (monitor);
 
 				if (errorsList.Count > 0) {
-					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false)) {
+					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errorsList.ToArray (), false)) {
 						if (!dlg.Run ())
 							return 1;
 					}
@@ -285,7 +287,7 @@ namespace MonoDevelop.Ide
 			}
 
 			if (errorsList.Count > reportedFailures) {
-				using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true))
+				using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errorsList.ToArray (), true))
 					dlg.Run ();
 			}
 			
@@ -314,6 +316,16 @@ namespace MonoDevelop.Ide
 
 			startupTimer.Stop ();
 
+			// Need to start this timer because we don't know yet if we've been asked to open a solution from the file manager.
+			timeToCodeTimer.Start ();
+			ttcMetadata = new TimeToCodeMetadata {
+				StartupTime = startupTimer.ElapsedMilliseconds
+			};
+
+			// Start this timer to limit the time to decide if the app was opened by a file manager
+			IdeApp.StartFMOpenTimer (FMOpenTimerExpired);
+			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteTimeToCode;
+
 			CreateStartupMetadata (startupInfo);
 
 			GLib.Idle.Add (OnIdle);
@@ -334,6 +346,14 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Components.GtkWorkarounds.Terminate ();
 			
 			return 0;
+		}
+
+		void FMOpenTimerExpired ()
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteTimeToCode;
+			timeToCodeTimer.Stop ();
+			timeToCodeTimer = null;
+			ttcMetadata = null;
 		}
 
 		/// <summary>
@@ -388,6 +408,27 @@ namespace MonoDevelop.Ide
 			}
 			Counters.Startup.Inc (GetStartupMetadata (startupInfo, result));
 			IdeApp.OnStartupCompleted ();
+		}
+
+		static void CompleteTimeToCode (object sender, EventArgs args)
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteTimeToCode;
+
+			if (timeToCodeTimer == null) {
+				return;
+			}
+
+			timeToCodeTimer.Stop ();
+			ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
+
+			ttcMetadata.CorrectedDuration = ttcMetadata.StartupTime + ttcMetadata.SolutionLoadTime;
+
+			timeToCodeTimer = null;
+
+			if (IdeApp.ReportTimeToCode) {
+				Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
+				IdeApp.ReportTimeToCode = false;
+			}
 		}
 
 		static DateTime lastIdle;

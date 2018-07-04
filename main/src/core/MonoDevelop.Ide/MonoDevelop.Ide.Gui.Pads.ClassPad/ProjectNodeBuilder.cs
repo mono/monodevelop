@@ -115,6 +115,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			}
 			builder.AddChildren (dom.Assembly.GlobalNamespace.GetTypeMembers ()
 								 .Where (type => !publicOnly || type.DeclaredAccessibility == Accessibility.Public)
+								 .Where (t => !t.IsImplicitClass)
 								 .Select (type => new ClassData (project, type)));
 		}
 

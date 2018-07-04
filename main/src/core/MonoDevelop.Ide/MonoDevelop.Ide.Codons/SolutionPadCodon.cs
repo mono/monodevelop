@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui;
@@ -56,8 +57,8 @@ namespace MonoDevelop.Ide.Codons
 		
 		void BuildChildren ()
 		{
-			ArrayList bs = new ArrayList ();
-			ArrayList ops = new ArrayList ();
+			List<NodeBuilder> bs = new List<NodeBuilder> ();
+			List<TreePadOption> ops = new List<TreePadOption> ();
 			
 			foreach (ExtensionNode ob in ChildNodes) {
 				NodeBuilderCodon nbc = ob as NodeBuilderCodon;
@@ -69,8 +70,8 @@ namespace MonoDevelop.Ide.Codons
 				} else if (ob is PadContextMenuExtensionNode)
 					contextMenuPath = ((PadContextMenuExtensionNode) ob).MenuPath;
 			}
-			builders = (NodeBuilder[]) bs.ToArray (typeof(NodeBuilder));
-			options = (TreePadOption[]) ops.ToArray (typeof(TreePadOption));
+			builders = bs.ToArray ();
+			options = ops.ToArray ();
 		}
 		
 		protected override PadContent CreatePad ()

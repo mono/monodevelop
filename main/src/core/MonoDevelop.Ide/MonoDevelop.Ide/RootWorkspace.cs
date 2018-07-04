@@ -532,11 +532,13 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.LockGui ();
 			metadata = GetOpenWorkspaceItemMetadata (metadata);
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
+
 			try {
 				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
 				return await oper;
 			} finally {
 				timer.End ();
+
 				monitor.Dispose ();
 				IdeApp.Workbench.UnlockGui ();
 			}
@@ -880,7 +882,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (entry is SolutionFolder) {
-				ArrayList ens = new ArrayList ();
+				var ens = new List<SolutionFolderItem> ();
 				foreach (SolutionFolderItem ce in ((SolutionFolder)entry).Items)
 					ens.Add (ce);
 				foreach (SolutionFolderItem ce in ens)

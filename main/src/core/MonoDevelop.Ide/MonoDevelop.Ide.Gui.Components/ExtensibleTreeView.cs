@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		ZoomableCellRendererPixbuf pix_render;
 		CustomCellRendererText text_render;
 		TreeBuilderContext builderContext;
-		Hashtable callbacks = new Hashtable ();
+		Dictionary<object, List<TreeNodeCallback>> callbacks = new Dictionary<object, List<TreeNodeCallback>> ();
 		bool editingText = false;
 
 		TreePadOption[] options;
@@ -830,11 +830,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				return;
 			}
 
-			ArrayList list = callbacks [dataObject] as ArrayList;
-			if (list != null)
+			if (callbacks.TryGetValue (dataObject, out var list)) {
 				list.Add (callback);
-			else {
-				list = new ArrayList ();
+			} else {
+				list = new List<TreeNodeCallback> ();
 				list.Add (callback);
 				callbacks [dataObject] = list;
 			}
@@ -847,9 +846,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		class MulticastNodeRouter: IMultiCastCommandRouter
 		{
-			ArrayList targets;
+			List<NodeCommandTargetChain> targets;
 
-			public MulticastNodeRouter (ArrayList targets)
+			public MulticastNodeRouter (List<NodeCommandTargetChain> targets)
 			{
 				this.targets = targets;
 			}
@@ -869,7 +868,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (editingText)
 				return null;
 
-			ArrayList targets = new ArrayList ();
+			List<NodeCommandTargetChain> targets = new List<NodeCommandTargetChain> ();
 
 			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
 				NodeBuilder[] chain = grp.BuilderChain;
@@ -1722,7 +1721,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (copyObjects != null) {
 				int i = Array.IndexOf (copyObjects, dataObject);
 				if (i != -1) {
-					ArrayList list = new ArrayList (copyObjects);
+					var list = new List<object> (copyObjects);
 					list.RemoveAt (i);
 					if (list.Count > 0)
 						copyObjects = list.ToArray ();
@@ -1736,7 +1735,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (tree.dragObjects != null) {
 				int i = Array.IndexOf (tree.dragObjects, dataObject);
 				if (i != -1) {
-					ArrayList list = new ArrayList (tree.dragObjects);
+					var list = new List<object> (tree.dragObjects);
 					list.RemoveAt (i);
 					if (list.Count > 0)
 						tree.dragObjects = list.ToArray ();
@@ -1806,8 +1805,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal void NotifyInserted (Gtk.TreeIter it, object dataObject)
 		{
 			if (callbacks.Count > 0) {
-				ArrayList list = callbacks [dataObject] as ArrayList;
-				if (list != null) {
+				if (callbacks.TryGetValue (dataObject, out var list)) {
 					ITreeNavigator nav = new TreeNodeNavigator (this, it);
 					NodePosition pos = nav.CurrentPosition;
 					foreach (TreeNodeCallback callback in list) {

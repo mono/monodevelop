@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.Gui.Content;
@@ -33,20 +34,21 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 {
 	static class OptionsExtensions
 	{
-		public static string GetPropertyName (this OptionKey optionKey)
+		public static IEnumerable<string> GetPropertyNames (this OptionKey optionKey)
 		{
 			// Prevent NRE being thrown on iteration.
 			if (optionKey.Option.StorageLocations.IsDefaultOrEmpty)
-				return null;
+				yield break;
 
 			foreach (var storageLocation in optionKey.Option.StorageLocations) {
 				if (storageLocation is RoamingProfileStorageLocation roamingLocation)
-					return roamingLocation.GetKeyNameForLanguage (optionKey.Language);
+					yield return roamingLocation.GetKeyNameForLanguage (optionKey.Language);
 				if (storageLocation is LocalUserProfileStorageLocation userLocation)
-					return userLocation.KeyName;
+					yield return userLocation.KeyName;
 			}
-			return null;
 		}
+
+		public static string GetPropertyName (this OptionKey optionKey) => GetPropertyNames (optionKey).FirstOrDefault ();
 
 		public static TextStylePolicy GetTextStylePolicy (this OptionKey optionKey)
 		{
