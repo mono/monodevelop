@@ -11,39 +11,61 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	class UIThreadMonitor
+	public class UIThreadMonitor
 	{
 		public static UIThreadMonitor Instance { get; } = new UIThreadMonitor ();
 
-		UIThreadMonitor () { }
+		UIThreadMonitor ()
+		{
+			IdeApp.Exited += IdeAppExited;
+		}
 
-		Socket socket;
+		void IdeAppExited (object sender, EventArgs e)
+		{
+			try {
+				Instance.Stop ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("UIThreadMonitor stop error.", ex);
+			}
+		}
+
 		Thread tcpLoopThread;
 		Thread dumpsReaderThread;
-		Thread pumpErrorThread;
 		TcpListener listener;
 		Process process;
 
-		void TcpLoop ()
+		void TcpLoop (object param)
 		{
-			byte [] buffer = new byte [1];
-			ManualResetEvent waitUIThread = new ManualResetEvent (false);
-			var sw = Stopwatch.StartNew ();
-			while (true) {
-				sw.Restart ();
-				var readBytes = socket.Receive (buffer, 1, SocketFlags.None);
-				if (readBytes != 1)
-					return;
-				waitUIThread.Reset ();
-				Runtime.RunInMainThread (delegate {
-					waitUIThread.Set ();
-				});
-				waitUIThread.WaitOne ();
-				socket.Send (buffer);
+			var connection = (ConnectionInfo)param;
+			var socket = connection.Socket;
+			try {
+				var buffer = new byte [1];
+				var waitUIThread = new ManualResetEvent (false);
+				while (connection.ListenerActive) {
+					var readBytes = socket.Receive (buffer, 1, SocketFlags.None);
+					if (readBytes != 1)
+						return;
+					waitUIThread.Reset ();
+					Runtime.RunInMainThread (delegate {
+						waitUIThread.Set ();
+					});
+					waitUIThread.WaitOne ();
+					socket.Send (buffer);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("UIThreadMonitor TcpLoop error.", ex);
+			} finally {
+				try {
+					if (connection.ListenerActive)
+						AcceptClientConnection (connection.Listener);
+					socket.Close ();
+				} catch (Exception) {
+				}
 			}
 		}
 
@@ -86,61 +108,87 @@ namespace PerformanceDiagnosticsAddIn
 		}
 
 		public bool IsListening { get; private set; }
+		public bool IsSampling { get; private set; }
+		public string HangFileName { get; set; }
 
-		public void Start ()
+		public void Start (bool sample)
 		{
-			if (IsListening)
-				return;
-			if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
-				MessageService.ShowWarning ("Set environment variable",
-											$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
+			if (IsListening) {
+				if (IsSampling == sample)
+					return;
+				Stop ();
+			}
+			if (sample) {
+				if (!(Environment.GetEnvironmentVariable ("MONO_DEBUG")?.Contains ("disable_omit_fp") ?? false)) {
+					MessageService.ShowWarning ("Set environment variable",
+												$@"It is highly recommended to set environment variable ""MONO_DEBUG"" to ""disable_omit_fp"" and restart {BrandingService.ApplicationName} to have better results.");
+				}
 			}
 			IsListening = true;
+			IsSampling = sample;
 			//start listening on random port
 			listener = new TcpListener (IPAddress.Loopback, 0);
 			listener.Start ();
-			listener.AcceptSocketAsync ().ContinueWith (t => {
-				if (!t.IsFaulted && !t.IsCanceled) {
-					socket = t.Result;
-					tcpLoopThread = new Thread (new ThreadStart (TcpLoop));
-					tcpLoopThread.IsBackground = true;
-					tcpLoopThread.Start ();
-					listener.Stop ();
-				}
-			});
+			AcceptClientConnection (listener);
 			//get random port provided by OS
 			var port = ((IPEndPoint)listener.LocalEndpoint).Port;
 			process = new Process ();
 			process.StartInfo.FileName = "mono";
-			process.StartInfo.Arguments = $"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location} {port} {Process.GetCurrentProcess ().Id}";
+			process.StartInfo.Arguments = GetArguments (port, sample);
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = true;//Ignore it, otherwise it goes to IDE logging
 			process.Start ();
-			process.StandardError.ReadLine ();
-			dumpsReaderThread = new Thread (new ThreadStart (DumpsReader));
-			dumpsReaderThread.IsBackground = true;
-			dumpsReaderThread.Start ();
 
-			pumpErrorThread = new Thread (new ThreadStart (PumpErrorStream));//We need to read this...
-			pumpErrorThread.IsBackground = true;
-			pumpErrorThread.Start ();
+			if (IsSampling) {
+				dumpsReaderThread = new Thread (new ParameterizedThreadStart (DumpsReader));
+				dumpsReaderThread.IsBackground = true;
+				dumpsReaderThread.Start (process);
+				Task.Run (() => PumpErrorStream (process)).Ignore ();
+			}
+		}
+
+		void AcceptClientConnection (TcpListener tcpListener)
+		{
+			tcpListener.AcceptSocketAsync ().ContinueWith (t => {
+				if (!t.IsFaulted && !t.IsCanceled) {
+					currentConnection = new ConnectionInfo (t.Result, tcpListener);
+					tcpLoopThread = new Thread (new ParameterizedThreadStart (TcpLoop));
+					tcpLoopThread.IsBackground = true;
+					tcpLoopThread.Start (currentConnection);
+				}
+			});
+		}
+
+		string GetArguments (int port, bool sample)
+		{
+			var arguments = new StringBuilder ();
+			arguments.Append ($"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location} {port} {Process.GetCurrentProcess ().Id}");
+
+			if (!sample)
+				arguments.Append (" --noSample");
+
+			if (!string.IsNullOrEmpty (HangFileName))
+				arguments.Append ($" --hangFile:\"{HangFileName}\"");
+
+			return arguments.ToString ();
 		}
 
 		[DllImport ("__Internal")]
 		extern static string mono_pmip (long offset);
 		static Dictionary<long, string> methodsCache = new Dictionary<long, string> ();
 
-		void PumpErrorStream ()
+		static async Task PumpErrorStream (Process process)
 		{
-			while (!(process?.HasExited ?? true)) {
-				process?.StandardError?.ReadLine ();
+			while (!process.HasExited) {
+				await process.StandardError.ReadLineAsync ().ConfigureAwait (false);
 			}
 		}
 
-		void DumpsReader ()
+		static void DumpsReader (object param)
 		{
-			while (!(process?.HasExited ?? true)) {
+			var process = (Process)param;
+			while (!process.HasExited) {
 				var fileName = process.StandardOutput.ReadLine ();
 				ConvertJITAddressesToMethodNames (fileName, "UIThreadHang");
 			}
@@ -150,11 +198,14 @@ namespace PerformanceDiagnosticsAddIn
 		{
 			if (!IsListening)
 				return;
-			IsListening = false;
-			listener.Stop ();
-			listener = null;
+			if (currentConnection != null)
+				currentConnection.ListenerActive = false;
 			process.Kill ();
 			process = null;
+			IsListening = false;
+			IsSampling = false;
+			listener.Stop ();
+			listener = null;
 		}
 
 		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
@@ -182,6 +233,22 @@ namespace PerformanceDiagnosticsAddIn
 						sw.WriteLine (line);
 					}
 				}
+			}
+		}
+
+		ConnectionInfo currentConnection;
+
+		class ConnectionInfo
+		{
+			public Socket Socket { get; }
+			public TcpListener Listener { get; }
+			public bool ListenerActive { get; set; }
+
+			public ConnectionInfo (Socket socket, TcpListener listener)
+			{
+				Socket = socket;
+				Listener = listener;
+				ListenerActive = true;
 			}
 		}
 	}
