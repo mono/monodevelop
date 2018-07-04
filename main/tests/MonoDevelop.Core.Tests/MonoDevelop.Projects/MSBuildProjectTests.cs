@@ -1652,6 +1652,23 @@ namespace MonoDevelop.Projects
 				Assert.That (ex.Message, Contains.Substring (fileName));
 			}
 		}
+
+		[Test]
+		public void EvaluateInvalidMSBuildImportXml_ExceptionContainsFileBeingLoaded ()
+		{
+			string directory = Util.CreateTmpDir ("MSBuildImportLoadInvalidXml");
+			string fileName = Path.Combine (directory, "MSBuildImportLoadInvalidXml.csproj");
+			File.WriteAllText (fileName, "<Project><Import Project='InvalidXmlImport.targets' /></Project>");
+			string importFileName = Path.Combine (directory, "InvalidXmlImport.targets");
+			File.WriteAllText (importFileName, "<Project></Project>\n</Project>");
+			var p = new MSBuildProject ();
+			p.Load (fileName);
+			try {
+				p.Evaluate ();
+			} catch (Exception ex) {
+				Assert.That (ex.Message, Contains.Substring (importFileName));
+			}
+		}
 	}
 
 	class CustomGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
