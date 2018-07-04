@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using MonoDevelop.Core;
 using NUnit.Framework;
 
 namespace MonoDevelop.FSW
@@ -41,7 +42,7 @@ namespace MonoDevelop.FSW
 			var tree = new PathTree ();
 			var node = tree.rootNode;
 
-			if (!Core.Platform.IsWindows) {
+			if (!Platform.IsWindows) {
 				node = node.FirstChild;
 				Assert.AreEqual ("/", node.FullPath);
 			}
@@ -49,11 +50,10 @@ namespace MonoDevelop.FSW
 			Assert.IsNull (node.FirstChild);
 			Assert.IsNull (node.LastChild);
 			Assert.IsNull (node.Next);
-			Assert.That (node.Segment, Is.Not.Null.Or.Empty);
 		}
 
 
-		static readonly string prefix = Core.Platform.IsWindows ? "C:" : "/";
+		static readonly string prefix = Platform.IsWindows ? "C:\\" : "/";
 		static string MakePath (params string [] segments) => Path.Combine (prefix, Path.Combine (segments));
 
 		static PathTree CreateTree ()
@@ -452,7 +452,7 @@ namespace MonoDevelop.FSW
 			tree.RemoveNode (prefix, id);
 
 			var node = tree.FindNode (prefix);
-			if (Core.Platform.IsWindows) {
+			if (Platform.IsWindows) {
 				Assert.IsNull (node);
 			} else {
 				Assert.IsNotNull (node);
