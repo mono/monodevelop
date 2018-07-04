@@ -31,6 +31,10 @@ namespace MonoDevelop.Projects.MSBuild
 		public MSBuildFileFormatException (string message): base (message)
 		{
 		}
+
+		public MSBuildFileFormatException (string message, Exception innerException): base (message, innerException)
+		{
+		}
 	}
 }
 
