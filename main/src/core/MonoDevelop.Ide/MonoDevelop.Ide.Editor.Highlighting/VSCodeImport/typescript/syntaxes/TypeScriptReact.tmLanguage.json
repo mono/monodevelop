@@ -7,6 +7,9 @@
 	"version": "https://github.com/Microsoft/TypeScript-TmLanguage/commit/7bf8960f7042474b10b519f39339fc527907ce16",
 	"name": "TypeScriptReact",
 	"scopeName": "source.tsx",
+	"fileTypes": [
+		"tsx"
+	],
 	"patterns": [
 		{
 			"include": "#directives"
