@@ -211,5 +211,13 @@ namespace MonoDevelop.Core
 
 			Assert.IsNull (value.Metadata);
 		}
+
+		[Test]
+		public void CounterMetadataQueryingDoesNotCrash ()
+		{
+			var metadata = new CustomCounterMetadata ();
+
+			Assert.AreEqual (default (int), metadata.SomeMeasure);
+		}
 	}
 }
