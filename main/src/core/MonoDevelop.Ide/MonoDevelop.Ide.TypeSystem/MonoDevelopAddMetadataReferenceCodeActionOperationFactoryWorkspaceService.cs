@@ -62,8 +62,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public override void Apply (Workspace workspace, CancellationToken cancellationToken = default (CancellationToken))
 			{
-				var monoDevelopProject = (MonoDevelopWorkspace)workspace;
-				var mdProject = monoDevelopProject.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+				var mdWorkspace = workspace as MonoDevelopWorkspace;
+				if (mdWorkspace == null)
+					return; // no md workspace -> not a common file/ignore.
+				var mdProject = mdWorkspace.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 				if (mdProject == null) {
 					LoggingService.LogWarning ("Can't find project  " + projectId + " to add reference " + assemblyIdentity.GetDisplayName ());
 					return;
