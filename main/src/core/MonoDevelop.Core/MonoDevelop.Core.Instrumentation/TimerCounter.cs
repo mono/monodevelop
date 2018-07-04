@@ -260,8 +260,11 @@ namespace MonoDevelop.Core.Instrumentation
 
 		protected T GetProperty<T> ([CallerMemberName]string name = null)
 		{
-			properties.TryGetValue (name, out var result);
-			return (T) Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
+			if (properties.TryGetValue (name, out var result)) {
+				return (T)Convert.ChangeType (result, typeof (T), CultureInfo.InvariantCulture);
+			}
+
+			return default (T);
 		}
 	}
 
