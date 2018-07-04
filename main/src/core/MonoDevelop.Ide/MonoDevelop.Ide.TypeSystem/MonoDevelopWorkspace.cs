@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				// make sure we show info bar only once for the same solution.
 				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, true);
 
-				const string LowVMMoreInfoLink = "http://go.microsoft.com/fwlink/?LinkID=799402&clcid=0x409";
+				const string LowVMMoreInfoLink = "https://go.microsoft.com/fwlink/?linkid=2003417&clcid=0x409";
 				Services.GetService<IErrorReportingService> ().ShowGlobalErrorInfo (
 					GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance", BrandingService.ApplicationName),
 					new InfoBarUI ("Learn more", InfoBarUI.UIKind.HyperLink, () => DesktopService.ShowUrl (LowVMMoreInfoLink), closeAfterAction: false),
