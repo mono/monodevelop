@@ -385,8 +385,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			foreach (var e in tempExtensions)
-				e.Dispose ();
+			extensionChain.Dispose ();
 
 			// Now create the final extension chain
 
