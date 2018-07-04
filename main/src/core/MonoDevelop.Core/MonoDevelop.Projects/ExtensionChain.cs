@@ -34,6 +34,7 @@ namespace MonoDevelop.Projects
 		Dictionary<Type,ChainedExtension> chains = new Dictionary<Type, ChainedExtension> ();
 		ChainedExtension[] extensions;
 		ChainedExtension defaultInsertBefore;
+		BatchModifier batchModifier;
 
 		public static ExtensionChain Create<T> (T[] extensions) where T:ChainedExtension
 		{
@@ -67,6 +68,8 @@ namespace MonoDevelop.Projects
 			return extensions;
 		}
 
+		internal IDisposable BatchModify () => batchModifier = new BatchModifier (this);
+
 		internal void AddExtension (ChainedExtension ext, ChainedExtension insertAfter = null, ChainedExtension insertBefore = null)
 		{
 			int index;
@@ -85,7 +88,9 @@ namespace MonoDevelop.Projects
 			for (int n = extensions.Length - 1; n > index; n--)
 				extensions [n] = extensions [n - 1];
 			extensions [index] = ext;
-			Rechain ();
+
+			if (batchModifier == null)
+				Rechain ();
 		}
 
 		internal void RemoveExtension (ChainedExtension ext)
@@ -94,7 +99,8 @@ namespace MonoDevelop.Projects
 				return;
 
 			extensions = extensions.Where (e => e != ext).ToArray ();
-			Rechain ();
+			if (batchModifier == null)
+				Rechain ();
 		}
 
 		void Rechain ()
@@ -114,6 +120,21 @@ namespace MonoDevelop.Projects
 			var first = extensions [0];
 			extensions = null;
 			first.DisposeChain ();
+		}
+
+		class BatchModifier : IDisposable
+		{
+			readonly ExtensionChain chain;
+			public BatchModifier (ExtensionChain chain)
+			{
+				this.chain = chain;
+			}
+
+			public void Dispose ()
+			{
+				chain.Rechain ();
+				chain.batchModifier = null;
+			}
 		}
 	}
 }
