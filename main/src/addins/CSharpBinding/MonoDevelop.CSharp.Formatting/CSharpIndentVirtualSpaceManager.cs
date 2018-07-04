@@ -25,48 +25,76 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
+using System.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
-using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	class IndentVirtualSpaceManager : IndentationTracker
 	{
-		readonly TextEditor data;
-		readonly CacheIndentEngine stateTracker;
+		readonly TextEditor editor;
+		private ISmartIndentationService indentationService;
+		int cacheSpaceCount = -1, oldTabCount = -1;
+		string cachedIndentString;
 
-        public override IndentationTrackerFeatures SupportedFeatures { 
+		public override IndentationTrackerFeatures SupportedFeatures { 
             get {
                 return IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
             }
         }
 
-        public IndentVirtualSpaceManager(TextEditor data, CacheIndentEngine stateTracker)
+		public IndentVirtualSpaceManager(TextEditor editor)
 		{
-			this.data = data;
-			this.stateTracker = stateTracker;
+			this.editor = editor;
+			indentationService = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentationService> ();
 		}
 
 		#region IndentationTracker implementation
 		public override string GetIndentationString (int lineNumber)
 		{
-			var line = data.GetLine (lineNumber);
-			if (line == null)
+			if (lineNumber < 1) 
 				return "";
-			// Get context to the end of the line w/o changing the main engine's state
-			var offset = line.Offset;
-			string curIndent = line.GetIndentation (data);
-			try {
-				stateTracker.Update (data, Math.Min (data.Length, offset + line.Length));
-				int nlwsp = curIndent.Length;
-				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.GetCharAt (offset + nlwsp) == '*'))
-					return stateTracker.ThisLineIndent;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while indenting at line " + lineNumber, e); 
+			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
+			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
+			int? indentation = indentationService.GetDesiredIndentation (editor.TextView, caretLine);
+			if (indentation.HasValue) {
+				int tabCount = 0;
+				int spaceCount = indentation.Value;
+				if (!editor.Options.TabsToSpaces) {
+					tabCount = spaceCount / editor.Options.TabSize;
+					spaceCount = spaceCount % editor.Options.TabSize;
+				}
+				if (cacheSpaceCount != spaceCount || oldTabCount != tabCount) {
+					string tabString = new string ('\t', tabCount);
+					string spaceString = new string (' ', spaceCount);
+					cacheSpaceCount = spaceCount;
+					cacheSpaceCount = tabCount;
+					return cachedIndentString = tabString + spaceString;
+				}
+				return cachedIndentString;
 			}
-			return curIndent;
+			if (caretLine.Length > 0) {
+				var sb = StringBuilderCache.Allocate ();
+				try {
+					for (int i = 0; i < caretLine.Length; i++) {
+						char curChar = snapshot [i + caretLine.Start];
+						if (Char.IsWhiteSpace (curChar))
+							sb.Append (curChar);
+						else
+							break;
+					}
+					return sb.ToString ();
+				} finally {
+					StringBuilderCache.Free (sb);
+				}
+			}
+
+			return "";
 		}
 		#endregion
 	}

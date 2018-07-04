@@ -121,6 +121,10 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml" />

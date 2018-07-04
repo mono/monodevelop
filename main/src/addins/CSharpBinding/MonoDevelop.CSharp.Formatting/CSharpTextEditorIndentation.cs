@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
 						editor.IndentationTracker = null;
 					} else {
-						editor.IndentationTracker = new IndentVirtualSpaceManager (editor, stateTracker);
+						editor.IndentationTracker = new IndentVirtualSpaceManager (editor);
 					}
 
 					indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
@@ -854,7 +854,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
 			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && Editor.GetCharAt (line.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
-				string newIndent = curTracker.ThisLineIndent;
+				string newIndent = Editor.IndentationTracker.GetIndentationString (line.LineNumber);
 				int newIndentLength = newIndent.Length;
 				if (newIndent != curIndent) {
 					if (CompletionWindowManager.IsVisible) {
