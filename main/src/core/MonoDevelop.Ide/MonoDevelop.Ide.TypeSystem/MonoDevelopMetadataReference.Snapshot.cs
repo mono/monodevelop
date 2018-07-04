@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal sealed class Snapshot : PortableExecutableReference, ISupportTemporaryStorage
 		{
 			readonly MonoDevelopMetadataReferenceManager _provider;
-			readonly DateTime _timestamp;
+			readonly Lazy<DateTime> _timestamp;
 			Exception _error;
 
 			internal Snapshot (MonoDevelopMetadataReferenceManager provider, MetadataReferenceProperties properties, string fullPath)
@@ -65,23 +65,32 @@ namespace MonoDevelop.Ide.TypeSystem
 				Contract.Requires (Properties.Kind == MetadataImageKind.Assembly);
 				_provider = provider;
 
-				try {
-					_timestamp = File.GetLastWriteTimeUtc (FilePath);
-				} catch (IOException e) {
-					// Reading timestamp of a file might fail. 
-					// Let's remember the failure and report it to the compiler when it asks for metadata.
-					_error = e;
-				}
+				_timestamp = new Lazy<DateTime> (() => {
+					try {
+						return Roslyn.Utilities.FileUtilities.GetFileTimeStamp (this.FilePath);
+					} catch (IOException e) {
+						// Reading timestamp of a file might fail. 
+						// Let's remember the failure and report it to the compiler when it asks for metadata.
+						// We could let the Lazy hold onto this (since it knows how to rethrow exceptions), but
+						// our support of GetStorages needs to gracefully handle the case where we have no timestamp.
+						// If Lazy had a "IsValueFaulted" we could be cleaner here.
+						_error = e;
+						return DateTime.MinValue;
+					}
+				}, LazyThreadSafetyMode.PublicationOnly);
 			}
 
 			protected override Metadata GetMetadataImpl ()
 			{
+				// Fetch the timestamp first, so as to populate _error if needed
+				var timestamp = _timestamp.Value;
+
 				if (_error != null) {
 					throw _error;
 				}
 
 				try {
-					return _provider.GetMetadata (FilePath, _timestamp);
+					return _provider.GetMetadata (FilePath, timestamp);
 				} catch (Exception e) when (SaveMetadataReadingException (e)) {
 					// unreachable
 					throw new InvalidOperationException ("Should be unreachable");
@@ -127,7 +136,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IEnumerable<ITemporaryStreamStorage> ISupportTemporaryStorage.GetStorages ()
 			{
-				return _provider.GetStorages (FilePath, _timestamp);
+				return _provider.GetStorages (FilePath, _timestamp.Value);
 			}
 
 			class RoslynDocumentationProvider : DocumentationProvider
