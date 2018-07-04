@@ -276,10 +276,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 				if (CompletionItem.Rules.FormatOnCommit) {
 					var spanToFormat = triggerSnapshotSpan.TranslateTo (currentBuffer.CurrentSnapshot, SpanTrackingMode.EdgeInclusive);
-					var formattingService = document.AnalysisDocument.GetLanguageService<IEditorFormattingService> ();
+					var formattingService = context.AnalysisDocument.GetLanguageService<IEditorFormattingService> ();
 
 					if (formattingService != null) {
-						var changes = formattingService.GetFormattingChangesAsync (document.AnalysisDocument, spanToFormat.Span.ToTextSpan (), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+						var changes = formattingService.GetFormattingChangesAsync (context.AnalysisDocument, spanToFormat.Span.ToTextSpan (), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 						editor.ApplyTextChanges (changes);
 					}
 				}

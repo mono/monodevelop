@@ -248,16 +248,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpJumpToDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\CSharpNUnitSourceCodeLocationFinder.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\CSharpAutoInsertBracketHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\AbstractTokenBraceCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\BracketCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\CharLiteralCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\CurlyBraceCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\InterpolatedStringCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\LessAndGreaterThanCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\ParenthesisCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\StringLiteralCompletionSession.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\InterpolationCompletionSession.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\OrganizeImportsCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\SortImportsCodeRefactoringProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Navigation\FindMemberOverloadsHandler.cs" />
