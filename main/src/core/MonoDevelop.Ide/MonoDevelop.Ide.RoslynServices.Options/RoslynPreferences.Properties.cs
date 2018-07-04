@@ -41,19 +41,30 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 		internal bool TryGet (OptionKey key, out string propertyKey, out object value)
 		{
-			// Check for roaming/profile properties
-			propertyKey = key.GetPropertyName ();
-			if (propertyKey != null) {
-				var defaultValue = key.Option.DefaultValue;
-				if (TryGetSerializationMethods<object> (key.Option.Type, out var serializer, out var deserializer))
-					defaultValue = serializer (defaultValue);
+			propertyKey = null;
+			value = null;
 
-				value = PropertyService.Get (propertyKey, defaultValue);
-				return true;
+			var type = key.Option.Type;
+			var defaultValue = key.Option.DefaultValue;
+			if (TryGetSerializationMethods<object> (type, out var serializer, out var deserializer)) {
+				defaultValue = serializer (defaultValue);
+				type = typeof (object);
 			}
 
-			value = default (object);
-			return false;
+			// Check for roaming/profile properties
+			foreach (var keyToCheck in key.GetPropertyNames ()) {
+				propertyKey = propertyKey ?? keyToCheck;
+				value = value ?? defaultValue;
+				if (keyToCheck == null)
+					continue;
+
+				if (PropertyService.HasValue (keyToCheck)) {
+					value = PropertyService.GlobalInstance.Get (keyToCheck, defaultValue, type);
+					return true;
+				}
+			}
+
+			return propertyKey != null;
 		}
 
 		internal bool TryGetUpdater (OptionKey key, out string propertyKey, out Action<object> updater) {
