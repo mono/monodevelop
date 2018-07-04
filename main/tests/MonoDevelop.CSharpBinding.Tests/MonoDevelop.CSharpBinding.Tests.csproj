@@ -94,7 +94,6 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\PolicyTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CSharpAutoInsertBracketHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\ExpandSelectionHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Parser\CSharpParsedDocumentTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpLanguageVersionHelperTests.cs" />
