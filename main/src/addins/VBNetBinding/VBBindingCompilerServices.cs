@@ -47,9 +47,10 @@ namespace MonoDevelop.VBNetBinding {
 	/// <summary>
 	/// This class controls the compilation of VB.net files and VB.net projects
 	/// </summary>
+	[Obsolete]
 	public class VBBindingCompilerServices
 	{
-		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProject projectparameters, string outputFileName)
+		static string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProject projectparameters, string outputFileName)
 		{
 			var project = configuration.ParentItem;
 			StringBuilder sb = new StringBuilder ();
@@ -182,8 +183,13 @@ namespace MonoDevelop.VBNetBinding {
 			
 			return sb.ToString();
 		}
-		
+
 		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
+		{
+			return InternalCompile (items, configuration, configSelector, monitor);
+		}
+
+		internal static BuildResult InternalCompile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			VBCompilerParameters compilerparameters = (VBCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null)
@@ -270,7 +276,7 @@ namespace MonoDevelop.VBNetBinding {
 		}
 		
 		// code duplication: see C# backend : CSharpBindingCompilerManager
-		void WriteManifestFile(string fileName)
+		static void WriteManifestFile(string fileName)
 		{
 			string manifestFile = String.Concat(fileName, ".manifest");
 			if (File.Exists(manifestFile)) {
@@ -296,7 +302,7 @@ namespace MonoDevelop.VBNetBinding {
 			sw.Close();
 		}
 		
-		BuildResult ParseOutput(TempFileCollection tf, string output)
+		static BuildResult ParseOutput(TempFileCollection tf, string output)
 		{
 			var result = new BuildResult (output, 1, 0);
 
@@ -336,7 +342,7 @@ namespace MonoDevelop.VBNetBinding {
 			return err;
 		}
 		
-		private int DoCompilation (string compilerName, string responseFileName, TempFileCollection tf, string working_dir, ExecutionEnvironment envVars, ref string output)
+		static int DoCompilation (string compilerName, string responseFileName, TempFileCollection tf, string working_dir, ExecutionEnvironment envVars, ref string output)
 		{
 			StringWriter outwr = new StringWriter ();
 			try {
