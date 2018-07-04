@@ -284,6 +284,21 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfObjectViewElementFactory.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorKeyPressTimings.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentService.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentServiceFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAggregator.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAggregatorFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionDefaultSession.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionEditorExtension.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionManager.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionManagerFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionStack.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAdornmentService.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAdornmentServiceFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAggregator.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAggregatorFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionMetadata.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml" />

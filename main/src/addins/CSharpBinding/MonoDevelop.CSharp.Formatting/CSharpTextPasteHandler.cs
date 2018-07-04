@@ -67,34 +67,21 @@ namespace MonoDevelop.CSharp.Formatting
 			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
 		}
 
-
-		 public override async Task PostFomatPastedText (int offset, int length)
+		public override async Task PostFomatPastedText (int offset, int length)
 		{
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
-<<<<<<< b738bf3460320ce20b794df21006916ce9223009
 			  indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
-=======
-				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
-				return Task.CompletedTask;
->>>>>>> [CSharpBinding] Implemented format on paste using the roslyn
 			var doc = indent.DocumentContext.AnalysisDocument;
 
 			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
 			if (formattingService == null || !formattingService.SupportsFormatOnPaste)
-<<<<<<< b738bf3460320ce20b794df21006916ce9223009
 				return;
 
 			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new TextSpan (offset, length), default (CancellationToken));
 			if (changes == null)
 				return;
-=======
-				return Task.CompletedTask;
 
-			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new TextSpan (insertionOffset, insertedChars), default (CancellationToken));
-			if (changes == null)
-				return Task.CompletedTask;
->>>>>>> [CSharpBinding] Implemented format on paste using the roslyn
 			indent.Editor.ApplyTextChanges (changes);
 			indent.Editor.FixVirtualIndentation ();
 		}
