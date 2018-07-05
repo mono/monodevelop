@@ -13,6 +13,7 @@ nuget Newtonsoft.Json
 nuget StrongNamer
 nuget System.Reactive.Linq
 
+github fsprojects/Roslyn.FSharp Roslyn.FSharp/FSharpSyntaxReference.fs
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/FSharpSymbol.fs
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/FSharpTypeSymbol.fs
 github fsprojects/Roslyn.FSharp Roslyn.FSharp/Helpers.fs
