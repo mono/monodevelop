@@ -41,6 +41,9 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 {
 	sealed partial class RoslynPreferences
 	{
+		public bool FullSolutionAnalysisRuntimeEnabled { get; internal set; } = true;
+		public event EventHandler FullSolutionAnalysisRuntimeEnabledChanged;
+
 		internal PerLanguagePreferences CSharp => languageConfigs [LanguageNames.CSharp];
 		public PerLanguagePreferences For (string languageName) => languageConfigs [languageName];
 
@@ -57,13 +60,19 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 		public class PerLanguagePreferences
 		{
+			readonly string language;
+			readonly RoslynPreferences roslynPreferences;
+
 			public readonly ConfigurationProperty<bool> PlaceSystemNamespaceFirst;
 			public readonly ConfigurationProperty<bool> SeparateImportDirectiveGroups;
 			public readonly ConfigurationProperty<bool> SuggestForTypesInNuGetPackages;
-			public readonly ConfigurationProperty<bool?> SolutionCrawlerClosedFileDiagnostic;
+			public readonly ConfigurationProperty<bool> SolutionCrawlerClosedFileDiagnostic;
 
 			internal PerLanguagePreferences (string language, RoslynPreferences preferences)
 			{
+				this.language = language;
+				roslynPreferences = preferences;
+
 				PlaceSystemNamespaceFirst = preferences.Wrap<bool> (
 					new OptionKey (Microsoft.CodeAnalysis.Editing.GenerationOptions.PlaceSystemNamespaceFirst, language),
 					language + ".PlaceSystemNamespaceFirst"
@@ -79,10 +88,38 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					true
 				);
 
-				SolutionCrawlerClosedFileDiagnostic = preferences.Wrap<bool?> (
-					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language),
-					true
-				);
+				SolutionCrawlerClosedFileDiagnostic = new ClosedFileDiagnosticProperty (preferences.Wrap<bool?> (
+					new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language)
+				), language, roslynPreferences);
+			}
+
+			class ClosedFileDiagnosticProperty : ConfigurationProperty<bool>
+			{
+				readonly ConfigurationProperty<bool?> underlying;
+				readonly RoslynPreferences roslynPreferences;
+				readonly string language;
+
+				public ClosedFileDiagnosticProperty (ConfigurationProperty<bool?> underlying, string language, RoslynPreferences roslynPreferences)
+				{
+					this.underlying = underlying;
+					underlying.Changed += (sender, args) => {
+						bool? newValue = underlying.Value;
+						if (newValue.HasValue)
+							OnSetValue (newValue.Value);
+					};
+					this.language = language;
+					this.roslynPreferences = roslynPreferences;
+				}
+
+				protected override bool OnGetValue () => underlying.Value ?? language != LanguageNames.CSharp;
+
+				protected override bool OnSetValue (bool value)
+				{
+					underlying.Value = value;
+					roslynPreferences.FullSolutionAnalysisRuntimeEnabled |= value;
+					roslynPreferences.FullSolutionAnalysisRuntimeEnabledChanged?.Invoke (this, EventArgs.Empty);
+					return true;
+				}
 			}
 		}
 	}
