@@ -245,8 +245,12 @@ namespace MonoDevelop.VersionControl
 					}
 				}
 			}
-			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (bestMatch, id);
-
+			try {
+				return detectedVCS?.GetRepositoryReference (bestMatch, id);
+			} catch (Exception e) {
+				LoggingService.LogError ($"Could not query {detectedVCS.Name} repository reference", e);
+				return null;
+			}
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
