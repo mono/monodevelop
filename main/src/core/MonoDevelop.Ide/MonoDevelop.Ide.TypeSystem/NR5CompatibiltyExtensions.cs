@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			//NR5 is returning true also for same type
 			for (; type != null; type = type.BaseType) {
-				if (type == baseType) {
+				if (type.Equals(baseType)) {
 					return true;
 				}
 			}

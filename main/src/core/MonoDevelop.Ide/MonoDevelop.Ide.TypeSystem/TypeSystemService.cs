@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		const string CurrentVersion = "1.1.9";
 		static IEnumerable<TypeSystemParserNode> parsers;
-		internal static ImmutableList<RoslynCompilationProvider> compilationProviders;
+		internal static ImmutableList<RoslynCompilationProvider> compilationProviders = ImmutableList<RoslynCompilationProvider>.Empty;
 		static string[] filesSkippedInParseThread = new string[0];
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
