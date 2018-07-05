@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 
 		internal void AddExtension (ChainedExtension ext, ChainedExtension insertAfter = null, ChainedExtension insertBefore = null)
 		{
-			int index;
+			int index = -1;
 			if (insertBefore != null) {
 				index = Array.IndexOf (extensions, insertBefore);
 			} else if (insertAfter != null) {
@@ -81,9 +81,12 @@ namespace MonoDevelop.Projects
 					index++;
 			} else if (defaultInsertBefore != null) {
 				index = Array.IndexOf (extensions, defaultInsertBefore);
-			} else
+			}
+
+			if (index == -1) {
 				index = extensions.Length;
-			
+			}
+
 			Array.Resize (ref extensions, extensions.Length + 1);
 			for (int n = extensions.Length - 1; n > index; n--)
 				extensions [n] = extensions [n - 1];

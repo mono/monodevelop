@@ -46,49 +46,44 @@ namespace MonoDevelop.Projects
 			return chain;
 		}
 
+		static T [] GetAllExtensions<T> (ExtensionChain chain) => chain.GetAllExtensions ().Cast<T> ().ToArray ();
+
+		static BaseTestChainedExtension [] GetAllExtensions (ExtensionChain chain) => GetAllExtensions<BaseTestChainedExtension> (chain);
+
 		[Test]
 		public void ExtensionChainConstruction ()
 		{
 			var (exts, chain) = CreateTestExtensionChainAndArray (2);
 
-			var allExtensions = chain.GetAllExtensions ().ToArray ();
+			var allExtensions = GetAllExtensions (chain);
 
 			Assert.AreEqual (2, allExtensions.Length);
 			Assert.AreSame (exts[0], allExtensions [0]);
 			Assert.AreSame (exts[1], allExtensions [1]);
-		}
-
-		[Test]
-		public void ExtensionChainInitializedOnCreation ()
-		{
-			var (array, chain) = CreateTestExtensionChainAndArray (2);
-
-			Assert.AreEqual (1, array [0].InitializedCount);
-
-			// The equivalent of the default extension.
-			Assert.AreEqual (0, array [1].InitializedCount);
+			Assert.AreSame (exts [1], exts [0].Next);
 		}
 
 		[Test]
 		public void ExtensionChainModification ()
 		{
-			var (initial, chain) = CreateTestExtensionChainAndArray (2);
+			var chain = CreateTestExtensionChain (2);
 
 			// Assert default insertion position is at the end.
 			var ext = new BaseTestChainedExtension ();
 			chain.AddExtension (ext);
-			var currentExts = chain.GetAllExtensions ().ToArray ();
+			var currentExts = GetAllExtensions (chain);
 
 			Assert.AreEqual (3, currentExts.Length);
-			Assert.AreSame (ext, currentExts[currentExts.Length - 1]);
+			Assert.AreSame (ext, currentExts [currentExts.Length - 1]);
 
 			// Make it insert by default the beginning
-			chain.SetDefaultInsertionPosition (currentExts [0]);
+			var defaultInsertionPosition = currentExts [0];
+			chain.SetDefaultInsertionPosition (defaultInsertionPosition);
 
 			// Assert insert in default position
 			var defaultInserted = new BaseTestChainedExtension ();
 			chain.AddExtension (defaultInserted);
-			currentExts = chain.GetAllExtensions ().ToArray ();
+			currentExts = GetAllExtensions (chain);
 
 			Assert.AreEqual (4, currentExts.Length);
 			Assert.AreSame (defaultInserted, currentExts [0]);
@@ -96,7 +91,7 @@ namespace MonoDevelop.Projects
 			// Assert insert before a given extension
 			var beforeExt = new BaseTestChainedExtension ();
 			chain.AddExtension (beforeExt, insertBefore: ext);
-			currentExts = chain.GetAllExtensions ().ToArray ();
+			currentExts = GetAllExtensions (chain);
 
 			Assert.AreEqual (5, currentExts.Length);
 			Assert.AreSame (beforeExt, currentExts[currentExts.Length - 2]);
@@ -105,7 +100,7 @@ namespace MonoDevelop.Projects
 			// Assert insert after a given extension
 			var afterExt = new BaseTestChainedExtension ();
 			chain.AddExtension (afterExt, insertAfter: ext);
-			currentExts = chain.GetAllExtensions ().ToArray ();
+			currentExts = GetAllExtensions (chain);
 
 			Assert.AreEqual (6, currentExts.Length);
 			Assert.AreSame (beforeExt, currentExts [currentExts.Length - 3]);
@@ -113,16 +108,16 @@ namespace MonoDevelop.Projects
 			Assert.AreSame (afterExt, currentExts [currentExts.Length - 1]);
 
 			// Remove the default one and probe it doesn't exist
-			chain.RemoveExtension (defaultInserted);
-			currentExts = chain.GetAllExtensions ().ToArray ();
+			chain.RemoveExtension (defaultInsertionPosition);
+			currentExts = GetAllExtensions (chain); ;
 
 			Assert.AreEqual (5, currentExts.Length);
-			Assert.That (currentExts, Is.Not.Contains (defaultInserted));
+			Assert.That (currentExts, Is.Not.Contains (defaultInsertionPosition));
 
 			// Validate that we insert at the end now
 			var lastExt = new BaseTestChainedExtension ();
 			chain.AddExtension (lastExt);
-			currentExts = chain.GetAllExtensions ().ToArray ();
+			currentExts = GetAllExtensions (chain);
 
 			Assert.AreEqual (6, currentExts.Length);
 			Assert.AreSame (lastExt, currentExts [currentExts.Length - 1]);
@@ -132,27 +127,122 @@ namespace MonoDevelop.Projects
 		public void AssertDisposedExtensionChain ()
 		{
 			var chain = CreateTestExtensionChain (2);
+			var exts = GetAllExtensions (chain);
 
 			chain.Dispose ();
+
+			Assert.IsTrue (exts [0].IsDisposed);
+			Assert.IsTrue (exts [1].IsDisposed);
 
 			Assert.IsNull (chain.GetAllExtensions ());
 			Assert.Throws<NullReferenceException> (() => {
 				chain.AddExtension (new BaseTestChainedExtension ());
 			});
-			Assert.Throws<NullReferenceException> (() => {
-				chain.RemoveExtension (new BaseTestChainedExtension ());
-			});
+		}
+
+		[Test]
+		public void ExtensionChainInitializedOnCreationAndDisposal ()
+		{
+			var (array, chain) = CreateTestExtensionChainAndArray (2);
+
+			// The last one doesn't get initialized
+			Assert.AreEqual (1, array [0].InitializedCount);
+			Assert.AreEqual (0, array [1].InitializedCount);
+
+			chain.Dispose ();
+
+			// Assert disposing does not initialize or rechain
+			Assert.AreEqual (1, array [0].InitializedCount);
+			Assert.AreEqual (0, array [1].InitializedCount);
 		}
 
 		[Test]
 		public void ExtensionChainRechainedOnModification ()
 		{
+			var chain = CreateTestExtensionChain (2);
+
+			chain.SetDefaultInsertionPosition (chain.GetAllExtensions ().Last ());
+
+			chain.AddExtension (new BaseTestChainedExtension ());
+			var currentExts = GetAllExtensions (chain);
+
+			Assert.AreEqual (2, currentExts [0].InitializedCount);
+			Assert.AreEqual (1, currentExts [1].InitializedCount);
+			Assert.AreEqual (0, currentExts [2].InitializedCount);
+
+			chain.AddExtension (new BaseTestChainedExtension ());
+			currentExts = GetAllExtensions (chain);
+
+			Assert.AreEqual (3, currentExts [0].InitializedCount);
+			Assert.AreEqual (2, currentExts [1].InitializedCount);
+			Assert.AreEqual (1, currentExts [2].InitializedCount);
+			Assert.AreEqual (0, currentExts [3].InitializedCount);
+
+			chain.RemoveExtension (currentExts [1]);
+			currentExts = GetAllExtensions (chain);
+
+			Assert.AreEqual (4, currentExts [0].InitializedCount);
+			Assert.AreEqual (2, currentExts [1].InitializedCount);
+			Assert.AreEqual (0, currentExts [2].InitializedCount);
+
+			// Check that the item is removed and the chain is rechaiend
+			currentExts [0].Dispose ();
+			currentExts = GetAllExtensions (chain);
+
+			Assert.AreEqual (3, currentExts [0].InitializedCount);
+			Assert.AreEqual (0, currentExts [1].InitializedCount);
+		}
+
+		[Test]
+		public void ExtensionChainRechainingBatchModification ()
+		{
+			BaseTestChainedExtension [] currentExts;
+			var chain = CreateTestExtensionChain (2);
+
+			chain.SetDefaultInsertionPosition (chain.GetAllExtensions ().Last ());
+
+			using (chain.BatchModify ()) {
+
+				chain.AddExtension (new BaseTestChainedExtension ());
+				currentExts = GetAllExtensions (chain);
+
+				Assert.AreEqual (1, currentExts [0].InitializedCount);
+				Assert.AreEqual (0, currentExts [1].InitializedCount);
+				Assert.AreEqual (0, currentExts [2].InitializedCount);
+
+				chain.AddExtension (new BaseTestChainedExtension ());
+				currentExts = GetAllExtensions (chain);
+
+				Assert.AreEqual (1, currentExts [0].InitializedCount);
+				Assert.AreEqual (0, currentExts [1].InitializedCount);
+				Assert.AreEqual (0, currentExts [2].InitializedCount);
+				Assert.AreEqual (0, currentExts [3].InitializedCount);
+
+				chain.RemoveExtension (currentExts [1]);
+				currentExts = GetAllExtensions (chain);
+
+				Assert.AreEqual (1, currentExts [0].InitializedCount);
+				Assert.AreEqual (0, currentExts [1].InitializedCount);
+				Assert.AreEqual (0, currentExts [2].InitializedCount);
+
+				currentExts [1].Dispose ();
+				currentExts = GetAllExtensions (chain);
+				Assert.AreEqual (1, currentExts [0].InitializedCount);
+				Assert.AreEqual (0, currentExts [1].InitializedCount);
+			}
+
+			// We should get an initialization here
+			currentExts = GetAllExtensions (chain);
+
+			Assert.AreEqual (2, currentExts [0].InitializedCount);
+			Assert.AreEqual (1, currentExts [1].InitializedCount);
+			Assert.AreEqual (0, currentExts [2].InitializedCount);
 		}
 
 		class BaseTestChainedExtension : ChainedExtension
 		{
 			public int InitializedCount { get; private set; }
-			public bool Disposed { get; private set; }
+			public bool IsDisposed { get; private set; }
 
 			protected internal override void InitializeChain (ChainedExtension next)
 			{
@@ -162,7 +252,7 @@ namespace MonoDevelop.Projects
 
 			public override void Dispose ()
 			{
-				Disposed = true;
+				IsDisposed = true;
 				base.Dispose ();
 			}
 		}
