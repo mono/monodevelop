@@ -147,9 +147,9 @@ test ""f\t"" this bar
 		[Test]
 		public void TestTryScanJSonStyle ()
 		{
-			var stream = new MemoryStream ();
-			var writer = new StreamWriter (stream);
-			writer.Write (@"{
+			using (var stream = new MemoryStream ())
+			using (var writer = new StreamWriter (stream)) {
+				writer.Write (@"{
 	""information_for_contributors"": [
 		""This file has been converted from https://github.com/Microsoft/TypeScript-TmLanguage/blob/master/TypeScript.tmLanguage"",
 		""If you want to provide a fix or improvement, please create a pull request against the original repository."",
@@ -161,13 +161,14 @@ test ""f\t"" this bar
 	""fileTypes"": [
 		""ts""
 	],");
-			writer.Flush ();
-			stream.Position = 0;
-			bool result = SyntaxHighlightingService.TryScanJSonStyle (stream, out var name, out var format, out var fileTypes, out var scopeName);
-			Assert.AreEqual (true, result);
-			Assert.AreEqual ("TypeScript", name);
-			Assert.AreEqual ("source.ts", scopeName);
-			Assert.True (fileTypes.Contains ("ts"));
+				writer.Flush ();
+				stream.Position = 0;
+				bool result = SyntaxHighlightingService.TryScanJSonStyle (stream, out var name, out var format, out var fileTypes, out var scopeName);
+				Assert.AreEqual (true, result);
+				Assert.AreEqual ("TypeScript", name);
+				Assert.AreEqual ("source.ts", scopeName);
+				Assert.True (fileTypes.Contains ("ts"));
+			}
 		}
 	}
 }
