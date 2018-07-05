@@ -40,6 +40,7 @@ namespace MonoDevelop.FSW
 				rootNode.FirstChild = new PathTreeNode ("/", 0, 0) {
 					Parent = rootNode,
 				};
+				rootNode.ChildrenCount = 1;
 			}
 		}
 
@@ -57,7 +58,7 @@ namespace MonoDevelop.FSW
 			// If the amount of children a node has exceeds the maximum amount of leaves
 			// we want, we just return the node itself, even if it's not live.
 
-			var queue = new Queue<PathTreeNode>();
+			var queue = new Queue<PathTreeNode>(maxLeafs);
 
 			int yielded = 0;
 			var child = rootNode.FirstChild;
@@ -229,14 +230,17 @@ namespace MonoDevelop.FSW
 			if (previousNode == null)
 			{
 				// We're inserting at the beginning.
-				node.Next = parentNode.FirstChild;
+				var insertBefore = parentNode.FirstChild;
+
+				node.Next = insertBefore;
+				if (insertBefore != null)
+					insertBefore.Previous = node;
 				parentNode.FirstChild = node;
 				return;
 			}
 
 			// We are appending inbetween other nodes
 			var next = previousNode.Next;
-
 			previousNode.Next = node;
 			node.Previous = previousNode;
 

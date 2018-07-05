@@ -105,6 +105,9 @@ namespace MonoDevelop.FSW
 			g1 = g.FirstChild;
 			g2 = g1.Next;
 
+			Assert.AreEqual (1, root.ChildrenCount);
+			Assert.AreSame (pathRoot, root.FirstChild);
+
 			// rootNode -> a
 			Assert.AreEqual (nameof (a), a.Segment);
 			Assert.IsNull (a.Next);
@@ -458,6 +461,35 @@ namespace MonoDevelop.FSW
 				Assert.IsNotNull (node);
 				Assert.AreEqual (false, node.IsLive);
 			}
+		}
+
+		[Test]
+		public void TestRemovalOfNodeAddedToTheBeginning ()
+		{
+			var tree = new PathTree ();
+
+			var c = tree.AddNode (MakePath ("a", "c"), id);
+
+			var b = tree.AddNode (MakePath ("a", "b"), id);
+			var a = tree.AddNode (MakePath ("a", "a"), id);
+
+			Assert.IsNotNull (tree.FindNode (MakePath ("a", "a")));
+			Assert.IsNotNull (tree.FindNode (MakePath ("a", "b")));
+			Assert.IsNotNull (tree.FindNode (MakePath ("a", "c")));
+
+			tree.RemoveNode (MakePath ("a", "b"), id);
+
+			Assert.AreSame (c, a.Next);
+			Assert.AreSame (a, c.Previous);
+
+			tree.RemoveNode (MakePath ("a", "c"), id);
+
+			Assert.IsNull (a.Next);
+			tree.RemoveNode (MakePath ("a", "a"), id); 
+
+			Assert.IsNull (tree.FindNode (MakePath ("a", "a")));
+			Assert.IsNull (tree.FindNode (MakePath ("a", "b")));
+			Assert.IsNull (tree.FindNode (MakePath ("a", "c")));
 		}
 	}
 }
