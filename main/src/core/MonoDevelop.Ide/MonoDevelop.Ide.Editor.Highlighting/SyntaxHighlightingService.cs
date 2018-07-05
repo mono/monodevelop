@@ -399,18 +399,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (readFileTypes && fileTypesEndRegex.Match (line).Success)
 						break;
 					if (readFileTypes) {
-						line = line.Trim ();
-						if (line.Length > 3 && line[0] == '"' && line[line.Length - 1] == '"') {
-							int start = 1;
-
-							// the . is optional, some extensions mention it and some don't
-							if (line[1] == '.') {
-								start = 2;
-							}
-
-							string fileType = line.Substring (start, line.Length - start - 1);
+						string fileType = ParseFileType (line);
+						if (!string.IsNullOrEmpty(fileType))
 							fileTypes.Add (fileType);
-						}
 					}
 				}
 				if (fileTypes == null)
@@ -426,6 +417,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
+		internal static string ParseFileType (string line)
+		{
+			var idx1 = line.IndexOf ('"');
+			var idx2 = line.LastIndexOf ('"');
+			if (idx1 < 0 || idx1 + 1 >= idx2)
+				return null;
+			// the . is optional, some extensions mention it and some don't
+			if (line [idx1 + 1] == '.')
+				idx1++;
+			idx1++; // skip "
+			return line.Substring (idx1, idx2 - idx1);
+
+		}
 		static bool TryScanTextMateSyntax (Stream stream, out List<string> fileTypes, out string name, out string scopeName)
 		{
 			fileTypes = null;
