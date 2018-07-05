@@ -462,49 +462,6 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void NormalizeDirectories1 ()
-		{
-			FilePath fileName = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
-			FilePath rootDirectory = fileName.ParentDirectory;
-
-			var directories = new [] {
-				rootDirectory.Combine ("a"),
-				rootDirectory,
-				rootDirectory.Combine ("c")
-			};
-
-			var normalized = FileWatcherService.Normalize (directories).ToArray ();
-
-			Assert.AreEqual (1, normalized.Length);
-			Assert.That (normalized, Contains.Item (rootDirectory));
-		}
-
-		[Test]
-		public void NormalizeDirectories2 ()
-		{
-			FilePath fileName = Util.GetSampleProject ("FileWatcherTest", "Root.sln");
-			FilePath rootDirectory = fileName.ParentDirectory;
-
-			var bDirectory = rootDirectory.Combine ("..", "b").FullPath;
-			var dDirectory = rootDirectory.Combine ("..", "d").FullPath;
-
-			var directories = new [] {
-				rootDirectory.Combine ("a"),
-				bDirectory,
-				rootDirectory,
-				rootDirectory.Combine ("c"),
-				dDirectory
-			};
-
-			var normalized = FileWatcherService.Normalize (directories).ToArray ();
-
-			Assert.AreEqual (3, normalized.Length);
-			Assert.That (normalized, Contains.Item (rootDirectory));
-			Assert.That (normalized, Contains.Item (bDirectory));
-			Assert.That (normalized, Contains.Item (dDirectory));
-		}
-
-		[Test]
 		public async Task DeleteProjectFileExternally_TwoSolutionsOpen_OneSolutionDisposed ()
 		{
 			FilePath rootSolFile = Util.GetSampleProject ("FileWatcherTest", "Root.sln");

@@ -26,151 +26,118 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.FSW;
 
 namespace MonoDevelop.Projects
 {
 	public static class FileWatcherService
 	{
+		// We don't want more than 8 threads for FileSystemWatchers.
+		const int maxWatchers = 8;
+
+		static readonly PathTree tree = new PathTree ();
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
-		static readonly List<WorkspaceItem> workspaceItems = new List<WorkspaceItem> ();
-		static readonly Dictionary<object, List<FilePath>> monitoredDirectories = new Dictionary<object, List<FilePath>> ();
+		static readonly Dictionary<object, HashSet<FilePath>> monitoredDirectories = new Dictionary<object, HashSet<FilePath>> ();
 		static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 
 		public static Task Add (WorkspaceItem item)
 		{
 			lock (watchers) {
-				workspaceItems.Add (item);
 				item.RootDirectoriesChanged += OnRootDirectoriesChanged;
-				CancelUpdate ();
-				return UpdateWatchersAsync ();
+				return WatchDirectories (item, item.GetRootDirectories ());
 			}
-		}
-
-		static void CancelUpdate ()
-		{
-			cancellationTokenSource.Cancel ();
-			cancellationTokenSource = new CancellationTokenSource ();
 		}
 
 		public static Task Remove (WorkspaceItem item)
 		{
 			lock (watchers) {
-				if (workspaceItems.Remove (item)) {
-					item.RootDirectoriesChanged -= OnRootDirectoriesChanged;
-					CancelUpdate ();
-					return UpdateWatchersAsync ();
-				}
+				item.RootDirectoriesChanged -= OnRootDirectoriesChanged;
+				return WatchDirectories (item, null);
 			}
-			return Task.CompletedTask;
 		}
 
-		static void OnRootDirectoriesChanged (object sender, EventArgs e)
+		static void OnRootDirectoriesChanged (object sender, EventArgs args)
 		{
 			lock (watchers) {
-				CancelUpdate ();
-				UpdateWatchersAsync ().Ignore ();
+				var item = (WorkspaceItem)sender;
+				WatchDirectories (item, item.GetRootDirectories ()).Ignore ();
 			}
 		}
 
 		static Task UpdateWatchersAsync ()
 		{
+			cancellationTokenSource.Cancel ();
+			cancellationTokenSource = new CancellationTokenSource ();
 			CancellationToken token = cancellationTokenSource.Token;
-			return Task.Run (() => {
-				UpdateWatchers (workspaceItems, monitoredDirectories, token);
-			});
+
+			return Task.Run (() => UpdateWatchers (token));
 		}
 
-		static void UpdateWatchers (
-			List<WorkspaceItem> currentWorkspaceItems,
-			Dictionary<object, List<FilePath>> currentMonitoredDirectories,
-			CancellationToken token)
+		static void UpdateWatchers (CancellationToken token)
 		{
-			List<FileWatcherWrapper> newWatchers = null;
-
-			HashSet<FilePath> watchedDirectories = GetWatchedDirectories ();
-
 			if (token.IsCancellationRequested)
 				return;
 
-			foreach (FilePath directory in GetRootDirectories (currentWorkspaceItems, currentMonitoredDirectories)) {
-				if (!watchedDirectories.Remove (directory)) {
-					if (Directory.Exists (directory)) {
-						if (newWatchers == null)
-							newWatchers = new List<FileWatcherWrapper> ();
-						var watcher = new FileWatcherWrapper (directory);
-						newWatchers.Add (watcher);
-					}
-				}
-			}
-
-			if (newWatchers == null && !watchedDirectories.Any ()) {
-				// Unchanged.
-				return;
-			}
-
 			lock (watchers) {
-				if (token.IsCancellationRequested) {
-					if (newWatchers != null) {
-						foreach (FileWatcherWrapper watcher in newWatchers) {
-							watcher.Dispose ();
-						}
-					}
+				if (token.IsCancellationRequested)
+					return;
+
+				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.FullPath);
+				var newWatchers = new HashSet<FilePath> (newPathsToWatch.Where (dir => Directory.Exists (dir)));
+				if (newWatchers.Count == 0 && watchers.Count == 0) {
+					// Unchanged.
 					return;
 				}
 
-				// Remove file watchers no longer needed.
-				foreach (FilePath directory in watchedDirectories) {
-					Remove (directory);
-				}
-
-				if (newWatchers != null) {
-					foreach (FileWatcherWrapper watcher in newWatchers) {
-						watchers.Add (watcher.Path, watcher);
-						watcher.EnableRaisingEvents = true;
+				List<FilePath> toRemove;
+				if (newWatchers.Count == 0)
+					toRemove = watchers.Keys.ToList ();
+				else {
+					toRemove = new List<FilePath> ();
+					foreach (var kvp in watchers) {
+						var directory = kvp.Key;
+						if (!newWatchers.Contains (directory))
+							toRemove.Add (directory);
 					}
 				}
-			}
-		}
 
-		static HashSet<FilePath> GetWatchedDirectories ()
-		{
-			lock (watchers) {
-				var directories = new HashSet<FilePath> ();
-				foreach (FilePath directory in watchers.Keys) {
-					directories.Add (directory);
+				// After this point, the watcher update is real and a destructive operation, so do not use the token.
+				if (token.IsCancellationRequested)
+					return;
+				
+				// First remove the watchers, so we don't spin too many threads.
+				foreach (var directory in toRemove) {
+					RemoveWatcher_NoLock (directory);
 				}
-				return directories;
-			}
-		}
 
-		static IEnumerable<FilePath> GetRootDirectories (
-			List<WorkspaceItem> currentWorkspaceItems,
-			Dictionary<object, List<FilePath>> currentMonitoredDirectories)
-		{
-			var directories = new HashSet<FilePath> ();
+				// Add the new ones.
+				if (newWatchers.Count == 0)
+					return;
 
-			foreach (WorkspaceItem item in currentWorkspaceItems) {
-				foreach (FilePath directory in item.GetRootDirectories ()) {
-					directories.Add (directory);
+				foreach (var path in newWatchers) {
+					// Don't modify a watcher that already exists.
+					if (watchers.ContainsKey (path)) {
+						continue;
+					}
+
+					var watcher = new FileWatcherWrapper (path);
+					watchers.Add (path, watcher);
+					watcher.EnableRaisingEvents = true;
 				}
-			}
 
-			foreach (var kvp in currentMonitoredDirectories) {
-				foreach (var directory in kvp.Value)
-					directories.Add (directory);
 			}
-
-			return Normalize (directories);
 		}
 
-		static void Remove (FilePath directory)
+		static void RemoveWatcher_NoLock (FilePath directory)
 		{
+			Debug.Assert (Monitor.IsEntered (watchers));
+
 			if (watchers.TryGetValue (directory, out FileWatcherWrapper watcher)) {
 				watcher.EnableRaisingEvents = false;
 				watcher.Dispose ();
@@ -178,28 +145,51 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal static IEnumerable<FilePath> Normalize (IEnumerable<FilePath> directories)
-		{
-			var directorySet = new HashSet<FilePath> (directories);
-
-			return directorySet.Where (d => {
-				return directorySet.All (other => !d.IsChildPathOf (other));
-			});
-		}
-
 		public static Task WatchDirectories (object id, IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
-				if (directories == null)
-					monitoredDirectories.Remove (id);
-				else {
-					directories = directories.Where (directory => !directory.IsNullOrEmpty);
-					monitoredDirectories [id] = new List<FilePath> (directories);
+				if (RegisterDirectoriesInTree_NoLock (id, directories))
+					return UpdateWatchersAsync ();
+				return Task.CompletedTask;
+			}
+		}
+
+		static bool RegisterDirectoriesInTree_NoLock (object id, IEnumerable<FilePath> directories)
+		{
+			Debug.Assert (Monitor.IsEntered (watchers));
+
+			// Remove paths subscribed for this id.
+			// TODO: Only modify those which need to be modified, don't register/unregister with no reason.
+
+			bool modified = false;
+
+			if (monitoredDirectories.TryGetValue (id, out var oldDirectories)) {
+				foreach (var dir in oldDirectories) {
+					var node = tree.RemoveNode (dir, id);
+
+					bool wasRemoved = node != null && !node.IsLive;
+					modified |= wasRemoved;
+				}
+			}
+
+			// Remove the current registered directories
+			monitoredDirectories.Remove (id);
+			if (directories == null)
+				return modified;
+
+			// Apply new ones if we have any
+			var set = new HashSet<FilePath> (directories.Where(x => !x.IsNullOrEmpty));
+
+			if (set.Count > 0) {
+				monitoredDirectories [id] = set;
+				foreach (var path in set) {
+					tree.AddNode (path, id);
 				}
 
-				CancelUpdate ();
-				return UpdateWatchersAsync ();
+				// If we reached here, we have added at least 1 node, and the tree has changed.
+				modified = true;
 			}
+			return modified;
 		}
 
 		/// <summary>
@@ -208,7 +198,6 @@ namespace MonoDevelop.Projects
 		internal static Task Update ()
 		{
 			lock (watchers) {
-				CancelUpdate ();
 				return UpdateWatchersAsync ();
 			}
 		}
