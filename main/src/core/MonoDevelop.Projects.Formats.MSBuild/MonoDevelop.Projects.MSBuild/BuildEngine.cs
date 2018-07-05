@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.MSBuild
 				unsavedProjects.Remove (file);
 			}
 
-			RunSTA (delegate
+			RunSTA (this, delegate
 			{
 				// Unloading projects modifies the collection, so copy it
 				var loadedProjects = engine.GetLoadedProjects(file).ToArray();
@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			// Start a new MSBuild build session, sending log to the provided writter
 
-			RunSTA (delegate {
+			RunSTA (this, delegate {
 				BuildOperationStarted = true;
 				// This property specifies the mapping between the solution configuration
 				// and the project configurations
@@ -143,7 +143,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			// End the MSBuild build session started in BeginBuildOperation
 
-			RunSTA (delegate {
+			RunSTA (this, delegate {
 				engine.RemoveGlobalProperty ("CurrentSolutionConfigurationContents");
 				BuildOperationStarted = false;
 				BuildManager.DefaultBuildManager.EndBuild ();
@@ -172,6 +172,15 @@ namespace MonoDevelop.Projects.MSBuild
 		public void EndProjectSessionBuild ()
 		{
 			loggerAdapter.EngineLogWriter = sessionLogWriter;
+		}
+
+		static partial void OnThreadAbort (BuildEngine buildEngine)
+		{
+			if (buildEngine.BuildOperationStarted) {
+				// Try to end the build here, to workaround a finalizer crash in zstream in mono
+				// https://github.com/mono/mono/issues/9142
+				BuildManager.DefaultBuildManager.EndBuild ();
+			}
 		}
 	}
 }

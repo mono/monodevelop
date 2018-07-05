@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			MSBuildResult result = null;
 
-			BuildEngine.RunSTA (taskId, delegate {
+			BuildEngine.RunSTA (taskId, buildEngine, delegate {
 				Project project = null;
 				Dictionary<string, string> originalGlobalProperties = null;
 
