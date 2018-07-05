@@ -116,6 +116,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested += OnCacheFlushRequested;
 
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
+			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled = true;
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
             // Turn on FSA on a new workspace addition
@@ -134,7 +135,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			IdeApp.Preferences.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
 
 			// TODO: Unhack C# here when monodevelop workspace supports more than C#
-			IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Changed += OnEnableFullSourceAnalysisChanged;
+			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
@@ -167,6 +168,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 
 			Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
+			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled = false;
 			if (IsUserOptionOn ()) {
 				// let user know full analysis is turned off due to memory concern.
 				// make sure we show info bar only once for the same solution.
@@ -207,7 +209,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// check languages currently on solution. since we only show info bar once, we don't need to track solution changes.
 			var languages = CurrentSolution.Projects.Select (p => p.Language).Distinct ();
 			foreach (var language in languages) {
-				if (ServiceFeatureOnOffOptions.IsClosedFileDiagnosticsEnabled (Options, language)) {
+				if (IdeApp.Preferences.Roslyn.For (language).SolutionCrawlerClosedFileDiagnostic) {
 					return true;
 				}
 			}
@@ -226,8 +228,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnEnableFullSourceAnalysisChanged (object sender, EventArgs args)
 		{
-			if (IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Value == true)
-				Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Shared.Options.RuntimeOptions.FullSolutionAnalysis, true);
+			// we only want to turn on FSA if the option is explicitly enabled,
+			// we don't want to turn it off here.
+			if (IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled) {
+				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true);
+			}
 		}
 
 		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
@@ -241,15 +246,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			disposed = true;
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
-			IdeApp.Preferences.Roslyn.CSharp.SolutionCrawlerClosedFileDiagnostic.Changed -= OnEnableFullSourceAnalysisChanged;
+			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
 			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
-			foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
-				UnloadMonoProject (prj);
+			if (monoDevelopSolution != null) {
+				foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
+					UnloadMonoProject (prj);
+				}
 			}
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
