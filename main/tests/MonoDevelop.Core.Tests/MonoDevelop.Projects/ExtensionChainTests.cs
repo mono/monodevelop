@@ -239,6 +239,48 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, currentExts [2].InitializedCount);
 		}
 
+		[Test]
+		public void ExtensionChainQuerying ()
+		{
+			var exts = new BaseTestChainedExtension [] {
+				new SquareChainedExtension (),
+				new RectangleChainedExtension (),
+				new ShapeChainedExtension (),
+				new GreenChainedExtension (),
+				new ColorChainedExtension (),
+				new BaseTestChainedExtension (),
+			};
+
+			var initialSquare = exts [0];
+			var initialGreen = exts [3];
+			var initialBase = exts [5];
+
+			var chain = ExtensionChain.Create (exts);
+
+			// Look for shape extensions
+			var square = chain.GetExtension<SquareChainedExtension> ();
+			var rectangle = chain.GetExtension<RectangleChainedExtension> ();
+			var shape = chain.GetExtension<ShapeChainedExtension> ();
+
+			Assert.IsNull (square.Next);
+			Assert.AreSame (initialSquare, rectangle.Next);
+			Assert.AreSame (initialSquare, shape.Next);
+
+			// Look for color extensions
+			var green = chain.GetExtension<GreenChainedExtension> ();
+			var color = chain.GetExtension<ColorChainedExtension> ();
+
+			Assert.IsNull (green.Next);
+			Assert.AreSame (initialGreen, color.Next);
+
+			var chainedExtension = chain.GetExtension<BaseTestChainedExtension> ();
+			Assert.IsNull (chainedExtension.Next);
+
+			chain.Dispose ();
+
+			// Check that the extensions we queried get disposed
+		}
+
 		class BaseTestChainedExtension : ChainedExtension
 		{
 			public int InitializedCount { get; private set; }
@@ -255,6 +297,31 @@ namespace MonoDevelop.Projects
 				IsDisposed = true;
 				base.Dispose ();
 			}
+		}
+
+		class ShapeChainedExtension : BaseTestChainedExtension
+		{
+			public virtual string GetShapeName () => "None";
+		}
+
+		class RectangleChainedExtension : ShapeChainedExtension
+		{
+			public override string GetShapeName () => "Rectangle";
+		}
+
+		class SquareChainedExtension : RectangleChainedExtension
+		{
+			public override string GetShapeName () => "Square";
+		}
+
+		class ColorChainedExtension : BaseTestChainedExtension
+		{
+			public virtual string GetColorName () => "None";
+		}
+
+		class GreenChainedExtension : ColorChainedExtension
+		{
+			public override string GetColorName () => "Green";
 		}
 	}
 }
