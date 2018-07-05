@@ -123,6 +123,13 @@ namespace MonoDevelop.Projects
 			var first = extensions [0];
 			extensions = null;
 			first.DisposeChain ();
+
+			foreach (var kvp in chains) {
+				// Dispose the placeholder extension just in case the extension itself registers something
+				// in InitializeChain that it cleans up in Dispose.
+				var extension = kvp.Value;
+				extension.Dispose ();
+			}
 		}
 
 		class BatchModifier : IDisposable
