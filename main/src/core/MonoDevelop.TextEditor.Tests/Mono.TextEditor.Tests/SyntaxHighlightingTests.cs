@@ -120,7 +120,7 @@ namespace Mono.TextEditor.Tests
 		}
 		
 		[Test]
-		[Ignore("FIXME")]
+		[Ignore("FIXME")] // https://github.com/mono/monodevelop/issues/5322
 		public void TestCDATASection ()
 		{
 			TestOutput ("<![CDATA[ test]]>",
