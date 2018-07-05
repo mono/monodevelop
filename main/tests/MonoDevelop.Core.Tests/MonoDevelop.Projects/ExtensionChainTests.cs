@@ -279,6 +279,12 @@ namespace MonoDevelop.Projects
 			chain.Dispose ();
 
 			// Check that the extensions we queried get disposed
+			Assert.IsTrue (square.IsDisposed);
+			Assert.IsTrue (rectangle.IsDisposed);
+			Assert.IsTrue (shape.IsDisposed);
+			Assert.IsTrue (green.IsDisposed);
+			Assert.IsTrue (color.IsDisposed);
+			Assert.IsTrue (chainedExtension.IsDisposed);
 		}
 
 		class BaseTestChainedExtension : ChainedExtension
