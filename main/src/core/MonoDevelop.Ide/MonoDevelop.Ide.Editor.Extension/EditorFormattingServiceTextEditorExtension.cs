@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -66,10 +68,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 		bool TryFormat (IEditorFormattingService formattingService, char typedChar, int position, bool formatOnReturn, CancellationToken cancellationToken)
 		{
 			var document = DocumentContext.AnalysisDocument;
-			var changes = formatOnReturn
-				? formattingService.GetFormattingChangesOnReturnAsync (document, position, cancellationToken).WaitAndGetResult (cancellationToken)
-				: formattingService.GetFormattingChangesAsync (document, typedChar, position, cancellationToken).WaitAndGetResult (cancellationToken);
-			var options = document.GetOptionsAsync (cancellationToken).WaitAndGetResult (cancellationToken);
+			IList<TextChange> changes;
+			if (formatOnReturn) {
+				if (!formattingService.SupportsFormatOnReturn)
+					return false;
+				changes = formattingService.GetFormattingChangesOnReturnAsync (document, position, cancellationToken).WaitAndGetResult (cancellationToken);
+			} else {
+				if (!formattingService.SupportsFormattingOnTypedCharacter (document, typedChar))
+					return false;
+				changes = formattingService.GetFormattingChangesAsync (document, typedChar, position, cancellationToken).WaitAndGetResult (cancellationToken);
+			}
 
 			if (changes == null || changes.Count == 0) {
 				return false;

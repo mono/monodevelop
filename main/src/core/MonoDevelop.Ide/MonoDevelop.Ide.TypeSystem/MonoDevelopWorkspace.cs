@@ -1628,6 +1628,10 @@ namespace MonoDevelop.Ide.TypeSystem
 						var projectInfo = LoadProject (project, cts.Token, null).ContinueWith (t => {
 							if (t.IsCanceled)
 								return;
+							if (t.IsFaulted) {
+								LoggingService.LogError ("Failed to reload project", t.Exception);
+								return;
+							}
 							try {
 								lock (projectModifyLock) {
 									// correct openDocument ids - they may change due to project reload.
