@@ -287,6 +287,115 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (chainedExtension.IsDisposed);
 		}
 
+		[Test]
+		public void ExtensionChainQueryingCaching ()
+		{
+			var exts = new BaseTestChainedExtension [] {
+				new SquareChainedExtension (),
+				new RectangleChainedExtension (),
+				new ShapeChainedExtension (),
+				new GreenChainedExtension (),
+				new ColorChainedExtension (),
+				new BaseTestChainedExtension (),
+			};
+
+			var arrSquare = exts.Single (x => x.GetType () == typeof (SquareChainedExtension));
+			var arrRect = exts.Single (x => x.GetType () == typeof (RectangleChainedExtension));
+			var arrShape = exts.Single (x => x.GetType () == typeof (ShapeChainedExtension));
+			var arrGreen = exts.Single (x => x.GetType () == typeof (GreenChainedExtension));
+			var arrColor = exts.Single (x => x.GetType () == typeof (ColorChainedExtension));
+			var arrBase = exts.Single (x => x.GetType () == typeof (BaseTestChainedExtension));
+
+			var chain = ExtensionChain.Create (exts);
+
+			// Look for shape extensions
+			var square = chain.GetExtension<SquareChainedExtension> ();
+			var rectangle = chain.GetExtension<RectangleChainedExtension> ();
+			var shape = chain.GetExtension<ShapeChainedExtension> ();
+			var green = chain.GetExtension<GreenChainedExtension> ();
+			var color = chain.GetExtension<ColorChainedExtension> ();
+			var chainedExtension = chain.GetExtension<BaseTestChainedExtension> ();
+
+			int shapeInitializedCount = 1;
+			int colorInitializedCount = 1;
+			int baseInitializedCount = 1;
+			int noNextInitializedCount = 1;
+
+			AssertInitializedCount ();
+
+			// Add a BaseTestChainedExtension before the last item
+			// This should not trigger any init, as it's not a candidate for anything.
+			var toAdd = new BaseTestChainedExtension ();
+			chain.AddExtension (toAdd, insertBefore: arrBase);
+			noNextInitializedCount++;
+			AssertInitializedCount ();
+
+			// Remove the same one we added.
+			chain.RemoveExtension (toAdd);
+			noNextInitializedCount++;
+			AssertInitializedCount ();
+
+			// This won't have any effect, all of the colors go to green which is to the left of the node we insert after
+			toAdd = new ColorChainedExtension ();
+			chain.AddExtension (toAdd, insertAfter: arrColor);
+			noNextInitializedCount++;
+			AssertInitializedCount ();
+
+			// This won't have any effect, all of the colors go to green, before color
+			toAdd = new ColorChainedExtension ();
+			chain.AddExtension (toAdd, insertBefore: arrColor);
+			noNextInitializedCount++;
+			AssertInitializedCount ();
+
+			// Removing green would cause colors and the base extensions to be rechained.
+			chain.RemoveExtension (arrGreen);
+			noNextInitializedCount++;
+			baseInitializedCount++;
+			colorInitializedCount++;
+			AssertInitializedCount ();
+
+			// Adding a new square after the first one should rechain everything but shapes
+			toAdd = new SquareChainedExtension ();
+			chain.AddExtension (toAdd, insertAfter: arrSquare);
+			noNextInitializedCount++;
+			baseInitializedCount++;
+			colorInitializedCount++;
+			AssertInitializedCount ();
+
+			// Removing the square rechain everything but shapes
+			chain.RemoveExtension (toAdd);
+			noNextInitializedCount++;
+			baseInitializedCount++;
+			colorInitializedCount++;
+			AssertInitializedCount ();
+
+			// Adding a square at the beginning should rechain everything
+			chain.AddExtension (toAdd, insertBefore: arrSquare);
+			noNextInitializedCount++;
+			baseInitializedCount++;
+			colorInitializedCount++;
+			shapeInitializedCount++;
+			AssertInitializedCount ();
+
+			// Then removing it should rechain everything.
+			chain.RemoveExtension (toAdd);
+			noNextInitializedCount++;
+			baseInitializedCount++;
+			colorInitializedCount++;
+			shapeInitializedCount++;
+			AssertInitializedCount ();
+
+			void AssertInitializedCount ()
+			{
+				Assert.AreEqual (noNextInitializedCount, square.InitializedCount);
+				Assert.AreEqual (shapeInitializedCount, rectangle.InitializedCount);
+				Assert.AreEqual (shapeInitializedCount, shape.InitializedCount);
+				Assert.AreEqual (noNextInitializedCount, green.InitializedCount);
+				Assert.AreEqual (colorInitializedCount, color.InitializedCount);
+				Assert.AreEqual (noNextInitializedCount, chainedExtension.InitializedCount);
+			}
+		}
+
 		class BaseTestChainedExtension : ChainedExtension
 		{
 			public int InitializedCount { get; private set; }

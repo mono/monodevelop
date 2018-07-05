@@ -31,8 +31,8 @@ namespace MonoDevelop.Projects
 {
 	public class ExtensionChain
 	{
-		Dictionary<Type,ChainedExtension> chains = new Dictionary<Type, ChainedExtension> ();
-		ChainedExtension[] extensions;
+		Dictionary<Type,ChainedExtensionSentinel> chains = new Dictionary<Type, ChainedExtensionSentinel> ();
+		ChainedExtension [] extensions;
 		ChainedExtension defaultInsertBefore;
 		BatchModifier batchModifier;
 
@@ -49,13 +49,12 @@ namespace MonoDevelop.Projects
 
 		public T GetExtension<T> () where T:ChainedExtension, new()
 		{
-			ChainedExtension e;
-			if (!chains.TryGetValue (typeof(T), out e)) {
-				e = new T ();
-				e.InitChain (this, ChainedExtension.FindNextImplementation<T> (extensions[0]));
+			if (!chains.TryGetValue (typeof(T), out ChainedExtensionSentinel e)) {
+				e = new ChainedExtensionSentinel (new T());
+				e.Update (this, typeof (T), -1);
 				chains [typeof(T)] = e;
 			}
-			return (T)e;
+			return (T)e.Extension;
 		}
 
 		internal void SetDefaultInsertionPosition (ChainedExtension insertBefore)
@@ -92,8 +91,10 @@ namespace MonoDevelop.Projects
 				extensions [n] = extensions [n - 1];
 			extensions [index] = ext;
 
-			if (batchModifier == null)
-				Rechain ();
+			if (batchModifier != null)
+				batchModifier.UpdateFirstIndex (index);
+			else
+				Rechain (index);
 		}
 
 		internal void RemoveExtension (ChainedExtension ext)
@@ -101,21 +102,32 @@ namespace MonoDevelop.Projects
 			if (extensions == null)
 				return;
 
-			extensions = extensions.Where (e => e != ext).ToArray ();
+			int index = extensions.Length;
+			extensions = extensions.Where ((e, eindex) => {
+				bool shouldRemove = e == ext;
+				if (shouldRemove)
+					index = Math.Min (index, eindex);
+				return !shouldRemove;
+			}).ToArray ();
+
 			if (batchModifier == null)
-				Rechain ();
+				Rechain (index);
+			else
+				batchModifier.UpdateFirstIndex (index);
 		}
 
-		void Rechain ()
+		void Rechain (int firstChangeIndex)
 		{
 			// Re-chain every extension
 			for (int n = extensions.Length - 2; n >= 0; n--)
 				extensions [n].InitChain (this, extensions [n + 1]);
-			
+
 			// The first extension object in type-specific chains is a placeholder extension used only to hold
 			// a reference to the real first extension.
-			foreach (var fex in chains)
-				fex.Value.InitChain (this, ChainedExtension.FindNextImplementation (fex.Key, extensions[0]));
+			foreach (var kvp in chains) {
+				ChainedExtensionSentinel fex = kvp.Value;
+				fex.Update (this, kvp.Key, firstChangeIndex);
+			}
 		}
 
 		public void Dispose ()
@@ -132,17 +144,49 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		class ChainedExtensionSentinel
+		{
+			public ChainedExtension Extension { get; }
+			int extensionIndex = -1;
+
+			public ChainedExtensionSentinel (ChainedExtension extension)
+			{
+				Extension = extension;
+			}
+
+			public void Update (ExtensionChain chain, Type type, int firstChainChangeIndex)
+			{
+				// We only want to update an extension if we insert somewhere before the extension we found.
+				if (extensionIndex < firstChainChangeIndex)
+					return;
+
+				// Maybe it would be useful to skip extensions until the first chain change, as they've already been scanned.
+				var impl = ChainedExtension.FindNextImplementation (type, chain.extensions[0], out extensionIndex);
+				Extension.InitChain (chain, impl);
+			}
+
+			public void Dispose () => Extension.Dispose ();
+		}
+
 		class BatchModifier : IDisposable
 		{
 			readonly ExtensionChain chain;
+			int minChangedIndex;
+
 			public BatchModifier (ExtensionChain chain)
 			{
 				this.chain = chain;
+				minChangedIndex = chain.extensions.Length;
+			}
+
+			public void UpdateFirstIndex (int firstChainChangeIndex)
+			{
+				minChangedIndex = Math.Min (firstChainChangeIndex, minChangedIndex);
 			}
 
 			public void Dispose ()
 			{
-				chain.Rechain ();
+				chain.Rechain (minChangedIndex);
 				chain.batchModifier = null;
 			}
 		}
