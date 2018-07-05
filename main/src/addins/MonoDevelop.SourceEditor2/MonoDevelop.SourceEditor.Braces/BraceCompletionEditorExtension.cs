@@ -16,7 +16,9 @@ namespace MonoDevelop.SourceEditor.Braces
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			
+			if (Manager == null)
+				return base.KeyPress (descriptor);
+
 			char typedChar = descriptor.KeyChar;
 			if ((descriptor.SpecialKey == SpecialKey.None) &&
 				(typedChar != '\0')) {
