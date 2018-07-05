@@ -32,6 +32,7 @@ namespace MonoDevelop.Projects
 	public class ExtensionChain
 	{
 		Dictionary<Type,ChainedExtensionSentinel> chains = new Dictionary<Type, ChainedExtensionSentinel> ();
+		// Maybe an array is not the best solution here, given chains grow and decrease, a list might be better.
 		ChainedExtension [] extensions;
 		ChainedExtension defaultInsertBefore;
 		BatchModifier batchModifier;
@@ -160,7 +161,8 @@ namespace MonoDevelop.Projects
 				if (extensionIndex < firstChainChangeIndex)
 					return;
 
-				// Maybe it would be useful to skip extensions until the first chain change, as they've already been scanned.
+				// Maybe it would be useful to skip extensions until min(indices), as they've already been scanned
+				// in a previous check
 				var impl = ChainedExtension.FindNextImplementation (type, chain.extensions[0], out extensionIndex);
 				Extension.InitChain (chain, impl);
 			}
@@ -181,6 +183,10 @@ namespace MonoDevelop.Projects
 
 			public void UpdateFirstIndex (int firstChainChangeIndex)
 			{
+				// If we added a node at firstChainChangeIndex then removed that one
+				// it might help not to rechain in that case and reset the index.
+				// Maybe we can keep track of that and handle it.
+				// Regardless, the code is simpler this way and it should not be a bottleneck
 				minChangedIndex = Math.Min (firstChainChangeIndex, minChangedIndex);
 			}
 

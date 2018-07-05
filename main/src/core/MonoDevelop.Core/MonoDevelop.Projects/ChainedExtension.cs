@@ -63,6 +63,7 @@ namespace MonoDevelop.Projects
 			if (!type.IsInstanceOfType (next))
 				return FindNextImplementation_Internal (type, next.nextInChain, ref position);
 
+			// Maybe it would make sense to cache these, but not sure if we should.
 			foreach (var method in type.GetMethods (BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				if (method != null && method.IsVirtual && method.Name != "InitializeChain") {
 					var paramArray = method.GetParameters ();
