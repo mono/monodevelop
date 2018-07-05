@@ -227,7 +227,6 @@
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\IStateMachineIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\NullIStateMachineIndentEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Features\IndentEngine\TextPasteIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\CSharpEditorFormattingService.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\FormattingOptionsFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Formatter\Indent.cs" />
@@ -307,6 +306,9 @@
     <Compile Include="MonoDevelop.CSharp.Resolver\LocationInfoGetter.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\DataTipInfoGetter.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerExpressionResolver.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.PasteFormattingRule.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.PasteStrategy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.TextPasteUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />

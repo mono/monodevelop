@@ -24,47 +24,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.CodeCompletion;
-using Microsoft.CodeAnalysis.Options;
-using Microsoft.CodeAnalysis.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Formatting;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Formatting.Rules;
-using Roslyn.Utilities;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using System.Linq;
-using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Editor;
-using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using Roslyn.Utilities;
+using Microsoft.CodeAnalysis.Options;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class CSharpTextPasteHandler : TextPasteHandler
+	partial class CSharpTextPasteHandler : TextPasteHandler
 	{
-		readonly ICSharpCode.NRefactory6.CSharp.ITextPasteHandler engine;
+		readonly OptionSet optionSet;
 		readonly CSharpTextEditorIndentation indent;
 
-		public CSharpTextPasteHandler (CSharpTextEditorIndentation indent, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine decoratedEngine, OptionSet formattingOptions)
+		public CSharpTextPasteHandler (CSharpTextEditorIndentation indent, OptionSet optionSet)
 		{
-			this.engine = new ICSharpCode.NRefactory6.CSharp.TextPasteIndentEngine (decoratedEngine, formattingOptions);
 			this.indent = indent;
+			this.optionSet = optionSet;
 		}
 
-		public override string FormatPlainText (int insertionOffset, string text, byte [] copyData)
+		public bool InUnitTestMode { get; internal set; }
+
+		public override string FormatPlainText (int offset, string text, byte [] copyData)
 		{
+			if (indent.DocumentContext?.AnalysisDocument == null)
+				return text;
+			var sourceText = indent.Editor;
+			var syntaxRoot = indent.DocumentContext.AnalysisDocument.GetSyntaxRootAsync ().WaitAndGetResult ();
+			var token = syntaxRoot.FindToken (offset);
+
+			if (copyData != null && copyData.Length == 1) {
+				var strategy = TextPasteUtils.Strategies [(PasteStrategy)copyData [0]];
+				text = strategy.Decode (text);
+			}
+			if (CSharpSyntaxFactsService.Instance.IsVerbatimStringLiteral (token)) {
+				int idx = text.IndexOf ('"');
+				if (idx > 0 && !token.Text.EndsWith ("\"", System.StringComparison.Ordinal))
+					return TextPasteUtils.VerbatimStringStrategy.Encode (text.Substring (0, idx)) + text.Substring (idx);
+				return TextPasteUtils.VerbatimStringStrategy.Encode (text);
+			}
+
+			if (CSharpSyntaxFactsService.Instance.IsStringLiteral (token)) {
+				int idx = text.IndexOf ('"');
+				if (idx > 0 && !token.Text.EndsWith ("\"", System.StringComparison.Ordinal))
+					return TextPasteUtils.StringLiteralStrategy.Encode (text.Substring (0, idx)) + text.Substring (idx);
+				return TextPasteUtils.StringLiteralStrategy.Encode (text);
+			}
+
 			return text;
 		}
 
 		public override byte [] GetCopyData (int offset, int length)
 		{
-			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
+			if (indent.DocumentContext?.AnalysisDocument == null)
+				return null;
+			var syntaxRoot = indent.DocumentContext.AnalysisDocument.GetSyntaxRootAsync ().WaitAndGetResult ();
+			var token = syntaxRoot.FindToken (offset);
+
+			if (CSharpSyntaxFactsService.Instance.IsVerbatimStringLiteral (token))
+				return new [] { (byte)PasteStrategy.VerbatimString };
+
+			if (CSharpSyntaxFactsService.Instance.IsStringLiteral (token)) 
+				return new [] { (byte)PasteStrategy.StringLiteral };
+
+			return null;
 		}
 
 		public override async Task PostFomatPastedText (int offset, int length)
@@ -86,22 +118,5 @@ namespace MonoDevelop.CSharp.Formatting
 			indent.Editor.FixVirtualIndentation ();
 		}
 
-		class PasteFormattingRule : AbstractFormattingRule
-		{
-			public override AdjustNewLinesOperation GetAdjustNewLinesOperation (SyntaxToken previousToken, SyntaxToken currentToken, OptionSet optionSet, NextOperation<AdjustNewLinesOperation> nextOperation)
-			{
-				if (currentToken.Parent != null) {
-					var currentTokenParentParent = currentToken.Parent.Parent;
-					if (currentToken.Kind () == SyntaxKind.OpenBraceToken && currentTokenParentParent != null &&
-						(currentTokenParentParent.Kind () == SyntaxKind.SimpleLambdaExpression ||
-						 currentTokenParentParent.Kind () == SyntaxKind.ParenthesizedLambdaExpression ||
-						 currentTokenParentParent.Kind () == SyntaxKind.AnonymousMethodExpression)) {
-						return FormattingOperations.CreateAdjustNewLinesOperation (0, AdjustNewLinesOption.PreserveLines);
-					}
-				}
-
-				return nextOperation.Invoke ();
-			}
-		}
 	}
 }
