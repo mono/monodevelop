@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.CSharp.Formatting;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory6.IndentationTests
@@ -173,13 +174,13 @@ namespace Foo {
 		[Test]
 		public void TestStringLiteralPasteStrategyUnicodeDecode()
 		{
-			var s = ICSharpCode.NRefactory6.CSharp.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode(@"\u0066");
+			var s = CSharpTextPasteHandler.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode(@"\u0066");
 			Assert.AreEqual("\u0066", s);
 
-			s = ICSharpCode.NRefactory6.CSharp.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode(@"\U00000066");
+			s = CSharpTextPasteHandler.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode(@"\U00000066");
 			Assert.AreEqual("\U00000066", s);
 
-			s = ICSharpCode.NRefactory6.CSharp.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode(@"\xAFFE");
+			s = CSharpTextPasteHandler.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode(@"\xAFFE");
 			Assert.AreEqual("\xAFFE", s);
 
 		}

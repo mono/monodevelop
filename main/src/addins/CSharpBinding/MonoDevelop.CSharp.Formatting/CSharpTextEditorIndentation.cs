@@ -161,7 +161,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (indentationDisabled) {
 						editor.SetTextPasteHandler (null);
 					} else {
-						editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, optionSet));
+						editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, optionSet));
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while handling text option change.", ex);
@@ -271,8 +271,8 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			if (offset > endOffset || endOffset == textEditorData.Length)
 				return;
-			var plainText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
-			var newText = TextPasteUtils.VerbatimStringStrategy.Encode (plainText);
+			var plainText = CSharpTextPasteHandler.TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
+			var newText = CSharpTextPasteHandler.TextPasteUtils.VerbatimStringStrategy.Encode (plainText);
 			textEditorData.ReplaceText (offset, endOffset - offset, newText);
 		}
 
@@ -290,8 +290,8 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				endOffset++;
 			}
-			var plainText = TextPasteUtils.VerbatimStringStrategy.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
-			var newText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Encode (plainText);
+			var plainText = CSharpTextPasteHandler.TextPasteUtils.VerbatimStringStrategy.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
+			var newText = CSharpTextPasteHandler.TextPasteUtils.StringLiteralPasteStrategy.Instance.Encode (plainText);
 			textEditorData.ReplaceText (offset, endOffset - offset, newText);
 		}
 
