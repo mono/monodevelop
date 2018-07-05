@@ -232,7 +232,8 @@ namespace MonoDevelop.Projects.MSBuild
 				string xml = File.ReadAllText (file);
 
 				LoadXml (xml, reader);
-
+			} catch (Exception ex) {
+				throw new MSBuildFileFormatException (ex.Message + " " + file, ex);
 			} finally {
 				EnableChangeTracking ();
 			}

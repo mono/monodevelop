@@ -1633,6 +1633,42 @@ namespace MonoDevelop.Projects
 				MSBuildProjectService.UnregisterGlobalPropertyProvider (prov2);
 			}
 		}
+
+		/// <summary>
+		/// Tests that the MSBuildProject.Load method includes information about the file
+		/// being loaded when there was an error. This makes it easier to fix problems when
+		/// the project file or imported file fails to load in the IDE.
+		/// </summary>
+		[Test]
+		public void LoadInvalidXml_ExceptionContainsFileBeingLoaded ()
+		{
+			string directory = Util.CreateTmpDir ("MSBuildProjectLoadInvalidXml");
+			string fileName = Path.Combine (directory, "MSBuildProjectLoadInvalidXml.csproj");
+			File.WriteAllText (fileName, "<Project></Project>\n</Project>");
+			var p = new MSBuildProject ();
+			try {
+				p.Load (fileName);
+			} catch (Exception ex) {
+				Assert.That (ex.Message, Contains.Substring (fileName));
+			}
+		}
+
+		[Test]
+		public void EvaluateInvalidMSBuildImportXml_ExceptionContainsFileBeingLoaded ()
+		{
+			string directory = Util.CreateTmpDir ("MSBuildImportLoadInvalidXml");
+			string fileName = Path.Combine (directory, "MSBuildImportLoadInvalidXml.csproj");
+			File.WriteAllText (fileName, "<Project><Import Project='InvalidXmlImport.targets' /></Project>");
+			string importFileName = Path.Combine (directory, "InvalidXmlImport.targets");
+			File.WriteAllText (importFileName, "<Project></Project>\n</Project>");
+			var p = new MSBuildProject ();
+			p.Load (fileName);
+			try {
+				p.Evaluate ();
+			} catch (Exception ex) {
+				Assert.That (ex.Message, Contains.Substring (importFileName));
+			}
+		}
 	}
 
 	class CustomGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
