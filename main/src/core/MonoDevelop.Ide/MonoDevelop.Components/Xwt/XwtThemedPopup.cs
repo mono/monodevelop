@@ -129,8 +129,13 @@ namespace MonoDevelop.Components
 			return false;
 		}
 
+		bool ignoreRepositionWindow;
 		public override void RepositionWindow (Rectangle? newTargetRect = default (Rectangle?))
 		{
+			if (ignoreRepositionWindow) {
+				return;
+			}
+
 			if (!HasParent)
 				return;
 
@@ -249,6 +254,15 @@ namespace MonoDevelop.Components
 			Theme.ArrowOffset = (int)offset;
 
 			Location = new Point (x, y);
+		}
+
+		// If hard setting a location, then we don't want RepositionWindow to override it
+		new Point Location {
+			get => base.Location;
+			set {
+				ignoreRepositionWindow = true;
+				base.Location = value;
+			}
 		}
 
 		class XwtPopoverCanvas : Canvas

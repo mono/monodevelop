@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -643,11 +644,17 @@ namespace MonoDevelop.Components.MainToolbar
 			if (popup == null)
 				return;
 
+			var anchor = ToolbarView.PopupAnchor;
 			if (IdeApp.Workbench.RootWindow.Visible)
-				popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
+				popup.ShowPopup (anchor, PopupPosition.TopRight);
 
-			if (ToolbarView.PopupAnchor.GdkWindow == null)
-				popup.Location = new Xwt.Point (ToolbarView.PopupAnchor.Allocation.Width - popup.Size.Width, ToolbarView.PopupAnchor.Allocation.Y);
+			if (anchor.GdkWindow == null) {
+				var location = new Xwt.Point (anchor.Allocation.Width - popup.Size.Width, anchor.Allocation.Y);
+
+				// Need to hard lock the location because Xwt doesn't know that the allocation might be coming from a
+				// Cocoa control and thus has been changed to take macOS monitor layout into consideration
+				popup.Location = location;
+			}
 		}
 
 		void DestroyPopup ()
