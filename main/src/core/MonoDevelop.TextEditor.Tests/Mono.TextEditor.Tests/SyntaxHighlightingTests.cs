@@ -212,6 +212,16 @@ namespace Mono.TextEditor.Tests
 			TestOutput ("$\"{foo}\"",
 			  			"<span foreground=\"#e5da73\">$\"{</span><span foreground=\"#eeeeec\">foo</span><span foreground=\"#e5da73\">}\"</span>");
 		}
-
+		[Test]
+		public void ParseFileTypeTest ()
+		{
+			Assert.AreEqual ("xml", SyntaxHighlightingService.ParseFileType ("\"xml\""));
+			Assert.AreEqual ("xml", SyntaxHighlightingService.ParseFileType ("\".xml\""));
+			Assert.AreEqual ("xml", SyntaxHighlightingService.ParseFileType ("\"xml\","));
+			Assert.AreEqual ("xml", SyntaxHighlightingService.ParseFileType ("\".xml\","));
+			Assert.IsTrue (string.IsNullOrEmpty (SyntaxHighlightingService.ParseFileType ("\"\",")));
+			Assert.IsTrue (string.IsNullOrEmpty (SyntaxHighlightingService.ParseFileType ("\".\",")));
+			Assert.IsTrue (string.IsNullOrEmpty (SyntaxHighlightingService.ParseFileType ("}")));
+		}
 	}
 }

@@ -143,5 +143,32 @@ test ""f\t"" this bar
 			var h = TextMateFormat.ReadHighlighting (new MemoryStream (Encoding.UTF8.GetBytes (highlighting)));
 			SyntaxHighlightingTest.RunHighlightingTest (h, test);
 		}
+
+		[Test]
+		public void TestTryScanJSonStyle ()
+		{
+			using (var stream = new MemoryStream ())
+			using (var writer = new StreamWriter (stream)) {
+				writer.Write (@"{
+	""information_for_contributors"": [
+		""This file has been converted from https://github.com/Microsoft/TypeScript-TmLanguage/blob/master/TypeScript.tmLanguage"",
+		""If you want to provide a fix or improvement, please create a pull request against the original repository."",
+		""Once accepted there, we are happy to receive an update request.""
+	],
+	""version"": ""https://github.com/Microsoft/TypeScript-TmLanguage/commit/7bf8960f7042474b10b519f39339fc527907ce16"",
+	""name"": ""TypeScript"",
+	""scopeName"": ""source.ts"",
+	""fileTypes"": [
+		""ts""
+	],");
+				writer.Flush ();
+				stream.Position = 0;
+				bool result = SyntaxHighlightingService.TryScanJSonStyle (stream, out var name, out var format, out var fileTypes, out var scopeName);
+				Assert.AreEqual (true, result);
+				Assert.AreEqual ("TypeScript", name);
+				Assert.AreEqual ("source.ts", scopeName);
+				Assert.True (fileTypes.Contains ("ts"));
+			}
+		}
 	}
 }
