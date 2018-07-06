@@ -113,6 +113,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpSyntaxReference.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/FSharpSyntaxReference.fs</Link>
+    </Compile>
     <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\Helpers.fs">
       <Paket>True</Paket>
       <Link>paket-files/Helpers.fs</Link>
@@ -120,10 +124,6 @@
     <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\XmlDocumentation.fs">
       <Paket>True</Paket>
       <Link>paket-files/XmlDocumentation.fs</Link>
-    </Compile>
-    <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpSyntaxReference.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/FSharpSyntaxReference.fs</Link>
     </Compile>
     <Compile Include="..\paket-files\fsprojects\Roslyn.FSharp\Roslyn.FSharp\FSharpSymbol.fs">
       <Paket>True</Paket>

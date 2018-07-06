@@ -36,7 +36,7 @@
      <PackageRepository path="Packages" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/Ide/TypeService/CompilationProvider">
+  <Extension path = "/MonoDevelop/Ide/TypeSystem/CompilationProvider">
      <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpRoslynCompilationProvider" />
   </Extension>
 

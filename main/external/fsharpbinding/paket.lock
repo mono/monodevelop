@@ -59,9 +59,9 @@ NUGET
     System.ValueTuple (4.4)
 GITHUB
   remote: fsprojects/Roslyn.FSharp
-    Roslyn.FSharp/FSharpSyntaxReference.fs (a9eb71da7a0e26614856ea5b92e41b642fc053e2)
-    Roslyn.FSharp/FSharpSymbol.fs (a9eb71da7a0e26614856ea5b92e41b642fc053e2)
-    Roslyn.FSharp/FSharpTypeSymbol.fs (a9eb71da7a0e26614856ea5b92e41b642fc053e2)
-    Roslyn.FSharp/Helpers.fs (a9eb71da7a0e26614856ea5b92e41b642fc053e2)
-    Roslyn.FSharp/FSharpCompilation.fs (a9eb71da7a0e26614856ea5b92e41b642fc053e2)
-    Roslyn.FSharp/XmlDocumentation.fs (a9eb71da7a0e26614856ea5b92e41b642fc053e2)
+    Roslyn.FSharp/FSharpSyntaxReference.fs (9597001502c62a088f6a8b94aed7d23ff1b582cf)
+    Roslyn.FSharp/FSharpSymbol.fs (9597001502c62a088f6a8b94aed7d23ff1b582cf)
+    Roslyn.FSharp/FSharpTypeSymbol.fs (9597001502c62a088f6a8b94aed7d23ff1b582cf)
+    Roslyn.FSharp/Helpers.fs (9597001502c62a088f6a8b94aed7d23ff1b582cf)
+    Roslyn.FSharp/FSharpCompilation.fs (9597001502c62a088f6a8b94aed7d23ff1b582cf)
+    Roslyn.FSharp/XmlDocumentation.fs (9597001502c62a088f6a8b94aed7d23ff1b582cf)
