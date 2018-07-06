@@ -30,16 +30,16 @@ namespace MonoDevelop.PackageManagement.Tests
 {
 	class TestableInstrumentationService : PackageManagementInstrumentationService
 	{
-		public IDictionary<string, string> InstallPackageMetadata;
+		public PackageMetadata InstallPackageMetadata;
 
-		public override void IncrementInstallPackageCounter (IDictionary<string, string> metadata)
+		public override void IncrementInstallPackageCounter (PackageMetadata metadata)
 		{
 			InstallPackageMetadata = metadata;
 		}
 
-		public IDictionary<string, string> UninstallPackageMetadata;
+		public PackageMetadata UninstallPackageMetadata;
 
-		public override void IncrementUninstallPackageCounter (IDictionary<string, string> metadata)
+		public override void IncrementUninstallPackageCounter (PackageMetadata metadata)
 		{
 			UninstallPackageMetadata = metadata;
 		}
