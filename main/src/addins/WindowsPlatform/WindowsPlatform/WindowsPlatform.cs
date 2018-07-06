@@ -137,25 +137,14 @@ namespace MonoDevelop.Platform
 
 		public override bool GetIsFullscreen (Components.Window window)
 		{
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = Marshal.SizeOf (lpwndpl);
-
-			Gtk.Window controlWindow = window;
-			IntPtr handle = GdkWin32.HgdiobjGet (controlWindow.GdkWindow);
-			Win32.GetWindowPlacement (handle, ref lpwndpl);
-			return lpwndpl.showCmd == Win32.SW_SHOWMAXIMIZED;
+			//the Fullscreen functionality is broken in GTK on Win7+
+			//TODO: implement a workaround.
+			return false;
 		}
 
 		public override void SetIsFullscreen (Components.Window window, bool isFullscreen)
 		{
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = Marshal.SizeOf (lpwndpl);
-
-			Gtk.Window controlWindow = window;
-			IntPtr handle = GdkWin32.HgdiobjGet (controlWindow.GdkWindow);
-			Win32.GetWindowPlacement (handle, ref lpwndpl);
-			lpwndpl.showCmd = isFullscreen ? Win32.SW_SHOWMAXIMIZED : Win32.SW_SHOWNORMAL;
-			Win32.SetWindowPlacement (handle, ref lpwndpl);
+			//no-op as we have not yet implemented this
 		}
 
 		internal static Xwt.Toolkit WPFToolkit;
