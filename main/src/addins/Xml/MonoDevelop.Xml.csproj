@@ -176,6 +176,7 @@
     <Compile Include="Completion\XmlElementPath.cs" />
     <Compile Include="Editor\XmlCommands.cs" />
     <Compile Include="Editor\EncodedStringWriter.cs" />
+    <Compile Include="Editor\XmlExpandSelectionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
