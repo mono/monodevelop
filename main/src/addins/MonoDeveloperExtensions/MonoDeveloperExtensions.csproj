@@ -45,9 +45,7 @@
     <Compile Include="MonoMakefileProjectReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDeveloperExtensions.addin.xml">
-      <LogicalName>MonoDeveloperExtensions.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDeveloperExtensions.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -119,93 +119,36 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MacPlatform.addin.xml">
-      <LogicalName>MacPlatform.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="maintoolbarbg.png">
-      <LogicalName>maintoolbarbg.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build.png">
-      <LogicalName>build.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build%402x.png">
-      <LogicalName>build@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~dark.png">
-      <LogicalName>build~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~dark%402x.png">
-      <LogicalName>build~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue.png">
-      <LogicalName>continue.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue%402x.png">
-      <LogicalName>continue@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue~dark.png">
-      <LogicalName>continue~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue~dark%402x.png">
-      <LogicalName>continue~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device.png">
-      <LogicalName>device.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device%402x.png">
-      <LogicalName>device@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device~dark.png">
-      <LogicalName>device~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device~dark%402x.png">
-      <LogicalName>device~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project.png">
-      <LogicalName>project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project%402x.png">
-      <LogicalName>project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project~dark.png">
-      <LogicalName>project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project~dark%402x.png">
-      <LogicalName>project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop.png">
-      <LogicalName>stop.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop%402x.png">
-      <LogicalName>stop@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~dark.png">
-      <LogicalName>stop~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~dark%402x.png">
-      <LogicalName>stop~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="maintoolbarbg~dark.png">
-      <LogicalName>maintoolbarbg~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="maintoolbarbg~dark%402x.png">
-      <LogicalName>maintoolbarbg~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16.png">
-      <LogicalName>status-stop-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16%402x.png">
-      <LogicalName>status-stop-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16~dark.png">
-      <LogicalName>status-stop-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16~dark%402x.png">
-      <LogicalName>status-stop-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MacPlatform.addin.xml" />
+    <EmbeddedResource Include="maintoolbarbg.png" />
+    <EmbeddedResource Include="icons\build.png" />
+    <EmbeddedResource Include="icons\build%402x.png" />
+    <EmbeddedResource Include="icons\build~dark.png" />
+    <EmbeddedResource Include="icons\build~dark%402x.png" />
+    <EmbeddedResource Include="icons\continue.png" />
+    <EmbeddedResource Include="icons\continue%402x.png" />
+    <EmbeddedResource Include="icons\continue~dark.png" />
+    <EmbeddedResource Include="icons\continue~dark%402x.png" />
+    <EmbeddedResource Include="icons\device.png" />
+    <EmbeddedResource Include="icons\device%402x.png" />
+    <EmbeddedResource Include="icons\device~dark.png" />
+    <EmbeddedResource Include="icons\device~dark%402x.png" />
+    <EmbeddedResource Include="icons\project.png" />
+    <EmbeddedResource Include="icons\project%402x.png" />
+    <EmbeddedResource Include="icons\project~dark.png" />
+    <EmbeddedResource Include="icons\project~dark%402x.png" />
+    <EmbeddedResource Include="icons\stop.png" />
+    <EmbeddedResource Include="icons\stop%402x.png" />
+    <EmbeddedResource Include="icons\stop~dark.png" />
+    <EmbeddedResource Include="icons\stop~dark%402x.png" />
+    <EmbeddedResource Include="maintoolbarbg~dark.png" />
+    <EmbeddedResource Include="maintoolbarbg~dark%402x.png" />
+    <EmbeddedResource Include="icons\status-stop-16.png" />
+    <EmbeddedResource Include="icons\status-stop-16%402x.png" />
+    <EmbeddedResource Include="icons\status-stop-16~dark.png" />
+    <EmbeddedResource Include="icons\status-stop-16~dark%402x.png" />
     <EmbeddedResource Include="..\..\..\external\Xamarin.Mac.buildinfo">
       <Link>Xamarin.Mac.buildinfo</Link>
-      <LogicalName>Xamarin.Mac.buildinfo</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

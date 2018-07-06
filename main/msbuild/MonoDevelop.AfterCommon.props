@@ -29,4 +29,10 @@
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<RootNamespace>$(MSBuildProjectName)</RootNamespace>
 	</PropertyGroup>
+
+	<ItemDefinitionGroup Condition="'$(ShortEmbeddedResourceIDs)'!='False'">
+		<EmbeddedResource>
+			<LogicalName>%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemDefinitionGroup>
 </Project>

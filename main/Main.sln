@@ -2156,7 +2156,7 @@ Global
 		$2.scope = application/json
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
-		$3.ResourceNamePolicy = FileName
+		$3.ResourceNamePolicy = MSBuild
 		$0.VersionControlPolicy = $4
 		$0.ChangeLogPolicy = $5
 		$5.UpdateMode = None

@@ -118,11 +118,9 @@
   <ItemGroup>
     <EmbeddedResource Include="..\schemas\XMLSchema.xsd">
       <Link>Resources\XMLSchema.xsd</Link>
-      <LogicalName>XMLSchema.xsd</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\AspNet\Html\Schemas\xhtml1-strict.xsd">
       <Link>Resources\xhtml1-strict.xsd</Link>
-      <LogicalName>xhtml1-strict.xsd</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

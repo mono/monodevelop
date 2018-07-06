@@ -122,48 +122,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.GtkCore.addin.xml">
-      <LogicalName>MonoDevelop.GtkCore.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\Dialog.xft.xml">
-      <LogicalName>Dialog.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\Window.xft.xml">
-      <LogicalName>Window.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\Widget.xft.xml">
-      <LogicalName>Widget.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\ActionGroup.xft.xml">
-      <LogicalName>ActionGroup.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gui.glade">
-      <LogicalName>gui.glade</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\ActionGroupPartial.xft.xml">
-      <LogicalName>ActionGroupPartial.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\DialogPartial.xft.xml">
-      <LogicalName>DialogPartial.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\WidgetPartial.xft.xml">
-      <LogicalName>WidgetPartial.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\DrawingArea.xft.xml">
-      <LogicalName>DrawingArea.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\WindowPartial.xft.xml">
-      <LogicalName>WindowPartial.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\widget.png">
-      <LogicalName>widget.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\actiongroup.png">
-      <LogicalName>actiongroup.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\image-x-generic.png">
-      <LogicalName>image-x-generic.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.GtkCore.addin.xml" />
+    <EmbeddedResource Include="templates\Dialog.xft.xml" />
+    <EmbeddedResource Include="templates\Window.xft.xml" />
+    <EmbeddedResource Include="templates\Widget.xft.xml" />
+    <EmbeddedResource Include="templates\ActionGroup.xft.xml" />
+    <EmbeddedResource Include="gui.glade" />
+    <EmbeddedResource Include="templates\ActionGroupPartial.xft.xml" />
+    <EmbeddedResource Include="templates\DialogPartial.xft.xml" />
+    <EmbeddedResource Include="templates\WidgetPartial.xft.xml" />
+    <EmbeddedResource Include="templates\DrawingArea.xft.xml" />
+    <EmbeddedResource Include="templates\WindowPartial.xft.xml" />
+    <EmbeddedResource Include="icons\widget.png" />
+    <EmbeddedResource Include="icons\actiongroup.png" />
+    <EmbeddedResource Include="icons\image-x-generic.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.GtkCore.Commands\GladeCommands.cs" />

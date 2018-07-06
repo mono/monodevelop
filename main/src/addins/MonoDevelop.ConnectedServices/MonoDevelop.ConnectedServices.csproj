@@ -142,9 +142,7 @@
     <Compile Include="AddServiceTelemetryCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
-      <LogicalName>MonoDevelop.ConnectedServices.addin.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.md" />

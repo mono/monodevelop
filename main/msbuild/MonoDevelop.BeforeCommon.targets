@@ -6,6 +6,8 @@
 
 	<!-- force a bunch of default values for consistency -->
 	<PropertyGroup>
+		<MDConfigIsRelease>$(Configuration.Contains('Release'))</MDConfigIsRelease>
+		<MDConfigIsDebug>$(Configuration.Contains('Debug'))</MDConfigIsDebug>
 		<Optimize>$(MDConfigIsRelease)</Optimize>
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>portable</DebugType>
@@ -18,7 +20,7 @@
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$(Configuration.Contains('Debug'))">
+	<PropertyGroup Condition="'$(MDConfigIsDebug)'=='true'">
 		<DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
 	</PropertyGroup>
 

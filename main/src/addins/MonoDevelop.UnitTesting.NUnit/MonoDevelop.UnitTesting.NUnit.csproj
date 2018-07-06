@@ -48,54 +48,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">
-      <LogicalName>MonoDevelopNUnit.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitProject.xpt.xml">
-      <LogicalName>NUnitProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml">
-      <LogicalName>NUnitProjectVBNet.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\NUnitTestClass.xft.xml">
-      <LogicalName>NUnitTestClass.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-template.png">
-      <LogicalName>project-test-template.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-template%402x.png">
-      <LogicalName>project-test-template@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-template~dark.png">
-      <LogicalName>project-test-template~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-template~dark%402x.png">
-      <LogicalName>project-test-template~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32.png">
-      <LogicalName>project-test-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32%402x.png">
-      <LogicalName>project-test-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32~dark.png">
-      <LogicalName>project-test-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32~dark%402x.png">
-      <LogicalName>project-test-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32~sel.png">
-      <LogicalName>project-test-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32~sel%402x.png">
-      <LogicalName>project-test-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32~dark~sel.png">
-      <LogicalName>project-test-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-test-32~dark~sel%402x.png">
-      <LogicalName>project-test-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelopNUnit.addin.xml" />
+    <EmbeddedResource Include="templates\NUnitProject.xpt.xml" />
+    <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml" />
+    <EmbeddedResource Include="templates\NUnitTestClass.xft.xml" />
+    <EmbeddedResource Include="templates\images\project-test-template.png" />
+    <EmbeddedResource Include="templates\images\project-test-template%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-template~dark.png" />
+    <EmbeddedResource Include="templates\images\project-test-template~dark%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32.png" />
+    <EmbeddedResource Include="templates\images\project-test-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~sel.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~sel%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark~sel.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark~sel%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.UnitTesting.NUnit\ExternalTestRunner.cs" />

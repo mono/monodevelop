@@ -79,12 +79,8 @@
     <Compile Include="Gui\MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ChangeLogAddIn.addin.xml">
-      <LogicalName>ChangeLogAddIn.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Policies.xml">
-      <LogicalName>Policies.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="ChangeLogAddIn.addin.xml" />
+    <EmbeddedResource Include="Policies.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

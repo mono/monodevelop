@@ -79,12 +79,8 @@
     <Compile Include="Gui\MonoDevelop.RegexToolkit.RegexToolkitWidget.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.RegexToolkit.addin.xml">
-      <LogicalName>MonoDevelop.RegexToolkit.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="RegexElements.xml">
-      <LogicalName>RegexElements.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.RegexToolkit.addin.xml" />
+    <EmbeddedResource Include="RegexElements.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
