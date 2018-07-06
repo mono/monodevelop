@@ -105,6 +105,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			BuildOutput = output;
 
 			BuildOutput.OutputChanged += OnOutputChanged;
+			BuildOutput.ProjectStarted += OnProjectStarted;
+			BuildOutput.ProjectFinished += OnProjectFinished;
 			ProcessLogs (false);
 
 			pathBar = new PathBar (this.CreatePathWidget, PathBarTopPadding) {
@@ -112,7 +114,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			};
 			pathBar.Show ();
 
-			box.PackStart (pathBar, true, true, 10);
+			box.PackStart (pathBar, true, true, 2);
 			box.ReorderChild (pathBar, 0);
 			box.Show ();
 		}
@@ -120,6 +122,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		void OnOutputChanged (object sender, EventArgs args)
 		{
 			ProcessLogs (showDiagnosticsButton.Active);
+		}
+
+		void OnProjectStarted (object sender, EventArgs args)
+		{
+			SetSpinnerVisibility (true);
+		}
+
+		void OnProjectFinished (object sender, EventArgs args)
+		{
+			SetSpinnerVisibility (false);
 		}
 
 		void Initialize (DocumentToolbar toolbar)
@@ -130,12 +142,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// Toolbar items must use Gtk, for now
 			Xwt.Toolkit.Load (ToolkitType.Gtk).Invoke (() => {
 				showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
+				showDiagnosticsButton.HeightRequest = 17;
 				showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";
 				showDiagnosticsButton.TooltipText = GettextCatalog.GetString ("Show full (diagnostics enabled) or reduced log");
 				showDiagnosticsButton.Accessible.Description = GettextCatalog.GetString ("Diagnostic log verbosity");
 				showDiagnosticsButton.Clicked += (sender, e) => ProcessLogs (showDiagnosticsButton.Active);
 
 				saveButton = new Button (GettextCatalog.GetString ("Save"));
+				saveButton.HeightRequest = 17;
 				saveButton.Accessible.Identifier = "BuildOutputWidget.SaveButton";
 				saveButton.TooltipText = GettextCatalog.GetString ("Save build output");
 				saveButton.Accessible.Description = GettextCatalog.GetString ("Save build output");
@@ -147,10 +161,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 				searchEntry.Accessible.Name = "BuildOutputWidget.Search";
 				searchEntry.Accessible.Description = GettextCatalog.GetString ("Search the build log");
 				searchEntry.WidthRequest = 200;
+				searchEntry.Entry.HeightRequest = 17;
 				searchEntry.Visible = true;
 				searchEntry.EmptyMessage = GettextCatalog.GetString ("Search Build Output");
 
 				resultInformLabel = new Label ();
+				resultInformLabel.HeightRequest = 17;
 				searchEntry.AddLabelWidget ((Gtk.Label)resultInformLabel.ToGtkWidget ());
 
 				searchEntry.Entry.Changed += FindFirst;
@@ -162,9 +178,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				buttonSearchForward.Clicked += FindNext;
 				buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext, true));
 				buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious, true));
-				buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu);
-				buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu);
-				buttonSearchBackward.Sensitive = buttonSearchForward.Sensitive = false;
+				buttonSearchForward.HeightRequest = buttonSearchBackward.HeightRequest = 17;
+				SetSearchButtonsSensitivity (false);
 			});
 
 			box = new Gtk.VBox ();
@@ -255,6 +270,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 						firstNode = child;
 					}
 					firstNode = ExpandChildrenWithErrorsOrWarnings (tree, dataSource, child, expandWarnings, firstNode);
+				} else if (child.NodeType == BuildOutputNodeType.Project) {
+					tree.ExpandToRow (child);
 				}
 			}
 
@@ -572,7 +589,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 			resultInformLabel.Show ();
 
-			buttonSearchForward.Sensitive = buttonSearchBackward.Sensitive = currentSearch?.MatchesCount > 0; 
+			SetSearchButtonsSensitivity (currentSearch?.MatchesCount > 0);
 		}
 
 		static string GetShortcut (object commandId, bool includeParen)
@@ -582,6 +599,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return "";
 			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
 			return includeParen ? "(" + nextShortcut + ")" : nextShortcut;
+		}
+
+		void SetSearchButtonsSensitivity (bool sensitive)
+		{
+			buttonSearchForward.Sensitive = buttonSearchBackward.Sensitive = sensitive;
+			buttonSearchForward.Image = ImageService.GetIcon ("gtk-go-down", Gtk.IconSize.Menu).WithStyles (sensitive ? "" : "disabled");
+			buttonSearchBackward.Image = ImageService.GetIcon ("gtk-go-up", Gtk.IconSize.Menu).WithStyles (sensitive ? "" : "disabled");
 		}
 
 		Task SetSpinnerVisibility (bool visible)
@@ -676,6 +700,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			if (BuildOutput != null) {
 				BuildOutput.OutputChanged -= OnOutputChanged;
+				BuildOutput.ProjectStarted -= OnProjectStarted;
+				BuildOutput.ProjectFinished -= OnProjectFinished;
 				BuildOutput = null;
 			}
 
