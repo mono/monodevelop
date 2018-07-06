@@ -261,7 +261,7 @@ namespace MonoDevelop.Core.Instrumentation
 		public void SetUserCancel () => Result = CounterResult.UserCancel;
 
 		protected void SetProperty (object value, [CallerMemberName]string name = null)
-			=> properties[name] = value.ToString ();
+			=> properties[name] = value;
 
 		protected T GetProperty<T> ([CallerMemberName]string name = null)
 		{
