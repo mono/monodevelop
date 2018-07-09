@@ -69,6 +69,7 @@ Target "GenerateFastBuildProjects" (fun _ ->
     |> Array.filter(fun p -> not (p.Contains "Samples" || p.Contains "fastbuild"))
 
   for projectPath in projects do
+    printfn "Processing %s" projectPath
     let projectFolderUri = Uri(projectPath)
     let ns = XNamespace.Get nsuri
     let doc = XDocument.Load projectPath
@@ -77,19 +78,27 @@ Target "GenerateFastBuildProjects" (fun _ ->
 
     for re in references do
       let inc = re.Attribute(XName.Get "Include").Value
+      printfn "Processing %s" (inc.ToString())
       let fullPath = absoluteFromRelative projectPath inc
       let projectFolder = Path.GetDirectoryName fullPath
       let referenced = XDocument.Load fullPath
-      let getDescendant name = (referenced.Descendants(ns + name) |> firstOrDefault).Value
-      let assemblyName = getDescendant "AssemblyName"
+      let getDescendant name =
+          referenced.Descendants(ns + name)
+          |> Seq.tryHead
+          |> Option.map(fun d -> d.Value)
+
+      let assemblyName =
+        match getDescendant "AssemblyName" with
+        | Some name -> name
+        | None -> Path.GetFileNameWithoutExtension fullPath 
 
       let outputPath =
           match Path.GetFileNameWithoutExtension(fullPath) with
           | "MonoDevelop.PackageManagement.Tests" -> @"..\..\..\..\build\tests"
           | "MonoDevelop.PackageManagement" -> @"..\..\..\build\AddIns\MonoDevelop.PackageManagement"
-          | _ -> getDescendant "OutputPath"
+          | _ -> (getDescendant "OutputPath").Value
 
-      let outputExtension = if getDescendant "OutputType" = "Exe" then ".exe" else ".dll"
+      let outputExtension = if getDescendant "OutputType" = (Some "Exe") then ".exe" else ".dll"
       let hintPath = projectFolder/outputPath/(assemblyName + outputExtension)
 
       let hintPathUri = Uri(hintPath)
