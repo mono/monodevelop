@@ -37,7 +37,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
-	
+using MonoDevelop.Components.Mac;
+
 namespace MonoDevelop.MacIntegration
 {
 	class MacAlertDialogHandler : IAlertDialogHandler
@@ -75,8 +76,14 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				alert.MessageText = data.Message.Text;
-				alert.InformativeText = data.Message.SecondaryText ?? "";
-				
+
+				try {
+					alert.AccessoryView = GetAccessoryView (data.Message.SecondaryText);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Failed to create attributed dialog view", ex);
+					alert.InformativeText = data.Message.SecondaryText ?? string.Empty;
+				}
+
 				var buttons = data.Buttons.Reverse ().ToList ();
 				
 				for (int i = 0; i < buttons.Count - 1; i++) {
@@ -207,6 +214,32 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			return true;
+		}
+
+		NSView GetAccessoryView (string text, int viewWidth = 450)
+		{
+			if (string.IsNullOrEmpty (text))
+				throw new ArgumentException (nameof (text));
+
+			var labelField = new NSTextField {
+				BackgroundColor = NSColor.Clear,
+				Bordered = false,
+				Selectable = true,
+				AllowsEditingTextAttributes = true,
+				Editable = false,
+				LineBreakMode = NSLineBreakMode.ByWordWrapping
+			};
+
+			var rect = new NSString (text).BoundingRectWithSize (
+				new CGSize (viewWidth, double.MaxValue),
+				NSStringDrawingOptions.UsesLineFragmentOrigin,
+				NSDictionary.FromObjectAndKey (NSFont.NameAttribute, labelField.Font)
+			);
+
+			labelField.Frame = new CGRect (0, 0, viewWidth, rect.Height);
+			labelField.AttributedStringValue = Xwt.FormattedText.FromMarkup (text).ToAttributedString ();
+
+			return labelField;
 		}
 	}
 
