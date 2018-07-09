@@ -37,12 +37,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	partial class EditorFormattingServiceTextEditorExtension : TextEditorExtension
 	{
-        protected override void Initialize()
-        {
+		protected override void Initialize()
+		{
 			base.Initialize();
-        }
+		}
 
-        public override bool KeyPress(KeyDescriptor descriptor)
+		public override bool KeyPress(KeyDescriptor descriptor)
 		{
 			var result = base.KeyPress (descriptor);
 
