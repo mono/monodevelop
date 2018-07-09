@@ -100,6 +100,13 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.SourceEditor.dll.config">

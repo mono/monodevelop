@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Editor.Shared.Options;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -105,6 +106,9 @@ namespace MonoDevelop.CSharp.Formatting
 			  indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
 			var doc = indent.DocumentContext.AnalysisDocument;
+			var options = await doc.GetOptionsAsync ();
+			if (!options.GetOption (FeatureOnOffOptions.FormatOnPaste, doc.Project.Language))
+				return;
 
 			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
 			if (formattingService == null || !formattingService.SupportsFormatOnPaste)

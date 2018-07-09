@@ -187,14 +187,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		#endregion
 
-		public bool OnTheFlyFormatting {
-			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
-			}
-			set {
-			}
-		}
-
 		#region old options
 		string defaultEolMarker;
 		public override string DefaultEolMarker {

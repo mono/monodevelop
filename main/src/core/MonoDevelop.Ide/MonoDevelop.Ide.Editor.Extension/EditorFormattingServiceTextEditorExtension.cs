@@ -45,9 +45,7 @@ namespace MonoDevelop.Ide.Editor.Extension
         public override bool KeyPress(KeyDescriptor descriptor)
 		{
 			var result = base.KeyPress (descriptor);
-			if (!DefaultSourceEditorOptions.Instance.OnTheFlyFormatting)
-				return result;
-			
+
 			var doc = DocumentContext.AnalysisDocument;
 			if (doc == null)
 				return result;
