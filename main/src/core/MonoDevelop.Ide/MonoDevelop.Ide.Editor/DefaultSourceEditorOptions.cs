@@ -467,14 +467,13 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		ConfigurationProperty<bool> onTheFlyFormatting = ConfigurationProperty.Create ("OnTheFlyFormatting", true);
+		[Obsolete ("Deprecated - use the roslyn FeatureOnOffOptions.FormatXXX per document options.")]
 		public bool OnTheFlyFormatting {
 			get {
-				return onTheFlyFormatting;
+				return true;
 			}
 			set {
-				if (onTheFlyFormatting.Set (value))
-					OnChanged (EventArgs.Empty);
+				// unused
 			}
 		}
 

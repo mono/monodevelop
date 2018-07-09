@@ -90,12 +90,6 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		public static bool OnTheFlyFormatting {
-			get {
-				return DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
-			}
-		}
-
 		protected override void Initialize ()
 		{
 			base.Initialize ();

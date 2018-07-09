@@ -354,4 +354,9 @@
 	<Extension path="/MonoDevelop/Ide/TypeService/OptionProviders">
 		<Class class="MonoDevelop.CSharp.OptionProvider.EditorConfigDocumentOptionsProviderFactory"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Behavior">
+		<Section id="CSharpOnTheFlyFormattingPanel" insertbefore="Formatting" _label="C#" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.OnTheFlyFormattingPanel" icon="md-prefs-code-formatting" />
+	</Extension>
+
 </ExtensionModel>
