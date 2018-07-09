@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Xml.Dom;
@@ -94,7 +95,7 @@ namespace MonoDevelop.Xml.Editor
 
 		class XmlExpandSelectionAnnotation
 		{
-			Stack<(int, SelectionLevel)> expansions = new Stack<(int, SelectionLevel)> ();
+			ImmutableStack<(int, SelectionLevel)> expansions = ImmutableStack<(int, SelectionLevel)>.Empty;
 
 			readonly IReadonlyTextDocument document;
 			readonly TextEditor editor;
@@ -149,7 +150,7 @@ namespace MonoDevelop.Xml.Editor
 			{
 				var old = (Index, Level);
 				if (GrowStateInternal ()) {
-					expansions.Push (old);
+					expansions = expansions.Push (old);
 					return GetCurrent ();
 				}
 				return null;
@@ -253,8 +254,8 @@ namespace MonoDevelop.Xml.Editor
 			public DocumentRegion? Shrink ()
 			{
 				// if we have expansion state, pop it
-				if (expansions.Count > 0) {
-					var last = expansions.Pop ();
+				if (!expansions.IsEmpty) {
+					expansions = expansions.Pop (out var last);
 					Index = last.Item1;
 					Level = last.Item2;
 					return GetCurrent ();
