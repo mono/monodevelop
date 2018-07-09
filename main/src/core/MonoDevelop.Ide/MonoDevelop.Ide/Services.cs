@@ -58,7 +58,6 @@ namespace MonoDevelop.Ide
 		internal static Counter PadShown = InstrumentationService.CreateCounter ("Pad focused", "IDE", id:"Ide.Shell.PadShown");
 		internal static TimerCounter SaveAllTimer = InstrumentationService.CreateTimerCounter ("Save all documents", "IDE", id:"Ide.Shell.SaveAll");
 		internal static TimerCounter CloseWorkspaceTimer = InstrumentationService.CreateTimerCounter ("Workspace closed", "IDE", id:"Ide.Shell.CloseWorkspace");
-<<<<<<< HEAD
 		internal static Counter<StartupMetadata> Startup = InstrumentationService.CreateCounter<StartupMetadata> ("IDE Startup", "IDE", id:"Ide.Startup");
 		internal static TimerCounter CompositionAddinLoad = InstrumentationService.CreateTimerCounter ("MEF Composition Addin Load", "IDE", id: "Ide.Startup.Composition.ExtensionLoad");
 		internal static TimerCounter CompositionDiscovery = InstrumentationService.CreateTimerCounter ("MEF Composition From Discovery", "IDE", id:"Ide.Startup.Composition.Discovery");
