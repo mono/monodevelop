@@ -46,6 +46,8 @@ using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core.Collections;
+using ICSharpCode.Decompiler.TypeSystem.Implementation;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Projects
 {
@@ -59,7 +61,7 @@ namespace MonoDevelop.Projects
 	public class Project : SolutionItem
 	{
 		string[] flavorGuids = new string[0];
-		static Counter ProjectOpenedCounter = InstrumentationService.CreateCounter ("Project Opened", "Project Model", id:"Ide.Project.Open");
+		static Counter<ProjectEventMetadata> ProjectOpenedCounter = InstrumentationService.CreateCounter<ProjectEventMetadata> ("Project Opened", "Project Model", id:"Ide.Project.Open");
 
 		string[] buildActions;
 		MSBuildProject sourceProject;
@@ -712,7 +714,23 @@ namespace MonoDevelop.Projects
 				sb.Append (p);
 				first = false;
 			}
-			metadata ["ProjectTypes"] = sb.ToString ();
+			metadata["ProjectTypes"] = sb.ToString ();
+		}
+
+		protected override void OnGetProjectEventMetadata (ProjectEventMetadata metadata)
+		{
+			base.OnGetProjectEventMetadata (metadata);
+			var sb = new System.Text.StringBuilder ();
+			var first = true;
+
+			var projectTypes = this.GetTypeTags ().ToList ();
+			foreach (var p in projectTypes.Where (x => (x != "DotNet") || projectTypes.Count == 1)) {
+				if (!first)
+					sb.Append (", ");
+				sb.Append (p);
+				first = false;
+			}
+			metadata.ProjectTypes = sb.ToString ();
 		}
 
 		protected override void OnEndLoad ()
@@ -1243,13 +1261,13 @@ namespace MonoDevelop.Projects
 				await Task.Run (async delegate {
 
 					bool operationRequiresExclusiveLock = context.BuilderQueue == BuilderQueue.LongOperations;
-					TimerCounter buildTimer = null;
+					TimerCounter<ProjectEventMetadata> buildTimer = null;
 					switch (target) {
 					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
 					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					var metadata = GetProjectEventMetadata (configuration);
+					var metadata = CreateProjectEventMetadata (configuration);
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (metadata);
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (metadata) : null;
 
@@ -1347,27 +1365,27 @@ namespace MonoDevelop.Projects
 		}
 
 		void AddRunMSBuildTargetTimerMetadata (
-			IDictionary<string, string> metadata,
+			ProjectEventMetadata metadata,
 			MSBuildResult result,
 			string target,
 			ConfigurationSelector configuration)
 		{
 			if (target == "Build") {
-				metadata ["BuildType"] = "4";
+				metadata.BuildType = 4;
 			} else if (target == "Clean") {
-				metadata ["BuildType"] = "1";
+				metadata.BuildType = 1;
 			}
-			metadata ["BuildTypeString"] = target;
+			metadata.BuildTypeString = target;
 
-			metadata ["FirstBuild"] = IsFirstBuild.ToString ();
-			metadata ["ProjectID"] = ItemId;
-			metadata ["ProjectType"] = TypeGuid;
-			metadata ["ProjectFlavor"] = FlavorGuids.FirstOrDefault () ?? TypeGuid;
+			metadata.FirstBuild = IsFirstBuild;
+			metadata.ProjectID = ItemId;
+			metadata.ProjectType = TypeGuid;
+			metadata.ProjectFlavor = FlavorGuids.FirstOrDefault () ?? TypeGuid;
 
 			var c = GetConfiguration (configuration);
 			if (c != null) {
-				metadata ["Configuration"] = c.Id;
-				metadata ["Platform"] = GetExplicitPlatform (c);
+				metadata.Configuration = c.Id;
+				metadata.Platform = GetExplicitPlatform (c);
 			}
 
 			bool success = false;
@@ -1381,8 +1399,8 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			metadata ["Success"] = success.ToString ();
-			metadata ["Cancelled"] = cancelled.ToString ();
+			metadata.Success = success;
+			metadata.Cancelled = cancelled;
 		}
 
 		string activeTargetFramework;

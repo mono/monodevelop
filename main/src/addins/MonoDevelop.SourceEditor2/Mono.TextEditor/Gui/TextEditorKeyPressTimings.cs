@@ -31,6 +31,8 @@ using Microsoft.VisualStudio.Text.Implementation;
 using System.Linq;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.Ide;
+using System.Collections.Immutable;
+using MonoDevelop.Core.Instrumentation;
 
 namespace Mono.TextEditor
 {
@@ -53,6 +55,15 @@ namespace Mono.TextEditor
 		int activeCountIndex = 0;
 		int droppedEvents = 0;
 
+		const int numberOfBuckets = 9;
+		readonly int[] buckets = new int[numberOfBuckets];
+
+		// One less than buckets because the last bucket is everything else.
+		// This number is the max time a keystroke can take to be placed into this bucket
+		static readonly ImmutableArray<int> bucketUpperLimit = ImmutableArray.Create<int> (
+			8, 16, 32, 64, 128, 256, 512, 1024
+		);
+
 		public void StartTimer (Gdk.EventKey evt)
 		{
 			if (activeCountIndex == numberOfCountSpaces) {
@@ -67,6 +78,18 @@ namespace Mono.TextEditor
 			activeCounts[activeCountIndex++] = evt.Time;
 		}
 
+		int CalculateBucket (TimeSpan duration)
+		{
+			long ms = (long)duration.TotalMilliseconds;
+			for (var bucket = 0; bucket < bucketUpperLimit.Length; bucket++) {
+				if (ms <= bucketUpperLimit[bucket]) {
+					return bucket;
+				}
+			}
+
+			return numberOfBuckets - 1;
+		}
+
 		void AddTime (TimeSpan duration)
 		{
 			if (duration > maxTime) {
@@ -79,6 +102,9 @@ namespace Mono.TextEditor
 
 			totalTime += duration;
 			count++;
+
+			var bucketNumber = CalculateBucket (duration);
+			buckets[bucketNumber]++;
 		}
 
 		/// <summary>
@@ -131,19 +157,59 @@ namespace Mono.TextEditor
 
 			string extension = document.FileName.Extension;
 
-			var metadata = new Dictionary<string, string> ();
-			if (!string.IsNullOrEmpty (extension))
-				metadata ["Extension"] = extension;
-
 			var average = totalTime.TotalMilliseconds / count;
-			metadata ["Average"] = average.ToString ();
-			metadata ["First"] = firstTime.Value.TotalMilliseconds.ToString ();
-			metadata ["Maximum"] = maxTime.TotalMilliseconds.ToString ();
+			var metadata = new TypingTimingMetadata {
+				Average = average,
+				First = firstTime.Value.TotalMilliseconds,
+				Maximum = maxTime.TotalMilliseconds,
+				Dropped = droppedEvents
+			};
 
-			// Do we want to track the number of dropped events?
-			// If there are any dropped events, something major happened to halt the event loop
-			metadata ["Dropped"] = droppedEvents.ToString ();
+			if (!string.IsNullOrEmpty (extension))
+				metadata.Extension = extension;
+
+			metadata.AddBuckets (buckets);
 			MonoDevelop.SourceEditor.Counters.Typing.Inc (metadata);
 		}
 	}
+
+	class TypingTimingMetadata : CounterMetadata
+	{
+		public TypingTimingMetadata ()
+		{
+		}
+
+		public string Extension {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public double Average {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double First {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double Maximum {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public int Dropped {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public void AddBuckets (int [] buckets)
+		{
+			for (var bucket = 0; bucket < buckets.Length; bucket++) {
+				Properties [$"Bucket{bucket}"] = buckets [bucket];
+			}
+		}
+	}
+
 }
