@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using Microsoft.Build.Evaluation;
+using System.Diagnostics;
 using System.Globalization;
-using Microsoft.Build.Execution;
 using System.Linq;
-using Microsoft.Build.Logging;
+using System.Threading;
+using Microsoft.Build.Evaluation;
+using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
-using System;
+using Microsoft.Build.Logging;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -148,6 +149,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void EndBuildOperationNonSTA ()
 		{
+			Debug.Assert (Monitor.IsEntered (threadLock));
+
 			engine.RemoveGlobalProperty ("CurrentSolutionConfigurationContents");
 			BuildOperationStarted = false;
 			BuildManager.DefaultBuildManager.EndBuild ();
