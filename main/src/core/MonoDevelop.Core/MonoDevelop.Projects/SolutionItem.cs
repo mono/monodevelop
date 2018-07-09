@@ -1866,6 +1866,11 @@ namespace MonoDevelop.Projects
 			set => SetProperty (value);
 		}
 
+		public string Capabilities {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
 		public string Configuration {
 			get => GetProperty<string> ();
 			set => SetProperty (value);
