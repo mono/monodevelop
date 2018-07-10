@@ -159,13 +159,12 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			if (args.Item is MonoDevelop.Projects.Solution sol) {
 				var ws = await TypeSystemService.GetWorkspaceAsync (sol);
-				var solId = ws.GetSolutionId (sol);
 
 				lock (lockObject) {
 					if (cachedUntilViewCreated == null)
 						return;
 
-					cachedUntilViewCreated = cachedUntilViewCreated.Where (x => x.Value.Solution.Id != solId).ToDictionary (x => x.Key, x => x.Value);
+					cachedUntilViewCreated = cachedUntilViewCreated.Where (x => x.Value.Workspace != ws).ToDictionary (x => x.Key, x => x.Value);
 				}
 			}
 		}
