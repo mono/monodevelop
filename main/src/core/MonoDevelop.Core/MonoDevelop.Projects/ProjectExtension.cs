@@ -301,6 +301,11 @@ namespace MonoDevelop.Projects
 		}
 
 		#endregion
+
+		internal protected virtual ProjectEventMetadata UpdateProjectEventMetadata (ConfigurationSelector configurationSelector, ProjectEventMetadata metadata)
+		{
+			return next.UpdateProjectEventMetadata (configurationSelector, metadata);
+		}
 	}
 }
 
