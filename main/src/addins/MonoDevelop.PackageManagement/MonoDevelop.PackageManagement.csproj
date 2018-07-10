@@ -100,7 +100,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsPanel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\AddPackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.UI.cs">
@@ -324,7 +323,6 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetProjectServices.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectSystemReferencesReader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ItemTemplateNuGetPackageInstaller.cs" />
-    <Compile Include="Gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
     <Compile Include="Gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RepositoryProviderFactoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpHandlerResourceV3Provider.cs" />

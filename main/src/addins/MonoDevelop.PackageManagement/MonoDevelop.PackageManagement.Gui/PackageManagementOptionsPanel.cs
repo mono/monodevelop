@@ -27,24 +27,48 @@
 //
 
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Xwt;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
-	internal class PackageManagementOptionsPanel : OptionsPanel
+	class PackageManagementOptionsPanel : OptionsPanel
 	{
-		PackageManagementOptionsViewModel optionsViewModel;
+		readonly PackageManagementOptionsViewModel optionsViewModel = new PackageManagementOptionsViewModel ();
 
-		public override Control CreatePanelWidget()
+		public override Control CreatePanelWidget ()
 		{
-			optionsViewModel = new PackageManagementOptionsViewModel ();
-			return new PackageManagementOptionsWidget (optionsViewModel);
+			var vbox = new VBox { Spacing = 12 };
+
+			vbox.PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Package Restore") + "</b>" });
+
+			var restoreOnOpenCheck = new CheckBox {
+				Label = GettextCatalog.GetString ("_Automatically restore packages when opening a solution."),
+				MarginLeft = 12,
+				Active = optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled
+			};
+			restoreOnOpenCheck.Toggled += delegate {
+				optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = restoreOnOpenCheck.Active;
+			};
+			vbox.PackStart (restoreOnOpenCheck);
+
+			vbox.PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Package Updates") + "</b>" });
+
+			var checkUpdatesOnOpenCheck = new CheckBox {
+				Label = GettextCatalog.GetString ("Check for package _updates when opening a solution."),
+				MarginLeft = 12,
+				Active = optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled
+			};
+			checkUpdatesOnOpenCheck.Toggled += delegate {
+				optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = checkUpdatesOnOpenCheck.Active;
+			};
+			vbox.PackStart (checkUpdatesOnOpenCheck);
+
+			return new XwtControl (vbox);
 		}
 		
-		public override void ApplyChanges()
-		{
-			optionsViewModel.SaveOptions ();
-		}
+		public override void ApplyChanges() => optionsViewModel.SaveOptions ();
 	}
 }
 
