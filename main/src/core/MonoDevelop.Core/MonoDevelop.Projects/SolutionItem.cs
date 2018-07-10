@@ -896,8 +896,7 @@ namespace MonoDevelop.Projects
 			}
 
 			var metadata = new ProjectEventMetadata (id);
-			OnGetProjectEventMetadata (metadata);
-			return metadata;
+			return itemExtension.OnGetProjectEventMetadata (metadata, configurationSelector);
 		}
 
 		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
@@ -908,6 +907,7 @@ namespace MonoDevelop.Projects
 		protected virtual void OnGetProjectEventMetadata (ProjectEventMetadata metadata)
 		{
 		}
+
 		/// <summary>
 		/// Executes this solution item
 		/// </summary>

@@ -1312,8 +1312,7 @@ namespace MonoDevelop.Projects
 				}
 
 				// Get the evaluated properties
-				var eventMetadata = CreateProjectEventMetadata (configuration);
-				var metadata = ProjectExtension.UpdateProjectEventMetadata (configuration, eventMetadata);
+				var metadata = CreateProjectEventMetadata (configuration);
 
 				var properties = new Dictionary<string, IMSBuildPropertyEvaluated> ();
 				foreach (var p in result.Properties)
