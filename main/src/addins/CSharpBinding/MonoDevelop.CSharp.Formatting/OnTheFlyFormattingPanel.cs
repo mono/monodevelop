@@ -93,7 +93,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 				formatOnPasteCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format on paste"));
 				formatOnPasteCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.FormatOnPaste, LanguageNames.CSharp);
-				Console.WriteLine ("paste :" + FeatureOnOffOptions.FormatOnPaste.DefaultValue);
 				PackStart (formatOnPasteCheckBox);
 				FormatOnTypeCheckBox_Toggled (this, EventArgs.Empty);
 			}
