@@ -1273,8 +1273,7 @@ namespace MonoDevelop.Projects
 				case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 				}
 
-				var eventMetadata = CreateProjectEventMetadata (configuration);
-				var metadata = ProjectExtension.UpdateProjectEventMetadata (configuration, eventMetadata);
+				var metadata = CreateProjectEventMetadata (configuration);
 				var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (metadata);
 				var t2 = buildTimer?.BeginTiming (metadata);
 
