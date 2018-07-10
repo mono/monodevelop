@@ -35,23 +35,17 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class IndentVirtualSpaceManager : IndentationTracker
+	class CSharpIndentationTracker : IndentationTracker
 	{
 		readonly TextEditor editor;
-		private ISmartIndentationService indentationService;
 		int cacheSpaceCount = -1, oldTabCount = -1;
 		string cachedIndentString;
 
-		public override IndentationTrackerFeatures SupportedFeatures { 
-            get {
-                return IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
-            }
-        }
+		public override IndentationTrackerFeatures SupportedFeatures => IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
 
-		public IndentVirtualSpaceManager(TextEditor editor)
+		public CSharpIndentationTracker (TextEditor editor)
 		{
 			this.editor = editor;
-			indentationService = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentationService> ();
 		}
 
 		#region IndentationTracker implementation
@@ -61,6 +55,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return "";
 			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
 			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
+			var indentationService = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentationService> ();
 			int? indentation = indentationService.GetDesiredIndentation (editor.TextView, caretLine);
 			if (indentation.HasValue) {
 				int tabCount = 0;

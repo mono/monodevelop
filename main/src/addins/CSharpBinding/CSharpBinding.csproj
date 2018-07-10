@@ -181,7 +181,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ToStringGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\WriteLineGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentationTracker.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\LanguageItemTooltipProvider.cs" />
