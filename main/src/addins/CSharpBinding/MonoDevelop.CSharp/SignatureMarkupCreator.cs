@@ -1340,7 +1340,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is a member access modifier. A protected member is accessible from within the class in which it is declared, and from within any class derived from the class that declared this member.", Highlight ("protected", GetThemeColor (modifierColor)));
 				break;
 			case SyntaxKind.PublicKeyword:
-				Console.WriteLine ("modifier color:  "+GetThemeColor (modifierColor).ToPangoString ());
 				result.SignatureMarkup = Highlight ("public", GetThemeColor (modifierColor)) + keywordSign;
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is an access modifier for types and type members. Public access is the most permissive access level. There are no restrictions on accessing public members.", Highlight ("public", GetThemeColor (modifierColor)));
 				break;
