@@ -327,6 +327,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					outputFile = outputFile.ChangeExtension (binLogExtension);
 
 				await BuildOutput.Save (outputFile);
+				ViewContentName = outputFile.FileName;
 				FileNameChanged?.Invoke (this, outputFile);
 				filePathLocation = outputFile;
 				IsDirty = false;
@@ -649,9 +650,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
 						processingCompletion.TrySetResult (null);
 
-						FileNameChanged?.Invoke (this, filePathLocation.IsEmpty ?
-													$"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
-													(string) filePathLocation);
+						ViewContentName = filePathLocation.IsEmpty ?
+														  $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
+														  (string)filePathLocation;
+						FileNameChanged?.Invoke (this, ViewContentName);
 					});
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
