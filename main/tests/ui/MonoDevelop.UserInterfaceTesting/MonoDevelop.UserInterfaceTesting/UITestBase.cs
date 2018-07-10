@@ -137,6 +137,28 @@ namespace MonoDevelop.UserInterfaceTesting
 			TakeScreenShot ("Application-Ready");
 		}
 
+		public void OpenApplicationAndWait ()
+		{
+			var mdProfileDir = Util.CreateTmpDir ();
+			FoldersToClean.Add (mdProfileDir);
+
+			StartSession (mdProfileDir);
+			Session.WaitForElement (IdeQuery.DefaultWorkbench);
+		}
+
+		public void OpenExampleSolutionAndWait ()
+		{
+			var sln = Path.Combine (MainPath, "build/tests/TestSolutions/ExampleFormsSolution/ExampleFormsSolution.sln");
+
+			if (!File.Exists (sln)) {
+				throw new FileNotFoundException ("Could not find test solution", sln);
+			}
+
+			// Tell the app to track time to code
+			Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.ReportTimeToCode", true);
+			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)sln), "Ide.Shell.SolutionOpened", 60000);
+		}
+
 		public void StartSession (string mdProfile, string args = null)
 		{
 			TestService.StartSession (MonoDevelopBinPath, mdProfile, args);

@@ -1,5 +1,5 @@
 ﻿//
-// TestStartup.cs
+// TestSolutionLoad.cs
 //
 // Author:
 //       iain <iaholmes@microsoft.com>
@@ -24,23 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
-
+using System;
 using NUnit.Framework;
 
-using MonoDevelop.Components.AutoTest;
 using MonoDevelop.UserInterfaceTesting;
 using MonoDevelop.PerformanceTesting;
-
 using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.PerfTests
 {
-	[TestFixture]
-	public class TestStartup : UITestBase
+	[TestFixture ()]
+	public class TestSolutionLoad : UITestBase
 	{
-		// Override the setup so it only sets up the environment for running
-		// because we want to time the start up
 		public override void SetUp ()
 		{
 			InstrumentationService.Enabled = true;
@@ -48,25 +43,16 @@ namespace MonoDevelop.Ide.PerfTests
 		}
 
 		[Test]
-		[Benchmark(Tolerance=0.1)]
-		public void TestStartupTime ()
-		{
-			OpenApplicationAndWait ();
-
-			var t = Session.GetCounterMetadataValue<long> ("Ide.Startup", "CorrectedStartupTime");
-			Benchmark.SetTime ((double)t / 1000d);
-		}
-
-		[Test]
-		[Benchmark(Tolerance = 0.1)]
-		public void TestTimeToCode ()
+		[Benchmark (Tolerance = 0.1)]
+		public void TestLoad ()
 		{
 			OpenApplicationAndWait ();
 
 			OpenExampleSolutionAndWait ();
 
-			var t = Session.GetCounterMetadataValue<long>("Ide.TimeToCode", "CorrectedDuration");
-			Benchmark.SetTime ((double)t / 1000d);
+			var t = Session.GetTimerDuration ("Ide.Shell.SolutionOpened");
+
+			Benchmark.SetTime ((double)t.TotalMilliseconds / 1000d);
 		}
 	}
 }
