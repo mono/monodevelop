@@ -56,6 +56,7 @@ using System.ComponentModel;
 using MonoDevelop.Ide.BuildOutputView;
 using System.Threading.Tasks;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -114,6 +115,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			internal const int Project = 5;
 			internal const int Path = 6;
 			internal const int Category = 7;
+		}
+
+		static class Counters
+		{
+			public static Counter BuildLogShown = InstrumentationService.CreateCounter ("Build log opened", "Build Output", id: "ErrorListPad.BuildLogShown");
 		}
 
 		public override Control Control {
@@ -1032,6 +1038,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logView.Visible = visible;
 
 			SetInitialOutputViewSize (control.Allocation.Width);
+
+			if (visible) {
+				Counters.BuildLogShown++;
+			}
 		}
 
 		void SetInitialOutputViewSize (int controlWidth)
