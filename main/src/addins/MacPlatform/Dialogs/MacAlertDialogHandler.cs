@@ -76,14 +76,26 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				alert.MessageText = data.Message.Text;
-				var accessoryViews = new List<NSView> ();
 
-				try {
-					accessoryViews.Add (GetMessageView (data.Message.SecondaryText));
-				} catch (Exception ex) {
-					LoggingService.LogError ("Failed to create attributed dialog view", ex);
-					alert.InformativeText = data.Message.SecondaryText ?? string.Empty;
+				int accessoryViewItemsCount = data.Options.Count;
+
+				NSView messageView = null;
+				string secondaryText = data.Message.SecondaryText ?? string.Empty;
+				if (!string.IsNullOrEmpty (secondaryText)) {
+					try {
+						messageView = GetMessageView (secondaryText);
+						accessoryViewItemsCount++;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to create attributed dialog view", ex);
+						alert.InformativeText = secondaryText;
+					}
 				}
+
+				var accessoryViews = new NSView [accessoryViewItemsCount];
+				int accessoryViewsIndex = 0;
+
+				if (messageView != null)
+					accessoryViews [accessoryViewsIndex++] = messageView;
 
 				var buttons = data.Buttons.Reverse ().ToList ();
 				
@@ -116,12 +128,11 @@ namespace MonoDevelop.MacIntegration
 					nsbutton.Target = wrapperButton;
 					nsbutton.Action = new ObjCRuntime.Selector ("buttonActivatedAction");
 				}
-				
-				NSButton[] optionButtons = null;
 
+				NSButton [] optionButtons = null;
 				if (data.Options.Count > 0) {
-					optionButtons = new NSButton[data.Options.Count];
-					
+					optionButtons = new NSButton [data.Options.Count];
+
 					for (int i = data.Options.Count - 1; i >= 0; i--) {
 						var option = data.Options[i];
 						var button = new NSButton {
@@ -131,12 +142,12 @@ namespace MonoDevelop.MacIntegration
 						};
 						button.SetButtonType (NSButtonType.Switch);
 						button.SizeToFit ();
-						optionButtons[i] = button;
-						accessoryViews.Add (button);
+						optionButtons [i] = button;
+						accessoryViews [accessoryViewsIndex++] = button;
 					}
 				}
 
-				ArrangeAccessoryViews (alert, accessoryViews);
+				alert.AccessoryView = ArrangeAccessoryViews (accessoryViews);
 
 				NSButton applyToAllCheck = null;
 				if (data.Message.AllowApplyToAll) {
@@ -209,41 +220,36 @@ namespace MonoDevelop.MacIntegration
 					data.ApplyToAll = true;
 
 
-
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
 
 			return true;
 		}
 
-		void ArrangeAccessoryViews (NSAlert alert, IEnumerable<NSView> views, int viewWidth = 450, int spacing = 5)
+		static NSStackView ArrangeAccessoryViews (NSView[] views, int viewWidth = 450, int spacing = 5)
 		{
-			if (alert == null)
-				throw new ArgumentNullException (nameof (alert));
-
 			if (views == null)
 				throw new ArgumentNullException (nameof (views));
 
-			if (!views.Any ())
-				return;
+			if (views.Length == 0)
+				return null;
 
-			var stackView = NSStackView.FromViews (views.ToArray ());
+			var stackView = NSStackView.FromViews (views);
 			stackView.Orientation = NSUserInterfaceLayoutOrientation.Vertical;
 			stackView.Distribution = NSStackViewDistribution.EqualSpacing;
 			stackView.Alignment = NSLayoutAttribute.Left;
 			stackView.Spacing = spacing;
 
 			nfloat stackViewHeight = 0;
-			stackView.ArrangedSubviews.ToList ().ForEach (v => stackViewHeight += v.Frame.Height);
+			foreach (var v in stackView.ArrangedSubviews)
+				stackViewHeight += v.Frame.Height;
+
 			stackView.Frame = new CGRect (0, 0, viewWidth, stackViewHeight);
-			alert.AccessoryView = stackView;
+			return stackView;
 		}
 
-		NSView GetMessageView (string text, int viewWidth = 450, int topPadding = 10)
+		static NSView GetMessageView (string text, int viewWidth = 450, int topPadding = 10)
 		{
-			if (string.IsNullOrEmpty (text))
-				throw new ArgumentException (nameof (text));
-
 			var labelField = new NSTextField {
 				BackgroundColor = NSColor.Clear,
 				Bordered = false,
