@@ -48,18 +48,18 @@ namespace MonoDevelop.PackageManagement.Commands
 			Run (project, false);
 		}
 
-		public static void Run (DotNetProject project, bool restoreTransitiveProjectReferences)
+		public static void Run (DotNetProject project, bool restoreTransitiveProjectReferences, bool reevaluateBeforeRestore = false)
 		{
 			try {
 				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-				IPackageAction action = CreateRestorePackagesAction (project, restoreTransitiveProjectReferences);
+				IPackageAction action = CreateRestorePackagesAction (project, restoreTransitiveProjectReferences, reevaluateBeforeRestore);
 				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
 			}
 		}
 
-		static IPackageAction CreateRestorePackagesAction (DotNetProject project, bool restoreTransitiveProjectReferences)
+		static IPackageAction CreateRestorePackagesAction (DotNetProject project, bool restoreTransitiveProjectReferences, bool reevaluateBeforeRestore)
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 			var nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
@@ -70,7 +70,9 @@ namespace MonoDevelop.PackageManagement.Commands
 					project,
 					buildIntegratedProject,
 					solutionManager,
-					restoreTransitiveProjectReferences);
+					restoreTransitiveProjectReferences) {
+					ReevaluateBeforeRestore = reevaluateBeforeRestore
+				};
 			}
 
 			var nugetAwareProject = project as INuGetAwareProject;
