@@ -887,16 +887,7 @@ namespace MonoDevelop.Projects
 
 		public ProjectEventMetadata CreateProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
-			string id = null;
-			if (configurationSelector != null) {
-				var slnConfig = configurationSelector as SolutionConfigurationSelector;
-				if (slnConfig != null) {
-					id = slnConfig.Id;
-				}
-			}
-
-			var metadata = new ProjectEventMetadata (id);
-			return itemExtension.OnGetProjectEventMetadata (metadata, configurationSelector);
+			return ItemExtension.OnGetProjectEventMetadata (configurationSelector, new ProjectEventMetadata ());
 		}
 
 		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
@@ -906,6 +897,21 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnGetProjectEventMetadata (ProjectEventMetadata metadata)
 		{
+		}
+
+		protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector, ProjectEventMetadata origMetadata)
+		{
+			string id = null;
+			if (configurationSelector != null) {
+				var slnConfig = configurationSelector as SolutionConfigurationSelector;
+				if (slnConfig != null) {
+					id = slnConfig.Id;
+				}
+			}
+
+			var metadata = new ProjectEventMetadata (id);
+			OnGetProjectEventMetadata (metadata);
+			return metadata;
 		}
 
 		/// <summary>
@@ -1601,6 +1607,11 @@ namespace MonoDevelop.Projects
 				return Item.OnGetReferencedItems (configuration);
 			}
 
+			protected internal override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector, ProjectEventMetadata metadata)
+			{
+				return Item.OnGetProjectEventMetadata (configurationSelector, metadata);
+			}
+
 			internal protected override void OnSetFormat (MSBuildFileFormat format)
 			{
 				Item.OnSetFormat (format);
@@ -1827,6 +1838,14 @@ namespace MonoDevelop.Projects
 		public ProjectEventMetadata (CounterMetadata metadata)
 			: base (metadata)
 		{
+		}
+
+		public ProjectEventMetadata (CounterMetadata metadata, string configurationId)
+			: base (metadata)
+		{
+			if (configurationId != null) {
+				Properties ["Config.Id"] = configurationId;
+			}
 		}
 
 		public ProjectEventMetadata (string configurationId)
