@@ -11,6 +11,7 @@ namespace MonoDevelop.SourceEditor.Braces
 	using Microsoft.VisualStudio.Text.BraceCompletion;
 	using Microsoft.VisualStudio.Text.Editor;
 	using Microsoft.VisualStudio.Text.Utilities;
+	using MonoDevelop.Ide.Editor;
 	using System;
 	using System.Diagnostics;
 
@@ -27,8 +28,6 @@ namespace MonoDevelop.SourceEditor.Braces
 		private readonly IBraceCompletionAggregator _sessionAggregator;
 		private readonly ITextView _textView;
 		private readonly GuardedOperations _guardedOperations;
-
-		private bool _braceCompletionEnabled;
 
 		private IBraceCompletionSession _postSession;
 		private IBraceCompletionSession _waitingSession;
@@ -54,11 +53,7 @@ namespace MonoDevelop.SourceEditor.Braces
 
 		#region IBraceCompletionManager
 
-		public bool Enabled {
-			get {
-				return _braceCompletionEnabled;
-			}
-		}
+		public bool Enabled => DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
 
 		public string ClosingBraces {
 			get {
@@ -306,12 +301,8 @@ namespace MonoDevelop.SourceEditor.Braces
 
 		private void GetOptions ()
 		{
-			bool beforeEnabled = _braceCompletionEnabled;
-
-			_braceCompletionEnabled = true;// _textView.Options.GetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId);
-
 			// if completion was disabled, clear out the stack
-			if (beforeEnabled && !_braceCompletionEnabled) {
+			if (!Enabled) {
 				_waitingSession = null;
 				_postSession = null;
 				_stack.Clear ();
