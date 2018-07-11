@@ -125,5 +125,9 @@ namespace MonoDevelop.PackageManagement
 		internal static PackageManagementWorkspace Workspace {
 			get { return workspace; }
 		}
+
+		internal static ProjectTargetFrameworkMonitor ProjectTargetFrameworkMonitor {
+			get { return projectTargetFrameworkMonitor;  }
+		}
 	}
 }
