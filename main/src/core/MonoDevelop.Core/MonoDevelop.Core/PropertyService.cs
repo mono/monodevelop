@@ -33,6 +33,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Core
 {
+	// New comment!
 	public static class PropertyService
 	{
 		public static ConfigurationProperty<T> Wrap<T> (string property, T defaultValue) => new CoreConfigurationProperty<T> (property, defaultValue);
