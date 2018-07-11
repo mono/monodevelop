@@ -79,17 +79,11 @@ namespace MonoDevelop.MacIntegration
 
 				int accessoryViewItemsCount = data.Options.Count;
 
-				NSView messageView = null;
 				string secondaryText = data.Message.SecondaryText ?? string.Empty;
-				if (!string.IsNullOrEmpty (secondaryText)) {
-					try {
-						messageView = GetMessageView (secondaryText);
-						accessoryViewItemsCount++;
-					} catch (Exception ex) {
-						LoggingService.LogError ("Failed to create attributed dialog view", ex);
-						alert.InformativeText = secondaryText;
-					}
-				}
+				if (TryGetMessageView (secondaryText, out NSView messageView)) {
+					accessoryViewItemsCount++;
+				} else
+					alert.InformativeText = secondaryText;
 
 				var accessoryViews = new NSView [accessoryViewItemsCount];
 				int accessoryViewsIndex = 0;
@@ -248,8 +242,19 @@ namespace MonoDevelop.MacIntegration
 			return stackView;
 		}
 
-		static NSView GetMessageView (string text, int viewWidth = 450, int topPadding = 10)
+		static bool TryGetMessageView (string text, out NSView messageView, int viewWidth = 450, int topPadding = 10)
 		{
+			messageView = null;
+
+			if (string.IsNullOrEmpty (text))
+				return false;
+
+			var formattedText = Xwt.FormattedText.FromMarkup (text);
+
+			bool isFormatted = formattedText.Attributes.Any ();
+			if (!isFormatted)
+				return false;
+
 			var labelField = new NSTextField {
 				BackgroundColor = NSColor.Clear,
 				Bordered = false,
@@ -260,10 +265,11 @@ namespace MonoDevelop.MacIntegration
 				PreferredMaxLayoutWidth = viewWidth
 			};
 
-			labelField.AttributedStringValue = Xwt.FormattedText.FromMarkup (text).ToAttributedString ();
+			labelField.AttributedStringValue = formattedText.ToAttributedString ();
 			labelField.Frame = new CGRect (0, 0, labelField.FittingSize.Width, labelField.FittingSize.Height + topPadding);
 
-			return labelField;
+			messageView = labelField;
+			return true;
 		}
 	}
 
