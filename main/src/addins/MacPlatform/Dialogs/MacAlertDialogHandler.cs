@@ -85,7 +85,7 @@ namespace MonoDevelop.MacIntegration
 				} else
 					alert.InformativeText = secondaryText;
 
-				var accessoryViews = new NSView [accessoryViewItemsCount];
+				var accessoryViews = accessoryViewItemsCount > 0 ? new NSView [accessoryViewItemsCount] : null;
 				int accessoryViewsIndex = 0;
 
 				if (messageView != null)
@@ -141,7 +141,9 @@ namespace MonoDevelop.MacIntegration
 					}
 				}
 
-				alert.AccessoryView = ArrangeAccessoryViews (accessoryViews);
+				var accessoryView = ArrangeAccessoryViews (accessoryViews);
+				if (accessoryView != null)
+					alert.AccessoryView = accessoryView;
 
 				NSButton applyToAllCheck = null;
 				if (data.Message.AllowApplyToAll) {
@@ -222,10 +224,7 @@ namespace MonoDevelop.MacIntegration
 
 		static NSStackView ArrangeAccessoryViews (NSView[] views, int viewWidth = 450, int spacing = 5)
 		{
-			if (views == null)
-				throw new ArgumentNullException (nameof (views));
-
-			if (views.Length == 0)
+			if (views == null || views.Length == 0)
 				return null;
 
 			var stackView = NSStackView.FromViews (views);
