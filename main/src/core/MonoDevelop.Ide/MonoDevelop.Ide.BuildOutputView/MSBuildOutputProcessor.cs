@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
 		{
-			if (messageTargets.Contains (e.TaskName)) {
+			if (Array.IndexOf (messageTargets, e.TaskName) >= 0) {
 				// Known message tasks are removed, we just display the messages
 				return;
 			}
@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
 		{
-			if (messageTargets.Contains (e.TaskName)) {
+			if (Array.IndexOf (messageTargets, e.TaskName) >= 0) {
 				// Known message tasks are removed, we just display the messages
 				return;
 			}
