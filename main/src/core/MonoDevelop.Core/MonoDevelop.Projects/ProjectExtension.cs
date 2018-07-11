@@ -301,7 +301,6 @@ namespace MonoDevelop.Projects
 		}
 
 		#endregion
-
 	}
 }
 
