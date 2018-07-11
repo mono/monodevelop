@@ -1,22 +1,22 @@
-// 
+//
 // BacktrackingStringMatcher.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 //       Andrea Krüger <andrea@shakuras.homeunix.net>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,6 +29,8 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Text
 {
+
+	// TEST!!!
 	class BacktrackingStringMatcher : StringMatcher
 	{
 		readonly string filterTextUpperCase;
@@ -170,7 +172,7 @@ namespace MonoDevelop.Core.Text
 			int wordStart = j + 1;
 			for (; j < text.Length; j++) {
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
-				// like foo:bar 
+				// like foo:bar
 				ch = text [j];
 				var category = char.GetUnicodeCategory (ch);
 				if (category == System.Globalization.UnicodeCategory.LowercaseLetter) {
@@ -193,7 +195,7 @@ namespace MonoDevelop.Core.Text
 					if (j + 1 < text.Length && filterChar == char.ToUpper (text [j + 1]))
 						return j + 1;
 					lastWasLower = lastWasUpper = false;
-				} 
+				}
 			}
 			return -1;
 		}
@@ -252,4 +254,3 @@ namespace MonoDevelop.Core.Text
 		}
 	}
 }
-
