@@ -90,8 +90,7 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
-			var metadata = next.OnGetProjectEventMetadata (configurationSelector);
-			return new ProjectEventMetadata (metadata);
+			return next.OnGetProjectEventMetadata (configurationSelector);
 		}
 
 		internal void ItemReady ()
