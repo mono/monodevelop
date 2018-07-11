@@ -5,6 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}</ProjectGuid>
     <OutputType>Exe</OutputType>
+    <AssemblyName>NUnitRunner</AssemblyName>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.UnitTesting\NUnit3</OutputPath>
   </PropertyGroup>
