@@ -76,9 +76,10 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				alert.MessageText = data.Message.Text;
+				var accessoryViews = new List<NSView> ();
 
 				try {
-					alert.AccessoryView = GetAccessoryView (data.Message.SecondaryText);
+					accessoryViews.Add (GetMessageView (data.Message.SecondaryText));
 				} catch (Exception ex) {
 					LoggingService.LogError ("Failed to create attributed dialog view", ex);
 					alert.InformativeText = data.Message.SecondaryText ?? string.Empty;
@@ -116,10 +117,9 @@ namespace MonoDevelop.MacIntegration
 					nsbutton.Action = new ObjCRuntime.Selector ("buttonActivatedAction");
 				}
 				
-				
 				NSButton[] optionButtons = null;
+
 				if (data.Options.Count > 0) {
-					var box = new MDBox (LayoutDirection.Vertical, 2, 2);
 					optionButtons = new NSButton[data.Options.Count];
 					
 					for (int i = data.Options.Count - 1; i >= 0; i--) {
@@ -130,14 +130,14 @@ namespace MonoDevelop.MacIntegration
 							State = option.Value? NSCellStateValue.On : NSCellStateValue.Off,
 						};
 						button.SetButtonType (NSButtonType.Switch);
+						button.SizeToFit ();
 						optionButtons[i] = button;
-						box.Add (new MDAlignment (button, true) { XAlign = LayoutAlign.Begin });
+						accessoryViews.Add (button);
 					}
-					
-					box.Layout ();
-					alert.AccessoryView = box.View;
 				}
-				
+
+				ArrangeAccessoryViews (alert, accessoryViews);
+
 				NSButton applyToAllCheck = null;
 				if (data.Message.AllowApplyToAll) {
 					alert.ShowsSuppressionButton = true;
@@ -197,7 +197,7 @@ namespace MonoDevelop.MacIntegration
 				if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
 					data.SetResultToCancelled ();
 				}
-				
+
 				if (optionButtons != null) {
 					foreach (var button in optionButtons) {
 						var option = data.Options[(int)button.Tag];
@@ -212,11 +212,34 @@ namespace MonoDevelop.MacIntegration
 
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
-			
+
 			return true;
 		}
 
-		NSView GetAccessoryView (string text, int viewWidth = 450)
+		void ArrangeAccessoryViews (NSAlert alert, IEnumerable<NSView> views, int viewWidth = 450, int spacing = 5)
+		{
+			if (alert == null)
+				throw new ArgumentNullException (nameof (alert));
+
+			if (views == null)
+				throw new ArgumentNullException (nameof (views));
+
+			if (!views.Any ())
+				return;
+
+			var stackView = NSStackView.FromViews (views.ToArray ());
+			stackView.Orientation = NSUserInterfaceLayoutOrientation.Vertical;
+			stackView.Distribution = NSStackViewDistribution.EqualSpacing;
+			stackView.Alignment = NSLayoutAttribute.Left;
+			stackView.Spacing = spacing;
+
+			nfloat stackViewHeight = 0;
+			stackView.ArrangedSubviews.ToList ().ForEach (v => stackViewHeight += v.Frame.Height);
+			stackView.Frame = new CGRect (0, 0, viewWidth, stackViewHeight);
+			alert.AccessoryView = stackView;
+		}
+
+		NSView GetMessageView (string text, int viewWidth = 450, int topPadding = 10)
 		{
 			if (string.IsNullOrEmpty (text))
 				throw new ArgumentException (nameof (text));
@@ -227,17 +250,12 @@ namespace MonoDevelop.MacIntegration
 				Selectable = true,
 				AllowsEditingTextAttributes = true,
 				Editable = false,
-				LineBreakMode = NSLineBreakMode.ByWordWrapping
+				LineBreakMode = NSLineBreakMode.ByWordWrapping,
+				PreferredMaxLayoutWidth = viewWidth
 			};
 
-			var rect = new NSString (text).BoundingRectWithSize (
-				new CGSize (viewWidth, double.MaxValue),
-				NSStringDrawingOptions.UsesLineFragmentOrigin,
-				NSDictionary.FromObjectAndKey (NSFont.NameAttribute, labelField.Font)
-			);
-
-			labelField.Frame = new CGRect (0, 0, viewWidth, rect.Height);
 			labelField.AttributedStringValue = Xwt.FormattedText.FromMarkup (text).ToAttributedString ();
+			labelField.Frame = new CGRect (0, 0, labelField.FittingSize.Width, labelField.FittingSize.Height + topPadding);
 
 			return labelField;
 		}
