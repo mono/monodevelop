@@ -887,7 +887,7 @@ namespace MonoDevelop.Projects
 
 		public ProjectEventMetadata CreateProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
-			return ItemExtension.OnGetProjectEventMetadata (configurationSelector, new ProjectEventMetadata ());
+			return ItemExtension.OnGetProjectEventMetadata (configurationSelector);
 		}
 
 		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
@@ -895,11 +895,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		protected virtual void OnGetProjectEventMetadata (ProjectEventMetadata metadata)
-		{
-		}
-
-		protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector, ProjectEventMetadata origMetadata)
+		protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
 			string id = null;
 			if (configurationSelector != null) {
@@ -909,9 +905,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			var metadata = new ProjectEventMetadata (id);
-			OnGetProjectEventMetadata (metadata);
-			return metadata;
+			return new ProjectEventMetadata (id);
 		}
 
 		/// <summary>
@@ -1607,9 +1601,10 @@ namespace MonoDevelop.Projects
 				return Item.OnGetReferencedItems (configuration);
 			}
 
-			protected internal override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector, ProjectEventMetadata metadata)
+			protected internal override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 			{
-				return Item.OnGetProjectEventMetadata (configurationSelector, metadata);
+				var metadata = Item.OnGetProjectEventMetadata (configurationSelector);
+				return new ProjectEventMetadata (metadata);
 			}
 
 			internal protected override void OnSetFormat (MSBuildFileFormat format)
