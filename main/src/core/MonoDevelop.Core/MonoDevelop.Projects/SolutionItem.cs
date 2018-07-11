@@ -1603,8 +1603,7 @@ namespace MonoDevelop.Projects
 
 			protected internal override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 			{
-				var metadata = Item.OnGetProjectEventMetadata (configurationSelector);
-				return new ProjectEventMetadata (metadata);
+				return Item.OnGetProjectEventMetadata (configurationSelector);
 			}
 
 			internal protected override void OnSetFormat (MSBuildFileFormat format)
