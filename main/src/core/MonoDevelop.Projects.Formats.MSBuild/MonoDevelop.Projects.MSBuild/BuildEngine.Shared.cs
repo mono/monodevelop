@@ -262,12 +262,12 @@ namespace MonoDevelop.Projects.MSBuild
 			workDoneEvent.Set ();
 		}
 
-		internal static void RunSTA (ThreadStart ts)
+		internal static void RunSTA (BuildEngine buildEngine, ThreadStart ts)
 		{
-			RunSTA (-1, ts);
+			RunSTA (-1, buildEngine, ts);
 		}
 
-		internal static void RunSTA (int taskId, ThreadStart ts)
+		internal static void RunSTA (int taskId, BuildEngine buildEngine, ThreadStart ts)
 		{
 			lock (workLock) {
 				if (IsTaskCancelled (taskId))
@@ -289,7 +289,7 @@ namespace MonoDevelop.Projects.MSBuild
 						workThread.SetApartmentState (ApartmentState.STA);
 						workThread.IsBackground = true;
 						workThread.CurrentUICulture = uiCulture;
-						workThread.Start ();
+						workThread.Start (buildEngine);
 					}
 					else
 						// Awaken the existing thread
@@ -316,7 +316,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static readonly object threadLock = new object ();
 		
-		static void STARunner ()
+		static void STARunner (object buildEngine)
 		{
 			try {
 				lock (threadLock) {
@@ -327,10 +327,7 @@ namespace MonoDevelop.Projects.MSBuild
 						} catch (ThreadAbortException) {
 							// Gracefully stop the thread
 							Thread.ResetAbort ();
-
-							// Try to end the build here, to workaround a finalizer crash in zstream in mono
-							// https://github.com/mono/mono/issues/9142
-							Microsoft.Build.Execution.BuildManager.DefaultBuildManager.EndBuild ();
+							OnThreadAbort ((BuildEngine)buildEngine);
 							return;
 						} catch (Exception ex) {
 							workError = ex;
@@ -346,6 +343,8 @@ namespace MonoDevelop.Projects.MSBuild
 				Thread.ResetAbort ();
 			}
 		}
+
+		static partial void OnThreadAbort (BuildEngine buildEngine);
 	}
 
 	interface IEngineLogWriter
