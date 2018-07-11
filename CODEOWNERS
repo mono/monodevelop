@@ -8,7 +8,7 @@
 # https://github.com/blog/2392-introducing-code-owners
 # https://help.github.com/articles/about-codeowners
 
-/main/src/core/MonoDevelop.Core @slluis @mrward
+/main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.AtkCocoaHelper @iainx
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking @slluis @sevoku
