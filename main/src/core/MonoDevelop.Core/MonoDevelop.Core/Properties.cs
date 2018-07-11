@@ -37,6 +37,7 @@ using System.Xml.Serialization;
 
 namespace MonoDevelop.Core
 {
+	// Updated
 	public class Properties : ICustomXmlSerializer
 	{
 		ImmutableDictionary<string, object> properties    = ImmutableDictionary<string, object>.Empty;
