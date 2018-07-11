@@ -89,7 +89,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Occurs when the remote process shuts down
 		/// </summary>
-		public event EventHandler Disconnected;
+		public event AsyncEventHandler Disconnected;
 
 		/// <summary>
 		/// Handle of the currently active build session, or null if there is no build session.
@@ -289,8 +289,8 @@ namespace MonoDevelop.Projects.MSBuild
 		internal async Task<bool> CheckDisconnected ()
 		{
 			if (!await CheckAlive ()) {
-				if (Disconnected != null)
-					Disconnected (this, EventArgs.Empty);
+				foreach (AsyncEventHandler d in Disconnected.GetInvocationList ())
+					await d (this, EventArgs.Empty);
 				return true;
 			}
 			return false;
