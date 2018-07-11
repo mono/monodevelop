@@ -74,6 +74,8 @@ namespace MonoDevelop.PackageManagement
 				IncludeTransitiveProjectReferences ();
 		}
 
+		internal bool ReevaluateBeforeRestore { get; set; }
+
 		public PackageActionType ActionType {
 			get { return PackageActionType.Restore; }
 		}
@@ -98,6 +100,9 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
+			if (ReevaluateBeforeRestore)
+				await project.DotNetProject.ReevaluateProject (new ProgressMonitor ());
+
 			if (referencingProjects == null)
 				await packageRestorer.RestorePackages (nugetProject, cancellationToken);
 			else
