@@ -30,6 +30,8 @@ namespace MonoDevelop.CSharp.Diagnostics
 	static class IDEDiagnosticIds
 	{
 		public const string MonoTODODiagnosticDiagnosticId = "XS0001";
+
+		public const string GettextConcatenationDiagnosticId = "MD0001";
 	}
 }
 
