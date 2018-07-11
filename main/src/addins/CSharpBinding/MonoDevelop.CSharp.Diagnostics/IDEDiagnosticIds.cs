@@ -32,6 +32,7 @@ namespace MonoDevelop.CSharp.Diagnostics
 		public const string MonoTODODiagnosticDiagnosticId = "XS0001";
 
 		public const string GettextConcatenationDiagnosticId = "MD0001";
+		public const string GtkDestroyDiagnosticId = "MD0002";
 	}
 }
 

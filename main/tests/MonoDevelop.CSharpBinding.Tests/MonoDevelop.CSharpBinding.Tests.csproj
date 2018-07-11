@@ -103,6 +103,7 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpCodeActionEditorExtensionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpResultsEditorExtensionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Diagnostics\CSharpLocalizationConcatenationDiagnosticAnalyzerTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Diagnostics\CSharpGtkDestroyDiagnosticAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
