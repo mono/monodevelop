@@ -88,9 +88,10 @@ namespace MonoDevelop.Projects
 			next.OnInitializeFromTemplate (projectCreateInfo, template);
 		}
 
-		internal protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector, ProjectEventMetadata metadata)
+		internal protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
-			return next.OnGetProjectEventMetadata (configurationSelector, metadata);
+			var metadata = next.OnGetProjectEventMetadata (configurationSelector);
+			return new ProjectEventMetadata (metadata);
 		}
 
 		internal void ItemReady ()
