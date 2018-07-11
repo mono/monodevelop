@@ -310,7 +310,7 @@
     <Compile Include="MonoDevelop.CSharp.Resolver\LocationInfoGetter.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\DataTipInfoGetter.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerExpressionResolver.cs" />
-    <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoDevelop\GettextConcatenationDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoDevelop\LocalizationConcatenationDiagnosticAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />

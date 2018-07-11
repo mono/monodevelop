@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,22 +104,24 @@ namespace MonoDevelop.Refactoring.Tests
 			return tuple.Item1;
 		}
 
-		protected static void AssertExpectedDiagnostics (IEnumerable<ExpectedDiagnostic> expected, Ide.Gui.Document doc)
+		protected static void AssertExpectedDiagnostics (IEnumerable<ExpectedDiagnostic> expected, Ide.Gui.Document doc, Func<QuickTask, bool> filter = null)
 		{
 			var ext = doc.GetContent<ResultsEditorExtension> ();
 
 			var actualDiagnostics = ext.QuickTasks;
+			if (filter != null)
+				actualDiagnostics = actualDiagnostics.Where (x => filter (x)).ToImmutableArray ();
+
 			var expectedDiagnostics = expected.ToArray ();
 			Assert.AreEqual (expectedDiagnostics.Length, actualDiagnostics.Length);
 
 			for (int i = 0; i < expectedDiagnostics.Length; ++i) {
-				AssertExpectedDiagnostic (expectedDiagnostics [i], ext, i);
+				AssertExpectedDiagnostic (expectedDiagnostics [i], actualDiagnostics[i]);
 			}
 		}
 
-		static void AssertExpectedDiagnostic (ExpectedDiagnostic expected, ResultsEditorExtension ext, int i)
+		static void AssertExpectedDiagnostic (ExpectedDiagnostic expected, QuickTask actual)
 		{
-			var actual = ext.QuickTasks [i];
 			Assert.AreEqual (expected.Location, actual.Location);
 			Assert.AreEqual (expected.Severity, actual.Severity);
 			Assert.AreEqual (expected.Description, actual.Description);
