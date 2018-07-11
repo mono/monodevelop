@@ -70,7 +70,7 @@ namespace MonoDevelop.WebReferences
 		internal IEnumerable<WebReferenceItem> GetWebReferenceItemsWS ()
 		{
 			if (webReferenceItemsWS == null)
-				webReferenceItemsWS = WebReferencesService.WcfEngine.GetReferenceItems (Project).ToList ();
+				webReferenceItemsWS = WebReferencesService.WsEngine.GetReferenceItems (Project).ToList ();
 			return webReferenceItemsWS;
 		}
 	}
