@@ -114,6 +114,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (project, eventArgs [0].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
 			Assert.AreEqual (0, eventArgsCountBeforeSave);
 		}
 
@@ -153,6 +154,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (project, eventArgs [0].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
 		}
 
 		[Test]
@@ -182,6 +184,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (project, eventArgs [0].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
 		}
 
 		[Test]
@@ -226,6 +229,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (reloadedProject, eventArgs [0].Project);
+			Assert.IsTrue (eventArgs [0].IsReload);
 		}
 
 		[Test]
@@ -285,6 +289,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (2, eventArgs.Count);
 			Assert.AreEqual (firstProject, eventArgs [0].Project);
 			Assert.AreEqual (secondProject, eventArgs [1].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
+			Assert.IsFalse (eventArgs [1].IsReload);
 		}
 
 		[Test]
@@ -304,6 +310,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (firstProject, eventArgs [0].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
 		}
 
 		[Test]
@@ -324,6 +331,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (secondProject, eventArgs [0].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
 		}
 
 		[Test]
@@ -370,6 +378,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, eventArgs.Count);
 			Assert.AreEqual (project, eventArgs [0].Project);
+			Assert.IsFalse (eventArgs [0].IsReload);
 		}
 
 		/// <summary>

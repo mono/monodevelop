@@ -30,12 +30,14 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class ProjectTargetFrameworkChangedEventArgs : EventArgs
 	{
-		public ProjectTargetFrameworkChangedEventArgs (IDotNetProject project)
+		public ProjectTargetFrameworkChangedEventArgs (IDotNetProject project, bool isReload)
 		{
 			Project = project;
+			IsReload = isReload;
 		}
 
 		public IDotNetProject Project { get; private set; }
+		public bool IsReload { get; private set; }
 	}
 }
 

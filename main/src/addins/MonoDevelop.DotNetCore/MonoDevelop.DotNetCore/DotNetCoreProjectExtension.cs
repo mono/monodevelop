@@ -296,6 +296,8 @@ namespace MonoDevelop.DotNetCore
 			if (!IdeApp.IsInitialized)
 				return;
 
+			PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
+
 			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
 			}
@@ -304,7 +306,27 @@ namespace MonoDevelop.DotNetCore
 		public override void Dispose ()
 		{
 			Project.Modified -= OnProjectModified;
+
+			if (IdeApp.IsInitialized)
+				PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged -= ProjectTargetFrameworkChanged;
+
 			base.Dispose ();
+		}
+
+		/// <summary>
+		/// This event is fired after the project is saved. Runs a restore if the project was
+		/// not reloaded.
+		/// </summary>
+		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		{
+			if (e.IsReload) {
+				// Ignore. A restore will occur on reload elsewhere.
+				return;
+			}
+
+			// Need to re-evaluate before restoring to ensure the implicit package references are correct after
+			// the target framework has changed.
+			RestorePackagesInProjectHandler.Run (Project, restoreTransitiveProjectReferences: true, reevaluateBeforeRestore: true);
 		}
 
 		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
@@ -523,42 +545,6 @@ namespace MonoDevelop.DotNetCore
 
 			if (ProjectNeedsRestore ())
 				RestorePackagesInProjectHandler.Run (Project);
-		}
-
-		internal bool RestoreAfterSave { get; set; }
-
-		protected override Task OnSave (ProgressMonitor monitor)
-		{
-			if (RestoreAfterSave) {
-				RestoreAfterSave = false;
-				if (!PackageManagementServices.BackgroundPackageActionRunner.IsRunning) {
-					return OnRestoreAfterSave (monitor);
-				}
-			}
-			return base.OnSave (monitor);
-		}
-
-		/// <summary>
-		/// This is currently only called after the target framework of the project
-		/// is modified. The project is saved, then re-evaluated and finally the NuGet
-		/// packages are restored. The project re-evaluation is done so any target
-		/// framework changes are available in the MSBuildProject's EvaluatedProperties
-		/// otherwise the restore uses the wrong target framework.
-		/// Also using a GLib.Timeout since triggering the reload straight away can
-		/// cause the Save to fail with an index out of range exception when
-		/// MSBuildPropertyGroup.Add is called when the DotNetProjectConfiguration
-		/// is written.
-		/// </summary>
-		async Task OnRestoreAfterSave (ProgressMonitor monitor)
-		{
-			await base.OnSave (monitor);
-			await Runtime.RunInMainThread (() => {
-				GLib.Timeout.Add (0, () => {
-					Project.NeedsReload = true;
-					FileService.NotifyFileChanged (Project.FileName);
-					return false;
-				});
-			});
 		}
 
 		protected override bool OnGetSupportsImportedItem (IMSBuildItemEvaluated buildItem)
