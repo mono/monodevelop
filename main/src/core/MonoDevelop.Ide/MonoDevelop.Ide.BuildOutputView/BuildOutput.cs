@@ -41,7 +41,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildOutput : IDisposable
+	public class BuildOutput : IDisposable
 	{
 		BuildOutputProgressMonitor progressMonitor;
 		ImmutableList<BuildOutputProcessor> projects = ImmutableList<BuildOutputProcessor>.Empty;
@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ProjectFinished?.Invoke (this, EventArgs.Empty);
 		}
 
-		public List<BuildOutputNode> GetRootNodes (bool includeDiagnostics)
+		internal List<BuildOutputNode> GetRootNodes (bool includeDiagnostics)
 		{
 			if (includeDiagnostics) {
 				return GetProjectRootNodes ().ToList ();

@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		JumpTo
 	}
 
-	class BuildOutputViewContent : AbstractXwtViewContent
+	public class BuildOutputViewContent : AbstractXwtViewContent
 	{
 		FilePath filename;
 		BuildOutputWidget control;
