@@ -1087,6 +1087,7 @@ namespace Mono.TextEditor
 			if (containsPreedit) {
 				if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 					lineText = textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location) + textEditor.preeditString;
+					wrapper.IsVirtualLineText = true;
 				} else {
 					lineText = lineText.Insert (textEditor.preeditOffset - offset, textEditor.preeditString);
 				}
@@ -1636,6 +1637,7 @@ namespace Mono.TextEditor
 			}
 
 			public bool FastPath { get; internal set; }
+			public bool IsVirtualLineText { get; internal set; }
 
 			public Pango.Rectangle IndexToPos (int index)
 			{
@@ -1794,6 +1796,8 @@ namespace Mono.TextEditor
 
 		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd)
 		{
+			if (layout.IsVirtualLineText)
+				return;
 			if (textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space)) {
 				InnerDecorateTabsAndSpaces (ctx, layout, offset, x, y, selectionStart, selectionEnd, ' ');
 			}
@@ -1882,6 +1886,7 @@ namespace Mono.TextEditor
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
 			LayoutWrapper wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
+			wrapper.IsVirtualLineText = true;
 			wrapper.Text = virtualSpace;
 			wrapper.Layout.Tabs = tabArray;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
