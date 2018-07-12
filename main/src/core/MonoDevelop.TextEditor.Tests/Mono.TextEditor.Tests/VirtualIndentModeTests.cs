@@ -584,6 +584,19 @@ namespace Mono.TextEditor.Tests
 			data.FixVirtualIndentation ();
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
+
+		/// <summary>
+		/// Github issue #5279 Text Editor outdents to hard left instead of going back an indent level 
+		/// </summary>
+		[Test]
+		public void TestIssue5279 ()
+		{
+			var data = CreateData ("\n\n\n");
+			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ();
+			data.Caret.Location = new DocumentLocation (2, 3);
+			MiscActions.RemoveTab (data);
+			Assert.AreEqual ("\n\t\n\n", data.Document.Text);
+		}
 	}
 }
 
