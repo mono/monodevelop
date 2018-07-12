@@ -31,11 +31,11 @@ namespace MonoDevelop.SourceEditor.Braces
 					if (handledCommand) {
 						return false;
 					}
-
 					bool result = base.KeyPress (descriptor);
 
-					Manager.PostTypeChar (typedChar);
-
+					using (var undo = Editor.OpenUndoGroup ()) {
+						Manager.PostTypeChar (typedChar);
+					}
 					return result;
 				}
 			}
@@ -45,18 +45,19 @@ namespace MonoDevelop.SourceEditor.Braces
 				case SpecialKey.Return:
 					if (!IsCompletionActive) {
 						bool handledCommand = false;
+						using (var undo = Editor.OpenUndoGroup ()) {
+							Manager.PreReturn (out handledCommand);
 
-						Manager.PreReturn (out handledCommand);
+							if (handledCommand) {
+								return false;
+							}
 
-						if (handledCommand) {
-							return false;
+							bool result = base.KeyPress (descriptor);
+							Manager.PostReturn ();
+							Editor.FixVirtualIndentation ();
+
+							return result;
 						}
-
-						bool result = base.KeyPress (descriptor);
-
-						Manager.PostReturn ();
-
-						return result;
 					}
 					break;
 				case SpecialKey.Tab:
