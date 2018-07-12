@@ -402,10 +402,6 @@
 		<Class class = "MonoDevelop.Ide.GettingStarted.GettingStartedProjectExtension"/>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
-		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
-	</Extension>
-
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll"/>
 		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.dll"/>

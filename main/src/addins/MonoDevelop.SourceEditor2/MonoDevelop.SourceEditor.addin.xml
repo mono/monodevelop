@@ -190,7 +190,7 @@
 		<StockIcon stockid="md-prefs-completion" resource="prefs-completion-16.png" size="Menu" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.SourceEditor.dll"/>
 	</Extension>
 </ExtensionModel>
