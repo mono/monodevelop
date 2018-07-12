@@ -1834,14 +1834,6 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public ProjectEventMetadata (CounterMetadata metadata, string configurationId)
-			: base (metadata)
-		{
-			if (configurationId != null) {
-				Properties ["Config.Id"] = configurationId;
-			}
-		}
-
 		public ProjectEventMetadata (string configurationId)
 		{
 			if (configurationId != null) {
