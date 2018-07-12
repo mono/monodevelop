@@ -65,6 +65,31 @@ namespace MonoDevelop.PackageManagement.Gui
 			};
 			vbox.PackStart (checkUpdatesOnOpenCheck);
 
+			vbox.PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Package Management") + "</b>" });
+
+			//FIXME: XWT doesn't allow mnemonics for labels
+			var defaultFormatLabel = new Label ("Default package management format:");
+			var defaultFormatCombo = new ComboBox {
+				TooltipText = GettextCatalog.GetString (
+				"The default format used for adding NuGet references to projects. " +
+				"PackageReference stores NuGet package references directly in the project file, and requires Visual Studio 2017 or later. " +
+				"packages.config is a legacy format that stores references in a separate file, and is backwards compatible with older versions of Visual Studio.")
+			};
+			defaultFormatCombo.Accessible.LabelWidget = defaultFormatLabel;
+			defaultFormatCombo.Items.Add (PackageReferenceFormat.PackageReference, GettextCatalog.GetString ("PackageReference"));
+			defaultFormatCombo.Items.Add (PackageReferenceFormat.PackagesConfig, GettextCatalog.GetString ("packages.config"));
+			defaultFormatCombo.SelectedItem = optionsViewModel.DefaultPackageReferenceFormat;
+			defaultFormatCombo.SelectionChanged += delegate {
+				optionsViewModel.DefaultPackageReferenceFormat = (PackageReferenceFormat) defaultFormatCombo.SelectedItem;
+			};
+
+			var defaultFormatBox = new HBox { MarginLeft = 12 };
+			defaultFormatBox.PackStart (defaultFormatLabel, false);
+			defaultFormatCombo.MarginLeft = 6;
+			defaultFormatBox.PackStart (defaultFormatCombo, false);
+
+			vbox.PackStart (defaultFormatBox);
+
 			return new XwtControl (vbox);
 		}
 		

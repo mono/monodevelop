@@ -1,4 +1,4 @@
-﻿// 
+// 
 // PackageManagementOptionsViewModel.cs
 // 
 // Author:
@@ -42,15 +42,18 @@ namespace MonoDevelop.PackageManagement
 			this.options = options;
 			IsAutomaticPackageRestoreOnOpeningSolutionEnabled = options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
 			IsCheckForPackageUpdatesOnOpeningSolutionEnabled = options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled;
+			DefaultPackageReferenceFormat = options.DefaultPackageReferenceFormat;
 		}
 
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled { get; set; }
 		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled { get; set; }
+		public PackageReferenceFormat DefaultPackageReferenceFormat { get; set; }
 
 		public void SaveOptions ()
 		{
 			options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
 			options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = IsCheckForPackageUpdatesOnOpeningSolutionEnabled;
+			options.DefaultPackageReferenceFormat = DefaultPackageReferenceFormat;
 		}
 	}
 }

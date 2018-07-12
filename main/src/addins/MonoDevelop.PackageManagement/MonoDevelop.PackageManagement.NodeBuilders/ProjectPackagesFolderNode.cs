@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectPackagesFolderNode.cs
 //
 // Author:
@@ -34,7 +34,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
-using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
@@ -50,6 +49,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
 		bool packageReferencesRefreshed;
+		PackageReferenceFormat oldDefaultFormat;
 
 		CancellationTokenSource cancellationTokenSource;
 
@@ -79,6 +79,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				CreateInitNuGetProject ();
 		}
 
+		void CheckCachedProject ()
+		{
+			var newDefaultFormat = PackageManagementServices.Options.DefaultPackageReferenceFormat;
+			if (oldDefaultFormat != newDefaultFormat) {
+				oldDefaultFormat = newDefaultFormat;
+				CreateInitNuGetProject ();
+			}
+		}
+
 		protected void CreateInitNuGetProject ()
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
@@ -88,9 +97,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				PackagesFolderPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings); 
 				packagePathResolver = new VersionFolderPathResolver ( 
 					PackagesFolderPath);
+				folder = null;
 			} else {
 				PackagesFolderPath = nugetProject.GetPackagesFolderPath (solutionManager);
 				folder = new FolderNuGetProject (PackagesFolderPath);
+				packagePathResolver = null;
 			}
 		}
 
@@ -121,7 +132,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			int count = GetUpdatedPackagesCount ();
 			if (count == 0) {
-				return String.Empty;
+				return string.Empty;
 			}
 
 			return GetUpdatedPackagesCountLabel (count);
@@ -199,15 +210,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void OnPackageReferencesChanged ()
 		{
-			var handler = PackageReferencesChanged;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
+			PackageReferencesChanged?.Invoke (this, new EventArgs ());
 		}
 
 		public void RefreshPackages ()
 		{
 			try {
+				CheckCachedProject ();
 				CancelCurrentRefresh ();
 				GetInstalledPackages ();
 			} catch (Exception ex) {
