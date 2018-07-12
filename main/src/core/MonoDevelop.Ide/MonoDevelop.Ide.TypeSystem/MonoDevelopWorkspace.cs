@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
-			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
+ 			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
 
 			if (IdeApp.Preferences.EnableSourceAnalysis) {
 				var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
-			
+
 			disposed = true;
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				foreach (var p in toDispose)
 					p.Dispose ();
-				
+
 				solutionData = new SolutionData ();
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var solId = workspace.GetSolutionId (sol);
 			if (solId == null)
 				return;
-			
+
 			NotifySolutionModified (sol, solId, workspace);
 		}
 
@@ -397,7 +397,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
 				return;
-			
+
 			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
 			locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
 		}
@@ -443,7 +443,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		internal bool Contains (ProjectId projectId) 
+		internal bool Contains (ProjectId projectId)
 		{
 			return projectDataMap.ContainsKey (projectId);
 		}
@@ -538,7 +538,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					documentIdMap[name] = id;
 				}
 			}
-			
+
 			public DocumentId GetDocumentId (string name)
 			{
 				DocumentId result;
@@ -654,7 +654,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal class SolutionData
 		{
-			public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> (); 
+			public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> ();
 		}
 
 		internal static Func<SolutionData, string, TextLoader> CreateTextLoader = (data, fileName) => data.Files.GetOrAdd (fileName, a => new MonoDevelopTextLoader (a));
@@ -997,13 +997,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				OnDocumentClosed (analysisDocument, loader);
 				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
-					OnDocumentClosed (linkedDoc, loader); 
+					OnDocumentClosed (linkedDoc, loader);
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Exception while closing document.", e); 
+				LoggingService.LogError ("Exception while closing document.", e);
 			}
 		}
-		
+
 		public override void CloseDocument (DocumentId documentId)
 		{
 		}
@@ -1181,7 +1181,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								case CSharpMethodKind:
 									insertionModeOperation = GettextCatalog.GetString ("Insert Method");
 									break;
-								case 8892: // C# property 
+								case 8892: // C# property
 									insertionModeOperation = GettextCatalog.GetString ("Insert Property");
 									break;
 								default:
@@ -1323,7 +1323,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					tryApplyState_documentTextChangedContents.Clear ();
 					tryApplyState_documentTextChangedTasks.Clear ();
 					tryApplyState_changedProjects.Clear ();
-					freezeProjectModify = false; 
+					freezeProjectModify = false;
 				}
 			}
 		}
@@ -1373,7 +1373,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
-			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
+			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path));
 			if (formatter != null && mdProject != null) {
 				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
 			} else {
@@ -1583,7 +1583,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
-			var id = GetProjectId (project); 
+			var id = GetProjectId (project);
 			if (id != null) {
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
@@ -1663,7 +1663,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 
 		/// <summary>
-		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
+		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it
 		/// back to the original physical file.
 		/// </summary>
 		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)

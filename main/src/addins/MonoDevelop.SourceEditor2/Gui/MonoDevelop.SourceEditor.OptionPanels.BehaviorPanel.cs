@@ -20,8 +20,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.CheckButton smartSemicolonPlaceCheckbutton;
 
-		private global::Gtk.CheckButton checkbuttonOnTheFlyFormatting;
-
 		private global::Gtk.CheckButton checkbuttonFormatOnSave;
 
 		private global::Gtk.CheckButton checkbuttonAutoSetSearchPatternCasing;
@@ -128,18 +126,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.checkbuttonOnTheFlyFormatting = new global::Gtk.CheckButton();
-			this.checkbuttonOnTheFlyFormatting.CanFocus = true;
-			this.checkbuttonOnTheFlyFormatting.Name = "checkbuttonOnTheFlyFormatting";
-			this.checkbuttonOnTheFlyFormatting.Label = global::Mono.Unix.Catalog.GetString("_Enable on the fly code formatting");
-			this.checkbuttonOnTheFlyFormatting.DrawIndicator = true;
-			this.checkbuttonOnTheFlyFormatting.UseUnderline = true;
-			this.vbox4.Add(this.checkbuttonOnTheFlyFormatting);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.checkbuttonOnTheFlyFormatting]));
-			w6.Position = 2;
-			w6.Expand = false;
-			w6.Fill = false;
+
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.checkbuttonFormatOnSave = new global::Gtk.CheckButton();
 			this.checkbuttonFormatOnSave.CanFocus = true;

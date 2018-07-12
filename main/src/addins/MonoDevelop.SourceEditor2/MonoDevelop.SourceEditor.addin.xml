@@ -193,4 +193,9 @@
 	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
 		<Assembly file="MonoDevelop.SourceEditor.dll"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.SourceEditor.Braces.BraceCompletionEditorExtension" />
+	</Extension>
+
 </ExtensionModel>

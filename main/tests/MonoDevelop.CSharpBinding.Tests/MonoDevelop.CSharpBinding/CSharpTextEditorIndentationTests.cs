@@ -548,7 +548,7 @@ class Foo
 				indent.Initialize (testCase.Document.Editor, testCase.Document);
 				var offset = testCase.Document.Editor.CaretOffset;
 				indent.SafeUpdateIndentEngine (offset);
-				var pasteHandler = new CSharpTextPasteHandler (indent, indent.stateTracker, null);
+				var pasteHandler = new CSharpTextPasteHandler (indent, null);
 				await pasteHandler.PostFomatPastedText (offset, "	int a;".Length);
 				CheckOutput (testCase, @"
 class Foo 

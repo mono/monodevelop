@@ -1,11 +1,10 @@
 ﻿//
-// BracketCompletionSession.cs
+// Util.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
-// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Microsoft.CodeAnalysis.CSharp;
-using MonoDevelop.Ide.Editor;
+using GLib;
+using MonoDevelop.Components;
+using MonoDevelop.Components.Theming;
 
-namespace MonoDevelop.CSharp.Features.AutoInsertBracket
+namespace MonoDevelop.Refactoring.Options
 {
-	class BracketCompletionSession : AbstractTokenBraceCompletionSession
+	static class Util
 	{
-		
-		public BracketCompletionSession(DocumentContext ctx)
-			: base(ctx, (int)SyntaxKind.OpenBracketToken, (int)SyntaxKind.CloseBracketToken, ']')
+		public static void MarkupSearchResult (string filter, ref string title)
 		{
-		}
-	}
-}
+			if (!string.IsNullOrEmpty (filter)) {
+				var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
+				if (idx >= 0) {
+					string color;
+					if (IdeTheme.UserInterfaceTheme == MonoDevelop.Ide.Theme.Light) {
+						color = "yellow";
+					} else {
+						color = "#666600";
+					}
 
+					title =
+						Markup.EscapeText (title.Substring (0, idx)) +
+						"<span bgcolor=\"" + color + "\">" +
+						Markup.EscapeText (title.Substring (idx, filter.Length)) +
+						"</span>" +
+						Markup.EscapeText (title.Substring (idx + filter.Length));
+					return;
+				}
+			}
+			title = Markup.EscapeText (title);
+		}
+	} 
+}

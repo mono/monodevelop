@@ -24,21 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
+using MonoDevelop.CSharp;
 using MonoDevelop.CSharp.Completion;
-using MonoDevelop.CSharp.Features.AutoInsertBracket;
-using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
-using NUnit.Framework;
-using MonoDevelop.CSharp;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Collections.Generic;
+using MonoDevelop.Ide.Gui;
+using NUnit.Framework;
 
 namespace MonoDevelop.CSharpBinding
 {

@@ -84,7 +84,7 @@ namespace MonoDevelop.AnalysisCore
 							foreach (var subIssue in node.Provider.SupportedDiagnostics) {
 								title = subIssue.Description.ToString ();
 								desc = subIssue.Description.ToString () != title ? subIssue.Description : "";
-								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + node.Descriptor.GetSeverity (subIssue) + "</td></tr>");
+								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + subIssue.DefaultSeverity + "</td></tr>");
 							}
 						}
 					}

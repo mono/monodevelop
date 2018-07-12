@@ -4128,6 +4128,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\InfoBar.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopAddMetadataReferenceCodeActionOperationFactoryWorkspaceService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentSupportsFeatureService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\EditorFormattingServiceTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
