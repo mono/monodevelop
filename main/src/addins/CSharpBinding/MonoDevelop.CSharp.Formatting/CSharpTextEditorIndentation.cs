@@ -850,7 +850,7 @@ namespace MonoDevelop.CSharp.Formatting
 				// Possibly replace the indent
 				string newIndent = Editor.IndentationTracker.GetIndentationString (line.LineNumber);
 				int newIndentLength = newIndent.Length;
-				if (newIndent != curIndent) {
+				if (newIndent != curIndent && line.Length > 0) {
 					if (CompletionWindowManager.IsVisible) {
 						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
