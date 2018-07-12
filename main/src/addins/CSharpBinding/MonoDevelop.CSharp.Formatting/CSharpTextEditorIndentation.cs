@@ -63,18 +63,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static CSharpTextEditorIndentation ()
 		{
-			CompletionWindowManager.WordCompleted += delegate (object sender, CodeCompletionContextEventArgs e) {
-				var editor = e.Widget as IServiceProvider;
-				if (editor == null)
-					return;
-				var extension = editor.GetService (typeof (CSharpTextEditorIndentation)) as CSharpTextEditorIndentation;
-				if (extension == null)
-					return;
-				extension.SafeUpdateIndentEngine (extension.Editor.CaretOffset);
-				if (extension.stateTracker.NeedsReindent)
-					extension.DoReSmartIndent ();
-			};
-
 			RefactoringService.OptionSetCreation = (editor, ctx) => {
 				var policy = ctx.Project.Policies.Get<CSharpFormattingPolicy> (types);
 				return policy.CreateOptions (editor.Options);
