@@ -40,21 +40,21 @@ namespace MonoDevelop.WebReferences
 
 		public static IEnumerable<WebReferenceItem> GetWebReferenceItemsWS (DotNetProject project)
 		{
-			foreach (WebReferenceItem item in WsEngine.GetReferenceItems (project))
-				yield return item;
+			var ext = project.GetService<WebReferencesProjectExtension> ();
+			return ext.GetWebReferenceItemsWS ();
 		}
 
 		public static IEnumerable<WebReferenceItem> GetWebReferenceItemsWCF (DotNetProject project)
 		{
-			foreach (WebReferenceItem item in WcfEngine.GetReferenceItems (project))
-				yield return item;
+			var ext = project.GetService<WebReferencesProjectExtension> ();
+			return ext.GetWebReferenceItemsWCF ();
 		}
 
 		public static IEnumerable<WebReferenceItem> GetWebReferenceItems (DotNetProject project)
 		{
-			foreach (WebReferenceItem item in WcfEngine.GetReferenceItems (project))
+			foreach (WebReferenceItem item in GetWebReferenceItemsWCF (project))
 				yield return item;
-			foreach (WebReferenceItem item in WsEngine.GetReferenceItems (project))
+			foreach (WebReferenceItem item in GetWebReferenceItemsWS (project))
 				yield return item;
 		}
 		
