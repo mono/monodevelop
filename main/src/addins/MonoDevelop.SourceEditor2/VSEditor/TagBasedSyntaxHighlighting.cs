@@ -1,33 +1,21 @@
-﻿//
+//
 //  Copyright (c) Microsoft Corporation. All rights reserved.
-//  Licensed under the MIT License. See License.txt in the project root for license information.
 //
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using System.Reflection;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Ide.Editor;
-
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.VisualStudio.Text.Editor;
-using static Microsoft.VisualStudio.Language.Intellisense.Implementation.MDUtils;
 using Microsoft.VisualStudio.Language.StandardClassification;
-using MonoDevelop.Core.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Tasks;
+using static Microsoft.VisualStudio.Language.Intellisense.Implementation.MDUtils;
 
 namespace Microsoft.VisualStudio.Platform
 {
@@ -68,11 +56,11 @@ namespace Microsoft.VisualStudio.Platform
 		{
 			ITextSnapshotLine snapshotLine = (line as Mono.TextEditor.TextDocument.DocumentLineFromTextSnapshotLine)?.Line;
 			if ((this.classifier == null) || (snapshotLine == null)) {
-				return Task.FromResult (new HighlightedLine (line, new [] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
+				return Task.FromResult (new HighlightedLine (line, new[] { new ColoredSegment (0, line.Length, ScopeStack.Empty) }));
 			}
 			List<ColoredSegment> coloredSegments = new List<ColoredSegment> ();
 
-			SnapshotSpan snapshotSpan = new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, snapshotLine.Extent.Span);
+			SnapshotSpan snapshotSpan = new SnapshotSpan (textView.TextBuffer.CurrentSnapshot, snapshotLine.Extent.Span);
 			int start = snapshotSpan.Start.Position;
 			int end = snapshotSpan.End.Position;
 
@@ -104,7 +92,7 @@ namespace Microsoft.VisualStudio.Platform
 				coloredSegments.Add (whitespaceSegment);
 			}
 
-			return Task.FromResult(new HighlightedLine (line, coloredSegments));
+			return Task.FromResult (new HighlightedLine (line, coloredSegments));
 		}
 		#region Tag Comment Scanning
 
@@ -197,7 +185,7 @@ namespace Microsoft.VisualStudio.Platform
 			}
 		}
 
-        private void OnClassificationChanged (object sender, ClassificationChangedEventArgs args)
+		private void OnClassificationChanged (object sender, ClassificationChangedEventArgs args)
 		{
 			var handler = _highlightingStateChanged;
 			if (handler != null) {
@@ -211,7 +199,7 @@ namespace Microsoft.VisualStudio.Platform
 						continue;
 					}
 					for (int i = 0; i < oldSegments.Count; i++) {
-						if (newSegments [i].ColorStyleKey != oldSegments [i].ColorStyleKey) {
+						if (newSegments[i].ColorStyleKey != oldSegments[i].ColorStyleKey) {
 							handler (this, new LineEventArgs (line.line));
 							break;
 						}
@@ -225,7 +213,7 @@ namespace Microsoft.VisualStudio.Platform
 			if (classificationTypeToScopeCache.TryGetValue (classificationType, out var cachedScope))
 				return cachedScope;
 			ScopeStack scope = null;
-			void ProcessClassificationType(IClassificationType classification)
+			void ProcessClassificationType (IClassificationType classification)
 			{
 				foreach (var baseType in classification.BaseTypes) {
 					ProcessClassificationType (baseType);
@@ -248,7 +236,7 @@ namespace Microsoft.VisualStudio.Platform
 				scope = new ScopeStack (styleName);
 			}
 			ProcessClassificationType (classificationType);
-			return classificationTypeToScopeCache [classificationType] = scope ?? defaultScopeStack;
+			return classificationTypeToScopeCache[classificationType] = scope ?? defaultScopeStack;
 		}
 
 		private string GetStyleNameFromClassificationName (string classificationName)

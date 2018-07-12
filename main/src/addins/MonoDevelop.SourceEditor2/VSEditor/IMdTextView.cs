@@ -13,9 +13,8 @@ namespace Microsoft.VisualStudio.Text.Editor
 		/// </remarks>
 		ISpaceReservationManager GetSpaceReservationManager (string name);
 
-		Gtk.Container VisualElement
-        {
-            get;
-        }
+		Gtk.Container VisualElement {
+			get;
+		}
 	}
 }
