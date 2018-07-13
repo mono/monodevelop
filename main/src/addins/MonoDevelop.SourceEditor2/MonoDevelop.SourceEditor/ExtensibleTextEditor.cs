@@ -892,12 +892,16 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord)]
 		internal void OnSelectionMovePrevWord ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MovePreviousWord);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord)]
 		internal void OnSelectionMoveNextWord ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveNextWord);
 		}
 		
@@ -916,54 +920,72 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevSubword)]
 		internal void OnSelectionMovePrevSubword ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MovePreviousSubword);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextSubword)]
 		internal void OnSelectionMoveNextSubword ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveNextSubword);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp)]
 		internal void OnSelectionMoveUp ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveUp);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown)]
 		internal void OnSelectionMoveDown ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveDown);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome)]
 		internal void OnSelectionMoveHome ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveLineHome);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd)]
 		internal void OnSelectionMoveEnd ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveLineEnd);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart)]
 		internal void OnSelectionMoveToDocumentStart ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveToDocumentStart);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelectionToLine)]
 		internal void OnExpandSelectionToLine ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.ExpandSelectionToLine);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd)]
 		internal void OnSelectionMoveToDocumentEnd ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MoveToDocumentEnd);
 		}
 
