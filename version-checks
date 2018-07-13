@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=972defab3685aa0907c3fb2fe340ab6cdb0e3fc0
+DEP_NEEDED_VERSION[0]=885983810dd9f8eb5106deba16f3f8773ff28991
 DEP_BRANCH_AND_REMOTE[0]="merp-upload-mode origin/merp-upload-mode"
 
 # heap-shot

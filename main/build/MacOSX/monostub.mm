@@ -306,6 +306,26 @@ run_md_bundle_if_needed(NSString *appDir, int argc, char **argv)
     }
 }
 
+extern "C"
+void crash_vsm_please()
+{
+	char x[] = { 0 };
+	/* - NullReferenceException
+	char *p = NULL;
+	putchar(*p);
+	*/
+
+	/* - SIGABRT
+	abort();
+	*/
+
+	abort();
+
+	x[1] = 3;
+}
+
+
+
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
