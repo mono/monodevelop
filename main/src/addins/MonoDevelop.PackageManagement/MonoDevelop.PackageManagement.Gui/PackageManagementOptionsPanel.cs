@@ -48,8 +48,8 @@ namespace MonoDevelop.PackageManagement.Gui
 				MarginLeft = 12,
 				Active = optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled
 			};
-			restoreOnOpenCheck.Toggled += delegate {
-				optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = restoreOnOpenCheck.Active;
+			restoreOnOpenCheck.Toggled += (sender, _) => {
+				optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = ((CheckBox)sender).Active;
 			};
 			vbox.PackStart (restoreOnOpenCheck);
 
@@ -60,8 +60,8 @@ namespace MonoDevelop.PackageManagement.Gui
 				MarginLeft = 12,
 				Active = optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled
 			};
-			checkUpdatesOnOpenCheck.Toggled += delegate {
-				optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = checkUpdatesOnOpenCheck.Active;
+			checkUpdatesOnOpenCheck.Toggled += (sender, _) => {
+				optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = ((CheckBox)sender).Active;
 			};
 			vbox.PackStart (checkUpdatesOnOpenCheck);
 
@@ -79,8 +79,8 @@ namespace MonoDevelop.PackageManagement.Gui
 			defaultFormatCombo.Items.Add (PackageReferenceFormat.PackageReference, GettextCatalog.GetString ("PackageReference"));
 			defaultFormatCombo.Items.Add (PackageReferenceFormat.PackagesConfig, GettextCatalog.GetString ("packages.config"));
 			defaultFormatCombo.SelectedItem = optionsViewModel.DefaultPackageReferenceFormat;
-			defaultFormatCombo.SelectionChanged += delegate {
-				optionsViewModel.DefaultPackageReferenceFormat = (PackageReferenceFormat) defaultFormatCombo.SelectedItem;
+			defaultFormatCombo.SelectionChanged += (sender, _) => {
+				optionsViewModel.DefaultPackageReferenceFormat = (PackageReferenceFormat) ((ComboBox)sender).SelectedItem;
 			};
 
 			var defaultFormatBox = new HBox { MarginLeft = 12 };
