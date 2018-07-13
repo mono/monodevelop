@@ -662,11 +662,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 															  $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
 															  (string)filePathLocation;
 							FileNameChanged?.Invoke (this, ViewContentName);
-							if (showDiagnostics) {
-								Counters.DiagnosticsViewSelected++;
-							} else {
-								Counters.NormalViewSelected++;
-							}
 						});
 					}
 				} catch (Exception ex) {
