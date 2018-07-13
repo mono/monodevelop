@@ -196,13 +196,17 @@ namespace MonoDevelop.Ide.Composition
 		[Serializable]
 		class MefControlCache
 		{
+			[JsonRequired]
 			public MefControlCacheAssemblyInfo [] AssemblyInfos;
 		}
 
 		[Serializable]
 		internal class MefControlCacheAssemblyInfo
 		{
+			[JsonRequired]
 			public string Location;
+
+			[JsonRequired]
 			public DateTime LastWriteTimeUtc;
 		}
 	}
