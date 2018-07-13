@@ -30,6 +30,8 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System;
 
 namespace MonoDevelop.Projects
 {
@@ -72,6 +74,15 @@ namespace MonoDevelop.Projects
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
 			return ProjectFeatures.Build | ProjectFeatures.Configurations | ProjectFeatures.Execute;
+		}
+
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			monitor.LogObject (new BuildSessionStartedEvent { LogFile = Name, TimeStamp = DateTime.Now });
+			var result = base.OnBuild (monitor, configuration, operationContext);
+			monitor.LogObject (new BuildSessionFinishedEvent ());
+
+			return result;
 		}
 	}
 	
