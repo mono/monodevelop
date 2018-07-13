@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				} else {
 					currentCustomProject = new BuildOutputProcessor (pspe.LogFile, false);
 					currentCustomProject.AddNode (BuildOutputNodeType.Project,
-					                              GettextCatalog.GetString ("Custom project"),
+					                              pspe.LogFile,
 					                              GettextCatalog.GetString ("Custom project started building"),
 					                              true, pspe.TimeStamp);
 				}
