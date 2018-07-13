@@ -32,20 +32,24 @@ using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	class CSharpIndentationTracker : IndentationTracker
 	{
 		readonly TextEditor editor;
+		readonly DocumentContext context;
 		int cacheSpaceCount = -1, oldTabCount = -1;
 		string cachedIndentString;
 
 		public override IndentationTrackerFeatures SupportedFeatures => IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
 
-		public CSharpIndentationTracker (TextEditor editor)
+		public CSharpIndentationTracker (TextEditor editor, DocumentContext context)
 		{
 			this.editor = editor;
+			this.context = context;
 		}
 
 		#region IndentationTracker implementation
@@ -53,13 +57,15 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (lineNumber < 1) 
 				return "";
+			var doc = context.AnalysisDocument;
+			if (doc == null)
+				return editor.GetLineIndent (lineNumber);
 			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
-			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
-			var indentationService = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentationService> ();
-			int? indentation = indentationService.GetDesiredIndentation (editor.TextView, caretLine);
+			var indentationService = doc.GetLanguageService<Microsoft.CodeAnalysis.Editor.ISynchronousIndentationService> ();
+			var indentation = indentationService.GetDesiredIndentation (doc, lineNumber - 1, default (CancellationToken));
 			if (indentation.HasValue) {
 				int tabCount = 0;
-				int spaceCount = indentation.Value;
+				int spaceCount = indentation.Value.Offset;
 				if (!editor.Options.TabsToSpaces) {
 					tabCount = spaceCount / editor.Options.TabSize;
 					spaceCount = spaceCount % editor.Options.TabSize;
@@ -71,25 +77,10 @@ namespace MonoDevelop.CSharp.Formatting
 					cacheSpaceCount = tabCount;
 					return cachedIndentString = tabString + spaceString;
 				}
-				return cachedIndentString;
-			}
-			if (caretLine.Length > 0) {
-				var sb = StringBuilderCache.Allocate ();
-				try {
-					for (int i = 0; i < caretLine.Length; i++) {
-						char curChar = snapshot [i + caretLine.Start];
-						if (Char.IsWhiteSpace (curChar))
-							sb.Append (curChar);
-						else
-							break;
-					}
-					return sb.ToString ();
-				} finally {
-					StringBuilderCache.Free (sb);
-				}
-			}
 
-			return "";
+				return cachedIndentString;
+			} 
+			return editor.GetLineIndent (lineNumber);
 		}
 		#endregion
 	}

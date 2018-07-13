@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
 						editor.IndentationTracker = null;
 					} else {
-						editor.IndentationTracker = new CSharpIndentationTracker (editor);
+						editor.IndentationTracker = new CSharpIndentationTracker (editor, DocumentContext);
 					}
 
 					indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
@@ -838,7 +838,11 @@ namespace MonoDevelop.CSharp.Formatting
 				// Possibly replace the indent
 				string newIndent = Editor.IndentationTracker.GetIndentationString (line.LineNumber);
 				int newIndentLength = newIndent.Length;
-				if (newIndent != curIndent && line.Length > 0) {
+				if (Editor.Options.IndentStyle == IndentStyle.Virtual && line.Length == 0) {
+					Editor.CaretColumn = newIndentLength;
+					return;
+				}
+				if (newIndent != curIndent) {
 					if (CompletionWindowManager.IsVisible) {
 						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
@@ -848,12 +852,7 @@ namespace MonoDevelop.CSharp.Formatting
 					//textEditorData.CommitLineUpdate (textEditorData.CaretLine);
 					CompletionWindowManager.HideWindow ();
 				}
-				pos += newIndentLength;
-			} else {
-				pos += curIndent.Length;
-			}
-
-			pos += offset;
+			} 
 
 			Editor.FixVirtualIndentation ();
 		}
