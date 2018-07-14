@@ -542,6 +542,8 @@ namespace MonoDevelop.MacInterop
 		{
 			var pathStr = string.Join (string.Empty, uri.Segments);
 			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] path0 = new byte[path.Length + 1];
+			Array.Copy (path, path0, path.Length);
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			IntPtr passwordData;
@@ -550,7 +552,7 @@ namespace MonoDevelop.MacInterop
 
 			var result = SecKeychainFindInternetPassword (
 				CurrentKeychain, (uint) host.Length, host, 0, null,
-				0, null, (uint) path.Length, path, (ushort) uri.Port,
+				0, null, (uint) path0.Length, path0, (ushort) uri.Port,
 				protocol, auth, out passwordLength, out passwordData, ref item);
 
 			try {
