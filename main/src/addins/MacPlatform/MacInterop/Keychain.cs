@@ -169,7 +169,7 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern unsafe SecStatusCode SecKeychainItemCreateFromContent (SecItemClass itemClass, SecKeychainAttributeList *attrList,
 		                                                                uint passwordLength, byte[] password, IntPtr keychain,
-		                                                                IntPtr initialAccess, ref IntPtr itemRef);
+		                                                                IntPtr initialAccess, IntPtr itemOpt);
 
 		[DllImport (SecurityLib)]
 		static extern SecStatusCode SecKeychainItemDelete (IntPtr itemRef);
@@ -309,9 +309,7 @@ namespace MonoDevelop.MacInterop
 
 				SecKeychainAttributeList attrList = new SecKeychainAttributeList (n, (IntPtr) attrs);
 
-				var item = IntPtr.Zero;
-				var result = SecKeychainItemCreateFromContent (SecItemClass.InternetPassword, &attrList, (uint) passwd.Length, passwd, CurrentKeychain, IntPtr.Zero, ref item);
-				CFRelease (item);
+				var result = SecKeychainItemCreateFromContent (SecItemClass.InternetPassword, &attrList, (uint) passwd.Length, passwd, CurrentKeychain, IntPtr.Zero, IntPtr.Zero);
 
 				return result;
 			}
