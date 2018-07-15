@@ -220,38 +220,6 @@ namespace MonoDevelop.MacInterop
 
 		#endregion
 
-		#region CFData
-
-		[DllImport (CoreFoundationLib)]
-		extern static int CFDataGetLength (IntPtr data);
-
-		[DllImport (CoreFoundationLib)]
-		extern static void CFDataGetBytes (IntPtr data, CFRange range, IntPtr buffer);
-
-		[DllImport (CoreFoundationLib)]
-		extern static IntPtr CFDataCreate (IntPtr allocator, byte[] buffer, int length);
-
-		static byte[] CFDataGetBytes (IntPtr data)
-		{
-			if (data == IntPtr.Zero)
-				return null;
-
-			long len = CFDataGetLength (data);
-			if (len < 1 || len > int.MaxValue)
-				return null;
-
-			byte[] buffer = new byte [(int) len];
-			unsafe {
-				fixed (byte *bufptr = buffer) {
-					CFDataGetBytes (data, new CFRange (0, (int) len), (IntPtr) bufptr);
-				}
-			}
-
-			return buffer;
-		}
-
-		#endregion
-
 		#region CFString
 		
 		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
