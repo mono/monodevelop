@@ -51,21 +51,21 @@ namespace MonoDevelop.MacInterop
 		#region Managing Keychains
 
 		[DllImport (SecurityLib)]
-		static extern SecStatusCode SecKeychainCreate (string pathName, uint passwordLength, byte[] password,
+		static extern SecStatusCode SecKeychainCreate (byte[] pathName, uint passwordLength, byte[] password,
 		                                          bool promptUser,  IntPtr initialAccess, ref IntPtr keychain);
 
 		[DllImport (SecurityLib)]
 		static extern SecStatusCode SecKeychainDelete (IntPtr keychain);
 
 		[DllImport (SecurityLib)]
-		static extern SecStatusCode SecKeychainOpen (string pathName, ref IntPtr keychain);
+		static extern SecStatusCode SecKeychainOpen (byte[] pathName, ref IntPtr keychain);
 
 		internal static IntPtr CreateKeychain (string path, string password)
 		{
 			var passwd = Encoding.UTF8.GetBytes (password);
 			var result = IntPtr.Zero;
 
-			var status = SecKeychainCreate (path, (uint) passwd.Length, passwd, false, IntPtr.Zero, ref result);
+			var status = SecKeychainCreate (path.ToNullTerminatedUtf8 (), (uint) passwd.Length, passwd, false, IntPtr.Zero, ref result);
 			if (status != SecStatusCode.Success)
 				throw new Exception (status.GetStatusDescription ());
 
@@ -74,9 +74,9 @@ namespace MonoDevelop.MacInterop
 
 		internal static bool TryDeleteKeychain (string path)
 		{
+			var ptr = IntPtr.Zero;
 			try {
-				var ptr = IntPtr.Zero;
-				var result = SecKeychainOpen (path, ref ptr);
+				var result = SecKeychainOpen (path.ToNullTerminatedUtf8 (), ref ptr);
 				if (result == SecStatusCode.Success) {
 					DeleteKeychain (ptr);
 					return true;
@@ -89,6 +89,8 @@ namespace MonoDevelop.MacInterop
 				// this by wrapping in a try/catch. The 'DeleteKeyChain (IntPtr)' method 
 				// will throw a 'key chain does not exist' error if there is no pre-existing
 				// keychain
+			} finally {
+				CFRelease (ptr);
 			}
 			return false;
 		}
@@ -116,6 +118,12 @@ namespace MonoDevelop.MacInterop
 		                                                        out uint passwordLength, out IntPtr passwordData, ref IntPtr itemRef);
 
 		[DllImport (SecurityLib)]
+		static extern SecStatusCode SecKeychainFindInternetPassword (IntPtr keychain, uint serverNameLength, byte[] serverName, uint securityDomainLength,
+		                                                        byte[] securityDomain, uint accountNameLength, byte[] accountName, uint pathLength,
+		                                                        byte[] path, ushort port, SecProtocolType protocol, SecAuthenticationType authType,
+		                                                        IntPtr paswordLength, IntPtr passwordData, ref IntPtr itemRef);
+
+		[DllImport (SecurityLib)]
 		static extern SecStatusCode SecKeychainAddGenericPassword (IntPtr keychain, uint serviceNameLength, byte[] serviceName,
 		                                                      uint accountNameLength, byte[] accountName, uint passwordLength,
 		                                                      byte[] passwordData, ref IntPtr itemRef);
@@ -123,16 +131,6 @@ namespace MonoDevelop.MacInterop
 		static extern SecStatusCode SecKeychainFindGenericPassword (IntPtr keychain, uint serviceNameLength, byte[] serviceName,
 		                                                       uint accountNameLength, byte[] accountName, out uint passwordLength,
 		                                                       out IntPtr passwordData, ref IntPtr itemRef);
-
-		#endregion
-
-		#region Searching for Keychain Items
-
-		[DllImport (SecurityLib)]
-		static extern unsafe SecStatusCode SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, SecKeychainAttributeList *attrList, out IntPtr searchRef);
-
-		[DllImport (SecurityLib)]
-		static extern SecStatusCode SecKeychainSearchCopyNext (IntPtr searchRef, out IntPtr itemRef);
 
 		#endregion
 
@@ -323,9 +321,7 @@ namespace MonoDevelop.MacInterop
 			byte[] user = Encoding.UTF8.GetBytes (username);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordData = IntPtr.Zero;
 			IntPtr item = IntPtr.Zero;
-			uint passwordLength = 0;
 			int port = uri.Port;
 			byte[] desc = null;
 
@@ -335,7 +331,7 @@ namespace MonoDevelop.MacInterop
 			// See if there is already a password there for this uri
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port, 
-			                                              protocol, auth, out passwordLength, out passwordData, ref item);
+			                                              protocol, auth, IntPtr.Zero, IntPtr.Zero, ref item);
 
 			if (result == SecStatusCode.Success) {
 				// If there is, replace it with the new one
@@ -361,9 +357,7 @@ namespace MonoDevelop.MacInterop
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordData = IntPtr.Zero;
 			IntPtr item = IntPtr.Zero;
-			uint passwordLength = 0;
 			int port = uri.Port;
 			byte[] desc = null;
 
@@ -373,7 +367,7 @@ namespace MonoDevelop.MacInterop
 			// See if there is already a password there for this uri
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port,
-			                                              protocol, auth, out passwordLength, out passwordData, ref item);
+			                                              protocol, auth, IntPtr.Zero, IntPtr.Zero, ref item);
 
 			if (result == SecStatusCode.Success) {
 				// If there is, replace it with the new one
@@ -491,20 +485,18 @@ namespace MonoDevelop.MacInterop
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordData = IntPtr.Zero;
 			IntPtr item = IntPtr.Zero;
-			uint passwordLength = 0;
 
 			// Look for an internet password for the given protocol and auth mechanism
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 				(uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
-				protocol, auth, out passwordLength, out passwordData, ref item);
+				protocol, auth, IntPtr.Zero, IntPtr.Zero, ref item);
 
 			// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
 			if (result == SecStatusCode.ItemNotFound && protocol != SecProtocolType.Any)
 				result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 					(uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
-					0, auth, out passwordLength, out passwordData, ref item);
+					0, auth, IntPtr.Zero, IntPtr.Zero, ref item);
 
 			try {
 				if (result != SecStatusCode.Success)
@@ -521,14 +513,12 @@ namespace MonoDevelop.MacInterop
 			byte[] path = uri.ToPathBytes ();
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
-			IntPtr passwordData;
 			IntPtr item = IntPtr.Zero;
-			uint passwordLength = 0;
 
 			var result = SecKeychainFindInternetPassword (
 				CurrentKeychain, (uint) host.Length, host, 0, null,
 				0, null, (uint) path.Length, path, (ushort) uri.Port,
-				GetSecProtocolType (uri.Scheme), auth, out passwordLength, out passwordData, ref item);
+				GetSecProtocolType (uri.Scheme), auth, IntPtr.Zero, IntPtr.Zero, ref item);
 
 			try {
 				if (result != SecStatusCode.Success)
