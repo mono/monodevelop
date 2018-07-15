@@ -28,6 +28,7 @@
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
+using Security;
 
 namespace MonoDevelop.MacInterop
 {
@@ -50,21 +51,21 @@ namespace MonoDevelop.MacInterop
 		#region Getting Information About Security Result Codes
 
 		[DllImport (SecurityLib)]
-		static extern IntPtr SecCopyErrorMessageString (OSStatus status, IntPtr reserved);
+		static extern IntPtr SecCopyErrorMessageString (SecStatusCode status, IntPtr reserved);
 
 		#endregion
 
 		#region Managing Keychains
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainCreate (string pathName, uint passwordLength, byte[] password,
+		static extern SecStatusCode SecKeychainCreate (string pathName, uint passwordLength, byte[] password,
 		                                          bool promptUser,  IntPtr initialAccess, ref IntPtr keychain);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainDelete (IntPtr keychain);
+		static extern SecStatusCode SecKeychainDelete (IntPtr keychain);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainOpen (string pathName, ref IntPtr keychain);
+		static extern SecStatusCode SecKeychainOpen (string pathName, ref IntPtr keychain);
 
 		internal static IntPtr CreateKeychain (string path, string password)
 		{
@@ -72,8 +73,8 @@ namespace MonoDevelop.MacInterop
 			var result = IntPtr.Zero;
 
 			var status = SecKeychainCreate (path, (uint) passwd.Length, passwd, false, IntPtr.Zero, ref result);
-			if (status != OSStatus.Ok)
-				throw new Exception (GetError (status));
+			if (status != SecStatusCode.Success)
+				throw new Exception (status.GetStatusDescription ());
 
 			return result;
 		}
@@ -83,7 +84,7 @@ namespace MonoDevelop.MacInterop
 			try {
 				var ptr = IntPtr.Zero;
 				var result = SecKeychainOpen (path, ref ptr);
-				if (result == OSStatus.Ok) {
+				if (result == SecStatusCode.Success) {
 					DeleteKeychain (ptr);
 					return true;
 				}
@@ -102,7 +103,7 @@ namespace MonoDevelop.MacInterop
 		internal static void DeleteKeychain (IntPtr keychain)
 		{
 			var status = SecKeychainDelete (keychain);
-			if (status != OSStatus.Ok)
+			if (status != SecStatusCode.Success)
 				throw new Exception (GetError (status));
 		}
 
@@ -111,22 +112,22 @@ namespace MonoDevelop.MacInterop
 		#region Storing and Retrieving Passwords
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainAddInternetPassword (IntPtr keychain, uint serverNameLength, byte[] serverName, uint securityDomainLength,
+		static extern SecStatusCode SecKeychainAddInternetPassword (IntPtr keychain, uint serverNameLength, byte[] serverName, uint securityDomainLength,
 		                                                       byte[] securityDomain, uint accountNameLength, byte[] accountName, uint pathLength,
 		                                                       byte[] path, ushort port, SecProtocolType protocol, SecAuthenticationType authType,
 		                                                       uint passwordLength, byte[] passwordData, ref IntPtr itemRef);
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainFindInternetPassword (IntPtr keychain, uint serverNameLength, byte[] serverName, uint securityDomainLength,
+		static extern SecStatusCode SecKeychainFindInternetPassword (IntPtr keychain, uint serverNameLength, byte[] serverName, uint securityDomainLength,
 		                                                        byte[] securityDomain, uint accountNameLength, byte[] accountName, uint pathLength,
 		                                                        byte[] path, ushort port, SecProtocolType protocol, SecAuthenticationType authType,
 		                                                        out uint passwordLength, out IntPtr passwordData, ref IntPtr itemRef);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainAddGenericPassword (IntPtr keychain, uint serviceNameLength, byte[] serviceName,
+		static extern SecStatusCode SecKeychainAddGenericPassword (IntPtr keychain, uint serviceNameLength, byte[] serviceName,
 		                                                      uint accountNameLength, byte[] accountName, uint passwordLength,
 		                                                      byte[] passwordData, ref IntPtr itemRef);
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainFindGenericPassword (IntPtr keychain, uint serviceNameLength, byte[] serviceName,
+		static extern SecStatusCode SecKeychainFindGenericPassword (IntPtr keychain, uint serviceNameLength, byte[] serviceName,
 		                                                       uint accountNameLength, byte[] accountName, out uint passwordLength,
 		                                                       out IntPtr passwordData, ref IntPtr itemRef);
 
@@ -135,10 +136,10 @@ namespace MonoDevelop.MacInterop
 		#region Searching for Keychain Items
 
 		[DllImport (SecurityLib)]
-		static extern unsafe OSStatus SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, SecKeychainAttributeList *attrList, out IntPtr searchRef);
+		static extern unsafe SecStatusCode SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, SecKeychainAttributeList *attrList, out IntPtr searchRef);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainSearchCopyNext (IntPtr searchRef, out IntPtr itemRef);
+		static extern SecStatusCode SecKeychainSearchCopyNext (IntPtr searchRef, out IntPtr itemRef);
 
 		#endregion
 
@@ -173,12 +174,12 @@ namespace MonoDevelop.MacInterop
 		}
 
 		[DllImport (SecurityLib)]
-		static extern unsafe OSStatus SecKeychainItemCreateFromContent (SecItemClass itemClass, SecKeychainAttributeList *attrList,
+		static extern unsafe SecStatusCode SecKeychainItemCreateFromContent (SecItemClass itemClass, SecKeychainAttributeList *attrList,
 		                                                                uint passwordLength, byte[] password, IntPtr keychain,
 		                                                                IntPtr initialAccess, ref IntPtr itemRef);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainItemDelete (IntPtr itemRef);
+		static extern SecStatusCode SecKeychainItemDelete (IntPtr itemRef);
 
 		#endregion
 
@@ -193,17 +194,17 @@ namespace MonoDevelop.MacInterop
 		}
 
 		[DllImport (SecurityLib)]
-		static extern unsafe OSStatus SecKeychainItemCopyAttributesAndData (IntPtr itemRef, SecKeychainAttributeInfo* info, ref SecItemClass itemClass,
+		static extern unsafe SecStatusCode SecKeychainItemCopyAttributesAndData (IntPtr itemRef, SecKeychainAttributeInfo* info, ref SecItemClass itemClass,
 		                                                                    SecKeychainAttributeList** attrList, ref uint length, ref IntPtr outData);
 
 		[DllImport (SecurityLib)]
-		static extern unsafe OSStatus SecKeychainItemModifyAttributesAndData (IntPtr itemRef, SecKeychainAttributeList *attrList, uint length, byte [] data);
+		static extern unsafe SecStatusCode SecKeychainItemModifyAttributesAndData (IntPtr itemRef, SecKeychainAttributeList *attrList, uint length, byte [] data);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainItemCopyContent (IntPtr itemRef, ref SecItemClass itemClass, IntPtr attrList, ref uint length, ref IntPtr data);
+		static extern SecStatusCode SecKeychainItemCopyContent (IntPtr itemRef, ref SecItemClass itemClass, IntPtr attrList, ref uint length, ref IntPtr data);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainItemFreeContent (IntPtr attrList, IntPtr data);
+		static extern SecStatusCode SecKeychainItemFreeContent (IntPtr attrList, IntPtr data);
 
 		#endregion
 
@@ -260,7 +261,7 @@ namespace MonoDevelop.MacInterop
 		
 		#endregion
 
-		static string GetError (OSStatus status)
+		static string GetError (SecStatusCode status)
 		{
 			IntPtr str = IntPtr.Zero;
 			try {
@@ -341,7 +342,7 @@ namespace MonoDevelop.MacInterop
 			}
 		}
 
-		static unsafe OSStatus ReplaceInternetPassword (IntPtr item, byte[] desc, byte[] passwd)
+		static unsafe SecStatusCode ReplaceInternetPassword (IntPtr item, byte[] desc, byte[] passwd)
 		{
 			fixed (byte* descPtr = desc) {
 				SecKeychainAttribute* attrs = stackalloc SecKeychainAttribute [1];
@@ -356,7 +357,7 @@ namespace MonoDevelop.MacInterop
 			}
 		}
 
-		static unsafe OSStatus AddInternetPassword (byte[] label, byte[] desc, SecAuthenticationType auth, byte[] user, byte[] passwd, SecProtocolType protocol, byte[] host, int port, byte[] path)
+		static unsafe SecStatusCode AddInternetPassword (byte[] label, byte[] desc, SecAuthenticationType auth, byte[] user, byte[] passwd, SecProtocolType protocol, byte[] host, int port, byte[] path)
 		{
 			// Note: the following code does more-or-less the same as:
 			//SecKeychainAddInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
@@ -413,7 +414,7 @@ namespace MonoDevelop.MacInterop
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port, 
 			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
-			if (result == OSStatus.Ok) {
+			if (result == SecStatusCode.Success) {
 				// If there is, replace it with the new one
 				result = ReplaceInternetPassword (item, desc, passwd);
 				CFRelease (item);
@@ -423,7 +424,7 @@ namespace MonoDevelop.MacInterop
 				result = AddInternetPassword (label, desc, auth, user, passwd, protocol, host, port, path);
 			}
 
-			if (result != OSStatus.Ok && result != OSStatus.DuplicateItem)
+			if (result != SecStatusCode.Success && result != SecStatusCode.DuplicateItem)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
@@ -452,7 +453,7 @@ namespace MonoDevelop.MacInterop
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port,
 			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
-			if (result == OSStatus.Ok) {
+			if (result == SecStatusCode.Success) {
 				// If there is, replace it with the new one
 				result = ReplaceInternetPassword (item, desc, passwd);
 				CFRelease (item);
@@ -463,7 +464,7 @@ namespace MonoDevelop.MacInterop
 				result = AddInternetPassword (label, desc, auth, user, passwd, protocol, host, port, path);
 			}
 
-			if (result != OSStatus.Ok && result != OSStatus.DuplicateItem)
+			if (result != SecStatusCode.Success && result != SecStatusCode.DuplicateItem)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
@@ -483,12 +484,12 @@ namespace MonoDevelop.MacInterop
 				SecItemClass itemClass = 0;
 				uint length = 0;
 
-				OSStatus status = SecKeychainItemCopyAttributesAndData (itemRef, &attributeInfo, ref itemClass, &attributeList, ref length, ref outData);
+				SecStatusCode status = SecKeychainItemCopyAttributesAndData (itemRef, &attributeInfo, ref itemClass, &attributeList, ref length, ref outData);
 
-				if (status == OSStatus.ItemNotFound)
+				if (status == SecStatusCode.ItemNotFound)
 					throw new Exception ("Could not add internet password to keychain: " + GetError (status));
 
-				if (status != OSStatus.Ok)
+				if (status != SecStatusCode.Success)
 					throw new Exception ("Could not find internet username and password: " + GetError (status));
 
 				var userNameAttr = (SecKeychainAttribute*) attributeList->Attrs;
@@ -524,7 +525,7 @@ namespace MonoDevelop.MacInterop
 				protocol, auth, out passwordLength, out passwordData, ref item);
 
 			try {
-				if (result != OSStatus.Ok)
+				if (result != SecStatusCode.Success)
 					return null;
 
 				var username = GetUsernameFromKeychainItemRef (item);
@@ -552,14 +553,14 @@ namespace MonoDevelop.MacInterop
 			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
 			// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
-			if (result == OSStatus.ItemNotFound && protocol != SecProtocolType.Any)
+			if (result == SecStatusCode.ItemNotFound && protocol != SecProtocolType.Any)
 				result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 				                                          (uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
 				                                          0, auth, out passwordLength, out passwordData, ref item);
 
 			CFRelease (item);
 
-			if (result != OSStatus.Ok)
+			if (result != SecStatusCode.Success)
 				return null;
 
 			return Marshal.PtrToStringAuto (passwordData, (int) passwordLength);
@@ -583,13 +584,13 @@ namespace MonoDevelop.MacInterop
 				protocol, auth, out passwordLength, out passwordData, ref item);
 
 			// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
-			if (result == OSStatus.ItemNotFound && protocol != SecProtocolType.Any)
+			if (result == SecStatusCode.ItemNotFound && protocol != SecProtocolType.Any)
 				result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 					(uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
 					0, auth, out passwordLength, out passwordData, ref item);
 
 			try {
-				if (result != OSStatus.Ok)
+				if (result != SecStatusCode.Success)
 					return;
 
 				SecKeychainItemDelete (item);
@@ -614,7 +615,7 @@ namespace MonoDevelop.MacInterop
 				GetSecProtocolType (uri.Scheme), auth, out passwordLength, out passwordData, ref item);
 
 			try {
-				if (result != OSStatus.Ok)
+				if (result != SecStatusCode.Success)
 					return;
 
 				SecKeychainItemDelete (item);
@@ -680,18 +681,6 @@ namespace MonoDevelop.MacInterop
 		CrlType              = 1668445296,
 		CrlEncoding          = 1668443747,
 		Alias                = 1634494835,
-	}
-
-	enum OSStatus
-	{
-		Ok                   = 0,
-		AuthFailed           = -25293,
-		NoSuchKeychain       = -25294,
-		DuplicateKeychain    = -25296,
-		DuplicateItem        = -25299,
-		ItemNotFound         = -25300,
-		NoDefaultKeychain    = -25307,
-		DecodeError          = -26275,
 	}
 
 	enum SecAuthenticationType : int
