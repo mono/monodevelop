@@ -34,8 +34,8 @@ namespace MonoDevelop.MacInterop
 {
 	public static class Keychain
 	{
-		const string CoreFoundationLib = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
-		const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
+		const string CoreFoundationLib = ObjCRuntime.Constants.CoreFoundationLibrary;
+		const string SecurityLib = ObjCRuntime.Constants.SecurityLibrary;
 
 		internal static IntPtr CurrentKeychain = IntPtr.Zero;
 
@@ -47,13 +47,6 @@ namespace MonoDevelop.MacInterop
 			if (cfRef != IntPtr.Zero)
 				CFReleaseInternal (cfRef);
 		}
-
-		#region Getting Information About Security Result Codes
-
-		[DllImport (SecurityLib)]
-		static extern IntPtr SecCopyErrorMessageString (SecStatusCode status, IntPtr reserved);
-
-		#endregion
 
 		#region Managing Keychains
 
@@ -206,59 +199,6 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern SecStatusCode SecKeychainItemFreeContent (IntPtr attrList, IntPtr data);
 
-		#endregion
-
-		#region CFRange
-
-		struct CFRange {
-			public IntPtr Location, Length;
-			public CFRange (int l, int len)
-			{
-				Location = (IntPtr) l;
-				Length = (IntPtr) len;
-			}
-		}
-
-		#endregion
-
-		#region CFString
-		
-		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
-		extern static int CFStringGetLength (IntPtr handle);
-
-		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
-		extern static IntPtr CFStringGetCharactersPtr (IntPtr handle);
-		
-		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
-		extern static IntPtr CFStringGetCharacters (IntPtr handle, CFRange range, IntPtr buffer);
-		
-		static string CFStringGetString (IntPtr handle)
-		{
-			if (handle == IntPtr.Zero)
-				return null;
-			
-			int length = CFStringGetLength (handle);
-			var unicode = CFStringGetCharactersPtr (handle);
-			IntPtr buffer = IntPtr.Zero;
-			string str;
-
-			if (unicode == IntPtr.Zero){
-				var range = new CFRange (0, length);
-				buffer = Marshal.AllocCoTaskMem (length * 2);
-				CFStringGetCharacters (handle, range, buffer);
-				unicode = buffer;
-			}
-
-			unsafe {
-				str = new string ((char *) unicode, 0, length);
-			}
-			
-			if (buffer != IntPtr.Zero)
-				Marshal.FreeCoTaskMem (buffer);
-			
-			return str;
-		}
-		
 		#endregion
 
 		static SecAuthenticationType GetSecAuthenticationType (string query)
