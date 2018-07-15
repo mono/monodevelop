@@ -435,23 +435,27 @@ namespace MonoDevelop.MacInterop
 			IntPtr item = IntPtr.Zero;
 			uint passwordLength = 0;
 
-			// Look for an internet password for the given protocol and auth mechanism
-			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
-			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
-			                                              protocol, auth, out passwordLength, out passwordData, ref item);
+			try {
+				// Look for an internet password for the given protocol and auth mechanism
+				var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint)host.Length, host, 0, null,
+															  (uint)user.Length, user, (uint)path.Length, path, (ushort)uri.Port,
+															  protocol, auth, out passwordLength, out passwordData, ref item);
 
-			// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
-			if (result == SecStatusCode.ItemNotFound && protocol != SecProtocolType.Any)
-				result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
-				                                          (uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
-				                                          0, auth, out passwordLength, out passwordData, ref item);
+				// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
+				if (result == SecStatusCode.ItemNotFound && protocol != SecProtocolType.Any)
+					result = SecKeychainFindInternetPassword (CurrentKeychain, (uint)host.Length, host, 0, null,
+															  (uint)user.Length, user, (uint)path.Length, path, (ushort)uri.Port,
+															  0, auth, out passwordLength, out passwordData, ref item);
 
-			CFRelease (item);
+				CFRelease (item);
 
-			if (result != SecStatusCode.Success)
-				return null;
+				if (result != SecStatusCode.Success)
+					return null;
 
-			return Marshal.PtrToStringAuto (passwordData, (int) passwordLength);
+				return Marshal.PtrToStringAuto (passwordData, (int)passwordLength);
+			} finally {
+				SecKeychainItemFreeContent (IntPtr.Zero, passwordData);
+			}
 		}
 
 		public static void RemoveInternetPassword (Uri uri)
