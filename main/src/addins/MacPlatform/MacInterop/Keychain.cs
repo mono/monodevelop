@@ -551,18 +551,23 @@ namespace MonoDevelop.MacInterop
 		}
 
 		// It seems that keychain APIs require null terminated native strings.
-		internal static byte [] ToNullTerminatedUtf8 (this string str)
+		internal static byte [] ToNullTerminatedUtf8 (this string str, int offset = 0)
 		{
 			unsafe {
 				fixed (char* p = str) {
-					var byteCount = Encoding.UTF8.GetByteCount (p, str.Length);
-					var bytes = new byte [byteCount + 1];
-					fixed (byte* b = bytes) {
-						Encoding.UTF8.GetBytes (p, str.Length, b, byteCount);
-					}
-					return bytes;
+					return ToNullTerminatedUtf8 (p + offset, str.Length - offset);
 				}
 			}
+		}
+
+		static unsafe byte [] ToNullTerminatedUtf8 (char* p, int len)
+		{
+			var byteCount = Encoding.UTF8.GetByteCount (p, len);
+			var bytes = new byte [byteCount + 1];
+			fixed (byte* b = bytes) {
+				Encoding.UTF8.GetBytes (p, len, b, byteCount);
+			}
+			return bytes;
 		}
 	}
 
