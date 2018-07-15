@@ -130,6 +130,12 @@ namespace MacPlatform.Tests
 			AssertKeychain (uri2, "user3", password, null);
 			AssertKeychain (uri2, "user3", password, null);
 
+			Keychain.RemoveInternetUserNameAndPassword (uri3);
+			AssertKeychain (uriBase, null, null, null);
+			AssertKeychain (uri1, null, null, null);
+			AssertKeychain (uri2, null, null, null);
+			AssertKeychain (uri2, null, null, null);
+
 			void AssertKeychain (Uri uri, string expectedUser, string expectedUserPassword, string expectedPassword)
 			{
 				var userPassword = Keychain.FindInternetUserNameAndPassword (uri);
