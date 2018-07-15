@@ -104,7 +104,7 @@ namespace MonoDevelop.MacInterop
 		{
 			var status = SecKeychainDelete (keychain);
 			if (status != SecStatusCode.Success)
-				throw new Exception (GetError (status));
+				throw new Exception (status.GetStatusDescription ());
 		}
 
 		#endregion
@@ -261,20 +261,6 @@ namespace MonoDevelop.MacInterop
 		
 		#endregion
 
-		static string GetError (SecStatusCode status)
-		{
-			IntPtr str = IntPtr.Zero;
-			try {
-				str = SecCopyErrorMessageString (status, IntPtr.Zero);
-				return CFStringGetString (str);
-			} catch {
-				return status.ToString ();
-			} finally {
-				if (str != IntPtr.Zero)
-					CFRelease (str);
-			}
-		}
-
 		static SecAuthenticationType GetSecAuthenticationType (string query)
 		{
 			if (string.IsNullOrEmpty (query))
@@ -425,7 +411,7 @@ namespace MonoDevelop.MacInterop
 			}
 
 			if (result != SecStatusCode.Success && result != SecStatusCode.DuplicateItem)
-				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
+				throw new Exception ("Could not add internet password to keychain: " + result.GetStatusDescription ());
 		}
 
 		static readonly byte[] WebFormPassword = Encoding.UTF8.GetBytes ("Web form password");
@@ -465,7 +451,7 @@ namespace MonoDevelop.MacInterop
 			}
 
 			if (result != SecStatusCode.Success && result != SecStatusCode.DuplicateItem)
-				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
+				throw new Exception ("Could not add internet password to keychain: " + result.GetStatusDescription ());
 		}
 
 		static unsafe string GetUsernameFromKeychainItemRef (IntPtr itemRef)
@@ -487,10 +473,10 @@ namespace MonoDevelop.MacInterop
 				SecStatusCode status = SecKeychainItemCopyAttributesAndData (itemRef, &attributeInfo, ref itemClass, &attributeList, ref length, ref outData);
 
 				if (status == SecStatusCode.ItemNotFound)
-					throw new Exception ("Could not add internet password to keychain: " + GetError (status));
+					throw new Exception ("Could not add internet password to keychain: " + status.GetStatusDescription ());
 
 				if (status != SecStatusCode.Success)
-					throw new Exception ("Could not find internet username and password: " + GetError (status));
+					throw new Exception ("Could not find internet username and password: " + status.GetStatusDescription ());
 
 				var userNameAttr = (SecKeychainAttribute*) attributeList->Attrs;
 
