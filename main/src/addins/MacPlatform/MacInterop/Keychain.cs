@@ -654,6 +654,21 @@ namespace MonoDevelop.MacInterop
 				CFRelease (item);
 			}
 		}
+
+		// It seems that keychain APIs require null terminated native strings.
+		internal static byte [] ToNullTerminatedUtf8 (this string str)
+		{
+			unsafe {
+				fixed (char* p = str) {
+					var byteCount = Encoding.UTF8.GetByteCount (p, str.Length);
+					var bytes = new byte [byteCount + 1];
+					fixed (byte* b = bytes) {
+						Encoding.UTF8.GetBytes (p, str.Length, b, byteCount);
+					}
+					return bytes;
+				}
+			}
+		}
 	}
 
 	enum SecItemClass : uint
