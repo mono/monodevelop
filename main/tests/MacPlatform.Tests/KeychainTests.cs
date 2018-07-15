@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
 using System.IO;
+using System.Text;
 
 namespace MacPlatform.Tests
 {
@@ -60,6 +61,18 @@ namespace MacPlatform.Tests
 			var passAndUser = Keychain.FindInternetUserNameAndPassword (new Uri ("http://google.com"));
 			Assert.AreEqual (null, passAndUser.Item1, "#2");
 			Assert.AreEqual ("pa55word", passAndUser.Item2, "#3");
+		}
+
+		[Test]
+		public void ToNullTerminatedUtf8IsNullTerminated ()
+		{
+			var str = "This is a test string";
+
+			var bytes = Encoding.UTF8.GetBytes (str);
+			var bytesWithNullTerm = str.ToNullTerminatedUtf8 ();
+
+			Assert.AreEqual (bytes.Length + 1, bytesWithNullTerm.Length);
+			Assert.AreEqual (0, bytesWithNullTerm [bytesWithNullTerm.Length - 1]);
 		}
 	}
 }
