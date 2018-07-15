@@ -317,8 +317,7 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe void AddInternetPassword (Uri uri, string username, string password)
 		{
-			var pathStr = string.Join (string.Empty, uri.Segments);
-			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte [] path = uri.ToPathBytes ();
 			byte[] passwd = Encoding.UTF8.GetBytes (password);
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			byte[] user = Encoding.UTF8.GetBytes (username);
@@ -356,8 +355,7 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe void AddInternetPassword (Uri uri, string password)
 		{
-			var pathStr = string.Join (string.Empty, uri.Segments);
-			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] path = uri.ToPathBytes ();
 			byte[] user = Encoding.UTF8.GetBytes (Uri.UnescapeDataString (uri.UserInfo));
 			byte[] passwd = Encoding.UTF8.GetBytes (password);
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
@@ -433,10 +431,7 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri, SecProtocolType protocol)
 		{
-			var pathStr = string.Join (string.Empty, uri.Segments);
-			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
-			byte[] path0 = new byte[path.Length + 1];
-			Array.Copy (path, path0, path.Length);
+			byte[] path = uri.ToPathBytes ();
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			IntPtr passwordData;
@@ -445,7 +440,7 @@ namespace MonoDevelop.MacInterop
 
 			var result = SecKeychainFindInternetPassword (
 				CurrentKeychain, (uint) host.Length, host, 0, null,
-				0, null, (uint) path0.Length, path0, (ushort) uri.Port,
+				0, null, (uint) path.Length, path, (ushort) uri.Port,
 				protocol, auth, out passwordLength, out passwordData, ref item);
 
 			try {
@@ -461,8 +456,7 @@ namespace MonoDevelop.MacInterop
 
 		public static string FindInternetPassword (Uri uri)
 		{
-			var pathStr = string.Join (string.Empty, uri.Segments);
-			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] path = uri.ToPathBytes ();
 			byte[] user = Encoding.UTF8.GetBytes (Uri.UnescapeDataString (uri.UserInfo));
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
@@ -492,8 +486,7 @@ namespace MonoDevelop.MacInterop
 
 		public static void RemoveInternetPassword (Uri uri)
 		{
-			var pathStr = string.Join (string.Empty, uri.Segments);
-			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] path = uri.ToPathBytes ();
 			byte[] user = Encoding.UTF8.GetBytes (Uri.UnescapeDataString (uri.UserInfo));
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
@@ -525,8 +518,7 @@ namespace MonoDevelop.MacInterop
 
 		public static void RemoveInternetUserNameAndPassword (Uri uri)
 		{
-			var pathStr = string.Join (string.Empty, uri.Segments);
-			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] path = uri.ToPathBytes ();
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			IntPtr passwordData;
@@ -546,6 +538,13 @@ namespace MonoDevelop.MacInterop
 			} finally {
 				CFRelease (item);
 			}
+		}
+
+		static byte [] ToPathBytes (this Uri uri)
+		{
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? pathStr.ToNullTerminatedUtf8 (1) : Array.Empty<byte> (); // don't include the leading '/'
+			return path;
 		}
 
 		// It seems that keychain APIs require null terminated native strings.
