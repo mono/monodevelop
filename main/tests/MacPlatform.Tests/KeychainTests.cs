@@ -73,6 +73,13 @@ namespace MacPlatform.Tests
 
 			Assert.AreEqual (bytes.Length + 1, bytesWithNullTerm.Length);
 			Assert.AreEqual (0, bytesWithNullTerm [bytesWithNullTerm.Length - 1]);
+
+			// UTF8Encoding does not handle null terminated strings, so do the check like this.
+			Assert.AreEqual (str + char.MinValue, Encoding.UTF8.GetString (bytesWithNullTerm));
+
+			const int offset = 2;
+			var bytesWithNullTermOffset = str.ToNullTerminatedUtf8 (offset);
+			Assert.AreEqual (str.Substring (offset) + char.MinValue, Encoding.UTF8.GetString (bytesWithNullTermOffset));
 		}
 	}
 }
