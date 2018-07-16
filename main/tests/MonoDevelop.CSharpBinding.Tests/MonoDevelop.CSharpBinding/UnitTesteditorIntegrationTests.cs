@@ -51,10 +51,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			yield return new UnitTestTextEditorExtension ();
 		}
 
-		class UnitTestMarkers: IUnitTestMarkers
+		class UnitTestMarkers: IUnitTestMarkers2
 		{
 			public string TestMethodAttributeMarker { get; set; }
 			public string TestCaseMethodAttributeMarker { get; set; }
+			public string TestCaseSourceAttributeMarker { get; set; }
 			public string IgnoreTestMethodAttributeMarker { get; set; }
 			public string IgnoreTestClassAttributeMarker { get; set; }
 		}
@@ -63,6 +64,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			new UnitTestMarkers {
 				TestMethodAttributeMarker = "NUnit.Framework.TestAttribute",
 				TestCaseMethodAttributeMarker = "NUnit.Framework.TestCaseAttribute",
+				TestCaseSourceAttributeMarker = "NUnit.Framework.TestCaseSourceAttribute",
 				IgnoreTestMethodAttributeMarker = "NUnit.Framework.IgnoreAttribute",
 				IgnoreTestClassAttributeMarker = "NUnit.Framework.IgnoreAttribute"
 			}

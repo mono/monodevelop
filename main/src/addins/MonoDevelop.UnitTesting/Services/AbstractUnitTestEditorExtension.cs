@@ -386,5 +386,17 @@ namespace MonoDevelop.UnitTesting
 		/// <value>The ignore test method attribute marker.</value>
 		string IgnoreTestClassAttributeMarker { get; }
 	}
+
+	/// <summary>
+	/// TODO: Merge with IUnitTestMarkers - possible replace it with an abstract class in next API break.
+	/// </summary>
+	public interface IUnitTestMarkers2 : IUnitTestMarkers
+	{
+		/// <summary>
+		/// TestCaseSourceAttribute is used on a parameterized test method to identify the property, method or field that will provide the required arguments.  It has to be applied to a test method.
+		/// </summary>
+		/// <value>The test method attribute marker.</value>
+		string TestCaseSourceAttributeMarker { get; }
+	}
 }
 

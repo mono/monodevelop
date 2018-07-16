@@ -28,13 +28,16 @@ using Mono.Addins;
 
 namespace MonoDevelop.UnitTesting
 {
-	class UnitTestMarkersExtension: ExtensionNode, IUnitTestMarkers
+	class UnitTestMarkersExtension: ExtensionNode, IUnitTestMarkers2
 	{
 		[NodeAttribute ("testMethodAttributeMarker")]
 		public string TestMethodAttributeMarker { get; set; }
 
 		[NodeAttribute ("testCaseMethodAttributeMarker")]
 		public string TestCaseMethodAttributeMarker { get; set; }
+
+		[NodeAttribute ("testCaseSourceMethodAttributeMarker")]
+		public string TestCaseSourceAttributeMarker { get; set; }
 
 		[NodeAttribute ("ignoreTestMethodAttributeMarker")]
 		public string IgnoreTestMethodAttributeMarker { get; set; }
