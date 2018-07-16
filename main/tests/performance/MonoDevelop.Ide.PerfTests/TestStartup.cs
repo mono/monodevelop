@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.PerfTests
 		{
 			OpenApplicationAndWait ();
 
-			OpenExampleSolutionAndWait ();
+			OpenExampleSolutionAndWait (out _);
 
 			var t = Session.GetCounterMetadataValue<long>("Ide.TimeToCode", "CorrectedDuration");
 			Benchmark.SetTime ((double)t / 1000d);

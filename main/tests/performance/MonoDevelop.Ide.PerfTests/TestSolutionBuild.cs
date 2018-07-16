@@ -1,10 +1,10 @@
 ﻿//
-// TestSolutionLoad.cs
+// TestSolutionBuild.cs
 //
 // Author:
 //       iain <iaholmes@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,12 +29,14 @@ using NUnit.Framework;
 
 using MonoDevelop.UserInterfaceTesting;
 using MonoDevelop.PerformanceTesting;
+
 using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.PerfTests
 {
 	[TestFixture ()]
-	public class TestSolutionLoad : UITestBase
+	[Benchmark (Tolerance = 0.1)]
+	public class TestSolutionBuild : UITestBase
 	{
 		public override void SetUp ()
 		{
@@ -42,15 +44,21 @@ namespace MonoDevelop.Ide.PerfTests
 			PreStart ();
 		}
 
-		[Test]
-		[Benchmark (Tolerance = 0.1)]
-		public void TestLoad ()
+		[Test ()]
+		public void TestBuild ()
 		{
 			OpenApplicationAndWait ();
 
-			OpenExampleSolutionAndWait (out _);
+			OpenExampleSolutionAndWait (out var waitForPackages);
 
-			var t = Session.GetTimerDuration ("Ide.Shell.SolutionOpened");
+			if (waitForPackages) {
+				// The package system emits signals on the Solution object, but we don't have access to that,
+				// so we watch the statusbar for notification that packages are updated.
+				UserInterfaceTesting.Ide.WaitForStatusMessage (new [] {"Packages successfully restored."});
+			}
+			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (Commands.ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt", 60000);
+
+			var t = Session.GetTimerDuration ("Ide.Shell.ProjectBuilt");
 
 			Benchmark.SetTime ((double)t.TotalMilliseconds / 1000d);
 		}

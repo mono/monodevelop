@@ -146,7 +146,7 @@ namespace MonoDevelop.UserInterfaceTesting
 			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 		}
 
-		public void OpenExampleSolutionAndWait ()
+		public void OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
 			var sln = Path.Combine (MainPath, "build/tests/TestSolutions/ExampleFormsSolution/ExampleFormsSolution.sln");
 
@@ -157,6 +157,11 @@ namespace MonoDevelop.UserInterfaceTesting
 			// Tell the app to track time to code
 			Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.ReportTimeToCode", true);
 			Session.RunAndWaitForTimer (() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (Core.FilePath)sln), "Ide.Shell.SolutionOpened", 60000);
+
+			// Currently we only have one solution which needs packages waited for.
+			// When we have more projects, we'll need a more clever system for detecting
+			// if packages need updated.
+			waitForPackages = true;
 		}
 
 		public void StartSession (string mdProfile, string args = null)
