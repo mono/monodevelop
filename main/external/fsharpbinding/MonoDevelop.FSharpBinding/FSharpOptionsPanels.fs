@@ -22,13 +22,10 @@ module Settings =
     let fsiAdvanceToNextLine = "FSharpBinding.AdvanceToNextLine"
     let highlightMutables = "FSharpBinding.HighlightMutables"
     let showTypeSignatures = "FSharpBinding.ShowTypeSignatures"
+    let showStatusBarTooltips = "FSharpBinding.ShowStatusBarTooltips"
 
 type FSharpSettingsPanel() =
     inherit OptionsPanel()
-
-    let fscPathPropName = "FSharpBinding.FscPath"
-    let fsiAdvanceToNextLine = "FSharpBinding.AdvanceToNextLine"
-    let fsHighlightMutables = "FSharpBinding.HighlightMutables"
 
     let mutable widget : FSharpSettingsWidget = null
 
@@ -48,10 +45,11 @@ type FSharpSettingsPanel() =
         widget <- new FSharpSettingsWidget()
 
         // Load current state
-        let interactiveAdvanceToNextLine = PropertyService.Get (fsiAdvanceToNextLine, true)
-        let compilerPath = PropertyService.Get (fscPathPropName, "")
-        let highlightMutables = PropertyService.Get (fsHighlightMutables, false)
+        let interactiveAdvanceToNextLine = PropertyService.Get (Settings.fsiAdvanceToNextLine, true)
+        let compilerPath = PropertyService.Get (Settings.fscPath, "")
+        let highlightMutables = PropertyService.Get (Settings.highlightMutables, false)
         let showTypeSignatures = PropertyService.Get (Settings.showTypeSignatures, false)
+        let showStatusBarTooltips = PropertyService.Get (Settings.showStatusBarTooltips, true)
 
         setCompilerDisplay (compilerPath = "")
 
@@ -59,6 +57,7 @@ type FSharpSettingsPanel() =
 
         widget.CheckHighlightMutables.Active <- highlightMutables
         widget.CheckTypeSignatures.Active <- showTypeSignatures
+        widget.CheckStatusBarTooltips.Active <- showStatusBarTooltips
 
         // Implement checkbox for F# Compiler options
         widget.CheckCompilerUseDefault.Toggled.Add (fun _ -> setCompilerDisplay widget.CheckCompilerUseDefault.Active)
@@ -67,10 +66,11 @@ type FSharpSettingsPanel() =
         Control.op_Implicit widget
 
     override x.ApplyChanges() =
-        PropertyService.Set (fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
-        PropertyService.Set (fsiAdvanceToNextLine, widget.AdvanceLine.Active)
-        PropertyService.Set (fsHighlightMutables, widget.CheckHighlightMutables.Active)
+        PropertyService.Set (Settings.fscPath, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
+        PropertyService.Set (Settings.fsiAdvanceToNextLine, widget.AdvanceLine.Active)
+        PropertyService.Set (Settings.highlightMutables, widget.CheckHighlightMutables.Active)
         PropertyService.Set (Settings.showTypeSignatures, widget.CheckTypeSignatures.Active)
+        PropertyService.Set (Settings.showStatusBarTooltips, widget.CheckStatusBarTooltips.Active)
 
         IdeApp.Workbench.ReparseOpenDocuments()
 

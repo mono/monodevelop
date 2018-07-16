@@ -177,6 +177,7 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.ExpandSelectionTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebugScriptTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.IndentationTextEditorExtension" />
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.StatusBarTooltipExtension" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">
