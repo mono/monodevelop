@@ -318,9 +318,8 @@ namespace MonoDevelop.Projects
 		{
 			if (!item.UserProperties.IsEmpty && item.ParentFolder != null)
 				props.SetValue (path, item.UserProperties);
-			
-			SolutionFolder sf = item as SolutionFolder;
-			if (sf != null) {
+
+			if (item is SolutionFolder sf) {
 				foreach (SolutionFolderItem ci in sf.Items)
 					CollectItemProperties (props, ci, path + "." + ci.Name);
 			}
@@ -329,9 +328,8 @@ namespace MonoDevelop.Projects
 		void CleanItemProperties (PropertyBag props, SolutionFolderItem item, string path)
 		{
 			props.RemoveValue (path);
-			
-			SolutionFolder sf = item as SolutionFolder;
-			if (sf != null) {
+
+			if (item is SolutionFolder sf) {
 				foreach (SolutionFolderItem ci in sf.Items)
 					CleanItemProperties (props, ci, path + "." + ci.Name);
 			}
@@ -344,9 +342,8 @@ namespace MonoDevelop.Projects
 				item.LoadUserProperties (info);
 				props.RemoveValue (path);
 			}
-			
-			SolutionFolder sf = item as SolutionFolder;
-			if (sf != null) {
+
+			if (item is SolutionFolder sf) {
 				foreach (SolutionFolderItem ci in sf.Items)
 					LoadItemProperties (props, ci, path + "." + ci.Name);
 			}
@@ -373,7 +370,7 @@ namespace MonoDevelop.Projects
 
 		public SolutionConfiguration AddConfiguration (string id, bool createConfigForItems)
 		{
-			SolutionConfiguration conf = new SolutionConfiguration (id);
+			var conf = new SolutionConfiguration (id);
 			foreach (SolutionItem item in Items.Where (it => it.SupportsBuild())) {
 				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (id)) == null) {
 					SolutionItemConfiguration newc = item.CreateConfiguration (id);
@@ -389,7 +386,7 @@ namespace MonoDevelop.Projects
 		
 		public override ReadOnlyCollection<string> GetConfigurations ()
 		{
-			List<string> configs = new List<string> ();
+			var configs = new List<string> ();
 			foreach (SolutionConfiguration conf in Configurations)
 				configs.Add (conf.Id);
 			return configs.AsReadOnly ();
@@ -857,12 +854,10 @@ namespace MonoDevelop.Projects
 
 		/*protected virtual*/ bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			var ssc = runConfiguration as SingleItemSolutionRunConfiguration;
-			if (ssc != null)
+			if (runConfiguration is SingleItemSolutionRunConfiguration ssc)
 				return ssc.Item.CanExecute (context, configuration, ssc.RunConfiguration);
 
-			var msc = runConfiguration as MultiItemSolutionRunConfiguration;
-			if (msc != null) {
+			if (runConfiguration is MultiItemSolutionRunConfiguration msc) {
 				var multiProject = context.ExecutionTarget as MultiProjectExecutionTarget;
 				foreach (StartupItem it in msc.Items) {
 					var localContext = context;
@@ -879,13 +874,11 @@ namespace MonoDevelop.Projects
 		
 		/*protected virtual*/ async Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			var ssc = runConfiguration as SingleItemSolutionRunConfiguration;
-			if (ssc != null) {
+			if (runConfiguration is SingleItemSolutionRunConfiguration ssc) {
 				await ssc.Item.Execute (monitor, context, configuration, ssc.RunConfiguration);
 				return;
 			}
-			var msc = runConfiguration as MultiItemSolutionRunConfiguration;
-			if (msc != null) {
+			if (runConfiguration is MultiItemSolutionRunConfiguration msc) {
 				var tasks = new List<Task> ();
 				var monitors = new List<AggregatedProgressMonitor> ();
 				monitor.BeginTask ("Executing projects", 1);
@@ -898,7 +891,7 @@ namespace MonoDevelop.Projects
 						localContext = new ExecutionContext (context.ExecutionHandler, context.ConsoleFactory, multiProject?.GetTarget (it.SolutionItem));
 					if (!it.SolutionItem.CanExecute (localContext, configuration, it.RunConfiguration))
 						continue;
-					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
+					var mon = new AggregatedProgressMonitor ();
 					mon.AddFollowerMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.FollowerCancel);
 					monitors.Add (mon);
 					tasks.Add (it.SolutionItem.Execute (mon, localContext, configuration, it.RunConfiguration));
@@ -923,16 +916,13 @@ namespace MonoDevelop.Projects
 
 		/*protected virtual*/ void OnStartupItemChanged(EventArgs e)
 		{
-			if (StartupItemChanged != null)
-				StartupItemChanged (this, e);
+			StartupItemChanged?.Invoke (this, e);
 		}
 
 		void OnStartupConfigurationChanged (EventArgs e)
 		{
-			if (StartupConfigurationChanged != null)
-				StartupConfigurationChanged (this, e);
+			StartupConfigurationChanged?.Invoke (this, e);
 		}
-
 
 		[ThreadSafe]
 		public MSBuildFileFormat FileFormat {
@@ -988,25 +978,21 @@ namespace MonoDevelop.Projects
 			
 			solutionItems = null;
 
-			SolutionFolder sf = args.SolutionItem as SolutionFolder;
-			if (sf != null) {
+			if (args.SolutionItem is SolutionFolder sf) {
 				foreach (SolutionFolderItem eitem in sf.GetAllItems<SolutionFolderItem> ())
 					SetupNewItem (eitem, null);
-			}
-			else {
+			} else {
 				SetupNewItem (args.SolutionItem, args.ReplacedItem);
 			}
 
 			OnRootDirectoriesChanged ();
-			
-			if (SolutionItemAdded != null)
-				SolutionItemAdded (this, args);
+
+			SolutionItemAdded?.Invoke (this, args);
 		}
 		
 		void SetupNewItem (SolutionFolderItem item, SolutionFolderItem replacedItem)
 		{
-			SolutionItem eitem = item as SolutionItem;
-			if (eitem != null) {
+			if (item is SolutionItem eitem) {
 				eitem.ConvertToFormat (FileFormat);
 				eitem.NeedsReload = false;
 				if (eitem.SupportsConfigurations () || replacedItem != null) {
@@ -1035,22 +1021,18 @@ namespace MonoDevelop.Projects
 		internal /*protected virtual*/ void OnSolutionItemRemoved (SolutionItemChangeEventArgs args)
 		{
 			solutionItems = null;
-			
-			SolutionFolder sf = args.SolutionItem as SolutionFolder;
-			if (sf != null) {
+
+			if (args.SolutionItem is SolutionFolder sf) {
 				foreach (SolutionItem eitem in sf.GetAllItems<SolutionItem> ())
 					DetachItem (eitem, args.Reloading);
-			}
-			else {
-				SolutionItem item = args.SolutionItem as SolutionItem;
-				if (item != null)
+			} else {
+				if (args.SolutionItem is SolutionItem item)
 					DetachItem (item, args.Reloading);
 			}
 
 			OnRootDirectoriesChanged ();
-			
-			if (SolutionItemRemoved != null)
-				SolutionItemRemoved (this, args);
+
+			SolutionItemRemoved?.Invoke (this, args);
 		}
 		
 		void DetachItem (SolutionItem item, bool reloading)
@@ -1082,7 +1064,7 @@ namespace MonoDevelop.Projects
 				if (project == projectToRemove)
 					continue;
 				
-				List<ProjectReference> toDelete = new List<ProjectReference> ();
+				var toDelete = new List<ProjectReference> ();
 				
 				foreach (ProjectReference pref in project.References) {
 					if (pref.ReferenceType == ReferenceType.Project && pref.Reference == projectToRemove.Name)
@@ -1100,7 +1082,7 @@ namespace MonoDevelop.Projects
 		internal void ReadSolution (ProgressMonitor monitor)
 		{
 			var sln = new SlnFile ();
-			sln.Read (this.FileName);
+			sln.Read (FileName);
 
 			using (currentLoadContext = new SolutionLoadContext (this))
 				SolutionExtension.OnReadSolution (monitor, sln);
@@ -1177,62 +1159,52 @@ namespace MonoDevelop.Projects
 		
 		internal /*protected virtual*/ void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
-			if (FileAddedToProject != null)
-				FileAddedToProject (this, args);
+			FileAddedToProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnFileRemovedFromProject (ProjectFileEventArgs args)
 		{
-			if (FileRemovedFromProject != null)
-				FileRemovedFromProject (this, args);
+			FileRemovedFromProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnFileChangedInProject (ProjectFileEventArgs args)
 		{
-			if (FileChangedInProject != null)
-				FileChangedInProject (this, args);
+			FileChangedInProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnFilePropertyChangedInProject (ProjectFileEventArgs args)
 		{
-			if (FilePropertyChangedInProject != null)
-				FilePropertyChangedInProject (this, args);
+			FilePropertyChangedInProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
-			if (FileRenamedInProject != null)
-				FileRenamedInProject (this, args);
+			FileRenamedInProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnReferenceAddedToProject (ProjectReferenceEventArgs args)
 		{
-			if (ReferenceAddedToProject != null)
-				ReferenceAddedToProject (this, args);
+			ReferenceAddedToProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnReferenceRemovedFromProject (ProjectReferenceEventArgs args)
 		{
-			if (ReferenceRemovedFromProject != null)
-				ReferenceRemovedFromProject (this, args);
+			ReferenceRemovedFromProject?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnEntryModified (SolutionItemModifiedEventArgs args)
 		{
-			if (EntryModified != null)
-				EntryModified (this, args);
+			EntryModified?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnEntrySaved (SolutionItemSavedEventArgs args)
 		{
-			if (EntrySaved != null)
-				EntrySaved (this, args);
+			EntrySaved?.Invoke (this, args);
 		}
 		
 		internal /*protected virtual*/ void OnItemReloadRequired (SolutionItemEventArgs args)
 		{
-			if (ItemReloadRequired != null)
-				ItemReloadRequired (this, args);
+			ItemReloadRequired?.Invoke (this, args);
 		}
 		
 #endregion
@@ -1400,8 +1372,7 @@ namespace MonoDevelop.Projects
 
 		void IDisposable.Dispose ()
 		{
-			if (LoadCompleted != null)
-				LoadCompleted (this, EventArgs.Empty);
+			LoadCompleted?.Invoke (this, EventArgs.Empty);
 		}
 	}
 }
