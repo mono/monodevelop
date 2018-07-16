@@ -181,8 +181,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				expanderRect = Rectangle.Zero;
 				layoutBounds = cellArea;
-				layoutBounds.X += ImageSize - 3;
-				layoutBounds.Width -= (ImageSize - 3) + DefaultInformationContainerWidth;
+				layoutBounds.X += ImageSize + ImagePadding;
+				layoutBounds.Width -= ImagePadding + DefaultInformationContainerWidth;
 
 				textLayout = GetUnconstrainedLayout ();
 				var textSize = textLayout.GetSize ();
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
 		const int ImageSize = 16;
-		const int ImagePadding = 0;
+		const int ImagePadding = 4;
 		const int FontSize = 11;
 		const int MinLayoutWidth = 30;
 
@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			FillCellBackground (ctx, buildOutputNode, status);
 
 			//Draw the image row
-			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
+			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), cellArea.Left, ImageSize, isSelected, ImagePadding);
 
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
