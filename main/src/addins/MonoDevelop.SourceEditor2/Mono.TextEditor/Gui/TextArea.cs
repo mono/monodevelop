@@ -549,6 +549,7 @@ namespace Mono.TextEditor
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
 		{
 			HideTooltip ();
+			textViewMargin.HideCodeSegmentPreviewWindow ();
 			ResetIMContext ();
 			
 			if (Caret.AutoScrollToCaret && HasFocus)
@@ -1278,8 +1279,7 @@ namespace Mono.TextEditor
 			uint keyVal = (uint)key;
 			CurrentMode.SelectValidShortcut (accels, out key, out mod);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
-				var p = LocationToPoint (Caret.Location);
-				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
+				ShowQuickInfo ();
 				keyPressTimings.EndTimer ();
 				return true;
 			}
@@ -3163,6 +3163,14 @@ namespace Mono.TextEditor
 
 		public void ShowQuickInfo ()
 		{
+			int caretOffset = Caret.Offset;
+			foreach (var shownFolding in textViewMargin.GetFoldRectangles (Caret.Line)) {
+				if (shownFolding.Value.Offset == caretOffset || shownFolding.Value.EndOffset == caretOffset) {
+					textViewMargin.ShowCodeSegmentPreviewTooltip (shownFolding.Value.Segment, shownFolding.Key, 0);
+					return;
+				}
+			}
+
 			var p = LocationToPoint (Caret.Location);
 			ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y, 0);
 		}
