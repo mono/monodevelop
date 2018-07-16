@@ -3098,6 +3098,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\IMonoDevelopHostDocument.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
+    <Compile Include="MonoDevelop.Ide\ProjectOperations.SolutionItemBuildBatch.cs" />
     <Compile Include="MonoDevelop.Ide\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />

@@ -26,44 +26,35 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Ide.ProgressMonitoring;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Projects;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
-using System.Diagnostics;
-using System.Text;
-using MonoDevelop.Ide.TypeSystem;
-using System.Threading.Tasks;
-using System.Threading;
-using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
-using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects.MSBuild;
-using System.Collections.Immutable;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
-using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
+using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 
 namespace MonoDevelop.Ide
 {
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
-	public class ProjectOperations
+	public partial class ProjectOperations
 	{
 		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
 		MultipleAsyncOperation currentRunOperation = MultipleAsyncOperation.CompleteMultipleOperation;
@@ -1394,6 +1385,10 @@ namespace MonoDevelop.Ide
 			Func<IBuildTarget, ProgressMonitor,Task> createPrepareExecutionTask = null,
 			CancellationToken? token = null)
 		{
+			if (executionTargets.Count == 0) {
+				throw new ArgumentException ("No execution targets specified", nameof (executionTargets)); ;
+			}
+
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				var bres = await currentBuildOperation.Task;
 				if (bres.HasErrors || (cancelOnWarning && bres.HasWarnings))
@@ -1405,58 +1400,16 @@ namespace MonoDevelop.Ide
 			if (r.Failed)
 				return false;
 
-			//validate there's only one solution and all items are in it
-			if (executionTargets.Count > 1) {
-				Solution sln = null;
-				foreach (var executionTarget in executionTargets) {
-					switch (executionTarget) {
-					case SolutionItem si:
-						if (sln == null) {
-							sln = si.ParentSolution;
-						} else if (sln != si.ParentSolution) {
-							throw new ArgumentException ("All items must be in the same solution", nameof (executionTargets));
-						}
-						continue;
-					case Solution s:
-						throw new ArgumentException ("Only one solution is permitted", nameof (executionTargets));
-					}
-				}
-			}
+			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionTargets.SelectMany (et => et.GetExecutionDependencies ()));
 
-			var buildTargets = new HashSet<IBuildTarget> ();
-
-			foreach (var target in executionTargets) {
-				foreach (var dep in target.GetExecutionDependencies ()) {
-					buildTargets.Add (dep);
-				}
-			}
-
-			var needsBuild = FastCheckNeedsBuild (buildTargets, configuration);
-			if (needsBuild.Count == 0) {
+			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
 				return true;
 			}
 
 			if (!buildWithoutPrompting) {
-				var bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
-				var bRun = new AlertButton (Gtk.Stock.Execute, true);
-				var res = MessageService.AskQuestion (
-					GettextCatalog.GetString ("Outdated Build"),
-					GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
-					1,
-					AlertButton.Cancel,
-					bBuild,
-					bRun);
-
-				// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
-				// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
-				DispatchService.RunPendingEvents ();
-
-				if (res == bRun) {
-					return true;
-				}
-
-				if (res != bBuild) {
-					return false;
+				var ret = PromptToBuild ();
+				if (ret.HasValue) {
+					return ret.Value;
 				}
 			}
 
@@ -1474,13 +1427,11 @@ namespace MonoDevelop.Ide
 				prepareExecutionTask = RunPrepareExecutionTasks ();
 			}
 
-			//TODO: parallelize this and deduplicate shared dependencies
-			foreach (var target in buildTargets) {
-				var result = await Build (target, true, token).Task;
-				if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
-					prepareOpTokenSource?.Cancel ();
-					return false;
-				}
+			BuildResult result = await Build (buildTarget, token).Task;
+
+			if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
+				prepareOpTokenSource?.Cancel ();
+				return false;
 			}
 
 			building = false;
@@ -1503,63 +1454,93 @@ namespace MonoDevelop.Ide
 		}
 
 		/// <summary>
-		/// From a list of build targets, determines which of them need building.
+		/// Prompts the user whether they want to build the project
 		/// </summary>
-		/// <returns>The targets that need to be built.</returns>
-		/// <param name="targets">The build targets to check.</param>
-		/// <param name="configuration">The build configuration selector.</param>
-		HashSet<IBuildTarget> FastCheckNeedsBuild (HashSet<IBuildTarget> targets, ConfigurationSelector configuration)
+		/// <returns>True to execute without building, false to cancel, null to build.</returns>
+		static bool? PromptToBuild ()
 		{
-			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
-			if (!string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase))
-				return targets;
+			var bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
+			var bRun = new AlertButton (Gtk.Stock.Execute, true);
+			var res = MessageService.AskQuestion (
+				GettextCatalog.GetString ("Outdated Build"),
+				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
+				1,
+				AlertButton.Cancel,
+				bBuild,
+				bRun);
 
-			var targetsNeedBuild = new HashSet<IBuildTarget> ();
-			var checkedTargets = new HashSet<IBuildTarget> ();
+			// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
+			// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
+			DispatchService.RunPendingEvents ();
 
-			foreach (var target in targets) {
-				if (!checkedTargets.Add (target)) {
-					continue;
+			if (res == bRun) {
+				return true;
+			}
+
+			if (res == bBuild) {
+				return null;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Given a build target, determines whether it or its dependencies needs to be built.
+		/// </summary>
+		/// <param name="target">The build target to check.</param>
+		/// <param name="configuration">The build configuration selector.</param>
+		static bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		{
+			if (FastBuildCheckDisabled ()) {
+				return true;
+			}
+
+			IEnumerable<SolutionItem> items;
+
+			switch (target) {
+			case Project proj: {
+					var deps = new HashSet<SolutionItem> { proj };
+					CollectDependencies (proj, deps, configuration);
+					items = deps;
+					break;
 				}
-				switch (target) {
-				case Project proj: {
-						if (proj.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ()))) {
-							targetsNeedBuild.Add (proj);
-							continue;
-						}
-						//TODO: respect solution level dependencies
-						var deps = new HashSet<SolutionItem> ();
-						CollectReferencedItems (proj, deps, configuration);
-						foreach (var dep in deps.OfType<Project> ()) {
-							if (checkedTargets.Add (target) && dep.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ()))) {
-								targetsNeedBuild.Add (proj);
-								continue;
-							}
-						}
-						continue;
+			case SolutionItemBuildBatch batch: {
+					var deps = new HashSet<SolutionItem> ();
+					foreach (var item in batch.Items) {
+						deps.Add (item);
+						CollectDependencies (item, deps, configuration);
 					}
-				case Solution sln:
-					foreach (var item in sln.GetAllProjects ()) {
-						if (checkedTargets.Add (item) && item.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
-							targetsNeedBuild.Add (sln);
-							continue;
-					}
-					//TODO: handle other IBuildTargets in the sln
-					continue;
-				default:
-					targetsNeedBuild.Add (target);
-					continue;
+					items = deps;
+					break;
+				}
+			case Solution sln:
+				items = sln.GetAllSolutionItems ();
+				break;
+			default:
+				return true;
+			}
+
+			foreach (var item in items) {
+				if (!(item is Project p) || p.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ()))) {
+					return true;
 				}
 			}
 
-			return targetsNeedBuild;
+			return false;
 		}
 
-		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
+		static bool FastBuildCheckDisabled ()
+		{
+			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
+			return !string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase);
+		}
+
+		//TODO: respect solution level dependencies
+		static void CollectDependencies (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
 		{
 			foreach (var refItem in item.GetReferencedItems (configuration)) {
 				if (collected.Add (refItem)) {
-					CollectReferencedItems (refItem, collected, configuration);
+					CollectDependencies (refItem, collected, configuration);
 				}
 			}
 		}
@@ -1634,7 +1615,7 @@ namespace MonoDevelop.Ide
 		/// Initializes the context to be used for build operations. It currently just initializes
 		/// it with the currently selected execution target.
 		/// </summary>
-		T InitOperationContext<T> (IBuildTarget target, T context) where T:OperationContext
+		static T InitOperationContext<T> (IBuildTarget target, T context) where T:OperationContext
 		{
 			OperationContext ctx = context;
 			if (ctx == null)
