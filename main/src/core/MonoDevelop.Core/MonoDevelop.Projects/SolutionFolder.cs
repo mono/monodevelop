@@ -418,6 +418,7 @@ namespace MonoDevelop.Projects
 			return GetAllItems<SolutionFolderItem> ();
 		}
 		
+		[Obsolete("This method will be removed in future releases")]
 		public ReadOnlyCollection<T> GetAllItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			var list = new List<T> ();
@@ -434,6 +435,7 @@ namespace MonoDevelop.Projects
 		
 		// The projects are returned in the order
 		// they should be compiled, acording to their references.
+		[Obsolete("This method will be removed in future releases")]
 		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
 			var list = new List<Project> ();
@@ -453,6 +455,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		[Obsolete("This method will be removed in future releases")]
 		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration, bool topologicalSort, bool includeExternalReferences)
 		{
 			var list = new List<SolutionItem> ();
@@ -463,7 +466,9 @@ namespace MonoDevelop.Projects
 			if (conf == null)
 				return list.AsReadOnly ();
 
-			GetAllBuildableEntries (list, configuration, conf, includeExternalReferences);
+			var collected = new HashSet<SolutionItem> ();
+			CollectBuildableEntries (collected, configuration, conf, includeExternalReferences);
+			list.AddRange (collected);
 
 			if (topologicalSort)
 				return SolutionItem.TopologicalSort (list, configuration);
@@ -471,33 +476,23 @@ namespace MonoDevelop.Projects
 				return list.AsReadOnly ();
 		}
 
-		void GetAllBuildableEntries (List<SolutionItem> list, ConfigurationSelector configuration, SolutionConfiguration slnConf, bool includeExternalReferences)
-		{
-			foreach (SolutionFolderItem item in Items) {
-				if (item is SolutionFolder sf)
-					GetAllBuildableEntries (list, configuration, slnConf, includeExternalReferences);
-				else if ((item is SolutionItem) && slnConf.BuildEnabledForItem ((SolutionItem)item) && ((SolutionItem)item).SupportsBuild ())
-					GetAllBuildableReferences (list, (SolutionItem)item, configuration, slnConf, includeExternalReferences, false);
-			}
-		}
-
-		static void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, SolutionConfiguration conf, bool includeExternalReferences, bool isDirectReference)
-		{
-			if (list.Contains (item) || !conf.BuildEnabledForItem (item))
-				return;
-			// Skip unsupported projects which are not directly referenced by other (supported) projects
-			if (!isDirectReference && item.IsUnsupportedProject)
-				return;
-			list.Add (item);
-			if (includeExternalReferences) {
-				foreach (var it in item.GetReferencedItems (configuration))
-					GetAllBuildableReferences (list, it, configuration, conf, includeExternalReferences, true);
-			}
-		}
-
+		[Obsolete("This method will be removed in future releases")]
 		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration)
 		{
 			return GetAllBuildableEntries (configuration, false, false);
+		}
+
+		void CollectBuildableEntries (HashSet<SolutionItem> collected, ConfigurationSelector configuration, SolutionConfiguration slnConf, bool includeDependencies)
+		{
+			foreach (SolutionFolderItem item in Items) {
+				if (item is SolutionFolder sf)
+					sf.CollectBuildableEntries (collected, configuration, slnConf, includeDependencies);
+				else if (item is SolutionItem si && slnConf.BuildEnabledForItem (si) && si.SupportsBuild () && collected.Add (si)) {
+					if (includeDependencies) {
+						Solution.CollectBuildableDependencies (collected, si, configuration, slnConf);
+					}
+				}
+			}
 		}
 
 		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
@@ -575,160 +570,31 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
-		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
-			if (ParentSolution == null)
-				return new BuildResult();
-			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
-			if (conf == null)
-				return new BuildResult();
+			var slnConf = ParentSolution?.GetConfiguration (configuration);
+			if (slnConf == null)
+				return Task.FromResult (new BuildResult ());
 
-			if (operationContext == null)
-				operationContext = new OperationContext ();
+			//don't collect dependencies, CleanItems will do it
+			var collected = new HashSet<SolutionItem> ();
+			CollectBuildableEntries (collected, configuration, slnConf, false);
 
-			ReadOnlyCollection<SolutionItem> allProjects;
-			try {
-				allProjects = GetAllBuildableEntries (configuration, true, true);
-			} catch (CyclicDependencyException) {
-				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
-				return new BuildResult ("", 1, 1);
-			}
-
-			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
-
-			bool operationStarted = false;
-			BuildResult result = null;
-
-			try {
-				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, configuration, operationContext);
-
-				return result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
-					return item.Clean (m, configuration, operationContext);
-				}, false);
-			}
-			finally {
-				if (operationStarted)
-					await ParentSolution.EndBuildOperation (monitor, configuration, operationContext, result);
-				monitor.EndTask ();
-			}
+			return ParentSolution.CleanItems (monitor, configuration, collected, operationContext);
 		}
 
-		class BuildStatus
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
-			public bool Failed;
-			public Task Task;
-			public BuildResult Result;
-		}
+			var slnConf = ParentSolution?.GetConfiguration (configuration);
+			if (slnConf == null)
+				return Task.FromResult (new BuildResult ());
 
-		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
-		{
-			ReadOnlyCollection<SolutionItem> allProjects;
-				
-			try {
-				allProjects = GetAllBuildableEntries (configuration, true, true);
-			} catch (CyclicDependencyException) {
-				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
-				return new BuildResult ("", 1, 1);
-			}
+			//don't collect dependencies, BuildItems will do it
+			var collected = new HashSet<SolutionItem> ();
+			CollectBuildableEntries (collected, configuration, slnConf, false);
 
-			if (operationContext == null)
-				operationContext = new OperationContext ();
-
-			bool operationStarted = false;
-			BuildResult result = null;
-
-			try {
-
-				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
-					allProjects = allProjects.Where (si => {
-						if (si is Project p)
-							return p.FastCheckNeedsBuild (configuration);
-						return true;//Don't filter things that don't have FastCheckNeedsBuild
-					}).ToList ().AsReadOnly ();
-				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
-
-				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, configuration, operationContext);
-
-				return result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
-					return item.Build (m, configuration, false, operationContext);
-				}, false);
-
-			} finally {
-				if (operationStarted)
-					await ParentSolution.EndBuildOperation (monitor, configuration, operationContext, result);
-				monitor.EndTask ();
-			}
+			return ParentSolution.BuildItems (monitor, configuration, collected, operationContext);
         }
-
-		internal static async Task<BuildResult> RunParallelBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> sortedItems, Func<ProgressMonitor,SolutionItem,Task<BuildResult>> buildAction, bool ignoreFailed)
-		{
-			List<SolutionItem> toBuild = new List<SolutionItem> (sortedItems);
-			BuildResult cres = new BuildResult ();
-			cres.BuildCount = 0;
-
-			// Limit the number of concurrent builders to processors / 2
-
-			var slotScheduler = new TaskSlotScheduler (Environment.ProcessorCount / 2);
-
-			// Create a dictionary with the status objects of all items
-
-			var buildStatus = new Dictionary<SolutionItem, BuildStatus> ();
-			foreach (var it in toBuild)
-				buildStatus.Add (it, new BuildStatus ());
-
-			// Start the build tasks for all itemsw
-
-			foreach (var itemToBuild in toBuild) {
-				if (monitor.CancellationToken.IsCancellationRequested)
-					break;
-
-				var item = itemToBuild;
-
-				var myStatus = buildStatus [item];
-
-				var myMonitor = monitor.BeginAsyncStep (1);
-
-				// Get a list of the status objects for all items on which this one depends
-
-				var refStatus = item.GetReferencedItems (configuration).Select (it => {
-					BuildStatus bs;
-					buildStatus.TryGetValue (it, out bs);
-					return bs;
-				}).Where (t => t != null).ToArray ();
-
-				// Build the item when all its dependencies have been built
-
-				var refTasks = refStatus.Select (bs => bs.Task);
-
-				myStatus.Task = Task.WhenAll (refTasks).ContinueWith (async t => {
-					if (!ignoreFailed && (refStatus.Any (bs => bs.Failed) || t.IsFaulted)) {
-						myStatus.Failed = true;
-					} else {
-						using (await slotScheduler.GetTaskSlot ())
-							myStatus.Result = await buildAction (myMonitor, item);
-						myStatus.Failed = myStatus.Result != null && myStatus.Result.ErrorCount > 0;
-					}
-					myMonitor.Dispose ();
-				}, Runtime.MainTaskScheduler).Unwrap ();
-
-				if (!Runtime.Preferences.ParallelBuild.Value)
-					await myStatus.Task;
-			}
-
-			// Wait for all tasks to end
-
-			await Task.WhenAll (buildStatus.Values.Select (bs => bs.Task));
-
-			// Generate the errors in the order they were supposed to build
-
-			foreach (var it in toBuild) {
-				BuildStatus bs;
-				if (buildStatus.TryGetValue (it, out bs) && bs.Result != null)
-					cres.Append (bs.Result);
-			}
-
-			return cres;
-		}
 
 		[Obsolete("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)

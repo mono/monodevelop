@@ -442,12 +442,13 @@ namespace MonoDevelop.Projects
 
 		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
-			return RootFolder.GetAllItemsWithTopologicalSort<T> (configuration);
+			var list = new List<T> (GetAllItems<T> ());
+			return SolutionItem.TopologicalSort (list, configuration);
 		}
 		
 		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
-			return RootFolder.GetAllProjectsWithTopologicalSort (configuration);
+			return GetAllSolutionItemsWithTopologicalSort<Project> (configuration);
 		}
 
 		public override IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
@@ -922,6 +923,198 @@ namespace MonoDevelop.Projects
 		void OnStartupConfigurationChanged (EventArgs e)
 		{
 			StartupConfigurationChanged?.Invoke (this, e);
+		}
+
+		/// <summary>
+		/// Builds a set of SolutionItems from this solution and their dependencies. They will be built in parallel, and common dependencies will be deduplicated.
+		/// </summary>
+		public async Task<BuildResult> CleanItems (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> items, OperationContext operationContext = null)
+		{
+			SolutionConfiguration slnConf = GetConfiguration (configuration);
+			if (slnConf == null)
+				return new BuildResult ();
+
+			ReadOnlyCollection<SolutionItem> sortedItems;
+			try {
+				sortedItems = GetItemsAndDependenciesSortedForBuild (items, configuration);
+			} catch (CyclicDependencyException) {
+				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
+				return new BuildResult ("", 1, 1);
+			}
+
+			if (operationContext == null)
+				operationContext = new OperationContext ();
+
+			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), sortedItems.Count);
+
+			bool operationStarted = false;
+			BuildResult result = null;
+
+			try {
+				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
+
+				return result = await RunParallelBuildOperation (monitor, configuration, sortedItems, (ProgressMonitor m, SolutionItem item) => {
+					return item.Clean (m, configuration, operationContext);
+				}, false);
+			} finally {
+				if (operationStarted)
+					await EndBuildOperation (monitor, configuration, operationContext, result);
+				monitor.EndTask ();
+			}
+		}
+
+		/// <summary>
+		/// Builds a set of SolutionItems from this solution and their dependencies. They will be built in parallel, and common dependencies will be deduplicated.
+		/// </summary>
+		public async Task<BuildResult> BuildItems (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> items, OperationContext operationContext = null)
+		{
+			SolutionConfiguration slnConf = GetConfiguration (configuration);
+			if (slnConf == null)
+				return new BuildResult ();
+
+			ReadOnlyCollection<SolutionItem> allProjects;
+
+			try {
+				allProjects = GetItemsAndDependenciesSortedForBuild (items, configuration);
+			} catch (CyclicDependencyException) {
+				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
+				return new BuildResult ("", 1, 1);
+			}
+
+			if (operationContext == null)
+				operationContext = new OperationContext ();
+
+			bool operationStarted = false;
+			BuildResult result = null;
+
+			try {
+
+				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
+					allProjects = allProjects.Where (si => {
+						if (si is Project p)
+							return p.FastCheckNeedsBuild (configuration);
+						return true;//Don't filter things that don't have FastCheckNeedsBuild
+					}).ToList ().AsReadOnly ();
+				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
+
+				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
+
+				return result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+					return item.Build (m, configuration, false, operationContext);
+				}, false);
+
+			} finally {
+				if (operationStarted)
+					await EndBuildOperation (monitor, configuration, operationContext, result);
+				monitor.EndTask ();
+			}
+		}
+
+		static async Task<BuildResult> RunParallelBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> sortedItems, Func<ProgressMonitor, SolutionItem, Task<BuildResult>> buildAction, bool ignoreFailed)
+		{
+			var toBuild = new List<SolutionItem> (sortedItems);
+			var cres = new BuildResult { BuildCount = 0 };
+
+			// Limit the number of concurrent builders to processors / 2
+
+			var slotScheduler = new TaskSlotScheduler (Environment.ProcessorCount / 2);
+
+			// Create a dictionary with the status objects of all items
+
+			var buildStatus = new Dictionary<SolutionItem, BuildStatus> ();
+			foreach (var it in toBuild)
+				buildStatus.Add (it, new BuildStatus ());
+
+			// Start the build tasks for all itemsw
+
+			foreach (var itemToBuild in toBuild) {
+				if (monitor.CancellationToken.IsCancellationRequested)
+					break;
+
+				var item = itemToBuild;
+
+				var myStatus = buildStatus[item];
+
+				var myMonitor = monitor.BeginAsyncStep (1);
+
+				// Get a list of the status objects for all items on which this one depends
+
+				var refStatus = item.GetReferencedItems (configuration).Select (it => {
+					buildStatus.TryGetValue (it, out var bs);
+					return bs;
+				}).Where (t => t != null).ToArray ();
+
+				// Build the item when all its dependencies have been built
+
+				var refTasks = refStatus.Select (bs => bs.Task);
+
+				myStatus.Task = Task.WhenAll (refTasks).ContinueWith (async t => {
+					if (!ignoreFailed && (refStatus.Any (bs => bs.Failed) || t.IsFaulted)) {
+						myStatus.Failed = true;
+					} else {
+						using (await slotScheduler.GetTaskSlot ())
+							myStatus.Result = await buildAction (myMonitor, item);
+						myStatus.Failed = myStatus.Result != null && myStatus.Result.ErrorCount > 0;
+					}
+					myMonitor.Dispose ();
+				}, Runtime.MainTaskScheduler).Unwrap ();
+
+				if (!Runtime.Preferences.ParallelBuild.Value)
+					await myStatus.Task;
+			}
+
+			// Wait for all tasks to end
+
+			await Task.WhenAll (buildStatus.Values.Select (bs => bs.Task));
+
+			// Generate the errors in the order they were supposed to build
+
+			foreach (var it in toBuild) {
+				if (buildStatus.TryGetValue (it, out var bs) && bs.Result != null)
+					cres.Append (bs.Result);
+			}
+
+			return cres;
+		}
+
+		class BuildStatus
+		{
+			public bool Failed;
+			public Task Task;
+			public BuildResult Result;
+		}
+
+		/// <summary>
+		/// Given a set of SolutionItems from this solution, collects them and their buildable dependencies, and toplogically sorts them in preparation for a build.
+		/// </summary>
+		ReadOnlyCollection<SolutionItem> GetItemsAndDependenciesSortedForBuild (IEnumerable<SolutionItem> items, ConfigurationSelector configuration)
+		{
+			var slnConf = GetConfiguration (configuration);
+			var collected = new HashSet<SolutionItem> ();
+
+			foreach (var item in items) {
+				if (item.ParentSolution != this) {
+					throw new ArgumentException ("All items must be in this solution", nameof(items));
+				}
+				if (slnConf.BuildEnabledForItem (item) && collected.Add (item)) {
+					CollectBuildableDependencies (collected, item, configuration, slnConf);
+				}
+			}
+
+			return SolutionItem.TopologicalSort (collected, configuration);
+		}
+
+		/// <summary>
+		/// Recursively collects buildable dependencies.
+		/// </summary>
+		internal static void CollectBuildableDependencies (HashSet<SolutionItem> collected, SolutionItem item, ConfigurationSelector configuration, SolutionConfiguration conf)
+		{
+			foreach (var it in item.GetReferencedItems (configuration)) {
+				if (collected.Contains (it) || !conf.BuildEnabledForItem (it))
+					continue;
+				collected.Add (it);
+				CollectBuildableDependencies (collected, it, configuration, conf);
+			}
 		}
 
 		[ThreadSafe]

@@ -635,35 +635,16 @@ namespace MonoDevelop.Projects
 				return result;
 			}
 
+			if (ParentSolution == null) {
+				throw new InvalidOperationException ("Cannot build SolutionItem without parent solution");
+			}
+
 			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, CreateProjectEventMetadata (solutionConfiguration));
 			try {
-				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, solutionConfiguration, operationContext);
-
-				// Get a list of all items that need to be built (including this),
-				// and build them in the correct order
-
-				var referenced = new List<SolutionItem> ();
-				var visited = new Set<SolutionItem> ();
-				GetBuildableReferencedItems (visited, referenced, this, solutionConfiguration);
-				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
-					referenced.RemoveAll (si => {
-						if (si is Project p)
-							return !p.FastCheckNeedsBuild (solutionConfiguration);
-						return false;//Don't filter things that don't have FastCheckNeedsBuild
-					});
-				var sortedReferenced = TopologicalSort (referenced, solutionConfiguration);
-
-				SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
-				string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
-				monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), sortedReferenced.Count);
-
-				result = await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
-					return item.Build (m, solutionConfiguration, false, operationContext);
-				}, false);
+				operationStarted = await ParentSolution.BeginBuildOperation (monitor, solutionConfiguration, operationContext);
+				result = await ParentSolution.BuildItems (monitor, solutionConfiguration, new[] { this }, operationContext);
 			} finally {
-				monitor.EndTask ();
 				tt.End ();
-
 				if (operationStarted)
 					await ParentSolution.EndBuildOperation (monitor, solutionConfiguration, operationContext, result);
 			}
