@@ -838,7 +838,8 @@ namespace MonoDevelop.CSharp.Formatting
 				// Possibly replace the indent
 				string newIndent = Editor.IndentationTracker.GetIndentationString (line.LineNumber);
 				int newIndentLength = newIndent.Length;
-				if (Editor.Options.IndentStyle == IndentStyle.Virtual && line.Length == 0) {
+				bool isVirtualIndent = Editor.Options.IndentStyle == IndentStyle.Smart && Editor.Options.RemoveTrailingWhitespaces || Editor.Options.IndentStyle == IndentStyle.Virtual;
+				if (isVirtualIndent && line.Length == 0) {
 					Editor.CaretColumn = newIndentLength;
 					return;
 				}
