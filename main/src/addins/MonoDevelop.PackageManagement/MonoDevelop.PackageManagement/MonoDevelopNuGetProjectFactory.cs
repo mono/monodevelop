@@ -88,14 +88,11 @@ namespace MonoDevelop.PackageManagement
 					settings);
 			}
 
-			string packagesConfigFolderPath = project.BaseDirectory;
-			var packageConfigExists = File.Exists (Path.Combine (packagesConfigFolderPath, "packages.config"));
+			if (project.HasPackagesConfig () || PackageManagementServices.Options.DefaultPackageReferenceFormat == PackageReferenceFormat.PackagesConfig) {
 
-			if (packageConfigExists || PackageManagementServices.Options.DefaultPackageReferenceFormat == PackageReferenceFormat.PackagesConfig) {
 				var projectSystem = new MonoDevelopMSBuildNuGetProjectSystem (project, context);
-
-				string baseDirectory = GetBaseDirectory (project);
-				string folderNuGetProjectFullPath = PackagesFolderPathUtility.GetPackagesFolderPath (baseDirectory, settings);
+				string folderNuGetProjectFullPath = PackagesFolderPathUtility.GetPackagesFolderPath (GetNuGetBaseDirectory (project), settings);
+				string packagesConfigFolderPath = project.BaseDirectory;
 
 				return new MonoDevelopMSBuildNuGetProject (
 					projectSystem,
@@ -106,7 +103,7 @@ namespace MonoDevelop.PackageManagement
 			return new PackageReferenceNuGetProject (project, configuration);
 		}
 
-		static string GetBaseDirectory (DotNetProject project)
+		static string GetNuGetBaseDirectory (DotNetProject project)
 		{
 			if (project.ParentSolution != null)
 				return project.ParentSolution.BaseDirectory;
