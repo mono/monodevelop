@@ -40,6 +40,8 @@ using System.Diagnostics;
 using MonoDevelop.Ide;
 using Microsoft.VisualStudio.Text.Classification;
 using System.Threading;
+using Microsoft.VisualStudio.Text.Operations.Implementation;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace Mono.TextEditor
 {
@@ -64,6 +66,8 @@ namespace Mono.TextEditor
 		bool hasInitializeBeenCalled = false;
 
 		ITextSelection selection;
+
+		internal IEditorOperations EditorOperations { get; private set; }
 
 		bool hasAggregateFocus;
 
@@ -144,7 +148,7 @@ namespace Mono.TextEditor
 			//			this.Loaded += OnLoaded;
 
 			// TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
-			factoryService.EditorOperationsProvider.GetEditorOperations (this);
+			EditorOperations =  factoryService.EditorOperationsProvider.GetEditorOperations (this);
 
 			connectionManager = new ConnectionManager (this, factoryService.TextViewConnectionListeners, factoryService.GuardedOperations);
 
@@ -350,7 +354,8 @@ namespace Mono.TextEditor
 
 		public SnapshotSpan GetTextElementSpan (SnapshotPoint point)
 		{
-			throw new NotImplementedException ();
+			var line = this.GetTextViewLineContainingBufferPosition (point);
+			return line.GetTextElementSpan (point);
 		}
 
 		public ITextViewLine GetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition)

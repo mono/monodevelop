@@ -153,7 +153,11 @@ namespace Mono.TextEditor
 
 		public SnapshotSpan GetTextElementSpan (SnapshotPoint bufferPosition)
 		{
-			return new SnapshotSpan (bufferPosition, 1);
+			var line = GetTextViewLineContainingBufferPosition (bufferPosition);
+			if (line == null)
+				throw new ArgumentOutOfRangeException (nameof (bufferPosition));
+
+			return line.GetTextElementSpan (bufferPosition);
 		}
 
 		public ITextViewLine GetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition)
