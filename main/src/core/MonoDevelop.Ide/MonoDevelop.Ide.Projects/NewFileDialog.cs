@@ -543,10 +543,10 @@ namespace MonoDevelop.Ide.Projects
 				}
 
 				if (project != null)
-					IdeApp.ProjectOperations.SaveAsync (project);
+					IdeApp.ProjectOperations.SaveAsync (project).Ignore ();
 
 				if (parentSolutionFolder != null)
-					IdeApp.ProjectOperations.SaveAsync (parentSolutionFolder.ParentSolution);
+					IdeApp.ProjectOperations.SaveAsync (parentSolutionFolder.ParentSolution).Ignore ();
 
 				if (OnOked != null)
 					OnOked (null, null);

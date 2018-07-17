@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private bool _currentParameterVisibility;
         private IContentType _textContentType;
         private double _pagerWidth;
-        private bool _isAutoSizePending = false;
+        //private bool _isAutoSizePending = false;
 
         internal SignatureHelpSessionView(DefaultSignatureHelpPresenterProvider componentContext)
         {
@@ -467,7 +467,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         {
             //TODO
             //Helpers.AutoSizeTextView(_signatureWpfTextView, this.ContainerMaxWidth - this.PagerWidth - 4 /* 4px of Margin */, this.ContainerMaxHeight);
-            _isAutoSizePending = false;
+            //_isAutoSizePending = false;
         }
     }
 }

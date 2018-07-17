@@ -103,9 +103,8 @@ type ``Template tests``() =
             cinfo.Parameters.["CreateAndroidUITest"] <- "False"
             cinfo.Parameters.["MinimumOSVersion"] <- "10.7"
             cinfo.Parameters.["AppIdentifier"] <- tt
-            cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"10\""
+            cinfo.Parameters.["AndroidMinSdkVersionAttribute"] <- "android:minSdkVersion=\"27\""
             cinfo.Parameters.["AndroidThemeAttribute"] <- ""
-            cinfo.Parameters.["TargetFrameworkVersion"] <- "MonoAndroid,Version=v8.1"
 
             for templateParameter in TemplateParameter.CreateParameters (parameters) do
                 cinfo.Parameters.[templateParameter.Name] <- templateParameter.Value

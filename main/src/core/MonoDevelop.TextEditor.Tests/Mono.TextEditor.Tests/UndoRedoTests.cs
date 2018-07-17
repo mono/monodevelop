@@ -70,5 +70,25 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.Document.Text, "HelloWorld");
 			Assert.AreEqual (data.Document.Length, data.Caret.Offset);
 		}
+
+		/// <summary>
+		/// VSTS 633531: File save sometimes not working
+		/// </summary>
+		[Test]
+		public void TestVSTS633531 ()
+		{
+			TextEditorData data = Create ("Hello");
+			data.Caret.Offset = data.Document.Length;
+			data.InsertAtCaret ("a");
+			data.Document.OptimizeTypedUndo ();
+			data.Document.SetNotDirtyState ();
+			Assert.IsFalse (data.Document.IsDirty);
+
+			data.InsertAtCaret ("a");
+			data.Document.OptimizeTypedUndo ();
+			Assert.IsTrue (data.Document.IsDirty);
+			data.Document.Undo ();
+			Assert.IsFalse (data.Document.IsDirty);
+		}
 	}
 }

@@ -232,6 +232,9 @@ namespace MonoDevelop.Ide.Gui
 			action ();
 		}
 		#endregion
+
+		#pragma warning disable 67 // never used
 		public event EventHandler CaretPositionSet;
+		#pragma warning restore 67
 	}
 }

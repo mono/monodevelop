@@ -340,7 +340,7 @@ namespace console61
 }
 ",
 								  (doc, list) => {
-									  var extEditor = GetExtensibleEditor (doc.Editor);
+									  var extEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
 									  var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
 									  CompletionWindowManager.StartPrepareShowWindowSession ();
 									  extEditor.EditorExtension = compExt;
@@ -367,27 +367,6 @@ namespace console61
 ", doc.Editor.Text);
 								  });
 		}
-
-		internal static ExtensibleTextEditor GetExtensibleEditor (TextEditor editor)
-	{
-		//Reason why we use GetNativeWidget, and navigate to ExtensibleTextEditor child
-		//and execute KeyPress on it instead something more abstract is...
-		//EditSession key processing is done inside ExtensibleTextEditor.
-		return FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
-	}
-
-	static T FindChild<T> (Container container) where T : Widget
-	{
-		foreach (var child in container.Children)
-			if (child is T) {
-				return (T)child;
-			} else if (child is Container) {
-				var foundChild = FindChild<T> ((Container)child);
-				if (foundChild != null)
-					return foundChild;
-			}
-		return default (T);
-	}
 
 	}
 }

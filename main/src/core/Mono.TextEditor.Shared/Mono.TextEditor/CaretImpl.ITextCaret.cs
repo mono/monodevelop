@@ -25,14 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor;
-using System;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor

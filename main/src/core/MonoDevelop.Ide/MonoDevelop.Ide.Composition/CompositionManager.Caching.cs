@@ -1,4 +1,4 @@
-﻿//
+//
 // CompositionManager.Caching.cs
 //
 // Author:
@@ -29,11 +29,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Microsoft.VisualStudio.Composition;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Instrumentation;
 using Newtonsoft.Json;
 
@@ -55,7 +53,7 @@ namespace MonoDevelop.Ide.Composition
 		internal class Caching
 		{
 			internal static bool writeCache;
-			ICachingFaultInjector cachingFaultInjector;
+			readonly ICachingFaultInjector cachingFaultInjector;
 			Task saveTask;
 			public HashSet<Assembly> Assemblies { get; }
 			internal string MefCacheFile { get; }
@@ -113,6 +111,13 @@ namespace MonoDevelop.Ide.Composition
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not deserialize MEF cache control", ex);
+						DeleteFiles ();
+						return false;
+					}
+
+					//this can return null (if the cache format changed?). clean up and start over.
+					if (controlCache == null) {
+						LoggingService.LogError ("MEF cache control deserialized as null");
 						DeleteFiles ();
 						return false;
 					}
@@ -191,13 +196,17 @@ namespace MonoDevelop.Ide.Composition
 		[Serializable]
 		class MefControlCache
 		{
+			[JsonRequired]
 			public MefControlCacheAssemblyInfo [] AssemblyInfos;
 		}
 
 		[Serializable]
 		internal class MefControlCacheAssemblyInfo
 		{
+			[JsonRequired]
 			public string Location;
+
+			[JsonRequired]
 			public DateTime LastWriteTimeUtc;
 		}
 	}

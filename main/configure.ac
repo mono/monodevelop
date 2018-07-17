@@ -357,7 +357,6 @@ src/addins/MonoDevelop.SourceEditor2/Makefile
 src/addins/Xml/Makefile
 src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.AspNetCore/Makefile
-src/addins/MonoDevelop.AzureFunctions/Makefile
 src/addins/MonoDevelop.ConnectedServices/Makefile
 src/addins/MonoDevelop.DotNetCore/Makefile
 src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Tests/Makefile

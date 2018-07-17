@@ -31,11 +31,13 @@ namespace MonoDevelop.Debugger
 {
 	class DebuggerEngineExtensionNode: TypeExtensionNode
 	{
+		#pragma warning disable 649 // never assigned
 		[NodeAttribute ("name")]
 		public string Name;
 		
 		[NodeAttribute ("features")]
 		public string[] SupportedFeatures;
+		#pragma warning disable 649
 	}
 }
 

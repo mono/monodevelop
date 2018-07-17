@@ -85,7 +85,6 @@ namespace MonoDevelop.Projects.MSBuild
 							foreach (var p in globalProperties)
 								project.SetGlobalProperty (p.Key, p.Value);
 						}
-						project.ReevaluateIfNecessary ();
 					}
 
 					// Building the project will create items and alter properties, so we use a new instance
@@ -134,7 +133,6 @@ namespace MonoDevelop.Projects.MSBuild
 							project.RemoveGlobalProperty (p.Key);
 						foreach (var p in originalGlobalProperties)
 							project.SetGlobalProperty (p.Key, p.Value);
-						project.ReevaluateIfNecessary ();
 					}
 				}
 			});
@@ -183,17 +181,19 @@ namespace MonoDevelop.Projects.MSBuild
 				else {
 					if (!string.IsNullOrEmpty (projectDir) && Directory.Exists (projectDir))
 						Environment.CurrentDirectory = projectDir;
-					var projectRootElement = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)));
+
+					var settings = new XmlReaderSettings {
+						DtdProcessing = DtdProcessing.Ignore,
+						IgnoreWhitespace = true,
+					};
+					var projectRootElement = ProjectRootElement.Create (XmlReader.Create (new StringReader (content), settings), engine);
 					projectRootElement.FullPath = file;
 
 					// Use the engine's default tools version to load the project. We want to build with the latest
 					// tools version.
-					string toolsVersion = engine.DefaultToolsVersion;
-					p = new Project (projectRootElement, engine.GlobalProperties, toolsVersion, engine);
+					p = new Project (projectRootElement, engine.GlobalProperties, MSBuildConsts.Version, engine);
 				}
 			}
-
-			bool reevaluate = false;
 
 			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
 				p.SetGlobalProperty ("Configuration", configuration);
@@ -201,7 +201,6 @@ namespace MonoDevelop.Projects.MSBuild
 					p.SetGlobalProperty ("Platform", platform);
 				else
 					p.RemoveGlobalProperty ("Platform");
-				reevaluate = true;
 			}
 
 			// The CurrentSolutionConfigurationContents property only needs to be set once
@@ -210,11 +209,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (!buildEngine.BuildOperationStarted && this.file == file && p.GetPropertyValue ("CurrentSolutionConfigurationContents") != slnConfigContents) {
 				p.SetGlobalProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
-				reevaluate = true;
 			}
-
-			if (reevaluate)
-				p.ReevaluateIfNecessary ();
 
 			return p;
 		}

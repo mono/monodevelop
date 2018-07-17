@@ -5,8 +5,11 @@ namespace Stetic.Editor
 {
 	public class FlagsSelectorDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.TreeView treeView;
 		[Glade.Widget ("FlagsSelectorDialog")] Gtk.Dialog dialog;
+		#pragma warning restore 649
+
 		Gtk.ListStore store;
 		Gtk.Window parent;
 		uint flags;

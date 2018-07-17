@@ -8,6 +8,7 @@ namespace Stetic.Editor
 {
 	public class SelectImageDialog: IDisposable
 	{
+		#pragma warning disable 649 // never assigned
 		[Glade.Widget] Gtk.TreeView resourceList;
 		[Glade.Widget] Gtk.FileChooserWidget fileChooser;
 		[Glade.Widget] Gtk.Entry iconNameEntry;
@@ -21,7 +22,8 @@ namespace Stetic.Editor
 		[Glade.Widget] Gtk.Button buttonAdd;
 		[Glade.Widget] Gtk.Button buttonRemove;
 		[Glade.Widget ("SelectImageDialog")] Gtk.Dialog dialog;
-		
+		#pragma warning restore 649
+
 		ThemedIconList iconList;
 		
 		Gtk.ListStore resourceListStore;

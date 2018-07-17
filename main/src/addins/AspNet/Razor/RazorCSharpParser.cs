@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Configuration;
 using System.Web.Mvc.Razor;
 using System.Web.Razor;
@@ -39,22 +40,17 @@ using System.Web.Razor.Parser.SyntaxTree;
 using System.Web.Razor.Text;
 using System.Web.WebPages.Razor;
 using System.Web.WebPages.Razor.Configuration;
-
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
-using MonoDevelop.AspNet.Projects;
-using MonoDevelop.AspNet.WebForms.Parser;
-using MonoDevelop.AspNet.Razor.Parser;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using MonoDevelop.Ide.Editor;
+
+using MonoDevelop.AspNet.Projects;
+using MonoDevelop.AspNet.Razor.Parser;
+using MonoDevelop.AspNet.WebForms.Parser;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Projection;
-using System.Runtime.Remoting.Messaging;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -77,7 +73,7 @@ namespace MonoDevelop.AspNet.Razor
 			};
 		}
 
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions, CancellationToken cancellationToken)
+		public override Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions, CancellationToken cancellationToken)
 		{
 			OpenRazorDocument currentDocument = GetDocument (parseOptions.FileName);
 			if (currentDocument == null)
@@ -95,40 +91,45 @@ namespace MonoDevelop.AspNet.Razor
 			return mimeType == "text/x-cshtml";
 		}
 
-		public override async System.Threading.Tasks.Task<IReadOnlyList<Projection>> GenerateProjections (Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		public override async Task<IReadOnlyList<Projection>> GenerateProjections (Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var razorDocument = (RazorCSharpParsedDocument)await Parse (options, cancellationToken);
 			return await GenerateProjections (razorDocument, options, cancellationToken);
 		}
 
-		async System.Threading.Tasks.Task<IReadOnlyList<Projection>> GenerateProjections (RazorCSharpParsedDocument razorDocument, Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		Task<IReadOnlyList<Projection>> GenerateProjections (RazorCSharpParsedDocument razorDocument, Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var code = razorDocument.PageInfo.CSharpCode;
 			if (string.IsNullOrEmpty (code))
-				return new List<Projection> ();
-			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (code), razorDocument.PageInfo.ParsedDocument.FileName, "text/x-csharp");
+				return Task.FromResult ((IReadOnlyList<Projection>)new Projection[0]);
+
+			string filename = razorDocument.PageInfo.ParsedDocument.FileName;
 			var currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
-			var segments = new List<ProjectedSegment> ();
 
-			foreach (var map in currentMappings) {
+			return Task.Run (() => {
+				var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (code), filename, "text/x-csharp");
+				var segments = new List<ProjectedSegment> ();
 
-				string pattern = "#line " + map.Key + " ";
-				var idx = razorDocument.PageInfo.CSharpCode.IndexOf (pattern, StringComparison.Ordinal);
-				if (idx < 0)
-					continue;
-				var line = doc.GetLineByOffset (idx);
-				var offset = line.NextLine.Offset + map.Value.StartGeneratedColumn - 1;
+				foreach (var map in currentMappings) {
 
-				var seg = new ProjectedSegment (map.Value.StartOffset.Value, offset, map.Value.CodeLength);
-				segments.Add (seg);
-			}
+					string pattern = "#line " + map.Key + " ";
+					var idx = razorDocument.PageInfo.CSharpCode.IndexOf (pattern, StringComparison.Ordinal);
+					if (idx < 0)
+						continue;
+					var line = doc.GetLineByOffset (idx);
+					var offset = line.NextLine.Offset + map.Value.StartGeneratedColumn - 1;
 
-			var projections = new List<Projection> ();
-			projections.Add (new Projection (doc, segments));
-			return projections;
+					var seg = new ProjectedSegment (map.Value.StartOffset.Value, offset, map.Value.CodeLength);
+					segments.Add (seg);
+				}
+
+				var projections = new List<Projection> ();
+				projections.Add (new Projection (doc, segments));
+				return (IReadOnlyList<Projection>) projections;
+			});
 		}
 
-		public override async System.Threading.Tasks.Task<ParsedDocumentProjection> GenerateParsedDocumentProjection (Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		public override async Task<ParsedDocumentProjection> GenerateParsedDocumentProjection (Ide.TypeSystem.ParseOptions options, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var razorDocument = (RazorCSharpParsedDocument)await Parse (options, cancellationToken);
 			var projections = await GenerateProjections (razorDocument, options, cancellationToken);

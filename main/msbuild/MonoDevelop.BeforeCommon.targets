@@ -4,26 +4,43 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
-	<!-- force Roslyn compiler -->
-	<PropertyGroup Condition="'$(OS)'=='Unix' And '$(MSBuildProjectExtension)'=='.csproj'">
-		<_MonoBinDir>$(MSBuildBinPath)\..\..\..\4.5\</_MonoBinDir>
-		<CscToolExe>csc.exe</CscToolExe>
-		<CscToolPath>$(_MonoBinDir)</CscToolPath>
-		<DebugType>portable</DebugType>
-		<CscDebugFileExt>.pdb</CscDebugFileExt>
-		<_DebugFileExt>.pdb</_DebugFileExt>
-	</PropertyGroup>
-
+	<!-- force a bunch of default values for consistency -->
 	<PropertyGroup>
+		<MDConfigIsRelease>$(Configuration.Contains('Release'))</MDConfigIsRelease>
+		<MDConfigIsDebug>$(Configuration.Contains('Debug'))</MDConfigIsDebug>
+		<Optimize>$(MDConfigIsRelease)</Optimize>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>portable</DebugType>
+		<WarningLevel>4</WarningLevel>
 		<Deterministic>True</Deterministic>
+		<!-- always produce docs -->
 		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
 		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-		<NoWarn>$(NoWarn);1591</NoWarn>
+		<!-- don't warn about missing doc comments -->
+		<NoWarn>$(NoWarn);1591;1573</NoWarn>
 	</PropertyGroup>
 
-	<!-- C# only -->
-	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
-		<Deterministic>True</Deterministic>
-		<NoWarn>$(NoWarn);1591</NoWarn>
+	<PropertyGroup Condition="'$(MDConfigIsDebug)'=='true'">
+		<DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Platform.Equals('x86'))">
+		<PlatformTarget>x86</PlatformTarget>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Platform.Equals('x64'))">
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('Mac'))">
+		<DefineConstants>$(DefineConstants);MAC</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('Win32'))">
+		<DefineConstants>$(DefineConstants);WIN32;WINDOWS</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains('Gnome'))">
+		<DefineConstants>$(DefineConstants);GNOME;LINUX</DefineConstants>
 	</PropertyGroup>
 </Project>

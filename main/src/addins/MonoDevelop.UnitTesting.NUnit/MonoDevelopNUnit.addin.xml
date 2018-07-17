@@ -27,6 +27,7 @@
 		<TestMarkers
 				testMethodAttributeMarker="NUnit.Framework.TestAttribute"
 				testCaseMethodAttributeMarker="NUnit.Framework.TestCaseAttribute"
+				testCaseSourceMethodAttributeMarker="NUnit.Framework.TestCaseSourceAttribute"
 				ignoreTestMethodAttributeMarker="NUnit.Framework.IgnoreAttribute"
 				ignoreTestClassAttributeMarker="NUnit.Framework.IgnoreAttribute"
 			/>

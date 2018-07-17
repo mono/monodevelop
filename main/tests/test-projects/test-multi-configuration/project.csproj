@@ -26,9 +26,6 @@
       </EnvironmentVariables>
     </EnvironmentVariables>
     <PlatformTarget>x86</PlatformTarget>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\bin\MonoDevelop.xml</DocumentationFile>
   </PropertyGroup>
@@ -55,9 +52,6 @@
         <Variable name="MONODEVELOP_PROFILE" value="./test-profile" />
       </EnvironmentVariables>
     </EnvironmentVariables>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
     <Commandlineparameters>-no-redirect</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -66,9 +60,6 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

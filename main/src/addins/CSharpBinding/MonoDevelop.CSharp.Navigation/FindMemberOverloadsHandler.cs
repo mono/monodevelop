@@ -109,16 +109,16 @@ namespace MonoDevelop.CSharp.Navigation
 				var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
 				var sym = info.Symbol ?? info.DeclaredSymbol;
 				if (sym == null) {
-					Counters.UpdateUserFault (metadata);
+					metadata.SetUserFault ();
 					return;
 				}
 
 				using (var source = new CancellationTokenSource ()) {
 					try {
 						FindOverloads (sym, source);
-						Counters.UpdateNavigateResult (metadata, true);
+						metadata.SetResult (true);
 					} finally {
-						Counters.UpdateUserCancellation (metadata, source.Token);
+						metadata.UpdateUserCancellation (source.Token);
 					}
 				}
 			}

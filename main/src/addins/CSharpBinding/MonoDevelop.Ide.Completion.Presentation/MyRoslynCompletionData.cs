@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public CompletionItem CompletionItem { get; private set; }
 
-		public CompletionItemRules Rules { get { return CompletionItem.Rules; } }
+		public override CompletionItemRules Rules { get { return CompletionItem.Rules; } }
 
 		public override string DisplayText {
 			get {

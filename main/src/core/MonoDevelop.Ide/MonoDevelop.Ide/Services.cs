@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide
 {
@@ -49,8 +50,8 @@ namespace MonoDevelop.Ide
 		internal static Counter DocumentsInMemory = InstrumentationService.CreateCounter ("Documents in memory", "IDE");
 		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads loaded", "IDE");
 		internal static TimerCounter CommandTargetScanTime = InstrumentationService.CreateTimerCounter ("Command target scan", "Timing", 0.3, false);
-		internal static TimerCounter OpenWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Solution opened in the IDE", "IDE", id:"Ide.Shell.SolutionOpened");
-		internal static TimerCounter OpenDocumentTimer = InstrumentationService.CreateTimerCounter ("Open document", "IDE", id:"Ide.Shell.OpenDocument");
+		internal static TimerCounter<OpenWorkspaceItemMetadata> OpenWorkspaceItemTimer = InstrumentationService.CreateTimerCounter<OpenWorkspaceItemMetadata> ("Solution opened in the IDE", "IDE", id:"Ide.Shell.SolutionOpened");
+		internal static TimerCounter<OpenDocumentMetadata> OpenDocumentTimer = InstrumentationService.CreateTimerCounter<OpenDocumentMetadata> ("Open document", "IDE", id:"Ide.Shell.OpenDocument");
 		internal static TimerCounter DocumentOpened = InstrumentationService.CreateTimerCounter ("Document opened", "IDE", id:"Ide.Shell.DocumentOpened");
 		internal static Counter AutoSavedFiles = InstrumentationService.CreateCounter ("Autosaved Files", "Text Editor");
 		internal static TimerCounter BuildItemTimer = InstrumentationService.CreateTimerCounter ("Project/Solution built in the IDE", "IDE", id:"Ide.Shell.ProjectBuilt");
@@ -64,7 +65,11 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter CompositionCache = InstrumentationService.CreateTimerCounter ("MEF Composition From Cache", "IDE", id: "Ide.Startup.Composition.Cache");
 		internal static TimerCounter CompositionSave = InstrumentationService.CreateTimerCounter ("MEF Composition Save", "IDE", id: "Ide.CompositionSave");
 		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
-		internal static Counter CodeCompletionStats = InstrumentationService.CreateCounter ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
+		internal static Counter<CompletionStatisticsMetadata> CodeCompletionStats = InstrumentationService.CreateCounter<CompletionStatisticsMetadata> ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
+		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
+
+		internal static bool TrackingBuildAndDeploy;
+		internal static TimerCounter<CounterMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<CounterMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
@@ -100,12 +105,12 @@ namespace MonoDevelop.Ide
 
 	class AssetMetadata : CounterMetadata
 	{
-		public string AssetTypeId {
-			get => GetProperty ();
+		public int AssetTypeId {
+			get => GetProperty<int> ();
 			set => SetProperty (value);
 		}
 		public string AssetTypeName {
-			get => GetProperty ();
+			get => GetProperty<string> ();
 			set => SetProperty (value);
 		}
 	}
@@ -133,6 +138,24 @@ namespace MonoDevelop.Ide
 			set => SetProperty (value);
 		}
 		public long TimeSinceLogin {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+	}
+
+	class TimeToCodeMetadata : CounterMetadata
+	{
+		public long CorrectedDuration {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public long StartupTime {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public long SolutionLoadTime {
 			get => GetProperty<long> ();
 			set => SetProperty (value);
 		}

@@ -51,7 +51,6 @@ namespace MonoDevelop.PackageManagement
 		NuGetProject project;
 		IEnumerable<NuGetProjectAction> actions;
 		List<SourceRepository> primarySources;
-		IEnumerable<PackageReference> packageReferences;
 		string projectName;
 
 		public UpdateAllNuGetPackagesInProjectAction (

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Composition;
+using System.Reflection;
 using Microsoft.CodeAnalysis.Extensions;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
@@ -33,7 +34,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Ide.RoslynServices
 {
 	[ExportWorkspaceServiceFactory (typeof (IErrorReportingService), ServiceLayer.Host), Shared]
-	sealed class VisualStudioErrorReportingServiceFactory : IWorkspaceServiceFactory
+	sealed class MonoDevelopErrorReportingServiceFactory : IWorkspaceServiceFactory
 	{
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
@@ -56,8 +57,16 @@ namespace MonoDevelop.Ide.RoslynServices
 				_infoBarService.ShowInfoBarInGlobalView (message, items);
 
 			// These are usually analyzers which would crash the process.
-			public void ShowDetailedErrorInfo (Exception exception) =>
-				LoggingService.LogError ("Roslyn wanted to display an exception to user", exception);
+			public void ShowDetailedErrorInfo (Exception exception)
+			{
+				LoggingService.LogError("Roslyn reported an exception to the user", exception);
+				
+				var logFile = (string)typeof (LoggingService).InvokeMember ("logFile", BindingFlags.GetField | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
+
+				// If the output is redirected, open the log file, otherwise do not do anything.
+				if (logFile != null)
+					DesktopService.OpenFile (logFile);
+			}
 		}
 	}
 }

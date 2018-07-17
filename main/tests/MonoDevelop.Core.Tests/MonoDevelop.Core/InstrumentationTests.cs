@@ -104,7 +104,7 @@ namespace MonoDevelop.Core
 
 			Assert.IsNotNull (value.Metadata);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
-			Assert.AreEqual ("4", measure);
+			Assert.AreEqual (4, measure);
 			Assert.IsFalse (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 		}
 
@@ -126,8 +126,8 @@ namespace MonoDevelop.Core
 			var timer = InstrumentationService.CreateTimerCounter<CustomCounterMetadata> ("TestCounter");
 			var md = new CustomCounterMetadata {
 				SomeMeasure = 5,
-				Result = CounterResult.Success
 			};
+			md.SetSuccess ();
 			var t = timer.BeginTiming (md);
 			t.Dispose ();
 			Assert.AreEqual (1, counterValues.Count);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Core
 
 			Assert.IsNotNull (value.Metadata);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
-			Assert.AreEqual ("5", measure);
+			Assert.AreEqual (5, measure);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual ("Success", result);
 		}
@@ -174,7 +174,7 @@ namespace MonoDevelop.Core
 
 			Assert.IsNotNull (value.Metadata);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
-			Assert.AreEqual ("4", measure);
+			Assert.AreEqual (4, measure);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual ("UserCancel", result);
 		}
@@ -194,7 +194,7 @@ namespace MonoDevelop.Core
 
 			Assert.IsNotNull (value.Metadata);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CustomCounterMetadata.SomeMeasure), out var measure));
-			Assert.AreEqual ("5", measure);
+			Assert.AreEqual (5, measure);
 			Assert.IsTrue (value.Metadata.TryGetValue (nameof (CounterMetadata.Result), out var result));
 			Assert.AreEqual ("Success", result);
 		}
@@ -210,6 +210,14 @@ namespace MonoDevelop.Core
 			var value = counterValues [0];
 
 			Assert.IsNull (value.Metadata);
+		}
+
+		[Test]
+		public void CounterMetadataQueryingDoesNotCrash ()
+		{
+			var metadata = new CustomCounterMetadata ();
+
+			Assert.AreEqual (default (int), metadata.SomeMeasure);
 		}
 	}
 }

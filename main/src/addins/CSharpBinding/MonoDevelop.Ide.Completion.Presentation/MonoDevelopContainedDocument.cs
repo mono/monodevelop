@@ -315,7 +315,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 				var ch = text[i];
 				switch (ch) {
 				case ' ':
-					if (!TextAt (text, i - 1, ' ')) {
+				case '\t':
+					if (!TextAt (text, i - 1, ' ') && !TextAt (text, i - 1, '\t')) {
 						start = i;
 					}
 
@@ -326,7 +327,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 					if (i == 0) {
 						groups.Add (TextSpan.FromBounds (0, 0));
 					}
-					else if (TextAt (text, i - 1, ' ')) {
+					else if (TextAt (text, i - 1, ' ') || TextAt (text, i - 1, '\t')) {
 						groups.Add (TextSpan.FromBounds (start, i));
 					}
 					else if (TextAt (text, i - 1, '\n')) {
@@ -603,6 +604,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			var editorOptionsFactory = CompositionManager.GetExportedValue<IEditorOptionsFactoryService> ();
 			var editorOptions = editorOptionsFactory.GetOptions (DataBuffer);
 			var options = _workspace.Options
+										.WithChangedOption (FormattingOptions.NewLine, root.Language, editorOptions.GetNewLineCharacter ())
 										.WithChangedOption (FormattingOptions.UseTabs, root.Language, !editorOptions.IsConvertTabsToSpacesEnabled ())
 										.WithChangedOption (FormattingOptions.TabSize, root.Language, editorOptions.GetTabSize ())
 										.WithChangedOption (FormattingOptions.IndentationSize, root.Language, editorOptions.GetIndentSize ());

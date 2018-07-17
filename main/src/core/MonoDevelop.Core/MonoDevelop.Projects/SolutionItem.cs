@@ -622,7 +622,7 @@ namespace MonoDevelop.Projects
 
 					operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, solutionConfiguration, operationContext);
 
-					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
+					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, CreateProjectEventMetadata (solutionConfiguration))) {
 						result = await InternalBuild (monitor, solutionConfiguration, operationContext);
 					}
 
@@ -635,7 +635,7 @@ namespace MonoDevelop.Projects
 				return result;
 			}
 
-			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration));
+			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, CreateProjectEventMetadata (solutionConfiguration));
 			try {
 				operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, solutionConfiguration, operationContext);
 
@@ -758,7 +758,7 @@ namespace MonoDevelop.Projects
 
 		async Task<BuildResult> CleanTask (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata (configuration));
+			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name, CreateProjectEventMetadata (configuration));
 			try {
 				try {
 					SolutionItemConfiguration iconf = GetConfiguration (configuration);
@@ -865,24 +865,49 @@ namespace MonoDevelop.Projects
 			sortedItems.Add (insertItem);
 			inserted[index] = true;
 		}
-		
+
+		[Obsolete ("Use CreateProjectEventMetadata")]
 		public IDictionary<string, string> GetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
-			var data = new Dictionary<string, string> ();
+			string id = null;
 			if (configurationSelector != null) {
 				var slnConfig = configurationSelector as SolutionConfigurationSelector;
 				if (slnConfig != null) {
-					data ["Config.Id"] = slnConfig.Id;
+					id = slnConfig.Id;
 				}
 			}
 
-			OnGetProjectEventMetadata (data);
-			return data;
+			// Due to API break restrictions, this may cause the work to be done twice
+			// For example: MonoDevelop.Projects.Project
+			var obsoleteMetadata = new Dictionary<string, string> ();
+			OnGetProjectEventMetadata (obsoleteMetadata);
+
+			return obsoleteMetadata;
 		}
 
+		public ProjectEventMetadata CreateProjectEventMetadata (ConfigurationSelector configurationSelector)
+		{
+			return ItemExtension.OnGetProjectEventMetadata (configurationSelector);
+		}
+
+		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
 		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
 		{
 		}
+
+		protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
+		{
+			string id = null;
+			if (configurationSelector != null) {
+				var slnConfig = configurationSelector as SolutionConfigurationSelector;
+				if (slnConfig != null) {
+					id = slnConfig.Id;
+				}
+			}
+
+			return new ProjectEventMetadata (id);
+		}
+
 		/// <summary>
 		/// Executes this solution item
 		/// </summary>
@@ -1576,6 +1601,11 @@ namespace MonoDevelop.Projects
 				return Item.OnGetReferencedItems (configuration);
 			}
 
+			protected internal override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
+			{
+				return Item.OnGetProjectEventMetadata (configurationSelector);
+			}
+
 			internal protected override void OnSetFormat (MSBuildFileFormat format)
 			{
 				Item.OnSetFormat (format);
@@ -1790,6 +1820,85 @@ namespace MonoDevelop.Projects
 				return item.FileName;
 			}
 			throw new NotSupportedException ();
+		}
+	}
+
+	public class ProjectEventMetadata : CounterMetadata
+	{
+		public ProjectEventMetadata ()
+		{
+		}
+
+		public ProjectEventMetadata (CounterMetadata metadata)
+			: base (metadata)
+		{
+		}
+
+		public ProjectEventMetadata (string configurationId)
+		{
+			if (configurationId != null) {
+				Properties["Config.Id"] = configurationId;
+			}
+		}
+
+		public string ProjectTypes {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public int BuildType {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public string BuildTypeString {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public bool FirstBuild {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectID {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectType {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectFlavor {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Capabilities {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Configuration {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Platform {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public bool Success {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+
+		public bool Cancelled {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
 		}
 	}
 }

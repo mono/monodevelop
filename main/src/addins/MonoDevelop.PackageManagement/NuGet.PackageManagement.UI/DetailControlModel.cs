@@ -52,16 +52,17 @@ namespace NuGet.PackageManagement.UI
 		{
 		}
 
+		/*
 		/// <summary>
 		/// Returns the list of projects that are selected for the given action
 		/// </summary>
-		//public abstract IEnumerable<NuGetProject> GetSelectedProjects(UserAction action);
-
+		public abstract IEnumerable<NuGetProject> GetSelectedProjects(UserAction action);
+		*/
 		/// <summary>
 		/// Sets the package to be displayed in the detail control.
 		/// </summary>
 		/// <param name="searchResultPackage">The package to be displayed.</param>
-		/// <param name="filter">The current filter. This will used to select the default action.</param>
+		// <param name="filter">The current filter. This will used to select the default action.</param>
 		public async virtual Task SetCurrentPackage(
 			PackageItemListViewModel searchResultPackage)//,
 		//	ItemFilter filter)

@@ -120,78 +120,29 @@ namespace MonoDevelop.Deployment
 		public static void CreateArchive (ProgressMonitor mon, string folder, string targetFile)
 		{
 			string tf = Path.GetFileNameWithoutExtension (targetFile);
-			if (tf.EndsWith (".tar")) tf = Path.GetFileNameWithoutExtension (tf);
+			if (tf.EndsWith (".tar", StringComparison.CurrentCulture))
+				tf = Path.GetFileNameWithoutExtension (tf);
 			
 			if (File.Exists (targetFile))
 				File.Delete (targetFile);
 			
 			using (Stream os = File.Create (targetFile)) {
-	
-				Stream outStream = os;
-				// Create the zip file
 				switch (GetArchiveExtension (targetFile)) {
 				case ".tar.gz":
-					outStream = new GZipOutputStream(outStream);
-					goto case ".tar";
+					using (var zipStream = new GZipOutputStream (os)) {
+						CreateTarArchive (mon, folder, zipStream);
+					}
+					break;
 				case ".tar.bz2":
-					outStream = new BZip2OutputStream(outStream, 9);
-					goto case ".tar";
+					using (var bzipStream = new BZip2OutputStream (os, 9)) {
+						CreateTarArchive (mon, folder, bzipStream);
+					}
+					break;
 				case ".tar":
-					TarArchive archive = TarArchive.CreateOutputTarArchive (outStream);
-					archive.SetAsciiTranslation (false);
-					archive.RootPath = folder;
-					archive.ProgressMessageEvent += delegate (TarArchive ac, TarEntry e, string message) {
-						if (message != null)
-							mon.Log.WriteLine (message);
-					};
-
-					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
-						TarEntry entry = TarEntry.CreateEntryFromFile (f);
-						entry.Name = f.ToRelative (folder);
-						if (!Platform.IsWindows) {
-							UnixFileInfo fi = new UnixFileInfo (f);
-							entry.TarHeader.Mode = (int)fi.Protection;
-						}
-						else {
-							entry.Name = entry.Name.Replace ('\\', '/');
-							FilePermissions p = FilePermissions.S_IFREG | FilePermissions.S_IROTH | FilePermissions.S_IRGRP | FilePermissions.S_IRUSR;
-							if (!new FileInfo (f).IsReadOnly)
-								p |= FilePermissions.S_IWUSR;
-							entry.TarHeader.Mode = (int) p;
-						}
-						archive.WriteEntry(entry, false);
-					}
-					
-					// HACK: GNU tar expects to find a double zero record at the end of the archive. TarArchive only emits one.
-					// This hack generates the second zero block.
-					FieldInfo tarOutField = typeof(TarArchive).GetField ("tarOut", BindingFlags.Instance | BindingFlags.NonPublic);
-					if (tarOutField != null) {
-						TarOutputStream tarOut = (TarOutputStream) tarOutField.GetValue (archive);
-						tarOut.Finish ();
-					}
-					
-					archive.CloseArchive ();
+					CreateTarArchive (mon, folder, os);
 					break;
 				case ".zip":
-					ZipOutputStream zs = new ZipOutputStream (outStream);
-					zs.SetLevel(5);
-					
-					byte[] buffer = new byte [8092];
-					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
-						string name = f.ToRelative (folder);
-						if (Platform.IsWindows)
-							name = name.Replace ('\\', '/');
-						ZipEntry infoEntry = new ZipEntry (name);
-						zs.PutNextEntry (infoEntry);
-						using (Stream s = File.OpenRead (f)) {
-							int nr;
-							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
-								zs.Write (buffer, 0, nr);
-						}
-						zs.CloseEntry ();
-					}
-					zs.Finish ();
-					zs.Close ();
+					CreateZipArchive (folder, os);
 					break;
 				default:
 					mon.Log.WriteLine ("Unsupported file format: " + Path.GetFileName (targetFile));
@@ -199,7 +150,66 @@ namespace MonoDevelop.Deployment
 				}
 			}
 		}
-		
+
+		private static void CreateZipArchive (string folder, Stream outStream)
+		{
+			using (var zs = new ZipOutputStream (outStream)) {
+				zs.SetLevel (5);
+
+				byte [] buffer = new byte [8092];
+				foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
+					string name = f.ToRelative (folder);
+					if (Platform.IsWindows)
+						name = name.Replace ('\\', '/');
+					ZipEntry infoEntry = new ZipEntry (name);
+					zs.PutNextEntry (infoEntry);
+					using (Stream s = File.OpenRead (f)) {
+						int nr;
+						while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+							zs.Write (buffer, 0, nr);
+					}
+					zs.CloseEntry ();
+				}
+				zs.Finish ();
+			}
+		}
+
+		static void CreateTarArchive (ProgressMonitor mon, string folder, Stream outStream)
+		{
+			using (var archive = TarArchive.CreateOutputTarArchive (outStream)) {
+				archive.AsciiTranslate = false;
+				archive.RootPath = folder;
+				archive.ProgressMessageEvent += delegate (TarArchive ac, TarEntry e, string message) {
+					if (message != null)
+						mon.Log.WriteLine (message);
+				};
+
+				foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
+					TarEntry entry = TarEntry.CreateEntryFromFile (f);
+					entry.Name = f.ToRelative (folder);
+					if (!Platform.IsWindows) {
+						UnixFileInfo fi = new UnixFileInfo (f);
+						entry.TarHeader.Mode = (int)fi.Protection;
+					} else {
+						entry.Name = entry.Name.Replace ('\\', '/');
+						FilePermissions p = FilePermissions.S_IFREG | FilePermissions.S_IROTH | FilePermissions.S_IRGRP | FilePermissions.S_IRUSR;
+						if (!new FileInfo (f).IsReadOnly)
+							p |= FilePermissions.S_IWUSR;
+						entry.TarHeader.Mode = (int)p;
+					}
+					archive.WriteEntry (entry, false);
+				}
+
+				// HACK: GNU tar expects to find a double zero record at the end of the archive. TarArchive only emits one.
+				// This hack generates the second zero block.
+				FieldInfo tarOutField = typeof (TarArchive).GetField ("tarOut", BindingFlags.Instance | BindingFlags.NonPublic);
+				if (tarOutField != null) {
+					TarOutputStream tarOut = (TarOutputStream)tarOutField.GetValue (archive);
+					tarOut.Finish ();
+				}
+			}
+		}
+
 		static IEnumerable<FilePath> GetFilesRec (DirectoryInfo dir)
 		{
 			foreach (FileSystemInfo si in dir.GetFileSystemInfos ()) {

@@ -1,43 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{50D6768C-C072-4E79-AFC5-C1C40767EF45}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AssemblyName>MacPlatform</AssemblyName>
-    <RootNamespace>MacPlatform</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\bin</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -59,7 +32,6 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -96,7 +68,6 @@
       <Name>Xwt.XamMac</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MacKeychainPasswordProvider.cs" />
@@ -145,110 +116,45 @@
     <Compile Include="MacTelemetryDetails.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <EmbeddedResource Include="MacPlatform.addin.xml">
-      <LogicalName>MacPlatform.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="maintoolbarbg.png">
-      <LogicalName>maintoolbarbg.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build.png">
-      <LogicalName>build.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build%402x.png">
-      <LogicalName>build@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~dark.png">
-      <LogicalName>build~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~dark%402x.png">
-      <LogicalName>build~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue.png">
-      <LogicalName>continue.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue%402x.png">
-      <LogicalName>continue@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue~dark.png">
-      <LogicalName>continue~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue~dark%402x.png">
-      <LogicalName>continue~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device.png">
-      <LogicalName>device.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device%402x.png">
-      <LogicalName>device@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device~dark.png">
-      <LogicalName>device~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\device~dark%402x.png">
-      <LogicalName>device~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project.png">
-      <LogicalName>project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project%402x.png">
-      <LogicalName>project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project~dark.png">
-      <LogicalName>project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project~dark%402x.png">
-      <LogicalName>project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop.png">
-      <LogicalName>stop.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop%402x.png">
-      <LogicalName>stop@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~dark.png">
-      <LogicalName>stop~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~dark%402x.png">
-      <LogicalName>stop~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="maintoolbarbg~dark.png">
-      <LogicalName>maintoolbarbg~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="maintoolbarbg~dark%402x.png">
-      <LogicalName>maintoolbarbg~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16.png">
-      <LogicalName>status-stop-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16%402x.png">
-      <LogicalName>status-stop-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16~dark.png">
-      <LogicalName>status-stop-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-stop-16~dark%402x.png">
-      <LogicalName>status-stop-16~dark@2x.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="MacPlatform.addin.xml" />
+    <EmbeddedResource Include="maintoolbarbg.png" />
+    <EmbeddedResource Include="icons\build.png" />
+    <EmbeddedResource Include="icons\build%402x.png" />
+    <EmbeddedResource Include="icons\build~dark.png" />
+    <EmbeddedResource Include="icons\build~dark%402x.png" />
+    <EmbeddedResource Include="icons\continue.png" />
+    <EmbeddedResource Include="icons\continue%402x.png" />
+    <EmbeddedResource Include="icons\continue~dark.png" />
+    <EmbeddedResource Include="icons\continue~dark%402x.png" />
+    <EmbeddedResource Include="icons\device.png" />
+    <EmbeddedResource Include="icons\device%402x.png" />
+    <EmbeddedResource Include="icons\device~dark.png" />
+    <EmbeddedResource Include="icons\device~dark%402x.png" />
+    <EmbeddedResource Include="icons\project.png" />
+    <EmbeddedResource Include="icons\project%402x.png" />
+    <EmbeddedResource Include="icons\project~dark.png" />
+    <EmbeddedResource Include="icons\project~dark%402x.png" />
+    <EmbeddedResource Include="icons\stop.png" />
+    <EmbeddedResource Include="icons\stop%402x.png" />
+    <EmbeddedResource Include="icons\stop~dark.png" />
+    <EmbeddedResource Include="icons\stop~dark%402x.png" />
+    <EmbeddedResource Include="maintoolbarbg~dark.png" />
+    <EmbeddedResource Include="maintoolbarbg~dark%402x.png" />
+    <EmbeddedResource Include="icons\status-stop-16.png" />
+    <EmbeddedResource Include="icons\status-stop-16%402x.png" />
+    <EmbeddedResource Include="icons\status-stop-16~dark.png" />
+    <EmbeddedResource Include="icons\status-stop-16~dark%402x.png" />
     <EmbeddedResource Include="..\..\..\external\Xamarin.Mac.buildinfo">
       <Link>Xamarin.Mac.buildinfo</Link>
-      <LogicalName>Xamarin.Mac.buildinfo</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dialogs\" />
-    <Folder Include="MacInterop\" />
-    <Folder Include="MacInterop\AppleEvents\" />
-    <Folder Include="icons\" />
-    <Folder Include="MainToolbar\" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MacPlatform.Tests" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <LibXammac Include="..\..\..\external\libxammac.dylib" />
   </ItemGroup>

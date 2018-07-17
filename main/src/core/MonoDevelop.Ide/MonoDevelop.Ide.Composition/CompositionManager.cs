@@ -89,18 +89,22 @@ namespace MonoDevelop.Ide.Composition
 		/// <summary>
 		/// Returns an instance of type T that is exported by some composition part. The instance is shared (singleton).
 		/// </summary>
-		public static T GetExportedValue<T> ()
-		{
-			return Instance.ExportProvider.GetExportedValue<T> ();
-		}
+		public static T GetExportedValue<T> () => Instance.ExportProvider.GetExportedValue<T> ();
 
 		/// <summary>
-		/// Returns all instance of type T that are exported by some composition part. The instances are shared (singletons).
+		/// Returns all instances of type T that are exported by some composition part. The instances are shared (singletons).
 		/// </summary>
-		public static IEnumerable<T> GetExportedValues<T> ()
-		{
-			return Instance.ExportProvider.GetExportedValues<T> ();
-		}
+		public static IEnumerable<T> GetExportedValues<T> () => Instance.ExportProvider.GetExportedValues<T> ();
+
+		/// <summary>
+		/// Returns a lazy holding the instance of type T that is exported by some composition part. The instance is shared (singleton).
+		/// </summary>
+		public static Lazy<T> GetExport<T> () => Instance.ExportProvider.GetExport<T> ();
+
+		/// <summary>
+		/// Returns lazies holding all instances of type T that are exported by some composition part. The instances are shared (singletons).
+		/// </summary>
+		public static IEnumerable<Lazy<T>> GetExports<T> () => Instance.ExportProvider.GetExports<T> ();
 
 		public RuntimeComposition RuntimeComposition { get; private set; }
 		public IExportProviderFactory ExportProviderFactory { get; private set; }
@@ -167,7 +171,6 @@ namespace MonoDevelop.Ide.Composition
 
 				ComposableCatalog catalog = ComposableCatalog.Create (StandardResolver)
 					.WithCompositionService ()
-					.WithDesktopSupport ()
 					.AddParts (parts);
 
 				var discoveryErrors = catalog.DiscoveredParts.DiscoveryErrors;
@@ -223,7 +226,7 @@ namespace MonoDevelop.Ide.Composition
 							AddinManager.LoadAddin (null, id);
 
 							var assemblyFilePath = assemblyNode.Addin.GetFilePath (assemblyNode.FileName);
-							var assembly = Runtime.SystemAssemblyService.LoadAssemblyFrom (assemblyFilePath);
+							var assembly = Runtime.LoadAssemblyFrom (assemblyFilePath);
 							assemblies.Add (assembly);
 
 							timer.Trace ("Loaded: " + assemblyName);

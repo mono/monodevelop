@@ -52,7 +52,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		Dictionary<string, string> defaultCustomTools = new Dictionary<string, string> ();
 
-		public void AddDefaultCustomToolForFileName (string fileName, string customTool)
+		public void AddCustomToolForFileName (string fileName, string customTool)
 		{
 			defaultCustomTools.Add (fileName, customTool);
 		}

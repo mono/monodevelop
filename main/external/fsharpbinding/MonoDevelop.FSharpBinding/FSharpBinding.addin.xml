@@ -196,6 +196,10 @@
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpFindReferencesProvider" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/Refactoring/FindReferenceUsagesProvider">
+    <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpFindReferenceUsagesProvider" />
+  </Extension>
+
   <Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
     <Class class="MonoDevelop.FSharp.FSharpJumpToDeclarationHandler" />
   </Extension>
@@ -223,7 +227,7 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
-    <Condition id="ItemType" value="IFileItem">
+    <Condition id="FileType" fileExtensions=".fs,.fsi,.fsx,.fsscript">
       <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptInternal"/>
       <CommandItem id = "MonoDevelop.FSharp.SolutionPad.DebugScriptExternal"/>
     </Condition>

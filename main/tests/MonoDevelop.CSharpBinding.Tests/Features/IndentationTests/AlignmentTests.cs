@@ -750,7 +750,7 @@ class Test
 		}
 
 		/// <summary>
-		/// Bug 42310 - Extra indentation when using Smart indentation with inline List<enum> initialisation
+		/// Bug 42310 - Extra indentation when using Smart indentation with inline List&lt;enum> initialisation
 		/// </summary>
 		[Test]
 		public void TestBug42310 ()

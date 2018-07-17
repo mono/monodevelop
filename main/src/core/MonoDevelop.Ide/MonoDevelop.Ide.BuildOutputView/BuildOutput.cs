@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutputProgressMonitor progressMonitor;
 		ImmutableList<BuildOutputProcessor> projects = ImmutableList<BuildOutputProcessor>.Empty;
 		public event EventHandler OutputChanged;
+		public event EventHandler ProjectStarted;
+		public event EventHandler ProjectFinished;
 
 		public ProgressMonitor GetProgressMonitor ()
 		{
@@ -129,6 +131,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		internal void RaiseOutputChanged ()
 		{
 			OutputChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal void RaiseProjectStarted ()
+		{
+			ProjectStarted?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal void RaiseProjectFinished ()
+		{
+			ProjectFinished?.Invoke (this, EventArgs.Empty);
 		}
 
 		public List<BuildOutputNode> GetRootNodes (bool includeDiagnostics)
@@ -244,6 +256,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 					                              GettextCatalog.GetString ("Custom project started building"),
 					                              true, pspe.TimeStamp);
 				}
+
+				BuildOutput.RaiseProjectStarted ();
 				break;
 			case BuildSessionFinishedEvent psfe:
 				if (currentCustomProject != null) {
@@ -254,6 +268,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 					BuildOutput.Load (logFile, true);
 					binlogSessions.Remove (psfe.SessionId);
 				}
+
+				BuildOutput.RaiseProjectFinished ();
 				BuildOutput.RaiseOutputChanged ();
 				break;
 			}
@@ -283,11 +299,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public Type [] ColumnTypes => new Type [] { typeof (Xwt.Drawing.Image), typeof (string) };
 
+		#pragma warning disable 67 // event not used
 		public event EventHandler<TreeNodeEventArgs> NodeInserted;
 		public event EventHandler<TreeNodeChildEventArgs> NodeDeleted;
-		public event EventHandler<TreeNodeEventArgs> NodeChanged;
 		public event EventHandler<TreeNodeOrderEventArgs> NodesReordered;
 		public event EventHandler Cleared;
+		#pragma warning restore 67 //
+
+		public event EventHandler<TreeNodeEventArgs> NodeChanged;
 
 		public TreePosition GetChild (TreePosition pos, int index)
 		{

@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense
     public interface IPopupIntellisensePresenter : IIntellisensePresenter
     {
         /// <summary>
-        /// Gets the WPF <see cref="UIElement"/> that the presenter wants to be displayed inside a
+        /// Gets the <see cref="Xwt.Widget"/> that the presenter wants to be displayed inside a
         /// <see cref="Microsoft.VisualStudio.Text.Editor.ITextView"/> popup.
         /// </summary>
         Xwt.Widget SurfaceElement { get; }

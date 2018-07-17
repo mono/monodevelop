@@ -1,43 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AssemblyName>libstetic</AssemblyName>
     <RootNamespace>Stetic</RootNamespace>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.GtkCore</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.GtkCore\libstetic.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.GtkCore</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.GtkCore\libstetic.xml</DocumentationFile>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="Mono.Posix" />
     <Reference Include="System" />
@@ -215,231 +187,81 @@
     <Compile Include="editor\PropertyTextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="stetic.glade">
-      <LogicalName>stetic.glade</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\accellabel.png">
-      <LogicalName>accellabel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\actiongroup.png">
-      <LogicalName>actiongroup.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\add-check-label.png">
-      <LogicalName>add-check-label.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\add-menu.png">
-      <LogicalName>add-menu.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\alignment.png">
-      <LogicalName>alignment.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\arrow.png">
-      <LogicalName>arrow.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\box-expand.png">
-      <LogicalName>box-expand.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\box-fill.png">
-      <LogicalName>box-fill.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\button.png">
-      <LogicalName>button.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\calendar.png">
-      <LogicalName>calendar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\cell-expand-h.png">
-      <LogicalName>cell-expand-h.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\cell-expand-v.png">
-      <LogicalName>cell-expand-v.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\cell-fill-h.png">
-      <LogicalName>cell-fill-h.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\cell-fill-v.png">
-      <LogicalName>cell-fill-v.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\checkbutton.png">
-      <LogicalName>checkbutton.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\colorbutton.png">
-      <LogicalName>colorbutton.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\colorselection.png">
-      <LogicalName>colorselection.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\colorselectiondialog.png">
-      <LogicalName>colorselectiondialog.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\combo.png">
-      <LogicalName>combo.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\comboentry.png">
-      <LogicalName>comboentry.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\custom.png">
-      <LogicalName>custom.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\dec-border.png">
-      <LogicalName>dec-border.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\dialog.png">
-      <LogicalName>dialog.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\drawingarea.png">
-      <LogicalName>drawingarea.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\entry.png">
-      <LogicalName>entry.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\eventbox.png">
-      <LogicalName>eventbox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\expander.png">
-      <LogicalName>expander.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\fileselection.png">
-      <LogicalName>fileselection.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\fixed.png">
-      <LogicalName>fixed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\fontbutton.png">
-      <LogicalName>fontbutton.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\fontselection.png">
-      <LogicalName>fontselection.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\fontselectiondialog.png">
-      <LogicalName>fontselectiondialog.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\frame.png">
-      <LogicalName>frame.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\globe.png">
-      <LogicalName>globe.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\globe-not.png">
-      <LogicalName>globe-not.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\handlebox.png">
-      <LogicalName>handlebox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\hbox.png">
-      <LogicalName>hbox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\hbuttonbox.png">
-      <LogicalName>hbuttonbox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\hpaned.png">
-      <LogicalName>hpaned.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\hscale.png">
-      <LogicalName>hscale.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\hscrollbar.png">
-      <LogicalName>hscrollbar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\hseparator.png">
-      <LogicalName>hseparator.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\iconview.png">
-      <LogicalName>iconview.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\image.png">
-      <LogicalName>image.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\inc-border.png">
-      <LogicalName>inc-border.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\label.png">
-      <LogicalName>label.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\menu.png">
-      <LogicalName>menu.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\menubar.png">
-      <LogicalName>menubar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\messagedialog.png">
-      <LogicalName>messagedialog.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\missing.png">
-      <LogicalName>missing.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\notebook.png">
-      <LogicalName>notebook.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\optionmenu.png">
-      <LogicalName>optionmenu.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\progressbar.png">
-      <LogicalName>progressbar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\radiobutton.png">
-      <LogicalName>radiobutton.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\remove-check-label.png">
-      <LogicalName>remove-check-label.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\remove-menu.png">
-      <LogicalName>remove-menu.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\scrolledwindow.png">
-      <LogicalName>scrolledwindow.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\spinbutton.png">
-      <LogicalName>spinbutton.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\statusbar.png">
-      <LogicalName>statusbar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\table.png">
-      <LogicalName>table.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\textview.png">
-      <LogicalName>textview.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\togglebutton.png">
-      <LogicalName>togglebutton.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\toolbar.png">
-      <LogicalName>toolbar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\treeview.png">
-      <LogicalName>treeview.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\vbox.png">
-      <LogicalName>vbox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\vbuttonbox.png">
-      <LogicalName>vbuttonbox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\viewport.png">
-      <LogicalName>viewport.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\vpaned.png">
-      <LogicalName>vpaned.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\vscale.png">
-      <LogicalName>vscale.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\vscrollbar.png">
-      <LogicalName>vscrollbar.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\vseparator.png">
-      <LogicalName>vseparator.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\widget.png">
-      <LogicalName>widget.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrapper\pixmaps\window.png">
-      <LogicalName>window.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="stetic.glade" />
+    <EmbeddedResource Include="wrapper\objects.xml" />
+    <EmbeddedResource Include="wrapper\pixmaps\accellabel.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\actiongroup.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\add-check-label.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\add-menu.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\alignment.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\arrow.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\box-expand.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\box-fill.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\button.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\calendar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\cell-expand-h.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\cell-expand-v.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\cell-fill-h.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\cell-fill-v.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\checkbutton.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\colorbutton.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\colorselection.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\colorselectiondialog.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\combo.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\comboentry.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\custom.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\dec-border.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\dialog.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\drawingarea.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\entry.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\eventbox.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\expander.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\fileselection.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\fixed.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\fontbutton.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\fontselection.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\fontselectiondialog.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\frame.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\globe.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\globe-not.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\handlebox.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\hbox.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\hbuttonbox.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\hpaned.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\hscale.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\hscrollbar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\hseparator.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\iconview.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\image.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\inc-border.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\label.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\menu.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\menubar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\messagedialog.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\missing.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\notebook.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\optionmenu.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\progressbar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\radiobutton.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\remove-check-label.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\remove-menu.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\scrolledwindow.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\spinbutton.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\statusbar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\table.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\textview.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\togglebutton.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\toolbar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\treeview.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\vbox.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\vbuttonbox.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\viewport.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\vpaned.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\vscale.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\vscrollbar.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\vseparator.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\widget.png" />
+    <EmbeddedResource Include="wrapper\pixmaps\window.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libstetic.dll.config">

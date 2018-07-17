@@ -129,8 +129,13 @@ namespace MonoDevelop.Components
 			return false;
 		}
 
+		internal bool IgnoreRepositionWindow { get; set; }
 		public override void RepositionWindow (Rectangle? newTargetRect = default (Rectangle?))
 		{
+			if (IgnoreRepositionWindow) {
+				return;
+			}
+
 			if (!HasParent)
 				return;
 

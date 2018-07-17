@@ -23,12 +23,12 @@
         public virtual string AppearanceCategory { get; protected set; }
 
         /// <summary>
-        /// Gets a <see cref="Brush"/> that will be used to paint the borders in the ToolTip presenter.
+        /// Gets a <see cref="Color"/> that will be used to paint the borders in the ToolTip presenter.
         /// </summary>
         public virtual Color BorderBrush { get; protected set; }
 
         /// <summary>
-        /// Gets a <see cref="Brush"/> that will be used to paint the background of the ToolTip presenter.
+        /// Gets a <see cref="Color"/> that will be used to paint the background of the ToolTip presenter.
         /// </summary>
         public virtual Color BackgroundBrush { get; protected set; }
     }

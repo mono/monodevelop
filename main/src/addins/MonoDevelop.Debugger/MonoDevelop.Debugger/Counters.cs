@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core.Instrumentation;
+using System;
 
 namespace MonoDevelop.Debugger
 {
@@ -32,5 +33,46 @@ namespace MonoDevelop.Debugger
 	{
 		public static Counter DebugSession = InstrumentationService.CreateCounter ("Debug Session", "Debugger", id: "Debugger.DebugSession");
 		public static Counter EvaluationStats = InstrumentationService.CreateCounter ("Evaluation Statistics", "Debugger", id: "Debugger.EvaluationStatistics");
+		public static TimerCounter<DebuggerStartMetadata> DebuggerStart = InstrumentationService.CreateTimerCounter<DebuggerStartMetadata> ("Debugger Start", "Debugger", id: "Debugger.Start");
+		public static TimerCounter<DebuggerActionMetadata> DebuggerAction = InstrumentationService.CreateTimerCounter<DebuggerActionMetadata> ("Debugger Action", "Debugger", id: "Debugger.Action");
+	}
+
+	class DebuggerStartMetadata : CounterMetadata
+	{
+		public DebuggerStartMetadata ()
+		{
+		}
+
+		public string Name {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+	}
+
+	class DebuggerActionMetadata : CounterMetadata
+	{
+		public enum ActionType {
+			Unknown,
+			StepOver,
+			StepInto,
+			StepOut
+		};
+
+		public DebuggerActionMetadata ()
+		{
+		}
+
+		public ActionType Type {
+			get {
+				var result = GetProperty<string> ();
+				if (Enum.TryParse<ActionType> (result, out var eResult)) {
+					return eResult;
+				}
+
+				return ActionType.Unknown;
+			}
+
+			set => SetProperty (value.ToString ());
+		}
 	}
 }

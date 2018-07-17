@@ -50,6 +50,9 @@ namespace Microsoft.VisualStudio.Platform
 		private ITextView textView { get; }
 		private IAccurateClassifier classifier { get; set; }
 		readonly Dictionary<string, ScopeStack> classificationMap;
+		Dictionary<IClassificationType, ScopeStack> classificationTypeToScopeCache = new Dictionary<IClassificationType, ScopeStack> ();
+		ScopeStack defaultScopeStack = new ScopeStack (EditorThemeColors.Foreground);
+		ScopeStack userScope;
 		private MonoDevelop.Ide.Editor.ITextDocument textDocument { get; }
 
 		internal TagBasedSyntaxHighlighting (ITextView textView, string defaultScope)
@@ -58,6 +61,7 @@ namespace Microsoft.VisualStudio.Platform
 			this.textDocument = textView.GetTextEditor ();
 			if (defaultScope != null)
 				classificationMap = GetClassificationMap (defaultScope);
+			this.userScope = this.defaultScopeStack.Push (EditorThemeColors.UserTypes);
 		}
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
@@ -78,7 +82,7 @@ namespace Microsoft.VisualStudio.Platform
 			ScopeStack scopeStack;
 			foreach (ClassificationSpan curSpan in classifications) {
 				if (curSpan.Span.Start > lastClassifiedOffsetEnd) {
-					scopeStack = new ScopeStack (EditorThemeColors.Foreground);
+					scopeStack = userScope;
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
@@ -95,7 +99,7 @@ namespace Microsoft.VisualStudio.Platform
 			}
 
 			if (end > lastClassifiedOffsetEnd) {
-				scopeStack = new ScopeStack (EditorThemeColors.Foreground);
+				scopeStack = userScope;
 				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, end - lastClassifiedOffsetEnd, scopeStack);
 				coloredSegments.Add (whitespaceSegment);
 			}
@@ -162,7 +166,7 @@ namespace Microsoft.VisualStudio.Platform
 				if (segment.Offset <= offset && segment.EndOffset >= offset)
 					return segment.ScopeStack;
 			}
-			return ScopeStack.Empty;
+			return defaultScopeStack;
 		}
 
 		private EventHandler<LineEventArgs> _highlightingStateChanged;
@@ -215,9 +219,6 @@ namespace Microsoft.VisualStudio.Platform
 				}
 			}
 		}
-
-		Dictionary<IClassificationType, ScopeStack> classificationTypeToScopeCache = new Dictionary<IClassificationType, ScopeStack> ();
-		static ScopeStack defaultScopeStack = new ScopeStack (EditorThemeColors.Foreground);
 
 		private ScopeStack GetScopeStackFromClassificationType (IClassificationType classificationType)
 		{
@@ -298,10 +299,7 @@ namespace Microsoft.VisualStudio.Platform
 				styleName = "punctuation.separator.key-value.html";
 				break;
 			case "HTML Server-Side Script":
-				//styleName = "punctuation.section.embedded.begin"; // suggested by mike, does nothing
-				//styleName = "punctuation.section.embedded.begin.cs"; // suggested by mike, does nothing
-				styleName = "meta.preprocessor.source.cs"; // TODO: Find a name to use here
-														   //styleName = style.HtmlServerSideScript.Name;
+				styleName = "source.server.html";
 				break;
 			case "HTML Tag Delimiter":
 				styleName = "punctuation.definition.tag.begin.html";
@@ -387,12 +385,12 @@ namespace Microsoft.VisualStudio.Platform
 		}
 
 		static ImmutableDictionary<string, Dictionary<string, ScopeStack>> classificationMapCache = ImmutableDictionary<string, Dictionary<string, ScopeStack>>.Empty;
-		static Dictionary<string, ScopeStack> GetClassificationMap (string scope)
+		Dictionary<string, ScopeStack> GetClassificationMap (string scope)
 		{
 			Dictionary<string, ScopeStack> result;
+			defaultScopeStack = new ScopeStack (scope);
 			if (classificationMapCache.TryGetValue (scope, out result))
 				return result;
-			var defaultScopeStack = new ScopeStack (scope);
 			result = new Dictionary<string, ScopeStack> {
 				[ClassificationTypeNames.Comment] = MakeScope (defaultScopeStack, "comment." + scope),
 				[ClassificationTypeNames.ExcludedCode] = MakeScope (defaultScopeStack, "comment.excluded." + scope),

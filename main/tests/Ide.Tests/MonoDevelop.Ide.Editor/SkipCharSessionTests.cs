@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Editor
 				//Reason why we use GetNativeWidget, and navigate to ExtensibleTextEditor child
 				//and execute KeyPress on it instead something more abstract is...
 				//EditSession key processing is done inside ExtensibleTextEditor.
-				var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
+				var extensibleEditor = editor.GetContent<SourceEditorView> ().TextEditor;
 				extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
 				extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
 				extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
@@ -64,18 +64,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		private T FindChild<T> (Container container) where T : Widget
-		{
-			foreach (var child in container.Children)
-				if (child is T) {
-					return (T)child;
-				} else if (child is Container) {
-					var foundChild = FindChild<T> ((Container)child);
-					if (foundChild != null)
-						return foundChild;
-				}
-			return default (T);
-		}
 		/// <summary>
 		/// Bug 615849: Automatic matching brace completion deletes `{` when `}` is deleted
 		/// </summary>
@@ -96,7 +84,7 @@ namespace MonoDevelop.Ide.Editor
 				const string originalText = @"";
 				editor.Text = originalText;
 
-				var extensibleEditor = FindChild<ExtensibleTextEditor> (editor.GetNativeWidget<Container> ());
+				var extensibleEditor = editor.GetContent<SourceEditorView> ().TextEditor;
 				extensibleEditor.OnIMProcessedKeyPressEvent ((Gdk.Key)'"', '"', Gdk.ModifierType.None);
 				extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
 				extensibleEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);

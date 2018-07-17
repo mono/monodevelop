@@ -80,7 +80,6 @@ namespace MonoDevelop.Ide.Gui
 
 		bool closeAll;
 
-		bool fullscreen;
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
 		Gtk.Container rootWidget;
@@ -641,10 +640,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public ICustomXmlSerializer Memento {
 			get {
-				WorkbenchMemento memento   = new WorkbenchMemento (new Properties ());
-				int x, y, width, height;
-				GetPosition (out x, out y);
-				GetSize (out width, out height);
+				var memento  = new WorkbenchMemento (new Properties ());
+				GetPosition (out int x, out int y);
+				GetSize (out int width, out int height);
 				// HACK: always capture bounds on OS X because we don't restore Gdk.WindowState.Maximized due to
 				// the bug mentioned below. So we simular Maximized by capturing the Maximized size.
 				if (GdkWindow.State == 0 || Platform.IsMac) {
@@ -653,7 +651,7 @@ namespace MonoDevelop.Ide.Gui
 					memento.Bounds = normalBounds;
 				}
 				memento.WindowState = GdkWindow.State;
-				memento.FullScreen  = fullscreen;
+				memento.FullScreen  = FullScreen;
 				return memento.ToProperties ();
 			}
 			set {

@@ -607,11 +607,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete]
 		internal protected override void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			base.PopulateOutputFileList (list, configuration);
-			DotNetProjectConfiguration conf = GetConfiguration (configuration) as DotNetProjectConfiguration;
-			if (conf == null)
+			if (!(GetConfiguration (configuration) is DotNetProjectConfiguration conf))
 				return;
 
 			// Debug info file
@@ -645,6 +645,7 @@ namespace MonoDevelop.Projects
 		[ThreadStatic]
 		static HashSet<DotNetProject> processedProjects;
 
+		[Obsolete]
 		internal protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			try {
@@ -660,6 +661,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[Obsolete]
 		void PopulateSupportFileListInternal (FileCopySet list, ConfigurationSelector configuration)
 		{
 			if (supportReferDistance <= 2)
@@ -943,7 +945,12 @@ namespace MonoDevelop.Projects
 			if (!noStdLib) {
 				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
 				if (sa != null) {
-					var ar = new AssemblyReference (sa.Location);
+					var props = new MSBuildPropertyGroupEvaluated (null);
+					var trueString = "true";
+					var property = new MSBuildPropertyEvaluated (null, "Implicit", trueString, trueString);
+					props.SetProperty (property.Name, property);
+
+					var ar = new AssemblyReference (sa.Location, props);
 					if (!result.Contains (ar))
 						result.Add (ar);
 				}
@@ -985,6 +992,11 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual Task<List<AssemblyReference>> OnGetFacadeAssemblies ()
 		{
+			var sharedProperties = new MSBuildPropertyGroupEvaluated (null);
+			var resolvedFrom = "ImplicitlyExpandDesignTimeFacades";
+			var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
+			sharedProperties.SetProperty (property.Name, property);
+
 			List<AssemblyReference> result = null;
 			var runtime = TargetRuntime ?? Runtime.SystemAssemblyService.DefaultRuntime;
 			var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
@@ -993,7 +1005,8 @@ namespace MonoDevelop.Projects
 					continue;
 				if (result == null)
 					result = new List<AssemblyReference> ();
-				var ar = new AssemblyReference (facade);
+
+				var ar = new AssemblyReference (facade, sharedProperties);
 				result.Add (ar);
 			}
 			return Task.FromResult (result);
@@ -1181,12 +1194,14 @@ namespace MonoDevelop.Projects
 			return project?.FileName;
 		}
 
+		[Obsolete]
 		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var handler = new MD1DotNetProjectHandler (this);
 			return handler.RunTarget (monitor, "Build", configuration);
 		}
 
+		[Obsolete]
 		protected override Task<BuildResult> DoClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var handler = new MD1DotNetProjectHandler (this);
@@ -1283,8 +1298,14 @@ namespace MonoDevelop.Projects
 
 			var config = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			return Files.Any (file => file.BuildAction == BuildAction.EmbeddedResource
-					&& String.Compare (Path.GetExtension (file.FilePath), ".resx", StringComparison.OrdinalIgnoreCase) == 0
-					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath, config.IntermediateOutputDirectory.Combine (file.ResourceId)));
+					&& file.FilePath.HasExtension (".resx")
+					&& IsResourceUpToDate (file.FilePath, config.IntermediateOutputDirectory.Combine (file.ResourceId)));
+
+			bool IsResourceUpToDate (string resxFile, string outputResources)
+			{
+				var outInfo = new FileInfo (outputResources);
+				return !outInfo.Exists || new FileInfo (resxFile).LastWriteTime < outInfo.LastWriteTime;
+			}
 		}
 
 		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
@@ -1495,11 +1516,13 @@ namespace MonoDevelop.Projects
 			return baseFiles;
 		}
 
+		[Obsolete ("Use MSBuild")]
 		internal Task<BuildResult> Compile (ProgressMonitor monitor, BuildData buildData)
 		{
 			return ProjectExtension.OnCompile (monitor, buildData);
 		}
 
+		[Obsolete ("Use MSBuild")]
 		protected virtual Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
 		{
 			return MD1DotNetProjectHandler.Compile (monitor, this, buildData);
@@ -1669,6 +1692,7 @@ namespace MonoDevelop.Projects
 
 		protected abstract DotNetCompilerParameters OnCreateCompilationParameters (DotNetProjectConfiguration config, ConfigurationKind kind);
 
+		[Obsolete]
 		internal protected virtual BuildResult OnCompileSources (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			throw new NotSupportedException ();
@@ -2077,6 +2101,7 @@ namespace MonoDevelop.Projects
 				Project.OnReferencedAssembliesChanged ();
 			}
 
+			[Obsolete]
 			internal protected override Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
 			{
 				return Project.OnCompile (monitor, buildData);

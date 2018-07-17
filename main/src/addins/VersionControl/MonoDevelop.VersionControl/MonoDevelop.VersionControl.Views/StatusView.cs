@@ -821,7 +821,7 @@ namespace MonoDevelop.VersionControl.Views
 			VersionControlItemList items = new VersionControlItemList ();
 			foreach (string file in files) {
 				Project prj = IdeApp.Workspace.GetProjectsContainingFile (file).FirstOrDefault ();
-				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file), null));
+				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file), GetVersionInfo (file)));
 			}
 			return items;
 		}
@@ -1225,10 +1225,9 @@ namespace MonoDevelop.VersionControl.Views
 				}
 			}
 
-			handled = handled || (
-				IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)
+			handled |= (IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y) && ctxMenu)
 				&& this.Selection.GetSelectedRows ().Length > 1
-				&& (evnt.State & selectionModifiers) == 0);
+				&& (evnt.State & selectionModifiers) == 0;
 
 			if (!handled)
 				handled = base.OnButtonPressEvent (evnt);

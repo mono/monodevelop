@@ -29,27 +29,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
 using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Gdb
 {
-	public class GdbSessionFactory: IDebuggerEngine
+	class GdbDebuggerBackend : DebuggerEngineBackend
 	{
-		struct FileData {
+		struct FileData
+		{
 			public DateTime LastCheck;
 			public bool IsExe;
 		}
-		
-		Dictionary<string,FileData> fileCheckCache = new Dictionary<string, FileData> ();
-		
-		public bool CanDebugCommand (ExecutionCommand command)
+
+		Dictionary<string, FileData> fileCheckCache = new Dictionary<string, FileData> ();
+
+		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{
-			NativeExecutionCommand cmd = command as NativeExecutionCommand;
-			if (cmd == null)
+			if (!(cmd is NativeExecutionCommand nativeCmd))
 				return false;
-			
-			string file = FindFile (cmd.Command);
+
+			string file = FindFile (nativeCmd.Command);
 			if (!File.Exists (file)) {
 				// The provided file is not guaranteed to exist. If it doesn't
 				// we assume we can execute it because otherwise the run command
@@ -57,12 +56,11 @@ namespace MonoDevelop.Debugger.Gdb
 				// command will build the project if the exec doesn't yet exist.
 				return true;
 			}
-			
+
 			file = Path.GetFullPath (file);
 			DateTime currentTime = File.GetLastWriteTime (file);
-				
-			FileData data;
-			if (fileCheckCache.TryGetValue (file, out data)) {
+
+			if (fileCheckCache.TryGetValue (file, out var data)) {
 				if (data.LastCheck == currentTime)
 					return data.IsExe;
 			}
@@ -75,28 +73,29 @@ namespace MonoDevelop.Debugger.Gdb
 			fileCheckCache [file] = data;
 			return data.IsExe;
 		}
-		
-		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+
+		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd)
 		{
-			NativeExecutionCommand pec = (NativeExecutionCommand) command;
-			DebuggerStartInfo startInfo = new DebuggerStartInfo ();
-			startInfo.Command = pec.Command;
-			startInfo.Arguments = pec.Arguments;
-			startInfo.WorkingDirectory = pec.WorkingDirectory;
-			if (pec.EnvironmentVariables.Count > 0) {
-				foreach (KeyValuePair<string,string> val in pec.EnvironmentVariables)
+			var nativeCmd = (NativeExecutionCommand)cmd;
+			var startInfo = new DebuggerStartInfo {
+				Command = nativeCmd.Command,
+				Arguments = nativeCmd.Arguments,
+				WorkingDirectory = nativeCmd.WorkingDirectory
+			};
+			if (nativeCmd.EnvironmentVariables.Count > 0) {
+				foreach (KeyValuePair<string, string> val in nativeCmd.EnvironmentVariables)
 					startInfo.EnvironmentVariables [val.Key] = val.Value;
 			}
 			return startInfo;
 		}
-		
-		public bool IsExecutable (string file)
+
+		internal static bool IsExecutable (string file)
 		{
 			// HACK: this is a quick but not very reliable way of checking if a file
 			// is a native executable. Actually, we are interested in checking that
 			// the file is not a script.
-			using (StreamReader sr = new StreamReader (file)) {
-				char[] chars = new char[3];
+			using (var sr = new StreamReader (file)) {
+				char [] chars = new char [3];
 				int n = 0, nr = 0;
 				while (n < chars.Length && (nr = sr.ReadBlock (chars, n, chars.Length - n)) != 0)
 					n += nr;
@@ -108,18 +107,16 @@ namespace MonoDevelop.Debugger.Gdb
 			return true;
 		}
 
-		public DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession ()
 		{
-			GdbSession ds = new GdbSession ();
-			return ds;
+			return new GdbSession ();
 		}
-		
-		public ProcessInfo[] GetAttachableProcesses ()
+
+		public override ProcessInfo [] GetAttachableProcesses ()
 		{
-			List<ProcessInfo> procs = new List<ProcessInfo> ();
+			var procs = new List<ProcessInfo> ();
 			foreach (string dir in Directory.GetDirectories ("/proc")) {
-				int id;
-				if (!int.TryParse (Path.GetFileName (dir), out id))
+				if (!int.TryParse (Path.GetFileName (dir), out var id))
 					continue;
 				try {
 					File.ReadAllText (Path.Combine (dir, "sessionid"));
@@ -127,25 +124,55 @@ namespace MonoDevelop.Debugger.Gdb
 					continue;
 				}
 				string cmdline = File.ReadAllText (Path.Combine (dir, "cmdline"));
-				cmdline = cmdline.Replace ('\0',' ');
-				ProcessInfo pi = new ProcessInfo (id, cmdline);
-				procs.Add (pi);
+				cmdline = cmdline.Replace ('\0', ' ');
+				procs.Add (new ProcessInfo (id, cmdline));
 			}
 			return procs.ToArray ();
 		}
-		
-		string FindFile (string cmd)
+
+		static string FindFile (string cmd)
 		{
 			if (Path.IsPathRooted (cmd))
 				return cmd;
 			string pathVar = Environment.GetEnvironmentVariable ("PATH");
-			string[] paths = pathVar.Split (Path.PathSeparator);
+			string [] paths = pathVar.Split (Path.PathSeparator);
 			foreach (string path in paths) {
 				string file = Path.Combine (path, cmd);
 				if (File.Exists (file))
 					return file;
 			}
 			return cmd;
+		}
+	}
+
+	[Obsolete ("Should not have been public")]
+	public class GdbSessionFactory: IDebuggerEngine
+	{
+		readonly GdbDebuggerBackend backend = new GdbDebuggerBackend ();
+
+		public bool CanDebugCommand (ExecutionCommand command)
+		{
+			return backend.CanDebugCommand (command);
+		}
+		
+		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		{
+			return backend.CreateDebuggerStartInfo (command);
+		}
+		
+		public bool IsExecutable (string file)
+		{
+			return GdbDebuggerBackend.IsExecutable (file);
+		}
+
+		public DebuggerSession CreateSession ()
+		{
+			return backend.CreateSession ();
+		}
+		
+		public ProcessInfo[] GetAttachableProcesses ()
+		{
+			return backend.GetAttachableProcesses ();
 		}
 	}
 }

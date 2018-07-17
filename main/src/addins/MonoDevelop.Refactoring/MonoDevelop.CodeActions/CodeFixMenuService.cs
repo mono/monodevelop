@@ -261,16 +261,16 @@ namespace MonoDevelop.CodeActions
 			public async Task Run ()
 			{
 				var token = default (CancellationToken);
-				var insertionAction = act as InsertionAction;
-				if (insertionAction != null) {
+				if (act is InsertionAction insertionAction) {
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
 					var document = await IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
 					var parsedDocument = await document.UpdateParseDocument ();
+					var model = await document.AnalysisDocument.GetSemanticModelAsync (token);
 					if (parsedDocument != null) {
 						var insertionPoints = InsertionPointService.GetInsertionPoints (
 							document.Editor,
-							parsedDocument,
+							model,
 							insertion.Type,
 							insertion.Location.SourceSpan.Start
 						);

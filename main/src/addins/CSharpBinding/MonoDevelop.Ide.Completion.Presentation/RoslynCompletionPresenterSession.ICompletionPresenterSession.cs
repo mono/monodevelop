@@ -18,7 +18,10 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public event EventHandler<CompletionItemEventArgs> ItemSelected;
 		public event EventHandler<CompletionItemEventArgs> ItemCommitted;
+
+		#pragma warning disable 67 // FIXME: implement intellisense filtering
 		public event EventHandler<CompletionItemFilterStateChangedEventArgs> FilterStateChanged;
+		#pragma warning restore 67
 
 		public static RoslynCompletionPresenterSession Instance { get; private set; }
 

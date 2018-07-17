@@ -1,50 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <ProjectGuid>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.PackageManagement.Tests</RootNamespace>
-    <AssemblyName>MonoDevelop.PackageManagement.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
-    <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <OutputPath>..\..\..\..\build\tests</OutputPath>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,7 +24,6 @@
     <Reference Include="NuGet.Versioning">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
     </Reference>
-    <Reference Include="mscorlib" />
     <Reference Include="NuGet.Frameworks">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
     </Reference>
@@ -209,6 +176,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectJsonBuildIntegratedNuGetProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ItemTemplateNuGetPackageInstallerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateXamarinFormsBuildTest.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetCoreRestoreTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\RestoreTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -236,12 +205,8 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.PackageManagement.Tests\" />
-    <Folder Include="MonoDevelop.PackageManagement.Tests.Helpers\" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

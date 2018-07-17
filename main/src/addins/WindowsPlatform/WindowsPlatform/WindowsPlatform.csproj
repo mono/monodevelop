@@ -1,40 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{459868D2-54DC-415B-B1AB-BE39BDBD352F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AssemblyName>WindowsPlatform</AssemblyName>
-    <RootNamespace>WindowsPlatform</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\bin</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\WindowsPlatform\WindowsPlatform.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\build\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\WindowsPlatform\WindowsPlatform.xml</DocumentationFile>
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -140,155 +114,56 @@
     <Compile Include="Styles.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WindowsPlatform.addin.xml">
-      <LogicalName>WindowsPlatform.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-continue-debug.png">
-      <LogicalName>md-continue-debug.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-continue-debug~dark.png">
-      <LogicalName>md-continue-debug~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-continue-debug~hover.png">
-      <LogicalName>md-continue-debug~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-continue-debug~hover~dark.png">
-      <LogicalName>md-continue-debug~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-continue-debug~pressed.png">
-      <LogicalName>md-continue-debug~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-continue-debug~pressed~dark.png">
-      <LogicalName>md-continue-debug~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-pause-debug.png">
-      <LogicalName>md-pause-debug.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-pause-debug~dark.png">
-      <LogicalName>md-pause-debug~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-pause-debug~hover.png">
-      <LogicalName>md-pause-debug~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-pause-debug~hover~dark.png">
-      <LogicalName>md-pause-debug~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-pause-debug~pressed.png">
-      <LogicalName>md-pause-debug~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-pause-debug~pressed~dark.png">
-      <LogicalName>md-pause-debug~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-into-debug.png">
-      <LogicalName>md-step-into-debug.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-into-debug~dark.png">
-      <LogicalName>md-step-into-debug~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-into-debug~hover.png">
-      <LogicalName>md-step-into-debug~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-into-debug~hover~dark.png">
-      <LogicalName>md-step-into-debug~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-into-debug~pressed.png">
-      <LogicalName>md-step-into-debug~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-into-debug~pressed~dark.png">
-      <LogicalName>md-step-into-debug~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-out-debug.png">
-      <LogicalName>md-step-out-debug.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-out-debug~dark.png">
-      <LogicalName>md-step-out-debug~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-out-debug~hover.png">
-      <LogicalName>md-step-out-debug~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-out-debug~hover~dark.png">
-      <LogicalName>md-step-out-debug~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-out-debug~pressed.png">
-      <LogicalName>md-step-out-debug~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-out-debug~pressed~dark.png">
-      <LogicalName>md-step-out-debug~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-over-debug.png">
-      <LogicalName>md-step-over-debug.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-over-debug~dark.png">
-      <LogicalName>md-step-over-debug~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-over-debug~hover.png">
-      <LogicalName>md-step-over-debug~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-over-debug~hover~dark.png">
-      <LogicalName>md-step-over-debug~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-over-debug~pressed.png">
-      <LogicalName>md-step-over-debug~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-step-over-debug~pressed~dark.png">
-      <LogicalName>md-step-over-debug~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build.png">
-      <LogicalName>build.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~dark.png">
-      <LogicalName>build~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~hover.png">
-      <LogicalName>build~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~hover~dark.png">
-      <LogicalName>build~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~pressed.png">
-      <LogicalName>build~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~pressed~dark.png">
-      <LogicalName>build~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop.png">
-      <LogicalName>stop.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~dark.png">
-      <LogicalName>stop~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~hover.png">
-      <LogicalName>stop~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~hover~dark.png">
-      <LogicalName>stop~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~pressed.png">
-      <LogicalName>stop~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~pressed~dark.png">
-      <LogicalName>stop~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute.png">
-      <LogicalName>execute.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~dark.png">
-      <LogicalName>execute~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~hover.png">
-      <LogicalName>execute~hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~hover~dark.png">
-      <LogicalName>execute~hover~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~pressed.png">
-      <LogicalName>execute~pressed.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~pressed~dark.png">
-      <LogicalName>execute~pressed~dark.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="WindowsPlatform.addin.xml" />
+    <EmbeddedResource Include="icons\md-continue-debug.png" />
+    <EmbeddedResource Include="icons\md-continue-debug~dark.png" />
+    <EmbeddedResource Include="icons\md-continue-debug~hover.png" />
+    <EmbeddedResource Include="icons\md-continue-debug~hover~dark.png" />
+    <EmbeddedResource Include="icons\md-continue-debug~pressed.png" />
+    <EmbeddedResource Include="icons\md-continue-debug~pressed~dark.png" />
+    <EmbeddedResource Include="icons\md-pause-debug.png" />
+    <EmbeddedResource Include="icons\md-pause-debug~dark.png" />
+    <EmbeddedResource Include="icons\md-pause-debug~hover.png" />
+    <EmbeddedResource Include="icons\md-pause-debug~hover~dark.png" />
+    <EmbeddedResource Include="icons\md-pause-debug~pressed.png" />
+    <EmbeddedResource Include="icons\md-pause-debug~pressed~dark.png" />
+    <EmbeddedResource Include="icons\md-step-into-debug.png" />
+    <EmbeddedResource Include="icons\md-step-into-debug~dark.png" />
+    <EmbeddedResource Include="icons\md-step-into-debug~hover.png" />
+    <EmbeddedResource Include="icons\md-step-into-debug~hover~dark.png" />
+    <EmbeddedResource Include="icons\md-step-into-debug~pressed.png" />
+    <EmbeddedResource Include="icons\md-step-into-debug~pressed~dark.png" />
+    <EmbeddedResource Include="icons\md-step-out-debug.png" />
+    <EmbeddedResource Include="icons\md-step-out-debug~dark.png" />
+    <EmbeddedResource Include="icons\md-step-out-debug~hover.png" />
+    <EmbeddedResource Include="icons\md-step-out-debug~hover~dark.png" />
+    <EmbeddedResource Include="icons\md-step-out-debug~pressed.png" />
+    <EmbeddedResource Include="icons\md-step-out-debug~pressed~dark.png" />
+    <EmbeddedResource Include="icons\md-step-over-debug.png" />
+    <EmbeddedResource Include="icons\md-step-over-debug~dark.png" />
+    <EmbeddedResource Include="icons\md-step-over-debug~hover.png" />
+    <EmbeddedResource Include="icons\md-step-over-debug~hover~dark.png" />
+    <EmbeddedResource Include="icons\md-step-over-debug~pressed.png" />
+    <EmbeddedResource Include="icons\md-step-over-debug~pressed~dark.png" />
+    <EmbeddedResource Include="icons\build.png" />
+    <EmbeddedResource Include="icons\build~dark.png" />
+    <EmbeddedResource Include="icons\build~hover.png" />
+    <EmbeddedResource Include="icons\build~hover~dark.png" />
+    <EmbeddedResource Include="icons\build~pressed.png" />
+    <EmbeddedResource Include="icons\build~pressed~dark.png" />
+    <EmbeddedResource Include="icons\stop.png" />
+    <EmbeddedResource Include="icons\stop~dark.png" />
+    <EmbeddedResource Include="icons\stop~hover.png" />
+    <EmbeddedResource Include="icons\stop~hover~dark.png" />
+    <EmbeddedResource Include="icons\stop~pressed.png" />
+    <EmbeddedResource Include="icons\stop~pressed~dark.png" />
+    <EmbeddedResource Include="icons\execute.png" />
+    <EmbeddedResource Include="icons\execute~dark.png" />
+    <EmbeddedResource Include="icons\execute~hover.png" />
+    <EmbeddedResource Include="icons\execute~hover~dark.png" />
+    <EmbeddedResource Include="icons\execute~pressed.png" />
+    <EmbeddedResource Include="icons\execute~pressed~dark.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Page Include="Dialogs\SelectEncodingControl.xaml">
       <SubType>Designer</SubType>
@@ -325,4 +200,5 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

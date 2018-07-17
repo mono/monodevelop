@@ -431,5 +431,76 @@ namespace MonoDevelop.Projects
 
 			sol.Dispose ();
 		}
+
+		/// <summary>
+		/// Verifies that the .xaml files can be found by ProjectFileCollection's GetFile method
+		/// after the project is re-evaluated after the package references are restored the first time
+		/// for the project. There is a separate lookup cache of files in the ProjectFileCollection.
+		/// </summary>
+		[Test]
+		public async Task ReevaluateXamarinFormsVersion24PackageReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+				var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml.cs");
+				var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "MyPage.xaml");
+
+				// No generator set before NuGet restore and re-evaluation.
+				Assert.AreEqual (string.Empty, xamlFile.Generator);
+				// No DependsOn set until NuGet restore and re-evaluation.
+				Assert.AreEqual (string.Empty, xamlCSharpFile.DependsOn);
+
+				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
+				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+				Assert.AreEqual (0, process.ExitCode);
+
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				xamlCSharpFile = p.Files.GetFile (xamlCSharpFile.FilePath);
+				xamlFile = p.Files.GetFile (xamlFile.FilePath);
+
+				Assert.IsNotNull (xamlCSharpFile);
+				Assert.IsNotNull (xamlFile);
+				Assert.AreEqual ("MSBuild:UpdateDesignTimeXaml", xamlFile.Generator);
+				Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
+
+				Assert.IsNotNull (p.GetProjectFile (xamlCSharpFile.FilePath));
+				Assert.IsNotNull (p.GetProjectFile (xamlFile.FilePath));
+
+				xamlCSharpFile = p.GetProjectFile (xamlCSharpFile.FilePath);
+				xamlFile = p.GetProjectFile(xamlFile.FilePath);
+
+				Assert.IsNotNull (xamlCSharpFile);
+				Assert.IsNotNull (xamlFile);
+				Assert.AreEqual ("MSBuild:UpdateDesignTimeXaml", xamlFile.Generator);
+				Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
+			}
+		}
+
+		[Test]
+		public async Task DotNetCoreNoMainPropertyGroup ()
+		{
+			FilePath solFile = Util.GetSampleProject ("DotNetCoreNoMainPropertyGroup", "DotNetCoreNoMainPropertyGroup.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+				Assert.AreEqual ("DotNetCoreNoMainPropertyGroup", p.Name);
+
+				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
+				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+				Assert.AreEqual (0, process.ExitCode);
+
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Project xml should not be changed.
+				string savedProjectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (projectXml, savedProjectXml);
+			}
+		}
 	}
 }

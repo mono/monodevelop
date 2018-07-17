@@ -38,10 +38,7 @@ git submodule update --init --recursive || goto :error
 set "CONFIG=DebugWin32"
 set "PLATFORM=Any CPU"
 
-rem only perform integrated restore on RefactoringEssentials, it fails on the whole solution
-"%MSBUILD_EXE%" external\RefactoringEssentials\RefactoringEssentials.sln /target:Restore %* || goto :error
-
-"%MSBUILD_EXE%" Main.sln /bl:MonoDevelop.binlog /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
+"%MSBUILD_EXE%" Main.sln /bl:MonoDevelop.binlog /r /m "/p:Configuration=%CONFIG%" "/p:Platform=%PLATFORM%" %* || goto :error
 goto :eof
 
 :error

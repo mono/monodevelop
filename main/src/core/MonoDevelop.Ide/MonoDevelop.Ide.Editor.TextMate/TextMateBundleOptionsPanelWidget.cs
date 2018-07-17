@@ -119,7 +119,9 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		void FillBundles ()
 		{
 			styleStore.Clear ();
-			foreach (var bundle in SyntaxHighlightingService.LanguageBundles) {
+			foreach (var bundle in SyntaxHighlightingService.AllBundles) {
+				if (bundle.BuiltInBundle)
+					continue;
 				styleStore.AppendValues (bundle.Name, bundle);
 			}
 		}

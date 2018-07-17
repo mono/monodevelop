@@ -216,6 +216,7 @@ namespace MonoDevelop.Ide.Gui
 				LastSaveTimeUtc = DateTime.UtcNow;
 				doc.Saved += Doc_Saved;
 				doc.Reloaded += Doc_Saved;
+				doc.FileNameChanged += Doc_Saved;
 			}
 
 
@@ -233,6 +234,7 @@ namespace MonoDevelop.Ide.Gui
 			{
 				Document.Saved -= Doc_Saved;
 				Document.Reloaded -= Doc_Saved;
+				Document.FileNameChanged -= Doc_Saved;
 			}
 		}
 

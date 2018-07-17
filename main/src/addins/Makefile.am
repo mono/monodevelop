@@ -31,7 +31,6 @@ SUBDIRS = \
 	MonoDevelop.HexEditor \
 	MonoDevelop.DocFood \
 	MonoDevelop.AspNetCore \
-	MonoDevelop.AzureFunctions \
 	MonoDevelop.DotNetCore \
 	MonoDevelop.ConnectedServices \
 	MonoDevelop.Packaging \

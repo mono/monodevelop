@@ -329,7 +329,6 @@ typedef struct
 							Console.WriteLine (segi);
 							Console.WriteLine (string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
 							string mk = null;
-							int d = 0;
 							var expr = StackMatchExpression.Parse (segi);
 							var matchResult = expr.MatchesStack (matchedSegment.ScopeStack, ref mk);
 							Assert.IsTrue (matchResult.Item1, "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));

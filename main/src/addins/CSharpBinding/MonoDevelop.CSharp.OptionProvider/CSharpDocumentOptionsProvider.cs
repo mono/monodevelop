@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			return null;
 		}
 
-		class DocumentOptions : IDocumentOptions
+		internal class DocumentOptions : IDocumentOptions
 		{
 			readonly OptionSet optionSet;
 			readonly ICodingConventionsSnapshot codingConventionsSnapshot;
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 				this.codingConventionsSnapshot = codingConventionsSnapshot;
 			}
 
-			public bool TryGetDocumentOption (Document document, OptionKey option, OptionSet underlyingOptions, out object value)
+			public bool TryGetDocumentOption (OptionKey option, OptionSet underlyingOptions, out object value)
 			{
 
 				if (codingConventionsSnapshot != null) {

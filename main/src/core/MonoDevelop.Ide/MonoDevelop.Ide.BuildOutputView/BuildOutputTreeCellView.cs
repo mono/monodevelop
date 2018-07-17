@@ -181,8 +181,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				expanderRect = Rectangle.Zero;
 				layoutBounds = cellArea;
-				layoutBounds.X += ImageSize - 3;
-				layoutBounds.Width -= (ImageSize - 3) + DefaultInformationContainerWidth;
+				layoutBounds.X += ImageSize + ImagePadding;
+				layoutBounds.Width -= ImagePadding + DefaultInformationContainerWidth;
 
 				textLayout = GetUnconstrainedLayout ();
 				var textSize = textLayout.GetSize ();
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int LinesDisplayedCount = 1;
 		const int DefaultInformationContainerWidth = 370;
 		const int ImageSize = 16;
-		const int ImagePadding = 0;
+		const int ImagePadding = 4;
 		const int FontSize = 11;
 		const int MinLayoutWidth = 30;
 
@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			FillCellBackground (ctx, buildOutputNode, status);
 
 			//Draw the image row
-			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), (cellArea.Left - 3), ImageSize, isSelected, ImagePadding);
+			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), cellArea.Left, ImageSize, isSelected, ImagePadding);
 
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
@@ -519,8 +519,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 					status.TaskLinkRenderRectangle.X = lastErrorPanelStartX + 5;
 					status.TaskLinkRenderRectangle.Y = cellArea.Y + padding;
 
-					var layout = DrawText (ctx, cellArea, status.TaskLinkRenderRectangle.X, text, padding, font: defaultFont, trimming: TextTrimming.Word, underline: true);
+					//TODO: we can do a cache of the text layout and only resize
+					//Our link text layoud needs to be created with real size
+					var layout = CreateTextLayout (cellArea, text, defaultFont, trimming: TextTrimming.WordElipsis, underline: true);
 					status.TaskLinkRenderRectangle.Size = layout.GetSize ();
+
+					//Now we calculate if fits the content and readjust
+					var maxSize = cellArea.Width + cellArea.X + padding - status.TaskLinkRenderRectangle.X;
+					status.TaskLinkRenderRectangle.Width = layout.Width = maxSize;
+
+					DrawText (ctx, layout, cellArea, status.TaskLinkRenderRectangle.X, padding);
 					return;
 				}
 				return;
@@ -569,30 +577,41 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 		}
 
-		TextLayout DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text, double padding, Font font, double width = 0, TextTrimming trimming = TextTrimming.WordElipsis, bool underline = false) 
+		static TextLayout CreateTextLayout (Xwt.Rectangle cellArea, string text, Font font, TextTrimming trimming = TextTrimming.WordElipsis, bool underline = false, double width = 0) 
 		{
-			if (width < 0) {
-				throw new Exception ("width cannot be negative");
-			}
+			var descriptionTextLayout = new TextLayout {
+				Font = font,
+				Text = text,
+				Trimming = trimming
+			};
 
-			var descriptionTextLayout = new TextLayout ();
-
-			descriptionTextLayout.Font = font;
-			descriptionTextLayout.Text = text;
-			descriptionTextLayout.Trimming = trimming;
-		
 			if (underline) {
 				descriptionTextLayout.SetUnderline (0, text.Length);
 			}
-		
+
 			if (width != 0) {
 				descriptionTextLayout.Width = width;
 			}
 
 			descriptionTextLayout.Height = cellArea.Height;
 
-			ctx.DrawTextLayout (descriptionTextLayout, x, cellArea.Y + padding);
 			return descriptionTextLayout;
+		}
+
+		static TextLayout DrawText (Context ctx, Xwt.Rectangle cellArea, double x, string text, double padding, Font font, double width = 0, TextTrimming trimming = TextTrimming.WordElipsis, bool underline = false) 
+		{
+			if (width < 0) {
+				throw new Exception ("width cannot be negative");
+			}
+
+			var textLayout = CreateTextLayout (cellArea, text, font, trimming, underline);
+			DrawText (ctx, textLayout, cellArea, x, padding);
+			return textLayout;
+		}
+
+		static void DrawText (Context ctx, TextLayout textLayout, Xwt.Rectangle cellArea, double x, double padding)
+		{
+			ctx.DrawTextLayout (textLayout, x, cellArea.Y + padding);
 		}
 
 		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected, double topPadding = 0)
@@ -673,7 +692,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			var status = GetViewStatus (node);
 
-			if (status.TaskLinkRenderRectangle.Contains (args.Position) || status.ErrorsRectangle.Contains (args.Position) || status.WarningsRectangle.Contains (args.Position)) {
+			var containsClickableElement = status.TaskLinkRenderRectangle.Contains (args.Position) || status.ErrorsRectangle.Contains (args.Position) || status.WarningsRectangle.Contains (args.Position);
+			if (containsClickableElement) {
 				ParentWidget.Cursor = CursorType.Hand;
 			} else {
 				ParentWidget.Cursor = CursorType.Arrow;
@@ -688,10 +708,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 					selectionEnd = pos;
 					QueueDraw ();
 				}
-			} else {
-				if (insideText) {
-					ParentWidget.Cursor = CursorType.IBeam;
-				}
+			} else if (insideText && !containsClickableElement)  {
+				ParentWidget.Cursor = CursorType.IBeam;
 			}
 		}
 

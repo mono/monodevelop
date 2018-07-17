@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override void ReparseDocument ()
 		{
-			ReparseDocumentInternal ();
+			ReparseDocumentInternal ().Ignore ();
 		}
 
 		async Task ReparseDocumentInternal ()

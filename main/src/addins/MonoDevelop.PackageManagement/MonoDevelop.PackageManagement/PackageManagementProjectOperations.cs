@@ -107,8 +107,6 @@ namespace MonoDevelop.PackageManagement
 		/// <summary>
 		/// Installs NuGet packages into the selected project using the enabled package sources.
 		/// </summary>
-		/// <param name="project">Project.</param>
-		/// <param name="packages">Packages.</param>
 		public Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages, bool licensesAccepted)
 		{
 			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();

@@ -24,16 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using NUnit.Framework;
-using System.Collections.Generic;
-using UnitTests;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using System.Threading.Tasks;
-using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
+using NUnit.Framework;
 
 namespace MonoDevelop.Ide
 {
@@ -44,7 +37,7 @@ namespace MonoDevelop.Ide
 		/// Information tooltips are not showing method docs, but object docs
 		/// </summary>
 		[Test]
-		public async Task TestBug530737 ()
+		public void TestBug530737 ()
 		{
 			if (Platform.IsWindows)
 				return;

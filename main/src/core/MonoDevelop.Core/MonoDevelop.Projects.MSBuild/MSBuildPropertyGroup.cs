@@ -463,6 +463,17 @@ namespace MonoDevelop.Projects.MSBuild
 				i++;
 			}
 		}
+
+		internal bool SkipSerializationOnNoChildren { get; set; } = false;
+
+		internal override bool SkipSerialization {
+			get {
+				if (SkipSerializationOnNoChildren)
+					return !GetChildren ().Any (c => !c.SkipSerialization);
+
+				return base.SkipSerialization;
+			}
+		}
 	}
 
 	public interface IMSBuildPropertyGroupEvaluated: IReadOnlyPropertySet

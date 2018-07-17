@@ -24,6 +24,10 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/FindReferenceUsagesProvider">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler" defaultInsertAfter = "MidStep">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
@@ -146,7 +150,7 @@
 		</Condition>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.Refactoring.dll"/>
 		<Assembly file="RefactoringEssentials.dll"/>
 	</Extension>

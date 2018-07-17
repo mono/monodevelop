@@ -331,6 +331,10 @@
 		<Class class="MonoDevelop.CSharp.Refactoring.CSharpFindReferencesProvider" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Refactoring/FindReferenceUsagesProvider">
+		<Class class="MonoDevelop.CSharp.Refactoring.CSharpFindReferenceUsagesProvider" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
 		<Class class="MonoDevelop.CSharp.Refactoring.CSharpJumpToDeclarationHandler" />
 	</Extension>
@@ -343,14 +347,10 @@
 		<Handler class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" mimeTypes = "text/x-csharp" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.CSharpBinding.dll"/>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
-		<Assembly file="MonoDevelop.CSharpBinding.dll"/>
-	</Extension>
-	
 	<Extension path="/MonoDevelop/Ide/TypeService/OptionProviders">
 		<Class class="MonoDevelop.CSharp.OptionProvider.EditorConfigDocumentOptionsProviderFactory"/>
 	</Extension>

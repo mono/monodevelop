@@ -224,7 +224,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                     with exn ->
                         LoggingService.LogDebug(sprintf "LanguageService: Error", exn)
                     | None -> () }
-        Async.Start computation
+        Async.StartAndLogException computation
 
     let loadingProjects = HashSet<string>()
 
@@ -543,6 +543,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
     member x.GetDerivedSymbolsInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
+        LoggingService.logDebug "Finding derived symbols in %s : Symbol %s" projectFilename symbolAtCaret.DisplayName
         let predicate (symbolUse: FSharpSymbolUse) =
             try
                 match symbolAtCaret with

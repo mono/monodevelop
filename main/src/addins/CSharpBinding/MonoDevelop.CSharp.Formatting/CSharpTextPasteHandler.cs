@@ -39,6 +39,8 @@ using Roslyn.Utilities;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using System.Linq;
+using Microsoft.CodeAnalysis.Editor;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -89,35 +91,23 @@ namespace MonoDevelop.CSharp.Formatting
 			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
 		}
 
-		public override async Task PostFomatPastedText (int insertionOffset, int insertedChars)
+
+		 public override async Task PostFomatPastedText (int offset, int length)
 		{
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
-				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
+			  indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
-			// Just correct the start line of the paste operation - the text is already Formatted.
-			var curLine = indent.Editor.GetLineByOffset (insertionOffset);
-			var curLineOffset = curLine.Offset;
-			indent.SafeUpdateIndentEngine (curLineOffset);
-			if (!indent.stateTracker.IsInsideOrdinaryCommentOrString) {
-				int pos = curLineOffset;
-				string curIndent = curLine.GetIndentation (indent.Editor);
-				int nlwsp = curIndent.Length;
-				if (!indent.stateTracker.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && indent.Editor.GetCharAt (curLineOffset + nlwsp) == '*')) {
-					// Possibly replace the indent
-					indent.SafeUpdateIndentEngine (curLineOffset + curLine.Length);
-					string newIndent = indent.stateTracker.ThisLineIndent;
-					if (newIndent != curIndent) {
-						if (CompletionWindowManager.IsVisible) {
-							if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
-								CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
-						}
-						indent.Editor.ReplaceText (pos, nlwsp, newIndent);
-						//						textEditorData.Document.CommitLineUpdate (textEditorData.CaretLine);
-					}
-				}
-			}
-			indent.Editor.FixVirtualIndentation ();
+			var doc = indent.DocumentContext.AnalysisDocument;
 
+			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
+			if (formattingService == null || !formattingService.SupportsFormatOnPaste)
+				return;
+
+			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new TextSpan (offset, length), default (CancellationToken));
+			if (changes == null)
+				return;
+			indent.Editor.ApplyTextChanges (changes);
+			indent.Editor.FixVirtualIndentation ();
 		}
 
 		class PasteFormattingRule : AbstractFormattingRule

@@ -9,7 +9,7 @@
     <AssemblyName>MonoDevelop.Core.Tests</AssemblyName>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -109,12 +109,10 @@
     <Compile Include="MonoDevelop.Projects\DotNetCoreFileWatcherTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherTests.cs" />
     <Compile Include="MonoDevelop.Core\InstrumentationTests.cs" />
+    <Compile Include="MonoDevelop.FSW\PathTreeNodeTests.cs" />
+    <Compile Include="MonoDevelop.FSW\PathTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Core\" />
-    <Folder Include="MonoDevelop.Core.Assemblies\" />
-    <Folder Include="MonoDevelop.Projects\" />
-    <Folder Include="MonoDevelop.Core.Execution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -143,6 +141,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.FSW\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

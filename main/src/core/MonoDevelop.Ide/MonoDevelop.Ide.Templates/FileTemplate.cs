@@ -337,15 +337,17 @@ namespace MonoDevelop.Ide.Templates
 							}
 							solutionFolder.Files.Add (fileName);
 						}
-						IdeApp.Workbench.OpenDocument (fileName, project: null);
+						IdeApp.Workbench.OpenDocument (fileName, project: null).Ignore ();
 						return true;
 					}
 					return false;
 				}
 
 				string unsavedFilename = singleFile.GetFileName (policyParent, project, language, directory, name);
+				#pragma warning disable 618 // back-compat for obsolete API
 				Stream stream = singleFile.CreateFileContent (policyParent, project, language, unsavedFilename, name)
 					?? await singleFile.CreateFileContentAsync (policyParent, project, language, unsavedFilename, name);
+				#pragma warning restore 618
 
 				string mimeType = GuessMimeType (unsavedFilename);
 				IdeApp.Workbench.NewDocument (unsavedFilename, mimeType, stream);

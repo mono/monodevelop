@@ -133,46 +133,38 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		static IDictionary<string, string> GetReadSolutionItemMetadata (string file, string typeGuid, string itemGuid)
+		static ReadSolutionItemMetadata GetReadSolutionItemMetadata (string file, string typeGuid, string itemGuid)
 		{
-			var metadata = new Dictionary<string, string> ();
-
 			string extension = Path.GetExtension (file);
 			if (!string.IsNullOrEmpty (extension) && extension [0] == '.') {
 				extension = extension.Substring (1);
 			}
 
-			metadata ["FileNameExtension"] = extension;
-
-			// Will be set to true later after a successful load
-			metadata ["LoadSucceed"] = bool.FalseString;
-
-			if (typeGuid != null)
-				metadata ["ProjectType"] = typeGuid;
-
-			if (itemGuid != null)
-				metadata ["ProjectID"] = itemGuid;
-
-			return metadata;
+			return new ReadSolutionItemMetadata {
+				LoadSucceed = false,
+				FileNameExtension = extension,
+				ProjectType = typeGuid,
+				ProjectID = itemGuid
+			};
 		}
 
-		static void UpdateReadSolutionItemMetadata (IDictionary<string, string> metadata, SolutionItem item)
+		static void UpdateReadSolutionItemMetadata (ReadSolutionItemMetadata metadata, SolutionItem item)
 		{
-			metadata ["ProjectType"] = item.TypeGuid;
-			metadata ["ProjectID"] = item.ItemId;
-			metadata ["LoadSucceed"] = bool.TrueString;
+			metadata.ProjectType = item.TypeGuid;
+			metadata.ProjectID = item.ItemId;
+			metadata.LoadSucceed = true;
 
 			var project = item as Project;
 			if (project == null)
 				return;
 
 			// Use TypeGuid by default for ProjectFlavor.
-			metadata ["ProjectFlavor"] = project.FlavorGuids.FirstOrDefault () ?? item.TypeGuid;
-			metadata ["Flavors"] =  string.Join (";", project.GetItemTypeGuids ());
+			metadata.ProjectFlavor = project.FlavorGuids.FirstOrDefault () ?? item.TypeGuid;
+			metadata.Flavors =  string.Join (";", project.GetItemTypeGuids ());
 
 			var capabilities = project.GetProjectCapabilities ();
 			if (capabilities.Any ()) {
-				metadata ["Capabilities"] = string.Join (" ", capabilities);
+				metadata.Capabilities = string.Join (" ", capabilities);
 			}
 		}
 
@@ -477,23 +469,65 @@ namespace MonoDevelop.Projects
 		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions loaded", "Project Model");
 
 		public static TimerCounter ReadWorkspaceItem = InstrumentationService.CreateTimerCounter ("Workspace item read", "Project Model", id:"Projects.WorkspaceItemRead");
-		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model", id:"Projects.SolutionItemRead");
+		public static TimerCounter<ReadSolutionItemMetadata> ReadSolutionItem = InstrumentationService.CreateTimerCounter<ReadSolutionItemMetadata> ("Solution item read", "Project Model", id:"Projects.SolutionItemRead");
 		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model", id:"Projects.MSBuildProjectRead");
 		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model", id:"Projects.MSBuildProjectWritten");
 
 		public static TimerCounter BuildSolutionTimer = InstrumentationService.CreateTimerCounter ("Build solution", "Project Model", id:"Projects.BuildSolution");
-		public static TimerCounter BuildProjectAndReferencesTimer = InstrumentationService.CreateTimerCounter ("Build project and references", "Project Model", id:"Projects.BuildProjectAndReferences");
-		public static TimerCounter BuildProjectTimer = InstrumentationService.CreateTimerCounter ("Build project", "Project Model", id:"Projects.BuildProject");
+		public static TimerCounter<ProjectEventMetadata> BuildProjectAndReferencesTimer = InstrumentationService.CreateTimerCounter<ProjectEventMetadata> ("Build project and references", "Project Model", id:"Projects.BuildProjectAndReferences");
+		public static TimerCounter<ProjectEventMetadata> BuildProjectTimer = InstrumentationService.CreateTimerCounter<ProjectEventMetadata> ("Build project", "Project Model", id:"Projects.BuildProject");
 		public static TimerCounter CleanProjectTimer = InstrumentationService.CreateTimerCounter ("Clean project", "Project Model", id:"Projects.CleanProject");
 		public static TimerCounter BuildWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Build workspace item", "Project Model");
 		public static TimerCounter NeedsBuildingTimer = InstrumentationService.CreateTimerCounter ("Check needs building", "Project Model");
 		
-		public static TimerCounter BuildMSBuildProjectTimer = InstrumentationService.CreateTimerCounter ("Build MSBuild project", "Project Model", id:"Projects.BuildMSBuildProject");
-		public static TimerCounter CleanMSBuildProjectTimer = InstrumentationService.CreateTimerCounter ("Clean MSBuild project", "Project Model", id:"Projects.CleanMSBuildProject");
-		public static TimerCounter RunMSBuildTargetTimer = InstrumentationService.CreateTimerCounter ("Run MSBuild target", "Project Model", id:"Projects.RunMSBuildTarget");
-		public static TimerCounter ResolveMSBuildReferencesTimer = InstrumentationService.CreateTimerCounter ("Resolve MSBuild references", "Project Model", id:"Projects.ResolveMSBuildReferences");
+		public static TimerCounter<ProjectEventMetadata> BuildMSBuildProjectTimer = InstrumentationService.CreateTimerCounter<ProjectEventMetadata> ("Build MSBuild project", "Project Model", id:"Projects.BuildMSBuildProject");
+		public static TimerCounter<ProjectEventMetadata> CleanMSBuildProjectTimer = InstrumentationService.CreateTimerCounter<ProjectEventMetadata> ("Clean MSBuild project", "Project Model", id:"Projects.CleanMSBuildProject");
+		public static TimerCounter<ProjectEventMetadata> RunMSBuildTargetTimer = InstrumentationService.CreateTimerCounter<ProjectEventMetadata> ("Run MSBuild target", "Project Model", id:"Projects.RunMSBuildTarget");
+		public static TimerCounter<ProjectEventMetadata> ResolveMSBuildReferencesTimer = InstrumentationService.CreateTimerCounter<ProjectEventMetadata> ("Resolve MSBuild references", "Project Model", id:"Projects.ResolveMSBuildReferences");
 
 		public static TimerCounter HelpServiceInitialization = InstrumentationService.CreateTimerCounter ("Help Service initialization", "IDE");
 		public static TimerCounter ParserServiceInitialization = InstrumentationService.CreateTimerCounter ("Parser Service initialization", "IDE");
+	}
+
+	internal class ReadSolutionItemMetadata : CounterMetadata
+	{
+		public ReadSolutionItemMetadata ()
+		{
+		}
+
+		public string ProjectType {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectID {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public bool LoadSucceed {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+
+		public string FileNameExtension {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectFlavor {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Flavors {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Capabilities {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
 	}
 }

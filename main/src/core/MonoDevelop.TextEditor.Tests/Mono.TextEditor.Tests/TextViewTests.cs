@@ -45,7 +45,9 @@ namespace Mono.TextEditor.Tests
 	{
 		class TestSyntaxMode : ISyntaxHighlighting
 		{
+			#pragma warning disable 67 // unused
 			public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> HighlightingStateChanged;
+			#pragma warning restore 67
 
 			public void Dispose ()
 			{

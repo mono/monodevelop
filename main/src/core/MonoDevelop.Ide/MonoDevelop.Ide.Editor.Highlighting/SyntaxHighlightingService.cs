@@ -47,20 +47,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public static class SyntaxHighlightingService
 	{
-		static LanguageBundle builtInBundle = new LanguageBundle ("default", null);
-		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null);
-		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null);
+		static LanguageBundle builtInBundle = new LanguageBundle ("default", null) { BuiltInBundle = true };
+		static LanguageBundle extensionBundle = new LanguageBundle ("extensions", null) { BuiltInBundle = true };
+		internal static LanguageBundle userThemeBundle = new LanguageBundle ("userThemes", null) { BuiltInBundle = true };
 		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
 
 		internal static IEnumerable<LanguageBundle> AllBundles {
 			get {
 				return languageBundles;
-			}
-		}
-
-		internal static IEnumerable<LanguageBundle> LanguageBundles {
-			get {
-				return languageBundles.Skip (1);
 			}
 		}
 
@@ -357,9 +351,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static System.Text.RegularExpressions.Regex fileTypesRegex = new System.Text.RegularExpressions.Regex ("\\s*\"fileTypes\"");
 		static System.Text.RegularExpressions.Regex fileTypesEndRegex = new System.Text.RegularExpressions.Regex ("\\],");
 
-		enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
+		internal enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
 
-		static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format, out List<string> fileTypes, out string scopeName)
+		internal static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format, out List<string> fileTypes, out string scopeName)
 		{
 			name = null;
 			scopeName = null;
@@ -405,11 +399,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (readFileTypes && fileTypesEndRegex.Match (line).Success)
 						break;
 					if (readFileTypes) {
-						line = line.Trim ();
-						if (line.Length > 3) {
-							var fileType = line.Substring (1, line.Length - 3);
+						string fileType = ParseFileType (line);
+						if (!string.IsNullOrEmpty(fileType))
 							fileTypes.Add (fileType);
-						}
 					}
 				}
 				if (fileTypes == null)
@@ -425,6 +417,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
+		internal static string ParseFileType (string line)
+		{
+			var idx1 = line.IndexOf ('"');
+			var idx2 = line.LastIndexOf ('"');
+			if (idx1 < 0 || idx1 + 1 >= idx2)
+				return null;
+			// the . is optional, some extensions mention it and some don't
+			if (line [idx1 + 1] == '.')
+				idx1++;
+			idx1++; // skip "
+			return line.Substring (idx1, idx2 - idx1);
+
+		}
 		static bool TryScanTextMateSyntax (Stream stream, out List<string> fileTypes, out string name, out string scopeName)
 		{
 			fileTypes = null;

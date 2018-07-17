@@ -458,9 +458,6 @@ module Completion =
                 let! typedParseResults =
                     asyncMaybe {
                         let! document = documentContext.TryGetFSharpParsedDocument() |> async.Return
-                        let! parsedLocation = document.ParsedLocation |> async.Return
-                        let! parsedLine = document.ParsedLine |> async.Return
-                        let col = min parsedLocation.Column (parsedLine.Length - 1)
 
                         let shouldReparse() =
                             lineToCaret.Contains "=" || lineToCaret.Contains "->"

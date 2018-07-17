@@ -43,17 +43,32 @@ namespace MonoDevelop.UnitTesting.VsTest
 	class VsTestDiscoveryAdapter : VsTestAdapter
 	{
 		ProgressMonitor monitor;
-		Pad pad;
-		public VsTestDiscoveryAdapter ()
+
+		/// <summary>
+		/// Creates the progress monitor if it does not already exist. This is done
+		/// on the UI thread explicitly. The ProgressMonitors is a GuiSyncObject so this
+		/// will be called on the UI thread implicitly otherwise. The progress monitor
+		/// should not be created when the static Instance is created since this can
+		/// result in a UI thread hang if Instance is called by both the UI thread and
+		/// a background thread at the same time.
+		/// </summary>
+		async Task CreateProgressMonitor ()
 		{
-			monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				"TestDiscoveryConsole",
-				GettextCatalog.GetString ("Test Discovery Console"),
-				Stock.Console,
-				false,
-				true,
-				false);
-			pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
+			if (monitor != null)
+				return;
+
+			await Runtime.RunInMainThread (() => {
+				if (monitor != null)
+					return;
+
+				monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+					"TestDiscoveryConsole",
+					GettextCatalog.GetString ("Test Discovery Console"),
+					Stock.Console,
+					false,
+					true,
+					false);
+			});
 		}
 
 		ConcurrentQueue<DiscoveryJob> discoveryQueue = new ConcurrentQueue<DiscoveryJob> ();
@@ -88,6 +103,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		public async Task<DiscoveredTests> DiscoverTestsAsync (Project project)
 		{
+			await CreateProgressMonitor ();
 			await Start ();
 			var job = new DiscoveryJob () { project = project };
 			discoveryQueue.Enqueue (job);

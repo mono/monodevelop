@@ -134,10 +134,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			var type = SyntaxFactory.ClassDeclaration (name)
 				.AddBaseListTypes (SyntaxFactory.SimpleBaseType (SyntaxFactory.ParseTypeName ("Gtk.ActionGroup")));
-			
+
 			// Generate the constructor. It contains the call that builds the widget.
-			var members = new SyntaxList<MemberDeclarationSyntax> ();
-			
 			var ctor = SyntaxFactory.ConstructorDeclaration (
 				new SyntaxList<AttributeListSyntax> (),
 				SyntaxFactory.TokenList (SyntaxFactory.Token (SyntaxKind.PublicKeyword)),

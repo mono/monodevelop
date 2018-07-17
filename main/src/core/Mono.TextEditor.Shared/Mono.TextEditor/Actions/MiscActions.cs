@@ -128,10 +128,10 @@ namespace Mono.TextEditor
 			}
 			var line = data.Document.GetLine (data.Caret.Line);
 			if (line != null) {
-				if (line.Length == 0 && data.Caret.Column > 1) {
-					data.Caret.Column = 1;
-				} else {
-					data.Document.ApplyTextChanges (new [] { RemoveTabInLine (data, line) });	
+				using (var undo = data.OpenUndoGroup ()) {
+					data.EnsureCaretIsNotVirtual ();
+					data.Document.ApplyTextChanges (new [] { RemoveTabInLine (data, line) });
+					data.FixVirtualIndentation ();
 				}
 			}
 		}

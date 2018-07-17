@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementProjectOperations projectOperations;
 		static readonly PackageManagementWorkspace workspace;
 		static readonly PackageManagementCredentialService credentialService;
-		static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
+		//static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
 		static readonly MonoDevelopHttpUserAgent userAgent = new MonoDevelopHttpUserAgent ();
 		static readonly NuGetConfigFileChangedMonitor nuGetConfigFileChangedMonitor = new NuGetConfigFileChangedMonitor ();
 
@@ -124,6 +124,10 @@ namespace MonoDevelop.PackageManagement
 
 		internal static PackageManagementWorkspace Workspace {
 			get { return workspace; }
+		}
+
+		internal static ProjectTargetFrameworkMonitor ProjectTargetFrameworkMonitor {
+			get { return projectTargetFrameworkMonitor;  }
 		}
 	}
 }

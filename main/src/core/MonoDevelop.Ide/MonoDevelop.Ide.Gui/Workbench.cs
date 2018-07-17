@@ -126,8 +126,7 @@ namespace MonoDevelop.Ide.Gui
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
-			Counters.Initialization.Trace ("Making Visible");
-			RootWindow.Visible = true;
+			Counters.Initialization.Trace ("Setting layout");
 			workbench.CurrentLayout = "Solution";
 			
 			// now we have an layout set notify it
@@ -137,7 +136,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			Counters.Initialization.Trace ("Initializing monitors");
 			monitors.Initialize ();
-			
+
+			Counters.Initialization.Trace ("Making visible");
 			Present ();
 		}
 		
@@ -648,22 +648,24 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		Dictionary<string, string> CreateOpenDocumentTimerMetadata ()
+		OpenDocumentMetadata CreateOpenDocumentTimerMetadata ()
 		{
-			var metadata = new Dictionary<string, string> ();
-			metadata ["Result"] = "None";
+			var metadata = new OpenDocumentMetadata {
+				ResultString = "None"
+			};
+
 			return metadata;
 		}
 
-		void AddOpenDocumentTimerMetadata (IDictionary<string, string> metadata, FileOpenInformation info, bool result)
+		void AddOpenDocumentTimerMetadata (OpenDocumentMetadata metadata, FileOpenInformation info, bool result)
 		{
 			if (info.NewContent != null)
-				metadata ["EditorType"] = info.NewContent.GetType ().FullName;
+				metadata.EditorType = info.NewContent.GetType ().FullName;
 			if (info.Project != null)
-				metadata ["OwnerProjectGuid"] = info.Project?.ItemId;
+				metadata.OwnerProjectGuid = info.Project?.ItemId;
 			
-			metadata ["Extension"] = info.FileName.Extension;
-			metadata ["Result"] = result ? "Success" : "Failure";
+			metadata.Extension = info.FileName.Extension;
+			metadata.ResultString = result ? "Success" : "Failure";
 		}
 
 		async Task<ViewContent> BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
@@ -973,6 +975,7 @@ namespace MonoDevelop.Ide.Gui
 			WatchDirectories ();
 		}
 
+		object directoryWatchId = new object ();
 		void WatchDirectories ()
 		{
 			HashSet<FilePath> directories = null;
@@ -984,10 +987,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			if (directories != null)
-				FileWatcherService.WatchDirectories (directories).Ignore ();
-			else
-				FileWatcherService.WatchDirectories (Enumerable.Empty<FilePath> ()).Ignore ();
+			FileWatcherService.WatchDirectories (directoryWatchId, directories).Ignore ();
 		}
 		
 		// When looking for the project to which the file belongs, look first
@@ -1652,5 +1652,34 @@ namespace MonoDevelop.Ide.Gui
 		Default = BringToFront | CenterCaretLine | HighlightCaretLine | TryToReuseViewer,
 		Debugger = BringToFront | CenterCaretLine | TryToReuseViewer,
 		DefaultInternal = Default | OnlyInternalViewer,
+	}
+
+	class OpenDocumentMetadata : CounterMetadata
+	{
+		public OpenDocumentMetadata ()
+		{
+		}
+
+		// CounterMetadata already has a Result property which isn't a string
+		// but we can overwrite the property directly in the dictionary
+		public string ResultString {
+			get => (string)Properties["Result"];
+			set => Properties["Result"] = value;
+		}
+
+		public string EditorType {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string OwnerProjectGuid {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Extension {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
 	}
 }

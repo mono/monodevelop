@@ -817,6 +817,28 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (expectedDefaultNamespace, result);
 		}
 
+		/// <summary>
+		/// Ensures the type system is notified when the project configuration is copied.
+		/// </summary>
+		[Test]
+		public async Task CloneAndUpdateProjectConfigurations ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				var debugConfig = p.Configurations ["Debug"];
+				string modifiedHint = null;
+				p.Modified += (sender, e) => {
+					modifiedHint = e.First ().Hint;
+				};
+				var cloneDebugConfig = ConfigurationTargetExtensions.CloneConfiguration (p, debugConfig, debugConfig.Id);
+				Assert.IsNull (modifiedHint);
+
+				debugConfig.CopyFrom (cloneDebugConfig);
+				Assert.AreEqual ("CompilerParameters", modifiedHint);
+			}
+		}
+
 		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{

@@ -55,7 +55,6 @@ namespace Stetic {
 		ContainerUndoRedoManager undoManager;
 		UndoQueue undoQueue;
 		
-		public event EventHandler ModifiedChanged;
 		public event EventHandler RootWidgetChanged;
 		public event Stetic.Wrapper.WidgetEventHandler SelectionChanged;
 		

@@ -27,16 +27,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	///       names in a regular expression.
 	///    </para>
 	/// </devdoc>
-#if !SILVERLIGHT
 	[ Serializable() ] 
-#endif
     class MatchCollection : ICollection {
         internal Regex _regex;
-#if SILVERLIGHT
         internal List<Match> _matches;
-#else
-        internal ArrayList _matches;
-#endif
         internal bool _done;
         internal string _input;
         internal int _beginning;
@@ -59,11 +53,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             _length = length;
             _startat = startat;
             _prevlen = -1;
-#if SILVERLIGHT
+
             _matches = new List<Match>();
-#else
-            _matches = new ArrayList();
-#endif
             _done = false;
         }
 
@@ -176,12 +167,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
             int count = Count;
             try
             {
-#if SILVERLIGHT
                 // Array.Copy will check for null.
                 Array.Copy(_matches.ToArray(), 0, array, arrayIndex, count);
-#else
-                _matches.CopyTo(array, arrayIndex);
-#endif
             }
             catch (ArrayTypeMismatchException)
             {

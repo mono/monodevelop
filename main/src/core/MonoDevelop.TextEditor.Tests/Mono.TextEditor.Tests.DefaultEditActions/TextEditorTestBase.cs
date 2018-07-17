@@ -40,7 +40,6 @@ namespace Mono.TextEditor.Tests
 	{
 		static bool firstRun = true;
 		static string rootDir;
-		static int projectId = 1;
 
 		public static string TestsRootDir {
 			get {

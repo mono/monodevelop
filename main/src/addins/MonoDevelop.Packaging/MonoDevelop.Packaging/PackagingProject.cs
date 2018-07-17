@@ -121,13 +121,6 @@ namespace MonoDevelop.Packaging
 			return false;
 		}
 
-		protected override void PopulateOutputFileList (
-			List<FilePath> list,
-			ConfigurationSelector configuration)
-		{
-			list.Add (OnGetOutputFileName (configuration));
-		}
-
 		protected override void OnPrepareForEvaluation (MSBuildProject project)
 		{
 			MSBuildPropertyGroup globalGroup = project.GetGlobalPropertyGroup ();

@@ -112,12 +112,11 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 						data.InsertText (data.Length, ch.ToString ());
 					}
 				}
-				var parsedFile = await doc.UpdateParseDocument ();
 				var model = await doc.AnalysisDocument.GetSemanticModelAsync ();
 				var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
 				var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
 				if (type != null) {
-					var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
+					var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, model, type, type.Locations.First ());
 					Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
 					for (int i = 0; i < loc.Count; i++) {
 						Assert.AreEqual (loc [i].Location, foundPoints [i].Location, "point " + i + " doesn't match");

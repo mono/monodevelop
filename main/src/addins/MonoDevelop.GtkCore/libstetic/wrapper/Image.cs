@@ -8,7 +8,7 @@ namespace Stetic.Wrapper {
 	
 		ImageInfo imageInfo;
 
-		public static Gtk.Image CreateInstance ()
+		public static new Gtk.Image CreateInstance ()
 		{
 			return new Gtk.Image (Gtk.Stock.Execute, Gtk.IconSize.Dialog);
 		}

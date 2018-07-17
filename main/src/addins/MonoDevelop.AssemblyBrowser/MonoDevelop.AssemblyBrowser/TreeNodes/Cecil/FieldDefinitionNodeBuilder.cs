@@ -27,20 +27,12 @@
 //
 
 using System;
-using System.Text;
-
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
-using ICSharpCode.Decompiler;
-using System.Text;
-using System.Threading;
 using System.Collections.Generic;
-using Mono.Cecil;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.Decompiler.TypeSystem;
-using MonoDevelop.Ide.Editor;
 using ICSharpCode.ILSpy;
+using Mono.Cecil;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -66,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var field = (FieldDefinition)dataObject;
 			nodeInfo.Label = field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field);
 
-			if (((FieldAttributes.Private | FieldAttributes.Assembly) & field.Attributes) != 0)
+			if (!field.IsPublic)
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(field));
 		}

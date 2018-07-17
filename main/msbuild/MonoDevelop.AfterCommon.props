@@ -4,6 +4,11 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<!-- target framework for the core and addins -->
+		<MDFrameworkVersion>v4.6.1</MDFrameworkVersion>
+	</PropertyGroup>
+
 	<!--
 	Sign assemblies so they get IVT access to Roslyn.
 	Disable for F# as its targets do not support public signing.
@@ -17,4 +22,17 @@
 	<PropertyGroup>
 		<MDBuildTasks>$(MSBuildThisFileDirectory)</MDBuildTasks>
 	</PropertyGroup>
+
+	<!-- set a bunch of default value the project can override -->
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
+		<RootNamespace>$(MSBuildProjectName)</RootNamespace>
+	</PropertyGroup>
+
+	<ItemDefinitionGroup Condition="'$(ShortEmbeddedResourceIDs)'!='False'">
+		<EmbeddedResource>
+			<LogicalName>%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemDefinitionGroup>
 </Project>

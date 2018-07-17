@@ -1,36 +1,19 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Core;
 using MonoDevelop.Autotools;
 using MonoDevelop.Projects;
-using CSharpBinding;
 using MonoDevelop.CSharp.Project;
-using System.Text.RegularExpressions;
 
 namespace CSharpBinding.Autotools
 {
 	class CSharpAutotoolsSetup : ISimpleAutotoolsSetup
 	{
-		public string GetCompilerCommand ( Project project, string configuration )
+		public string GetCompilerCommand (Project project, string configuration)
 		{
-			DotNetProject dp = project as DotNetProject;
-			if ( !this.CanDeploy ( project ) || dp == null)
-				throw new Exception ( "Not a deployable project." );
-			
-			switch (dp.TargetFramework.ClrVersion) {
-			case ClrVersion.Net_1_1:
+			if (CanDeploy (project) && project is DotNetProject dp)
 				return "mcs";
-			case ClrVersion.Net_2_0:
-				return "gmcs";
-			case ClrVersion.Clr_2_1:
-				return "smcs";
-			case ClrVersion.Net_4_0:
-			case ClrVersion.Net_4_5:
-				return "dmcs";
-			default:
-				throw new Exception ("Cannot handle unknown runtime version ClrVersion.'" + dp.TargetFramework.ClrVersion.ToString () + "'.");
-			}
+			throw new Exception ("Not a deployable project.");
 		}
 
 		public string GetCompilerFlags ( Project project, string configuration )

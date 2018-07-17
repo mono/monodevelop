@@ -65,7 +65,7 @@ using MonoDevelop.CSharp.Completion.Provider;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	sealed partial class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
+	sealed partial class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension
 	{
 		/*		internal protected virtual Mono.TextEditor.TextEditorData TextEditorData {
 					get {
@@ -121,33 +121,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		static List<CompletionData> snippets;
-
-		static CSharpCompletionTextEditorExtension ()
-		{
-			//try {
-			//	CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
-			//		if (snippets != null)
-			//			return Task.FromResult ((IEnumerable<CompletionData>)snippets);
-			//		var newSnippets = new List<CompletionData> ();
-			//		foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
-			//			if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
-			//				continue;
-			//			newSnippets.Add (new RoslynCompletionData (null) {
-			//				CompletionText = ct.Shortcut,
-			//				DisplayText = ct.Shortcut,
-			//				Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
-			//				Icon = ct.Icon
-			//			});
-			//		}
-			//		snippets = newSnippets;
-			//		return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
-			//	};
-			//} catch (Exception e) {
-			//	LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
-			//}
-		}
-
 		internal static Task<Document> WithFrozenPartialSemanticsAsync (Document doc, CancellationToken token)
 		{
 			return Task.FromResult (doc.WithFrozenPartialSemantics (token));
@@ -172,14 +145,6 @@ namespace MonoDevelop.CSharp.Completion
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-
-			var parsedDocument = DocumentContext.ParsedDocument;
-			if (parsedDocument != null) {
-				//				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
-				//					this.UnresolvedFileCompilation = DocumentContext.Compilation;
-				//					this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				//					Editor.CaretPositionChanged += HandlePositionChanged;
-			}
 
 			if (addEventHandlersInInitialization)
 				DocumentContext.DocumentParsed += HandleDocumentParsed;
@@ -788,14 +753,6 @@ namespace MonoDevelop.CSharp.Completion
 			return result.ParameterIndex;
 		}
 
-		#region IDebuggerExpressionResolver implementation
-
-		async Task<DebugDataTipInfo> IDebuggerExpressionResolver.ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken)
-		{
-			return await Resolver.DebuggerExpressionResolver.ResolveAsync (editor, doc, offset, cancellationToken).ConfigureAwait (false);
-		}
-
-		#endregion
 
 		[CommandHandler (RefactoryCommands.ImportSymbol)]
 		async void ImportSymbolCommand ()

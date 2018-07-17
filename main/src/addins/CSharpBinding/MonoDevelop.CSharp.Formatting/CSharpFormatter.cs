@@ -24,25 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-
-
-using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Policies;
-using System.Linq;
-using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Core;
-using MonoDevelop.CSharp.Refactoring;
-using MonoDevelop.Ide.Editor;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Formatting;
-using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp;
-using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Editor.Shared.Preview;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
-using Mono.Options;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects.Policies;
+using Roslyn.Utilities;
+using System.Threading;
+using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.CSharp.OptionProvider;
+using Microsoft.VisualStudio.CodingConventions;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -114,13 +115,48 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
-		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length) 
 		{
 			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (chain);
 			var textPolicy = policyParent.Get<TextStylePolicy> (chain);
+			var optionSet = policy.CreateOptions (textPolicy);
 
-			return new StringTextSource (FormatText (policy.CreateOptions (textPolicy), input.Text, startOffset, startOffset + length));
+			if (input is IReadonlyTextDocument doc) {
+				try {
+					var conventions = EditorConfigService.GetEditorConfigContext (doc.FileName).WaitAndGetResult ();
+					if (conventions != null)
+						optionSet = new FormattingDocumentOptionSet (optionSet, new CSharpDocumentOptionsProvider.DocumentOptions (optionSet, conventions.CurrentConventions));
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while loading coding conventions.", e);
+				}
+			}
+
+			return new StringTextSource (FormatText (optionSet, input.Text, startOffset, startOffset + length));
 		}
+
+		sealed class FormattingDocumentOptionSet : OptionSet
+		{
+			readonly OptionSet fallbackOptionSet;
+			readonly CSharpDocumentOptionsProvider.DocumentOptions optionsProvider;
+
+			internal FormattingDocumentOptionSet (OptionSet fallbackOptionSet, CSharpDocumentOptionsProvider.DocumentOptions optionsProvider)
+			{
+				this.fallbackOptionSet = fallbackOptionSet;
+				this.optionsProvider = optionsProvider;
+			}
+
+			public override object GetOption (OptionKey optionKey)
+			{
+				if (optionsProvider.TryGetDocumentOption (optionKey, fallbackOptionSet, out object value))
+					return value;
+				return fallbackOptionSet.GetOption (optionKey);
+			}
+
+			public override OptionSet WithChangedOption (OptionKey optionAndLanguage, object value) => throw new InvalidOperationException ();
+
+			internal override IEnumerable<OptionKey> GetChangedOptions (OptionSet optionSet) => throw new InvalidOperationException ();
+		}
+
 	}
 }

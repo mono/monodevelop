@@ -185,8 +185,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var token = src.Token;
 			if (LinksShown) {
 				var lineNumber = Editor.PointToLocation (x, y).Line;
+				if (lineNumber < 1 || lineNumber > Editor.LineCount)
+					return;
 				var line = Editor.GetLine (lineNumber);
-				if (visibleLines.Any (line.Equals)) {
+				if (line == null || visibleLines.Any (line.Equals)) {
 					return;
 				}
 				visibleLines.Add (line);

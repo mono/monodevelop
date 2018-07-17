@@ -35,15 +35,15 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class PackageManagementInstrumentationService
 	{
-		static Counter InstallPackageCounter = InstrumentationService.CreateCounter ("Package Installed", "Package Management", id: "PackageManagement.Package.Installed");
-		static Counter UninstallPackageCounter = InstrumentationService.CreateCounter ("Package Uninstalled", "Package Management", id: "PackageManagement.Package.Uninstalled");
+		static Counter<PackageMetadata> InstallPackageCounter = InstrumentationService.CreateCounter<PackageMetadata> ("Package Installed", "Package Management", id: "PackageManagement.Package.Installed");
+		static Counter<PackageMetadata> UninstallPackageCounter = InstrumentationService.CreateCounter<PackageMetadata> ("Package Uninstalled", "Package Management", id: "PackageManagement.Package.Uninstalled");
 
-		public virtual void IncrementInstallPackageCounter (IDictionary<string, string> metadata)
+		public virtual void IncrementInstallPackageCounter (PackageMetadata metadata)
 		{
 			InstallPackageCounter.Inc (1, null, metadata);
 		}
 
-		public virtual void IncrementUninstallPackageCounter (IDictionary<string, string> metadata)
+		public virtual void IncrementUninstallPackageCounter (PackageMetadata metadata)
 		{
 			UninstallPackageCounter.Inc (1, null, metadata);
 		}
@@ -63,10 +63,12 @@ namespace MonoDevelop.PackageManagement
 		void InstrumentPackageActions (IEnumerable<NuGetProjectAction> actions)
 		{
 			foreach (NuGetProjectAction action in actions) {
-				var metadata = new Dictionary<string, string> ();
-				metadata["PackageId"] = action.PackageIdentity.Id;
+				var metadata = new PackageMetadata {
+					PackageId = action.PackageIdentity.Id
+				};
+
 				if (action.PackageIdentity.HasVersion) {
-					metadata["Package"] = GetFullPackageInfo (action.PackageIdentity);
+					metadata.Package = GetFullPackageInfo (action.PackageIdentity);
 				}
 
 				switch (action.NuGetProjectActionType) {
@@ -83,6 +85,31 @@ namespace MonoDevelop.PackageManagement
 		static string GetFullPackageInfo (PackageIdentity packageIdentity)
 		{
 			return string.Format ("{0} v{1}", packageIdentity.Id, packageIdentity.Version);
+		}
+	}
+
+	internal class PackageMetadata : CounterMetadata
+	{
+		public PackageMetadata ()
+		{
+		}
+
+		public string PackageId {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Package {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public bool HasPackageVersion {
+			get => ContainsProperty ("PackageVersion");
+		}
+
+		public bool HasPackage {
+			get => ContainsProperty ("Package");
 		}
 	}
 }

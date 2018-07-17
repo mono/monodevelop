@@ -2342,28 +2342,22 @@ namespace MonoDevelop.Debugger
 
 			return offset >= txt.Length ? '\0' : txt[offset];
 		}
-		
+
 		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
-			var c = new CodeCompletionContext ();
-			c.TriggerLine = 0;
-			c.TriggerOffset = triggerOffset;
-			c.TriggerLineOffset = c.TriggerOffset;
-			c.TriggerTextHeight = editEntry.SizeRequest ().Height;
-			c.TriggerWordLength = currentCompletionData.ExpressionLength;
-
 			int x, y;
-			int tx, ty;
 			editEntry.GdkWindow.GetOrigin (out x, out y);
-			editEntry.GetLayoutOffsets (out tx, out ty);
+			editEntry.GetLayoutOffsets (out int tx, out int ty);
 			int cp = editEntry.TextIndexToLayoutIndex (editEntry.Position);
 			Pango.Rectangle rect = editEntry.Layout.IndexToPos (cp);
-			tx += Pango.Units.ToPixels (rect.X) + x;
+			x += Pango.Units.ToPixels (rect.X) + tx;
 			y += editEntry.Allocation.Height;
 
-			c.TriggerXCoord = tx;
-			c.TriggerYCoord = y;
-			return c;
+			return new CodeCompletionContext (
+				x, y, editEntry.SizeRequest ().Height,
+				triggerOffset, 0, triggerOffset,
+				currentCompletionData.ExpressionLength
+			);
 		}
 		
 		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)

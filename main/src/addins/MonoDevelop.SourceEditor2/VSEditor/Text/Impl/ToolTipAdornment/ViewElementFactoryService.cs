@@ -63,7 +63,7 @@
         }
 
         private IEnumerable<Lazy<IViewElementFactory, IViewElementFactoryMetadata>> OrderedFactories
-            => this.orderedFactories ?? (this.orderedFactories ?? Orderer.Order(this.unorderedViewFactories));
+            => this.orderedFactories ?? (this.orderedFactories = Orderer.Order(this.unorderedViewFactories));
 
         private Lazy<IViewElementFactory, IViewElementFactoryMetadata> FindFactory<TView>(Type modelType)
         {

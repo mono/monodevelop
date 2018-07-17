@@ -27,23 +27,23 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+
 using Mono.Addins;
 using Mono.Addins.Setup;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Setup;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Security;
-using System.Net;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
 
 namespace MonoDevelop.Core
 {
@@ -108,6 +108,7 @@ namespace MonoDevelop.Core
 			AddinManager.AddinLoadError += OnLoadError;
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
+			AddinManager.AddinAssembliesLoaded += OnAssembliesLoaded;
 
 			try {
 				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
@@ -211,15 +212,28 @@ namespace MonoDevelop.Core
 			string msg = "Add-in error (" + args.AddinId + "): " + args.Message;
 			LoggingService.LogError (msg, args.Exception);
 		}
-		
+
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string,string> { { "AddinId", args.AddinId } });
+			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string, string> {
+				{ "AddinId", args.AddinId },
+				{ "LoadTrace", Environment.StackTrace },
+			});
+#if DEBUG
+			LoggingService.LogDebug ("Add-in loaded: {0}: {1}", args.AddinId, Environment.StackTrace);
+#endif
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
 		{
 			Counters.AddinsLoaded.Dec ("Add-in unloaded: " + args.AddinId);
+		}
+
+		static void OnAssembliesLoaded (object s, AddinEventArgs args)
+		{
+#if DEBUG
+			LoggingService.LogDebug ("Add-in assemblies loaded: {0}: {1}", args.AddinId, Environment.StackTrace);
+#endif
 		}
 		
 		public static bool Initialized {
@@ -489,10 +503,10 @@ namespace MonoDevelop.Core
 		{
 			// Explicitly load the msbuild libraries since they are not installed in the GAC
 			var path = systemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
-			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
-			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
-			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Tasks.Core.dll"));
-			SystemAssemblyService.LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
+			LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.dll"));
+			LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Framework.dll"));
+			LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Tasks.Core.dll"));
+			LoadAssemblyFrom (System.IO.Path.Combine (path, "Microsoft.Build.Utilities.Core.dll"));
 
 			if (Type.GetType ("Mono.Runtime") == null) {
 				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -514,6 +528,20 @@ namespace MonoDevelop.Core
 			}
 
 			return null;
+		}
+
+		public static Assembly LoadAssemblyFrom (string asmPath)
+		{
+			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+				// MEF composition under Win32 requires that all assemblies be loaded in the
+				// Assembly.Load() context so use Assembly.Load() after getting the AssemblyName
+				// (which, on Win32, also contains the full path information so Assembly.Load()
+				// will work).
+				var asmName = AssemblyName.GetAssemblyName (asmPath);
+				return Assembly.Load (asmName);
+			}
+
+			return Assembly.LoadFrom (asmPath);
 		}
 	}
 	

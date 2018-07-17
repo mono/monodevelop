@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharp
 				IUnitTestMarkers markers = null;
 				foreach (var attr in method.GetAttributes ()) {
 					var cname = attr.AttributeClass.GetFullName ();
-					markers = unitTestMarkers.FirstOrDefault (m => (m.TestMethodAttributeMarker == cname || m.TestCaseMethodAttributeMarker == cname));
+					markers = unitTestMarkers.FirstOrDefault (m => (m.TestMethodAttributeMarker == cname || m.TestCaseMethodAttributeMarker == cname || (m as IUnitTestMarkers2)?.TestCaseSourceAttributeMarker == cname));
 					if (markers != null) {
 						if (test == null) {
 							TagClass (parentClass, markers);

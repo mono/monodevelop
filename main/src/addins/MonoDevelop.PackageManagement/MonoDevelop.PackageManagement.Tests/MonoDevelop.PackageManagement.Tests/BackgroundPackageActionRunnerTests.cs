@@ -145,13 +145,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		static void AssertCounterIncrementedForPackage (
-			IDictionary<string, string> metadata,
+			PackageMetadata metadata,
 			string packageId,
 			string packageVersion)
 		{
 			string fullInfo = packageId + " v" + packageVersion;
-			Assert.AreEqual (packageId, metadata["PackageId"]);
-			Assert.AreEqual (fullInfo, metadata["Package"]);
+			Assert.AreEqual (packageId, metadata.PackageId);
+			Assert.AreEqual (fullInfo, metadata.Package);
 		}
 
 		void AssertUninstallCounterIncrementedForPackage (string packageId, string packageVersion)
@@ -161,9 +161,9 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AssertUninstallCounterIncrementedForPackage (string packageId)
 		{
-			Assert.AreEqual (packageId, instrumentationService.UninstallPackageMetadata["PackageId"]);
-			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.ContainsKey ("PackageVersion"));
-			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.ContainsKey ("Package"));
+			Assert.AreEqual (packageId, instrumentationService.UninstallPackageMetadata.PackageId);
+			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.HasPackageVersion);
+			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.HasPackage);
 		}
 
 		void AddInstallPackageIntoProjectAction (FakeNuGetPackageManager packageManager, string packageId, string version)

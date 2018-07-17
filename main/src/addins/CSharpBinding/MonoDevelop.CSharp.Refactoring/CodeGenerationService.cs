@@ -166,11 +166,12 @@ namespace MonoDevelop.Refactoring
 			root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
 			var node = root.GetAnnotatedNodes (insertedMemberAnnotation).Single ();
+			var model = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
 
-			Application.Invoke (async (o, args) => {
+			Application.Invoke ((o, args) => {
 				var insertionPoints = InsertionPointService.GetInsertionPoints (
 					doc.Editor,
-					await doc.UpdateParseDocument (),
+					model,
 					type,
 					part.SourceSpan.Start
 				);

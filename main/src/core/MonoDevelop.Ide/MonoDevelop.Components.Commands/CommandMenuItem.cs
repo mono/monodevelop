@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
@@ -39,7 +40,7 @@ namespace MonoDevelop.Components.Commands
 		bool isArray;
 		bool isArrayItem;
 		object arrayDataItem;
-		ArrayList itemArray;
+		List<Gtk.MenuItem> itemArray;
 		IconId lastIcon;
 		string overrideLabel;
 		bool wasButtonActivation;
@@ -170,7 +171,7 @@ namespace MonoDevelop.Components.Commands
 						menu.Remove (item);
 				}
 				
-				itemArray = new ArrayList ();
+				itemArray = new List<Gtk.MenuItem> ();
 				int i = Array.IndexOf (menu.Children, this);
 				
 				if (cmdInfo.ArrayInfo != null) {
