@@ -109,6 +109,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
+			if (solution != null)
+				solution.ConfigurationsChanged += SolutionConfigurationsChanged;
 			backgroundCompiler = new BackgroundCompiler (this);
 
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
@@ -254,6 +256,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
 			if (monoDevelopSolution != null) {
+				monoDevelopSolution.ConfigurationsChanged -= SolutionConfigurationsChanged;
 				foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
 					UnloadMonoProject (prj);
 				}
@@ -301,6 +304,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void ShowStatusIcon ()
 		{
 			TypeSystemService.ShowTypeInformationGatheringIcon ();
+		}
+
+		void SolutionConfigurationsChanged (object sender, EventArgs e)
+		{
+			HandleActiveConfigurationChanged (sender, e);
 		}
 
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
