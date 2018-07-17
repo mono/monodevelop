@@ -374,6 +374,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		const int NormalRoundPrecision = 1;
 		const int DiagnosticRoundPrecision = 3;
+		const string NormalRoundPrecisioFormat = "{0:F1}s";
+		const string DiagnosticRoundPrecisionFormat = "{0:F3}s";
+
 		public static string GetDurationAsString (this BuildOutputNode node, bool includeDiagnostics)
 		{
 			var duration = node.EndTime.Subtract (node.StartTime);
@@ -382,17 +385,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			if (duration.TotalMinutes >= 1) {
-				return string.Format ("{0,7}", GettextCatalog.GetString ("{0}m {1}s", duration.Minutes.ToString(), duration.Seconds.ToString ("00")));
+				return GettextCatalog.GetString ("{0}m {1}s", duration.Minutes.ToString(), duration.Seconds.ToString ("00"));
 			}
 
-			var precision = includeDiagnostics ? DiagnosticRoundPrecision : NormalRoundPrecision;
+			string precisionFormat;
+			int precision;
+			if (includeDiagnostics) {
+				precisionFormat = DiagnosticRoundPrecisionFormat;
+				precision = DiagnosticRoundPrecision;
+			} else {
+				precisionFormat = NormalRoundPrecisioFormat;
+				precision = NormalRoundPrecision;
+			}
+
 			var value = Math.Round ((duration.Seconds + duration.Milliseconds / 1000d), precision);
 
 			//We don't want print 0 values
 			if (value == 0) {
 				return null;
 			}
-			return value.ToString ("F" + precision) + "s";
+			return string.Format (precisionFormat, value);
 		}
 
 		static void ToString (this BuildOutputNode node, bool includeChildren, StringBuilder result, string margin)
