@@ -61,26 +61,38 @@ namespace MonoDevelop.CSharp.Formatting
 			if (doc == null)
 				return editor.GetLineIndent (lineNumber);
 			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
-			var indentationService = doc.GetLanguageService<Microsoft.CodeAnalysis.Editor.ISynchronousIndentationService> ();
-			var indentation = indentationService.GetDesiredIndentation (doc, lineNumber - 1, default (CancellationToken));
-			if (indentation.HasValue) {
-				int tabCount = 0;
-				int spaceCount = indentation.Value.Offset;
-				if (!editor.Options.TabsToSpaces) {
-					tabCount = spaceCount / editor.Options.TabSize;
-					spaceCount = spaceCount % editor.Options.TabSize;
-				}
-				if (cacheSpaceCount != spaceCount || oldTabCount != tabCount) {
-					string tabString = new string ('\t', tabCount);
-					string spaceString = new string (' ', spaceCount);
-					cacheSpaceCount = spaceCount;
-					cacheSpaceCount = tabCount;
-					return cachedIndentString = tabString + spaceString;
-				}
+			var indentationService = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentationService> ();
+			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
+			int? indentation = indentationService.GetDesiredIndentation (editor.TextView, caretLine);
+			if (indentation.HasValue && indentation.Value > 0)
+				return GetIndentString (indentation.Value);
 
-				return cachedIndentString;
-			} 
+			// Fallback: Use roslyn indent tracker directly.
+			var roslynIndentService = doc.GetLanguageService<Microsoft.CodeAnalysis.Editor.ISynchronousIndentationService> ();
+			var roslynIndentation = roslynIndentService.GetDesiredIndentation (doc, lineNumber - 1, default (CancellationToken));
+			if (roslynIndentation.HasValue)
+				return GetIndentString (roslynIndentation.Value.Offset);
+
+			// vs.net & roslyn indent tracker failed -> don't change the indent.
 			return editor.GetLineIndent (lineNumber);
+		}
+
+		string GetIndentString (int spaceCount)
+		{
+			int tabCount = 0;
+			if (!editor.Options.TabsToSpaces) {
+				tabCount = spaceCount / editor.Options.TabSize;
+				spaceCount = spaceCount % editor.Options.TabSize;
+			}
+			if (cacheSpaceCount != spaceCount || oldTabCount != tabCount) {
+				string tabString = new string ('\t', tabCount);
+				string spaceString = new string (' ', spaceCount);
+				cacheSpaceCount = spaceCount;
+				cacheSpaceCount = tabCount;
+				return cachedIndentString = tabString + spaceString;
+			}
+
+			return cachedIndentString;
 		}
 		#endregion
 	}
