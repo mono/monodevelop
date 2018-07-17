@@ -266,11 +266,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return layout;
 			}
 
-			internal void Initialize ()
+			internal string Duration { get; private set; }
+
+			internal void Initialize (bool isShowingDiagnostics)
 			{
 				DrawsBottomLine = Node.Next == null || !(Node.Next.NodeType == BuildOutputNodeType.Error || Node.Next.NodeType == BuildOutputNodeType.Warning);
 				DrawsTopLine = Node.Previous == null || !(Node.Previous.NodeType == BuildOutputNodeType.Error || Node.Previous.NodeType == BuildOutputNodeType.Warning);
-
+				Duration = Node.GetDurationAsString (isShowingDiagnostics);
 				Reload ();
 			}
 		}
@@ -541,7 +543,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Size size = Size.Zero;
 
 			//Duration text
-			var duration = buildOutputNode.GetDurationAsString (contextProvider.IsShowingDiagnostics);
+			var duration = status.Duration;
 			if (duration != "") {
 				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultFont, DefaultInformationContainerWidth).GetSize ();
 				textStartX += size.Width + 10;
@@ -676,7 +678,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			var node = GetValue (BuildOutputNodeField);
 			if (node != null) {
 				var status = GetViewStatus (node);
-				status.Initialize ();
+				status.Initialize (contextProvider.IsShowingDiagnostics);
 			}
 		}
 
