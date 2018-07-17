@@ -1062,12 +1062,16 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageDownAction)]
 		internal void OnSelectionPageDownAction ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MovePageDown);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageUpAction)]
 		internal void OnSelectionPageUpAction ()
 		{
+			EnsurePreeditCommitted ();
+
 			RunAction (SelectionActions.MovePageUp);
 		}
 		
