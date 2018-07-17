@@ -319,12 +319,27 @@ namespace MonoDevelop.Projects
 			sol.Dispose();
 		}
 
+		static Solution WrapSolutionItem (SolutionItem item)
+		{
+			var sol = new Solution ();
+			var config = sol.AddConfiguration ("Debug", true);
+			sol.RootFolder.Items.Add (item);
+			config.GetEntryForItem (item).Build = true;
+			return sol;
+		}
+
+		async static Task<(Solution sln, T item)> LoadSampleSolutionItem<T> (params string [] projectName) where T : SolutionItem
+		{
+			string projFile = Util.GetSampleProject (projectName);
+			var item = (T) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			var sol = WrapSolutionItem (item);
+			return (sol, item);
+		}
+
 		[Test]
 		public async Task BuildWithCustomProps ()
 		{
-			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target.csproj");
-			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
-
+			(var sol, var p) = await LoadSampleSolutionItem<Project> ("msbuild-tests", "project-with-custom-build-target.csproj");
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("TestProp", "foo");
 			var res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, ctx);
@@ -340,6 +355,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Something failed: show", res.Errors [0].ErrorText);
 
 			p.Dispose ();
+			sol.Dispose ();
 		}
 
 		/// <summary>
@@ -350,8 +366,7 @@ namespace MonoDevelop.Projects
 		[Platform (Exclude = "Win")]
 		public async Task BuildWithCustomProps2 ()
 		{
-			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target2.csproj");
-			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			(var sol, var p) = await LoadSampleSolutionItem<Project> ("msbuild-tests", "project-with-custom-build-target2.csproj");
 
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("TestProp", "foo");
@@ -368,6 +383,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Something failed (show.targets): show", res.Errors [0].ErrorText);
 
 			p.Dispose ();
+			sol.Dispose ();
 		}
 
 		/// <summary>
@@ -379,8 +395,7 @@ namespace MonoDevelop.Projects
 		[Platform (Exclude = "Win")]
 		public async Task BuildWithCustomProps3 ()
 		{
-			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target3.csproj");
-			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			(var sol, var p) = await LoadSampleSolutionItem<Project> ("msbuild-tests", "project-with-custom-build-target3.csproj");
 
 			var ctx = new ProjectOperationContext ();
 			ctx.GlobalProperties.SetValue ("BuildingInsideVisualStudio", "false");
@@ -397,6 +412,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Something failed (true.targets): true", res.Errors [0].ErrorText);
 
 			p.Dispose ();
+			sol.Dispose ();
 		}
 
 		[Test]
@@ -509,7 +525,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test ()]
-		public async Task ProjectReferencingDisabledProject_ProjectBuildFails ()
+		public async Task ProjectReferencingDisabledProject_ProjectBuildWorks ()
 		{
 			// If a project references another project that is disabled for the solution configuration, the referenced
 			// project should build when directly building the referencing project.
@@ -520,7 +536,7 @@ namespace MonoDevelop.Projects
 			var p = sol.Items.FirstOrDefault (pr => pr.Name == "ReferencingProject");
 
 			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"Debug", true);
-			Assert.AreEqual (1, res.ErrorCount);
+			Assert.AreEqual (1, res.BuildCount);
 
 			sol.Dispose ();
 		}
