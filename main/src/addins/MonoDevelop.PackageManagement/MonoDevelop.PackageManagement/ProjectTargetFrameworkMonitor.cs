@@ -43,11 +43,11 @@ namespace MonoDevelop.PackageManagement
 
 		public event EventHandler<ProjectTargetFrameworkChangedEventArgs> ProjectTargetFrameworkChanged;
 
-		protected virtual void OnProjectTargetFrameworkChanged (IDotNetProject project)
+		protected virtual void OnProjectTargetFrameworkChanged (IDotNetProject project, bool isReload = false)
 		{
 			var handler = ProjectTargetFrameworkChanged;
 			if (handler != null) {
-				handler (this, new ProjectTargetFrameworkChangedEventArgs (project));
+				handler (this, new ProjectTargetFrameworkChangedEventArgs (project, isReload));
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 		void ProjectReloaded (object sender, ProjectReloadedEventArgs e)
 		{
 			if (HasTargetFrameworkChanged (e.NewProject, e.OldProject)) {
-				OnProjectTargetFrameworkChanged (e.NewProject);
+				OnProjectTargetFrameworkChanged (e.NewProject, isReload: true);
 			}
 		}
 

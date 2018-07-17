@@ -670,7 +670,7 @@ namespace Mono.TextEditor
 
 		void DisposeGCs ()
 		{
-			ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
+			ShowCodeSegmentPreviewTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 
 		int underlinePosition, underLineThickness;
@@ -1087,6 +1087,7 @@ namespace Mono.TextEditor
 			if (containsPreedit) {
 				if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
 					lineText = textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location) + textEditor.preeditString;
+					wrapper.IsVirtualLineText = true;
 				} else {
 					lineText = lineText.Insert (textEditor.preeditOffset - offset, textEditor.preeditString);
 				}
@@ -1636,6 +1637,7 @@ namespace Mono.TextEditor
 			}
 
 			public bool FastPath { get; internal set; }
+			public bool IsVirtualLineText { get; internal set; }
 
 			public Pango.Rectangle IndexToPos (int index)
 			{
@@ -1794,6 +1796,8 @@ namespace Mono.TextEditor
 
 		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, double x, double y, int selectionStart, int selectionEnd)
 		{
+			if (layout.IsVirtualLineText)
+				return;
 			if (textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space)) {
 				InnerDecorateTabsAndSpaces (ctx, layout, offset, x, y, selectionStart, selectionEnd, ' ');
 			}
@@ -1882,6 +1886,7 @@ namespace Mono.TextEditor
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
 			LayoutWrapper wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
+			wrapper.IsVirtualLineText = true;
 			wrapper.Text = virtualSpace;
 			wrapper.Layout.Tabs = tabArray;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
@@ -2523,7 +2528,7 @@ namespace Mono.TextEditor
 
 		uint codeSegmentTooltipTimeoutId = 0;
 
-		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
+		internal void ShowCodeSegmentPreviewTooltip (ISegment segment, Rectangle hintRectangle, uint timeout = 650)
 		{
 			if (previewWindow != null && previewWindow.Segment.Equals (segment))
 				return;
@@ -2531,7 +2536,7 @@ namespace Mono.TextEditor
 			HideCodeSegmentPreviewWindow ();
 			if (segment.IsInvalid () || segment.Length == 0)
 				return;
-			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
+			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (timeout, delegate {
 				codeSegmentTooltipTimeoutId = 0;
 				previewWindow = new CodeSegmentPreviewWindow (textEditor, false, segment);
 				if (previewWindow.IsEmptyText) {
@@ -2698,12 +2703,12 @@ namespace Mono.TextEditor
 				int lineNr = args.LineNumber;
 				foreach (var shownFolding in GetFoldRectangles (lineNr)) {
 					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
+						ShowCodeSegmentPreviewTooltip (shownFolding.Value.Segment, shownFolding.Key);
 						return;
 					}
 				}
 
-				ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
+				ShowCodeSegmentPreviewTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 				string link = GetLink != null ? GetLink (args) : null;
 
 				if (!String.IsNullOrEmpty (link)) {
@@ -2870,7 +2875,7 @@ namespace Mono.TextEditor
 			cr.Fill ();
 		}
 
-		IEnumerable<KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
+		internal IEnumerable<KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
 		{
 			if (lineNr < 0)
 				yield break;
@@ -3306,7 +3311,7 @@ namespace Mono.TextEditor
 		protected internal override void MouseLeft ()
 		{
 			base.MouseLeft ();
-			ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
+			ShowCodeSegmentPreviewTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 
 		#region Coordinate transformation

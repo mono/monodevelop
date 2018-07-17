@@ -37,7 +37,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
-	
+using MonoDevelop.Components.Mac;
+
 namespace MonoDevelop.MacIntegration
 {
 	class MacAlertDialogHandler : IAlertDialogHandler
@@ -75,8 +76,21 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				alert.MessageText = data.Message.Text;
-				alert.InformativeText = data.Message.SecondaryText ?? "";
-				
+
+				int accessoryViewItemsCount = data.Options.Count;
+
+				string secondaryText = data.Message.SecondaryText ?? string.Empty;
+				if (TryGetMessageView (secondaryText, out NSView messageView)) {
+					accessoryViewItemsCount++;
+				} else
+					alert.InformativeText = secondaryText;
+
+				var accessoryViews = accessoryViewItemsCount > 0 ? new NSView [accessoryViewItemsCount] : null;
+				int accessoryViewsIndex = 0;
+
+				if (messageView != null)
+					accessoryViews [accessoryViewsIndex++] = messageView;
+
 				var buttons = data.Buttons.Reverse ().ToList ();
 				
 				for (int i = 0; i < buttons.Count - 1; i++) {
@@ -108,13 +122,11 @@ namespace MonoDevelop.MacIntegration
 					nsbutton.Target = wrapperButton;
 					nsbutton.Action = new ObjCRuntime.Selector ("buttonActivatedAction");
 				}
-				
-				
-				NSButton[] optionButtons = null;
+
+				NSButton [] optionButtons = null;
 				if (data.Options.Count > 0) {
-					var box = new MDBox (LayoutDirection.Vertical, 2, 2);
-					optionButtons = new NSButton[data.Options.Count];
-					
+					optionButtons = new NSButton [data.Options.Count];
+
 					for (int i = data.Options.Count - 1; i >= 0; i--) {
 						var option = data.Options[i];
 						var button = new NSButton {
@@ -123,14 +135,16 @@ namespace MonoDevelop.MacIntegration
 							State = option.Value? NSCellStateValue.On : NSCellStateValue.Off,
 						};
 						button.SetButtonType (NSButtonType.Switch);
-						optionButtons[i] = button;
-						box.Add (new MDAlignment (button, true) { XAlign = LayoutAlign.Begin });
+						button.SizeToFit ();
+						optionButtons [i] = button;
+						accessoryViews [accessoryViewsIndex++] = button;
 					}
-					
-					box.Layout ();
-					alert.AccessoryView = box.View;
 				}
-				
+
+				var accessoryView = ArrangeAccessoryViews (accessoryViews);
+				if (accessoryView != null)
+					alert.AccessoryView = accessoryView;
+
 				NSButton applyToAllCheck = null;
 				if (data.Message.AllowApplyToAll) {
 					alert.ShowsSuppressionButton = true;
@@ -190,7 +204,7 @@ namespace MonoDevelop.MacIntegration
 				if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
 					data.SetResultToCancelled ();
 				}
-				
+
 				if (optionButtons != null) {
 					foreach (var button in optionButtons) {
 						var option = data.Options[(int)button.Tag];
@@ -202,10 +216,58 @@ namespace MonoDevelop.MacIntegration
 					data.ApplyToAll = true;
 
 
-
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
-			
+
+			return true;
+		}
+
+		static NSStackView ArrangeAccessoryViews (NSView[] views, int viewWidth = 450, int spacing = 5)
+		{
+			if (views == null || views.Length == 0)
+				return null;
+
+			var stackView = NSStackView.FromViews (views);
+			stackView.Orientation = NSUserInterfaceLayoutOrientation.Vertical;
+			stackView.Distribution = NSStackViewDistribution.EqualSpacing;
+			stackView.Alignment = NSLayoutAttribute.Left;
+			stackView.Spacing = spacing;
+
+			nfloat stackViewHeight = 0;
+			foreach (var v in stackView.ArrangedSubviews)
+				stackViewHeight += v.Frame.Height;
+
+			stackView.Frame = new CGRect (0, 0, viewWidth, stackViewHeight);
+			return stackView;
+		}
+
+		static bool TryGetMessageView (string text, out NSView messageView, int viewWidth = 450, int topPadding = 10)
+		{
+			messageView = null;
+
+			if (string.IsNullOrEmpty (text))
+				return false;
+
+			var formattedText = Xwt.FormattedText.FromMarkup (text);
+
+			bool isFormatted = formattedText.Attributes.Any ();
+			if (!isFormatted)
+				return false;
+
+			var labelField = new NSTextField {
+				BackgroundColor = NSColor.Clear,
+				Bordered = false,
+				Selectable = true,
+				AllowsEditingTextAttributes = true,
+				Editable = false,
+				LineBreakMode = NSLineBreakMode.ByWordWrapping,
+				PreferredMaxLayoutWidth = viewWidth
+			};
+
+			labelField.AttributedStringValue = formattedText.ToAttributedString ();
+			labelField.Frame = new CGRect (0, 0, labelField.FittingSize.Width, labelField.FittingSize.Height + topPadding);
+
+			messageView = labelField;
 			return true;
 		}
 	}

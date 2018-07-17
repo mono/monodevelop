@@ -171,10 +171,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 			EndCurrentNode (stringPool.Add (e.Message), e.Timestamp);
 		}
 
+		static readonly string [] messageTargets = {
+			"Message",
+			"ShowPreviewMessage",
+			"Copy"
+		};
+
 		private void BinLog_TaskStarted (object sender, TaskStartedEventArgs e)
 		{
-			if (e.TaskName == "Message") {
-				// <Task Message></Task> are removed, we just display the messages
+			if (Array.IndexOf (messageTargets, e.TaskName) >= 0) {
+				// Known message tasks are removed, we just display the messages
 				return;
 			}
 			AddNode (BuildOutputNodeType.Task,
@@ -186,8 +192,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		private void BinLog_TaskFinished (object sender, TaskFinishedEventArgs e)
 		{
-			if (e.TaskName == "Message") {
-				// <Task Message></Task> are removed, we just display the messages
+			if (Array.IndexOf (messageTargets, e.TaskName) >= 0) {
+				// Known message tasks are removed, we just display the messages
 				return;
 			}
 

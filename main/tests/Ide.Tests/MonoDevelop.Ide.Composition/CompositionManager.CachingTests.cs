@@ -1,4 +1,4 @@
-﻿//
+//
 // CompositionManager.CachingTests.cs
 //
 // Author:
@@ -157,6 +157,50 @@ namespace MonoDevelop.Ide.Composition
 			await CreateAndWrite (caching);
 
 			File.WriteAllText (caching.MefCacheControlFile, "corrupted");
+
+			Assert.IsFalse (caching.CanUse ());
+			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+		}
+
+		[Test]
+		public async Task TestControlCacheFilePartial ()
+		{
+			var caching = GetCaching ();
+			await CreateAndWrite (caching);
+
+			File.WriteAllText (caching.MefCacheControlFile, @"{
+   ""AssemblyInfos"":[
+      {
+         ""Location"":""/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/bin/Microsoft.VisualStudio.Text.Logic.dll"",
+         ""LastWriteTimeUtc"":""2018-03-10T01:13:54Z""
+      },");
+
+			Assert.IsFalse (caching.CanUse ());
+			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+		}
+
+		[Test]
+		public async Task TestControlCacheFileEmpty ()
+		{
+			var caching = GetCaching ();
+			await CreateAndWrite (caching);
+
+			File.WriteAllText (caching.MefCacheControlFile, "");
+
+			Assert.IsFalse (caching.CanUse ());
+			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");
+			Assert.IsFalse (File.Exists (caching.MefCacheControlFile), "Cache control was not deleted on corruption");
+		}
+
+		[Test]
+		public async Task TestControlCacheFileEmptyObject ()
+		{
+			var caching = GetCaching ();
+			await CreateAndWrite (caching);
+
+			File.WriteAllText (caching.MefCacheControlFile, "{}");
 
 			Assert.IsFalse (caching.CanUse ());
 			Assert.IsFalse (File.Exists (caching.MefCacheFile), "Cache was not deleted on corruption");

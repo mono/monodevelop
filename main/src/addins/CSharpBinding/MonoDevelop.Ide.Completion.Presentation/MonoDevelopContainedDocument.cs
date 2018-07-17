@@ -604,6 +604,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			var editorOptionsFactory = CompositionManager.GetExportedValue<IEditorOptionsFactoryService> ();
 			var editorOptions = editorOptionsFactory.GetOptions (DataBuffer);
 			var options = _workspace.Options
+										.WithChangedOption (FormattingOptions.NewLine, root.Language, editorOptions.GetNewLineCharacter ())
 										.WithChangedOption (FormattingOptions.UseTabs, root.Language, !editorOptions.IsConvertTabsToSpacesEnabled ())
 										.WithChangedOption (FormattingOptions.TabSize, root.Language, editorOptions.GetTabSize ())
 										.WithChangedOption (FormattingOptions.IndentationSize, root.Language, editorOptions.GetIndentSize ());

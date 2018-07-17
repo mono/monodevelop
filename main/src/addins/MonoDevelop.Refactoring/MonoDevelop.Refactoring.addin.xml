@@ -150,7 +150,7 @@
 		</Condition>
 	</Extension>
 
-	<Extension path="/MonoDevelop/Ide/TypeService/MefHostServices">
+	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.Refactoring.dll"/>
 		<Assembly file="RefactoringEssentials.dll"/>
 	</Extension>
