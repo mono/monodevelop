@@ -51,10 +51,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			yield return new UnitTestTextEditorExtension ();
 		}
 
-		class UnitTestMarkers: IUnitTestMarkers
+		class UnitTestMarkers: IUnitTestMarkers2
 		{
 			public string TestMethodAttributeMarker { get; set; }
 			public string TestCaseMethodAttributeMarker { get; set; }
+			public string TestCaseSourceAttributeMarker { get; set; }
 			public string IgnoreTestMethodAttributeMarker { get; set; }
 			public string IgnoreTestClassAttributeMarker { get; set; }
 		}
@@ -63,6 +64,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			new UnitTestMarkers {
 				TestMethodAttributeMarker = "NUnit.Framework.TestAttribute",
 				TestCaseMethodAttributeMarker = "NUnit.Framework.TestCaseAttribute",
+				TestCaseSourceAttributeMarker = "NUnit.Framework.TestCaseSourceAttribute",
 				IgnoreTestMethodAttributeMarker = "NUnit.Framework.IgnoreAttribute",
 				IgnoreTestClassAttributeMarker = "NUnit.Framework.IgnoreAttribute"
 			}
@@ -73,6 +75,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			var text = @"namespace NUnit.Framework {
 	public class TestFixtureAttribute : System.Attribute {} 
 	public class TestAttribute : System.Attribute {} 
+	public class TestCaseSourceAttribute : System.Attribute {} 
 } namespace TestNs { " + input + "}";
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
@@ -162,6 +165,35 @@ class TestClass
 {
 	[Test]
 	public void MyTest () {}
+}
+", async ext => {
+				var tests = await ext.GatherUnitTests (unitTestMarkers, default (CancellationToken));
+				Assert.IsNotNull (tests);
+				Assert.AreEqual (2, tests.Count);
+			});
+		}
+
+		/// <summary>
+		/// Issue #3869 "[TestCaseSource ("xzy")]" isn't seen as a test in the text editor. No dot next to it. 
+		/// </summary>
+		[Test]
+		public async Task TestIssue3869 ()
+		{
+			await Setup (@"using NUnit.Framework;
+class TestClass
+{
+	[TestCaseSource(""DivideCases"")]
+    public void DivideTest(int n, int d, int q)
+    {
+        Assert.AreEqual(q, n / d);
+    }
+
+    static object[] DivideCases =
+    {
+        new object[] { 12, 3, 4 },
+        new object[] { 12, 2, 6 },
+        new object[] { 12, 4, 3 }
+    };
 }
 ", async ext => {
 				var tests = await ext.GatherUnitTests (unitTestMarkers, default (CancellationToken));
