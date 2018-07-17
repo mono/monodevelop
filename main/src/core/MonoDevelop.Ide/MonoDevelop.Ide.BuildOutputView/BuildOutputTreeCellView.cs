@@ -539,10 +539,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 				status.WarningsRectangle.Width = size.Width + ImageSize + 2;
 				status.WarningsRectangle.Height = size.Height;
 
+				//Right area // based in our DefaultInformationContainerWidth
+				startX = cellArea.X + (cellArea.Width - DefaultInformationContainerWidth);
+
+				//Draw of duration based in startX position
+				DrawNodeDuration (ctx, cellArea, status.Duration, startX, ImagePadding);
+
 			} else if (buildOutputNode.NodeType == BuildOutputNodeType.Build) {
 				var textStartX = layoutBounds.X + layout.GetSize ().Width + 24;
 				DrawText (ctx, cellArea, textStartX, GetInformationMessage (buildOutputNode), status.LayoutYPadding, defaultFont, cellArea.Width - textStartX);
 			}
+		}
+
+		double DrawNodeDuration (Context ctx, Rectangle cellArea, string duration, double textStartX, double padding)
+		{
+			var size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultFont, DefaultInformationContainerWidth).GetSize ();
+			textStartX += size.Width + 10;
+			return textStartX;
 		}
 
 		void DrawNodeInformation (Context ctx, Xwt.Rectangle cellArea, BuildOutputNode buildOutputNode, double padding, bool isSelected, int imageSize, int imagePadding, ViewStatus status)
@@ -576,15 +589,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			UpdateInformationTextColor (ctx, isSelected);
 
+			//Right area // based in our DefaultInformationContainerWidth
 			var textStartX = cellArea.X + (cellArea.Width - DefaultInformationContainerWidth);
-
-			Size size = Size.Zero;
 
 			//Duration text
 			var duration = status.Duration;
 			if (duration != "") {
-				size = DrawText (ctx, cellArea, textStartX, duration, padding, defaultFont, DefaultInformationContainerWidth).GetSize ();
-				textStartX += size.Width + 10;
+				textStartX = DrawNodeDuration (ctx, cellArea, duration, textStartX, padding);
 			}
 
 			if (textStartX > lastErrorPanelStartX) {
