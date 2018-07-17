@@ -888,6 +888,22 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task CloneAndUpdateSolutionConfigurations ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var debugConfig = sol.Configurations ["Debug"];
+				bool configurationsChanged = false;
+				sol.ConfigurationsChanged += (sender, e) => configurationsChanged = true;
+				var cloneDebugConfig = ConfigurationTargetExtensions.CloneConfiguration (sol, debugConfig, debugConfig.Id);
+				Assert.IsFalse (configurationsChanged);
+
+				debugConfig.CopyFrom (cloneDebugConfig);
+				Assert.IsTrue (configurationsChanged);
+			}
+		}
+
+		[Test]
 		public async Task BuildSessionBeginEnd ()
 		{
 			var en = new CustomSolutionItemNode<TestBuildSolutionExtension> ();

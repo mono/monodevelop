@@ -185,6 +185,7 @@ namespace MonoDevelop.Projects
 			base.OnCopyFrom (configuration, isRename);
 			
 			SolutionConfiguration conf = (SolutionConfiguration) configuration;
+			bool notifySolution = parentSolution != null;
 			if (parentSolution == null)
 				parentSolution = conf.parentSolution;
 			
@@ -194,7 +195,8 @@ namespace MonoDevelop.Projects
 
 			if (parentSolution != null) {
 				parentSolution.UpdateDefaultConfigurations ();
-				parentSolution.NotifyConfigurationsChanged ();
+				if (notifySolution)
+					parentSolution.NotifyConfigurationsChanged ();
 			}
 		}
 	}
