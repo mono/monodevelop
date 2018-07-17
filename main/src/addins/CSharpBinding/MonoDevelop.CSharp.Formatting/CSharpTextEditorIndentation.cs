@@ -840,7 +840,7 @@ namespace MonoDevelop.CSharp.Formatting
 				int newIndentLength = newIndent.Length;
 				bool isVirtualIndent = Editor.Options.IndentStyle == IndentStyle.Smart && Editor.Options.RemoveTrailingWhitespaces || Editor.Options.IndentStyle == IndentStyle.Virtual;
 				if (isVirtualIndent && line.Length == 0) {
-					Editor.CaretColumn = newIndentLength;
+					Editor.CaretColumn = newIndentLength + 1;
 					return;
 				}
 				if (newIndent != curIndent) {
