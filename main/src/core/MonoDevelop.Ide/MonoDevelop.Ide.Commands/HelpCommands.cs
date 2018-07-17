@@ -180,8 +180,12 @@ namespace MonoDevelop.Ide.Commands
 
 	class MarkLogHandler : CommandHandler
 	{
+		[System.Runtime.InteropServices.DllImport("__Internal")]
+		static extern void crash_vsm_please();
+
 		protected override void Run ()
 		{
+			crash_vsm_please();
 			LoggingService.LogInfo ("\n\n--- --- --- --- MARK --- --- --- ---\n\n");
 		}
 	}
