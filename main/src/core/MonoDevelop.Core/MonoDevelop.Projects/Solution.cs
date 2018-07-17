@@ -928,7 +928,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Builds a set of SolutionItems from this solution and their dependencies. They will be built in parallel, and common dependencies will be deduplicated.
 		/// </summary>
-		public async Task<BuildResult> CleanItems (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> items, OperationContext operationContext = null)
+		public async Task<BuildResult> CleanItems (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> items, OperationContext operationContext = null, string beginTaskMessage = null)
 		{
 			SolutionConfiguration slnConf = GetConfiguration (configuration);
 			if (slnConf == null)
@@ -945,7 +945,10 @@ namespace MonoDevelop.Projects
 			if (operationContext == null)
 				operationContext = new OperationContext ();
 
-			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), sortedItems.Count);
+			monitor.BeginTask (
+				beginTaskMessage ?? GettextCatalog.GetString ("Cleaning {0} items in solution {1} ({2})", sortedItems.Count, Name, configuration.ToString ()),
+				sortedItems.Count
+			);
 
 			bool operationStarted = false;
 			BuildResult result = null;
@@ -966,16 +969,16 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Builds a set of SolutionItems from this solution and their dependencies. They will be built in parallel, and common dependencies will be deduplicated.
 		/// </summary>
-		public async Task<BuildResult> BuildItems (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> items, OperationContext operationContext = null)
+		public async Task<BuildResult> BuildItems (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> items, OperationContext operationContext = null, string beginTaskMessage = null)
 		{
 			SolutionConfiguration slnConf = GetConfiguration (configuration);
 			if (slnConf == null)
 				return new BuildResult ();
 
-			ReadOnlyCollection<SolutionItem> allProjects;
+			ReadOnlyCollection<SolutionItem> sortedItems;
 
 			try {
-				allProjects = GetItemsAndDependenciesSortedForBuild (items, configuration);
+				sortedItems = GetItemsAndDependenciesSortedForBuild (items, configuration);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
@@ -990,16 +993,20 @@ namespace MonoDevelop.Projects
 			try {
 
 				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
-					allProjects = allProjects.Where (si => {
+					sortedItems = sortedItems.Where (si => {
 						if (si is Project p)
 							return p.FastCheckNeedsBuild (configuration);
 						return true;//Don't filter things that don't have FastCheckNeedsBuild
 					}).ToList ().AsReadOnly ();
-				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
+
+				monitor.BeginTask (
+					beginTaskMessage ?? GettextCatalog.GetString ("Building {0} items in solution {1} ({2})", sortedItems.Count, Name, configuration.ToString ()),
+					sortedItems.Count
+				);
 
 				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
 
-				return result = await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
+				return result = await RunParallelBuildOperation (monitor, configuration, sortedItems, (ProgressMonitor m, SolutionItem item) => {
 					return item.Build (m, configuration, false, operationContext);
 				}, false);
 

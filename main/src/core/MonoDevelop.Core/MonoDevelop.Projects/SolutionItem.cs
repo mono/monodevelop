@@ -618,7 +618,7 @@ namespace MonoDevelop.Projects
 				try {
 					SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
 					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
-					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
+					monitor.BeginTask (GettextCatalog.GetString ("Building {0} ({1})", Name, confName), 1);
 
 					operationStarted = ParentSolution != null && await ParentSolution.BeginBuildOperation (monitor, solutionConfiguration, operationContext);
 
@@ -642,7 +642,10 @@ namespace MonoDevelop.Projects
 			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, CreateProjectEventMetadata (solutionConfiguration));
 			try {
 				operationStarted = await ParentSolution.BeginBuildOperation (monitor, solutionConfiguration, operationContext);
-				result = await ParentSolution.BuildItems (monitor, solutionConfiguration, new[] { this }, operationContext);
+				result = await ParentSolution.BuildItems (
+					monitor, solutionConfiguration, new[] { this }, operationContext,
+					GettextCatalog.GetString ("Building {0} ({1})", Name, solutionConfiguration.ToString ())
+				);
 			} finally {
 				tt.End ();
 				if (operationStarted)
@@ -744,7 +747,7 @@ namespace MonoDevelop.Projects
 				try {
 					SolutionItemConfiguration iconf = GetConfiguration (configuration);
 					string confName = iconf != null ? iconf.Id : configuration.ToString ();
-					monitor.BeginTask (GettextCatalog.GetString ("Cleaning: {0} ({1})", Name, confName), 1);
+					monitor.BeginTask (GettextCatalog.GetString ("Cleaning {0} ({1})", Name, confName), 1);
 
 					SolutionItemConfiguration conf = GetConfiguration (configuration);
 					if (conf != null) {

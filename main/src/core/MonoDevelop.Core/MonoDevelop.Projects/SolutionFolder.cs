@@ -580,7 +580,10 @@ namespace MonoDevelop.Projects
 			var collected = new HashSet<SolutionItem> ();
 			CollectBuildableEntries (collected, configuration, slnConf, false);
 
-			return ParentSolution.CleanItems (monitor, configuration, collected, operationContext);
+			return ParentSolution.CleanItems (
+				monitor, configuration, collected, operationContext,
+				IsRoot ? GettextCatalog.GetString ("Cleaning solution {0} ({1})", Name, configuration.ToString ()) : null
+			);
 		}
 
 		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
@@ -593,7 +596,11 @@ namespace MonoDevelop.Projects
 			var collected = new HashSet<SolutionItem> ();
 			CollectBuildableEntries (collected, configuration, slnConf, false);
 
-			return ParentSolution.BuildItems (monitor, configuration, collected, operationContext);
+
+			return ParentSolution.BuildItems (
+				monitor, configuration, collected, operationContext,
+				IsRoot ? GettextCatalog.GetString ("Building solution {0} ({1})", Name, configuration.ToString ()) : null
+			);
         }
 
 		[Obsolete("This method will be removed in future releases")]
