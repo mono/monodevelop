@@ -24,14 +24,13 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 			Span? locus = currentParameter?.Locus;
 			bool inDocumentation = false;
 			for (int i = 0; i < classifications.Count; i++) {
-				var part = classifications [i];
+				var part = classifications[i];
 				if (!inDocumentation) {
 					if (part.ClassificationType.Classification == ClassificationTypeNames.Text) {
 						inDocumentation = true;
 						markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
 						markup.AppendLine ();
-					}
-					else {
+					} else {
 						markup.Append ("<span foreground=\"");
 						markup.Append (GetThemeColor (theme, GetThemeColor (part.ClassificationType.Classification)));
 						markup.Append ("\">");
@@ -44,22 +43,19 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span)));
 							markup.Append ("</b>");
-						}
-						else {
+						} else {
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection)));
 							markup.Append ("</b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection.End, part.Span.End - intersection.End)));
 						}
-					}
-					else {
+					} else {
 						if (intersection.End == part.Span.End) {
 							markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span.Start, intersection.Start - part.Span.Start)));
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection)));
 							markup.Append ("</b>");
-						}
-						else {
+						} else {
 							markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span.Start, intersection.Start - part.Span.Start)));
 							markup.Append ("<b>");
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection)));
@@ -67,12 +63,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 							markup.Append (Ambience.EscapeText (snapshot.GetText (intersection.End, part.Span.End - intersection.End)));
 						}
 					}
-				}
-				else {
+				} else {
 					if (inDocumentation) {
 						AppendAndBreakText (markup, snapshot.GetText (part.Span), 0, MaxParamColumnCount);
 					} else {
-						markup.Append(Ambience.EscapeText (snapshot.GetText (part.Span)));
+						markup.Append (Ambience.EscapeText (snapshot.GetText (part.Span)));
 					}
 				}
 				if (!inDocumentation)
@@ -82,7 +77,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 				markup.Append ("</span>");
 
 			if (currentParameter != null) {
-				if (!string.IsNullOrEmpty(currentParameter.Documentation)) {
+				if (!string.IsNullOrEmpty (currentParameter.Documentation)) {
 					markup.Append ("<span font='" + FontService.SansFontName + "'");
 					//markup.Append ("foreground ='" + GetThemeColor (theme, "source.cs") + "'");
 					markup.Append (" size='small'>");
@@ -200,7 +195,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 			public const string ExtensionMethodName = "extension method name";
 			public const string PropertyName = "property name";
 			public const string EventName = "event name";
- 
+
 			public const string XmlDocCommentAttributeName = "xml doc comment - attribute name";
 			public const string XmlDocCommentAttributeQuotes = "xml doc comment - attribute quotes";
 			public const string XmlDocCommentAttributeValue = "xml doc comment - attribute value";
@@ -234,7 +229,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 		/// <param name="column">Column number (1 based).</param>
 		public static SnapshotPoint? GetSnapshotPoint (this ITextSnapshot snapshot, int line, int column)
 		{
-			if (TryGetSnapshotPoint (snapshot, line, column, out var snapshotPoint)) 
+			if (TryGetSnapshotPoint (snapshot, line, column, out var snapshotPoint))
 				return snapshotPoint;
 			return null;
 		}

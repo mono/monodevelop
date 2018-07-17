@@ -1,42 +1,42 @@
-﻿namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
+namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
-    using System;
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Threading;
-    using Microsoft.VisualStudio.Utilities;
+	using System;
+	using System.ComponentModel.Composition;
+	using Microsoft.VisualStudio.Text.Editor;
+	using Microsoft.VisualStudio.Threading;
+	using Microsoft.VisualStudio.Utilities;
 
 	// TODO: re-enable this as part of
 	// https://devdiv.visualstudio.com/DevDiv/Xamarin%20VS%20for%20Mac/_workitems/edit/617427
 	// [Export(typeof(ITextViewCreationListener))]
 	[ContentType ("any")]
-    [TextViewRole(PredefinedTextViewRoles.Editable)]
-    [TextViewRole(PredefinedTextViewRoles.EmbeddedPeekTextView)]
-    [TextViewRole(PredefinedTextViewRoles.CodeDefinitionView)]
-    internal sealed class QuickInfoTextViewCreationListener : ITextViewCreationListener
-    {
-        private readonly IAsyncQuickInfoBroker quickInfoBroker;
-        private readonly JoinableTaskContext joinableTaskContext;
+	[TextViewRole (PredefinedTextViewRoles.Editable)]
+	[TextViewRole (PredefinedTextViewRoles.EmbeddedPeekTextView)]
+	[TextViewRole (PredefinedTextViewRoles.CodeDefinitionView)]
+	internal sealed class QuickInfoTextViewCreationListener : ITextViewCreationListener
+	{
+		private readonly IAsyncQuickInfoBroker quickInfoBroker;
+		private readonly JoinableTaskContext joinableTaskContext;
 
-        [ImportingConstructor]
-        public QuickInfoTextViewCreationListener(
-            IAsyncQuickInfoBroker quickInfoBroker,
-            JoinableTaskContext joinableTaskContext)
-        {
-            this.quickInfoBroker = quickInfoBroker
-                ?? throw new ArgumentNullException(nameof(quickInfoBroker));
-            this.joinableTaskContext = joinableTaskContext
-                ?? throw new ArgumentNullException(nameof(joinableTaskContext));
-        }
+		[ImportingConstructor]
+		public QuickInfoTextViewCreationListener (
+			IAsyncQuickInfoBroker quickInfoBroker,
+			JoinableTaskContext joinableTaskContext)
+		{
+			this.quickInfoBroker = quickInfoBroker
+				?? throw new ArgumentNullException (nameof (quickInfoBroker));
+			this.joinableTaskContext = joinableTaskContext
+				?? throw new ArgumentNullException (nameof (joinableTaskContext));
+		}
 
-        public void TextViewCreated(ITextView textView)
-        {
+		public void TextViewCreated (ITextView textView)
+		{
 			// No need to do anything further, this type hooks up events to the
 			// text view and tracks its own life cycle.
-			new QuickInfoController(
-                this.quickInfoBroker,
-                this.joinableTaskContext,
-                textView);
-        }
-    }
+			new QuickInfoController (
+				this.quickInfoBroker,
+				this.joinableTaskContext,
+				textView);
+		}
+	}
 }

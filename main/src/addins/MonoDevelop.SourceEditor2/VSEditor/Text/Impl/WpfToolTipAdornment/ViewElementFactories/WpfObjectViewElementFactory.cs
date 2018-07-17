@@ -1,4 +1,4 @@
-﻿namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
 {
 	using System;
 	using System.ComponentModel.Composition;

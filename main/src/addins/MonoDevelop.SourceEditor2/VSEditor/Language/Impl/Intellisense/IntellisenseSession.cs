@@ -4,27 +4,24 @@ using System;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
-    internal abstract class IntellisenseSession : BaseIntellisenseSession
-    {
-        protected readonly ITrackingPoint triggerPoint;
+	internal abstract class IntellisenseSession : BaseIntellisenseSession
+	{
+		protected readonly ITrackingPoint triggerPoint;
 
-        protected IntellisenseSession(ITextView textView, ITrackingPoint triggerPoint)
-            : base(textView)
-        {
-            if (triggerPoint == null)
-            {
-                throw new ArgumentNullException("triggerPoint");
-            }
+		protected IntellisenseSession (ITextView textView, ITrackingPoint triggerPoint)
+			: base (textView)
+		{
+			if (triggerPoint == null) {
+				throw new ArgumentNullException ("triggerPoint");
+			}
 
-            this.triggerPoint = triggerPoint;
-        }
+			this.triggerPoint = triggerPoint;
+		}
 
-        public override ITrackingPoint TriggerPoint
-        {
-            get
-            {
-                return this.triggerPoint;
-            }
-        }
-    }
+		public override ITrackingPoint TriggerPoint {
+			get {
+				return this.triggerPoint;
+			}
+		}
+	}
 }
