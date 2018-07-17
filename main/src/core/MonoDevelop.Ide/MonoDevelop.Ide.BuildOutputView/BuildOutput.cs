@@ -182,6 +182,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 				var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
 				var summaryNode = new BuildOutputNode {
 					NodeType = BuildOutputNodeType.BuildSummary,
+					StartTime = result.Values
+						.MinValueOrDefault (s => s.StartTime.Ticks)?.StartTime ?? default(DateTime),
+					EndTime = result.Values
+						.MaxValueOrDefault (s => s.EndTime.Ticks)?.EndTime ?? default (DateTime),
 					Message = message,
 					FullMessage = message,
 					HasErrors = errorCount > 0,
