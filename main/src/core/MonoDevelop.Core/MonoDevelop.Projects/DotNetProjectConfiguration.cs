@@ -187,9 +187,12 @@ namespace MonoDevelop.Projects
 			
 			assembly = conf.assembly;
 			sourcePath = conf.sourcePath;
+			bool notifyParentItem = ParentItem != null;
 			if (ParentItem == null)
 				SetParentItem (conf.ParentItem);
 			CompilationParameters = conf.compilationParameters != null ? conf.compilationParameters.Clone () : null;
+			if (notifyParentItem)
+				ParentItem?.NotifyModified ("CompilerParameters");
 			signAssembly = conf.signAssembly;
 			delaySign = conf.delaySign;
 			assemblyKeyFile = conf.assemblyKeyFile;
