@@ -386,7 +386,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
 			contextProvider = context;
-			TextSelection = new TextSelection<BuildOutputNode> ();
 		}
 
 		internal void OnBoundsChanged (object sender, EventArgs args) 
