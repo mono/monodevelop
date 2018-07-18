@@ -83,6 +83,84 @@ namespace MonoDevelop.PackageManagement
 			}
 			return await base.OnBuild (monitor, configuration, operationContext);
 		}
+
+		protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			if (Project is DotNetProject dotNetProject) {
+				if (DotNetCoreNuGetProject.CanCreate (dotNetProject)) {
+					return GetDotNetCoreProjectSourceFiles (monitor, configuration);
+				} else if (PackageReferenceNuGetProject.CanCreate (dotNetProject)) {
+					return GetPackageReferenceProjectSourceFiles (monitor, configuration);
+				}
+			}
+			return base.OnGetSourceFiles (monitor, configuration);
+		}
+
+		bool dotNetCoreProject;
+
+		async Task<ProjectFile []> GetDotNetCoreProjectSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			try {
+				dotNetCoreProject = true;
+				return await base.OnGetSourceFiles (monitor, configuration);
+			} finally {
+				dotNetCoreProject = false;
+			}
+		}
+
+		bool packageReferenceProject;
+
+		async Task<ProjectFile []> GetPackageReferenceProjectSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			try {
+				packageReferenceProject = true;
+				return await base.OnGetSourceFiles (monitor, configuration);
+			} finally {
+				packageReferenceProject = false;
+			}
+		}
+
+		protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			if (dotNetCoreProject) {
+				return OnRunDotNetCoreProjectTarget (monitor, target, configuration, context);
+			} else if (packageReferenceProject) {
+				return OnRunPackageReferenceProjectTarget (monitor, target, configuration, context);
+			}
+			return base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		/// <summary>
+		/// Ensures any NuGet package content files are included when CoreCompileDependsOn is evaluated.
+		/// Visual Studio 2017 does not run the RunProductContentAssets target directly but runs a set of
+		/// targets which indirectly run RunProductContentAssets. 
+		/// </summary>
+		Task<TargetEvaluationResult> OnRunDotNetCoreProjectTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			if (IsCoreCompileDependsOn (context)) {
+				target += ";RunProduceContentAssets";
+			}
+			return base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		/// <summary>
+		/// Ensures any NuGet package content files are included when CoreCompileDependsOn is evaluated.
+		/// Visual Studio 2017 does not run the ResolveNuGetPackageAssets target directly but seems to
+		/// run the Compile target for the project which indirectly runs ResolveNuGetPackageAssets.
+		/// </summary>
+		Task<TargetEvaluationResult> OnRunPackageReferenceProjectTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			if (IsCoreCompileDependsOn (context)) {
+				target += ";ResolveNuGetPackageAssets";
+				context.GlobalProperties.SetValue ("ResolveNuGetPackages", true);
+			}
+			return base.OnRunTarget (monitor, target, configuration, context);
+		}
+
+		bool IsCoreCompileDependsOn (TargetEvaluationContext context)
+		{
+			return context.ItemsToEvaluate.Contains ("Compile");
+		}
 	}
 }
 
