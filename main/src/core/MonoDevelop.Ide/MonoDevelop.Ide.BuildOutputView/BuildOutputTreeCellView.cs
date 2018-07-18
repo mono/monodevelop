@@ -742,7 +742,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			var insideText = layoutBounds.Contains (args.Position);
-			if ((TextSelection?.IsStarting (node) ?? false) && insideText) {
+			if ((TextSelection?.IsStarting (node) ?? false)) {
 				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
 				if (pos != -1) {
 					TextSelection.Set (pos, args.Position);
