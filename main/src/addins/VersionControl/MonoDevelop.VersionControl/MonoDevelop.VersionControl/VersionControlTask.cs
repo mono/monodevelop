@@ -70,7 +70,8 @@ namespace MonoDevelop.VersionControl
 		public void Wakeup() {
 			try {
 				tracker.EndTask();
-				tracker.Dispose();
+				// Remove this when https://github.com/mono/monodevelop/issue/4751 is fixed.
+				Runtime.MainSynchronizationContext.Post (o => ((ProgressMonitor)o).Dispose (), tracker);
 			} finally {
 				Finished();
 			}
