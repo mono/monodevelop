@@ -47,7 +47,7 @@ namespace MacPlatform.Tests
 		public void TestGestalt ()
 		{
 			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 11, "Something is wrong\t");
+			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
 		}
 	}
 }
