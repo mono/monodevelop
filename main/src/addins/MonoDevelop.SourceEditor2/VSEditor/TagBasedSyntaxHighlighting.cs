@@ -51,8 +51,7 @@ namespace Microsoft.VisualStudio.Platform
 		private IAccurateClassifier classifier { get; set; }
 		readonly Dictionary<string, ScopeStack> classificationMap;
 		Dictionary<IClassificationType, ScopeStack> classificationTypeToScopeCache = new Dictionary<IClassificationType, ScopeStack> ();
-		ScopeStack defaultScopeStack = new ScopeStack (EditorThemeColors.Foreground);
-		ScopeStack userScope;
+		ScopeStack defaultScopeStack;
 		private MonoDevelop.Ide.Editor.ITextDocument textDocument { get; }
 
 		internal TagBasedSyntaxHighlighting (ITextView textView, string defaultScope)
@@ -61,7 +60,8 @@ namespace Microsoft.VisualStudio.Platform
 			this.textDocument = textView.GetTextEditor ();
 			if (defaultScope != null)
 				classificationMap = GetClassificationMap (defaultScope);
-			this.userScope = this.defaultScopeStack.Push (EditorThemeColors.UserTypes);
+			else
+				defaultScopeStack = new ScopeStack (EditorThemeColors.Foreground);
 		}
 
 		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
@@ -82,7 +82,7 @@ namespace Microsoft.VisualStudio.Platform
 			ScopeStack scopeStack;
 			foreach (ClassificationSpan curSpan in classifications) {
 				if (curSpan.Span.Start > lastClassifiedOffsetEnd) {
-					scopeStack = userScope;
+					scopeStack = defaultScopeStack;
 					ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, curSpan.Span.Start - lastClassifiedOffsetEnd, scopeStack);
 					coloredSegments.Add (whitespaceSegment);
 				}
@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.Platform
 			}
 
 			if (end > lastClassifiedOffsetEnd) {
-				scopeStack = userScope;
+				scopeStack = defaultScopeStack;
 				ColoredSegment whitespaceSegment = new ColoredSegment (lastClassifiedOffsetEnd - start, end - lastClassifiedOffsetEnd, scopeStack);
 				coloredSegments.Add (whitespaceSegment);
 			}
@@ -388,65 +388,66 @@ namespace Microsoft.VisualStudio.Platform
 		Dictionary<string, ScopeStack> GetClassificationMap (string scope)
 		{
 			Dictionary<string, ScopeStack> result;
-			defaultScopeStack = new ScopeStack (scope);
+			var baseScopeStack = new ScopeStack (scope);
+			defaultScopeStack = baseScopeStack.Push (EditorThemeColors.Foreground);
 			if (classificationMapCache.TryGetValue (scope, out result))
 				return result;
 			result = new Dictionary<string, ScopeStack> {
-				[ClassificationTypeNames.Comment] = MakeScope (defaultScopeStack, "comment." + scope),
-				[ClassificationTypeNames.ExcludedCode] = MakeScope (defaultScopeStack, "comment.excluded." + scope),
-				[ClassificationTypeNames.Identifier] = MakeScope (defaultScopeStack, scope),
-				[ClassificationTypeNames.Keyword] = MakeScope (defaultScopeStack, "keyword." + scope),
-				[ClassificationTypeNames.NumericLiteral] = MakeScope (defaultScopeStack, "constant.numeric." + scope),
-				[ClassificationTypeNames.Operator] = MakeScope (defaultScopeStack, scope),
-				[ClassificationTypeNames.PreprocessorKeyword] = MakeScope (defaultScopeStack, "meta.preprocessor." + scope),
-				[ClassificationTypeNames.StringLiteral] = MakeScope (defaultScopeStack, "string." + scope),
-				[ClassificationTypeNames.WhiteSpace] = MakeScope (defaultScopeStack, "text." + scope),
-				[ClassificationTypeNames.Text] = MakeScope (defaultScopeStack, "text." + scope),
+				[ClassificationTypeNames.Comment] = MakeScope (baseScopeStack, "comment." + scope),
+				[ClassificationTypeNames.ExcludedCode] = MakeScope (baseScopeStack, "comment.excluded." + scope),
+				[ClassificationTypeNames.Identifier] = MakeScope (baseScopeStack, scope),
+				[ClassificationTypeNames.Keyword] = MakeScope (baseScopeStack, "keyword." + scope),
+				[ClassificationTypeNames.NumericLiteral] = MakeScope (baseScopeStack, "constant.numeric." + scope),
+				[ClassificationTypeNames.Operator] = MakeScope (baseScopeStack, scope),
+				[ClassificationTypeNames.PreprocessorKeyword] = MakeScope (baseScopeStack, "meta.preprocessor." + scope),
+				[ClassificationTypeNames.StringLiteral] = MakeScope (baseScopeStack, "string." + scope),
+				[ClassificationTypeNames.WhiteSpace] = MakeScope (baseScopeStack, "text." + scope),
+				[ClassificationTypeNames.Text] = MakeScope (baseScopeStack, "text." + scope),
 
-				[ClassificationTypeNames.PreprocessorText] = MakeScope (defaultScopeStack, "meta.preprocessor.region.name." + scope),
-				[ClassificationTypeNames.Punctuation] = MakeScope (defaultScopeStack, "punctuation." + scope),
-				[ClassificationTypeNames.VerbatimStringLiteral] = MakeScope (defaultScopeStack, "string.verbatim." + scope),
+				[ClassificationTypeNames.PreprocessorText] = MakeScope (baseScopeStack, "meta.preprocessor.region.name." + scope),
+				[ClassificationTypeNames.Punctuation] = MakeScope (baseScopeStack, "punctuation." + scope),
+				[ClassificationTypeNames.VerbatimStringLiteral] = MakeScope (baseScopeStack, "string.verbatim." + scope),
 
-				[ClassificationTypeNames.ClassName] = MakeScope (defaultScopeStack, "entity.name.class." + scope),
-				[ClassificationTypeNames.DelegateName] = MakeScope (defaultScopeStack, "entity.name.delegate." + scope),
-				[ClassificationTypeNames.EnumName] = MakeScope (defaultScopeStack, "entity.name.enum." + scope),
-				[ClassificationTypeNames.InterfaceName] = MakeScope (defaultScopeStack, "entity.name.interface." + scope),
-				[ClassificationTypeNames.ModuleName] = MakeScope (defaultScopeStack, "entity.name.module." + scope),
-				[ClassificationTypeNames.StructName] = MakeScope (defaultScopeStack, "entity.name.struct." + scope),
-				[ClassificationTypeNames.TypeParameterName] = MakeScope (defaultScopeStack, "entity.name.typeparameter." + scope),
+				[ClassificationTypeNames.ClassName] = MakeScope (baseScopeStack, "entity.name.class." + scope),
+				[ClassificationTypeNames.DelegateName] = MakeScope (baseScopeStack, "entity.name.delegate." + scope),
+				[ClassificationTypeNames.EnumName] = MakeScope (baseScopeStack, "entity.name.enum." + scope),
+				[ClassificationTypeNames.InterfaceName] = MakeScope (baseScopeStack, "entity.name.interface." + scope),
+				[ClassificationTypeNames.ModuleName] = MakeScope (baseScopeStack, "entity.name.module." + scope),
+				[ClassificationTypeNames.StructName] = MakeScope (baseScopeStack, "entity.name.struct." + scope),
+				[ClassificationTypeNames.TypeParameterName] = MakeScope (baseScopeStack, "entity.name.typeparameter." + scope),
 
-				[ClassificationTypeNames.FieldName] = MakeScope (defaultScopeStack, "entity.name.field." + scope),
-				[ClassificationTypeNames.EnumMemberName] = MakeScope (defaultScopeStack, "entity.name.enummember." + scope),
-				[ClassificationTypeNames.ConstantName] = MakeScope (defaultScopeStack, "entity.name.constant." + scope),
-				[ClassificationTypeNames.LocalName] = MakeScope (defaultScopeStack, "entity.name.local." + scope),
-				[ClassificationTypeNames.ParameterName] = MakeScope (defaultScopeStack, "entity.name.parameter." + scope),
-				[ClassificationTypeNames.ExtensionMethodName] = MakeScope (defaultScopeStack, "entity.name.extensionmethod." + scope),
-				[ClassificationTypeNames.MethodName] = MakeScope (defaultScopeStack, "entity.name.function." + scope),
-				[ClassificationTypeNames.PropertyName] = MakeScope (defaultScopeStack, "entity.name.property." + scope),
-				[ClassificationTypeNames.EventName] = MakeScope (defaultScopeStack, "entity.name.event." + scope),
+				[ClassificationTypeNames.FieldName] = MakeScope (baseScopeStack, "entity.name.field." + scope),
+				[ClassificationTypeNames.EnumMemberName] = MakeScope (baseScopeStack, "entity.name.enummember." + scope),
+				[ClassificationTypeNames.ConstantName] = MakeScope (baseScopeStack, "entity.name.constant." + scope),
+				[ClassificationTypeNames.LocalName] = MakeScope (baseScopeStack, "entity.name.local." + scope),
+				[ClassificationTypeNames.ParameterName] = MakeScope (baseScopeStack, "entity.name.parameter." + scope),
+				[ClassificationTypeNames.ExtensionMethodName] = MakeScope (baseScopeStack, "entity.name.extensionmethod." + scope),
+				[ClassificationTypeNames.MethodName] = MakeScope (baseScopeStack, "entity.name.function." + scope),
+				[ClassificationTypeNames.PropertyName] = MakeScope (baseScopeStack, "entity.name.property." + scope),
+				[ClassificationTypeNames.EventName] = MakeScope (baseScopeStack, "entity.name.event." + scope),
 
-				[ClassificationTypeNames.XmlDocCommentAttributeName] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentCDataSection] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentComment] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentEntityReference] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentName] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentText] = MakeScope (defaultScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentAttributeName] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentCDataSection] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentComment] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentEntityReference] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentName] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+				[ClassificationTypeNames.XmlDocCommentText] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
 
-				[ClassificationTypeNames.XmlLiteralAttributeName] = MakeScope (defaultScopeStack, "entity.other.attribute-name." + scope),
-				[ClassificationTypeNames.XmlLiteralAttributeQuotes] = MakeScope (defaultScopeStack, "punctuation.definition.string." + scope),
-				[ClassificationTypeNames.XmlLiteralAttributeValue] = MakeScope (defaultScopeStack, "string.quoted." + scope),
-				[ClassificationTypeNames.XmlLiteralCDataSection] = MakeScope (defaultScopeStack, "text." + scope),
-				[ClassificationTypeNames.XmlLiteralComment] = MakeScope (defaultScopeStack, "comment.block." + scope),
-				[ClassificationTypeNames.XmlLiteralDelimiter] = MakeScope (defaultScopeStack, scope),
-				[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = MakeScope (defaultScopeStack, scope),
-				[ClassificationTypeNames.XmlLiteralEntityReference] = MakeScope (defaultScopeStack, scope),
-				[ClassificationTypeNames.XmlLiteralName] = MakeScope (defaultScopeStack, "entity.name.tag.localname." + scope),
-				[ClassificationTypeNames.XmlLiteralProcessingInstruction] = MakeScope (defaultScopeStack, scope),
-				[ClassificationTypeNames.XmlLiteralText] = MakeScope (defaultScopeStack, "text." + scope),
+				[ClassificationTypeNames.XmlLiteralAttributeName] = MakeScope (baseScopeStack, "entity.other.attribute-name." + scope),
+				[ClassificationTypeNames.XmlLiteralAttributeQuotes] = MakeScope (baseScopeStack, "punctuation.definition.string." + scope),
+				[ClassificationTypeNames.XmlLiteralAttributeValue] = MakeScope (baseScopeStack, "string.quoted." + scope),
+				[ClassificationTypeNames.XmlLiteralCDataSection] = MakeScope (baseScopeStack, "text." + scope),
+				[ClassificationTypeNames.XmlLiteralComment] = MakeScope (baseScopeStack, "comment.block." + scope),
+				[ClassificationTypeNames.XmlLiteralDelimiter] = MakeScope (baseScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralEmbeddedExpression] = MakeScope (baseScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralEntityReference] = MakeScope (baseScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralName] = MakeScope (baseScopeStack, "entity.name.tag.localname." + scope),
+				[ClassificationTypeNames.XmlLiteralProcessingInstruction] = MakeScope (baseScopeStack, scope),
+				[ClassificationTypeNames.XmlLiteralText] = MakeScope (baseScopeStack, "text." + scope),
 			};
 			classificationMapCache = classificationMapCache.SetItem (scope, result);
 
