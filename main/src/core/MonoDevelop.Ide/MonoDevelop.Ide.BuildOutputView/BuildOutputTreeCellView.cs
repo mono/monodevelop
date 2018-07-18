@@ -117,8 +117,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	{
 		const int SelectionDistancePixel = 1;
 
-		Point selectionStartingPoint { get; set; }
-
+		Point selectionStartingPoint;
 		int selectionStart;
 		int selectionEnd;
 
