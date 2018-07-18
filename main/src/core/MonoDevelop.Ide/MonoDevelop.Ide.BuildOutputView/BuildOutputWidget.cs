@@ -377,20 +377,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			if (e.Button == PointerButton.Left && e.MultiplePress == 2) {
+			if (e.Button == PointerButton.Left) {
 				if (!cellView.IsViewClickable (selectedNode, e.Position)) {
 					return;
 				}
-				if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
-					GoToTask (selectedNode);
+
+				if (e.MultiplePress == 1) {
+					cellView.ClearSelection ();
+				} else if (e.MultiplePress == 2) {
+
+					if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
+						GoToTask (selectedNode);
+						return;
+					}
+					if (treeView.IsRowExpanded (selectedNode)) {
+						treeView.CollapseRow (selectedNode);
+					} else {
+						treeView.ExpandRow (selectedNode, false);
+					}
 					return;
 				}
-				if (treeView.IsRowExpanded (selectedNode)) {
-					treeView.CollapseRow (selectedNode);
-				} else {
-					treeView.ExpandRow (selectedNode, false);
-				}
-				return;
 			}
 
 			if (e.IsContextMenuTrigger) {

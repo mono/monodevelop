@@ -334,6 +334,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		const int MinLayoutWidth = 30;
 
 		const int DefaultExpandClickDelay = 250;
+
 		DateTime lastExpanderClick = DateTime.Now;
 
 		public Color StrongSelectionColor { get; set; }
@@ -820,11 +821,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 					TextSelection.Stop ();
 					QueueDraw ();
 				} else if (TextSelection.State == TextSelectionState.Clicked) {
-					TextSelection = null;
-					QueueDraw ();
+					ClearSelection ();
 				}
 			}
 			base.OnButtonReleased (args);
+		}
+
+		public void ClearSelection ()
+		{
+			TextSelection = null;
+			QueueDraw ();
 		}
 
 		protected override void OnMouseExited ()
