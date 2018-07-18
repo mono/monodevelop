@@ -495,8 +495,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			var currentRow = treeView.SelectedRow as BuildOutputNode;
 
-			var cellSelection = cellView.CellSelection;
-			if (cellSelection.IsShown (currentRow)) {
+			var cellSelection = cellView.TextSelection;
+			if (cellSelection?.IsShown (currentRow) ?? false) {
 				Clipboard.SetText (cellSelection.Content.Message.Substring (cellSelection.Index, cellSelection.Length));
 			} else {
 				ClipboardCopy (currentRow);

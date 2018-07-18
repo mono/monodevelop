@@ -108,63 +108,33 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	enum TextSelectionState
 	{
-		UnSelected,
 		Clicked,
 		Selecting,
-		Finished //selection is finished but we want continue drawing the selection
+		Selected //selection is finished but we want continue drawing the selection
 	}
 
-	class TextSelectionManager<T>
+	class TextSelection<T> where T : class
 	{
 		const int SelectionDistancePixel = 1;
 
 		Point selectionStartingPoint { get; set; }
 
-		int selectionStart { get; set; }
-		int selectionEnd { get; set; }
-		public T Content { get; set; }
+		int selectionStart;
+		int selectionEnd;
 
-		public TextSelectionState State { get; private set; } = TextSelectionState.UnSelected;
+		public T Content { get; private set; }
+
+		public TextSelectionState State { get; private set; } = TextSelectionState.Clicked;
 		public int Index => Math.Min (selectionStart, selectionEnd);
 		public int Length => Math.Abs (selectionEnd - selectionStart) + 1;
 
-		public bool IsStarting (T currentRow)
-		{
-			if (EqualityComparer<T>.Default.Equals (Content, default (T))) {
-				return false;
-			}
-			return (State != TextSelectionState.UnSelected && State != TextSelectionState.Finished) && Content.Equals (currentRow);
-		}
+		public bool IsStarting (T currentContent) => State != TextSelectionState.Selected && currentContent == Content;
 
-		public bool IsShown (T currentRow)
-		{
-			if (EqualityComparer<T>.Default.Equals (Content, default (T))) {
-				return false;
-			}
-			return (State == TextSelectionState.Selecting || State == TextSelectionState.Finished) && Content.Equals (currentRow);
-		}
-
-		public void Start (Point mousePosition, int charPosition, T currentNode)
-		{
-			if (charPosition != -1) {
-				selectionStart = selectionEnd = charPosition;
-				Content = currentNode;
-				State = TextSelectionState.Clicked;
-				selectionStartingPoint = mousePosition;
-			} else {
-				Reset ();
-			}
-		}
+		public bool IsShown (T currentContent) => (State == TextSelectionState.Selecting || State == TextSelectionState.Selected) && currentContent == Content;
 
 		public void Stop ()
 		{
-			State = TextSelectionState.Finished;
-		}
-
-		public void Reset ()
-		{
-			State = TextSelectionState.UnSelected;
-			Content = default (T);
+			State = TextSelectionState.Selected;
 		}
 
 		public void Set (int pos, Point position)
@@ -183,6 +153,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (Math.Abs (first.Y - second.Y) > maxPixel)
 				return true;
 			return false;
+		}
+
+		public void Start (Point position, int pos, T content)
+		{
+			selectionStart = selectionEnd = pos;
+			State = TextSelectionState.Clicked;
+			selectionStartingPoint = position;
+			Content = content;
 		}
 	}
 
@@ -388,7 +366,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		double lastErrorPanelStartX;
 
-		readonly public TextSelectionManager<BuildOutputNode> CellSelection;
+		public TextSelection<BuildOutputNode> TextSelection { get; private set; }
 
 		static BuildOutputTreeCellView ()
 		{
@@ -405,8 +383,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			SelectionColor = Styles.CellSelectionColor;
 			UseStrongSelectionColor = true;
 			contextProvider = context;
-
-			CellSelection = new TextSelectionManager<BuildOutputNode> ();
+			TextSelection = new TextSelection<BuildOutputNode> ();
 		}
 
 		internal void OnBoundsChanged (object sender, EventArgs args) 
@@ -508,8 +485,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			HighlightSearchResults (layout, contextProvider.SearchString, Styles.GetTextColor (buildOutputNode, false), Styles.GetSearchMatchBackgroundColor (isSelected));
 
 			// Render the selection
-			if (CellSelection.IsShown (buildOutputNode)) {
-				layout.SetBackground (Styles.CellTextSelectionColorSecundary, CellSelection.Index, CellSelection.Length);
+			if (TextSelection?.IsShown (buildOutputNode) ?? false) {
+				layout.SetBackground (Styles.CellTextSelectionColorSecundary, TextSelection.Index, TextSelection.Length);
 			}
 
 			// Draw the text
@@ -764,10 +741,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
 
 			var insideText = layoutBounds.Contains (args.Position);
-			if (CellSelection.IsStarting (node) && insideText) {
+			if ((TextSelection?.IsStarting (node) ?? false) && insideText) {
 				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
 				if (pos != -1) {
-					CellSelection.Set (pos, args.Position);
+					TextSelection.Set (pos, args.Position);
 					QueueDraw ();
 				}
 			} else if (insideText && !containsClickableElement)  {
@@ -812,7 +789,15 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			if (args.Button == PointerButton.Left && layoutBounds.Contains (args.Position)) {
 				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
-				CellSelection.Start (args.Position, pos, node);
+				if (pos != -1) {
+					if (TextSelection == null) {
+						TextSelection = new TextSelection<BuildOutputNode> ();
+					}
+					TextSelection.Start (args.Position, pos, node);
+				} else {
+					TextSelection = null;
+				}
+
 				QueueDraw ();
 			}
 
@@ -828,12 +813,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
-			if (CellSelection.State == TextSelectionState.Selecting) {
-				CellSelection.Stop ();
-				QueueDraw ();
-			} else if (CellSelection.State == TextSelectionState.Clicked) {
-				CellSelection.Reset ();
-				QueueDraw ();
+			if (TextSelection != null) {
+				if (TextSelection.State == TextSelectionState.Selecting) {
+					TextSelection.Stop ();
+					QueueDraw ();
+				} else if (TextSelection.State == TextSelectionState.Clicked) {
+					TextSelection = null;
+					QueueDraw ();
+				}
 			}
 			base.OnButtonReleased (args);
 		}
