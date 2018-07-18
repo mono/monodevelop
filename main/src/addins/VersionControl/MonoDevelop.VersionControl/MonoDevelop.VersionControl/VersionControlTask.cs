@@ -54,6 +54,7 @@ namespace MonoDevelop.VersionControl
 					if (exception is DllNotFoundException) {
 						var msg = GettextCatalog.GetString ("The operation could not be completed because a shared library is missing: ");
 						tracker.ReportError (msg + exception.Message, null);
+						LoggingService.LogError ("Version Control command failed: ", exception);
 					} else if (exception is VersionControlException) {
 						var msg = GettextCatalog.GetString ("Version control operation failed: ");
 						tracker.ReportError (msg + exception.Message, exception);
@@ -61,7 +62,6 @@ namespace MonoDevelop.VersionControl
 						var msg = GettextCatalog.GetString ("Version control operation failed: ");
 						tracker.ReportError (msg, exception);
 					}
-					LoggingService.LogError ("Version Control command failed: ", exception);
 				}
 				Wakeup ();
 			}, Runtime.MainTaskScheduler);
