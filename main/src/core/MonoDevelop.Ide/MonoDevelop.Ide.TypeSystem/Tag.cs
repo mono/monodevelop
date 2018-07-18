@@ -87,7 +87,21 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var message = item.Message;
 			var index = message.IndexOf (':');
-			var tag = message.Substring (0, index);
+
+			string tag = string.Empty;
+
+			// Slow path if we don't have a colon
+			if (index == -1) {
+				foreach (var tagComment in Tasks.CommentTag.SpecialCommentTags) {
+					if (message.StartsWith (tagComment.Tag, StringComparison.OrdinalIgnoreCase)) {
+						tag = message;
+						break;
+					}
+				}
+			} else {
+				tag = message.Substring (0, index);
+			}
+
 			int line = item.MappedLine + 1;
 			int column = item.MappedColumn + 1;
 
