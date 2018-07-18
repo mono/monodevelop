@@ -92,7 +92,6 @@ namespace MonoDevelop.DotNetCore.Gui
 
 			if (framework != project.TargetFramework) {
 				project.TargetFramework = frameworks [runtimeVersionCombo.Active];
-				dotNetCoreProject.RestoreAfterSave = true;
 			}
 		}
 	}

@@ -90,6 +90,7 @@
     <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs" />
     <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs" />
     <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
+    <Compile Include="MonoDevelop.WebReferences\WebReferencesProjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml" />

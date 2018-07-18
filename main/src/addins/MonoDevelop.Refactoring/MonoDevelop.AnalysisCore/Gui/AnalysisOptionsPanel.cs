@@ -43,7 +43,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return widget = new AnalysisOptionsWidget (LanguageNames.CSharp) {
 				AnalysisEnabled = AnalysisOptions.AnalysisEnabled,
 				UnitTestIntegrationEnabled = AnalysisOptions.EnableUnitTestEditorIntegration,
-				FullAnalysisEnabled = (IdeApp.Preferences.Roslyn.For (LanguageNames.CSharp).SolutionCrawlerClosedFileDiagnostic.Value ?? true),
+				FullAnalysisEnabled = IdeApp.Preferences.Roslyn.For (LanguageNames.CSharp).SolutionCrawlerClosedFileDiagnostic && IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabled,
 			};
 		}
 		
@@ -51,7 +51,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			AnalysisOptions.AnalysisEnabled.Set (widget.AnalysisEnabled);
 			AnalysisOptions.EnableUnitTestEditorIntegration.Set (widget.UnitTestIntegrationEnabled);
-			IdeApp.Preferences.Roslyn.For (LanguageNames.CSharp).SolutionCrawlerClosedFileDiagnostic.Set (widget.FullAnalysisEnabled);
+			IdeApp.Preferences.Roslyn.For (LanguageNames.CSharp).SolutionCrawlerClosedFileDiagnostic.Value = widget.FullAnalysisEnabled;
 		}
 	}
 	

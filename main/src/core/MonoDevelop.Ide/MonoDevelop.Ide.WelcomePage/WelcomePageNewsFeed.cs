@@ -165,25 +165,32 @@ namespace MonoDevelop.Ide.WelcomePage
 					if (t.IsCanceled)
 						return;
 
+					if (t.IsFaulted) {
+						Exception ex = t.Exception;
+						if (ex is AggregateException agg) {
+							ex = agg.Flatten ().InnerException;
+						}
+						if (ex is WebException wex) {
+							if (wex.Status == WebExceptionStatus.NameResolutionFailure) {
+								LoggingService.LogWarning ("Welcome Page news server could not be reached.");
+								return;
+							}
+							if (wex.Response is HttpWebResponse resp && resp.StatusCode == HttpStatusCode.NotFound) {
+								LoggingService.LogWarning ("Welcome Page news feed was not found.");
+								return;
+							}
+						}
+						LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+						return;
+					}
+
 					if (!t.Result) {
 						LoggingService.LogInfo ("Welcome Page already up-to-date.");
 						return;
 					}
 
 					LoggingService.LogInfo ("Welcome Page updated.");
-					Gtk.Application.Invoke ((o, args) => { LoadNews (); });
-
-				} catch (Exception ex) {
-					var agg = ex as AggregateException;
-					if (agg != null) {
-						ex = agg.Flatten ().InnerException;
-					}
-					var wex = ex as WebException;
-					if (wex != null && wex.Status == WebExceptionStatus.NameResolutionFailure) {
-						LoggingService.LogWarning ("Welcome Page news server could not be reached.");
-					} else {
-						LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
-					}
+					Application.Invoke ((o, args) => { LoadNews (); });
 				} finally {
 					lock (updateLock)
 						isUpdating = false;

@@ -782,73 +782,68 @@ namespace MonoDevelop.Core
 			eventQueue.RaiseEvent (FileChanged, null, args);
 		}
 
-		public static Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
+		public static async Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
 			Func<Stream,bool> validateDownload = null, CancellationToken ct = default (CancellationToken))
 		{
-			return WebRequestHelper.GetResponseAsync (
-				() => (HttpWebRequest)WebRequest.Create (url),
-				r => {
-					//check to see if the online file has been modified since it was last downloaded
-					var localNewsXml = new FileInfo (cacheFile);
-					if (localNewsXml.Exists)
-						r.IfModifiedSince = localNewsXml.LastWriteTime;
-				},
-				ct
-			).ContinueWith (t => {
-				bool deleteTempFile = true;
-				var tempFile = cacheFile + ".temp";
+			bool deleteTempFile = true;
+			var tempFile = cacheFile + ".temp";
+			try {
+				var response = await WebRequestHelper.GetResponseAsync (
+					() => (HttpWebRequest)WebRequest.Create (url),
+					r => {
+						//check to see if the online file has been modified since it was last downloaded
+						var localNewsXml = new FileInfo (cacheFile);
+						if (localNewsXml.Exists)
+							r.IfModifiedSince = localNewsXml.LastWriteTime;
+					},
+					ct
+				).ConfigureAwait (false);
 
-				try {
+				ct.ThrowIfCancellationRequested ();
+
+				//TODO: limit this size in case open wifi hotspots provide junk data
+				if (response.StatusCode == HttpStatusCode.OK) {
+					using (var fs = File.Create (tempFile))
+						response.GetResponseStream ().CopyTo (fs, 2048);
+				}
+
+				//check the document is valid, might get bad ones from wifi hotspots etc
+				if (validateDownload != null) {
 					ct.ThrowIfCancellationRequested ();
 
-					if (t.IsFaulted) {
-						var wex = t.Exception.Flatten ().InnerException as WebException;
-						if (wex != null) {
-							var resp = wex.Response as HttpWebResponse;
-							if (resp != null && resp.StatusCode == HttpStatusCode.NotModified)
-								return false;
-						}
-					}
-
-					//TODO: limit this size in case open wifi hotspots provide junk data
-					var response = t.Result;
-					if (response.StatusCode == HttpStatusCode.OK) {
-						using (var fs = File.Create (tempFile))
-								response.GetResponseStream ().CopyTo (fs, 2048);
-					}
-
-					//check the document is valid, might get bad ones from wifi hotspots etc
-					if (validateDownload != null) {
-						ct.ThrowIfCancellationRequested ();
-
-						using (var f = File.OpenRead (tempFile)) {
-							bool validated;
-							try {
-								validated = validateDownload (f);
-							} catch (Exception ex) {
-								throw new Exception ("Failed to validate downloaded file", ex);
-							}
-							if (!validated) {
-								throw new Exception ("Failed to validate downloaded file");
-							}
-						}
-					}
-
-					ct.ThrowIfCancellationRequested ();
-
-					SystemRename (tempFile, cacheFile);
-					deleteTempFile = false;
-					return true;
-				} finally {
-					if (deleteTempFile) {
+					using (var f = File.OpenRead (tempFile)) {
+						bool validated;
 						try {
-							File.Delete (tempFile);
+							validated = validateDownload (f);
 						} catch (Exception ex) {
-							LoggingService.LogError ("Failed to delete temp download file", ex);
+							throw new Exception ("Failed to validate downloaded file", ex);
+						}
+						if (!validated) {
+							throw new Exception ("Failed to validate downloaded file");
 						}
 					}
 				}
-			}, ct);
+
+				ct.ThrowIfCancellationRequested ();
+
+				SystemRename (tempFile, cacheFile);
+				deleteTempFile = false;
+				return true;
+			} catch (Exception ex) {
+				if (ex.FlattenAggregate ().InnerException is WebException wex) {
+					if (wex.Response is HttpWebResponse resp && resp.StatusCode == HttpStatusCode.NotModified)
+						return false;
+				}
+				throw;
+			} finally {
+				if (deleteTempFile) {
+					try {
+						File.Delete (tempFile);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to delete temp download file", ex);
+					}
+				}
+			}
 		}
 	}
 

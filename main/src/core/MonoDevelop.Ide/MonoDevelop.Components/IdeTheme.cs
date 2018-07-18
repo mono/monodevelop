@@ -376,8 +376,13 @@ namespace MonoDevelop.Components
 		static void OnClose (NSNotification note)
 		{
 			var w = (NSWindow)note.Object;
-			NSNotificationCenter.DefaultCenter.RemoveObserver(nsWindows[w]);
+			if (MacSystemInformation.OsVersion < MacSystemInformation.HighSierra)
+				// Since HighSierra observers don't need to be removed manually, doing so
+				// after a window has been released might even lead to a native crash
+				// see: https://developer.apple.com/library/archive/releasenotes/Foundation/RN-Foundation/index.html#10_11NotificationCenter
+				NSNotificationCenter.DefaultCenter.RemoveObserver(nsWindows[w]);
 			nsWindows.Remove (w);
+
 		}
 
 		static void UpdateMacWindows ()

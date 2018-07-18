@@ -887,6 +887,16 @@ namespace MonoDevelop.Projects
 
 		public ProjectEventMetadata CreateProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
+			return ItemExtension.OnGetProjectEventMetadata (configurationSelector);
+		}
+
+		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
+		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
+		{
+		}
+
+		protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
+		{
 			string id = null;
 			if (configurationSelector != null) {
 				var slnConfig = configurationSelector as SolutionConfigurationSelector;
@@ -895,19 +905,9 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			var metadata = new ProjectEventMetadata (id);
-			OnGetProjectEventMetadata (metadata);
-			return metadata;
+			return new ProjectEventMetadata (id);
 		}
 
-		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
-		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
-		{
-		}
-
-		protected virtual void OnGetProjectEventMetadata (ProjectEventMetadata metadata)
-		{
-		}
 		/// <summary>
 		/// Executes this solution item
 		/// </summary>
@@ -1601,6 +1601,11 @@ namespace MonoDevelop.Projects
 				return Item.OnGetReferencedItems (configuration);
 			}
 
+			protected internal override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
+			{
+				return Item.OnGetProjectEventMetadata (configurationSelector);
+			}
+
 			internal protected override void OnSetFormat (MSBuildFileFormat format)
 			{
 				Item.OnSetFormat (format);
@@ -1824,6 +1829,11 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		public ProjectEventMetadata (CounterMetadata metadata)
+			: base (metadata)
+		{
+		}
+
 		public ProjectEventMetadata (string configurationId)
 		{
 			if (configurationId != null) {
@@ -1862,6 +1872,11 @@ namespace MonoDevelop.Projects
 		}
 
 		public string ProjectFlavor {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Capabilities {
 			get => GetProperty<string> ();
 			set => SetProperty (value);
 		}
