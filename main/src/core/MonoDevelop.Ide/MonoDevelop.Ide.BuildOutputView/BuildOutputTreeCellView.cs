@@ -388,7 +388,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		double lastErrorPanelStartX;
 
-		public TextSelectionManager<BuildOutputNode> CellSelection { get; private set; }
+		readonly public TextSelectionManager<BuildOutputNode> CellSelection;
 
 		static BuildOutputTreeCellView ()
 		{
@@ -828,7 +828,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
-			//var node = GetValue (BuildOutputNodeField);
 			if (CellSelection.State == TextSelectionState.Selecting) {
 				CellSelection.Stop ();
 				QueueDraw ();
