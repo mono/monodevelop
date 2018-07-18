@@ -46,27 +46,27 @@ namespace MonoDevelop.VersionControl
 			BackgroundWorker ();
 		}
 		
-		async void BackgroundWorker ()
+		void BackgroundWorker ()
 		{
-			try {
-				await Task.Run (() => Run ());
-			} catch (DllNotFoundException e) {
-				string msg = GettextCatalog.GetString ("The operation could not be completed because a shared library is missing: ");
-				tracker.ReportError (msg + e.Message, null);
-				LoggingService.LogError ("Version Control command failed: ", e);
-			} catch (VersionControlException e) {
-				string msg = GettextCatalog.GetString ("Version control operation failed: ");
-				tracker.ReportError (msg + e.Message, e);
-				LoggingService.LogError ("Version Control command failed: ", e);
-			} catch (Exception e) {
-				string msg = GettextCatalog.GetString ("Version control operation failed: ");
-				tracker.ReportError (msg, e);
-				LoggingService.LogError ("Version Control command failed: ", e);
-			} finally {
+			Task.Run (() => Run ()).ContinueWith (t => {
+				if (t.IsFaulted) {
+					var exception = t.Exception.FlattenAggregate ().InnerException;
+					if (exception is DllNotFoundException) {
+						var msg = GettextCatalog.GetString ("The operation could not be completed because a shared library is missing: ");
+						tracker.ReportError (msg + exception.Message, null);
+					} else if (exception is VersionControlException) {
+						var msg = GettextCatalog.GetString ("Version control operation failed: ");
+						tracker.ReportError (msg + exception.Message, exception);
+					} else {
+						var msg = GettextCatalog.GetString ("Version control operation failed: ");
+						tracker.ReportError (msg, exception);
+					}
+					LoggingService.LogError ("Version Control command failed: ", exception);
+				}
 				Wakeup ();
-			}
+			}, Runtime.MainTaskScheduler);
 		}
-	
+
 		public void Wakeup() {
 			try {
 				tracker.EndTask();
