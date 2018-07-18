@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		uint timerId;
 		CancellationTokenSource src = new CancellationTokenSource ();
-
+		
 		#region Key handling
 		static bool linksShown;
 
@@ -160,6 +160,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				ShowLinks ();
 		}
 
+		object markerLock = new object ();
 		List<ITextSegmentMarker> markers = new List<ITextSegmentMarker> ();
 		List<IDocumentLine> visibleLines = new List<IDocumentLine> ();
 		void ShowLinks ()
@@ -184,14 +185,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 			var token = src.Token;
 			if (LinksShown) {
-				var lineNumber = Editor.PointToLocation (x, y).Line;
+				var clickLocation = Editor.PointToLocation (x, y);
+				var lineNumber = clickLocation.Line;
 				if (lineNumber < 1 || lineNumber > Editor.LineCount)
 					return;
 				var line = Editor.GetLine (lineNumber);
 				if (line == null || visibleLines.Any (line.Equals)) {
 					return;
 				}
-				visibleLines.Add (line);
 
 				IEnumerable<NavigationSegment> segments;
 				try {
@@ -202,18 +203,24 @@ namespace MonoDevelop.Ide.Editor.Extension
 					LoggingService.LogError ("Error while requestling navigation links", ex);
 					return;
 				}
-				if (segments == null || token.IsCancellationRequested)
+				if (segments == null || token.IsCancellationRequested) {
 					return;
+				}
 				await Runtime.RunInMainThread(delegate {
 					try {
-						foreach (var segment in segments) {
-							if (token.IsCancellationRequested) {
-								return;
+						lock (markerLock) {
+							foreach (var segment in segments) {
+								if (token.IsCancellationRequested) {
+									return;
+								}
+								if (markers.Any (m => m.Offset == segment.Offset && m.Length == segment.Length))
+									continue;
+								var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+								marker.OnlyShowLinkOnHover = true;
+								Editor.AddMarker (marker);
+								markers.Add (marker);
 							}
-							var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
-							marker.OnlyShowLinkOnHover = true;
-							Editor.AddMarker (marker);
-							markers.Add (marker);
+							visibleLines.Add (line);
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error while creating navigation line markers", ex);
@@ -235,10 +242,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void HideLinks ()
 		{
-			foreach (var m in markers) {
-				Editor.RemoveMarker (m);
+			lock (markerLock) {
+				foreach (var m in markers) {
+					Editor.RemoveMarker (m);
+				}
+				markers.Clear ();
 			}
-			markers.Clear ();
 			visibleLines.Clear ();
 		}
 
