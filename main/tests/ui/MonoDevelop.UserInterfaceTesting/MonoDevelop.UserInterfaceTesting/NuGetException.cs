@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// NuGetException.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
-using NUnit.Framework;
 
-namespace MacPlatform.Tests
+namespace MonoDevelop.UserInterfaceTesting
 {
-	public class CarbonTests
+	public class NuGetException : Exception
 	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
+		public NuGetException (string message) : base (message)
 		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
-
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
 		}
 
-		[Test]
-		public void TestGestalt ()
+		public NuGetException (string message, Exception innerExceotion) : base (message, innerExceotion)
 		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
 		}
 	}
 }
+

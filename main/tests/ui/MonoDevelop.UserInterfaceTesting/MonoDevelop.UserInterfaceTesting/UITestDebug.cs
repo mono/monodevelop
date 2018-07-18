@@ -1,5 +1,5 @@
 ﻿//
-// CarbonTests.cs
+// UITestDebug.cs
 //
 // Author:
 //       iain holmes <iain@xamarin.com>
@@ -24,30 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
-using NUnit.Framework;
+using System.Runtime.InteropServices;
+using MonoDevelop.Components.AutoTest;
 
-namespace MacPlatform.Tests
+namespace MonoDevelop.UserInterfaceTesting
 {
-	public class CarbonTests
+	public class UITestDebug : MarshalByRefObject, IAutoTestSessionDebug<MarshalByRefObject>
 	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
+		public void Debug (string message)
 		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
-
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
-		}
-
-		[Test]
-		public void TestGestalt ()
-		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
+			Console.WriteLine ("{0}: {1}", DateTime.Now, message);
 		}
 	}
 }
+

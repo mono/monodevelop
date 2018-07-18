@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// AssemblyInfo.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
-using NUnit.Framework;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace MacPlatform.Tests
-{
-	public class CarbonTests
-	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
-		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
 
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
-		}
+[assembly: AssemblyTitle ("PerfTool")]
+[assembly: AssemblyDescription ("")]
+[assembly: AssemblyConfiguration ("")]
+[assembly: AssemblyCompany ("Microsoft")]
+[assembly: AssemblyProduct ("")]
+[assembly: AssemblyCopyright ("Microsoft")]
+[assembly: AssemblyTrademark ("")]
+[assembly: AssemblyCulture ("")]
 
-		[Test]
-		public void TestGestalt ()
-		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
-		}
-	}
-}
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
+
+[assembly: AssemblyVersion ("1.0.*")]
+
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]

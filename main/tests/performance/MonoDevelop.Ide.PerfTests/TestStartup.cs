@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// TestStartup.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       iain <iaholmes@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2018 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,50 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
+
+using System.IO;
+
 using NUnit.Framework;
 
-namespace MacPlatform.Tests
-{
-	public class CarbonTests
-	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
-		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
+using MonoDevelop.Components.AutoTest;
+using MonoDevelop.UserInterfaceTesting;
+using MonoDevelop.PerformanceTesting;
 
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
+using MonoDevelop.Core.Instrumentation;
+
+namespace MonoDevelop.Ide.PerfTests
+{
+	[TestFixture]
+	public class TestStartup : UITestBase
+	{
+		// Override the setup so it only sets up the environment for running
+		// because we want to time the start up
+		public override void SetUp ()
+		{
+			InstrumentationService.Enabled = true;
+			PreStart ();
 		}
 
 		[Test]
-		public void TestGestalt ()
+		[Benchmark(Tolerance=0.1)]
+		public void TestStartupTime ()
 		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
+			OpenApplicationAndWait ();
+
+			var t = Session.GetCounterMetadataValue<long> ("Ide.Startup", "CorrectedStartupTime");
+			Benchmark.SetTime ((double)t / 1000d);
+		}
+
+		[Test]
+		[Benchmark(Tolerance = 0.1)]
+		public void TestTimeToCode ()
+		{
+			OpenApplicationAndWait ();
+
+			OpenExampleSolutionAndWait (out _);
+
+			var t = Session.GetCounterMetadataValue<long>("Ide.TimeToCode", "CorrectedDuration");
+			Benchmark.SetTime ((double)t / 1000d);
 		}
 	}
 }

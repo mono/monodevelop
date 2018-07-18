@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.UserInterfaceTesting</RootNamespace>
+    <AssemblyName>MonoDevelop.UserInterfaceTesting</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\Ide.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\TestService.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\UITestBase.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\Util.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\Workbench.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\TemplateTestOptions.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\CreateBuildTemplatesTestBase.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting.Controllers\NewFileController.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting.Controllers\NewProjectController.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting.Controllers\NuGetController.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting.Controllers\NuGetOptions.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting.Controllers\OptionsController.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting.Controllers\SolutionExplorerController.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\IdeQuery.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\ProcessUtils.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\UITestDebug.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\LogMessageValidator.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\CreateProjectException.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\NuGetException.cs" />
+    <Compile Include="MonoDevelop.UserInterfaceTesting\TemplateSelectionException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.UserInterfaceTesting\" />
+    <Folder Include="MonoDevelop.UserInterfaceTesting.Controllers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

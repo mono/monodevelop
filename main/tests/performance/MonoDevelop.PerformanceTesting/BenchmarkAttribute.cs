@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// BenchmarkTolerance.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
+using System.Text;
 using NUnit.Framework;
 
-namespace MacPlatform.Tests
+namespace MonoDevelop.PerformanceTesting
 {
-	public class CarbonTests
+	public class BenchmarkAttribute: PropertyAttribute
 	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
+		public BenchmarkAttribute ()
 		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
-
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
+			Properties ["Time"] = new StringBuilder ();
 		}
 
-		[Test]
-		public void TestGestalt ()
-		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
+		public double Tolerance {
+			get {
+				var val = Properties ["Tolerance"];
+				if (val != null)
+					return (double)val;
+				else
+					return 0;
+			}
+			set {
+				Properties ["Tolerance"] = value;
+			}
 		}
 	}
 }

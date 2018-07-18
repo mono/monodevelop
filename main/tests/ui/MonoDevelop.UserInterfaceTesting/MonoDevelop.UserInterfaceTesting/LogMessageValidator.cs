@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// LogMessageValidator.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
+using System.IO;
 using NUnit.Framework;
+using System.Collections.Generic;
 
-namespace MacPlatform.Tests
+namespace MonoDevelop.UserInterfaceTesting
 {
-	public class CarbonTests
+	public class LogMessageValidator
 	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
-		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
+		static List<string> invalidLogStrings = new List<string> {
+			"Gtk-Critical: void gtk_container_remove(GtkContainer , GtkWidget )"
+		};
 
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
-		}
-
-		[Test]
-		public void TestGestalt ()
+		public static void Validate (string fileName)
 		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
+			string readIdeLog = string.Empty;
+			using (FileStream fileStream = new FileStream (fileName, FileMode.Open, 
+				                               FileAccess.Read, FileShare.ReadWrite)) {
+				using (StreamReader streamReader = new StreamReader (fileStream)) {
+					readIdeLog = streamReader.ReadToEnd ();
+				}
+			}
+
+			foreach (var error in invalidLogStrings) {
+				Assert.IsFalse (readIdeLog.Contains (error),
+					string.Format ("GTK Error detected in Ide.log file:\n\t{0}",error));
+			}
 		}
 	}
 }
+

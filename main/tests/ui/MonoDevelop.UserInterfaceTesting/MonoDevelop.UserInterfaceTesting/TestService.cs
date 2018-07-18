@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// TestService.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2014 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
-using NUnit.Framework;
+using MonoDevelop.Components.AutoTest;
+using System.Collections.Generic;
 
-namespace MacPlatform.Tests
+namespace MonoDevelop.UserInterfaceTesting
 {
-	public class CarbonTests
+	public static class TestService
 	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
-		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
+		public static AutoTestClientSession Session { get; private set; }
 
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
+		public static void StartSession (string file = null, string profilePath = null, string args = null)
+		{
+			Session = new AutoTestClientSession ();
+
+			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
+				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
+			});
+
+			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
 		}
 
-		[Test]
-		public void TestGestalt ()
+		public static void EndSession ()
 		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
+			Session.Stop ();
 		}
 	}
 }

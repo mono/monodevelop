@@ -1,10 +1,10 @@
 ﻿//
-// CarbonTests.cs
+// TestSolutionBuild.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       iain <iaholmes@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Diagnostics;
-using MonoDevelop.MacInterop;
 using NUnit.Framework;
 
-namespace MacPlatform.Tests
-{
-	public class CarbonTests
-	{
-		[Test]
-		[Ignore ("This test doesn't work on either 32 or 64bit")]
-		public void TestProcessName ()
-		{
-			string processName = "HelloWorld";
-			Carbon.SetProcessName (processName);
+using MonoDevelop.UserInterfaceTesting;
+using MonoDevelop.PerformanceTesting;
 
-			Process currentProcess = Process.GetCurrentProcess ();
-			Assert.AreEqual (processName, currentProcess.ProcessName);
+using MonoDevelop.Core.Instrumentation;
+
+namespace MonoDevelop.Ide.PerfTests
+{
+	[TestFixture ()]
+	[Benchmark (Tolerance = 0.1)]
+	public class TestSolutionBuild : UITestBase
+	{
+		public override void SetUp ()
+		{
+			InstrumentationService.Enabled = true;
+			PreStart ();
 		}
 
-		[Test]
-		public void TestGestalt ()
+		[Test ()]
+		public void TestBuild ()
 		{
-			int majorVersion = Carbon.Gestalt ("sys1");
-			Assert.AreEqual (majorVersion, 10, "Something is wrong\t");
+			OpenApplicationAndWait ();
+
+			OpenExampleSolutionAndWait (out var waitForPackages);
+
+			if (waitForPackages) {
+				// The package system emits signals on the Solution object, but we don't have access to that,
+				// so we watch the statusbar for notification that packages are updated.
+				UserInterfaceTesting.Ide.WaitForStatusMessage (new [] {"Packages successfully restored."});
+			}
+			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (Commands.ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt", 60000);
+
+			var t = Session.GetTimerDuration ("Ide.Shell.ProjectBuilt");
+
+			Benchmark.SetTime ((double)t.TotalMilliseconds / 1000d);
 		}
 	}
 }
