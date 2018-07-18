@@ -99,12 +99,12 @@ namespace MonoDevelop.Ide.Composition
 		/// <summary>
 		/// Returns a lazy holding the instance of type T that is exported by some composition part. The instance is shared (singleton).
 		/// </summary>
-		public static Lazy<T> GetExport<T> () => Instance.ExportProvider.GetExport<T> ();
+		public static Lazy<T> GetExport<T> () => new Lazy<T> (() => Instance.ExportProvider.GetExportedValue<T> ());
 
 		/// <summary>
-		/// Returns lazies holding all instances of type T that are exported by some composition part. The instances are shared (singletons).
+		/// Returns a lazy holding all instances of type T that are exported by some composition part. The instances are shared (singletons).
 		/// </summary>
-		public static IEnumerable<Lazy<T>> GetExports<T> () => Instance.ExportProvider.GetExports<T> ();
+		public static Lazy<IEnumerable<T>> GetExports<T> () => new Lazy<IEnumerable<T>> (() => Instance.ExportProvider.GetExportedValues<T> ());
 
 		public RuntimeComposition RuntimeComposition { get; private set; }
 		public IExportProviderFactory ExportProviderFactory { get; private set; }
