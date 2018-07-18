@@ -24,6 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+
 namespace MonoDevelop.Core.Setup
 {
 	public class UpdateChannel
@@ -163,6 +167,44 @@ namespace MonoDevelop.Core.Setup
 		public static implicit operator string (UpdateChannel a)
 		{
 			return a.ToString ();
+		}
+
+		public static FilePath VersionSourceCacheFile {
+			get { return UserProfile.Current.LocalConfigDir.Combine ("version-source"); }
+		}
+
+		static string UpdateChannelFromVersion (string fullVersion)
+		{
+			if (!File.Exists (VersionSourceCacheFile)) {
+				return null;
+			}
+
+			using (var file = File.OpenText (VersionSourceCacheFile)) {
+				var serializer = new JsonSerializer ();
+				var versionCache = (Dictionary<string, string>)serializer.Deserialize (file, typeof (Dictionary<string, string>));
+
+				if (versionCache == null) {
+					return null;
+				}
+
+				versionCache.TryGetValue (fullVersion, out var channelName);
+				return channelName;
+		    }
+		}
+
+		public static string ChannelNameForVersion ()
+		{
+			// If the VersionLabel doesn't contain "Preview" then it came from the stable channel or an installer
+			if (!BuildInfo.VersionLabel.Contains ("Preview")) {
+				return UpdateChannel.Stable;
+			}
+
+			// The DownloadService stores what channel each version came from.
+			var channel = UpdateChannelFromVersion (BuildInfo.FullVersion);
+
+			// If the DownloadService doesn't know what channel, then it was an unofficial build installed by hand
+			// (or built from source) - so we mark that as Test
+			return channel ?? "Test";
 		}
 	}
 }
