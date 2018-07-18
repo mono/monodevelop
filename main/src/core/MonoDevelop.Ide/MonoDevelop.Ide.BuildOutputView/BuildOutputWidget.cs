@@ -377,20 +377,26 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			if (e.Button == PointerButton.Left && e.MultiplePress == 2) {
+			if (e.Button == PointerButton.Left) {
 				if (!cellView.IsViewClickable (selectedNode, e.Position)) {
 					return;
 				}
-				if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
-					GoToTask (selectedNode);
+
+				if (e.MultiplePress == 1) {
+					cellView.ClearSelection ();
+				} else if (e.MultiplePress == 2) {
+
+					if (selectedNode.NodeType == BuildOutputNodeType.Warning || selectedNode.NodeType == BuildOutputNodeType.Error) {
+						GoToTask (selectedNode);
+						return;
+					}
+					if (treeView.IsRowExpanded (selectedNode)) {
+						treeView.CollapseRow (selectedNode);
+					} else {
+						treeView.ExpandRow (selectedNode, false);
+					}
 					return;
 				}
-				if (treeView.IsRowExpanded (selectedNode)) {
-					treeView.CollapseRow (selectedNode);
-				} else {
-					treeView.ExpandRow (selectedNode, false);
-				}
-				return;
 			}
 
 			if (e.IsContextMenuTrigger) {
@@ -493,16 +499,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		public void ClipboardCopy ()
 		{
-			var selection = cellView.GetCurrentSelection ();
-			if (selection.Node != null && selection.SelectionStart != selection.SelectionEnd) {
-				var init = Math.Min (selection.SelectionStart, selection.SelectionEnd);
-				var end = Math.Max (selection.SelectionStart, selection.SelectionEnd);
-				Clipboard.SetText (selection.Node.Message.Substring (init, end - init));
+			var currentRow = treeView.SelectedRow as BuildOutputNode;
+
+			var cellSelection = cellView.TextSelection;
+			if (cellSelection?.IsShown (currentRow) ?? false) {
+				Clipboard.SetText (cellSelection.Content.Message.Substring (cellSelection.Index, cellSelection.Length));
 			} else {
-				var selectedNode = treeView.SelectedRow as BuildOutputNode;
-				if (selectedNode != null) {
-					ClipboardCopy (selectedNode);
-				}
+				ClipboardCopy (currentRow);
 			}
 		}
 
