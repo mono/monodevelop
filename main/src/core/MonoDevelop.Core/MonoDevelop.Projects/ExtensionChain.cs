@@ -92,10 +92,7 @@ namespace MonoDevelop.Projects
 				extensions [n] = extensions [n - 1];
 			extensions [index] = ext;
 
-			if (batchModifier != null)
-				batchModifier.UpdateFirstIndex (index);
-			else
-				Rechain (index);
+			Rechain (index);
 		}
 
 		internal void RemoveExtension (ChainedExtension ext)
@@ -107,18 +104,21 @@ namespace MonoDevelop.Projects
 			extensions = extensions.Where ((e, eindex) => {
 				bool shouldRemove = e == ext;
 				if (shouldRemove)
-					index = Math.Min (index, eindex);
+					index = eindex;
 				return !shouldRemove;
 			}).ToArray ();
 
-			if (batchModifier == null)
-				Rechain (index);
-			else
-				batchModifier.UpdateFirstIndex (index);
+			Rechain (index);
 		}
 
 		void Rechain (int firstChangeIndex)
 		{
+			// If we are in a batch update, only update where to start rechaining.
+			if (batchModifier != null) {
+				batchModifier.UpdateFirstIndex (firstChangeIndex);
+				return;
+			}
+
 			// Re-chain every extension
 			for (int n = extensions.Length - 2; n >= 0; n--)
 				extensions [n].InitChain (this, extensions [n + 1]);
@@ -192,8 +192,8 @@ namespace MonoDevelop.Projects
 
 			public void Dispose ()
 			{
-				chain.Rechain (minChangedIndex);
 				chain.batchModifier = null;
+				chain.Rechain (minChangedIndex);
 			}
 		}
 	}
