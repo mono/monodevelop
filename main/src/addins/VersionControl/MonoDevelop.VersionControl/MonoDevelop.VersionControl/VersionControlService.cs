@@ -633,7 +633,7 @@ namespace MonoDevelop.VersionControl
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, statusIcon, true, true, false, outPad, cancellable));
+			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, statusIcon, false, true, false, outPad, cancellable));
 			return mon;
 		}
 		
