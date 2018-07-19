@@ -1548,6 +1548,11 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ShowTooltipWindow (window, options);
 		}
 
+		public void HideTooltipWindow ()
+		{
+			textEditorImpl.HideTooltipWindow ();
+		}
+
 		public Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return textEditorImpl.GetScopeStackAsync (offset, cancellationToken);
