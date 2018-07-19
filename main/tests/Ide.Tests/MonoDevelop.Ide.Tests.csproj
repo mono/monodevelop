@@ -52,6 +52,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.VisualStudio.CodingConventions">
+      <HintPath>..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
