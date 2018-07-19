@@ -27,6 +27,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
@@ -85,7 +86,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Ignore ("Build does not work with project.json on Mono")]
 		public async Task BuildPackagingProjectFromTemplate ()
 		{
 			string templateId = "MonoDevelop.Packaging.Project";
@@ -121,9 +121,11 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Linux")]
 		public async Task CreateMultiPlatformProjectFromTemplateWithAndroidOnly ()
 		{
+			if (!Platform.IsMac)
+				Assert.Ignore ("Platform not Mac - Ignoring CreateMultiPlatformProjectFromTemplateWithAndroidOnly");
+
 			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
 			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
 			var dir = Util.CreateTmpDir (template.Id);

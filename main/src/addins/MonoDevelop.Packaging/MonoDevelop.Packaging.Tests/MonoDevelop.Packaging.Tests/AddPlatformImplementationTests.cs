@@ -27,6 +27,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -38,9 +39,18 @@ namespace MonoDevelop.Packaging.Tests
 	[TestFixture]
 	public class AddPlatformImplementationTests : TestBase
 	{
+		[TestFixtureSetUp]
+		public void SetUp ()
+		{
+			if (!Platform.IsMac)
+				Assert.Ignore ("Platform not Mac - Ignoring AddPlatformImplementationTests");
+		}
+
 		protected override void InternalSetup (string rootDir)
 		{
 			base.InternalSetup (rootDir);
+			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
+			Ide.DesktopService.Initialize ();
 
 			#pragma warning disable 219
 			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
@@ -50,7 +60,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Linux")]
 		public async Task AddAndroidProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -134,8 +143,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Platform (Exclude = "Linux")]
 		public async Task AddIOSProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -216,8 +223,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Platform (Exclude = "Linux")]
 		public async Task AddSharedProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -347,8 +352,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Platform (Exclude = "Linux")]
 		public async Task PCLProjectInSameDirectoryAsSolution ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
