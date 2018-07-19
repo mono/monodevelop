@@ -26,44 +26,35 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Ide.ProgressMonitoring;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Projects;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
-using System.Diagnostics;
-using System.Text;
-using MonoDevelop.Ide.TypeSystem;
-using System.Threading.Tasks;
-using System.Threading;
-using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
-using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Projects.MSBuild;
-using System.Collections.Immutable;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
-using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
+using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 
 namespace MonoDevelop.Ide
 {
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
-	public class ProjectOperations
+	public partial class ProjectOperations
 	{
 		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
 		MultipleAsyncOperation currentRunOperation = MultipleAsyncOperation.CompleteMultipleOperation;
@@ -1355,11 +1346,52 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
+			var buildTarget = executionTarget;
+
+			// When executing a solution we are actually going to execute the startup project. So we only need to build that project.
+			// TODO: handle multi-startup solutions.
+			if (buildTarget is Solution sol && sol.StartupItem != null)
+				buildTarget = sol.StartupItem;
+
+			return CheckAndBuildForExecute (
+				new [] { buildTarget }, configuration,
+				IdeApp.Preferences.BuildBeforeExecuting, IdeApp.Preferences.RunWithWarnings,
+				(target, monitor) => {
+					if (target is IRunTarget)
+						return ((IRunTarget)target).PrepareExecution (monitor, context, configuration, runConfiguration);
+					return target.PrepareExecution (monitor, context, configuration);
+				}
+			);
+		}
+
+		/// <summary>
+		/// Prepares projects/solutions for execution by building them and their execution dependencies if necessary.
+		/// </summary>
+		/// <returns>Whether the operation was successful.</returns>
+		/// <param name="executionTargets">The projects and/or solution to build. If there are multiple projects, they must be in the same solution.</param>
+		/// <param name="configuration">The configuration selector.</param>
+		/// <param name="buildWithoutPrompting">Whether to prompt the user before building, when building is necessary.</param>
+		/// <param name="cancelOnWarning">Whether to cancel the execution operation if there is a build warning.</param>
+		/// <param name="createPrepareExecutionTask">
+		/// May be executed in parallel with the build to perform additional
+		/// preparation that does not depend on the build, such as launching a simulator.
+		/// There is no guaranteed this will be executed for any target.
+		/// </param>
+		public async Task<bool> CheckAndBuildForExecute (
+			ICollection<IBuildTarget> executionTargets, ConfigurationSelector configuration,
+			bool buildWithoutPrompting = true, bool cancelOnWarning = false,
+			Func<IBuildTarget, ProgressMonitor,Task> createPrepareExecutionTask = null,
+			CancellationToken? token = null)
+		{
+			if (executionTargets.Count == 0) {
+				throw new ArgumentException ("No execution targets specified", nameof (executionTargets)); ;
+			}
+
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				var bres = await currentBuildOperation.Task;
-				if (bres.HasErrors || !IdeApp.Preferences.RunWithWarnings && bres.HasWarnings)
+				if (bres.HasErrors || (cancelOnWarning && bres.HasWarnings))
 					return false;
 			}
 
@@ -1368,47 +1400,65 @@ namespace MonoDevelop.Ide
 			if (r.Failed)
 				return false;
 
-			var buildTarget = executionTarget;
+			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionTargets.SelectMany (et => et.GetExecutionDependencies ()));
 
-			// When executing a solution we are actually going to execute the starup project. So we only need to build that project.
-			// TODO: handle multi-startup solutions.
-			var sol = buildTarget as Solution;
-			if (sol != null && sol.StartupItem != null)
-				buildTarget = sol.StartupItem;
-			
-			var buildDeps = buildTarget.GetExecutionDependencies ().ToList ();
-			if (buildDeps.Count > 1)
-				throw new NotImplementedException ("Multiple execution dependencies not yet supported");
-			if (buildDeps.Count != 0)
-				buildTarget = buildDeps [0];
-
-			bool needsBuild = FastCheckNeedsBuild (buildTarget, configuration);
-			if (!needsBuild) {
+			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
 				return true;
 			}
 
-			if (IdeApp.Preferences.BuildBeforeExecuting) {
-				// Building the project may take some time, so we call PrepareExecution so that the target can
-				// prepare the execution (for example, it could start a simulator).
-				var cs = new CancellationTokenSource ();
-				Task prepareExecution;
-				if (buildTarget is IRunTarget)
-					prepareExecution = ((IRunTarget)buildTarget).PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration, runConfiguration);
-				else
-					prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
-				
-				var result = await Build (buildTarget, true).Task;
-
-				if (result.HasErrors || (!IdeApp.Preferences.RunWithWarnings && result.HasWarnings)) {
-					cs.Cancel ();
-					return false;
-				}
-				else {
-					await prepareExecution;
-					return true;
+			if (!buildWithoutPrompting) {
+				var ret = PromptToBuild ();
+				if (ret.HasValue) {
+					return ret.Value;
 				}
 			}
 
+			CancellationTokenSource prepareOpTokenSource = null;
+
+			// Building the project may take some time, so we call PrepareExecution so that the target can
+			// prepare the execution while the build is in progress (for example, it could start a simulator).
+			// As a simple way to avoid starvation, if there are multiple, we run them in sequence.
+			bool building = true;
+			Task prepareExecutionTask = null;
+			if (createPrepareExecutionTask != null) {
+				prepareOpTokenSource = token != null
+					? CancellationTokenSource.CreateLinkedTokenSource (token.Value)
+					: new CancellationTokenSource ();
+				prepareExecutionTask = RunPrepareExecutionTasks ();
+			}
+
+			BuildResult result = await Build (buildTarget, token).Task;
+
+			if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
+				prepareOpTokenSource?.Cancel ();
+				return false;
+			}
+
+			building = false;
+			if (prepareExecutionTask != null) {
+				await prepareExecutionTask;
+			}
+
+			return true;
+
+			async Task RunPrepareExecutionTasks ()
+			{
+				var targetsToPrepare = new Queue<IBuildTarget> (executionTargets);
+
+				while (targetsToPrepare.Count > 0 && building) {
+					var target = targetsToPrepare.Dequeue ();
+					var monitor = new ProgressMonitor ().WithCancellationSource (prepareOpTokenSource);
+					await createPrepareExecutionTask (target, monitor);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Prompts the user whether they want to build the project
+		/// </summary>
+		/// <returns>True to execute without building, false to cancel, null to build.</returns>
+		static bool? PromptToBuild ()
+		{
 			var bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
 			var bRun = new AlertButton (Gtk.Stock.Execute, true);
 			var res = MessageService.AskQuestion (
@@ -1428,69 +1478,69 @@ namespace MonoDevelop.Ide
 			}
 
 			if (res == bBuild) {
-				// Building the project may take some time, so we call PrepareExecution so that the target can
-				// prepare the execution (for example, it could start a simulator).
-				var cs = new CancellationTokenSource ();
+				return null;
+			}
 
-				Task prepareExecution;
-				if (buildTarget is IRunTarget)
-					prepareExecution = ((IRunTarget)buildTarget).PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration, runConfiguration);
-				else
-					prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
-				
-				var result = await Build (buildTarget, true).Task;
+			return false;
+		}
 
-				if (result.HasErrors || (!IdeApp.Preferences.RunWithWarnings && result.HasWarnings)) {
-					cs.Cancel ();
-					return false;
+		/// <summary>
+		/// Given a build target, determines whether it or its dependencies needs to be built.
+		/// </summary>
+		/// <param name="target">The build target to check.</param>
+		/// <param name="configuration">The build configuration selector.</param>
+		static bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		{
+			if (FastBuildCheckDisabled ()) {
+				return true;
+			}
+
+			IEnumerable<SolutionItem> items;
+
+			switch (target) {
+			case Project proj: {
+					var deps = new HashSet<SolutionItem> { proj };
+					CollectDependencies (proj, deps, configuration);
+					items = deps;
+					break;
 				}
-				else {
-					await prepareExecution;
+			case SolutionItemBuildBatch batch: {
+					var deps = new HashSet<SolutionItem> ();
+					foreach (var item in batch.Items) {
+						deps.Add (item);
+						CollectDependencies (item, deps, configuration);
+					}
+					items = deps;
+					break;
+				}
+			case Solution sln:
+				items = sln.GetAllSolutionItems ();
+				break;
+			default:
+				return true;
+			}
+
+			foreach (var item in items) {
+				if (!(item is Project p) || p.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ()))) {
 					return true;
 				}
 			}
 
 			return false;
 		}
-			
-		bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+
+		static bool FastBuildCheckDisabled ()
 		{
 			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
-			if (!string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase))
-				return true;
-
-			var sei = target as Project;
-			if (sei != null) {
-				if (sei.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
-					return true;
-				//TODO: respect solution level dependencies
-				var deps = new HashSet<SolutionItem> ();
-				CollectReferencedItems (sei, deps, configuration);
-				foreach (var dep in deps.OfType<Project> ()) {
-					if (dep.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
-						return true;
-				}
-				return false;
-			}
-
-			var sln = target as Solution;
-			if (sln != null) {
-				foreach (var item in sln.GetAllProjects ()) {
-					if (item.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ())))
-						return true;
-				}
-				return false;
-			}
-
-			//TODO: handle other IBuildTargets
-			return true;
+			return !string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase);
 		}
 
-		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
+		//TODO: respect solution level dependencies
+		static void CollectDependencies (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
 		{
 			foreach (var refItem in item.GetReferencedItems (configuration)) {
 				if (collected.Add (refItem)) {
-					CollectReferencedItems (refItem, collected, configuration);
+					CollectDependencies (refItem, collected, configuration);
 				}
 			}
 		}
@@ -1565,7 +1615,7 @@ namespace MonoDevelop.Ide
 		/// Initializes the context to be used for build operations. It currently just initializes
 		/// it with the currently selected execution target.
 		/// </summary>
-		T InitOperationContext<T> (IBuildTarget target, T context) where T:OperationContext
+		static T InitOperationContext<T> (IBuildTarget target, T context) where T:OperationContext
 		{
 			OperationContext ctx = context;
 			if (ctx == null)
