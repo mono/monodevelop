@@ -394,6 +394,7 @@
 	<StockIcon stockid="md-spinner-14" animation="res:spinner-14-1.png;40;res:spinner-14-2.png;40;res:spinner-14-3.png;40;res:spinner-14-4.png;40;res:spinner-14-5.png;40" size="Menu" />
 	<StockIcon stockid="md-spinner-16" animation="res:spinner-16-1.png;40;res:spinner-16-2.png;40;res:spinner-16-3.png;40;res:spinner-16-4.png;40;res:spinner-16-5.png;40" size="Menu" />
 	<StockIcon stockid="md-spinner-18" animation="res:spinner-18-1.png;40;res:spinner-18-2.png;40;res:spinner-18-3.png;40;res:spinner-18-4.png;40;res:spinner-18-5.png;40" size="Button" />
+	<StockIcon stockid="md-spinner-36" animation="res:spinner-36-1.png;40;res:spinner-36-2.png;40;res:spinner-36-3.png;40;res:spinner-36-4.png;40;res:spinner-36-5.png;40" size="Dialog" />
 
 	<!-- Overlays -->
 	<StockIcon stockid="md-internal-class" icon="res:element-class-16.png|res:element-visibility-internal-diamond-overlay-16.png" size="Menu" />
