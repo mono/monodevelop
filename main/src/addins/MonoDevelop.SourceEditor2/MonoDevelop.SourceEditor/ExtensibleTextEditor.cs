@@ -730,11 +730,6 @@ namespace MonoDevelop.SourceEditor
 			info.Bypass = HasFocus == false;
 		}
 
-		void EnsurePreeditCommitted()
-		{
-			TextArea.CommitPreedit ();
-		}
-
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd)]
 		internal void OnLineEnd ()
 		{
@@ -864,16 +859,12 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]
 		internal void OnSelectionMoveLeft ()
 		{
-			EnsurePreeditCommitted ();
-
 			RunAction (SelectionActions.MoveLeft);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight)]
 		internal void OnSelectionMoveRight ()
 		{
-			EnsurePreeditCommitted ();
-
 			RunAction (SelectionActions.MoveRight);
 		}
 

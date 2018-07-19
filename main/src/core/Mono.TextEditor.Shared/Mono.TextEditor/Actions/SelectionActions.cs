@@ -77,6 +77,8 @@ namespace Mono.TextEditor
 		
 		public static void Select (TextEditorData data, Action<TextEditorData> caretMoveAction)
 		{
+			data?.Parent?.CommitPreedit ();
+
 			using (var undoGroup = data.OpenUndoGroup ()) {
 				PositionChangedHandler handler = new PositionChangedHandler (data);
 				data.Caret.PositionChanged += handler.DataCaretPositionChanged;
