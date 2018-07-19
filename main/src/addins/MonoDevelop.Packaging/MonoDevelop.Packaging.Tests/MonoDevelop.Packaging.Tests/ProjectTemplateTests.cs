@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
@@ -39,13 +40,11 @@ using UnitTests;
 namespace MonoDevelop.Packaging.Tests
 {
 	[TestFixture]
-	public class ProjectTemplateTests : TestBase
+	public class ProjectTemplateTests : IdeTestBase
 	{
 		protected override void InternalSetup (string rootDir)
 		{
 			base.InternalSetup (rootDir);
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			Ide.DesktopService.Initialize ();
 
 			#pragma warning disable 219
 			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
@@ -110,7 +109,7 @@ namespace MonoDevelop.Packaging.Tests
 
 			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
 
-			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var solution = (Solution)await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			// Ensure readme.txt has metadata to include it in the NuGet package.
 			var wizard = new TestablePackagingProjectTemplateWizard ();
@@ -149,7 +148,7 @@ namespace MonoDevelop.Packaging.Tests
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
 			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
 
-			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			var project = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.FileName.FileName == "ProjectName.NuGet.nuproj");
 			Assert.IsNotNull (project);
@@ -199,7 +198,7 @@ namespace MonoDevelop.Packaging.Tests
 
 			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
 
-			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var solution = (Solution)await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			project = solution.GetAllProjects ().First ();
 			BuildResult cr = await solution.Build (Util.GetMonitor (), "Debug");
 			Assert.IsNotNull (cr);

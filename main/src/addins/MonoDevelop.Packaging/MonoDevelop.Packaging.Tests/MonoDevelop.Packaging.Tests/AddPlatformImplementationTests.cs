@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -37,7 +38,7 @@ using MonoDevelop.Projects.SharedAssetsProjects;
 namespace MonoDevelop.Packaging.Tests
 {
 	[TestFixture]
-	public class AddPlatformImplementationTests : TestBase
+	public class AddPlatformImplementationTests : IdeTestBase
 	{
 		[TestFixtureSetUp]
 		public void SetUp ()
@@ -49,8 +50,6 @@ namespace MonoDevelop.Packaging.Tests
 		protected override void InternalSetup (string rootDir)
 		{
 			base.InternalSetup (rootDir);
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			Ide.DesktopService.Initialize ();
 
 			#pragma warning disable 219
 			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
@@ -97,7 +96,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
 
@@ -180,7 +179,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
 
@@ -266,7 +265,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
 
@@ -389,7 +388,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			var androidProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.Android");
 			var nugetProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.NuGet");
