@@ -760,7 +760,7 @@ namespace MonoDevelop.Projects.MSBuild
 			
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
 				if (node.Guid.Equals (project.TypeGuid, StringComparison.OrdinalIgnoreCase)) {
-					if (node.MSBuildSupport != MSBuildSupport.Supported)
+					if (node.MSBuildSupport == MSBuildSupport.NotSupported)
 						return false;
 					return GetMSBuildSupportForFlavors (project.FlavorGuids);
 				}
