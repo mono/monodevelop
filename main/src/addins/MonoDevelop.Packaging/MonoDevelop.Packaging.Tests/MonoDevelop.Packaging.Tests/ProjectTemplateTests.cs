@@ -44,6 +44,8 @@ namespace MonoDevelop.Packaging.Tests
 		protected override void InternalSetup (string rootDir)
 		{
 			base.InternalSetup (rootDir);
+			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
+			Ide.DesktopService.Initialize ();
 
 			#pragma warning disable 219
 			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
@@ -109,6 +111,10 @@ namespace MonoDevelop.Packaging.Tests
 			await NuGetPackageInstaller.InstallPackages ((Solution)workspaceItem, template.PackageReferencesForCreatedProjects);
 
 			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+
+			// Ensure readme.txt has metadata to include it in the NuGet package.
+			var wizard = new TestablePackagingProjectTemplateWizard ();
+			wizard.ItemsCreated (new [] { solution });
 
 			BuildResult cr = await solution.Build (Util.GetMonitor (), "Debug");
 			Assert.IsNotNull (cr);
