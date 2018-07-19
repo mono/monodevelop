@@ -54,7 +54,7 @@ namespace Mono.TextEditor
 	partial class TextViewMargin : Margin
 	{
 		readonly MonoTextEditor textEditor;
-		Pango.TabArray tabArray;
+
 		Pango.Layout markerLayout, defaultLayout;
 		Pango.FontDescription markerLayoutFont;
 		Pango.Layout[] eolMarkerLayout;
@@ -611,9 +611,9 @@ namespace Mono.TextEditor
 			markerLayout.FontDescription = markerLayoutFont;
 
 			// Gutter font may be bigger
-			GetFontMetrics(textEditor.Options.GutterFont, textEditor.Options.GutterFontName, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
-			GetFontMetrics(textEditor.Options.Font, textEditor.Options.FontName, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
-			this.textEditor.GetTextEditorData().LineHeight = fontLineHeight;
+			GetFontMetrics (textEditor.Options.GutterFont, textEditor.Options.GutterFontName, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics (textEditor.Options.Font, textEditor.Options.FontName, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
+			this.textEditor.GetTextEditorData ().LineHeight = fontLineHeight;
 			this.charWidth = fontCharWidth;
 
 			var family = textEditor.PangoContext.Families.FirstOrDefault (f => f.Name == textEditor.Options.Font.Family);
@@ -626,10 +626,10 @@ namespace Mono.TextEditor
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
 
 			if (eolMarkerLayout == null) {
-				eolMarkerLayout = new Pango.Layout[markerTexts.Length];
-				eolMarkerLayoutRect = new Pango.Rectangle[markerTexts.Length];
+				eolMarkerLayout = new Pango.Layout [markerTexts.Length];
+				eolMarkerLayoutRect = new Pango.Rectangle [markerTexts.Length];
 				for (int i = 0; i < eolMarkerLayout.Length; i++)
-					eolMarkerLayout[i] = PangoUtil.CreateLayout (textEditor);
+					eolMarkerLayout [i] = PangoUtil.CreateLayout (textEditor);
 			}
 
 			var font = textEditor.Options.Font.Copy ();
@@ -647,25 +647,11 @@ namespace Mono.TextEditor
 				eolMarkerLayoutRect [i] = tRect;
 			}
 
-			if (tabArray != null) {
-				tabArray.Dispose ();
-				tabArray = null;
-			}
-
-			var tabWidthLayout = PangoUtil.CreateLayout (textEditor, (new string (' ', textEditor.Options.TabSize)));
-			tabWidthLayout.Alignment = Pango.Alignment.Left;
-			tabWidthLayout.FontDescription = textEditor.Options.Font;
-			int tabWidth, h;
-			tabWidthLayout.GetSize (out tabWidth, out h);
-			tabWidthLayout.Dispose ();
-			tabArray = new Pango.TabArray (1, false);
-			tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
-
 			textEditor.UpdatePreeditLineHeight ();
 
 			DisposeLayoutDict ();
 			caretX = caretY = -LineHeight;
-			base.cursor = GetDefaultTextCursor();
+			base.cursor = GetDefaultTextCursor ();
 		}
 
 		void DisposeGCs ()
@@ -725,11 +711,35 @@ namespace Mono.TextEditor
 				eolMarkerLayout = null;
 			}
 			DisposeLayoutDict ();
-			if (tabArray != null)
-				tabArray.Dispose ();
+			tabArray?.Dispose ();
 			accessible?.Dispose ();
 			accessible = null;
 			base.Dispose ();
+		}
+
+		int tabLayoutTabSize = -1;
+		Pango.TabArray tabArray;
+		Pango.TabArray TabArray {
+			get {
+				if (tabArray == null || tabLayoutTabSize != textEditor.Options.TabSize) {
+					CreateTabArray ();
+					tabLayoutTabSize = textEditor.Options.TabSize;
+				}
+				return tabArray;
+			}
+		}
+
+		void CreateTabArray ()
+		{
+			tabArray?.Dispose ();
+			using (var tabWidthLayout = PangoUtil.CreateLayout (textEditor, (new string (' ', textEditor.Options.TabSize)))) {
+				tabWidthLayout.Alignment = Pango.Alignment.Left;
+				tabWidthLayout.FontDescription = textEditor.Options.Font;
+				tabWidthLayout.GetSize (out int tabWidth, out int h);
+
+				tabArray = new Pango.TabArray (1, false);
+				tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
+			}
 		}
 
 		#region Caret blinking
@@ -1056,7 +1066,7 @@ namespace Mono.TextEditor
 			var atts = new FastPangoAttrList ();
 			wrapper.Layout.Alignment = Pango.Alignment.Left;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
-			wrapper.Layout.Tabs = tabArray;
+			wrapper.Layout.Tabs = TabArray;
 			if (textEditor.Options.WrapLines) {
 				wrapper.Layout.Wrap = Pango.WrapMode.WordChar;
 				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
@@ -1888,7 +1898,7 @@ namespace Mono.TextEditor
 			LayoutWrapper wrapper = new LayoutWrapper (this, textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsVirtualLineText = true;
 			wrapper.Text = virtualSpace;
-			wrapper.Layout.Tabs = tabArray;
+			wrapper.Layout.Tabs = TabArray;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
 			int vy, vx;
 			wrapper.GetSize (out vx, out vy);
@@ -2897,10 +2907,10 @@ namespace Mono.TextEditor
 			using (var calcTextLayout = textEditor.LayoutCache.RequestLayout ())
 			using (var calcFoldingLayout = textEditor.LayoutCache.RequestLayout ()) {
 				calcTextLayout.FontDescription = textEditor.Options.Font;
-				calcTextLayout.Tabs = this.tabArray;
+				calcTextLayout.Tabs = this.TabArray;
 
 				calcFoldingLayout.FontDescription = markerLayoutFont;
-				calcFoldingLayout.Tabs = this.tabArray;
+				calcFoldingLayout.Tabs = this.TabArray;
 				foreach (var folding in foldings) {
 					int foldOffset = folding.Offset;
 					if (foldOffset < offset)
@@ -3508,7 +3518,7 @@ namespace Mono.TextEditor
 					l.SetText (textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.LineNumber));
 					l.Alignment = Pango.Alignment.Left;
 					l.FontDescription = textEditor.Options.Font;
-					l.Tabs = tabArray;
+					l.Tabs = TabArray;
 
 					Pango.Rectangle ink_rect, logical_rect;
 					l.GetExtents (out ink_rect, out logical_rect);
