@@ -47,17 +47,6 @@ namespace MonoDevelop.Packaging.Tests
 				Assert.Ignore ("Platform not Mac - Ignoring AddPlatformImplementationTests");
 		}
 
-		protected override void InternalSetup (string rootDir)
-		{
-			base.InternalSetup (rootDir);
-
-			#pragma warning disable 219
-			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
-			// when we try to build the packaging project which breaks the tests.
-			string directory = DotNetCore.DotNetCoreSdk.MSBuildSDKsPath;
-			#pragma warning restore 219
-		}
-
 		[Test]
 		public async Task AddAndroidProjectForPCLProject ()
 		{
