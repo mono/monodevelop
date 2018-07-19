@@ -717,9 +717,9 @@ namespace MonoDevelop.Projects
 			metadata["ProjectTypes"] = sb.ToString ();
 		}
 
-		protected override void OnGetProjectEventMetadata (ProjectEventMetadata metadata)
+		protected override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
-			base.OnGetProjectEventMetadata (metadata);
+			var metadata = base.OnGetProjectEventMetadata (configurationSelector);
 			var sb = new System.Text.StringBuilder ();
 			var first = true;
 
@@ -731,6 +731,8 @@ namespace MonoDevelop.Projects
 				first = false;
 			}
 			metadata.ProjectTypes = sb.ToString ();
+
+			return metadata;
 		}
 
 		protected override void OnEndLoad ()
