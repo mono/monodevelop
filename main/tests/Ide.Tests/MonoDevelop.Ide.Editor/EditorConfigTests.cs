@@ -30,6 +30,7 @@ using UnitTests;
 using System.Threading;
 using GuiUnit;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.Ide.Editor
 	class EditorConfigTests : IdeTestBase
 	{
 
-		static void InvokeEditConfigTest (string editConfig, Action<TextEditor> test)
+		static async Task InvokeEditConfigTest (string editConfig, Action<TextEditor> test)
 		{
 			string tempPath;
 			int i = 0;
@@ -55,27 +56,26 @@ namespace MonoDevelop.Ide.Editor
 				File.WriteAllText (editorConfigFile, editConfig);
 				var editor = TextEditorFactory.CreateNewEditor ();
 				var viewContent = editor.GetViewContent ();
-				editor.OptionsChanged += delegate {
-					test (editor);
-				};
-				viewContent.ContentName = Path.Combine (tempPath, "a.cs");
-
+				string fileName = Path.Combine (tempPath, "a.cs");
+				var ctx = await EditorConfigService.GetEditorConfigContext (fileName);
+				((DefaultSourceEditorOptions)editor.Options).SetContext (ctx);
+				test (editor);
 			} finally {
 				Directory.Delete (tempPath, true);
 			}
 		}
 
 		[Test]
-		public void Test_indent_style ()
+		public async Task Test_indent_style ()
 		{
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 indent_style = space
 ", editor => {
 				Assert.AreEqual (true, editor.Options.TabsToSpaces);
 			});
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 indent_style = tab
@@ -85,9 +85,9 @@ indent_style = tab
 		}
 
 		[Test]
-		public void Test_indent_size ()
+		public async Task Test_indent_size ()
 		{
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 indent_size = 42
@@ -97,9 +97,9 @@ indent_size = 42
 		}
 
 		[Test]
-		public void Test_tab_width ()
+		public async Task Test_tab_width ()
 		{
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 tab_width = 42
@@ -109,23 +109,23 @@ tab_width = 42
 		}
 
 		[Test]
-		public void Test_end_of_line ()
+		public async Task Test_end_of_line ()
 		{
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 end_of_line = lf
 ", editor => {
 				Assert.AreEqual ("\n", editor.Options.DefaultEolMarker);
 			});
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 end_of_line = cr
 ", editor => {
 				Assert.AreEqual ("\r", editor.Options.DefaultEolMarker);
 			});
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 end_of_line = crlf
@@ -135,9 +135,9 @@ end_of_line = crlf
 		}
 
 		[Test]
-		public void Test_trim_trailing_whitespace ()
+		public async Task Test_trim_trailing_whitespace ()
 		{
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 trim_trailing_whitespace = true
@@ -145,7 +145,7 @@ trim_trailing_whitespace = true
 				Assert.AreEqual (true, editor.Options.RemoveTrailingWhitespaces);
 			});
 
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 trim_trailing_whitespace = false
@@ -155,9 +155,9 @@ trim_trailing_whitespace = false
 		}
 
 		[Test]
-		public void Test_max_line_length ()
+		public async Task Test_max_line_length ()
 		{
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 max_line_length = off
@@ -165,7 +165,7 @@ max_line_length = off
 				Assert.AreEqual (false, editor.Options.ShowRuler);
 			});
 
-			InvokeEditConfigTest (@"
+			await InvokeEditConfigTest (@"
 root = true
 [*.cs]
 max_line_length = 42
