@@ -44,6 +44,7 @@
     <Compile Include="MonoDevelop.Packaging.Tests\AddPlatformImplementationTests.cs" />
     <Compile Include="MonoDevelop.Packaging.Tests\TestableAddPlatformImplementationViewModel.cs" />
     <Compile Include="MonoDevelop.Packaging.Tests\TestableCrossPlatformLibraryTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Packaging.Tests\TestablePackagingProjectTemplateWizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
