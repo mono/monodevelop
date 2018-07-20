@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var roslynProject = GetProject (project, cancellationToken);
 			if (roslynProject != null)
 				return roslynProject.GetCompilationAsync (cancellationToken);
-			return null;
+			return Task.FromResult (default(Compilation));
 		}
 
 		internal static Microsoft.CodeAnalysis.Project GetProject (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default (CancellationToken))
