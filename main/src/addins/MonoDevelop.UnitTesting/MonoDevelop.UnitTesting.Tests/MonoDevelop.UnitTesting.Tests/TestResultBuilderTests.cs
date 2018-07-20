@@ -45,7 +45,7 @@ namespace MonoDevelop.UnitTesting.Tests
 		{
 			var executionContext = new ExecutionContext ((IExecutionHandler)null, null, null);
 			monitor = new TestProgressMonitor ();
-			context = new TestContext (monitor, null, executionContext, DateTime.Now);
+			context = new TestContext (monitor, executionContext, DateTime.Now);
 
 			builder = new TestResultBuilder (context, testProvider);
 		}
