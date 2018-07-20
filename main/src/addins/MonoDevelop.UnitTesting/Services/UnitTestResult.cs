@@ -36,7 +36,7 @@ using System.Text.RegularExpressions;
 namespace MonoDevelop.UnitTesting
 {
 	[Serializable]
-	public class UnitTestResult
+	public class UnitTestResult : IEquatable<UnitTestResult>
 	{
 		DateTime testDate;
 		ResultStatus status;
@@ -240,26 +240,19 @@ namespace MonoDevelop.UnitTesting
 			return unknowObject.GetHashCode ();
 		}
 
-		public override bool Equals (object obj)
-		{
-			var unitTestResult =  obj as UnitTestResult;
-			if (unitTestResult == null)
-				return false;
-			return EqualsHelper (this, unitTestResult);
-		}
+		public override bool Equals (object obj) => obj is UnitTestResult other && Equals (other);
 
-		bool EqualsHelper (UnitTestResult firstResult, UnitTestResult secondResult)
+		public bool Equals (UnitTestResult other)
 		{
-			return  firstResult.Status == secondResult.Status &&
-					firstResult.Passed == secondResult.Passed &&
-					firstResult.Errors == secondResult.Errors &&
-					firstResult.Failures == secondResult.Failures &&
-					firstResult.Inconclusive == secondResult.Inconclusive &&
-					firstResult.NotRunnable == secondResult.NotRunnable &&
-					firstResult.Skipped == secondResult.Skipped &&
-					firstResult.Ignored == secondResult.Ignored;
+			return Status == other.Status &&
+				Passed == other.Passed &&
+				Errors == other.Errors &&
+				Failures == other.Failures &&
+				Inconclusive == other.Inconclusive &&
+				NotRunnable == other.NotRunnable &&
+				Skipped == other.Skipped &&
+				Ignored == other.Ignored;
 		}
-
 	}
 }
 
