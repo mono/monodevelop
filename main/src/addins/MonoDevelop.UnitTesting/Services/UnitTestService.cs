@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -50,7 +50,7 @@ namespace MonoDevelop.UnitTesting
 	{
 		static ArrayList providers = new ArrayList ();
 		static UnitTest[] rootTests;
-		
+
 		static UnitTestService ()
 		{
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
@@ -109,7 +109,7 @@ namespace MonoDevelop.UnitTesting
 			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
-		
+
 		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
@@ -147,7 +147,7 @@ namespace MonoDevelop.UnitTesting
 					await RunTests (tests, context, false, checkCurrentRunOperation, cs);
 				return;
 			}
-			
+
 			if (checkCurrentRunOperation && !IdeApp.ProjectOperations.ConfirmExecutionOperation ())
 				return;
 
@@ -155,12 +155,12 @@ namespace MonoDevelop.UnitTesting
 
 			var test = tests.Count () == 1 ? tests.First () : new UnitTestSelection (tests, tests.First ().OwnerObject);
 			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content, cs);
-			
+
 			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
 
 			if (checkCurrentRunOperation)
 				IdeApp.ProjectOperations.AddRunOperation (session);
-			
+
 			try {
 				await session.Start ();
 			} finally {
@@ -242,7 +242,7 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-		
+
 		static UnitTest SearchTest (UnitTest test, string fullName)
 		{
 			if (test == null)
@@ -283,7 +283,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			return FindRootTest (RootTests, item);
 		}
-		
+
 		public static UnitTest FindRootTest (IEnumerable<UnitTest> tests, WorkspaceObject item)
 		{
 			foreach (UnitTest t in tests) {
@@ -298,7 +298,7 @@ namespace MonoDevelop.UnitTesting
 			}
 			return null;
 		}
-		
+
 		static void OnWorkspaceChanged (object sender, EventArgs e)
 		{
 			RebuildTests ();
@@ -377,7 +377,7 @@ namespace MonoDevelop.UnitTesting
 				LoggingService.LogError ("Exception gathering unit tests.", ex);
 			}
 		}
-		
+
 		public static UnitTest BuildTest (WorkspaceObject entry)
 		{
 			foreach (ITestProvider p in providers) {
@@ -417,7 +417,7 @@ namespace MonoDevelop.UnitTesting
 		public static UnitTest[] RootTests {
 			get { return rootTests; }
 		}
-		
+
 		static void NotifyTestSuiteChanged ()
 		{
 			Runtime.RunInMainThread (() => {
@@ -453,7 +453,7 @@ namespace MonoDevelop.UnitTesting
 		/// </summary>
 		public static event EventHandler<TestSessionEventArgs> TestSessionStarting;
 	}
-	
+
 
 
 	class TestSession: AsyncOperation
@@ -474,7 +474,7 @@ namespace MonoDevelop.UnitTesting
 			resultsPad.InitializeTestRun (test, cs);
 			Task = new Task ((Action)RunTests);
 		}
-		
+
 		public Task Start ()
 		{
 			Task.Start ();

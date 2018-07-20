@@ -244,7 +244,8 @@ namespace MonoDevelop.UnitTesting
 
 		public bool Equals (UnitTestResult other)
 		{
-			return Status == other.Status &&
+			return other != null &&
+				Status == other.Status &&
 				Passed == other.Passed &&
 				Errors == other.Errors &&
 				Failures == other.Failures &&
