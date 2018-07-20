@@ -113,7 +113,7 @@ namespace MonoDevelop.UnitTesting
 
 		internal void UpdateStatusFromChildren ()
 		{
-			if (this.Status == TestStatus.Running)
+			if (this.Status != TestStatus.Ready)
 				return;
 			var calculatedResult = GetLastResultDynamically (Tests);
 			var storedResult = GetLastResult ();
