@@ -1560,9 +1560,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
-			if (path == null)
-				return;
-			if (mdProject == null)
+			if (mdProject == null || path == null)
 				return;
 			var item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
 			if (item == null)
