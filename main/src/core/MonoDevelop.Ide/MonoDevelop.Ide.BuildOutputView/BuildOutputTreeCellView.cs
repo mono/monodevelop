@@ -188,6 +188,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			public double CollapsedLayoutHeight = -1;
 			public double LayoutYPadding = 0;
 			public double ExpanderYPadding = 0;
+			public double IconYPadding = 0;
+
 			public int NewLineCharIndex = -1;
 
 			public Rectangle TaskLinkRenderRectangle = Rectangle.Zero;
@@ -334,6 +336,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						CollapsedRowHeight = Math.Max (textSize.Height, ImageSize);
 						LayoutYPadding = (CollapsedRowHeight - CollapsedLayoutHeight) * .5;
 						ExpanderYPadding = (CollapsedRowHeight - BuildExpandIcon.Height) * .5;
+						IconYPadding = (CollapsedRowHeight - ImageSize) * .5;
 					}
 				}
 				layout.Trimming = Expanded ? TextTrimming.Word : TextTrimming.WordElipsis;
@@ -518,7 +521,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//Draw the image row
 			if (status.HasIcon) {
 				//Draw the image row
-				DrawImage (ctx, cellArea, status.Icon, status.LastRenderImageBounds.X, ImageSize, isSelected, ImagePadding);
+				DrawImage (ctx, cellArea, status.Icon, status.LastRenderImageBounds.X, ImageSize, isSelected, status.IconYPadding);
 			}
 
 			ctx.SetColor (Styles.GetTextColor (buildOutputNode, UseStrongSelectionColor && isSelected));
@@ -553,7 +556,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				status.ErrorsRectangle.X = startX;
 				status.ErrorsRectangle.Y = cellArea.Y;
-				DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize, isSelected, ImagePadding);
+				DrawImage (ctx, cellArea, Resources.ErrorIconSmall, startX, ImageSize, isSelected);
 
 				startX += ImageSize + 2;
 				var errors = GettextCatalog.GetString ("{0} errors", buildOutputNode.ErrorCount.ToString ());
@@ -569,7 +572,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				status.WarningsRectangle.X = startX;
 				status.WarningsRectangle.Y = cellArea.Y;
 
-				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected, ImagePadding);
+				DrawImage (ctx, cellArea, Resources.WarningIconSmall, startX, ImageSize, isSelected);
 
 				var warnings = GettextCatalog.GetString ("{0} warnings", buildOutputNode.WarningCount.ToString ());
 				startX += ImageSize + 2;
@@ -652,7 +655,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			    (buildOutputNode.ErrorCount > 0 || buildOutputNode.WarningCount > 0)) {
 
 				if (buildOutputNode.ErrorCount > 0) {
-					DrawImage (ctx, cellArea, Resources.ErrorIconSmall, textStartX, imageSize, isSelected, imagePadding);
+					DrawImage (ctx, cellArea, Resources.ErrorIconSmall, textStartX, imageSize, isSelected);
 					textStartX += ImageSize + 2;
 					var errors = buildOutputNode.ErrorCount.ToString ();
 
@@ -661,7 +664,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 
 				if (buildOutputNode.WarningCount > 0) {
-					DrawImage (ctx, cellArea, Resources.WarningIconSmall, textStartX, imageSize, isSelected, imagePadding);
+					DrawImage (ctx, cellArea, Resources.WarningIconSmall, textStartX, imageSize, isSelected);
 					textStartX += ImageSize + 2;
 					DrawText (ctx, cellArea, textStartX, buildOutputNode.WarningCount.ToString (), padding, defaultFont, 10, trimming: TextTrimming.Word);
 				}
@@ -705,9 +708,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ctx.DrawTextLayout (textLayout, x, cellArea.Y + padding);
 		}
 
-		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected, double topPadding = 0)
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected)
 		{
-			ctx.DrawImage (isSelected ? image.WithStyles ("sel") : image, x, cellArea.Top + (cellArea.Height / 2 - imageSize / 2), imageSize, imageSize);
+			DrawImage (ctx, cellArea, image, x, imageSize, isSelected, (cellArea.Height / 2 - imageSize / 2));
+		}
+
+		void DrawImage (Context ctx, Xwt.Rectangle cellArea, Image image, double x, int imageSize, bool isSelected, double topPadding)
+		{
+			ctx.DrawImage (isSelected ? image.WithStyles ("sel") : image, x, cellArea.Top + topPadding, imageSize, imageSize);
 		}
 
 		void UpdateInformationTextColor (Context ctx, bool isSelected)
