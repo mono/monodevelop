@@ -170,7 +170,7 @@ namespace MonoDevelop.UnitTesting
 
 		public static AsyncOperation RunTests (IEnumerable<UnitTest> tests, MonoDevelop.Projects.ExecutionContext context)
 		{
-			var result = RunTests (tests, context);
+			var result = RunTests (tests, context, true);
 			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
