@@ -27,6 +27,8 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -36,21 +38,16 @@ using MonoDevelop.Projects.SharedAssetsProjects;
 namespace MonoDevelop.Packaging.Tests
 {
 	[TestFixture]
-	public class AddPlatformImplementationTests : TestBase
+	public class AddPlatformImplementationTests : IdeTestBase
 	{
-		protected override void InternalSetup (string rootDir)
+		[TestFixtureSetUp]
+		public void SetUp ()
 		{
-			base.InternalSetup (rootDir);
-
-			#pragma warning disable 219
-			// Ensure MSBuildSdksPath is registered otherwise the project builders are recycled
-			// when we try to build the packaging project which breaks the tests.
-			string directory = DotNetCore.DotNetCoreSdk.MSBuildSDKsPath;
-			#pragma warning restore 219
+			if (!Platform.IsMac)
+				Assert.Ignore ("Platform not Mac - Ignoring AddPlatformImplementationTests");
 		}
 
 		[Test]
-		[Platform (Exclude = "Linux")]
 		public async Task AddAndroidProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -88,7 +85,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
 
@@ -134,8 +131,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Platform (Exclude = "Linux")]
 		public async Task AddIOSProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -173,7 +168,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
 
@@ -216,8 +211,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Platform (Exclude = "Linux")]
 		public async Task AddSharedProjectForPCLProject ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -261,7 +254,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
 
@@ -347,8 +340,6 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Platform (Exclude = "Linux")]
 		public async Task PCLProjectInSameDirectoryAsSolution ()
 		{
 			string templateId = "MonoDevelop.CSharp.PortableLibrary";
@@ -386,7 +377,7 @@ namespace MonoDevelop.Packaging.Tests
 			await viewModel.CreateProjects (Util.GetMonitor ());
 
 			// Verify projects created as expected.
-			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			solution = (Solution) await Ide.Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 
 			var androidProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.Android");
 			var nugetProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.NuGet");
