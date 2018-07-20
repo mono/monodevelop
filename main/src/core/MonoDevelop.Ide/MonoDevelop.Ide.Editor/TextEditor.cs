@@ -1055,9 +1055,13 @@ namespace MonoDevelop.Ide.Editor
 			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this);
 		}
 
-		void TextEditor_FileNameChanged (object sender, EventArgs e)
+		async void TextEditor_FileNameChanged (object sender, EventArgs e)
 		{
 			fileTypeCondition.SetFileName (FileName);
+			EditorConfigService.RemoveEditConfigContext (FileName).Ignore ();
+			var context = await EditorConfigService.GetEditorConfigContext (FileName, default (CancellationToken));
+			if (context != null && Options is DefaultSourceEditorOptions options)
+				options.SetContext (context);
 		}
 
 		void TextEditor_MimeTypeChanged (object sender, EventArgs e)

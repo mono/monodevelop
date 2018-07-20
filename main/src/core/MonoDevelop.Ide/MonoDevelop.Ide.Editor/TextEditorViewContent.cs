@@ -78,18 +78,12 @@ namespace MonoDevelop.Ide.Editor
 			textEditor.Options = DefaultSourceEditorOptions.Instance.Create ();
 		}
 
-		protected override async void OnContentNameChanged ()
+		protected override void OnContentNameChanged ()
 		{
 			base.OnContentNameChanged ();
 			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			if (textEditorImpl.ContentName != null && textEditorImpl.ContentName != this.ContentName) {
-				EditorConfigService.RemoveEditConfigContext (textEditorImpl.ContentName).Ignore ();
-				var context = await EditorConfigService.GetEditorConfigContext (textEditor.FileName, default (CancellationToken));
-				if (context != null) 
-					((DefaultSourceEditorOptions)textEditor.Options).SetContext (context);
-			}
-			textEditorImpl.ContentName = this.ContentName;
+			textEditor.FileName = ContentName;
 			if (this.WorkbenchWindow?.Document != null)
 				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
 			UpdateTextEditorOptions (null, null);
