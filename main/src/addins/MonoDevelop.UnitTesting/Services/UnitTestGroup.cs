@@ -70,7 +70,7 @@ namespace MonoDevelop.UnitTesting
 			base.ResetLastResult ();
 		}
 
-		static UnitTestResult GetLastResultDynamicaly (IEnumerable<UnitTest> tests)
+		static UnitTestResult GetLastResultDynamically (IEnumerable<UnitTest> tests)
 		{
 			int passed = 0; 
 			int errors = 0;
@@ -115,7 +115,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (this.Status == TestStatus.Running)
 				return;
-			var calculatedResult = GetLastResultDynamicaly (Tests);
+			var calculatedResult = GetLastResultDynamically (Tests);
 			var storedResult = GetLastResult ();
 			if(!calculatedResult.Equals (storedResult)){
 				lastResult = calculatedResult;
