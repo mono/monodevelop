@@ -182,10 +182,12 @@ namespace MonoDevelop.Ide.BuildOutputView
 			bool expanded;
 			public Rectangle LastRenderBounds = Rectangle.Zero;
 			public Rectangle LastRenderLayoutBounds = Rectangle.Zero;
+			public Rectangle LastRenderImageBounds = Rectangle.Zero;
 			public Rectangle LastRenderExpanderBounds = Rectangle.Zero;
 			public double CollapsedRowHeight = -1;
 			public double CollapsedLayoutHeight = -1;
 			public double LayoutYPadding = 0;
+			public double ExpanderYPadding = 0;
 			public int NewLineCharIndex = -1;
 
 			public Rectangle TaskLinkRenderRectangle = Rectangle.Zero;
@@ -205,14 +207,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 						layout.Width = layout.Height = -1;
 						Reload ();
-						CalculateLayout (LastRenderBounds, out var outLayout, out var outLayoutBounds, out var outexpanderRect);
+						CalculateLayout (LastRenderBounds, out var outLayout, out var outLayoutBounds, out var outexpanderRect, out var imageRect);
 						LastRenderLayoutBounds = outLayoutBounds;
 						LastRenderExpanderBounds = outexpanderRect;
 					}
 				}
 			}
 
-			internal bool CalculateLayout (Rectangle cellArea, out TextLayout textLayout, out Rectangle layoutBounds, out Rectangle expanderRect)
+			internal bool CalculateLayout (Rectangle cellArea, out TextLayout textLayout, out Rectangle layoutBounds, out Rectangle expanderRect, out Rectangle imageRect)
 			{
 				// Relayouting is expensive and not required if the size didn't change. Just update the locations in that case.
 				if (!LastRenderBounds.IsEmpty && LastRenderBounds.Contains (LastRenderLayoutBounds) && cellArea.Size == LastRenderBounds.Size) {
@@ -220,39 +222,62 @@ namespace MonoDevelop.Ide.BuildOutputView
 					layoutBounds = LastRenderLayoutBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
 					textLayout = GetUnconstrainedLayout ();
 					textLayout.Width = layoutBounds.Width;
+					imageRect = LastRenderImageBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
 					return true; // no resize is required
 				}
 
 				expanderRect = Rectangle.Zero;
-				layoutBounds = cellArea;
-				layoutBounds.X += ImageSize + ImagePadding;
-				layoutBounds.Width -= ImagePadding + DefaultInformationContainerWidth;
 
 				textLayout = GetUnconstrainedLayout ();
 				var textSize = textLayout.GetSize ();
 
-				if (textSize.Width > layoutBounds.Width || NewLineCharIndex > -1) {
-					layoutBounds.Width -= (ImageSize + ImagePadding);
+				var maxWidth = cellArea.Width - DefaultInformationContainerWidth;
+				if (HasIcon) {
+					maxWidth -= ImageSize + ImagePadding;
+				}
+
+				var startX = cellArea.X;
+				if (HasIcon) {
+					imageRect = new Rectangle (startX, cellArea.Y, ImageSize, ImageSize);
+					startX += ImageSize + ImagePadding;
+				} else {
+					imageRect = Rectangle.Zero;
+				}
+
+				layoutBounds = cellArea;
+				layoutBounds.X = startX;
+
+				layoutBounds.Width -= startX - cellArea.X + DefaultInformationContainerWidth;
+
+				var needsExpander = textSize.Width > maxWidth || NewLineCharIndex > -1;
+				if (needsExpander) {
+
+					layoutBounds.Width -= (ImageSize + ImagePadding * 2);
 					layoutBounds.Width = Math.Max (MinLayoutWidth, layoutBounds.Width);
-					textLayout.Width = layoutBounds.Width;
+
+					startX = layoutBounds.Right + ImagePadding;
+
+					expanderRect = new Rectangle (startX, cellArea.Y + ExpanderYPadding, ImageSize, ImageSize);
+					startX += ImageSize;
+				}
+
+				textLayout.Width = layoutBounds.Width;
+
+				if (needsExpander) {
 					textLayout.Height = Expanded ? -1 : cellArea.Height;
-
 					textSize = textLayout.GetSize ();
-
-					var expanderX = layoutBounds.Right + ImagePadding;
-					if (expanderX > 0)
-						expanderRect = new Rectangle (expanderX, cellArea.Y + ((CollapsedLayoutHeight - BuildExpandIcon.Height) * .5), BuildExpandIcon.Width, BuildExpandIcon.Height);
+				} else {
+					layoutBounds.Height = textSize.Height;
 				}
 
 				layoutBounds.Height = textSize.Height;
 				layoutBounds.Y += LayoutYPadding;
-				expanderRect.Y += LayoutYPadding;
 
 				// check that the text still fits into the cell
 				if (!cellArea.Contains (layoutBounds))
 					return false; // resize required
 								  // if the cell is too large, we need to resize it
-				else if (Expanded && Math.Abs (layoutBounds.Height - LayoutYPadding - cellArea.Height) > 1)
+				if (Expanded && Math.Abs (layoutBounds.Height - LayoutYPadding - cellArea.Height) > 1)
 					return false; // resize required
 				return true;
 			}
@@ -304,6 +329,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 						CollapsedLayoutHeight = textSize.Height;
 						CollapsedRowHeight = Math.Max (textSize.Height, ImageSize);
 						LayoutYPadding = (CollapsedRowHeight - CollapsedLayoutHeight) * .5;
+						ExpanderYPadding = (CollapsedRowHeight - BuildExpandIcon.Height) * .5;
 					}
 				}
 				layout.Trimming = Expanded ? TextTrimming.Word : TextTrimming.WordElipsis;
@@ -474,21 +500,22 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//Draw the node background
 			FillCellBackground (ctx, buildOutputNode, status);
 
-			//Draw the image row
-			if (status.HasIcon) {
-				//Draw the image row
-				DrawImage (ctx, cellArea, status.Icon, cellArea.Left, ImageSize, isSelected, ImagePadding);
-			}
-
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
 			// so that OnGetRequiredSize() is called again and the row is properly resized.
-			if (!status.CalculateLayout (cellArea, out var layout, out var layoutBounds, out var expanderRect))
+			if (!status.CalculateLayout (cellArea, out var layout, out var layoutBounds, out var expanderRect, out var imageRect))
 				QueueResize ();
 
 			status.LastRenderBounds = cellArea;
 			status.LastRenderLayoutBounds = layoutBounds;
 			status.LastRenderExpanderBounds = expanderRect;
+			status.LastRenderImageBounds = imageRect;
+
+			//Draw the image row
+			if (status.HasIcon) {
+				//Draw the image row
+				DrawImage (ctx, cellArea, status.Icon, imageRect.X, ImageSize, isSelected, ImagePadding);
+			}
 
 			ctx.SetColor (Styles.GetTextColor (buildOutputNode, UseStrongSelectionColor && isSelected));
 
@@ -759,7 +786,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				ParentWidget.Cursor = CursorType.Arrow;
 			}
 
-			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
+			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect, out var imageRect);
 
 			var insideText = layoutBounds.Contains (args.Position);
 			if ((TextSelection?.IsStarting (node) ?? false)) {
@@ -796,7 +823,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			}
 
-			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect);
+			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect, out var imageRect);
 
 			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
 				if (DateTime.Now.Subtract (lastExpanderClick).TotalMilliseconds < DefaultExpandClickDelay) {
