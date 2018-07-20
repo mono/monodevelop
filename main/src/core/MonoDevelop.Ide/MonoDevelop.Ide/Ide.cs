@@ -205,7 +205,9 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static void Initialize (ProgressMonitor monitor)
+		public static void Initialize (ProgressMonitor monitor) => Initialize (monitor, showWelcomePage: true);
+
+		internal static void Initialize (ProgressMonitor monitor, bool showWelcomePage)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
@@ -250,7 +252,8 @@ namespace MonoDevelop.Ide
 			monitor.Step (1);
 			
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
-			MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
+			if (showWelcomePage)
+				MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
 
 			monitor.Step (1);
 
