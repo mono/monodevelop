@@ -196,6 +196,9 @@ namespace MonoDevelop.UnitTesting
 		public TestStatus Status {
 			get { return status; }
 			set {
+				if (status == value)
+					return;
+
 				status = value;
 				OnTestStatusChanged ();
 				(Parent as UnitTestGroup)?.UpdateStatusFromChildren ();
