@@ -493,17 +493,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 				// Copy the whole MSBuild bin folder and subfolders. We need all support assemblies
 				// and files.
-
 				FileService.CopyDirectory (binDir, exesDir);
 
-				// Copy the MonoDevelop resolver, used for sdks registered by add-ins.
-				// This resolver will load registered sdks from the file sdks.config
+				CopyMonoDevelopResolver (mdResolverDir);
 
-				if (!Directory.Exists (mdResolverDir))
-					Directory.CreateDirectory (mdResolverDir);
-
-				var builderDir = new FilePath (typeof (MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
-				File.Copy (Path.Combine (builderDir, "MonoDevelop.MSBuildResolver.dll"), Path.Combine (mdResolverDir, "MonoDevelop.MSBuildResolver.dll"));
+				if (Platform.IsWindows) {
+					PatchNuGetSdkResolver (binDir, localResolversDir);
+				}
 
 				searchPathConfigNeedsUpdate = true;
 			}
@@ -514,6 +510,36 @@ namespace MonoDevelop.Projects.MSBuild
 				UpdateMSBuildExeConfigFile (runtime, originalExeConfig, destinationExeConfig, mdResolverConfig, binDir);
 			}
 			return destinationExe;
+		}
+
+		static void CopyMonoDevelopResolver (string mdResolverDir)
+		{
+			// Copy the MonoDevelop resolver, used for sdks registered by add-ins.
+			// This resolver will load registered sdks from the file sdks.config
+			if (!Directory.Exists (mdResolverDir))
+				Directory.CreateDirectory (mdResolverDir);
+
+			var builderDir = new FilePath (typeof (MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
+			File.Copy (Path.Combine (builderDir, "MonoDevelop.MSBuildResolver.dll"), Path.Combine (mdResolverDir, "MonoDevelop.MSBuildResolver.dll"));
+		}
+
+		/// <summary>
+		/// Make sure our copy of the manifest XML points at the valid NuGet resolver location within Visual Studio path.
+		/// When we copy the manifest XML the relative path becomes invalid.
+		/// </summary>
+		/// <param name="msbuildBinDir">A path similar to C:\Program Files (x86)\Microsoft Visual Studio\Preview\Enterprise\MSBuild\15.0\Bin</param>
+		/// <param name="localSdkResolversDir">A path similar to C:\Users\user\AppData\Local\MonoDevelop\7.0\Cache\MSBuild\6976_1\SdkResolvers</param>
+		static void PatchNuGetSdkResolver (string msbuildBinDir, string localSdkResolversDir)
+		{
+			var resolverXml = Path.Combine (localSdkResolversDir, "Microsoft.Build.NuGetSdkResolver", "Microsoft.Build.NuGetSdkResolver.xml");
+			if (File.Exists (resolverXml)) {
+				var vsRoot = new FilePath (msbuildBinDir).ParentDirectory.ParentDirectory.ParentDirectory;
+				var resolverDll = vsRoot.Combine ("Common7", "IDE", "CommonExtensions", "Microsoft", "NuGet", "Microsoft.Build.NuGetSdkResolver.dll");
+				var newText = $@"<SdkResolver>
+  <Path>{resolverDll}</Path>
+</SdkResolver>";
+				File.WriteAllText (resolverXml, newText);
+			}
 		}
 
 		static void UpdateMSBuildExeConfigFile (TargetRuntime runtime, string sourceConfigFile, string destinationConfigFile, string mdResolverConfig, string binDir)
