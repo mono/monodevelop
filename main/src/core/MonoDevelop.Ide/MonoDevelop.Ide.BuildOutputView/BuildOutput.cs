@@ -163,6 +163,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			int errorCount = 0, warningCount = 0;
 			Dictionary<string, AggregatedBuildOutputNode> result = new Dictionary<string, AggregatedBuildOutputNode> ();
+			DateTime maximum = default (DateTime);
+			DateTime minimum = default (DateTime);
 			foreach (var proj in projects) {
 				foreach (var node in proj.RootNodes) {
 					AggregatedBuildOutputNode aggregated = null;
@@ -170,6 +172,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 						aggregated.AddNode (node);
 					} else {
 						result [node.Message] = new AggregatedBuildOutputNode (node);
+					}
+
+					if (maximum == default (DateTime) || node.EndTime.Ticks > maximum.Ticks) {
+						maximum = node.EndTime;
+					}
+
+					if (minimum == default (DateTime) || node.StartTime.Ticks < minimum.Ticks) {
+						minimum = node.StartTime;
 					}
 
 					errorCount += node.Children.Sum (x => x.ErrorCount);
@@ -182,10 +192,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				var message = errorCount > 0 ? GettextCatalog.GetString ("Build failed") : GettextCatalog.GetString ("Build succeeded");
 				var summaryNode = new BuildOutputNode {
 					NodeType = BuildOutputNodeType.BuildSummary,
-					StartTime = result.Values
-						.MinValueOrDefault (s => s.StartTime.Ticks)?.StartTime ?? default(DateTime),
-					EndTime = result.Values
-						.MaxValueOrDefault (s => s.EndTime.Ticks)?.EndTime ?? default (DateTime),
+					StartTime = minimum,
+					EndTime = maximum,
 					Message = message,
 					FullMessage = message,
 					HasErrors = errorCount > 0,
