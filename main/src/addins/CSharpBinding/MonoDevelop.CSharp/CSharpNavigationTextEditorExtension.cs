@@ -115,21 +115,6 @@ namespace MonoDevelop.CSharp
 			{
 				return info.Symbol != null && info.Symbol.Kind != SymbolKind.Namespace;
 			}
-
-			public override void VisitMemberAccessExpression (MemberAccessExpressionSyntax node)
-			{
-				var info = model.GetSymbolInfo (node); 
-				if (IsNavigatable(info)) {
-					result.Add (new NavigationSegment (node.Name.Span.Start, node.Name.Span.Length, delegate {
-						GLib.Timeout.Add (50, delegate {
-							RefactoringService.RoslynJumpToDeclaration (info.Symbol, documentContext.Project);
-							return false;
-						});
-					})); 
-				}
-
-				base.VisitMemberAccessExpression (node);
-			}
 			 
 			public override void VisitBlock (BlockSyntax node)
 			{
