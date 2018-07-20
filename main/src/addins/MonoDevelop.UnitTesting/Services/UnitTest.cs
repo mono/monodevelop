@@ -201,7 +201,8 @@ namespace MonoDevelop.UnitTesting
 
 				status = value;
 				OnTestStatusChanged ();
-				(Parent as UnitTestGroup)?.UpdateStatusFromChildren ();
+
+				(Parent as UnitTestGroup)?.UpdateStatusFromChild (this);
 			}
 		}
 
