@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.Language.Intellisense.Implementation;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Implementation;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -218,9 +219,22 @@ namespace Mono.TextEditor
 					return new Collection<TextBounds>();
 			}
 
-			public SnapshotSpan GetTextElementSpan(SnapshotPoint bufferPosition)
+			public SnapshotSpan GetTextElementSpan (SnapshotPoint bufferPosition)
 			{
-				throw new System.NotImplementedException();
+				bufferPosition = this.FixBufferPosition (bufferPosition);
+				if (!this.ContainsBufferPosition (bufferPosition))
+					throw new ArgumentOutOfRangeException (nameof (bufferPosition));
+
+				if (bufferPosition >= ExtentIncludingLineBreak.End - lineBreakLength) {
+					return new SnapshotSpan (ExtentIncludingLineBreak.End - lineBreakLength, lineBreakLength);
+				}
+
+				var c = textEditor.GetCharAt (bufferPosition.Position);
+				if ((c & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker)
+					return new SnapshotSpan (bufferPosition.Snapshot, bufferPosition.Position, 2);
+				if ((c & CaretMoveActions.HighSurrogateMarker) == CaretMoveActions.HighSurrogateMarker)
+					return new SnapshotSpan (bufferPosition.Snapshot, bufferPosition.Position - 1, 2);
+				return new SnapshotSpan (bufferPosition, 1);
 			}
 
 			public VirtualSnapshotPoint GetVirtualBufferPositionFromXCoordinate(double xCoordinate)
