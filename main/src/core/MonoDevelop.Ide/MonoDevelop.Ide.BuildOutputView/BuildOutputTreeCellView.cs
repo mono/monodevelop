@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		class ViewStatus
 		{
-			TextLayout layout = new TextLayout ();
+			internal TextLayout layout = new TextLayout ();
 
 			bool expanded;
 			public Rectangle LastRenderBounds = Rectangle.Zero;
@@ -207,28 +207,27 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 						layout.Width = layout.Height = -1;
 						Reload ();
-						CalculateLayout (LastRenderBounds, out var outLayout, out var outLayoutBounds, out var outexpanderRect, out var imageRect);
-						LastRenderLayoutBounds = outLayoutBounds;
-						LastRenderExpanderBounds = outexpanderRect;
+						CalculateLayout (LastRenderBounds);
 					}
 				}
 			}
 
-			internal bool CalculateLayout (Rectangle cellArea, out TextLayout textLayout, out Rectangle layoutBounds, out Rectangle expanderRect, out Rectangle imageRect)
+			internal bool CalculateLayout (Rectangle cellArea)
 			{
 				// Relayouting is expensive and not required if the size didn't change. Just update the locations in that case.
 				if (!LastRenderBounds.IsEmpty && LastRenderBounds.Contains (LastRenderLayoutBounds) && cellArea.Size == LastRenderBounds.Size) {
-					expanderRect = LastRenderExpanderBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
-					layoutBounds = LastRenderLayoutBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
-					textLayout = GetUnconstrainedLayout ();
-					textLayout.Width = layoutBounds.Width;
-					imageRect = LastRenderImageBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+					LastRenderExpanderBounds = LastRenderExpanderBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+					LastRenderLayoutBounds = LastRenderLayoutBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+					LastRenderImageBounds = LastRenderImageBounds.Offset (-LastRenderBounds.X, -LastRenderBounds.Y).Offset (cellArea.X, cellArea.Y);
+
+					LastRenderBounds = cellArea;
 					return true; // no resize is required
 				}
 
-				expanderRect = Rectangle.Zero;
+				var imageRect = Rectangle.Zero;
+				var expanderRect = Rectangle.Zero;
 
-				textLayout = GetUnconstrainedLayout ();
+				var textLayout = GetUnconstrainedLayout ();
 				var textSize = textLayout.GetSize ();
 
 				var maxWidth = cellArea.Width - DefaultInformationContainerWidth;
@@ -244,7 +243,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 					imageRect = Rectangle.Zero;
 				}
 
-				layoutBounds = cellArea;
+				var layoutBounds = cellArea;
 				layoutBounds.X = startX;
 
 				layoutBounds.Width -= startX - cellArea.X + DefaultInformationContainerWidth;
@@ -272,6 +271,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				layoutBounds.Height = textSize.Height;
 				layoutBounds.Y += LayoutYPadding;
+
+				LastRenderImageBounds = imageRect;
+				LastRenderExpanderBounds = expanderRect;
+				LastRenderLayoutBounds = layoutBounds;
+				LastRenderBounds = cellArea;
 
 				// check that the text still fits into the cell
 				if (!cellArea.Contains (layoutBounds))
@@ -503,18 +507,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
 			// so that OnGetRequiredSize() is called again and the row is properly resized.
-			if (!status.CalculateLayout (cellArea, out var layout, out var layoutBounds, out var expanderRect, out var imageRect))
+			if (!status.CalculateLayout (cellArea))
 				QueueResize ();
 
 			status.LastRenderBounds = cellArea;
-			status.LastRenderLayoutBounds = layoutBounds;
-			status.LastRenderExpanderBounds = expanderRect;
-			status.LastRenderImageBounds = imageRect;
+
+			var layout = status.layout;
+			var layoutBounds = status.LastRenderLayoutBounds;
 
 			//Draw the image row
 			if (status.HasIcon) {
 				//Draw the image row
-				DrawImage (ctx, cellArea, status.Icon, imageRect.X, ImageSize, isSelected, ImagePadding);
+				DrawImage (ctx, cellArea, status.Icon, status.LastRenderImageBounds.X, ImageSize, isSelected, ImagePadding);
 			}
 
 			ctx.SetColor (Styles.GetTextColor (buildOutputNode, UseStrongSelectionColor && isSelected));
@@ -530,14 +534,14 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ctx.DrawTextLayout (layout, layoutBounds.X, layoutBounds.Y);
 
 			// Draw right hand expander
-			if (!expanderRect.IsEmpty) {
+			if (!status.LastRenderExpanderBounds.IsEmpty) {
 				// Draw the image
 				Image icon;
 				if (status.Expanded)
 					icon = isSelected ? BuildCollapseIconSel : BuildCollapseIcon;
 				else
 					icon = isSelected ? BuildExpandIconSel : BuildExpandIcon;
-				ctx.DrawImage (icon, expanderRect.X, expanderRect.Y);
+				ctx.DrawImage (icon, status.LastRenderExpanderBounds.X, status.LastRenderExpanderBounds.Y);
 			}
 
 			//Information section
@@ -786,11 +790,11 @@ namespace MonoDevelop.Ide.BuildOutputView
 				ParentWidget.Cursor = CursorType.Arrow;
 			}
 
-			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect, out var imageRect);
+			status.CalculateLayout (status.LastRenderBounds);
 
-			var insideText = layoutBounds.Contains (args.Position);
+			var insideText = status.LastRenderLayoutBounds.Contains (args.Position);
 			if ((TextSelection?.IsStarting (node) ?? false)) {
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+				var pos = status.layout.GetIndexFromCoordinates (args.Position.X - status.LastRenderLayoutBounds.X, args.Position.Y - status.LastRenderLayoutBounds.Y);
 				if (pos != -1) {
 					TextSelection.Set (pos, args.Position);
 					QueueDraw ();
@@ -823,9 +827,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 			}
 
-			status.CalculateLayout (status.LastRenderBounds, out var layout, out var layoutBounds, out var expanderRect, out var imageRect);
+			status.CalculateLayout (status.LastRenderBounds);
 
-			if (expanderRect != Rectangle.Zero && expanderRect.Contains (args.Position)) {
+			if (status.LastRenderExpanderBounds != Rectangle.Zero && status.LastRenderExpanderBounds.Contains (args.Position)) {
 				if (DateTime.Now.Subtract (lastExpanderClick).TotalMilliseconds < DefaultExpandClickDelay) {
 					return;
 				}
@@ -835,8 +839,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			if (args.Button == PointerButton.Left && layoutBounds.Contains (args.Position)) {
-				var pos = layout.GetIndexFromCoordinates (args.Position.X - layoutBounds.X, args.Position.Y - layoutBounds.Y);
+			if (args.Button == PointerButton.Left && status.LastRenderLayoutBounds.Contains (args.Position)) {
+				var pos = status.layout.GetIndexFromCoordinates (args.Position.X - status.LastRenderLayoutBounds.X, args.Position.Y - status.LastRenderLayoutBounds.Y);
 				if (pos != -1) {
 					if (TextSelection == null) {
 						TextSelection = new TextSelection<BuildOutputNode> ();
