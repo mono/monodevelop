@@ -70,16 +70,16 @@ namespace MonoDevelop.UnitTesting
 			base.ResetLastResult ();
 		}
 
-		static UnitTestResult GetLastResultDynamically (IEnumerable<UnitTest> tests, out bool isHistoric)
+		static UnitTestResult GenerateResultFromTests (UnitTestCollection tests, out bool isHistoric)
 		{
 			int passed = 0; 
 			int errors = 0;
 			int failures = 0;
 			int skipped = 0;
-			int uniqeCount = 0;
+			int uniqueCount = 0;
 
 			isHistoric = false;
-			ResultStatus ?lastStatus = null;
+			ResultStatus? lastStatus = null;
 			var resultStatus = ResultStatus.Inconclusive;
 
 			foreach (var test in tests) {
@@ -91,14 +91,14 @@ namespace MonoDevelop.UnitTesting
 				failures += res.Failures;
 				skipped += res.Skipped;
 
-				if(res.Status != lastStatus)
-					uniqeCount++;
+				if (res.Status != lastStatus)
+					uniqueCount++;
 				
 				lastStatus = res.Status;
 				isHistoric |= test.IsHistoricResult;
 			}
 
-			if (uniqeCount == 1)
+			if (uniqueCount == 1)
 				resultStatus = lastStatus.Value;
 			
 			var result = new UnitTestResult () {
@@ -112,26 +112,19 @@ namespace MonoDevelop.UnitTesting
 			return result;
 		}
 
-		internal void UpdateStatusFromChild (UnitTest test)
+		protected override void OnTestStatusChanged ()
 		{
-			if (Status != TestStatus.Ready)
-				return;
-
-			var parent = this;
-			while (parent != null) {
-				var calculatedResult = GetLastResultDynamically (parent.Tests, out bool isHistoricResult);
+			if (Status == TestStatus.Ready) {
+				var calculatedResult = GenerateResultFromTests (Tests, out bool isHistoricResult);
 				var storedResult = GetLastResult ();
 				if (!calculatedResult.Equals (storedResult)) {
 					lastResult = calculatedResult;
 					IsHistoricResult = isHistoricResult;
-					OnTestStatusChanged ();
 				}
-
-				test = this;
-				parent = parent as UnitTestGroup;
-			}		
+			}
+			base.OnTestStatusChanged ();
 		}
-			
+
 		public UnitTestCollection Tests {
 			get {
 				if (tests == null) {

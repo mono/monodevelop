@@ -43,6 +43,7 @@
     <Compile Include="MonoDevelop.UnitTesting.Tests\TestResultBuilderTests.cs" />
     <Compile Include="MonoDevelop.UnitTesting.Tests\TestProgressMonitor.cs" />
     <Compile Include="MonoDevelop.UnitTesting.Tests\VsTestUnitTestTests.cs" />
+    <Compile Include="MonoDevelop.UnitTesting.Tests\UnitTestGroupTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
