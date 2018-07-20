@@ -166,10 +166,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 	class BuildOutputTreeCellView : CanvasCellView
 	{
-		static readonly Image BuildExpandIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpand, Gtk.IconSize.Menu).WithSize (16);
-		static readonly Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu).WithSize (16);
-		static readonly Image BuildExpandIconSel = BuildExpandIcon.WithStyles ("sel");
-		static readonly Image BuildCollapseIconSel = BuildCollapseIcon.WithStyles ("sel");
+		static readonly Image BuildExpandIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildExpand, Gtk.IconSize.Menu)
+			.WithSize (10);
+		static readonly Image BuildCollapseIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildCollapse, Gtk.IconSize.Menu)
+			.WithSize (10);
 
 		public EventHandler<BuildOutputNode> GoToTask;
 		public EventHandler<BuildOutputNode> ExpandErrors;
@@ -237,29 +237,21 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 
 				var startX = cellArea.X;
+				var needsExpander = textSize.Width > maxWidth || NewLineCharIndex > -1;
+				if (needsExpander) {
+					expanderRect = new Rectangle (startX, cellArea.Y + ExpanderYPadding, ImageSize, ImageSize);
+					startX += ImageSize + ImagePadding;
+				}
+
 				if (HasIcon) {
 					imageRect = new Rectangle (startX, cellArea.Y, ImageSize, ImageSize);
 					startX += ImageSize + ImagePadding;
-				} else {
-					imageRect = Rectangle.Zero;
 				}
 
 				var layoutBounds = cellArea;
 				layoutBounds.X = startX;
 
 				layoutBounds.Width -= startX - cellArea.X + DefaultInformationContainerWidth;
-
-				var needsExpander = textSize.Width > maxWidth || NewLineCharIndex > -1;
-				if (needsExpander) {
-
-					layoutBounds.Width -= (ImageSize + ImagePadding * 2);
-					layoutBounds.Width = Math.Max (MinLayoutWidth, layoutBounds.Width);
-
-					startX = layoutBounds.Right + ImagePadding;
-
-					expanderRect = new Rectangle (startX, cellArea.Y + ExpanderYPadding, ImageSize, ImageSize);
-					startX += ImageSize;
-				}
 
 				textLayout.Width = layoutBounds.Width;
 				if (needsExpander) {
@@ -495,7 +487,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			ctx.Fill();
 		}
 
-		protected override void OnDraw(Context ctx, Xwt.Rectangle cellArea)
+		protected override void OnDraw (Context ctx, Xwt.Rectangle cellArea)
 		{
 			var buildOutputNode = GetValue (BuildOutputNodeField);
 			var isSelected = Selected;
@@ -539,9 +531,9 @@ namespace MonoDevelop.Ide.BuildOutputView
 				// Draw the image
 				Image icon;
 				if (status.Expanded)
-					icon = isSelected ? BuildCollapseIconSel : BuildCollapseIcon;
+					icon = BuildCollapseIcon;
 				else
-					icon = isSelected ? BuildExpandIconSel : BuildExpandIcon;
+					icon = BuildExpandIcon;
 				ctx.DrawImage (icon, status.LastRenderExpanderBounds.X, status.LastRenderExpanderBounds.Y);
 			}
 
