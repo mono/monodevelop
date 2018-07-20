@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Build.MSBuildLocator;
 using Microsoft.Win32;
 using MonoDevelop.Core.Execution;
@@ -171,7 +172,10 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			var instance = MSBuildLocator.QueryVisualStudioInstances (new VisualStudioInstanceQueryOptions ()).MaxValueOrDefault (vs => vs.Version);
+			var instances = MSBuildLocator.QueryVisualStudioInstances (new VisualStudioInstanceQueryOptions ())
+				.Where (vs => vs.DiscoveryType == DiscoveryType.VisualStudioSetup)
+				.ToArray ();
+			var instance = instances.MaxValueOrDefault (vs => vs.Version);
 			if (instance != null)
 				return instance.MSBuildPath;
 
