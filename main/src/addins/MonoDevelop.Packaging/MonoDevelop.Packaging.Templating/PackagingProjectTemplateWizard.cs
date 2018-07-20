@@ -49,7 +49,7 @@ namespace MonoDevelop.Packaging.Templating
 			var readmeFile = project.Files.FirstOrDefault (f => f.FilePath.FileName == "readme.txt");
 			readmeFile.Metadata.SetValue ("IncludeInPackage", true, false);
 
-			IdeApp.ProjectOperations.SaveAsync (project);
+			SaveAsync (project);
 		}
 
 		PackagingProject GetPackagingProject (IEnumerable<IWorkspaceFileObject> items)
@@ -60,6 +60,11 @@ namespace MonoDevelop.Packaging.Templating
 			}
 
 			return items.OfType<PackagingProject> ().FirstOrDefault ();
+		}
+
+		protected virtual void SaveAsync (PackagingProject project)
+		{
+			IdeApp.ProjectOperations.SaveAsync (project);
 		}
 	}
 }
