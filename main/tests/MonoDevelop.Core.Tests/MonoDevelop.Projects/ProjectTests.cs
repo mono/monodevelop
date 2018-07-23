@@ -839,6 +839,21 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Tests that the MSBuildRuntimeVersion property is defined when evaluating the project.
+		/// Xamarin.Android targets use this to determine whether xbuild is being used.
+		/// </summary>
+		[Test]
+		public async Task MSBuildRuntimeVersionProperty ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "msbuildruntimeversion.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				bool isXBuild = p.MSBuildProject.EvaluatedProperties.GetValue<bool> ("IsXBuild");
+				string msbuildRuntimeVersion = p.MSBuildProject.EvaluatedProperties.GetValue ("MSBuildRuntimeVersion");
+				Assert.IsFalse (isXBuild);
+			}
+		}
+
 		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
