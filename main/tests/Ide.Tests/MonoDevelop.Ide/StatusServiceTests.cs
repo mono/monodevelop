@@ -152,7 +152,7 @@ namespace Ide.Tests
 			// Assume this worked as it is tested by AddContext
 
 			expectedContextRemoved = newContext;
-			expectedContextRemoved.Dispose ();
+			newContext.Dispose ();
 		}
 
 		[Test]

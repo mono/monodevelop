@@ -548,7 +548,7 @@ namespace MonoDevelop.VersionControl.Views
 			/// </summary>
 			internal void UpdateAnnotations ()
 			{
-				StatusMessageContext ctx = StatusService.CreateContext ();
+				var ctx = StatusService.CreateContext ();
 				ctx.AutoPulse = true;
 				ctx.ShowMessage ("md-version-control", GettextCatalog.GetString ("Retrieving history"));
 

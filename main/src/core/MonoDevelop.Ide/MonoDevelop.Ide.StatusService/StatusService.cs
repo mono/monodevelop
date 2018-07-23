@@ -53,9 +53,9 @@ namespace MonoDevelop.Ide.Status
 			get { return mainContext; }
 		}
 
-		public static StatusMessageContext CreateContext ()
+		public static DisposableStatusMessageContext CreateContext ()
 		{
-			var ctx = new StatusMessageContext ();
+			var ctx = new DisposableStatusMessageContext ();
 			contexts.Add (ctx);
 
 			OnContextAdded (ctx);

@@ -32,15 +32,10 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Ide.Status
 {
-	public class StatusMessageContext : IDisposable
+	public class StatusMessageContext
 	{
 		internal StatusMessageContext ()
 		{
-		}
-
-		public void Dispose ()
-		{
-			StatusService.Remove (this);
 		}
 
 		public event EventHandler<StatusMessageContextMessageChangedArgs> MessageChanged;
@@ -182,6 +177,14 @@ namespace MonoDevelop.Ide.Status
 			if (ProgressChanged != null) {
 				ProgressChanged (this, args);
 			}
+		}
+	}
+
+	public class DisposableStatusMessageContext : StatusMessageContext, IDisposable
+	{
+		public void Dispose ()
+		{
+			StatusService.Remove (this);
 		}
 	}
 

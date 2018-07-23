@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui
 		bool lockGui;
 		bool showCancelButton;
 		string title;
-		StatusMessageContext statusContext;
+		DisposableStatusMessageContext statusContext;
 		Pad statusSourcePad;
 		
 		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad, bool showCancelButton): base (Runtime.MainSynchronizationContext)
