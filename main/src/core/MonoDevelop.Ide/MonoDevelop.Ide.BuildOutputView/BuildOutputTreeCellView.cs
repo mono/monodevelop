@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				var needsExpander = textSize.Width > maxWidth || NewLineCharIndex > -1;
 				if (needsExpander) {
 					expanderRect = new Rectangle (startX, cellArea.Y + ExpanderYPadding, ImageSize, ImageSize);
-					startX += ImageSize + ImagePadding;
+					startX += ImageSize;
 				}
 
 				if (HasIcon) {
