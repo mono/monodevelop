@@ -674,6 +674,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksRemoved -= updateHandler;
 			Ide.Gui.Styles.Changed -= LoadStyles;
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
+
+			ctxHandler.Dispose ();
 			base.Dispose (disposing);
 		}
 

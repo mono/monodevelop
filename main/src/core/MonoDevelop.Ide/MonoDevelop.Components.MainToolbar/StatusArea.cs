@@ -258,6 +258,8 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (theme != null)
 				theme.Dispose ();
+
+			ctxHandler.Dispose ();
 			base.OnDestroyed ();
 		}
 

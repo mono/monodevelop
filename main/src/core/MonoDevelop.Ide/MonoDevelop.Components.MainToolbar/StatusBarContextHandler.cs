@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusBarContextHandler
+	class StatusBarContextHandler : IDisposable
 	{
 		public event EventHandler<StatusMessageContextMessageChangedArgs> MessageChanged;
 		public event EventHandler<StatusMessageContextProgressChangedArgs> ProgressChanged;
@@ -46,6 +46,14 @@ namespace MonoDevelop.Components.MainToolbar
 			StatusService.ContextRemoved += StatusServiceContextRemoved;
 			StatusService.MainContext.MessageChanged += ContextMessageChanged;
 			StatusService.MainContext.ProgressChanged += ContextProgressChanged;
+		}
+
+		public void Dispose ()
+		{
+			StatusService.ContextAdded -= StatusServiceContextAdded;
+			StatusService.ContextRemoved -= StatusServiceContextRemoved;
+			StatusService.MainContext.MessageChanged -= ContextMessageChanged;
+			StatusService.MainContext.ProgressChanged -= ContextProgressChanged;
 		}
 
 		void StatusServiceContextAdded (object sender, StatusServiceContextEventArgs e)

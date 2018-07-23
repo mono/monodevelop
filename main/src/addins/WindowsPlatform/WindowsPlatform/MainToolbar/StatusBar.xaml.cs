@@ -122,6 +122,7 @@ namespace WindowsPlatform.MainToolbar
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
+			ctxHandler.Dispose ();
 		}
 
 		public void EndProgress ()
