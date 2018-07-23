@@ -23,7 +23,7 @@ Compiling
 ---------
 
 If you are building from Git, make sure that you initialize the submodules
-that are part of this repository by executing:
+that are part of this repository by executing:  
 `git submodule update --init --recursive`
 
 If you are running a parallel mono installation, make sure to run all the following steps
