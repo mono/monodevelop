@@ -137,6 +137,7 @@ namespace MonoDevelop.Projects.MSBuild
 			properties.Add ("MSBuildBinPath", msBuildBinPathEscaped);
 			properties.Add ("MSBuildToolsPath", msBuildBinPathEscaped);
 			properties.Add ("MSBuildBinPath32", msBuildBinPathEscaped);
+			properties.Add ("MSBuildRuntimeVersion", "4.0.30319");
 
 			properties.Add ("MSBuildToolsRoot", MSBuildProjectService.ToMSBuildPath (null, Path.GetDirectoryName (toolsPath)));
 			properties.Add ("MSBuildToolsVersion", toolsVersion);
