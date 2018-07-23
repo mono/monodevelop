@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusArea : EventBox, IStatusBar, Xwt.Motion.IAnimatable
+	class StatusArea : EventBox, Xwt.Motion.IAnimatable
 	{
 		struct Message
 		{
@@ -164,6 +164,7 @@ namespace MonoDevelop.Components.MainToolbar
 					break;
 				}
 			};
+			StatusService.StatusImageChanged += StatusImageChanged;
 
 			VisibleWindow = false;
 			NoShowAll = true;
@@ -260,6 +261,7 @@ namespace MonoDevelop.Components.MainToolbar
 				theme.Dispose ();
 
 			ctxHandler.Dispose ();
+			StatusService.StatusImageChanged -= StatusImageChanged;
 			base.OnDestroyed ();
 		}
 
@@ -437,13 +439,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		#region StatusBar implementation
 
-		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
+		void StatusImageChanged (object sender, StatusServiceStatusImageChangedArgs args)
 		{
 			Runtime.AssertMainThread ();
-			StatusIcon icon = new StatusIcon (this, pixbuf);
+			StatusIcon icon = new StatusIcon (this, args.Image);
+			args.StatusIcon = icon;
 			statusIconBox.PackEnd (icon.box);
 			statusIconBox.ShowAll ();
-			return icon;
 		}
 
 		void HideStatusIcon (StatusIcon icon)

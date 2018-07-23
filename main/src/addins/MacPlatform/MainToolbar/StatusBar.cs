@@ -457,7 +457,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSFocusButton, IStatusBar
+	class StatusBar : NSFocusButton
 	{
 		public enum MessageType
 		{
@@ -592,6 +592,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					break;
 				}
 			};
+			StatusService.StatusImageChanged += StatusImageChanged;
 
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
@@ -676,6 +677,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 
 			ctxHandler.Dispose ();
+			StatusService.StatusImageChanged -= StatusImageChanged;
 			base.Dispose (disposing);
 		}
 
@@ -830,10 +832,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			textField.SetFrameSize (new CGSize (right - 3 - textField.Frame.Left, Frame.Height));
 		}
 
-		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
+		void StatusImageChanged (object sender, StatusServiceStatusImageChangedArgs args)
 		{
 			var statusIcon = new StatusIcon (this) {
-				Image = pixbuf,
+				Image = args.Image,
 			};
 			statusIcons.Add (statusIcon);
 
@@ -846,7 +848,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (statusIcon);
 			RepositionStatusIcons ();
 
-			return statusIcon;
+			args.StatusIcon = statusIcon;
 		}
 
 		Pad sourcePad;

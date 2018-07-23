@@ -52,10 +52,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return awesomeBar.RunButton; }
 		}
 
-		IStatusBar statusBar {
-			get { return awesomeBar.StatusBar; }
-		}
-
 		SelectorView selector {
 			get { return awesomeBar.SelectorView; }
 		}
@@ -369,9 +365,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		public IStatusBar StatusBar {
-			get { return statusBar; }
-		}
 		#endregion
 	}
 }

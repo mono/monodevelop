@@ -50,10 +50,6 @@ namespace MonoDevelop.Components.MainToolbar
 			private set;
 		}
 
-		internal IStatusBar StatusBar {
-			get { return ToolbarView.StatusBar; }
-		}
-
 		readonly ConfigurationProperty<bool> searchForMembers = ConfigurationProperty.Create ("MainToolbar.Search.IncludeMembers", true);
 		bool SearchForMembers {
 			get { return searchForMembers; }

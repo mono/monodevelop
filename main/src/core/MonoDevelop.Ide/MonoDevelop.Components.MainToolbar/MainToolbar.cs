@@ -84,12 +84,6 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
-		public IStatusBar StatusBar {
-			get {
-				return statusArea;
-			}
-		}
-
 		internal static object LastCommandTarget {
 			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}

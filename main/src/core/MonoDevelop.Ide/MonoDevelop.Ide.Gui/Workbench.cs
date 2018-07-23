@@ -288,12 +288,6 @@ namespace MonoDevelop.Ide.Gui
 			get { return monitors; }
 		}
 
-		internal IStatusBar StatusBar {
-			get {
-				return workbench.StatusBar;
-			}
-		}
-
 		public void ShowCommandBar (string barId)
 		{
 			workbench.Toolbar.ShowCommandBar (barId);

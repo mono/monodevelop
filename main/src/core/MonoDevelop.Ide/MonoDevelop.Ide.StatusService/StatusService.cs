@@ -25,8 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
+
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Status
@@ -35,6 +34,7 @@ namespace MonoDevelop.Ide.Status
 	{
 		public static event EventHandler<StatusServiceContextEventArgs> ContextAdded;
 		public static event EventHandler<StatusServiceContextEventArgs> ContextRemoved;
+		public static event EventHandler<StatusServiceStatusImageChangedArgs> StatusImageChanged;
 
 		readonly static StatusMessageContext mainContext;
 		readonly static List<StatusMessageContext> contexts = new List<StatusMessageContext> ();
@@ -64,7 +64,20 @@ namespace MonoDevelop.Ide.Status
 
 		public static StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			return IdeApp.Workbench.StatusBar.ShowStatusIcon (pixbuf);
+			var args = new StatusServiceStatusImageChangedArgs (pixbuf);
+			return OnIconChanged (args);
+		}
+
+		public static StatusBarIcon ShowStatusIcon (IconId iconId)
+		{
+			var args = new StatusServiceStatusImageChangedArgs (iconId);
+			return OnIconChanged (args);
+		}
+
+		static StatusBarIcon OnIconChanged (StatusServiceStatusImageChangedArgs args)
+		{
+			StatusImageChanged?.Invoke (null, args);
+			return args.StatusIcon;
 		}
 
 		internal static void Remove (StatusMessageContext ctx)
@@ -101,6 +114,24 @@ namespace MonoDevelop.Ide.Status
 		public StatusServiceContextEventArgs (StatusMessageContext context)
 		{
 			Context = context;
+		}
+	}
+
+	public class StatusServiceStatusImageChangedArgs : EventArgs
+	{
+		public Xwt.Drawing.Image Image { get; private set; }
+		public IconId ImageId { get; private set; }
+
+		public StatusBarIcon StatusIcon { get; set; }
+
+		public StatusServiceStatusImageChangedArgs (Xwt.Drawing.Image image)
+		{
+			Image = image;
+		}
+
+		public StatusServiceStatusImageChangedArgs (IconId iconId)
+		{
+			ImageId = iconId;
 		}
 	}
 }
