@@ -3037,30 +3037,14 @@
     <EmbeddedResource Include="icons\build-task-success-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-task-success-16~sel.png" />
     <EmbeddedResource Include="icons\build-task-success-16~sel%402x.png" />
-    <EmbeddedResource Include="icons\tree-chevron-open~dark%402x.png">
-      <LogicalName>tree-chevron-open~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-open~dark.png">
-      <LogicalName>tree-chevron-open~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-open%402x.png">
-      <LogicalName>tree-chevron-open@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-open.png">
-      <LogicalName>tree-chevron-open.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-closed~dark%402x.png">
-      <LogicalName>tree-chevron-closed~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-closed~dark.png">
-      <LogicalName>tree-chevron-closed~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-closed%402x.png">
-      <LogicalName>tree-chevron-closed@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-chevron-closed.png">
-      <LogicalName>tree-chevron-closed.png</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-closed.png" />
+    <EmbeddedResource Include="icons\tree-chevron-closed%402x.png" />
+    <EmbeddedResource Include="icons\tree-chevron-closed~dark.png" />
+    <EmbeddedResource Include="icons\tree-chevron-closed~dark%402x.png" />
+    <EmbeddedResource Include="icons\tree-chevron-open.png" />
+    <EmbeddedResource Include="icons\tree-chevron-open%402x.png" />
+    <EmbeddedResource Include="icons\tree-chevron-open~dark.png" />
+    <EmbeddedResource Include="icons\tree-chevron-open~dark%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
