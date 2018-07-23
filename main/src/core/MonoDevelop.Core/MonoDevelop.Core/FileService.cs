@@ -585,7 +585,7 @@ namespace MonoDevelop.Core
 					break;
 				
 				i += 2;
-				while (i < maxLen && i == Path.DirectorySeparatorChar)
+				while (i < maxLen && path [i] == Path.DirectorySeparatorChar)
 					i++;
 			}
 
