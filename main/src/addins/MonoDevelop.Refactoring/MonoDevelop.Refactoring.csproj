@@ -182,6 +182,7 @@
     <Compile Include="MonoDevelop.Refactoring.Options\AbstractOptionPreviewViewModel.cs" />
     <Compile Include="MonoDevelop.Refactoring.Options\UI\GridOptionPreviewControl.cs" />
     <Compile Include="MonoDevelop.Refactoring.Options\Util.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeRulePanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

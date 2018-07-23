@@ -118,6 +118,7 @@
 			<Section id="C#" _label="C#" icon="md-prefs-source">
 				<Panel id="CodeActions" _label="Code Actions" fill="true" class="MonoDevelop.CodeActions.CodeActionPanel" grouping="Tab" icon="md-prefs-code-actions" />
 				<Panel id="CodeGeneration" _label="Code Generation" fill="true" class="MonoDevelop.Refactoring.CodeGenerationPanel" grouping="Tab" />
+				<Panel id="CodeRules" _label="Code Rules" fill="true" class="MonoDevelop.CodeIssues.CodeRulePanel" grouping="Tab" icon="md-prefs-code-rules" />
 			</Section>
 		</Section>
 	</Extension>
