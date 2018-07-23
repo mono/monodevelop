@@ -31,7 +31,6 @@
 				<Reference type="Package" SpecificVersion="false" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<Reference type="Package" SpecificVersion="false" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 			</References>
