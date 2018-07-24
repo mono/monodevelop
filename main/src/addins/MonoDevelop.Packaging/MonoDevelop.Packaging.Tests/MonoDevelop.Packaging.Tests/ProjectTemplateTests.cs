@@ -55,7 +55,7 @@ namespace MonoDevelop.Packaging.Tests
 				SolutionPath = dir
 			};
 
-			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+			var workspaceItem = await template.CreateWorkspaceItem (cinfo);
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
 			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
 
@@ -92,7 +92,7 @@ namespace MonoDevelop.Packaging.Tests
 			cinfo.Parameters["PackageDescription"] = "Description";
 			cinfo.Parameters["PackageVersion"] = "1.0.0";
 
-			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+			var workspaceItem = await template.CreateWorkspaceItem (cinfo);
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
 			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
 
@@ -133,7 +133,7 @@ namespace MonoDevelop.Packaging.Tests
 			cinfo.Parameters["CreateSharedProject"] = bool.TrueString;
 			cinfo.Parameters["CreateNuGetProject"] = bool.TrueString;
 
-			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+			var workspaceItem = await template.CreateWorkspaceItem (cinfo);
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
 			await workspaceItem.SaveAsync (solutionFileName, Util.GetMonitor ());
 
@@ -174,7 +174,7 @@ namespace MonoDevelop.Packaging.Tests
 			cinfo.Parameters["PackageDescription"] = "Description";
 			cinfo.Parameters["PackageVersion"] = "1.0.0";
 
-			var workspaceItem = template.CreateWorkspaceItem (cinfo);
+			var workspaceItem = await template.CreateWorkspaceItem (cinfo);
 
 			var wizard = new TestableCrossPlatformLibraryTemplateWizard ();
 			wizard.Parameters = cinfo.Parameters;
