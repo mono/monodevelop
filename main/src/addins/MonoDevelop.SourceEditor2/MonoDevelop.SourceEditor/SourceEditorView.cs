@@ -3379,28 +3379,16 @@ namespace MonoDevelop.SourceEditor
 			widget.QuickTaskStrip.GotoPgDown ();
 		}
 
-		[CommandUpdateHandler (ScrollbarCommand.ShowTasks)]
-		void UpdateShowMap (CommandInfo info)
-		{
-			widget.QuickTaskStrip.UpdateShowMap (info);
-		}
-
-		[CommandHandler (ScrollbarCommand.ShowTasks)]
-		void ShowMap ()
-		{
-			widget.QuickTaskStrip.ShowMap ();
-		}
-
 		[CommandUpdateHandler (ScrollbarCommand.ShowMinimap)]
-		void UpdateShowFull (CommandInfo info)
+		void UpdateShowMinimap (CommandInfo info)
 		{
-			widget.QuickTaskStrip.UpdateShowFull (info);
+			widget.QuickTaskStrip.UpdateShowMinimap (info);
 		}
 
 		[CommandHandler (ScrollbarCommand.ShowMinimap)]
-		void ShowFull ()
+		void ShowShowMinimap ()
 		{
-			widget.QuickTaskStrip.ShowFull ();
+			widget.QuickTaskStrip.ShowShowMinimap ();
 		}
 
 		#endregion
