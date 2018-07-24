@@ -339,7 +339,18 @@ namespace MonoDevelop.Ide.Templates
 			foreach (ISolutionItemDescriptor solutionItemDescriptor in GetItemsToCreate (solutionDescriptor, cInfo)) {
 				ProjectCreateInformation itemCreateInfo = GetItemSpecificCreateInfo (solutionItemDescriptor, cInfo);
 				itemCreateInfo = new ProjectTemplateCreateInformation (itemCreateInfo, cInfo.ProjectName);
-				itemCreateInfo.TemplateInitializationCallback = async p => await solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, p);
+				itemCreateInfo.TemplateInitializationCallback = async p => {
+					try {
+						await solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, p);
+						// Handle the case where InitializeItem has to wait for a Task to complete and the project
+						// is saved before all the files are added to the project. Otherwise the project will not contain
+						// the files even though the solution pad shows them.
+						// TODO: Investigate making the InitializeFromTemplate methods Task based.
+						await p.SaveAsync (new ProgressMonitor ());
+					} catch (Exception ex) {
+						LoggingService.LogError ("TemplateInitializationCallback error.", ex);
+					}
+				};
 
 				SolutionItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
 				if (solutionEntryItem != null) {
