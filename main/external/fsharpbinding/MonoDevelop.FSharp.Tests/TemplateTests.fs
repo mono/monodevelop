@@ -109,7 +109,8 @@ type ``Template tests``() =
             for templateParameter in TemplateParameter.CreateParameters (parameters) do
                 cinfo.Parameters.[templateParameter.Name] <- templateParameter.Value
 
-            use sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
+            let! item = projectTemplate.CreateWorkspaceItem (cinfo) |> Async.AwaitTask
+            use sln = item :?> Solution
 
             let createTemplate (template:SolutionTemplate) =
                 let config = NewProjectConfiguration(
@@ -165,16 +166,19 @@ type ``Template tests``() =
         let configFileName = templatesDir/"NuGet.Config"
         File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
 
-    [<Test>]
+    [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``FSharp portable project``() =
-        let name = "FSharpPortableLibrary"
-        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
-        let dir = FilePath (templatesDir/"fsportable")
-        dir.Delete()
-        let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
-        let sln = projectTemplate.CreateWorkspaceItem (cinfo) :?> Solution
-        let proj = sln.Items.[0] :?> FSharpProject
-        proj.IsPortableLibrary |> should equal true
+        async {
+            let name = "FSharpPortableLibrary"
+            let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
+            let dir = FilePath (templatesDir/"fsportable")
+            dir.Delete()
+            let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
+            let! item = projectTemplate.CreateWorkspaceItem (cinfo) |> Async.AwaitTask
+            let sln = item :?> Solution
+            let proj = sln.Items.[0] :?> FSharpProject
+            proj.IsPortableLibrary |> should equal true
+        } |> toTask
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
     [<Ignore("Waiting for dotnet core SDK 2.0 to be installed on Wrench")>]
