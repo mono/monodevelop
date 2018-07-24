@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
@@ -83,8 +84,9 @@ namespace MonoDevelop.Ide.Templates
 			return item;
 		}
 		
-		public void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
+		public Task InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
 		{
+			return Task.CompletedTask;
 		}
 		
 		public static SolutionItemDescriptor CreateDescriptor (RuntimeAddin addin, XmlElement element)
