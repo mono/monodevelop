@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui
 			this.statusSourcePad = statusSourcePad;
 			this.showCancelButton = showCancelButton;
 			icon = iconName;
-			statusContext = StatusService.CreateContext ();
+			statusContext = IdeApp.StatusService.CreateContext ();
 			statusContext.StatusSourcePad = statusSourcePad;
 			if (showCancelButton)
 				statusContext.CancellationTokenSource = CancellationTokenSource;
@@ -101,9 +101,9 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (Errors.Length > 0 || Warnings.Length > 0) {
 					if (Errors.Length > 0) {
-						StatusService.MainContext.ShowError (Errors [Errors.Length - 1].DisplayMessage);
+						IdeApp.StatusService.MainContext.ShowError (Errors [Errors.Length - 1].DisplayMessage);
 					} else if (SuccessMessages.Length == 0) {
-						StatusService.MainContext.ShowWarning (Warnings [Warnings.Length - 1]);
+						IdeApp.StatusService.MainContext.ShowWarning (Warnings [Warnings.Length - 1]);
 					}
 
 					DesktopService.ShowGlobalProgressError ();
@@ -116,10 +116,10 @@ namespace MonoDevelop.Ide.Gui
 				}
 
 				if (SuccessMessages.Length > 0)
-					StatusService.MainContext.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
+					IdeApp.StatusService.MainContext.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
 
 			} finally {
-				StatusService.MainContext.StatusSourcePad = statusSourcePad;
+				IdeApp.StatusService.MainContext.StatusSourcePad = statusSourcePad;
 			}
 
 			DesktopService.SetGlobalProgress (Progress);

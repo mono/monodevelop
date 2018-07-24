@@ -592,7 +592,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					break;
 				}
 			};
-			StatusService.StatusImageChanged += StatusImageChanged;
+			IdeApp.StatusService.StatusImageChanged += StatusImageChanged;
 
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
@@ -677,7 +677,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 
 			ctxHandler.Dispose ();
-			StatusService.StatusImageChanged -= StatusImageChanged;
+			IdeApp.StatusService.StatusImageChanged -= StatusImageChanged;
 			base.Dispose (disposing);
 		}
 

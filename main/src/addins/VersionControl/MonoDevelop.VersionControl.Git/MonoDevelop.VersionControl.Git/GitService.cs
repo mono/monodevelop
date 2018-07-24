@@ -163,13 +163,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (status == StashApplyStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				Runtime.RunInMainThread (delegate {
-					StatusService.MainContext.ShowWarning (msg);
+					IdeApp.StatusService.MainContext.ShowWarning (msg);
 				});
 			}
 			else {
 				string msg = GettextCatalog.GetString ("Stash successfully applied");
 				Runtime.RunInMainThread (delegate {
-					StatusService.MainContext.ShowMessage (msg);
+					IdeApp.StatusService.MainContext.ShowMessage (msg);
 				});
 			}
 		}

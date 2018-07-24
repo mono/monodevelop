@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!iconName.IsNull) {
 				Application.Invoke ((o, args) => {
 					var img = ImageService.GetIcon (iconName, IconSize.Menu);
-					icon = StatusService.ShowStatusIcon (img);
+					icon = IdeApp.StatusService.ShowStatusIcon (img);
 					icon.Title = GettextCatalog.GetString ("Background Progress");
 					icon.Help = GettextCatalog.GetString ("An operation is occuring in the background");
 					if (icon == null)

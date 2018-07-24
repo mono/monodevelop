@@ -612,8 +612,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 			if (string.IsNullOrEmpty (query)) {
 				notebook1.Page = 0;
-				StatusService.MainContext.EndProgress ();
-				StatusService.MainContext.ShowReady ();
+				IdeApp.StatusService.MainContext.EndProgress ();
+				IdeApp.StatusService.MainContext.ShowReady ();
 				return;
 			}
 			
@@ -621,13 +621,13 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			switch (searchMode) {
 			case SearchMode.Member:
-				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching member..."));
+				IdeApp.StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching member..."));
 				break;
 			case SearchMode.Type:
-				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching type..."));
+				IdeApp.StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching type..."));
 				break;
 			case SearchMode.TypeAndMembers:
-				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
+				IdeApp.StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
 			resultListStore.Clear ();

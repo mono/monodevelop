@@ -165,7 +165,7 @@ namespace MonoDevelop.VersionControl.Git
 								}
 
 								Runtime.RunInMainThread (delegate {
-									StatusService.MainContext.ShowMessage (msg);
+									IdeApp.StatusService.MainContext.ShowMessage (msg);
 								});
 							}
 

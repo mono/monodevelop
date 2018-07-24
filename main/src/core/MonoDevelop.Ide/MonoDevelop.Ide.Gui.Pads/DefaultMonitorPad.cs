@@ -191,14 +191,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 				
 				if (monitor.Errors.Length > 0) {
 					var e = monitor.Errors [monitor.Errors.Length - 1];
-					StatusService.MainContext.ShowMessage (Stock.Error, e.DisplayMessage);
-					StatusService.MainContext.StatusSourcePad = statusSourcePad;
+					IdeApp.StatusService.MainContext.ShowMessage (Stock.Error, e.DisplayMessage);
+					IdeApp.StatusService.MainContext.StatusSourcePad = statusSourcePad;
 				} else if (monitor.SuccessMessages.Length > 0) {
-					StatusService.MainContext.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
-					StatusService.MainContext.StatusSourcePad = statusSourcePad;
+					IdeApp.StatusService.MainContext.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
+					IdeApp.StatusService.MainContext.StatusSourcePad = statusSourcePad;
 				} else if (monitor.Warnings.Length > 0) {
-					StatusService.MainContext.ShowMessage (Stock.Warning, monitor.Warnings [monitor.Warnings.Length - 1]);
-					StatusService.MainContext.StatusSourcePad = statusSourcePad;
+					IdeApp.StatusService.MainContext.ShowMessage (Stock.Warning, monitor.Warnings [monitor.Warnings.Length - 1]);
+					IdeApp.StatusService.MainContext.StatusSourcePad = statusSourcePad;
 				}
 			});
 		}

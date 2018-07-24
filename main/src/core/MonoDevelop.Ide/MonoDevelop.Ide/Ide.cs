@@ -134,9 +134,14 @@ namespace MonoDevelop.Ide
 			get { return CommandService.ApplicationHasFocus; }
 		}
 
+		public static IStatusService StatusService {
+			get; internal set;
+		}
+
 		static IdeApp ()
 		{
 			preferences = new IdePreferences ();
+			StatusService = new StatusService ();
 		}
 		
 		public static Workbench Workbench {

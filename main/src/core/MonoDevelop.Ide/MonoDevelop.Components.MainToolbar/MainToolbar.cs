@@ -178,7 +178,7 @@ namespace MonoDevelop.Components.MainToolbar
 			AddSpace (24);
 
 			statusArea = new StatusArea ();
-			StatusService.MainContext.ShowMessage (BrandingService.ApplicationName);
+			IdeApp.StatusService.MainContext.ShowMessage (BrandingService.ApplicationName);
 
 			var statusAreaAlign = new Alignment (0, 0, 1, 1);
 			statusAreaAlign.Add (statusArea);

@@ -1113,7 +1113,7 @@ namespace MonoDevelop.Ide
 
 			var error = monitor.Errors.FirstOrDefault ();
 			if (error != null) {
-				StatusService.MainContext.ShowError (error.DisplayMessage);
+				IdeApp.StatusService.MainContext.ShowError (error.DisplayMessage);
 				metadata.SetFailure ();
 				Counters.TrackingBuildAndDeploy = false;
 				Counters.BuildAndDeploy.EndTiming ();

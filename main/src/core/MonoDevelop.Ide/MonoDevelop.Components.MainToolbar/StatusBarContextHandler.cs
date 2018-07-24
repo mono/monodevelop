@@ -42,18 +42,18 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public StatusBarContextHandler ()
 		{
-			StatusService.ContextAdded += StatusServiceContextAdded;
-			StatusService.ContextRemoved += StatusServiceContextRemoved;
-			StatusService.MainContext.MessageChanged += ContextMessageChanged;
-			StatusService.MainContext.ProgressChanged += ContextProgressChanged;
+			IdeApp.StatusService.ContextAdded += StatusServiceContextAdded;
+			IdeApp.StatusService.ContextRemoved += StatusServiceContextRemoved;
+			IdeApp.StatusService.MainContext.MessageChanged += ContextMessageChanged;
+			IdeApp.StatusService.MainContext.ProgressChanged += ContextProgressChanged;
 		}
 
 		public void Dispose ()
 		{
-			StatusService.ContextAdded -= StatusServiceContextAdded;
-			StatusService.ContextRemoved -= StatusServiceContextRemoved;
-			StatusService.MainContext.MessageChanged -= ContextMessageChanged;
-			StatusService.MainContext.ProgressChanged -= ContextProgressChanged;
+			IdeApp.StatusService.ContextAdded -= StatusServiceContextAdded;
+			IdeApp.StatusService.ContextRemoved -= StatusServiceContextRemoved;
+			IdeApp.StatusService.MainContext.MessageChanged -= ContextMessageChanged;
+			IdeApp.StatusService.MainContext.ProgressChanged -= ContextProgressChanged;
 		}
 
 		void StatusServiceContextAdded (object sender, StatusServiceContextEventArgs e)

@@ -118,7 +118,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged -= HandleUpdateCombos;
 
-				StatusService.MainContext.ShowMessage (null, "", false);
+				IdeApp.StatusService.MainContext.ShowMessage (null, "", false);
 			};
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;

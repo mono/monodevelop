@@ -743,7 +743,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 
 				if (IdeApp.IsInitialized)
-					statusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
+					statusIcon = IdeApp.StatusService.ShowStatusIcon (ImageService.GetIcon (Gui.Stock.Parser));
 				if (statusIcon != null)
 					statusIcon.ToolTip = GettextCatalog.GetString ("Gathering class information");
 			});

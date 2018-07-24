@@ -30,30 +30,39 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Status
 {
-	public static class StatusService
+	public interface IStatusService
 	{
-		public static event EventHandler<StatusServiceContextEventArgs> ContextAdded;
-		public static event EventHandler<StatusServiceContextEventArgs> ContextRemoved;
-		public static event EventHandler<StatusServiceStatusImageChangedArgs> StatusImageChanged;
+		event EventHandler<StatusServiceContextEventArgs> ContextAdded;
+		event EventHandler<StatusServiceContextEventArgs> ContextRemoved;
+		event EventHandler<StatusServiceStatusImageChangedArgs> StatusImageChanged;
 
-		readonly static StatusMessageContext mainContext;
-		readonly static List<StatusMessageContext> contexts = new List<StatusMessageContext> ();
-		/*
-		static Timer changeMessageTimer;
-		static int nextContext;
-		*/
+		StatusMessageContext MainContext { get; }
+		DisposableStatusMessageContext CreateContext ();
+		void Remove (StatusMessageContext ctx);
+		StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf);
+		StatusBarIcon ShowStatusIcon (IconId iconId);
+	}
 
-		static StatusService ()
+	public class StatusService : IStatusService
+	{
+		public event EventHandler<StatusServiceContextEventArgs> ContextAdded;
+		public event EventHandler<StatusServiceContextEventArgs> ContextRemoved;
+		public event EventHandler<StatusServiceStatusImageChangedArgs> StatusImageChanged;
+
+		readonly StatusMessageContext mainContext;
+		readonly List<StatusMessageContext> contexts = new List<StatusMessageContext> ();
+
+		internal StatusService ()
 		{
 			mainContext = new StatusMessageContext ();
 			contexts.Add (mainContext);
 		}
 
-		public static StatusMessageContext MainContext {
+		public StatusMessageContext MainContext {
 			get { return mainContext; }
 		}
 
-		public static DisposableStatusMessageContext CreateContext ()
+		public DisposableStatusMessageContext CreateContext ()
 		{
 			var ctx = new DisposableStatusMessageContext ();
 			contexts.Add (ctx);
@@ -62,25 +71,25 @@ namespace MonoDevelop.Ide.Status
 			return ctx;
 		}
 
-		public static StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
+		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			var args = new StatusServiceStatusImageChangedArgs (pixbuf);
 			return OnIconChanged (args);
 		}
 
-		public static StatusBarIcon ShowStatusIcon (IconId iconId)
+		public StatusBarIcon ShowStatusIcon (IconId iconId)
 		{
 			var args = new StatusServiceStatusImageChangedArgs (iconId);
 			return OnIconChanged (args);
 		}
 
-		static StatusBarIcon OnIconChanged (StatusServiceStatusImageChangedArgs args)
+		StatusBarIcon OnIconChanged (StatusServiceStatusImageChangedArgs args)
 		{
-			StatusImageChanged?.Invoke (null, args);
+			StatusImageChanged?.Invoke (this, args);
 			return args.StatusIcon;
 		}
 
-		internal static void Remove (StatusMessageContext ctx)
+		public void Remove (StatusMessageContext ctx)
 		{
 			if (ctx == mainContext) {
 				return;
@@ -90,20 +99,14 @@ namespace MonoDevelop.Ide.Status
 			OnContextRemoved (ctx);
 		}
 
-		static void OnContextAdded (StatusMessageContext ctx)
+		void OnContextAdded (StatusMessageContext ctx)
 		{
-			if (ContextAdded != null) {
-				var args = new StatusServiceContextEventArgs (ctx);
-				ContextAdded (null, args);
-			}
+			ContextAdded?.Invoke (this, new StatusServiceContextEventArgs (ctx));
 		}
 
-		static void OnContextRemoved (StatusMessageContext ctx)
+		void OnContextRemoved (StatusMessageContext ctx)
 		{
-			if (ContextRemoved != null) {
-				var args = new StatusServiceContextEventArgs (ctx);
-				ContextRemoved (null, args);
-			}
+			ContextRemoved?.Invoke (this, new StatusServiceContextEventArgs (ctx));
 		}
 	}
 

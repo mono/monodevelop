@@ -178,7 +178,7 @@ namespace MonoDevelop.RegexToolkit
 				Thread.ResetAbort ();
 			} catch (ArgumentException) {
 				Application.Invoke ((o, args) => {
-					StatusService.MainContext.ShowError (GettextCatalog.GetString ("Invalid expression"));
+					IdeApp.StatusService.MainContext.ShowError (GettextCatalog.GetString ("Invalid expression"));
 				});
 			} finally {
 				regexThread = null;
@@ -196,7 +196,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		void UpdateStartButtonSensitivity (object sender, EventArgs args)
 		{
-			StatusService.MainContext.ShowReady ();
+			IdeApp.StatusService.MainContext.ShowReady ();
 			UpdateRegex ();
 		}
 		

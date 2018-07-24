@@ -439,7 +439,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
-				StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
+				IdeApp.StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}
@@ -513,7 +513,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
-				StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
+				IdeApp.StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}

@@ -797,9 +797,9 @@ But I leave it in in the case I've missed something. Mike
 				//	error |= !valid;
 
 				if (!valid) {
-					StatusService.MainContext.ShowError (errorMsg);
+					IdeApp.StatusService.MainContext.ShowError (errorMsg);
 				} else {
-					StatusService.MainContext.ShowReady ();
+					IdeApp.StatusService.MainContext.ShowReady ();
 				}
 
 				if (!valid || textEditor.TextViewMargin.SearchResultMatchCount == 0) {
@@ -869,12 +869,12 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.CenterToCaret ();
 
 			if (result.SearchWrapped) {
-				StatusService.MainContext.ShowMessage (
+				IdeApp.StatusService.MainContext.ShowMessage (
 					Stock.Find,
 					GettextCatalog.GetString ("Reached bottom, continued from top")
 				);
 			} else {
-				StatusService.MainContext.ShowReady ();
+				IdeApp.StatusService.MainContext.ShowReady ();
 			}
 			return result;
 		}
@@ -887,12 +887,12 @@ But I leave it in in the case I've missed something. Mike
 				return null;
 			textEditor.CenterToCaret ();
 			if (result.SearchWrapped) {
-				StatusService.MainContext.ShowMessage (
+				IdeApp.StatusService.MainContext.ShowMessage (
 					Stock.Find,
 					GettextCatalog.GetString ("Reached top, continued from bottom")
 				);
 			} else {
-				StatusService.MainContext.ShowReady ();
+				IdeApp.StatusService.MainContext.ShowReady ();
 			}
 			return result;
 		}
@@ -908,9 +908,9 @@ But I leave it in in the case I've missed something. Mike
 		{
 			int number = textEditor.ReplaceAll (ReplacePattern);
 			if (number == 0) {
-				StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
+				IdeApp.StatusService.MainContext.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else {
-				StatusService.MainContext.ShowMessage (
+				IdeApp.StatusService.MainContext.ShowMessage (
 					GettextCatalog.GetPluralString ("Found and replaced one occurrence",
 					                                "Found and replaced {0} occurrences", number, number));
 			}

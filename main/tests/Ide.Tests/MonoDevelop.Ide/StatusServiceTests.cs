@@ -27,6 +27,7 @@ using System;
 using System.Text;
 using NUnit.Framework;
 
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Status;
 
 namespace Ide.Tests
@@ -37,10 +38,10 @@ namespace Ide.Tests
 		[TestFixtureSetUp]
 		public void AddListener ()
 		{
-			StatusService.ContextAdded += ContextAdded;
-			StatusService.ContextRemoved += ContextRemoved;
-			StatusService.MainContext.MessageChanged += MessageChanged;
-			StatusService.MainContext.ProgressChanged += ProgressChanged;
+			IdeApp.StatusService.ContextAdded += ContextAdded;
+			IdeApp.StatusService.ContextRemoved += ContextRemoved;
+			IdeApp.StatusService.MainContext.MessageChanged += MessageChanged;
+			IdeApp.StatusService.MainContext.ProgressChanged += ProgressChanged;
 		}
 
 		string expectedString;
@@ -109,8 +110,8 @@ namespace Ide.Tests
 		public void TestMainContextMessage ()
 		{
 			expectedString = MakeRandomString ();
-			expectedContext = StatusService.MainContext;
-			StatusService.MainContext.ShowMessage (expectedString);
+			expectedContext = IdeApp.StatusService.MainContext;
+			IdeApp.StatusService.MainContext.ShowMessage (expectedString);
 		}
 
 		[Test]
@@ -118,26 +119,26 @@ namespace Ide.Tests
 		{
 			expectedProgressStarted = true;
 			expectedString = MakeRandomString ();
-			expectedContext = StatusService.MainContext;
-			StatusService.MainContext.BeginProgress (expectedString);
+			expectedContext = IdeApp.StatusService.MainContext;
+			IdeApp.StatusService.MainContext.BeginProgress (expectedString);
 
 			expectedProgressStarted = false;
 
 			for (double w = 0.0; w < 100.0; w += 10.0) {
 				expectedProgress = w;
 				expectedProgressChanged = true;
-				StatusService.MainContext.SetProgressFraction (w);
+				IdeApp.StatusService.MainContext.SetProgressFraction (w);
 			}
 
 			expectedProgressEnded = true;
-			StatusService.MainContext.EndProgress ();
+			IdeApp.StatusService.MainContext.EndProgress ();
 		}
 
 		[Test]
 		public void TestAddContext ()
 		{
 			expectContextAdded = true;
-			var newContext = StatusService.CreateContext ();
+			var newContext = IdeApp.StatusService.CreateContext ();
 
 			Assert.AreSame (contextThatWasAdded, newContext);
 			contextThatWasAdded = null;
@@ -147,7 +148,7 @@ namespace Ide.Tests
 		public void TestRemoveContext ()
 		{
 			expectContextAdded = true;
-			var newContext = StatusService.CreateContext ();
+			var newContext = IdeApp.StatusService.CreateContext ();
 
 			// Assume this worked as it is tested by AddContext
 
@@ -159,7 +160,7 @@ namespace Ide.Tests
 		public void TestMessageOnNewContext ()
 		{
 			expectContextAdded = true;
-			expectedContext = StatusService.CreateContext ();
+			expectedContext = IdeApp.StatusService.CreateContext ();
 
 			expectedString = MakeRandomString ();
 			expectedContext.ShowMessage (expectedString);

@@ -164,7 +164,7 @@ namespace MonoDevelop.Components.MainToolbar
 					break;
 				}
 			};
-			StatusService.StatusImageChanged += StatusImageChanged;
+			IdeApp.StatusService.StatusImageChanged += StatusImageChanged;
 
 			VisibleWindow = false;
 			NoShowAll = true;
@@ -261,7 +261,7 @@ namespace MonoDevelop.Components.MainToolbar
 				theme.Dispose ();
 
 			ctxHandler.Dispose ();
-			StatusService.StatusImageChanged -= StatusImageChanged;
+			IdeApp.StatusService.StatusImageChanged -= StatusImageChanged;
 			base.OnDestroyed ();
 		}
 

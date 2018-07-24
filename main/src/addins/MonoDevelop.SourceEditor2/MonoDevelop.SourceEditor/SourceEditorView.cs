@@ -1100,7 +1100,7 @@ namespace MonoDevelop.SourceEditor
 				try {
 					writeAllowed = FileService.RequestFileEdit (ContentName);
 				} catch (Exception e) {
-					StatusService.MainContext.ShowError (e.Message);
+					IdeApp.StatusService.MainContext.ShowError (e.Message);
 					writeAllowed = false;
 				}
 			}

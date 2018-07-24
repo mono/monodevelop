@@ -894,7 +894,7 @@ namespace MonoDevelop.Debugger
 				busyEvaluator.UpdateBusyState (args);
 				if (args.IsBusy) {
 					if (busyStatusIcon == null) {
-						busyStatusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon ("md-bug", Gtk.IconSize.Menu));
+						busyStatusIcon = IdeApp.StatusService.ShowStatusIcon (ImageService.GetIcon ("md-bug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
 						busyStatusIcon.Title = GettextCatalog.GetString ("Debugger");
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
@@ -1473,14 +1473,14 @@ namespace MonoDevelop.Debugger
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke ((o, args) => {
-				StatusService.MainContext.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
+				IdeApp.StatusService.MainContext.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 
 		public void Dispose ()
 		{
 			Gtk.Application.Invoke ((o, args) => {
-				StatusService.MainContext.ShowReady ();
+				IdeApp.StatusService.MainContext.ShowReady ();
 			});
 		}
 	}

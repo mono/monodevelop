@@ -76,8 +76,8 @@ namespace MonoDevelop.AssemblyBrowser
 			bool IdleHandler ()
 			{
 				if (token.IsCancellationRequested || (fillStepFinished && i >= memberList.Count)) {
-					StatusService.MainContext.EndProgress ();
-					StatusService.MainContext.ShowReady ();
+					IdeApp.StatusService.MainContext.EndProgress ();
+					IdeApp.StatusService.MainContext.ShowReady ();
 					return false;
 				}
 				DoFillStep ();

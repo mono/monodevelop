@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Status
 	{
 		public void Dispose ()
 		{
-			StatusService.Remove (this);
+			IdeApp.StatusService.Remove (this);
 		}
 	}
 
