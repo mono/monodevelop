@@ -32,6 +32,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Linq;
 using MonoDevelop.Projects.MSBuild;
@@ -141,7 +142,7 @@ namespace MonoDevelop.Ide.Templates
 			return project;
 		}
 
-		public async void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
+		public async Task InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
 		{
 			MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
 

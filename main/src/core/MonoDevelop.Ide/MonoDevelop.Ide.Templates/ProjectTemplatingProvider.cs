@@ -55,16 +55,16 @@ namespace MonoDevelop.Ide.Templates
 
 		public Task<ProcessedTemplateResult> ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
-			return Task.FromResult (ProcessTemplate ((DefaultSolutionTemplate)template, config, parentFolder));
+			return ProcessTemplate ((DefaultSolutionTemplate)template, config, parentFolder);
 		}
 
-		ProcessedTemplateResult ProcessTemplate (DefaultSolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
+		async Task<ProcessedTemplateResult> ProcessTemplate (DefaultSolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			IEnumerable<IWorkspaceFileObject> newItems = null;
 			ProjectCreateInformation cinfo = CreateProjectCreateInformation (config, parentFolder);
 
 			if (parentFolder == null) {
-				IWorkspaceFileObject newItem = template.Template.CreateWorkspaceItem (cinfo);
+				IWorkspaceFileObject newItem = await template.Template.CreateWorkspaceItem (cinfo);
 				if (newItem != null) {
 					newItems = new [] { newItem };
 				}

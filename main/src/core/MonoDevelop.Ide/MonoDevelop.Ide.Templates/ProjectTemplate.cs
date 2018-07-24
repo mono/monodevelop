@@ -308,9 +308,9 @@ namespace MonoDevelop.Ide.Templates
 		{
 		}
 
-		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
+		public async Task<WorkspaceItem> CreateWorkspaceItem (ProjectCreateInformation cInfo)
 		{
-			WorkspaceItemCreatedInformation workspaceItemInfo = solutionDescriptor.CreateEntry (cInfo, this.languagename);
+			WorkspaceItemCreatedInformation workspaceItemInfo = await solutionDescriptor.CreateEntry (cInfo, this.languagename);
 
 			this.createdSolutionName = workspaceItemInfo.WorkspaceItem.FileName;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.Templates
 			foreach (ISolutionItemDescriptor solutionItemDescriptor in GetItemsToCreate (solutionDescriptor, cInfo)) {
 				ProjectCreateInformation itemCreateInfo = GetItemSpecificCreateInfo (solutionItemDescriptor, cInfo);
 				itemCreateInfo = new ProjectTemplateCreateInformation (itemCreateInfo, cInfo.ProjectName);
-				itemCreateInfo.TemplateInitializationCallback = p => solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, p);
+				itemCreateInfo.TemplateInitializationCallback = async p => await solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, p);
 
 				SolutionItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
 				if (solutionEntryItem != null) {
