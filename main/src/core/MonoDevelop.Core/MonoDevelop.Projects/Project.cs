@@ -4103,6 +4103,8 @@ namespace MonoDevelop.Projects
 					var oldCapabilities = new HashSet<string> (projectCapabilities);
 					bool oldSupportsExecute = SupportsExecute ();
 
+					var solutionStartupProjectRunConfig = GetSolutionStartupProjectRunConfigurationForThisProject ();
+
 					try {
 						IsReevaluating = true;
 
@@ -4137,8 +4139,31 @@ namespace MonoDevelop.Projects
 					if (oldSupportsExecute != SupportsExecute ()) {
 						OnSupportsExecuteChanged (!oldSupportsExecute);
 					}
+
+					if (solutionStartupProjectRunConfig != null && !runConfigurations.Contains (solutionStartupProjectRunConfig)) {
+						// Need to refresh solution startup run configuration since the re-evaluation
+						// removed it from the project's run configurations but the solution still refers
+						// to the old project run configuration.
+						ParentSolution.RefreshStartupConfiguration ();
+					}
 				}
 			}));
+		}
+
+		/// <summary>
+		/// If the solution's startup run configuration is a run configuration for this
+		/// project then the project run configuration will be returned.
+		/// </summary>
+		SolutionItemRunConfiguration GetSolutionStartupProjectRunConfigurationForThisProject ()
+		{
+			var config = ParentSolution?.StartupConfiguration as SingleItemSolutionRunConfiguration;
+			if (config == null)
+				return null;
+
+			if (runConfigurations.Contains (config.RunConfiguration))
+				return config.RunConfiguration;
+
+			return null;
 		}
 
 		/// <summary>
