@@ -42,6 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -81,12 +82,6 @@ namespace MonoDevelop.Components.MainToolbar
 		public int TitleBarHeight {
 			get;
 			set;
-		}
-
-		public MonoDevelop.Ide.StatusBar StatusBar {
-			get {
-				return statusArea;
-			}
 		}
 
 		internal static object LastCommandTarget {
@@ -183,7 +178,7 @@ namespace MonoDevelop.Components.MainToolbar
 			AddSpace (24);
 
 			statusArea = new StatusArea ();
-			statusArea.ShowMessage (BrandingService.ApplicationName);
+			IdeApp.StatusService.MainContext.ShowMessage (BrandingService.ApplicationName);
 
 			var statusAreaAlign = new Alignment (0, 0, 1, 1);
 			statusAreaAlign.Add (statusArea);

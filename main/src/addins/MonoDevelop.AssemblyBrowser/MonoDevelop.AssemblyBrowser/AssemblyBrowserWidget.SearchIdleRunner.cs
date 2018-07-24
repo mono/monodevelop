@@ -35,6 +35,8 @@ using System.Threading;
 using MonoDevelop.Core.Text;
 using System.Collections.Immutable;
 
+using MonoDevelop.Ide.Status;
+
 namespace MonoDevelop.AssemblyBrowser
 {
 	partial class AssemblyBrowserWidget
@@ -74,8 +76,8 @@ namespace MonoDevelop.AssemblyBrowser
 			bool IdleHandler ()
 			{
 				if (token.IsCancellationRequested || (fillStepFinished && i >= memberList.Count)) {
-					IdeApp.Workbench.StatusBar.EndProgress ();
-					IdeApp.Workbench.StatusBar.ShowReady ();
+					IdeApp.StatusService.MainContext.EndProgress ();
+					IdeApp.StatusService.MainContext.ShowReady ();
 					return false;
 				}
 				DoFillStep ();

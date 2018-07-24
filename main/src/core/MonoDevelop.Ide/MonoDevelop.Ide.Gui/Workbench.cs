@@ -287,12 +287,6 @@ namespace MonoDevelop.Ide.Gui
 		public ProgressMonitorManager ProgressMonitors {
 			get { return monitors; }
 		}
-		
-		public StatusBar StatusBar {
-			get {
-				return workbench.StatusBar.MainContext;
-			}
-		}
 
 		public void ShowCommandBar (string barId)
 		{

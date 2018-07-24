@@ -235,10 +235,6 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
-		public StatusBar StatusBar {
-			get	{ return toolbar.StatusBar; }
-		}
-
 		public event EventHandler ConfigurationChanged;
 		public event EventHandler RunButtonClicked;
 		public event EventHandler<MonoDevelop.Components.MainToolbar.HandledEventArgs> RuntimeChanged;

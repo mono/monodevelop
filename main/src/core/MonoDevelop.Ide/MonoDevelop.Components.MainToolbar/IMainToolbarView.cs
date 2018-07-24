@@ -222,18 +222,6 @@ namespace MonoDevelop.Components.MainToolbar
 	}
 
 	/// <summary>
-	/// Interface which specificies the minimum working base of a Status Bar.
-	/// </summary>
-	public interface IStatusBarView
-	{
-		/// <summary>
-		/// Gets the native status bar.
-		/// </summary>
-		/// <value>The native status bar.</value>
-		StatusBar StatusBar { get; }
-	}
-
-	/// <summary>
 	/// Interface which specificies the minimum working base of a Button Bar.
 	/// </summary>
 	public interface IButtonBarView
@@ -254,7 +242,7 @@ namespace MonoDevelop.Components.MainToolbar
 	/// <summary>
 	/// Interface which specificies the minimum working base of a MainToolbar.
 	/// </summary>
-	public interface IMainToolbarView : IRunButtonView, ISelectorView, ISearchEntryView, IStatusBarView, IButtonBarView
+	public interface IMainToolbarView : IRunButtonView, ISelectorView, ISearchEntryView, IButtonBarView
 	{
 		void Focus ();
 		void Focus (Action exitAction);

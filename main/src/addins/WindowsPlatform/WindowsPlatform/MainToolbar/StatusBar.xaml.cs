@@ -23,6 +23,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media.Animation;
 using MonoDevelop.Ide.Gui.Components;
 using System.Threading;
+using MonoDevelop.Ide.Status;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -37,7 +38,7 @@ namespace WindowsPlatform.MainToolbar
 	/// <summary>
 	/// Interaction logic for StatusBar.xaml
 	/// </summary>
-	public partial class StatusBarControl : UserControl, StatusBar, INotifyPropertyChanged
+	public partial class StatusBarControl : UserControl, INotifyPropertyChanged
 	{
 		StatusBarContextHandler ctxHandler;
 		TaskEventHandler updateHandler;
@@ -47,6 +48,7 @@ namespace WindowsPlatform.MainToolbar
 			DataContext = this;
 
 			ctxHandler = new StatusBarContextHandler (this);
+			StatusService.StatusImageChanged += StatusImageChanged;
 
 			ShowReady ();
 
@@ -122,6 +124,8 @@ namespace WindowsPlatform.MainToolbar
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
+			ctxHandler.Dispose ();
+			StatusService.StatusImageChanged -= StatusImageChanged;
 		}
 
 		public void EndProgress ()
@@ -236,10 +240,10 @@ namespace WindowsPlatform.MainToolbar
 				ShowReady ();
 		}
 
-		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
+		void StatusImageChanged (object sender, StatusServiceStatusImageChangedArgs args)
 		{
 			var icon = new StatusIcon (this) {
-				Image = pixbuf,
+				Image = args.Image,
 				Margin = new Thickness (5, 5, 5, 5),
 				MaxWidth = 16,
 				MaxHeight = 16,
@@ -247,7 +251,7 @@ namespace WindowsPlatform.MainToolbar
 
 			StatusIconsPanel.Children.Add (icon);
 
-			return icon;
+			args.StatusIcon = icon;
         }
 
 		public void ShowWarning (string warning)

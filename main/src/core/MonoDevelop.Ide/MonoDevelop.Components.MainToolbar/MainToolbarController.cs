@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Status;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -47,10 +48,6 @@ namespace MonoDevelop.Components.MainToolbar
 		internal IMainToolbarView ToolbarView {
 			get;
 			private set;
-		}
-
-		internal StatusBar StatusBar {
-			get { return ToolbarView.StatusBar; }
 		}
 
 		readonly ConfigurationProperty<bool> searchForMembers = ConfigurationProperty.Create ("MainToolbar.Search.IncludeMembers", true);
@@ -121,7 +118,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				IdeApp.ProjectOperations.CurrentSelectedSolutionChanged -= HandleUpdateCombos;
 
-				StatusBar.ShowReady ();
+				IdeApp.StatusService.MainContext.ShowMessage (null, "", false);
 			};
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
