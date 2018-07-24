@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			}
 		}
 
-		static readonly CompletionItem [] formatItems =  {
+		static readonly CompletionItem [] verbatimFormatItems =  {
 			FormatItemCompletionProvider.CreateCompletionItem("d", "Digit character", null),
 			FormatItemCompletionProvider.CreateCompletionItem("D", "Non-digit character", null),
 			FormatItemCompletionProvider.CreateCompletionItem("b", "Word boundary", null),
@@ -183,7 +183,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			FormatItemCompletionProvider.CreateCompletionItem("p{name}", "Unicode category or unicode block", null)
 		};
 
-		static readonly CompletionItem [] verbatimFormatItems =  {
+		static readonly CompletionItem [] formatItems =  {
 			FormatItemCompletionProvider.CreateCompletionItem("\\d", "Digit character", null),
 			FormatItemCompletionProvider.CreateCompletionItem("\\D", "Non-digit character", null),
 			FormatItemCompletionProvider.CreateCompletionItem("\\b", "Word boundary", null),
