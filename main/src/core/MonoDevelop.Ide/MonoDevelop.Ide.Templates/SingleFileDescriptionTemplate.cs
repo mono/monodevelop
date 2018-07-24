@@ -470,7 +470,8 @@ namespace MonoDevelop.Ide.Templates
 
 			if (formatter != null) {
 				var document = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content), fileName);
-				var formatted = formatter.Format (policyParent?.Policies, document);
+				// Avoid possible UI thread deadlock in CSharpFormatter by running the formatter with Task.Run.
+				var formatted = await Task.Run (() => formatter.Format (policyParent?.Policies, document));
 				if (formatted != null)
 					content = formatted.Text;
 			}
