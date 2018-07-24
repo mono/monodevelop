@@ -60,7 +60,7 @@ namespace MonoDevelop.Packaging.Tests
 				SolutionPath = dir
 			};
 
-			var solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			var solution = await template.CreateWorkspaceItem (cinfo) as Solution;
 			string solutionFileName = Path.Combine (dir, "Solution.sln");
 			await solution.SaveAsync (solutionFileName, Util.GetMonitor ());
 
@@ -143,7 +143,7 @@ namespace MonoDevelop.Packaging.Tests
 				SolutionPath = dir
 			};
 
-			var solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			var solution = await template.CreateWorkspaceItem (cinfo) as Solution;
 			string solutionFileName = Path.Combine (dir, "Solution.sln");
 			await solution.SaveAsync (solutionFileName, Util.GetMonitor ());
 
@@ -223,7 +223,7 @@ namespace MonoDevelop.Packaging.Tests
 				SolutionPath = dir
 			};
 
-			var solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			var solution = await template.CreateWorkspaceItem (cinfo) as Solution;
 			string solutionFileName = Path.Combine (dir, "Solution.sln");
 			await solution.SaveAsync (solutionFileName, Util.GetMonitor ());
 
@@ -352,7 +352,7 @@ namespace MonoDevelop.Packaging.Tests
 				SolutionPath = dir
 			};
 
-			var solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			var solution = await template.CreateWorkspaceItem (cinfo) as Solution;
 			string solutionFileName = Path.Combine (dir, "Solution.sln");
 			await solution.SaveAsync (solutionFileName, Util.GetMonitor ());
 

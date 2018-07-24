@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide
 
 		[Test]
 		[TestCaseSource ("Templates")]
-		public void CreateEveryProjectTemplate (string tt)
+		public async Task CreateEveryProjectTemplate (string tt)
 		{
 			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == tt);
 			if (template.Name.Contains ("Gtk#"))
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide
 			cinfo.Parameters ["CreateiOSUITest"] = "False";
 			cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
-			solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			solution = await template.CreateWorkspaceItem (cinfo) as Solution;
 		}
 
 		[Test]
