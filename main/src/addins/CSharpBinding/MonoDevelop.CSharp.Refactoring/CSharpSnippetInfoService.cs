@@ -40,6 +40,10 @@ namespace MonoDevelop.CSharp.Refactoring
 	[ExportLanguageService (typeof (ISnippetInfoService), LanguageNames.CSharp), Shared]
 	class CSharpSnippetInfoService : ISnippetInfoService
 	{
+		// #region and #endregion when appears in the completion list as snippets
+		// we should format the snippet on commit. 
+		private ISet<string> _formatTriggeringSnippets = new HashSet<string>(new string[] { "#region", "#endregion" });
+
 		IEnumerable<SnippetInfo> ISnippetInfoService.GetSnippetsIfAvailable ()
 		{
 			foreach (var template in CodeTemplateService.GetCodeTemplates (CSharp.Formatting.CSharpFormatter.MimeType)) {
@@ -49,7 +53,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		bool ISnippetInfoService.ShouldFormatSnippet (SnippetInfo snippetInfo)
 		{
-			return true;
+			return _formatTriggeringSnippets.Contains(snippetInfo.Shortcut);
 		}
 
 		bool ISnippetInfoService.SnippetShortcutExists_NonBlocking (string shortcut)
