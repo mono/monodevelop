@@ -314,12 +314,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			control.SizeAllocated += HandleControlSizeAllocated;
 			sw.SizeAllocated += HandleSwSizeAllocated;
 
-			if (OutputViewVisible) {
-				logView.Visible = true;
-				logBtn.Active = true;
-			} else {
-				logBtn.Active = false;
-			}
+			logView.Visible = OutputViewVisible;
+			logBtn.Active = OutputViewVisible;
 
 			// Load existing tasks
 			foreach (TaskListEntry t in TaskService.Errors) {
