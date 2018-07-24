@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.CSharp.Formatting
 		readonly DocumentContext context;
 		int cacheSpaceCount = -1, oldTabCount = -1;
 		string cachedIndentString;
+		private ISmartIndent smartIndent;
 
 		public override IndentationTrackerFeatures SupportedFeatures => IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
 
@@ -50,31 +52,29 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			this.editor = editor;
 			this.context = context;
+			var smartIndentProvider = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentProvider> ();
+			smartIndent = smartIndentProvider.CreateSmartIndent (editor.TextView);
+
 		}
 
 		#region IndentationTracker implementation
 		public override string GetIndentationString (int lineNumber)
 		{
-			if (lineNumber < 1) 
+			if (lineNumber < 1 || lineNumber > editor.LineCount) 
 				return "";
 			var doc = context.AnalysisDocument;
 			if (doc == null)
 				return editor.GetLineIndent (lineNumber);
 			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
-			var indentationService = CompositionManager.Instance.ExportProvider.GetExportedValue<ISmartIndentationService> ();
 			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
-			int? indentation = indentationService.GetDesiredIndentation (editor.TextView, caretLine);
+			int? indentation = smartIndent.GetDesiredIndentation (caretLine);
 			if (indentation.HasValue && indentation.Value > 0)
 				return GetIndentString (indentation.Value);
 
-			// Fallback: Use roslyn indent tracker directly.
-			var roslynIndentService = doc.GetLanguageService<Microsoft.CodeAnalysis.Editor.ISynchronousIndentationService> ();
-			var roslynIndentation = roslynIndentService.GetDesiredIndentation (doc, lineNumber - 1, default (CancellationToken));
-			if (roslynIndentation.HasValue)
-				return GetIndentString (roslynIndentation.Value.Offset);
-
-			// vs.net & roslyn indent tracker failed -> don't change the indent.
-			return editor.GetLineIndent (lineNumber);
+			// fallback see: https://github.com/mono/monodevelop/issues/5478
+			if (lineNumber + 1 < editor.LineCount)
+				return GetIndentationString (lineNumber + 1);
+			return GetIndentationString (lineNumber - 1);
 		}
 
 		string GetIndentString (int spaceCount)
