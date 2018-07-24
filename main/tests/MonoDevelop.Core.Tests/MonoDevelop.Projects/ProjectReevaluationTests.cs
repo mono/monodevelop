@@ -517,7 +517,48 @@ namespace MonoDevelop.Projects
 
 			p.Dispose ();
 		}
-    
+
+		/// <summary>
+		/// Ensures that the solution's StartupConfiguration still refers to the project's
+		/// default configuration after the project is re-evaluated. The StartupConfiguration
+		/// was not being refreshed after the project was re-evaluated so the solution's
+		/// StartupConfiguration was referring to a different project run configuration than
+		/// was stored with the project. This resulted in a new .NET Core project not using
+		/// arguments defined for the project's run configuration when running the solution.
+		/// </summary>
+		[Test]
+		public async Task ReevaluateProjectAfterChangingProjectRunConfiguration ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var p = (DotNetProject)sol.Items [0];
+
+				// By default the project's default run configuration will be used as the startup configuration
+				// for the solution when the solution loads.
+				var startupConfiguration = sol.StartupConfiguration as SingleItemSolutionRunConfiguration;
+				Assert.AreEqual (p.RunConfigurations [0], startupConfiguration.RunConfiguration);
+
+				// Re-evaluate the project.
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				// Change the project run configuration.
+				var projectRunConfiguration = p.RunConfigurations [0] as AssemblyRunConfiguration;
+				projectRunConfiguration.StartArguments = "Test";
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// After re-evaluation the solution's startup configuration should be pointing to the
+				// refreshed project run configuration.
+				startupConfiguration = sol.StartupConfiguration as SingleItemSolutionRunConfiguration;
+				var projectRunConfigurationAfterReevaluation = p.RunConfigurations [0] as AssemblyRunConfiguration;
+				var startupConfigurationAfterReevaluation = sol.StartupConfiguration as SingleItemSolutionRunConfiguration;
+				var startupProjectRunConfiguration = startupConfigurationAfterReevaluation.RunConfiguration as AssemblyRunConfiguration;
+
+				Assert.AreEqual ("Test", startupProjectRunConfiguration.StartArguments);
+				Assert.AreEqual (projectRunConfigurationAfterReevaluation, startupConfigurationAfterReevaluation.RunConfiguration);
+			}
+		}
+
 		class AddReferenceOnReevaluateProjectExtension : DotNetProjectExtension
 		{
 			protected internal override Task OnReevaluateProject (ProgressMonitor monitor)
