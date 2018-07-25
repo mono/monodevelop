@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide
 						if (sln != null && sln != s) {
 							throw new InvalidOperationException ("All items must be in the same solution");
 						}
-						return sln;
+						return s;
 					}
 				}
 				if (buildTargets.Count == 1) {
