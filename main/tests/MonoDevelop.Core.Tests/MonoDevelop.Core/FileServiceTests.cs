@@ -73,6 +73,8 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (Path.Combine ("..", "bin"), FileService.NormalizeRelativePath (Path.Combine ("..", "bin")));
 			Assert.AreEqual ("bin", FileService.NormalizeRelativePath (Path.Combine ("." + sep, "bin" + sep)));
 			Assert.AreEqual ("bin", FileService.NormalizeRelativePath (Path.Combine ("." + sep, "." + sep, "bin" + sep + sep)));
+			Assert.AreEqual ("FilePath.cs", FileService.NormalizeRelativePath ($".{sep}FilePath.cs"));
+			Assert.AreEqual ("FilePath.cs", FileService.NormalizeRelativePath ($".{sep}{sep}FilePath.cs"));
 		}
 	}
 }
