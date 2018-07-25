@@ -726,11 +726,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (TextEditor.EditorTheme == null)
 				return;
 			drawnCaretLine = TextEditor.Caret.Line;
-			double y = GetYPosition (drawnCaretLine);
+			int y = (int)GetYPosition (drawnCaretLine);
 
 			cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground));
-			var w = Allocation.Width * 0.618;
-			cr.Rectangle (0.5 + Allocation.Width - w, y - 1.5, w, 2);
+			var w = Math.Floor (Allocation.Width * 0.618);
+			cr.Rectangle (Allocation.Width - w, y - 1, w, 2);
 			cr.Fill ();
 		}
 
@@ -740,11 +740,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (breakPoints == null)
 				return;
 			foreach (var point in breakPoints) {
-				double y = GetYPosition (point.Line);
+				int y = (int)GetYPosition (point.Line);
 
 				cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.BreakpointMarker));
 				int r = 4;
-				cr.Rectangle (0.5 , 0.5 + y - r / 2, r, r);
+				cr.Rectangle (0, y  - r / 2, r, r);
 				cr.Fill ();
 			}
 		}
