@@ -58,7 +58,7 @@ namespace ConsoleApplication1
     }
 }
 ";
-			VerifyItemExists (text, "W", usePreviousCharAsTrigger: true);
+			VerifyItemExists (text, "\\W", usePreviousCharAsTrigger: true);
 		}
 
 		[Test]
@@ -79,7 +79,7 @@ namespace ConsoleApplication1
     }
 }
 ";
-			VerifyItemExists (text, "\\W", usePreviousCharAsTrigger: true);
+			VerifyItemExists (text, "W", usePreviousCharAsTrigger: true);
 		}
 
 		[Test]
@@ -100,7 +100,7 @@ namespace ConsoleApplication1
     }
 }
 ";
-			VerifyItemExists (text, "W", usePreviousCharAsTrigger: true);
+			VerifyItemExists (text, "\\W", usePreviousCharAsTrigger: true);
 		}
 
 		[Test]
