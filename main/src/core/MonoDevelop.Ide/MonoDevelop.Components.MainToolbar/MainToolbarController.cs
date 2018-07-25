@@ -36,7 +36,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -1162,4 +1161,3 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 	}
 }
-
