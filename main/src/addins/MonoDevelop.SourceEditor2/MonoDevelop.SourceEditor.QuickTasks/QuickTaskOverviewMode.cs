@@ -152,7 +152,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			heightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
 			HasTooltip = true;
-
+			TextEditor.Caret.PositionChanged += Caret_PositionChanged;
+			parentStrip.SourceEditorView.Breakpoints.BreakEventAdded += BreakpointsChanged;
+			parentStrip.SourceEditorView.Breakpoints.BreakEventRemoved += BreakpointsChanged;
 			fadeInStage.ActorStep += delegate (Actor<QuickTaskOverviewMode> actor) {
 				barColorValue = actor.Percent;
 				return true;
@@ -168,6 +170,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			fadeInStage.UpdateFrequency = fadeOutStage.UpdateFrequency = 10;
 
 			CanFocus = true;
+		}
+
+		void BreakpointsChanged (object sender, Mono.Debugging.Client.BreakEventArgs e)
+		{
+			QueueDraw ();
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -191,7 +198,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected override void OnDestroyed ()
 		{
-			DisposeProxies();
+			parentStrip.SourceEditorView.Breakpoints.BreakEventAdded -= BreakpointsChanged;
+			parentStrip.SourceEditorView.Breakpoints.BreakEventRemoved -= BreakpointsChanged;
+			TextEditor.Caret.PositionChanged -= Caret_PositionChanged;
+
+			DisposeProxies ();
 			DestroyBackgroundSurface ();
 			RemoveIndicatorIdleHandler ();
 			DestroyIndicatorSwapSurface ();
@@ -208,6 +219,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				heightTree.LineUpdateFrom -= HandleLineUpdateFrom;
 				heightTree = null;
 			}
+
 			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
 			textViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
 			textViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
@@ -701,17 +713,40 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return TextEditor.GetTextEditorData ().VisualToLogicalLine ((int)line);
 		}
 
+
+		void Caret_PositionChanged (object sender, CaretLocationEventArgs e)
+		{
+			if (drawnCaretLine != TextEditor.Caret.Line)
+				QueueDraw ();
+		}
+
+		int drawnCaretLine;
 		protected void DrawCaret (Cairo.Context cr)
 		{
-			if (TextEditor.EditorTheme == null || caretLine < 0)
+			if (TextEditor.EditorTheme == null)
 				return;
-			double y = GetYPosition (caretLine);
-			cr.MoveTo (0, y - 4);
-			cr.LineTo (7, y);
-			cr.LineTo (0, y + 4);
-			cr.ClosePath ();
+			drawnCaretLine = TextEditor.Caret.Line;
+			double y = GetYPosition (drawnCaretLine);
+
 			cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground));
+			var w = Allocation.Width * 0.618;
+			cr.Rectangle (0.5 + Allocation.Width - w, y - 1.5, w, 2);
 			cr.Fill ();
+		}
+
+		void DrawBreakpoints (Cairo.Context cr)
+		{
+			var breakPoints = parentStrip.SourceEditorView.Breakpoints.GetBreakpointsAtFile (TextEditor.FileName);
+			if (breakPoints == null)
+				return;
+			foreach (var point in breakPoints) {
+				double y = GetYPosition (point.Line);
+
+				cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.BreakpointMarker));
+				int r = 4;
+				cr.Rectangle (0.5 , 0.5 + y - r / 2, r, r);
+				cr.Fill ();
+			}
 		}
 
 		Dictionary<int, double> yPositionCache = new Dictionary<int, double> ();
@@ -935,7 +970,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					return true;
 
 				DrawCaret (cr);
-
+				DrawBreakpoints (cr);
 				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
 					DrawBar (cr);
 
