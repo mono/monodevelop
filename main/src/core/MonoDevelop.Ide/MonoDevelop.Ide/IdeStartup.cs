@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide
 			SetupExceptionManager ();
 
 			// explicit GLib type system initialization for GLib < 2.36 before any other type system access
-			GLib.GType.Init ();
+			//GLib.GType.Init ();
 
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			try {
@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide
 
 			// XWT initialization
 			FilePath p = typeof(IdeStartup).Assembly.Location;
-			Runtime.LoadAssemblyFrom (p.ParentDirectory.Combine("Xwt.Gtk.dll"));
-			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
+			Runtime.LoadAssemblyFrom (p.ParentDirectory.Combine("Xwt.Gtk3.dll"));
+			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk3);
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
 			IdeTheme.SetupXwtTheme ();

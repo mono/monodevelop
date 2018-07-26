@@ -95,19 +95,19 @@ namespace MonoDevelop.Components
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
 			min_height = Ypad * 2;
-			natural_height = 0;
 			if (image != null) {
 				min_height += (int)(image.Height);
 			}
+			natural_height = min_height;
 		}
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
 			min_width = Xpad * 2;
-			natural_width = 0;
 			if (image != null) {
 				min_width += (int)(image.Width);
 			}
+			natural_width = min_width;
 		}
 
 		bool IsParentDisabled ()
