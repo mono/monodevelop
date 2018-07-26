@@ -69,15 +69,12 @@ namespace MonoDevelop.CSharp.Formatting
 			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
 			int? indentation = smartIndent.GetDesiredIndentation (caretLine);
 			if (indentation.HasValue && indentation.Value > 0)
-				return GetIndentString (indentation.Value);
+				return CalculateIndentationString (indentation.Value);
 
-			// fallback see: https://github.com/mono/monodevelop/issues/5478
-			if (lineNumber + 1 < editor.LineCount)
-				return GetIndentationString (lineNumber + 1);
-			return GetIndentationString (lineNumber - 1);
+			return editor.GetLineIndent (lineNumber);
 		}
 
-		string GetIndentString (int spaceCount)
+		string CalculateIndentationString (int spaceCount)
 		{
 			int tabCount = 0;
 			if (!editor.Options.TabsToSpaces) {
