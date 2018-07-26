@@ -29,7 +29,7 @@
 
 using System;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Linq;
 using MonoDevelop.Core;
@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Templates
             return solutionDescriptor;
         }
 
-		public WorkspaceItemCreatedInformation CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public async Task<WorkspaceItemCreatedInformation> CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
         {
             WorkspaceItem workspaceItem = null;
 
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Templates
 					if (info == null)
 						continue;
 
-					solutionItemDesc.InitializeItem (solution.RootFolder, entryProjectCI, defaultLanguage, info);
+					await solutionItemDesc.InitializeItem (solution.RootFolder, entryProjectCI, defaultLanguage, info);
 
                     IConfigurationTarget configurationTarget = info as IConfigurationTarget;
                     if (configurationTarget != null) {
