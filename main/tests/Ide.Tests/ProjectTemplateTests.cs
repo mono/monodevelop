@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide
 
 		[Test]
 		[TestCaseSource ("Templates")]
-		public void CreateEveryProjectTemplate (string tt)
+		public async Task CreateEveryProjectTemplate (string tt)
 		{
 			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == tt);
 			if (template.Name.Contains ("Gtk#"))
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide
 			cinfo.Parameters ["CreateiOSUITest"] = "False";
 			cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
-			solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			solution = await template.CreateWorkspaceItem (cinfo) as Solution;
 		}
 
 		[Test]
@@ -102,7 +102,22 @@ namespace MonoDevelop.Ide
 
 			var sharedAssetsProject = template.CreateProjects (solution.RootFolder, cinfo)
 				.OfType<SharedAssetsProject> ().Single ();
-			var myclassFile = sharedAssetsProject.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+
+			// Template initialization is now asynchronous so we need to wait and unblock the UI thread
+			// to ensure the template finishes adding files to the project.
+			const int timeout = 2000; // ms
+			int waitedTime = 0;
+			int delayTime = 100;
+			ProjectFile myclassFile = null;
+			while (myclassFile == null) {
+				myclassFile = sharedAssetsProject.Files.FirstOrDefault (f => f.FilePath.FileName == "MyClass.cs");
+				if (myclassFile == null) {
+					if (waitedTime >= timeout)
+						Assert.Fail ("Timed out waiting for file to be added to shared project.");
+					await Task.Run (async () => await Task.Delay (delayTime));
+					waitedTime += delayTime;
+				}
+			};
 			Assert.AreEqual ("Compile", myclassFile.BuildAction);
 		}
 
