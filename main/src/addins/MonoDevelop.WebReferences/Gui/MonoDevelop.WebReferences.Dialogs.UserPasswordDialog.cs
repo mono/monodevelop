@@ -22,7 +22,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.Title = global::Mono.Unix.Catalog.GetString ("Credentials");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -101,7 +101,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w8.Expand = false;
 			w8.Fill = false;
 			// Internal child MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.ActionArea
-			global::Gtk.HButtonBox w9 = this.ActionArea;
+			global::Gtk.HButtonBox w9 = (Gtk.HButtonBox)this.ActionArea;
 			w9.Name = "dialog1_ActionArea";
 			w9.Spacing = 10;
 			w9.BorderWidth = ((uint)(5));

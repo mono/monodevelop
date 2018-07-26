@@ -189,7 +189,7 @@ namespace MonoDevelop.Debugger
 				store.Clear ();
 		}
 
-		static bool Search (TreeModel model, int column, string key, TreeIter iter)
+		static bool Search (ITreeModel model, int column, string key, TreeIter iter)
 		{
 			string value = (string)model.GetValue (iter, column);
 
@@ -485,7 +485,7 @@ namespace MonoDevelop.Debugger
 		internal void OnCopy ()
 		{
 			var txt = new StringBuilder ();
-			TreeModel model;
+			ITreeModel model;
 			TreeIter iter;
 
 			foreach (TreePath path in tree.Selection.GetSelectedRows (out model)) {

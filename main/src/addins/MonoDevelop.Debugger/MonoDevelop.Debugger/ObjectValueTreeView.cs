@@ -419,7 +419,7 @@ namespace MonoDevelop.Debugger
 			focus_line_width = (int)this.StyleGetProperty ("focus-line-width") * 2;//we just use *2 version in GetMaxWidth
 		}
 
-		static void ValueDataFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void ValueDataFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			var val = (ObjectValue)model.GetValue (iter, ObjectColumn);
 			Xwt.Drawing.Color? color;

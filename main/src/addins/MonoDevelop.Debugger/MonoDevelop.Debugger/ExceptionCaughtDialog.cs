@@ -244,7 +244,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				paned.Position = paned.MinPosition;
 		}
 
-		static void StackFrameLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
+		static void StackFrameLayout (CellLayout layout, CellRenderer cr, ITreeModel model, TreeIter iter)
 		{
 			var frame = (ExceptionStackFrame)model.GetValue (iter, (int)ModelColumn.StackFrame);
 			var renderer = (StackFrameCellRenderer)cr;
