@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Refactoring;
 using Microsoft.CodeAnalysis.Shared.Extensions;
@@ -809,7 +810,7 @@ namespace MonoDevelop.CSharp.Formatting
 			DoReSmartIndent (Editor.CaretOffset);
 		}
 
-		internal void DoReSmartIndent (int cursor)
+		internal async void DoReSmartIndent (int cursor)
 		{
 			SafeUpdateIndentEngine (cursor);
 			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment || stateTracker.IsInsidePreprocessorDirective)
@@ -819,41 +820,17 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			}
 			var line = Editor.GetLineByOffset (cursor);
+			var doc = DocumentContext.AnalysisDocument;
 
-			// Get context to the end of the line w/o changing the main engine's state
-			var curTracker = stateTracker.Clone ();
-			try {
-				for (int max = cursor; max < line.EndOffset; max++) {
-					curTracker.Push (Editor.GetCharAt (max));
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception during indentation", e);
-			}
+			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
+			if (formattingService == null || !formattingService.SupportsFormatOnPaste)
+				return;
 
-			int pos = line.Offset;
-			string curIndent = line.GetIndentation (Editor);
-			int nlwsp = curIndent.Length;
-			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
-			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && Editor.GetCharAt (line.Offset + nlwsp) == '*')) {
-				// Possibly replace the indent
-				string newIndent = Editor.IndentationTracker.GetIndentationString (line.LineNumber);
-				int newIndentLength = newIndent.Length;
-				bool isVirtualIndent = Editor.Options.IndentStyle == IndentStyle.Smart && Editor.Options.RemoveTrailingWhitespaces || Editor.Options.IndentStyle == IndentStyle.Virtual;
-				if (isVirtualIndent && line.Length == 0) {
-					Editor.CaretColumn = newIndentLength + 1;
-					return;
-				}
-				if (newIndent != curIndent) {
-					if (CompletionWindowManager.IsVisible) {
-						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
-							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
-					}
-					newIndentLength = newIndent.Length;
-					Editor.ReplaceText (pos, nlwsp, newIndent);
-					//textEditorData.CommitLineUpdate (textEditorData.CaretLine);
-					CompletionWindowManager.HideWindow ();
-				}
-			} 
+			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new Microsoft.CodeAnalysis.Text.TextSpan (line.Offset, line.Length), default (CancellationToken));
+			if (changes == null)
+				return;
+
+			Editor.ApplyTextChanges (changes);
 
 			Editor.FixVirtualIndentation ();
 		}
