@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void ProjectNameTextInserted (object o, TextInsertedArgs args)
 		{
-			if (args.Text.IndexOf ('\r') >= 0) {
+			if (args.ToString().IndexOf ('\r') >= 0) {
 				var textBox = (Entry)o;
 				textBox.Text = textBox.Text.Replace ("\r", string.Empty);
 			}

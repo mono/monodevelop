@@ -60,24 +60,24 @@ namespace MonoDevelop.Components.MainToolbar
 
 		const int height = 14;
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (!showProgress)
-				return base.OnExposeEvent (evnt);
-			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
-				ctx.LineWidth = 1;
-				ctx.MoveTo (Allocation.X + 0.5, Allocation.Y + 0.5);
-				ctx.RelLineTo (Allocation.Width, 0);
-				ctx.SetSourceRGB (0.8, 0.8, 0.8);
-				ctx.Stroke ();
-
-				ctx.MoveTo (Allocation.X + 0.5, Allocation.Y + 0.5);
-				ctx.RelLineTo ((double)Allocation.Width * fraction, 0);
-				ctx.SetSourceRGB (0.1, 0.1, 0.1);
-				ctx.Stroke ();
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			if (!showProgress)
+//				return base.OnExposeEvent (evnt);
+//			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
+//				ctx.LineWidth = 1;
+//				ctx.MoveTo (Allocation.X + 0.5, Allocation.Y + 0.5);
+//				ctx.RelLineTo (Allocation.Width, 0);
+//				ctx.SetSourceRGB (0.8, 0.8, 0.8);
+//				ctx.Stroke ();
+//
+//				ctx.MoveTo (Allocation.X + 0.5, Allocation.Y + 0.5);
+//				ctx.RelLineTo ((double)Allocation.Width * fraction, 0);
+//				ctx.SetSourceRGB (0.1, 0.1, 0.1);
+//				ctx.Stroke ();
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 	}
 }

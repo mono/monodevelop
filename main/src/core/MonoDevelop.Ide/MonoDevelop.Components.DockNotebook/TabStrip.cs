@@ -165,7 +165,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Add (innerBox);
 
 			this.notebook = notebook;
-			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
+			this.AppPaintable = true;
 			Events |= EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ButtonPressMask;
 
 			var arr = new Xwt.ImageView (tabbarPrevImage);
@@ -356,11 +356,16 @@ namespace MonoDevelop.Components.DockNotebook
 			Update ();
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
-			requisition.Height = TotalHeight;
-			requisition.Width = 0;
+			base.OnGetPreferredWidth (out min_width, out natural_width);
+			min_width = 0;
+		}
+
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight (out min_height, out natural_height);
+			min_height = TotalHeight;
 		}
 
 		internal void InitSize ()
@@ -1120,17 +1125,17 @@ namespace MonoDevelop.Components.DockNotebook
 			drawActive?.Invoke (ctx);
 
 			if (HasFocus) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, focusRect, this, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
+				Gtk.Style.PaintFocus (Style, ctx, State, /*focusRect,*/ this, "tab", focusRect.X, focusRect.Y, focusRect.Width, focusRect.Height);
 			}
 		}
 
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			using (var context = CairoHelper.Create (evnt.Window)) {
-				Draw (context);
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (EventExpose evnt)
+//		{
+//			using (var context = CairoHelper.Create (evnt.Window)) {
+//				Draw (context);
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		void DrawTab (Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la, bool focused)
 		{

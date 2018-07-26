@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void Init ()
 		{
-			VBox.PackStart (hbox);
+			ContentArea.PackStart (hbox, false, true, 0);
 			hbox.PackStart (labelsBox, true, true, 0);
 			labelsBox.PackStart (label, true, true, 0);
 				
@@ -68,10 +68,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.BorderWidth  = 6;
 			//this.Type         = WindowType.Toplevel;
 			this.Resizable    = false;
-			this.HasSeparator = false;
+//			this.HasSeparator = false;
 			
 			// Table 3.2
-			this.VBox.Spacing = 12;
+			this.ContentArea.Spacing = 12;
 			
 			// Table 3.3
 			this.hbox.Spacing     = 12;

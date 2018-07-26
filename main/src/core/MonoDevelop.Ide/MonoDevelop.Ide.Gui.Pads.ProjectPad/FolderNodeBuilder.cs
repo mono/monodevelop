@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else if (dataObject is Gtk.SelectionData) {
 				SelectionData data = (SelectionData) dataObject;
-				if (data.Type == "text/uri-list")
+				if (data.DataType == "text/uri-list")
 					return true;
 			}
 			return false;
@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else if (dataObject is Gtk.SelectionData) {
 				SelectionData data = (SelectionData) dataObject;
-				if (data.Type != "text/uri-list")
+				if (data.DataType != "text/uri-list")
 					return;
 				string sources = System.Text.Encoding.UTF8.GetString (data.Data);
 				Console.WriteLine ("text/uri-list:\n{0}", sources);

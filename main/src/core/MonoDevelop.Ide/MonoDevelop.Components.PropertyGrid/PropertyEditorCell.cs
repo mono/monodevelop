@@ -132,18 +132,18 @@ namespace MonoDevelop.Components.PropertyGrid
 			layout.GetPixelSize (out width, out height);
 		}
 
-		public virtual void Render (Drawable window, Cairo.Context ctx, Rectangle bounds, StateType state)
-		{
-			int w, h;
-			layout.GetPixelSize (out w, out h);
-			int dy = (bounds.Height - h) / 2;
-
-			ctx.Save ();
-			ctx.SetSourceColor (container.Style.Text (state).ToCairoColor ());
-			ctx.MoveTo (bounds.X, dy + bounds.Y);
-			Pango.CairoHelper.ShowLayout (ctx, layout);
-			ctx.Restore ();
-		}
+//		public virtual void Render (Drawable window, Cairo.Context ctx, Rectangle bounds, StateType state)
+//		{
+//			int w, h;
+//			layout.GetPixelSize (out w, out h);
+//			int dy = (bounds.Height - h) / 2;
+//
+//			ctx.Save ();
+//			ctx.SetSourceColor (container.Style.Text (state).ToCairoColor ());
+//			ctx.MoveTo (bounds.X, dy + bounds.Y);
+//			Pango.CairoHelper.ShowLayout (ctx, layout);
+//			ctx.Restore ();
+//		}
 		
 		protected virtual IPropertyEditor CreateEditor (Rectangle cellArea, StateType state)
 		{
@@ -335,19 +335,19 @@ namespace MonoDevelop.Components.PropertyGrid
 			this.ModifyBg (StateType.Normal, this.Style.White);
 		}
 		
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			bool res = base.OnExposeEvent (evnt);
-			cell.Initialize (this, em, context);
-			
-			Rectangle rect = Allocation;
-			rect.Inflate (-3, 0);// Add some margin
-
-			using (Cairo.Context ctx = CairoHelper.Create (GdkWindow)) {
-				cell.Render (GdkWindow, ctx, rect, StateType.Normal);
-			}
-			return res;
-		}
+//		protected override bool OnExposeEvent (EventExpose evnt)
+//		{
+//			bool res = base.OnExposeEvent (evnt);
+//			cell.Initialize (this, em, context);
+//			
+//			Rectangle rect = Allocation;
+//			rect.Inflate (-3, 0);// Add some margin
+//
+//			using (Cairo.Context ctx = CairoHelper.Create (GdkWindow)) {
+//				cell.Render (GdkWindow, ctx, rect, StateType.Normal);
+//			}
+//			return res;
+//		}
 	}
 	
 	class PropertyDialogueEditor: HBox, IPropertyEditor

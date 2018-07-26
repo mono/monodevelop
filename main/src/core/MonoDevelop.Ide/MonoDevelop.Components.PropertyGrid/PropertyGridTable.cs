@@ -159,7 +159,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			this.parentGrid = parentGrid;
 			this.editorManager = editorManager;
-			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
+			this.AppPaintable = true;
 			Events |= Gdk.EventMask.PointerMotionMask;
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
@@ -448,15 +448,23 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			requisition.Width = 20;
+			min_width = 20;
+			natural_width = 0;
 
+			foreach (var c in children)
+				c.Key.SizeRequest ();
+		}
+
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
+		{
+			natural_height = 0;
 			int dx = (int)((double)Allocation.Width * dividerPosition) - PropertyContentLeftPadding;
 			if (dx < 0) dx = 0;
 			int y = 0;
 			MeasureHeight (rows, ref y);
-			requisition.Height = y;
+			min_height = y;
 
 			foreach (var c in children)
 				c.Key.SizeRequest ();
@@ -528,24 +536,24 @@ namespace MonoDevelop.Components.PropertyGrid
 			layout.Dispose ();
 		}
 
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			using (Cairo.Context ctx = CairoHelper.Create (evnt.Window)) {
-				int dx = (int)((double)Allocation.Width * dividerPosition);
-				ctx.LineWidth = 1;
-				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor.ToCairoColor ());
-				ctx.Fill ();
-				ctx.MoveTo (dx + 0.5, 0);
-				ctx.RelLineTo (0, Allocation.Height);
-				ctx.SetSourceColor (Styles.PropertyPadDividerColor.ToCairoColor ());
-				ctx.Stroke ();
-
-				int y = 0;
-				Draw (ctx, rows, dx, PropertyLeftPadding, ref y);
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (EventExpose evnt)
+//		{
+//			using (Cairo.Context ctx = CairoHelper.Create (evnt.Window)) {
+//				int dx = (int)((double)Allocation.Width * dividerPosition);
+//				ctx.LineWidth = 1;
+//				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+//				ctx.SetSourceColor (Styles.PropertyPadLabelBackgroundColor.ToCairoColor ());
+//				ctx.Fill ();
+//				ctx.MoveTo (dx + 0.5, 0);
+//				ctx.RelLineTo (0, Allocation.Height);
+//				ctx.SetSourceColor (Styles.PropertyPadDividerColor.ToCairoColor ());
+//				ctx.Stroke ();
+//
+//				int y = 0;
+//				Draw (ctx, rows, dx, PropertyLeftPadding, ref y);
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		void Draw (Cairo.Context ctx, List<TableRow> rowList, int dividerX, int x, ref int y)
 		{
@@ -609,7 +617,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					if (r != currentEditorRow) {
 						var bounds = GetInactiveEditorBounds (r);
 
-						cell.Render (GdkWindow, ctx, bounds, state);
+//						cell.Render (GdkWindow, ctx, bounds, state);
 
 						if (r.IsExpandable) {
 							var img = r.Expanded ? discloseUp : discloseDown;

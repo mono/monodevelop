@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide
 
 		void EnsureItemIsSelected ()
 		{
-			TreeModel model;
+			ITreeModel model;
 			TreeIter iter;
 			// if the last item is removed no item is selected.
 			if (!listSelected.Selection.GetSelected (out model, out iter)) {
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide
 		
 		void MoveItem (TreeView sourceList, ListStore sourceStore, TreeView targetList, ListStore targetStore)
 		{
-			TreeModel model;
+			ITreeModel model;
 			TreeIter iter;
 			
 			if (sourceList.Selection.GetSelected (out model, out iter)) {
@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide
 		
 		protected void OnUpClicked (object ob, EventArgs args)
 		{
-			TreeModel model;
+			ITreeModel model;
 			TreeIter iter;
 			
 			if (listSelected.Selection.GetSelected (out model, out iter)) {
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide
 		
 		protected void OnDownClicked (object ob, EventArgs args)
 		{
-			TreeModel model;
+			ITreeModel model;
 			TreeIter iter;
 			
 			if (listSelected.Selection.GetSelected (out model, out iter)) {

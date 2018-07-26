@@ -5,9 +5,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Table table4;
-		private global::Gtk.ComboBox comboboxErrorPadAfter;
-		private global::Gtk.ComboBox comboboxJumpToFirst;
-		private global::Gtk.ComboBox comboboxMessageBubbles;
+		private global::Gtk.ComboBoxText comboboxErrorPadAfter;
+		private global::Gtk.ComboBoxText comboboxJumpToFirst;
+		private global::Gtk.ComboBoxText comboboxMessageBubbles;
 		private global::Gtk.Label label3;
 		private global::Gtk.Label label5;
 		private global::Gtk.Label label6;
@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.table4.RowSpacing = ((uint)(6));
 			this.table4.ColumnSpacing = ((uint)(6));
 			// Container child table4.Gtk.Table+TableChild
-			this.comboboxErrorPadAfter = global::Gtk.ComboBox.NewText ();
+			this.comboboxErrorPadAfter = new global::Gtk.ComboBoxText ();
 			this.comboboxErrorPadAfter.AppendText (global::Mono.Unix.Catalog.GetString ("Never"));
 			this.comboboxErrorPadAfter.Name = "comboboxErrorPadAfter";
 			this.comboboxErrorPadAfter.Active = 0;
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.comboboxJumpToFirst = global::Gtk.ComboBox.NewText ();
+			this.comboboxJumpToFirst = new global::Gtk.ComboBoxText ();
 			this.comboboxJumpToFirst.AppendText (global::Mono.Unix.Catalog.GetString ("Never"));
 			this.comboboxJumpToFirst.Name = "comboboxJumpToFirst";
 			this.comboboxJumpToFirst.Active = 0;
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.comboboxMessageBubbles = global::Gtk.ComboBox.NewText ();
+			this.comboboxMessageBubbles = new global::Gtk.ComboBoxText ();
 			this.comboboxMessageBubbles.AppendText (global::Mono.Unix.Catalog.GetString ("Never"));
 			this.comboboxMessageBubbles.Name = "comboboxMessageBubbles";
 			this.comboboxMessageBubbles.Active = 0;

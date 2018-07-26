@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Modal = true;
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.detailsScroll]));
 			w7.Position = 3;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.ActionArea
-			global::Gtk.HButtonBox w8 = this.ActionArea;
+			global::Gtk.HButtonBox w8 = (Gtk.HButtonBox)this.ActionArea;
 			w8.Name = "dialog1_ActionArea";
 			w8.Spacing = 6;
 			w8.BorderWidth = ((uint)(5));

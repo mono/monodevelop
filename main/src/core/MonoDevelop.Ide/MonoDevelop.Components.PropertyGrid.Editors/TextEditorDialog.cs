@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			IdeTheme.ApplyTheme (dialog);
 			dialog.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 			dialog.AddButton (Gtk.Stock.Ok, Gtk.ResponseType.Ok);
-			dialog.VBox.Add (sc);
+			dialog.ContentArea.Add (sc);
 		}
 
 		public Gtk.Window TransientFor {

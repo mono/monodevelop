@@ -182,16 +182,15 @@ namespace MonoDevelop.Components
 			base.OnDestroyed ();
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
 			int width, height;
+			natural_width = 0;
+			min_width = 0;
 			layout.GetPixelSize (out width, out height);
 			
 			if (Pixbuf != null) {
 				width += (int)Pixbuf.Width + pixbufSpacing * 2;
-				height = System.Math.Max (height, (int)Pixbuf.Height);
-			} else {
-				height = System.Math.Max (height, defaultIconHeight);
 			}
 			
 			if (DrawRightBorder)
@@ -199,8 +198,25 @@ namespace MonoDevelop.Components
 			int arrowHeight = height / 2; 
 			int arrowWidth = arrowHeight + 1;
 			
-			requisition.Width = FixedWidth > 0 ? FixedWidth : width + arrowWidth + leftSpacing;
-			requisition.Height = FixedHeight >0 ? FixedHeight : height + ySpacing * 2;
+			min_width = FixedWidth > 0 ? FixedWidth : width + arrowWidth + leftSpacing;
+		}
+		
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
+		{
+			int width, height;
+			natural_height = 0;
+			min_height = 0;
+			layout.GetPixelSize (out width, out height);
+			
+			if (Pixbuf != null) {
+				height = System.Math.Max (height, (int)Pixbuf.Height);
+			} else {
+				height = System.Math.Max (height, defaultIconHeight);
+			}
+			
+			int arrowHeight = height / 2; 
+			
+			min_height = FixedHeight >0 ? FixedHeight : height + ySpacing * 2;
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
@@ -279,71 +295,71 @@ namespace MonoDevelop.Components
 			return base.OnMotionNotifyEvent (e);
 		}
 	
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			Gdk.Drawable win = args.Window;
-		
-			int width, height;
-			layout.GetPixelSize (out width, out height);
-			
-			int arrowHeight = height / 2; 
-			int arrowWidth = arrowHeight + 1;
-			int arrowXPos = this.Allocation.X + this.Allocation.Width - arrowWidth;
-			if (DrawButtonShape) {
-				arrowXPos -= 4;
-			} else if (DrawRightBorder) {
-				arrowXPos -= 2;
-			}
-
-			//HACK: don't ever draw insensitive, only active/prelight/normal, because insensitive generally looks really ugly
-			//this *might* cause some theme issues with the state of the text/arrows rendering on top of it
-			var state = window != null? StateType.Active
-				: State == StateType.Insensitive? StateType.Normal : State;
-			
-			//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
-			// so we get the content but not the border. This might break with crazy themes.
-			//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
-			// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
-			const int padding = 4;
-			if (DrawButtonShape){
-				Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
-				            Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-
-			} else {
-				Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
-				            Allocation.X - padding, Allocation.Y - padding, Allocation.Width + padding * 2, Allocation.Height + padding * 2);
-			}
-
-			int xPos = Allocation.Left;
-			if (Pixbuf != null) {
-				using (var ctx = Gdk.CairoHelper.Create (win))
-					ctx.DrawImage (this, Pixbuf, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2);
-				xPos += (int)Pixbuf.Width + pixbufSpacing * 2;
-			}
-			if (DrawButtonShape)
-				xPos += 4;
-			
-			//constrain the text area so it doesn't get rendered under the arrows
-			var textArea = new Gdk.Rectangle (xPos, Allocation.Y + ySpacing, arrowXPos - xPos - 2, Allocation.Height - ySpacing);
-
-			if (FixedWidth > 0) {
-				layout.Ellipsize = Pango.EllipsizeMode.End;
-				layout.Width = Allocation.Width - textArea.X;
-			}
-
-			Style.PaintLayout (Style, win, state, true, textArea, this, "", textArea.X, textArea.Y + Math.Max (0, (textArea.Height - height) / 2), layout);
-			
-			state = Sensitive ? StateType.Normal : StateType.Insensitive;
-			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
-			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2, arrowWidth, arrowHeight);
-			if (!DrawButtonShape) {
-				if (DrawRightBorder)
-					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
-				if (DrawLeftBorder)
-					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X, Allocation.Y, Allocation.X, Allocation.Y + Allocation.Height);			
-			}
-			return false;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose args)
+//		{
+//			Gdk.Drawable win = args.Window;
+//		
+//			int width, height;
+//			layout.GetPixelSize (out width, out height);
+//			
+//			int arrowHeight = height / 2; 
+//			int arrowWidth = arrowHeight + 1;
+//			int arrowXPos = this.Allocation.X + this.Allocation.Width - arrowWidth;
+//			if (DrawButtonShape) {
+//				arrowXPos -= 4;
+//			} else if (DrawRightBorder) {
+//				arrowXPos -= 2;
+//			}
+//
+//			//HACK: don't ever draw insensitive, only active/prelight/normal, because insensitive generally looks really ugly
+//			//this *might* cause some theme issues with the state of the text/arrows rendering on top of it
+//			var state = window != null? StateType.Active
+//				: State == StateType.Insensitive? StateType.Normal : State;
+//			
+//			//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
+//			// so we get the content but not the border. This might break with crazy themes.
+//			//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
+//			// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
+//			const int padding = 4;
+//			if (DrawButtonShape){
+//				Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
+//				            Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+//
+//			} else {
+//				Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
+//				            Allocation.X - padding, Allocation.Y - padding, Allocation.Width + padding * 2, Allocation.Height + padding * 2);
+//			}
+//
+//			int xPos = Allocation.Left;
+//			if (Pixbuf != null) {
+//				using (var ctx = Gdk.CairoHelper.Create (win))
+//					ctx.DrawImage (this, Pixbuf, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2);
+//				xPos += (int)Pixbuf.Width + pixbufSpacing * 2;
+//			}
+//			if (DrawButtonShape)
+//				xPos += 4;
+//			
+//			//constrain the text area so it doesn't get rendered under the arrows
+//			var textArea = new Gdk.Rectangle (xPos, Allocation.Y + ySpacing, arrowXPos - xPos - 2, Allocation.Height - ySpacing);
+//
+//			if (FixedWidth > 0) {
+//				layout.Ellipsize = Pango.EllipsizeMode.End;
+//				layout.Width = Allocation.Width - textArea.X;
+//			}
+//
+//			Style.PaintLayout (Style, win, state, true, textArea, this, "", textArea.X, textArea.Y + Math.Max (0, (textArea.Height - height) / 2), layout);
+//			
+//			state = Sensitive ? StateType.Normal : StateType.Insensitive;
+//			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
+//			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2, arrowWidth, arrowHeight);
+//			if (!DrawButtonShape) {
+//				if (DrawRightBorder)
+//					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
+//				if (DrawLeftBorder)
+//					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X, Allocation.Y, Allocation.X, Allocation.Y + Allocation.Height);			
+//			}
+//			return false;
+//		}
 		
 		public EventHandler ItemSet;
 	}

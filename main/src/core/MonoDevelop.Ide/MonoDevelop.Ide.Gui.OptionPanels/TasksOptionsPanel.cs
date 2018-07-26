@@ -43,13 +43,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	partial class TasksPanelWidget : Gtk.Bin
 	{	
 		ListStore tokensStore;
-		ComboBox comboPriority;
+		ComboBoxText comboPriority;
 
 		public TasksPanelWidget ()
 		{
 			Build ();
 			
-			comboPriority = ComboBox.NewText ();
+			comboPriority = new ComboBoxText ();
 			foreach (TaskPriority priority in Enum.GetValues (typeof (TaskPriority)))
 				comboPriority.AppendText (Enum.GetName (typeof (TaskPriority), priority));
 			comboPriority.Changed += new EventHandler (Validate);
@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			string selectedToken = String.Empty;
 			int selectedPriority = (int)TaskPriority.Normal;
 			TreeIter iter;
-			TreeModel model = (TreeModel)tokensStore;
+			ITreeModel model = (ITreeModel)tokensStore;
 			if (tokensTreeView.Selection.GetSelected (out model, out iter)) {
 
 				selectedToken = (string)tokensStore.GetValue (iter, 0);
@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (selection != null)
 			{
 				TreeIter iter;
-				TreeModel model = (TreeModel)tokensStore;
+				ITreeModel model = (ITreeModel)tokensStore;
 				if (selection.GetSelected (out model, out iter)) {
 					entryToken.Text = (string)tokensStore.GetValue (iter, 0);
 					comboPriority.Active = (int)tokensStore.GetValue (iter, 1);
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void ChangeToken (object sender, EventArgs args)
 		{
 			TreeIter iter;
-			TreeModel model = (TreeModel)tokensStore;
+			ITreeModel model = (ITreeModel)tokensStore;
 			if (tokensTreeView.Selection.GetSelected (out model, out iter)) {
     			tokensStore.SetValue (iter, 0, entryToken.Text);
     			tokensStore.SetValue (iter, 1, comboPriority.Active);
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void RemoveToken (object sender, EventArgs args)
 		{
 			TreeIter iter;
-			TreeModel model = (TreeModel)tokensStore;
+			ITreeModel model = (ITreeModel)tokensStore;
 			if (tokensTreeView.Selection.GetSelected (out model, out iter)) {
 			   	tokensStore.Remove (ref iter);
 			}

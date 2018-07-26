@@ -34,19 +34,19 @@ namespace MonoDevelop.Components.AutoTest.Results
 	public class GtkTreeModelResult : GtkWidgetResult
 	{
 		Widget ParentWidget;
-		TreeModel TModel;
+		ITreeModel TModel;
 		int Column;
 		TreeIter? resultIter;
 		string DesiredText;
 
-		internal GtkTreeModelResult (Widget parent, TreeModel treeModel, int column) : base (parent)
+		internal GtkTreeModelResult (Widget parent, ITreeModel treeModel, int column) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		internal GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter) : base (parent)
+		internal GtkTreeModelResult (Widget parent, ITreeModel treeModel, int column, TreeIter iter) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return this;
 		}
 
-		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
+		bool CheckForText (ITreeModel model, TreeIter iter, bool exact)
 		{
 			string modelText = model.GetValue (iter, Column) as string;
 			if (modelText == null) {

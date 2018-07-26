@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.radioFlat.Name = "radioFlat";
 			this.radioFlat.DrawIndicator = true;
 			this.radioFlat.UseUnderline = true;
-			this.radioFlat.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioFlat.Group = new global::Gtk.RadioButton [0];
 			this.vbox4.Add (this.radioFlat);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radioFlat]));
 			w4.Position = 0;

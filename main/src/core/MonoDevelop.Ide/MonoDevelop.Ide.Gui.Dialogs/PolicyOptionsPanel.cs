@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			policyCombo.AddAttribute (renderer, "text", 0);
 			
 			label.MnemonicWidget = policyCombo;
-			policyCombo.RowSeparatorFunc = (TreeModel model, TreeIter iter) =>
+			policyCombo.RowSeparatorFunc = (ITreeModel model, TreeIter iter) =>
 				((string) model.GetValue (iter, 0)) == "--";
 			hbox.PackStart (policyCombo, false, false, 0);
 			

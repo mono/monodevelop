@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		private global::Gtk.Table tableFindAndReplace;
 		
-		private global::Gtk.ComboBoxEntry comboboxentryFind;
+		private global::Gtk.ComboBoxText comboboxentryFind;
 		
 		private global::Gtk.HBox hbox2;
 		
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.SkipPagerHint = true;
 			this.SkipTaskbarHint = true;
 			// Internal child MonoDevelop.Ide.FindInFiles.FindInFilesDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.toggleFindInFiles.DrawIndicator = false;
 			this.toggleFindInFiles.UseUnderline = true;
 			this.toggleFindInFiles.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.toggleFindInFiles.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.toggleFindInFiles.Group = new global::Gtk.RadioButton [0];
 			this.hbox3.Add (this.toggleFindInFiles);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.toggleFindInFiles]));
 			w2.Position = 0;
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.tableFindAndReplace.RowSpacing = ((uint)(6));
 			this.tableFindAndReplace.ColumnSpacing = ((uint)(6));
 			// Container child tableFindAndReplace.Gtk.Table+TableChild
-			this.comboboxentryFind = global::Gtk.ComboBoxEntry.NewText ();
+			this.comboboxentryFind = new global::Gtk.ComboBoxText ();
 			this.comboboxentryFind.Name = "comboboxentryFind";
 			this.tableFindAndReplace.Add (this.comboboxentryFind);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.comboboxentryFind]));
@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.comboboxScope = global::Gtk.ComboBox.NewText ();
+			this.comboboxScope = new global::Gtk.ComboBoxText ();
 			this.comboboxScope.Name = "comboboxScope";
 			this.hbox2.Add (this.comboboxScope);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.comboboxScope]));
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			w17.Expand = false;
 			w17.Fill = false;
 			// Internal child MonoDevelop.Ide.FindInFiles.FindInFilesDialog.ActionArea
-			global::Gtk.HButtonBox w18 = this.ActionArea;
+			global::Gtk.HButtonBox w18 = (Gtk.HButtonBox)this.ActionArea;
 			w18.Name = "dialog1_ActionArea";
 			w18.Spacing = 6;
 			w18.BorderWidth = ((uint)(5));

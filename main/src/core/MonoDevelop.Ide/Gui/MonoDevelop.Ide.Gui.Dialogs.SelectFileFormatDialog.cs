@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		private global::Gtk.Label labelCurrentFormat;
 		
-		private global::Gtk.ComboBox comboNewFormat;
+		private global::Gtk.ComboBoxText comboNewFormat;
 		
 		private global::Gtk.Label label3;
 		
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Title = global::Mono.Unix.Catalog.GetString ("Select File Format");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w9.XOptions = ((global::Gtk.AttachOptions)(4));
 			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboNewFormat = global::Gtk.ComboBox.NewText ();
+			this.comboNewFormat = new global::Gtk.ComboBoxText ();
 			this.comboNewFormat.Name = "comboNewFormat";
 			this.table1.Add (this.comboNewFormat);
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboNewFormat]));
@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w16.Expand = false;
 			w16.Fill = false;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.ActionArea
-			global::Gtk.HButtonBox w17 = this.ActionArea;
+			global::Gtk.HButtonBox w17 = (Gtk.HButtonBox)this.ActionArea;
 			w17.Name = "dialog1_ActionArea";
 			w17.Spacing = 10;
 			w17.BorderWidth = ((uint)(5));

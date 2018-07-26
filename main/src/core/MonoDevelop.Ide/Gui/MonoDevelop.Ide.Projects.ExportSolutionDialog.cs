@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		private global::Gtk.Table table;
 		
-		private global::Gtk.ComboBox comboFormat;
+		private global::Gtk.ComboBoxText comboFormat;
 		
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
 		
@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Projects
 			this.BorderWidth = ((uint)(6));
 			this.Resizable = false;
 			// Internal child MonoDevelop.Ide.Projects.ExportSolutionDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Events = ((global::Gdk.EventMask)(256));
 			w1.Name = "dialog_VBox";
 			w1.Spacing = 6;
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Projects
 			this.table.RowSpacing = ((uint)(6));
 			this.table.ColumnSpacing = ((uint)(6));
 			// Container child table.Gtk.Table+TableChild
-			this.comboFormat = global::Gtk.ComboBox.NewText ();
+			this.comboFormat = new global::Gtk.ComboBoxText ();
 			this.comboFormat.Name = "comboFormat";
 			this.table.Add (this.comboFormat);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table [this.comboFormat]));
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Projects
 			w9.Expand = false;
 			w9.Fill = false;
 			// Internal child MonoDevelop.Ide.Projects.ExportSolutionDialog.ActionArea
-			global::Gtk.HButtonBox w10 = this.ActionArea;
+			global::Gtk.HButtonBox w10 = (Gtk.HButtonBox)this.ActionArea;
 			w10.Name = "MonoDevelop.Ide.ExportProjectDialog_ActionArea";
 			w10.Spacing = 6;
 			w10.BorderWidth = ((uint)(5));

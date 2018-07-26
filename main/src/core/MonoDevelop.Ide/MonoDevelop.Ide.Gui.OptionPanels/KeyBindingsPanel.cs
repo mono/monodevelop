@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				schemeCombo.AppendText (s.Name);
 			
 			if (schemes.Count > 0) {
-				schemeCombo.RowSeparatorFunc = (TreeModel model, TreeIter iter) => {
+				schemeCombo.RowSeparatorFunc = (ITreeModel model, TreeIter iter) => {
 					if (model.GetValue (iter, 0) as string == "---")
 						return true;
 					return false;
@@ -360,7 +360,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void OnKeysTreeViewSelectionChange (object sender, EventArgs e)
 		{
 			TreeSelection sel = sender as TreeSelection;
-			TreeModel model;
+			ITreeModel model;
 			TreeIter iter;
 			Command selCommand = null;
 			if (sel.GetSelected (out model, out iter) && model.GetValue (iter, commandCol) != null) {
@@ -625,7 +625,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		List<Command> FindBindings (string accel)
 		{
 			List<Command> bindings = new List<Command> ();
-			TreeModel model = (TreeModel) keyStore;
+			ITreeModel model = (ITreeModel) keyStore;
 			TreeIter iter;
 			if (!model.GetIterFirst (out iter))
 				return bindings;
@@ -927,88 +927,88 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				return false;
 			}
 
-			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
-			{
-				if (string.IsNullOrEmpty (Text))
-					return;
+//			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+//			{
+//				if (string.IsNullOrEmpty (Text))
+//					return;
+//
+//				using (var cr = Gdk.CairoHelper.Create (window)) {
+//					using (var layout = new Pango.Layout (widget.PangoContext)) {
+//						var xpad = (int)Xpad;
+//						int w, h;
+//						Cairo.Color bgColor, fgColor;
+//						foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+//
+//							HashSet<Command> bindingConflicts;
+//							if (keyBindingsPanel.conflicts.TryGetValue (key, out bindingConflicts) && bindingConflicts.Contains (Command)) {
+//								bgColor = Styles.KeyBindingsPanel.KeyConflictBackgroundColor.ToCairoColor ();
+//								fgColor = Styles.KeyBindingsPanel.KeyConflictForegroundColor.ToCairoColor ();
+//							} else if (keyBindingsPanel.duplicates.ContainsKey (key)) {
+//								bgColor = Styles.KeyBindingsPanel.KeyDuplicateBackgroundColor.ToCairoColor ();
+//								fgColor = Styles.KeyBindingsPanel.KeyDuplicateForegroundColor.ToCairoColor ();
+//							} else {
+//								bgColor = Styles.KeyBindingsPanel.KeyBackgroundColor.ToCairoColor ();
+//								fgColor = Styles.KeyBindingsPanel.KeyForegroundColor.ToCairoColor ();
+//							}
+//
+//							layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
+//							layout.FontDescription = KeySymbolFont;
+//							layout.GetPixelSize (out w, out h);
+//
+//							int buttonWidth = w + (2 * KeyHPadding);
+//							int buttonHeight = h + (2 * KeyVPadding);
+//							int x = cell_area.X + xpad;
+//							double y = cell_area.Y + ((cell_area.Height / 2) - (buttonHeight / 2));
+//
+//							cr.RoundedRectangle (x, y, buttonWidth, buttonHeight, KeyBgRadius);
+//							cr.LineWidth = 1;
+//							cr.SetSourceColor (bgColor);
+//							cr.FillPreserve ();
+//							cr.SetSourceColor (bgColor);
+//							cr.Stroke ();
+//
+//							cr.SetSourceColor (fgColor);
+//							cr.MoveTo (x + KeyHPadding, y + KeyVPadding);
+//							cr.ShowLayout (layout);
+//							xpad += buttonWidth + Spacing;
+//						}
+//					}
+//				}
+//			}
 
-				using (var cr = Gdk.CairoHelper.Create (window)) {
-					using (var layout = new Pango.Layout (widget.PangoContext)) {
-						var xpad = (int)Xpad;
-						int w, h;
-						Cairo.Color bgColor, fgColor;
-						foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+//			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//			{
+//				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+//				x_offset = y_offset = 0;
+//				if (string.IsNullOrEmpty (Text)) {
+//					width = 0;
+//					height = 0;
+//					return;
+//				}
+//
+//				using (var layout = new Pango.Layout (widget.PangoContext)) {
+//					height = 0;
+//					width = (int)Xpad;
+//					int w, h, buttonWidth;
+//					foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+//						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
+//						layout.FontDescription = KeySymbolFont;
+//						layout.GetPixelSize (out w, out h);
+//						if (height == 0)
+//							height = h + (KeyVPadding * 2) + 1;
+//						
+//						buttonWidth = w + (2 * KeyHPadding);
+//						width += buttonWidth + Spacing;
+//					}
+//				}
+//			}
 
-							HashSet<Command> bindingConflicts;
-							if (keyBindingsPanel.conflicts.TryGetValue (key, out bindingConflicts) && bindingConflicts.Contains (Command)) {
-								bgColor = Styles.KeyBindingsPanel.KeyConflictBackgroundColor.ToCairoColor ();
-								fgColor = Styles.KeyBindingsPanel.KeyConflictForegroundColor.ToCairoColor ();
-							} else if (keyBindingsPanel.duplicates.ContainsKey (key)) {
-								bgColor = Styles.KeyBindingsPanel.KeyDuplicateBackgroundColor.ToCairoColor ();
-								fgColor = Styles.KeyBindingsPanel.KeyDuplicateForegroundColor.ToCairoColor ();
-							} else {
-								bgColor = Styles.KeyBindingsPanel.KeyBackgroundColor.ToCairoColor ();
-								fgColor = Styles.KeyBindingsPanel.KeyForegroundColor.ToCairoColor ();
-							}
-
-							layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
-							layout.FontDescription = KeySymbolFont;
-							layout.GetPixelSize (out w, out h);
-
-							int buttonWidth = w + (2 * KeyHPadding);
-							int buttonHeight = h + (2 * KeyVPadding);
-							int x = cell_area.X + xpad;
-							double y = cell_area.Y + ((cell_area.Height / 2) - (buttonHeight / 2));
-
-							cr.RoundedRectangle (x, y, buttonWidth, buttonHeight, KeyBgRadius);
-							cr.LineWidth = 1;
-							cr.SetSourceColor (bgColor);
-							cr.FillPreserve ();
-							cr.SetSourceColor (bgColor);
-							cr.Stroke ();
-
-							cr.SetSourceColor (fgColor);
-							cr.MoveTo (x + KeyHPadding, y + KeyVPadding);
-							cr.ShowLayout (layout);
-							xpad += buttonWidth + Spacing;
-						}
-					}
-				}
-			}
-
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				x_offset = y_offset = 0;
-				if (string.IsNullOrEmpty (Text)) {
-					width = 0;
-					height = 0;
-					return;
-				}
-
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					height = 0;
-					width = (int)Xpad;
-					int w, h, buttonWidth;
-					foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
-						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
-						layout.FontDescription = KeySymbolFont;
-						layout.GetPixelSize (out w, out h);
-						if (height == 0)
-							height = h + (KeyVPadding * 2) + 1;
-						
-						buttonWidth = w + (2 * KeyHPadding);
-						width += buttonWidth + Spacing;
-					}
-				}
-			}
-
-			protected override void OnDestroyed()
-			{
-				keyBindingsPanel = null;
-				HideConflictTooltip ();
-				base.OnDestroyed();
-			}
+//			protected override void OnDestroyed()
+//			{
+//				keyBindingsPanel = null;
+//				HideConflictTooltip ();
+//				base.OnDestroyed();
+//			}
 		}
 	}
 }

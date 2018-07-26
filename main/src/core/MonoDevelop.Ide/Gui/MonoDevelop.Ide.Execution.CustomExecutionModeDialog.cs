@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.Execution
 		private global::Gtk.Label label4;
 		private global::Gtk.Entry entryModeName;
 		private global::Gtk.Label label3;
-		private global::Gtk.ComboBox comboStore;
+		private global::Gtk.ComboBoxText comboStore;
 		private global::Gtk.CheckButton checkPrompt;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Execution
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Execution.CustomExecutionModeDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Execution
 			w12.Expand = false;
 			w12.Fill = false;
 			// Container child boxName.Gtk.Box+BoxChild
-			this.comboStore = global::Gtk.ComboBox.NewText ();
+			this.comboStore = new global::Gtk.ComboBoxText ();
 			this.comboStore.AppendText (global::Mono.Unix.Catalog.GetString ("Only this project"));
 			this.comboStore.AppendText (global::Mono.Unix.Catalog.GetString ("Only this solution"));
 			this.comboStore.AppendText (global::Mono.Unix.Catalog.GetString ("All solutions"));
@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Execution
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(w1 [this.boxEditor]));
 			w17.Position = 0;
 			// Internal child MonoDevelop.Ide.Execution.CustomExecutionModeDialog.ActionArea
-			global::Gtk.HButtonBox w18 = this.ActionArea;
+			global::Gtk.HButtonBox w18 = (Gtk.HButtonBox)this.ActionArea;
 			w18.Name = "dialog1_ActionArea";
 			w18.Spacing = 10;
 			w18.BorderWidth = ((uint)(5));

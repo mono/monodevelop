@@ -87,7 +87,7 @@ namespace MonoDevelop.Components
 		{
 			//while the menu's open, make sure the button looks depressed
 			if (isOpen && button.State != Gtk.StateType.Active)
-				button.State = Gtk.StateType.Active;
+				button.SetStateFlags (Gtk.StateFlags.Active, true);
 		}
 		
 		public void AddOption (string name, string value)
@@ -133,8 +133,8 @@ namespace MonoDevelop.Components
 			menu.Hidden += delegate {
 				button.Relief = oldRelief ;
 				isOpen = false;
-				button.State = Gtk.StateType.Normal;
-				
+				button.SetStateFlags (Gtk.StateFlags.Normal, true);
+
 				//FIXME: for some reason the menu's children don't get activated if we destroy 
 				//directly here, so use a timeout to delay it
 				GLib.Timeout.Add (100, delegate {

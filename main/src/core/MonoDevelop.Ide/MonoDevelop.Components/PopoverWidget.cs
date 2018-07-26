@@ -55,15 +55,15 @@ namespace MonoDevelop.Components
 			Add (alignment);
 
 			disableSizeCheck = false;
-
-			SizeRequested += (object o, SizeRequestedArgs args) => {
-				if (this.AnimationIsRunning("Resize") && !disableSizeCheck) {
-					Gtk.Requisition result = new Gtk.Requisition ();
-					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, targetSize.Width));
-					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, targetSize.Height));
-					args.Requisition = result;
-				}
-			};
+			
+//			SizeRequested += (object o, SizeRequestedArgs args) => {
+//				if (this.AnimationIsRunning("Resize") && !disableSizeCheck) {
+//					Gtk.Requisition result = new Gtk.Requisition ();
+//					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, targetSize.Width));
+//					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, targetSize.Height));
+//					args.Requisition = result;
+//				}
+//			};
 
 			UpdatePadding ();
 		}
@@ -118,7 +118,8 @@ namespace MonoDevelop.Components
 			disableSizeCheck = true;
 			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
 			// use OnSizeRequested instead of SizeRequest to bypass internal GTK caching
-			OnSizeRequested (ref sizeReq);
+			OnGetPreferredWidth (out sizeReq.Width, out sizeReq.Width);
+			OnGetPreferredHeight (out sizeReq.Height, out sizeReq.Height);
 			disableSizeCheck = false;
 
 			Gdk.Size size = new Gdk.Size (sizeReq.Width, sizeReq.Height);
@@ -150,7 +151,8 @@ namespace MonoDevelop.Components
 		{
 			disableSizeCheck = true;
 			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
-			OnSizeRequested (ref sizeReq);
+			OnGetPreferredHeight (out sizeReq.Height, out sizeReq.Height);
+			OnGetPreferredWidth (out sizeReq.Width, out sizeReq.Width);
 			disableSizeCheck = false;
 
 			if (sizeReq.Width == paintSize.Width && sizeReq.Height == paintSize.Height)
@@ -159,34 +161,34 @@ namespace MonoDevelop.Components
 				AnimatedResize (); //Desired size changed mid animation
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0)
-				theme.ArrowOffset = Allocation.Width / 2;
-			else
-				theme.ArrowOffset = Allocation.Height / 2;
-
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Save ();
-				Theme.SetBorderPath (context, BorderAllocation, position);
-				context.Clip ();
-				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
-				context.Restore ();
-
-
-				// protect against overriden methods which leave in a bad state
-				context.Save ();
-				if (Theme.DrawPager) {
-					Theme.RenderPager (context, 
-					                   PangoContext,
-					                   BorderAllocation);
-				}
-
-				Theme.RenderShadow (context, BorderAllocation, position);
-				context.Restore ();
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0)
+//				theme.ArrowOffset = Allocation.Width / 2;
+//			else
+//				theme.ArrowOffset = Allocation.Height / 2;
+//
+//			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+//				context.Save ();
+//				Theme.SetBorderPath (context, BorderAllocation, position);
+//				context.Clip ();
+//				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
+//				context.Restore ();
+//
+//
+//				// protect against overriden methods which leave in a bad state
+//				context.Save ();
+//				if (Theme.DrawPager) {
+//					Theme.RenderPager (context, 
+//					                   PangoContext,
+//					                   BorderAllocation);
+//				}
+//
+//				Theme.RenderShadow (context, BorderAllocation, position);
+//				context.Restore ();
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
 		{

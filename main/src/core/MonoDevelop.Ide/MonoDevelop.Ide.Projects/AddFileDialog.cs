@@ -66,12 +66,12 @@ namespace MonoDevelop.Ide.Projects
 			FileSelector fdiag  = new FileSelector (data.Title);
 
 			fdiag.ShowHidden = data.ShowHidden;
-			
+
 			//add a combo that can be used to override the default build action
-			ComboBox combo = new ComboBox (data.BuildActions ?? new string[0]);
+			ComboBoxText combo = (ComboBoxText)(new ComboBox (data.BuildActions ?? new string[0]));
 			combo.Sensitive = false;
 			combo.Active = 0;
-			combo.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
+			combo.RowSeparatorFunc = delegate (ITreeModel model, TreeIter iter) {
 				return "--" == ((string) model.GetValue (iter, 0));
 			};
 			

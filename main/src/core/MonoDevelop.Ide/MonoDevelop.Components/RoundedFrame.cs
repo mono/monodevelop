@@ -56,7 +56,7 @@ namespace MonoDevelop.Components
 		public RoundedFrame ()
 		{
 			this.Events =  Gdk.EventMask.AllEventsMask;
-			this.WidgetFlags |= WidgetFlags.NoWindow;
+			this.HasWindow = true;
 			DoubleBuffered = true;
 			AppPaintable = false;
 		}
@@ -100,21 +100,34 @@ namespace MonoDevelop.Components
 			theme = MonoDevelop.Components.Theming.ThemeEngine.CreateTheme (this);
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
+			natural_height = 0;
 			if (child != null && child.Visible) {
 				// Add the child's width/height
 				Requisition child_requisition = child.SizeRequest ();
-				requisition.Width = Math.Max (0, child_requisition.Width);
-				requisition.Height = child_requisition.Height;
+				min_height = child_requisition.Height;
 			} else {
-				requisition.Width = 0;
-				requisition.Height = 0;
+				min_height = 0;
 			}
 			
 			// Add the frame border
-			requisition.Width += ((int)BorderWidth + frame_width) * 2;
-			requisition.Height += ((int)BorderWidth + frame_width) * 2;
+			min_height += ((int)BorderWidth + frame_width) * 2;
+		}
+
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			natural_width = 0;
+			if (child != null && child.Visible) {
+				// Add the child's width/height
+				Requisition child_requisition = child.SizeRequest ();
+				min_width = Math.Max (0, child_requisition.Width);
+			} else {
+				min_width = 0;
+			}
+			
+			// Add the frame border
+			min_width += ((int)BorderWidth + frame_width) * 2;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -134,26 +147,26 @@ namespace MonoDevelop.Components
 			child.SizeAllocate (child_allocation);
 		}
 
-		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
-		{
-			// This is to satisfy the gtk_widget_set_scroll_adjustments
-			// inside of GtkScrolledWindow so it doesn't complain about
-			// its child not being scrollable.
-		}
+//		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
+//		{
+//			// This is to satisfy the gtk_widget_set_scroll_adjustments
+//			// inside of GtkScrolledWindow so it doesn't complain about
+//			// its child not being scrollable.
+//		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (!IsDrawable) {
-				return false;
-			}
-			
-			using (Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				DrawFrame (cr, evnt.Area);
-				if (child != null) 
-					PropagateExpose (child, evnt);
-				return false;
-			}
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			if (!IsDrawable) {
+//				return false;
+//			}
+//			
+//			using (Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+//				DrawFrame (cr, evnt.Area);
+//				if (child != null) 
+//					PropagateExpose (child, evnt);
+//				return false;
+//			}
+//		}
 
 		private void DrawFrame (Cairo.Context cr, Gdk.Rectangle clip)
 		{

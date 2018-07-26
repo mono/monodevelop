@@ -59,7 +59,7 @@ namespace MonoDevelop.Components
 			button.Clicked += new EventHandler(ButtonClicked);
 			button.Name = "MonoDevelop.TabLabel.CloseButton";
 			this.PackStart (button, false, true, 0);
-			this.ClearFlag (WidgetFlags.CanFocus);
+			this.CanFocus = false;
 			this.BorderWidth = 0;
 
 			this.ShowAll ();

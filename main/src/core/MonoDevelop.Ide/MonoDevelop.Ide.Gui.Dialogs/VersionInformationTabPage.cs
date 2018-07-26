@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			box.PackStart (new Gtk.Label () {
 				Markup = "<b>LoadedAssemblies</b>",
 				Xalign = 0
-			});
+			}, false, true, 0);
 			var table = new Gtk.Table (0, 0, false);
 			table.ColumnSpacing = 3;
 			uint line = 0;

@@ -104,9 +104,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.PackStart (new Label () {
 				Markup = "<b>" + GLib.Markup.EscapeText (panel.Label) + "</b>",
 					Xalign = 0f,
-			});
+			}, false, true, 0);
 			var alignment = new Alignment (0f, 0f, 1f, 1f) { LeftPadding = 24 };
-			this.PackStart (alignment);
+			this.PackStart (alignment, false, true, 0);
 			var vbox = new VBox (false , 6);
 			var locationBox = new HBox (false, 6);
 			var messageBox = new HBox (false, 6);

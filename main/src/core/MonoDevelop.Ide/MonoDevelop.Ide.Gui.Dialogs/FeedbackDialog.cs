@@ -50,10 +50,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			SetDefaultSize (350, 200);
 			if (x == -1 && y == -1) {
 				int ww, wh;
-				IdeApp.Workbench.RootWindow.GdkWindow.GetSize (out ww, out wh);
-				IdeApp.Workbench.RootWindow.GdkWindow.GetOrigin (out x, out y);
-				x = ww / 2 - 350 / 2;
-				y = wh / 2 - 200 / 2;
+//				IdeApp.Workbench.RootWindow.GdkWindow.GetSize (out ww, out wh);
+//				IdeApp.Workbench.RootWindow.GdkWindow.GetOrigin (out x, out y);
+//				x = ww / 2 - 350 / 2;
+//				y = wh / 2 - 200 / 2;
 				Move (x, y);
 			} else
 				Move (x - 350, y - 200);
@@ -243,34 +243,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	class TextViewWithEmptyMessage: Gtk.TextView
 	{
 		private Pango.Layout layout;
-		private Gdk.GC text_gc;
+//		private Gdk.GC text_gc;
 		
 		public string EmptyMessage { get; set; }
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			bool res = base.OnExposeEvent (evnt);
-			if (Buffer.Text.Length == 0 && !string.IsNullOrEmpty (EmptyMessage)) {
-				if (text_gc == null) {
-					text_gc = new Gdk.GC (evnt.Window);
-					text_gc.Copy (Style.TextGC (Gtk.StateType.Normal));
-					Gdk.Color color_a = Style.Base (Gtk.StateType.Normal);
-					Gdk.Color color_b = Style.Text (Gtk.StateType.Normal);
-					text_gc.RgbFgColor = EntryWithEmptyMessage.ColorBlend (color_a, color_b);
-				}
-				
-				if (layout == null) {
-					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
-				}
-				
-				int width, height;
-				layout.SetMarkup (EmptyMessage);
-				layout.GetPixelSize (out width, out height);
-				evnt.Window.DrawLayout (text_gc, 2, 2, layout);
-			}
-			return res;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			bool res = base.OnExposeEvent (evnt);
+//			if (Buffer.Text.Length == 0 && !string.IsNullOrEmpty (EmptyMessage)) {
+//				if (text_gc == null) {
+//					text_gc = new Gdk.GC (evnt.Window);
+//					text_gc.Copy (Style.TextGC (Gtk.StateType.Normal));
+//					Gdk.Color color_a = Style.Base (Gtk.StateType.Normal);
+//					Gdk.Color color_b = Style.Text (Gtk.StateType.Normal);
+//					text_gc.RgbFgColor = EntryWithEmptyMessage.ColorBlend (color_a, color_b);
+//				}
+//				
+//				if (layout == null) {
+//					layout = new Pango.Layout (PangoContext);
+//					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+//				}
+//				
+//				int width, height;
+//				layout.SetMarkup (EmptyMessage);
+//				layout.GetPixelSize (out width, out height);
+//				evnt.Window.DrawLayout (text_gc, 2, 2, layout);
+//			}
+//			return res;
+//		}
 
 		protected override void OnDestroyed ()
 		{
@@ -278,10 +278,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				layout.Dispose ();
 				layout = null;
 			}
-			if (text_gc != null) {
-				text_gc.Dispose ();
-				text_gc = null;
-			}
+//			if (text_gc != null) {
+//				text_gc.Dispose ();
+//				text_gc = null;
+//			}
 			base.OnDestroyed ();
 		}
 	}
@@ -289,34 +289,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	class EntryWithEmptyMessage: Gtk.Entry
 	{
 		private Pango.Layout layout;
-		private Gdk.GC text_gc;
+//		private Gdk.GC text_gc;
 		
 		public string EmptyMessage { get; set; }
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			bool res = base.OnExposeEvent (evnt);
-			if (Text.Length == 0 && !string.IsNullOrEmpty (EmptyMessage)) {
-				if (text_gc == null) {
-					text_gc = new Gdk.GC (evnt.Window);
-					text_gc.Copy (Style.TextGC (Gtk.StateType.Normal));
-					Gdk.Color color_a = Style.Base (Gtk.StateType.Normal);
-					Gdk.Color color_b = Style.Text (Gtk.StateType.Normal);
-					text_gc.RgbFgColor = ColorBlend (color_a, color_b);
-				}
-				
-				if (layout == null) {
-					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
-				}
-				
-				int width, height;
-				layout.SetMarkup (EmptyMessage);
-				layout.GetPixelSize (out width, out height);
-				evnt.Window.DrawLayout (text_gc, 2, 2, layout);
-			}
-			return res;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			bool res = base.OnExposeEvent (evnt);
+//			if (Text.Length == 0 && !string.IsNullOrEmpty (EmptyMessage)) {
+//				if (text_gc == null) {
+//					text_gc = new Gdk.GC (evnt.Window);
+//					text_gc.Copy (Style.TextGC (Gtk.StateType.Normal));
+//					Gdk.Color color_a = Style.Base (Gtk.StateType.Normal);
+//					Gdk.Color color_b = Style.Text (Gtk.StateType.Normal);
+//					text_gc.RgbFgColor = ColorBlend (color_a, color_b);
+//				}
+//				
+//				if (layout == null) {
+//					layout = new Pango.Layout (PangoContext);
+//					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+//				}
+//				
+//				int width, height;
+//				layout.SetMarkup (EmptyMessage);
+//				layout.GetPixelSize (out width, out height);
+//				evnt.Window.DrawLayout (text_gc, 2, 2, layout);
+//			}
+//			return res;
+//		}
 
 		protected override void OnDestroyed ()
 		{
@@ -324,10 +324,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				layout.Dispose ();
 				layout = null;
 			}
-			if (text_gc != null) {
-				text_gc.Dispose ();
-				text_gc = null;
-			}
+//			if (text_gc != null) {
+//				text_gc.Dispose ();
+//				text_gc = null;
+//			}
 			base.OnDestroyed ();
 		}
 		
@@ -359,7 +359,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			double blB = mB * blendRatio;
 			
 			Gdk.Color color = new Gdk.Color ((byte)blR, (byte)blG, (byte)blB);
-			Gdk.Colormap.System.AllocColor (ref color, true, true);
+//			Gdk.Colormap.System.AllocColor (ref color, true, true);
 			return color;
 		}
 	}

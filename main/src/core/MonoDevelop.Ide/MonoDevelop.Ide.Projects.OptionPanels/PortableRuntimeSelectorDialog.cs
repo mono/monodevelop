@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			alignment.Add (label);
 			alignment.Show ();
 
-			VBox.PackStart (alignment, false, true, 0);
+			ContentArea.PackStart (alignment, false, true, 0);
 		}
 
 		void AddTopSelectorCombo ()
@@ -305,7 +305,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			alignment.Show ();
 
-			VBox.PackStart (alignment, false, true, 0);
+			ContentArea.PackStart (alignment, false, true, 0);
 		}
 
 		void AddMultiOptionCombo (OptionCombo option)
@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			alignment.Add (hbox);
 			alignment.Show ();
 
-			VBox.PackStart (alignment, false, true, 0);
+			ContentArea.PackStart (alignment, false, true, 0);
 		}
 
 		void AddSingleOptionCheckbox (OptionCombo option)
@@ -390,7 +390,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			alignment.Add (option.Check);
 			alignment.Show ();
 
-			VBox.PackStart (alignment, false, true, 0);
+			ContentArea.PackStart (alignment, false, true, 0);
 		}
 
 		void AddWarningLabel ()
@@ -416,7 +416,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			alignment.Child = warningHBox;
 			alignment.Show ();
 
-			VBox.PackStart (alignment, false, true, 0);
+			ContentArea.PackStart (alignment, false, true, 0);
 		}
 
 		void ClearWarnings ()

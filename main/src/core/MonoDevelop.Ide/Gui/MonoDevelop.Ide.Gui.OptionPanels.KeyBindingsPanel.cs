@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		private global::Gtk.Label labelScheme;
 		
-		private global::Gtk.ComboBox schemeCombo;
+		private global::Gtk.ComboBoxText schemeCombo;
 		
 		private global::Gtk.HSeparator hseparator2;
 		
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.schemeCombo = global::Gtk.ComboBox.NewText ();
+			this.schemeCombo = new global::Gtk.ComboBoxText ();
 			this.schemeCombo.Name = "schemeCombo";
 			this.hbox1.Add (this.schemeCombo);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.schemeCombo]));

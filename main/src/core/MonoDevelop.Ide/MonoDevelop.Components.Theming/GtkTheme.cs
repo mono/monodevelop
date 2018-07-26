@@ -52,7 +52,7 @@ namespace MonoDevelop.Components.Theming
 		{
 			Cairo.Color color = GetCairoTextMidColor (widget);
 			Gdk.Color gdk_color = new Gdk.Color ((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
-			Gdk.Colormap.System.AllocColor (ref gdk_color, true, true);
+//			Gdk.Colormap.System.AllocColor (ref gdk_color, true, true);
 			return gdk_color;
 		}
 

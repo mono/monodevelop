@@ -61,7 +61,7 @@ namespace MonoDevelop.Components.Docking
 			filler = new Label ();
 			filler.WidthRequest = 4;
 			filler.HeightRequest = 4;
-			box.PackEnd (filler);
+			box.PackEnd (filler, false, true, 0);
 			
 			ShowAll ();
 			UpdateVisibility ();
@@ -181,16 +181,25 @@ namespace MonoDevelop.Components.Docking
 		{
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredHeight (out min_height, out natural_height);
+
+			if (ShowBorder) {
+				// Add space for the separator
+				if (Orientation == Gtk.Orientation.Horizontal)
+					min_height++;
+			}
+		}
+
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			base.OnGetPreferredWidth (out min_width, out natural_width);
 
 			if (ShowBorder) {
 				// Add space for the separator
 				if (Orientation == Gtk.Orientation.Vertical)
-					requisition.Width++;
-				else
-					requisition.Height++;
+					min_width++;
 			}
 		}
 
@@ -208,35 +217,35 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			var alloc = Allocation;
-			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-				ctx.Rectangle (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y + alloc.Height);
-				ctx.SetSourceColor (Styles.DockBarBackground.ToCairoColor ());
-				ctx.Fill ();
-			}
-
-			if (Child != null)
-				PropagateExpose (Child, evnt);
-
-			if (ShowBorder) {
-				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-					ctx.LineWidth = 1;
-
-					// Dark separator
-					switch (Position) {
-					case PositionType.Left:ctx.MoveTo (alloc.X + alloc.Width - 0.5, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
-					case PositionType.Right: ctx.MoveTo (alloc.X + 0.5, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
-					case PositionType.Top: ctx.MoveTo (alloc.X, alloc.Y + alloc.Height + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
-					case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
-					}
-					ctx.SetSourceColor (Styles.DockSeparatorColor.ToCairoColor ());
-					ctx.Stroke ();
-				}
-			}
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			var alloc = Allocation;
+//			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+//				ctx.Rectangle (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y + alloc.Height);
+//				ctx.SetSourceColor (Styles.DockBarBackground.ToCairoColor ());
+//				ctx.Fill ();
+//			}
+//
+//			if (Child != null)
+//				PropagateExpose (Child, evnt);
+//
+//			if (ShowBorder) {
+//				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+//					ctx.LineWidth = 1;
+//
+//					// Dark separator
+//					switch (Position) {
+//					case PositionType.Left:ctx.MoveTo (alloc.X + alloc.Width - 0.5, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
+//					case PositionType.Right: ctx.MoveTo (alloc.X + 0.5, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
+//					case PositionType.Top: ctx.MoveTo (alloc.X, alloc.Y + alloc.Height + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
+//					case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
+//					}
+//					ctx.SetSourceColor (Styles.DockSeparatorColor.ToCairoColor ());
+//					ctx.Stroke ();
+//				}
+//			}
+//			return true;
+//		}
 	}
 }
 

@@ -43,16 +43,16 @@ namespace MonoDevelop.Components.Commands
 			get { return manager; }
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.SetSourceColor (Style.Light (StateType.Normal).ToCairoColor ());
-				context.Paint ();
-			}
-
-			foreach (Gtk.Widget child in Children)
-				(this as Gtk.Container).PropagateExpose (child, evnt);
-			return false;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+//				context.SetSourceColor (Style.Light (StateType.Normal).ToCairoColor ());
+//				context.Paint ();
+//			}
+//
+//			foreach (Gtk.Widget child in Children)
+//				(this as Gtk.Container).PropagateExpose (child, evnt);
+//			return false;
+//		}
 	}
 }

@@ -61,14 +61,23 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredHeight (out min_height, out natural_height);
 
 			//if showing a border line, request a little more space
 			if (showBorderLine) {
-				requisition.Height += HScrollbar.Visible? 1 : 2;
-				requisition.Width += VScrollbar.Visible? 1 : 2;
+				min_height += HScrollbar.Visible? 1 : 2;
+			}
+		}
+
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			base.OnGetPreferredWidth (out min_width, out natural_width);
+
+			//if showing a border line, request a little more space
+			if (showBorderLine) {
+				min_width += VScrollbar.Visible? 1 : 2;
 			}
 		}
 
@@ -104,70 +113,70 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			var ret = base.OnExposeEvent (evnt);
-			if (!showBorderLine)
-				return ret;
-
-			bool hasHScroll = HScrollbar.Visible;
-			bool hasVScroll = VScrollbar.Visible;
-
-			//this is the rectangle that defines where we will draw the border lines
-			//note that Allocation was set by the base, but we altered it during allocation, so take that into account
-			var rect = Allocation;
-			var borderWidth = (int) BorderWidth;
-			rect.X += borderWidth - 1;
-			rect.Y += borderWidth - 1;
-			rect.Width -= borderWidth + borderWidth - 2;
-			rect.Height -= borderWidth + borderWidth - 2;
-
-			//if there will be scrollbars, bring the end of the lines to the middle of the scrollbar so it looks nice
-			if (hasHScroll) {
-				rect.Height -= HScrollbar.Allocation.Height / 2;
-			}
-
-			if (hasVScroll) {
-				rect.Width -= VScrollbar.Allocation.Width / 2;
-			}
-
-			double lineWidth = 1;
-			var halfLineWidth = lineWidth / 2.0;
-
-			//draw the border lines
-			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				Gdk.CairoHelper.Region (cr, evnt.Region);
-				cr.Clip ();
-				
-				cr.SetSourceColor (Style.Dark (Gtk.StateType.Normal).ToCairoColor ());
-				cr.LineWidth = lineWidth;
-				cr.Translate (rect.X, rect.Y);
-
-				//top
-				cr.MoveTo (0, halfLineWidth);
-				cr.LineTo (rect.Width, halfLineWidth);
-
-				//bottom. redundant if there's a horizontal scrollbar.
-				if (!hasHScroll) {
-					cr.MoveTo (0, rect.Height - halfLineWidth);
-					cr.LineTo (rect.Width, rect.Height - halfLineWidth);
-				}
-
-				//left
-				cr.MoveTo (halfLineWidth, 0);
-				cr.LineTo (halfLineWidth, rect.Height);
-
-				//right. redundant if there's a vertical scrollbar.
-				if (!hasVScroll) {
-					cr.MoveTo (rect.Width - halfLineWidth, 0);
-					cr.LineTo (rect.Width - halfLineWidth, rect.Height);
-				}
-
-				cr.Stroke ();
-			}
-			
-			return ret;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			var ret = base.OnExposeEvent (evnt);
+//			if (!showBorderLine)
+//				return ret;
+//
+//			bool hasHScroll = HScrollbar.Visible;
+//			bool hasVScroll = VScrollbar.Visible;
+//
+//			//this is the rectangle that defines where we will draw the border lines
+//			//note that Allocation was set by the base, but we altered it during allocation, so take that into account
+//			var rect = Allocation;
+//			var borderWidth = (int) BorderWidth;
+//			rect.X += borderWidth - 1;
+//			rect.Y += borderWidth - 1;
+//			rect.Width -= borderWidth + borderWidth - 2;
+//			rect.Height -= borderWidth + borderWidth - 2;
+//
+//			//if there will be scrollbars, bring the end of the lines to the middle of the scrollbar so it looks nice
+//			if (hasHScroll) {
+//				rect.Height -= HScrollbar.Allocation.Height / 2;
+//			}
+//
+//			if (hasVScroll) {
+//				rect.Width -= VScrollbar.Allocation.Width / 2;
+//			}
+//
+//			double lineWidth = 1;
+//			var halfLineWidth = lineWidth / 2.0;
+//
+//			//draw the border lines
+//			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
+//				Gdk.CairoHelper.Region (cr, evnt.Region);
+//				cr.Clip ();
+//				
+//				cr.SetSourceColor (Style.Dark (Gtk.StateType.Normal).ToCairoColor ());
+//				cr.LineWidth = lineWidth;
+//				cr.Translate (rect.X, rect.Y);
+//
+//				//top
+//				cr.MoveTo (0, halfLineWidth);
+//				cr.LineTo (rect.Width, halfLineWidth);
+//
+//				//bottom. redundant if there's a horizontal scrollbar.
+//				if (!hasHScroll) {
+//					cr.MoveTo (0, rect.Height - halfLineWidth);
+//					cr.LineTo (rect.Width, rect.Height - halfLineWidth);
+//				}
+//
+//				//left
+//				cr.MoveTo (halfLineWidth, 0);
+//				cr.LineTo (halfLineWidth, rect.Height);
+//
+//				//right. redundant if there's a vertical scrollbar.
+//				if (!hasVScroll) {
+//					cr.MoveTo (rect.Width - halfLineWidth, 0);
+//					cr.LineTo (rect.Width - halfLineWidth, rect.Height);
+//				}
+//
+//				cr.Stroke ();
+//			}
+//			
+//			return ret;
+//		}
 	}
 }
 

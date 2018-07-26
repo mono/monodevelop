@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			treeviewVariable.AppendColumn ("", new Gtk.CellRendererText (), "text", 0);
 			CellRendererText nameRenderer = new CellRendererText ();
-			treeviewVariable.AppendColumn ("", nameRenderer, delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
+			treeviewVariable.AppendColumn ("", nameRenderer, delegate (TreeViewColumn col, CellRenderer cell, ITreeModel model, TreeIter iter) {
 				nameRenderer.Markup = ((string)model.GetValue (iter, 2));
 			});
 			

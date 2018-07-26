@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::Mono.Unix.Catalog.GetString ("Add File Type");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.AddMimeTypeDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Projects
 			w7.Expand = false;
 			w7.Fill = false;
 			// Internal child MonoDevelop.Ide.Projects.AddMimeTypeDialog.ActionArea
-			global::Gtk.HButtonBox w8 = this.ActionArea;
+			global::Gtk.HButtonBox w8 = (Gtk.HButtonBox)this.ActionArea;
 			w8.Name = "dialog1_ActionArea";
 			w8.Spacing = 10;
 			w8.BorderWidth = ((uint)(5));

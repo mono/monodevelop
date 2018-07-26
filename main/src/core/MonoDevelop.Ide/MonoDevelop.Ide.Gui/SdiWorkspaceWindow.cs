@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			base.OnRealized ();
 			if (tabPage == null && subViewNotebook == null)
-				box.PackStart (TabPage);
+				box.PackStart (TabPage, false, true, 0);
 		}
 
 		Document document;

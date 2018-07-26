@@ -692,15 +692,26 @@ namespace MonoDevelop.Components.Docking
 			UpdateVisualStyle ();
 		}
 		
-		protected override void OnSizeRequested (ref Gtk.Requisition req)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
+			min_height = 0;
+			natural_height = 0;
 			if (Child != null) {
-				req = Child.SizeRequest ();
-				req.Width += (int)(TabPadding.Left + TabPadding.Right);
+				Requisition req = Child.SizeRequest ();
 				if (active)
-					req.Height += (int)(TabActivePadding.Top + TabActivePadding.Bottom);
+					min_height += (int)(TabActivePadding.Top + TabActivePadding.Bottom);
 				else
-					req.Height += (int)(TabPadding.Top + TabPadding.Bottom);
+					min_height += (int)(TabPadding.Top + TabPadding.Bottom);
+			}
+		}
+					
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			min_width = 0;
+			natural_width = 0;
+			if (Child != null) {
+				Requisition req = Child.SizeRequest ();
+				min_width += (int)(TabPadding.Left + TabPadding.Right);
 			}
 		}
 					
@@ -728,20 +739,20 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (VisualStyle.TabStyle == DockTabStyle.Normal)
-				DrawAsBrowser (evnt);
-			else
-				DrawNormal (evnt);
-
-			if (HasFocus) {
-				var alloc = labelWidget.Allocation;
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, alloc, this, "label",
-				                      alloc.X, alloc.Y, alloc.Width, alloc.Height);
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			if (VisualStyle.TabStyle == DockTabStyle.Normal)
+//				DrawAsBrowser (evnt);
+//			else
+//				DrawNormal (evnt);
+//
+//			if (HasFocus) {
+//				var alloc = labelWidget.Allocation;
+//				Gtk.Style.PaintFocus (Style, GdkWindow, State, alloc, this, "label",
+//				                      alloc.X, alloc.Y, alloc.Width, alloc.Height);
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		void DrawAsBrowser (Gdk.EventExpose evnt)
 		{

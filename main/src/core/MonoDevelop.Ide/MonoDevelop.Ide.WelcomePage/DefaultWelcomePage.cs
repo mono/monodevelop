@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				new WelcomePageBarButton (GettextCatalog.GetString ("Documentation"), "http://www.go-mono.com/docs", "welcome-link-info-16.png"),
 				new WelcomePageBarButton (GettextCatalog.GetString ("Support"), "http://monodevelop.com/index.php?title=Help_%26_Contact", "welcome-link-support-16.png"),
 				new WelcomePageBarButton (GettextCatalog.GetString ("Q&A"), "http://stackoverflow.com/questions/tagged/monodevelop", "welcome-link-chat-16.png")
-				)
+				), false, true, 0
 			);
 			row1.Accessible.SetShouldIgnore (true);
 			mainCol.PackStart (row1, false, false, 0);

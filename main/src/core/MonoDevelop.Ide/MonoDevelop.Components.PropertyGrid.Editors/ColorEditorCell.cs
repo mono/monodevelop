@@ -57,18 +57,18 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				return String.Format("#{0:x2}{1:x2}{2:x2}", color.R, color.G, color.B);
 		}
 		
-		public override void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, Gtk.StateType state)
-		{
-			using (Gdk.GC gc = new Gdk.GC (window)) {
-				gc.RgbFgColor = GetColor ();
-				int yd = (bounds.Height - ColorBoxSize) / 2;
-				window.DrawRectangle (gc, true, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
-				window.DrawRectangle (Container.GetNativeWidget<Gtk.Widget> ().Style.BlackGC, false, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
-				bounds.X += ColorBoxSize + ColorBoxSpacing;
-				bounds.Width -= ColorBoxSize + ColorBoxSpacing;
-				base.Render (window, ctx, bounds, state);
-			}
-		}
+//		public override void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, Gtk.StateType state)
+//		{
+//			using (Gdk.GC gc = new Gdk.GC (window)) {
+//				gc.RgbFgColor = GetColor ();
+//				int yd = (bounds.Height - ColorBoxSize) / 2;
+//				window.DrawRectangle (gc, true, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
+//				window.DrawRectangle (Container.GetNativeWidget<Gtk.Widget> ().Style.BlackGC, false, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
+//				bounds.X += ColorBoxSize + ColorBoxSpacing;
+//				bounds.Width -= ColorBoxSize + ColorBoxSpacing;
+//				base.Render (window, ctx, bounds, state);
+//			}
+//		}
 		
 		private Gdk.Color GetColor ()
 		{

@@ -5,8 +5,8 @@ namespace MonoDevelop.Ide.Projects
 	{
 		private global::Gtk.VBox vbox77;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBoxEntry comboName;
-		private global::Gtk.ComboBoxEntry comboPlatform;
+		private global::Gtk.ComboBoxText comboName;
+		private global::Gtk.ComboBoxText comboPlatform;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.CheckButton createChildrenCheck;
@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::Mono.Unix.Catalog.GetString ("New Configuration");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			// Internal child MonoDevelop.Ide.Projects.NewConfigurationDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog-vbox6";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog-vbox6.Gtk.Box+BoxChild
@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboName = global::Gtk.ComboBoxEntry.NewText ();
+			this.comboName = new Gtk.ComboBoxText ();
 			this.comboName.Name = "comboName";
 			this.table1.Add (this.comboName);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboName]));
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Projects
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboPlatform = global::Gtk.ComboBoxEntry.NewText ();
+			this.comboPlatform = new Gtk.ComboBoxText ();
 			this.comboPlatform.Name = "comboPlatform";
 			this.table1.Add (this.comboPlatform);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboPlatform]));
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox77]));
 			w8.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.NewConfigurationDialog.ActionArea
-			global::Gtk.HButtonBox w9 = this.ActionArea;
+			global::Gtk.HButtonBox w9 = (Gtk.HButtonBox)this.ActionArea;
 			w9.Name = "dialog-action_area6";
 			w9.Spacing = 6;
 			w9.BorderWidth = ((uint)(5));

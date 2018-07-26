@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.Projects
 			return selection.Contains (type + " " + name + " " + pkg);
 		}
 
-        private int Sort (TreeModel model, TreeIter left, TreeIter right)
+        private int Sort (ITreeModel model, TreeIter left, TreeIter right)
         {
 			int result = 0;
 			

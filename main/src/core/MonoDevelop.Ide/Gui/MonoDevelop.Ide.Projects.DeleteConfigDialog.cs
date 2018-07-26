@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::Mono.Unix.Catalog.GetString ("Delete Configuration");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			// Internal child MonoDevelop.Ide.Projects.DeleteConfigDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog-vbox7";
 			// Container child dialog-vbox7.Gtk.Box+BoxChild
 			this.hbox64 = new global::Gtk.HBox ();
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox64]));
 			w6.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.DeleteConfigDialog.ActionArea
-			global::Gtk.HButtonBox w7 = this.ActionArea;
+			global::Gtk.HButtonBox w7 = (Gtk.HButtonBox)this.ActionArea;
 			w7.Name = "dialog-action_area7";
 			w7.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog-action_area7.Gtk.ButtonBox+ButtonBoxChild

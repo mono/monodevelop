@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Projects
 		public AddExternalFileDialog (string file)
 		{
 			MonoDevelop.Components.IdeTheme.ApplyTheme (this);
-			HasSeparator = true;
+//			HasSeparator = true;
 			this.Build ();
 			radioCopy.Active = true;
 			labelTitle.Markup = GettextCatalog.GetString (labelTitle.Text, "<b>" + GLib.Markup.EscapeText (file) + "</b>");

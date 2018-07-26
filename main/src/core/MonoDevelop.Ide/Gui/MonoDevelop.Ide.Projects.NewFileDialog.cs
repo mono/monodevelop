@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		private global::Gtk.CheckButton projectAddCheckbox;
 		
-		private global::Gtk.ComboBox projectAddCombo;
+		private global::Gtk.ComboBoxText projectAddCombo;
 		
 		private global::Gtk.HBox hbox4;
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Projects
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.Ide.Projects.NewFileDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Projects
 			w17.Expand = false;
 			w17.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.projectAddCombo = global::Gtk.ComboBox.NewText ();
+			this.projectAddCombo = new global::Gtk.ComboBoxText ();
 			this.projectAddCombo.Name = "projectAddCombo";
 			this.hbox3.Add (this.projectAddCombo);
 			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.projectAddCombo]));
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w24.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.NewFileDialog.ActionArea
-			global::Gtk.HButtonBox w25 = this.ActionArea;
+			global::Gtk.HButtonBox w25 = (Gtk.HButtonBox)this.ActionArea;
 			w25.Name = "dialog1_ActionArea";
 			w25.Spacing = 6;
 			w25.BorderWidth = ((uint)(5));

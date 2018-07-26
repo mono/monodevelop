@@ -28,11 +28,11 @@ namespace MonoDevelop.FSharp.Gui
 
 		private global::Gtk.HBox hbox2;
 
-		private global::Gtk.ComboBox comboDebug;
+		private global::Gtk.ComboBoxText comboDebug;
 
 		private global::Gtk.HBox hbox6;
 
-		private global::Gtk.ComboBox comboPlatforms;
+		private global::Gtk.ComboBoxText comboPlatforms;
 
 		private global::Gtk.Label label1;
 
@@ -181,7 +181,7 @@ namespace MonoDevelop.FSharp.Gui
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.comboDebug = global::Gtk.ComboBox.NewText();
+			this.comboDebug = new global::Gtk.ComboBoxText();
 			this.comboDebug.AppendText(global::Mono.Unix.Catalog.GetString("Full"));
 			this.comboDebug.AppendText(global::Mono.Unix.Catalog.GetString("Symbols only"));
 			this.comboDebug.AppendText(global::Mono.Unix.Catalog.GetString("None"));
@@ -205,7 +205,7 @@ namespace MonoDevelop.FSharp.Gui
 			this.hbox6.Name = "hbox6";
 			this.hbox6.Spacing = 6;
 			// Container child hbox6.Gtk.Box+BoxChild
-			this.comboPlatforms = global::Gtk.ComboBox.NewText();
+			this.comboPlatforms = new global::Gtk.ComboBoxText();
 			this.comboPlatforms.AppendText(global::Mono.Unix.Catalog.GetString("Any CPU"));
 			this.comboPlatforms.AppendText(global::Mono.Unix.Catalog.GetString("x86"));
 			this.comboPlatforms.AppendText(global::Mono.Unix.Catalog.GetString("x64"));

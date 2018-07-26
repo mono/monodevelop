@@ -6,7 +6,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.VBox vbox81;
 		private global::Gtk.HBox hbox68;
 		private global::Gtk.Label label114;
-		private global::Gtk.ComboBox runtimeVersionCombo;
+		private global::Gtk.ComboBoxText runtimeVersionCombo;
 
 		protected virtual void Build ()
 		{
@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox68.Gtk.Box+BoxChild
-			this.runtimeVersionCombo = global::Gtk.ComboBox.NewText ();
+			this.runtimeVersionCombo = new global::Gtk.ComboBoxText ();
 			this.runtimeVersionCombo.Name = "runtimeVersionCombo";
 			this.hbox68.Add (this.runtimeVersionCombo);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox68 [this.runtimeVersionCombo]));

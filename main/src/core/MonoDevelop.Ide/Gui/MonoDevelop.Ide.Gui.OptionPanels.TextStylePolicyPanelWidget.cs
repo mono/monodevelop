@@ -10,7 +10,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.Label label5;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Label label6;
-		private global::Gtk.ComboBox lineEndingCombo;
+		private global::Gtk.ComboBoxText lineEndingCombo;
 		private global::Gtk.Alignment alignment2;
 		private global::Gtk.Label label3;
 		private global::Gtk.Alignment alignment1;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.lineEndingCombo = global::Gtk.ComboBox.NewText ();
+			this.lineEndingCombo = new global::Gtk.ComboBoxText ();
 			this.lineEndingCombo.Name = "lineEndingCombo";
 			this.hbox2.Add (this.lineEndingCombo);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.lineEndingCombo]));

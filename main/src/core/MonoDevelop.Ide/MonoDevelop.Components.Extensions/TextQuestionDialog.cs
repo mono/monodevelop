@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.Extensions
 			Gtk.Dialog md = null;
 			try {
 				md = new Gtk.Dialog (Caption, TransientFor, DialogFlags.Modal | DialogFlags.DestroyWithParent) {
-					HasSeparator = false,
+//					HasSeparator = false,
 					BorderWidth = 6,
 				};
 				
@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.Extensions
 					UseMarkup = true,
 					Xalign = 0.0F,
 				};
-				md.VBox.PackStart (questionLabel, true, false, 6);
+				md.ContentArea.PackStart (questionLabel, true, false, 6);
 				
 				var responseEntry = new Entry (Value ?? "") {
 					Visibility = !IsPassword,
@@ -84,7 +84,7 @@ namespace MonoDevelop.Components.Extensions
 				responseEntry.Activated += (sender, e) => {
 					md.Respond (ResponseType.Ok);
 				};
-				md.VBox.PackStart (responseEntry, false, true, 6);
+				md.ContentArea.PackStart (responseEntry, false, true, 6);
 				
 				md.AddActionWidget (new Button (Gtk.Stock.Cancel) { CanDefault = true }, ResponseType.Cancel);
 				md.AddActionWidget (new Button (Gtk.Stock.Ok), ResponseType.Ok);

@@ -971,66 +971,66 @@ namespace MonoDevelop.Components
 			col.CellSetCellData (tree.Model, iter, false, false);
 			int x = 0;
 			int th = 0;
-			CellRenderer[] renderers = col.CellRenderers;
-			foreach (CellRenderer cr in renderers) {
-				int sp, wi, he, xo, yo;
-				col.CellGetPosition (cr, out sp, out wi);
-				Gdk.Rectangle crect = new Gdk.Rectangle (x, rect.Y, wi, rect.Height);
-				cr.GetSize (tree, ref crect, out xo, out yo, out wi, out he);
-				if (cr != renderers [renderers.Length - 1])
-					x += crect.Width + col.Spacing + 1;
-				else
-					x += wi + 1;
-				if (he > th) th = he;
-			}
+//			CellRenderer[] renderers = col.CellRenderers;
+//			foreach (CellRenderer cr in renderers) {
+//				int sp, wi, he, xo, yo;
+//				col.CellGetPosition (cr, out sp, out wi);
+//				Gdk.Rectangle crect = new Gdk.Rectangle (x, rect.Y, wi, rect.Height);
+//				cr.GetSize (tree, ref crect, out xo, out yo, out wi, out he);
+//				if (cr != renderers [renderers.Length - 1])
+//					x += crect.Width + col.Spacing + 1;
+//				else
+//					x += wi + 1;
+//				if (he > th) th = he;
+//			}
 			SetSizeRequest (x, th + 2);
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			base.OnExposeEvent (evnt);
-
-			Gdk.Rectangle expose = Allocation;
-			Gdk.Color save = Gdk.Color.Zero;
-			bool hasFgColor = false;
-			int x = 1;
-
-			// Make sure that the row has not been removed inbetween.
-			// If the model is a TreeStore, it can do the validation for us, otherwise we need to validate the path.
-			if ((treeStore != null && treeStore.IterIsValid (iter) == false) || !tree.Model.GetIter (out iter, path)) {
-				GtkUtil.HideTooltip (tree);
-				return true;
-			}
-			col.CellSetCellData (tree.Model, iter, false, false);
-
-			foreach (CellRenderer cr in col.CellRenderers) {
-				if (!cr.Visible)
-					continue;
-
-				if (cr is CellRendererText) {
-					hasFgColor = ((CellRendererText)cr).GetCellForegroundSet ();
-					save = ((CellRendererText)cr).ForegroundGdk;
-					((CellRendererText)cr).ForegroundGdk = Style.Foreground (State);
-				}
-
-				int sp, wi, he, xo, yo;
-				col.CellGetPosition (cr, out sp, out wi);
-				Gdk.Rectangle bgrect = new Gdk.Rectangle (x, expose.Y, wi, expose.Height - 2);
-				cr.GetSize (tree, ref bgrect, out xo, out yo, out wi, out he);
-				int leftMargin = (int) ((bgrect.Width - wi) * cr.Xalign);
-				int topMargin = (int) ((bgrect.Height - he) * cr.Yalign);
-				Gdk.Rectangle cellrect = new Gdk.Rectangle (bgrect.X + leftMargin, bgrect.Y + topMargin + 1, wi, he);
-				cr.Render (this.GdkWindow, this, bgrect, cellrect, expose, CellRendererState.Focused);
-				x += bgrect.Width + col.Spacing + 1;
-
-				if (cr is CellRendererText) {
-					((CellRendererText)cr).ForegroundGdk = save;
-					((CellRendererText)cr).SetCellForegroundSet (hasFgColor);
-				}
-			}
-
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			base.OnExposeEvent (evnt);
+//
+//			Gdk.Rectangle expose = Allocation;
+//			Gdk.Color save = Gdk.Color.Zero;
+//			bool hasFgColor = false;
+//			int x = 1;
+//
+//			// Make sure that the row has not been removed inbetween.
+//			// If the model is a TreeStore, it can do the validation for us, otherwise we need to validate the path.
+//			if ((treeStore != null && treeStore.IterIsValid (iter) == false) || !tree.Model.GetIter (out iter, path)) {
+//				GtkUtil.HideTooltip (tree);
+//				return true;
+//			}
+//			col.CellSetCellData (tree.Model, iter, false, false);
+//
+//			foreach (CellRenderer cr in col.CellRenderers) {
+//				if (!cr.Visible)
+//					continue;
+//
+//				if (cr is CellRendererText) {
+//					hasFgColor = ((CellRendererText)cr).GetCellForegroundSet ();
+//					save = ((CellRendererText)cr).ForegroundGdk;
+//					((CellRendererText)cr).ForegroundGdk = Style.Foreground (State);
+//				}
+//
+//				int sp, wi, he, xo, yo;
+//				col.CellGetPosition (cr, out sp, out wi);
+//				Gdk.Rectangle bgrect = new Gdk.Rectangle (x, expose.Y, wi, expose.Height - 2);
+//				cr.GetSize (tree, ref bgrect, out xo, out yo, out wi, out he);
+//				int leftMargin = (int) ((bgrect.Width - wi) * cr.Xalign);
+//				int topMargin = (int) ((bgrect.Height - he) * cr.Yalign);
+//				Gdk.Rectangle cellrect = new Gdk.Rectangle (bgrect.X + leftMargin, bgrect.Y + topMargin + 1, wi, he);
+//				cr.Render (this.GdkWindow, this, bgrect, cellrect, expose, CellRendererState.Focused);
+//				x += bgrect.Width + col.Spacing + 1;
+//
+//				if (cr is CellRendererText) {
+//					((CellRendererText)cr).ForegroundGdk = save;
+//					((CellRendererText)cr).SetCellForegroundSet (hasFgColor);
+//				}
+//			}
+//
+//			return true;
+//		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{

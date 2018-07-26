@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			CodeTemplateService.Templates = templates;
 		}
 		
-		static void RenderIcon (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void RenderIcon (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CodeTemplate template = (CodeTemplate)model.GetValue (iter, 0);
 
@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				
 		}
 		
-		void RenderTemplateName (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void RenderTemplateName (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CodeTemplate template = (CodeTemplate)model.GetValue (iter, 0);
 			var crt = (CellRendererText)cell;

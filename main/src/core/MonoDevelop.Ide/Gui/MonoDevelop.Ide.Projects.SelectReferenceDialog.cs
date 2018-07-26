@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Projects
 			this.BorderWidth = ((uint)(6));
 			this.DestroyWithParent = true;
 			// Internal child MonoDevelop.Ide.Projects.SelectReferenceDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog-vbox2";
 			w1.Spacing = 6;
 			// Container child dialog-vbox2.Gtk.Box+BoxChild
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
 			w14.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.SelectReferenceDialog.ActionArea
-			global::Gtk.HButtonBox w15 = this.ActionArea;
+			global::Gtk.HButtonBox w15 = (Gtk.HButtonBox)this.ActionArea;
 			w15.Name = "dialog-action_area2";
 			w15.Spacing = 10;
 			w15.BorderWidth = ((uint)(5));

@@ -207,37 +207,38 @@ namespace MonoDevelop.Components
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
+			natural_height = 0;
+			min_height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.SetSourceColor (Styles.SubTabBarBackgroundColor.ToCairoColor ());
-				cr.Fill ();
-
-				Tab active = null;
-				for (int i = tabs.Count; i --> 0;) {
-					if (i == ActiveTab) {
-						active = tabs [i];
-						continue;
-					}
-					var tab = tabs[i];
-					var bounds = GetBounds (tab);
-					tab.HoverPosition = tab == hoverTab ? new Cairo.PointD (mx - bounds.X, my) : new Cairo.PointD (-1, -1);
-					tab.Draw (cr, bounds);
-				}
-
-				if (active != null) {
-					active.Draw (cr, GetBounds (active));
-				}
-			}
-
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
+//				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+//				cr.SetSourceColor (Styles.SubTabBarBackgroundColor.ToCairoColor ());
+//				cr.Fill ();
+//
+//				Tab active = null;
+//				for (int i = tabs.Count; i --> 0;) {
+//					if (i == ActiveTab) {
+//						active = tabs [i];
+//						continue;
+//					}
+//					var tab = tabs[i];
+//					var bounds = GetBounds (tab);
+//					tab.HoverPosition = tab == hoverTab ? new Cairo.PointD (mx - bounds.X, my) : new Cairo.PointD (-1, -1);
+//					tab.Draw (cr, bounds);
+//				}
+//
+//				if (active != null) {
+//					active.Draw (cr, GetBounds (active));
+//				}
+//			}
+//
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		int focusedTab = -1;
 		protected override bool OnFocused (DirectionType direction)

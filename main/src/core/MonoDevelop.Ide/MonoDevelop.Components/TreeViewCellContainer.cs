@@ -76,22 +76,23 @@ namespace MonoDevelop.Components
 			// Do nothing.
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-			if (box.Child != null) {
-				requisition = box.Child.SizeRequest ();
-				requisition.Height += 2 * box.Child.Style?.YThickness ?? 0;
-			}
-			else
-				requisition = box.SizeRequest ();
-		}
+//		protected override void OnSizeRequested (ref Requisition requisition)
+//		{
+//			base.OnSizeRequested (ref requisition);
+//			if (box.Child != null) {
+//				requisition = box.Child.SizeRequest ();
+//				requisition.Height += 2 * box.Child.Style?.YThickness ?? 0;
+//			}
+//			else
+//				requisition = box.SizeRequest ();
+//		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
 			box.SizeRequest ();
-			box.Allocation = allocation;
+			box.WidthRequest = allocation.Width;
+			box.HeightRequest = allocation.Height;
 		}
 	}
 }

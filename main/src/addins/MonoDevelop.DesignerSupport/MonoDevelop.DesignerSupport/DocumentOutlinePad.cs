@@ -207,16 +207,16 @@ namespace MonoDevelop.DesignerSupport
 				layout.SetText (text);
 			}
 
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-			{
-				if (evnt.Window != GdkWindow || layout == null) {
-					return base.OnExposeEvent (evnt);
-				}
-				layout.Width = (int)(Allocation.Width * 2 / 3 * Pango.Scale.PangoScale);
-				Gtk.Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area,
-				    this, null, Allocation.Width * 1 / 6 + Allocation.X , 12 + Allocation.Y, layout);
-				return true;
-			}
+//			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//			{
+//				if (evnt.Window != GdkWindow || layout == null) {
+//					return base.OnExposeEvent (evnt);
+//				}
+//				layout.Width = (int)(Allocation.Width * 2 / 3 * Pango.Scale.PangoScale);
+//				Gtk.Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area,
+//				    this, null, Allocation.Width * 1 / 6 + Allocation.X , 12 + Allocation.Y, layout);
+//				return true;
+//			}
 
 			protected override void OnStyleSet (Gtk.Style previous_style)
 			{
@@ -225,14 +225,14 @@ namespace MonoDevelop.DesignerSupport
 				base.OnStyleSet (previous_style);
 			}
 
-			public override void Dispose ()
-			{
-				if (layout != null) {
-					layout.Dispose ();
-					layout = null;
-				}
-				base.Dispose ();
-			}
+//			public override void Dispose ()
+//			{
+//				if (layout != null) {
+//					layout.Dispose ();
+//					layout = null;
+//				}
+//				base.Dispose ();
+//			}
 		}
 	}
 }

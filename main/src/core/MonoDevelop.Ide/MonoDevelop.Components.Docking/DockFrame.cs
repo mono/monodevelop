@@ -948,7 +948,7 @@ namespace MonoDevelop.Components.Docking
 				w.Parent = this;
 				w.Size = new Size (width, height);
 				Requisition r = w.SizeRequest ();
-				w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
+//				w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
 				topLevels.Add (w);
 			}
 		}
@@ -1098,11 +1098,18 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
 			if (overlayWidget != null)
 				overlayWidget.SizeRequest ();
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out min_width, out natural_width);
+		}
+
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
+		{
+			if (overlayWidget != null)
+				overlayWidget.SizeRequest ();
+			base.OnGetPreferredHeight (out min_height, out natural_height);
 		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)

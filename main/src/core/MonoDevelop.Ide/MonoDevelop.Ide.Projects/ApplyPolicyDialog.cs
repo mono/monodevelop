@@ -195,29 +195,29 @@ namespace MonoDevelop.Ide.Projects
 			this.AppendColumn ("", new Gtk.CellRendererText (), "text", 0);
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (HasPolicies) {
-				return base.OnExposeEvent (evnt);
-			}
-			
-			var win = evnt.Window;
-			win.Clear ();
-			if (string.IsNullOrEmpty (message)) {
-				return true;
-			}
-			
-			using (var layout = PangoUtil.CreateLayout (this)) {
-				layout.SetMarkup ("<i>" + GLib.Markup.EscapeText (message) + "</i>");
-				int w, h;
-				layout.GetPixelSize (out w, out h);
-				var a = Allocation;
-				var x = (a.Width - w) / 2;
-				var y = (a.Height - h ) / 2;
-				win.DrawLayout (Style.TextGC (Gtk.StateType.Normal), x, y, layout);
-			}
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			if (HasPolicies) {
+//				return base.OnExposeEvent (evnt);
+//			}
+//			
+//			var win = evnt.Window;
+//			win.Clear ();
+//			if (string.IsNullOrEmpty (message)) {
+//				return true;
+//			}
+//			
+//			using (var layout = PangoUtil.CreateLayout (this)) {
+//				layout.SetMarkup ("<i>" + GLib.Markup.EscapeText (message) + "</i>");
+//				int w, h;
+//				layout.GetPixelSize (out w, out h);
+//				var a = Allocation;
+//				var x = (a.Width - w) / 2;
+//				var y = (a.Height - h ) / 2;
+//				win.DrawLayout (Style.TextGC (Gtk.StateType.Normal), x, y, layout);
+//			}
+//			return true;
+//		}
 		
 		public bool HasPolicies { get; private set; }
 		

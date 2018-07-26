@@ -92,7 +92,7 @@ namespace MonoDevelop.Components
 		{
 			this.Relief = oldRelief;
 			isOpen = false;
-			this.State = StateType.Normal;
+			this.SetStateFlags (StateFlags.Normal, true);
 		}
 
 		protected override void OnClicked ()
@@ -136,10 +136,10 @@ namespace MonoDevelop.Components
 		protected override void OnStateChanged(StateType previous_state)
 		{
 			base.OnStateChanged (previous_state);
-			
+
 			//while the menu's open, make sure the button looks depressed
 			if (isOpen && this.State != StateType.Active)
-				this.State = StateType.Active;
+				this.SetStateFlags (StateFlags.Active, true);
 		}
 		
 		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)

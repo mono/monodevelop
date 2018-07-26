@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::Mono.Unix.Catalog.GetString ("Rename Configuration");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			// Internal child MonoDevelop.Ide.Projects.RenameConfigDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "vbox78";
 			w1.BorderWidth = ((uint)(2));
 			// Container child vbox78.Gtk.Box+BoxChild
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox79]));
 			w6.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.RenameConfigDialog.ActionArea
-			global::Gtk.HButtonBox w7 = this.ActionArea;
+			global::Gtk.HButtonBox w7 = (Gtk.HButtonBox)this.ActionArea;
 			w7.Name = "hbuttonbox2";
 			w7.Spacing = 6;
 			w7.BorderWidth = ((uint)(5));

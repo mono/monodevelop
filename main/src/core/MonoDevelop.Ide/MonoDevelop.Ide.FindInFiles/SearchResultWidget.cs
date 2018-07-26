@@ -383,7 +383,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			labelStatus.Text = text;
 		}
 		
-		static void FileIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void FileIconDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
@@ -399,7 +399,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return string.Format ("<span weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
 		}
 		
-		void FileNameDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		void FileNameDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
@@ -420,19 +420,19 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + lineNumber, didRead);
 		}
 		
-		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
+		int CompareLineNumbers (ITreeModel model, TreeIter first, TreeIter second)
 		{
 			var loc1 = GetLocation ((SearchResult)model.GetValue (first, SearchResultColumn));
 			var loc2 = GetLocation ((SearchResult)model.GetValue (second, SearchResultColumn));
 			return loc1.Line.CompareTo (loc2.Line);
 		}
 		
-		static int DefaultSortFunc (TreeModel model, TreeIter first, TreeIter second)
+		static int DefaultSortFunc (ITreeModel model, TreeIter first, TreeIter second)
 		{
 			return 0;
 		}
 
-		static int CompareFileNames (TreeModel model, TreeIter first, TreeIter second)
+		static int CompareFileNames (ITreeModel model, TreeIter first, TreeIter second)
 		{
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
@@ -446,7 +446,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		static int CompareProjectFileNames (TreeModel model, TreeIter first, TreeIter second)
+		static int CompareProjectFileNames (ITreeModel model, TreeIter first, TreeIter second)
 		{
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
@@ -457,7 +457,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return string.Compare (System.IO.Path.GetFileName (searchResult1.Projects [0].FileName), System.IO.Path.GetFileName (searchResult2.Projects [0].FileName), StringComparison.Ordinal);
 		}
 
-		static int CompareFilePaths (TreeModel model, TreeIter first, TreeIter second)
+		static int CompareFilePaths (ITreeModel model, TreeIter first, TreeIter second)
 		{
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
@@ -467,7 +467,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return System.IO.Path.GetDirectoryName (searchResult1.FileName).CompareTo (System.IO.Path.GetDirectoryName (searchResult2.FileName));
 		}
 		
-		void ResultPathDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		void ResultPathDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
@@ -491,7 +491,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			pathRenderer.Markup = MarkupText (directory, didRead);
 		}
 
-		static void ResultProjectIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void ResultProjectIconDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
@@ -506,7 +506,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		static void ResultProjectDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void ResultProjectDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
@@ -529,7 +529,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return Encoding.UTF8.GetCharCount (bytes, 0, index);
 		}
 		List<Tuple<SearchResult, string>> markupCache = new List<Tuple<SearchResult, string>> ();
-		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
@@ -759,7 +759,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void CopySelection ()
 		{
-			TreeModel model;
+			ITreeModel model;
 			var sb = new StringBuilder ();
 			foreach (TreePath p in treeviewSearchResults.Selection.GetSelectedRows (out model)) {
 				TreeIter iter;

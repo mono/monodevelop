@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		private global::Gtk.Label label2;
 		
-		private global::Gtk.ComboBox comboSets;
+		private global::Gtk.ComboBoxText comboSets;
 		
 		private global::Gtk.Button buttonCancel;
 		
@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::Mono.Unix.Catalog.GetString ("New Policy");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.NewPolicySetDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.comboSets = global::Gtk.ComboBox.NewText ();
+			this.comboSets = new global::Gtk.ComboBoxText ();
 			this.comboSets.Name = "comboSets";
 			this.vbox2.Add (this.comboSets);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.comboSets]));
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Projects
 			w6.Expand = false;
 			w6.Fill = false;
 			// Internal child MonoDevelop.Ide.Projects.NewPolicySetDialog.ActionArea
-			global::Gtk.HButtonBox w7 = this.ActionArea;
+			global::Gtk.HButtonBox w7 = (Gtk.HButtonBox)this.ActionArea;
 			w7.Name = "dialog1_ActionArea";
 			w7.Spacing = 10;
 			w7.BorderWidth = ((uint)(5));
