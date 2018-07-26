@@ -34,7 +34,9 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class DeleteOnRestartManager : IDeleteOnRestartManager
 	{
+		#pragma warning disable 67
 		public event EventHandler<PackagesMarkedForDeletionEventArgs> PackagesMarkedForDeletionFound;
+		#pragma warning restore 67
 
 		public void CheckAndRaisePackageDirectoriesMarkedForDeletion ()
 		{

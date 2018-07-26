@@ -62,26 +62,6 @@ namespace MonoDevelop.PackageManagement
 		public Solution Solution { get; private set; }
 		public ISettings Settings { get; private set; }
 
-		public NuGetProject DefaultNuGetProject {
-			get {
-				throw new NotImplementedException ();
-			}
-		}
-
-		public string DefaultNuGetProjectName {
-			get {
-				throw new NotImplementedException ();
-			}
-
-			set {
-				throw new NotImplementedException ();
-			}
-		}
-
-		public bool IsSolutionAvailable {
-			get { return true; }
-		}
-
 		public bool IsSolutionOpen {
 			get { return true; }
 		}
@@ -106,17 +86,17 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler SolutionOpening;
 		#pragma warning restore 67
 
-		public NuGetProject GetNuGetProject (string nuGetProjectSafeName)
+		public Task<NuGetProject> GetNuGetProjectAsync (string nuGetProjectSafeName)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public IEnumerable<NuGetProject> GetNuGetProjects ()
+		public Task<IEnumerable<NuGetProject>> GetNuGetProjectsAsync ()
 		{
 			if (projects == null) {
 				projects = GetNuGetProjects (Solution, Settings).ToList ();
 			}
-			return projects;
+			return Task.FromResult (projects.AsEnumerable ());
 		}
 
 		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution, ISettings settings)
@@ -127,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		public string GetNuGetProjectSafeName (NuGetProject nuGetProject)
+		public Task<string> GetNuGetProjectSafeNameAsync (NuGetProject nuGetProject)
 		{
 			throw new NotImplementedException ();
 		}
@@ -179,15 +159,18 @@ namespace MonoDevelop.PackageManagement
 			projects = null;
 		}
 
-		public bool IsSolutionDPLEnabled { get; private set; }
-
 		public void EnsureSolutionIsLoaded ()
 		{
 		}
 
-		public Task<NuGetProject> UpdateNuGetProjectToPackageRef (NuGetProject oldProject)
+		public Task<bool> DoesNuGetSupportsAnyProjectAsync ()
 		{
-			return Task.FromResult (oldProject);
+			throw new NotImplementedException ();
+		}
+
+		public Task<bool> IsSolutionAvailableAsync ()
+		{
+			return Task.FromResult (true);
 		}
 	}
 }

@@ -98,10 +98,12 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
+			var resolutionContext = CreateResolutionContext ();
+
 			actions = await packageManager.PreviewUpdatePackagesAsync (
 				PackageId,
 				project,
-				CreateResolutionContext (),
+				resolutionContext,
 				context,
 				primarySources,
 				new SourceRepository[0],
@@ -122,6 +124,7 @@ namespace MonoDevelop.PackageManagement
 						project,
 						actions,
 						context,
+						resolutionContext.SourceCacheContext,
 						cancellationToken);
 				}
 			}

@@ -372,7 +372,7 @@ namespace MonoDevelop.PackageManagement
 
 		static WarningProperties GetWarningProperties (IDotNetProject project)
 		{
-			return MSBuildRestoreUtility.GetWarningProperties (
+			return WarningProperties.GetWarningProperties (
 				project.EvaluatedProperties.GetValue ("TreatWarningsAsErrors"),
 				project.EvaluatedProperties.GetValue ("WarningsAsErrors"),
 				project.EvaluatedProperties.GetValue ("NoWarn")
