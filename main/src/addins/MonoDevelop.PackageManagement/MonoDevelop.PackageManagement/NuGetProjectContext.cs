@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement
 		public NuGetActionType ActionType { get; set; }
 		public XDocument OriginalPackagesConfig { get; set; }
 		public PackageExtractionContext PackageExtractionContext { get; set; }
-		public TelemetryServiceHelper TelemetryService { get; set; }
+		public Guid OperationId { get; set; }
 
 		public ISourceControlManagerProvider SourceControlManagerProvider {
 			get { return null; }

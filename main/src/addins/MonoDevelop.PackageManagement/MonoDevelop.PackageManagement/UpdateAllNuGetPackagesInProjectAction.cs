@@ -106,9 +106,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			await RestoreAnyMissingPackages (cancellationToken);
 
+			var resolutionContext = CreateResolutionContext ();
+
 			actions = await packageManager.PreviewUpdatePackagesAsync (
 				project,
-				CreateResolutionContext (),
+				resolutionContext,
 				context,
 				primarySources,
 				new SourceRepository[0],
@@ -127,6 +129,7 @@ namespace MonoDevelop.PackageManagement
 						project,
 						actions,
 						context,
+						resolutionContext.SourceCacheContext,
 						cancellationToken);
 				}
 			}

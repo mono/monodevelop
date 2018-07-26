@@ -41,7 +41,9 @@ namespace MonoDevelop.PackageManagement.Refactoring
 {
 	class NuGetPackageServicesProxy : PackageInstallerServiceFactory.IPackageServicesProxy
 	{
+		#pragma warning disable 67
 		public event EventHandler SourcesChanged;
+		#pragma warning restore 67
 
 		public IEnumerable<PackageInstallerServiceFactory.PackageMetadata> GetInstalledPackages (Project project)
 		{
