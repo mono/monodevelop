@@ -36,7 +36,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		protected override void InternalSetup (string rootDir)
 		{
 			base.InternalSetup (rootDir);
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
+			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk3);
 			DesktopService.Initialize ();
 		}
 

@@ -217,7 +217,6 @@ namespace MonoDevelop.Components
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
 			int hr = 0;
-			natural_height = 0;
 			foreach (var section in sections) {
 				var req = section.Child.SizeRequest ();
 				hr = Math.Max (hr, req.Height);
@@ -231,13 +230,12 @@ namespace MonoDevelop.Components
 			
 			hr = Math.Max (hr, HeightRequest);
 			
-			min_height = hr;
+			min_height = natural_height = hr;
 		}
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
 			int wr = 0;
-			natural_width = 0;
 			foreach (var section in sections) {
 				var req = section.Child.SizeRequest ();
 				wr = Math.Max (wr, req.Width);
@@ -250,7 +248,7 @@ namespace MonoDevelop.Components
 			
 			wr = Math.Max (wr, WidthRequest);
 			
-			min_width = wr;
+			min_width = natural_width = wr;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

@@ -40,7 +40,9 @@ namespace MonoDevelop.Ide.Fonts
 		static Properties fontProperties;
 
 		static string defaultMonospaceFontName = String.Empty;
+		static string defaultSansFontName = String.Empty;
 		static FontDescription defaultMonospaceFont = new FontDescription ();
+		static FontDescription defaultSansFont = new FontDescription ();
 
 		static void LoadDefaults ()
 		{
@@ -48,9 +50,15 @@ namespace MonoDevelop.Ide.Fonts
 				defaultMonospaceFont.Dispose ();
 			}
 
+			if (defaultSansFont != null) {
+				defaultSansFont.Dispose ();
+			}
+
 			#pragma warning disable 618
 			defaultMonospaceFontName = DesktopService.DefaultMonospaceFont;
 			defaultMonospaceFont = FontDescription.FromString (defaultMonospaceFontName);
+			defaultSansFontName = DesktopService.DefaultSansFont;
+			defaultSansFont = FontDescription.FromString (defaultSansFontName);
 			#pragma warning restore 618
 		}
 		
@@ -85,10 +93,10 @@ namespace MonoDevelop.Ide.Fonts
 		}
 
 		public static FontDescription MonospaceFont { get { return defaultMonospaceFont; } }
-		public static FontDescription SansFont { get { return Gui.Styles.DefaultFont; } }
+		public static FontDescription SansFont { get { return defaultSansFont; } }
 
 		public static string MonospaceFontName { get { return defaultMonospaceFontName; } }
-		public static string SansFontName { get { return Gui.Styles.DefaultFontName; } }
+		public static string SansFontName { get { return defaultSansFontName; } }
 
 		[Obsolete ("Use MonospaceFont")]
 		public static FontDescription DefaultMonospaceFontDescription {

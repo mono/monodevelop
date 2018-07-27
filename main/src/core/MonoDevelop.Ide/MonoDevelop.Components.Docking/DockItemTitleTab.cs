@@ -695,7 +695,6 @@ namespace MonoDevelop.Components.Docking
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
 			min_height = 0;
-			natural_height = 0;
 			if (Child != null) {
 				Requisition req = Child.SizeRequest ();
 				if (active)
@@ -703,16 +702,17 @@ namespace MonoDevelop.Components.Docking
 				else
 					min_height += (int)(TabPadding.Top + TabPadding.Bottom);
 			}
+			natural_height = min_height;
 		}
 					
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
 			min_width = 0;
-			natural_width = 0;
 			if (Child != null) {
 				Requisition req = Child.SizeRequest ();
 				min_width += (int)(TabPadding.Left + TabPadding.Right);
 			}
+			natural_width = min_width;
 		}
 					
 		protected override void OnSizeAllocated (Gdk.Rectangle rect)

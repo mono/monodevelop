@@ -110,7 +110,7 @@ namespace MonoDevelop.Components
 				return d.GetNativeWidget<Xwt.WindowFrame> ();
 
 			if (d.nativeWidget is Gtk.Window)
-				return Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).WrapWindow ((Gtk.Window)d);
+				return Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk3).WrapWindow ((Gtk.Window)d);
 #if MAC
 			if (d.nativeWidget is AppKit.NSWindow)
 				return Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac).WrapWindow ((AppKit.NSWindow)d);

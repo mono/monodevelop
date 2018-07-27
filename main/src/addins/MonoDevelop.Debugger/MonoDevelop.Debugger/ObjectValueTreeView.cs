@@ -152,31 +152,31 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				if (!icon.IsNull)
-					width += (int)(Xpad * 2 + img.Width);
-			}
+//			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//			{
+//				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+//				if (!icon.IsNull)
+//					width += (int)(Xpad * 2 + img.Width);
+//			}
 
-			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
-			{
-				base.Render (window, widget, background_area, cell_area, expose_area, flags);
-				if (!icon.IsNull) {
-					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						using (var layout = new Pango.Layout (widget.PangoContext)) {
-							layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
-							layout.FontDescription.Family = Family;
-							layout.SetText (Text);
-							int w, h;
-							layout.GetPixelSize (out w, out h);
-							var x = cell_area.X + w + 3 * Xpad;
-							var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
-							ctx.DrawImage (widget, img, x, y);
-						}
-					}
-				}
-			}
+//			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+//			{
+//				base.Render (window, widget, background_area, cell_area, expose_area, flags);
+//				if (!icon.IsNull) {
+//					using (var ctx = Gdk.CairoHelper.Create (window)) {
+//						using (var layout = new Pango.Layout (widget.PangoContext)) {
+//							layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+//							layout.FontDescription.Family = Family;
+//							layout.SetText (Text);
+//							int w, h;
+//							layout.GetPixelSize (out w, out h);
+//							var x = cell_area.X + w + 3 * Xpad;
+//							var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
+//							ctx.DrawImage (widget, img, x, y);
+//						}
+//					}
+//				}
+//			}
 		}
 
 		class ValueCellRenderer : CellRendererText
@@ -410,7 +410,7 @@ namespace MonoDevelop.Debugger
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
-			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
+//			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
 
 
 			expanderSize = (int)this.StyleGetProperty ("expander-size") + 4;//+4 is hardcoded in gtk.c code
@@ -454,15 +454,15 @@ namespace MonoDevelop.Debugger
 			column.CellSetCellData (Model, iter, false, false);
 			var area = new Gdk.Rectangle (0, 0, 1000, 1000);
 			bool firstCell = true;
-			foreach (var cellRenderer in column.CellRenderers) {
-				if (!cellRenderer.Visible)
-					continue;
-				if (!firstCell && columnWidth > 0)
-					columnWidth += column.Spacing;
-				cellRenderer.GetSize (this, ref area, out x, out y, out w, out h);
-				columnWidth += w + focus_line_width;
-				firstCell = false;
-			}
+//			foreach (var cellRenderer in column.CellRenderers) {
+//				if (!cellRenderer.Visible)
+//					continue;
+//				if (!firstCell && columnWidth > 0)
+//					columnWidth += column.Spacing;
+//				cellRenderer.GetSize (this, ref area, out x, out y, out w, out h);
+//				columnWidth += w + focus_line_width;
+//				firstCell = false;
+//			}
 			if (ExpanderColumn == column) {
 				columnWidth += horizontal_separator + (path.Depth - 1) * LevelIndentation;
 				if (ShowExpanders)
@@ -511,17 +511,17 @@ namespace MonoDevelop.Debugger
 		Adjustment oldHadjustment;
 		Adjustment oldVadjustment;
 		//Don't convert this event handler to override OnSetScrollAdjustments as it causes problems
-		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
-		{
-			if (oldHadjustment != null) {
-				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
-				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
-			}
-			oldHadjustment = Hadjustment;
-			oldVadjustment = Vadjustment;
-			oldHadjustment.ValueChanged += UpdatePreviewPosition;
-			oldVadjustment.ValueChanged += UpdatePreviewPosition;
-		}
+//		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
+//		{
+//			if (oldHadjustment != null) {
+//				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
+//				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
+//			}
+//			oldHadjustment = Hadjustment;
+//			oldVadjustment = Vadjustment;
+//			oldHadjustment.ValueChanged += UpdatePreviewPosition;
+//			oldVadjustment.ValueChanged += UpdatePreviewPosition;
+//		}
 
 		void UpdatePreviewPosition (object sender, EventArgs e)
 		{
@@ -577,7 +577,7 @@ namespace MonoDevelop.Debugger
 			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
 			expCol.RemoveNotification ("width", OnColumnWidthChanged);
 
-			ScrollAdjustmentsSet -= HandleScrollAdjustmentsSet;
+//			ScrollAdjustmentsSet -= HandleScrollAdjustmentsSet;
 			if (oldHadjustment != null) {
 				oldHadjustment.ValueChanged -= UpdatePreviewPosition;
 				oldVadjustment.ValueChanged -= UpdatePreviewPosition;
@@ -2057,7 +2057,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			if (selected.Length == 1) {
-				var editable = IdeApp.Workbench.RootWindow.Focus as Editable;
+				var editable = IdeApp.Workbench.RootWindow.Focus as IEditable;
 
 				if (editable != null) {
 					editable.CopyClipboard ();
@@ -2198,28 +2198,28 @@ namespace MonoDevelop.Debugger
 			if (GetPathAtPos (x, y, out path, out col)) {
 				var cellArea = GetCellArea (path, col);
 				x -= cellArea.X;
-				foreach (CellRenderer cr in col.CellRenderers) {
-					int xo, w;
-					col.CellGetPosition (cr, out xo, out w);
-					var visible = cr.Visible;
-					if (cr == crpViewer) {
-						if (store.GetIter (out var it, path)) {
-							visible = (bool)store.GetValue (it, ViewerButtonVisibleColumn);
-						}
-					} else if (cr == evaluateStatusCell) {
-						if (store.GetIter (out var it, path)) {
-							visible = (bool)store.GetValue (it, EvaluateStatusIconVisibleColumn);
-						}
-					} else if (cr == crpButton) {
-						if (store.GetIter (out var it, path)) {
-							visible = (bool)store.GetValue (it, ValueButtonVisibleColumn);
-						}
-					}
-					if (visible && x >= xo && x < xo + w) {
-						cellRenderer = cr;
-						return true;
-					}
-				}
+//				foreach (CellRenderer cr in col.CellRenderers) {
+//					int xo, w;
+//					col.CellGetPosition (cr, out xo, out w);
+//					var visible = cr.Visible;
+//					if (cr == crpViewer) {
+//						if (store.GetIter (out var it, path)) {
+//							visible = (bool)store.GetValue (it, ViewerButtonVisibleColumn);
+//						}
+//					} else if (cr == evaluateStatusCell) {
+//						if (store.GetIter (out var it, path)) {
+//							visible = (bool)store.GetValue (it, EvaluateStatusIconVisibleColumn);
+//						}
+//					} else if (cr == crpButton) {
+//						if (store.GetIter (out var it, path)) {
+//							visible = (bool)store.GetValue (it, ValueButtonVisibleColumn);
+//						}
+//					}
+//					if (visible && x >= xo && x < xo + w) {
+//						cellRenderer = cr;
+//						return true;
+//					}
+//				}
 			}
 			cellRenderer = null;
 			return false;

@@ -195,11 +195,11 @@ namespace MonoDevelop.SourceEditor
 		
 		class Border : Gtk.DrawingArea
 		{
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-			{
-				evnt.Window.DrawRectangle (this.Style.DarkGC (State), true, evnt.Area);
-				return true;
-			}
+//			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//			{
+//				evnt.Window.DrawRectangle (this.Style.DarkGC (State), true, evnt.Area);
+//				return true;
+//			}
 		}
 		
 		

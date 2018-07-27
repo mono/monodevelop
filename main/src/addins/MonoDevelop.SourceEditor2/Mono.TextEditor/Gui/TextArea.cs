@@ -3134,7 +3134,7 @@ namespace Mono.TextEditor
 		int nextTipOffset = 0;
 		int nextTipX=0; int nextTipY=0;
 		Gdk.ModifierType nextTipModifierState = ModifierType.None;
-		DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
+		System.DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
 		
 		void ShowTooltip (Gdk.ModifierType modifierState, DocumentLocation location)
 		{

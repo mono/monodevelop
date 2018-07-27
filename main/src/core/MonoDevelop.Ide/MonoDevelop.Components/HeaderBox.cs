@@ -129,24 +129,24 @@ namespace MonoDevelop.Components
 
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			natural_height = 0;
 			if (child != null) {
 				min_height = child.SizeRequest ().Height;
 				min_height += topMargin + bottomMargin + topPadding + bottomPadding;
 			} else {
 				min_height = 0;
 			}
+			natural_height = min_height;
 		}
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			natural_width = 0;
 			if (child != null) {
 				min_width = child.SizeRequest ().Width;
 				min_width += leftMargin + rightMargin + leftPadding + rightPadding;
 			} else {
 				min_width = 0;
 			}
+			natural_width = min_width;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

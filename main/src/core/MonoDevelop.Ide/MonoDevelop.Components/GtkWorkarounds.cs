@@ -910,6 +910,7 @@ namespace MonoDevelop.Components
 		// per-instance delegates.
 		public static void FixContainerLeak (Gtk.Container c)
 		{
+return;
 			if (containerLeakFixed) {
 				return;
 			}

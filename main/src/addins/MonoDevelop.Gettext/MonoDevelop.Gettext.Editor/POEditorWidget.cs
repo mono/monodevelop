@@ -375,7 +375,7 @@ namespace MonoDevelop.Gettext
 			Menu sub = new Menu ();
 			searchInMenu.Submenu = sub;
 			Gtk.RadioMenuItem  original = null, translated = null, both = null;
-			var group = new Gtk.RadioMenuItem [0];
+			Gtk.RadioMenuItem [] group = new Gtk.RadioMenuItem [0];
 			original = new Gtk.RadioMenuItem (group, GettextCatalog.GetString ("_Original"));
 			group = original.Group;
 			original.ButtonPressEvent += delegate { original.Activate (); };

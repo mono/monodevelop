@@ -499,8 +499,7 @@ namespace MonoDevelop.Ide
 
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			min_height = 0;
-			natural_height = 0;
+			min_height = natural_height = 0;
 			maxLength = 15;
 			foreach (var cat in categories) {
 				foreach (var item in cat.Items) {
@@ -526,12 +525,12 @@ namespace MonoDevelop.Ide
 				var headerHeight = h + headerDistance;
 				totalHeight = Math.Max (totalHeight, headerHeight + (Math.Min (cat.Items.Count, maxItems)) * iconHeight);
 			}
+			natural_height = min_height;
 		}
 		
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			min_width = 0;
-			natural_width = 0;
+			min_width = natural_width = 0;
 			maxLength = 15;
 			foreach (var cat in categories) {
 				foreach (var item in cat.Items) {
@@ -557,7 +556,7 @@ namespace MonoDevelop.Ide
 				var headerHeight = h + headerDistance;
 				totalWidth += (1 + Math.Min (maxRows - 1, cat.Items.Count / maxItems)) * iconWidth;
 			}
-			min_width = totalWidth + padding * 2 + (categories.Count - 1) * padding;
+			min_width = natural_width = totalWidth + padding * 2 + (categories.Count - 1) * padding;
 		}
 		
 		public class Item
