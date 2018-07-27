@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Templates
 			var metadata = new TemplateMetadata {
 				Id = Id,
 				Name = nonLocalizedName,
-				Language = LanguageName,
+				Language = LanguageName ?? string.Empty,
 				Platform = pDesc.Count == 1 ? pDesc[0].ProjectType : "Multiple"
 			};
 			TemplateCounter.Inc (1, null, metadata);
