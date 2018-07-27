@@ -39,11 +39,11 @@ namespace MonoDevelop.Gettext.Translator
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			this.Resizable = false;
-			this.AllowGrow = false;
+//			this.AllowGrow = false;
 			this.Gravity = ((global::Gdk.Gravity)(5));
 			this.SkipTaskbarHint = true;
 			// Internal child MonoDevelop.Gettext.Translator.LanguageChooserDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Events = ((global::Gdk.EventMask)(256));
 			w1.Name = "dialog_VBox";
 			w1.BorderWidth = ((uint)(2));
@@ -146,7 +146,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.radiobuttonKnown.Name = "radiobuttonKnown";
 			this.radiobuttonKnown.DrawIndicator = true;
 			this.radiobuttonKnown.UseUnderline = true;
-			this.radiobuttonKnown.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radiobuttonKnown.Group = new Gtk.RadioButton [0];
 			this.frame1.LabelWidget = this.radiobuttonKnown;
 			this.vbox3.Add (this.frame1);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.frame1]));
@@ -205,7 +205,7 @@ namespace MonoDevelop.Gettext.Translator
 			w19.Expand = false;
 			w19.Fill = false;
 			// Internal child MonoDevelop.Gettext.Translator.LanguageChooserDialog.ActionArea
-			global::Gtk.HButtonBox w20 = this.ActionArea;
+			global::Gtk.HButtonBox w20 = (Gtk.HButtonBox)this.ActionArea;
 			w20.Name = "MonoDevelop.Gettext.LanguageChooserDialog_ActionArea";
 			w20.Spacing = 6;
 			w20.BorderWidth = ((uint)(5));

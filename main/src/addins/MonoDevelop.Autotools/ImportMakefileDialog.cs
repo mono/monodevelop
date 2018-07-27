@@ -48,7 +48,7 @@ namespace MonoDevelop.Autotools
 			box.PackStart (optionsWidget, false, false, 0);
 			box.BorderWidth = 6;
 			
-			this.VBox.PackStart (box, true, true, 0);
+			this.ContentArea.PackStart (box, true, true, 0);
 			
 			this.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 			this.AddButton (Gtk.Stock.Ok, ResponseType.Ok);

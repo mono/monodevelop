@@ -15,8 +15,8 @@ namespace MonoDevelop.Deployment.Linux
 		public BasicOptionPanelWidget (Project entry, bool creatingProject)
 		{
 			this.Build();
-			
-			WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
+
+			this.NoShowAll = true;
 			
 			this.entry = entry;
 			if (entry is DotNetProject) {

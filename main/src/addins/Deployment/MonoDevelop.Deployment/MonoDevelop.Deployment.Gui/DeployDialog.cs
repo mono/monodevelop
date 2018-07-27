@@ -158,7 +158,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		PackageBuilder GetBuilderSelection ()
 		{
-			Gtk.TreeModel model;
+			Gtk.ITreeModel model;
 			Gtk.TreeIter iter;
 			
 			if (targetsTree.Selection.GetSelected (out model, out iter)) {

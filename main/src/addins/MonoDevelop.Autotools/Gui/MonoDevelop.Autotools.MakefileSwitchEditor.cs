@@ -16,7 +16,7 @@ namespace MonoDevelop.Autotools
 			this.Title = global::Mono.Unix.Catalog.GetString ("Switch editor");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Autotools.MakefileSwitchEditor.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -26,7 +26,7 @@ namespace MonoDevelop.Autotools
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1 [this.align]));
 			w2.Position = 0;
 			// Internal child MonoDevelop.Autotools.MakefileSwitchEditor.ActionArea
-			global::Gtk.HButtonBox w3 = this.ActionArea;
+			global::Gtk.HButtonBox w3 = (Gtk.HButtonBox)this.ActionArea;
 			w3.Name = "dialog1_ActionArea";
 			w3.Spacing = 6;
 			w3.BorderWidth = ((uint)(5));

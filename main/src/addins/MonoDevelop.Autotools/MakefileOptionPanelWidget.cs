@@ -14,7 +14,7 @@ namespace MonoDevelop.Autotools
 	public partial class MakefileOptionPanelWidget : Gtk.Bin
 	{
 		MakefileData data;
-		ComboBox [] combos = null;
+		ComboBoxText [] combos = null;
 		bool isDotNetProject;
 		bool loading = true;
 		Window parentDialog;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Autotools
 		public MakefileOptionPanelWidget()
 		{
 			this.Build();
-			combos = new ComboBox [7] {
+			combos = new ComboBoxText [7] {
 				comboFilesVar, comboDeployFilesVar, comboResourcesVar, comboOthersVar, 
 				comboPackageRefVar, comboAsmRefVar, comboProjectRefVar}; 
 				//comboAssemblyName, comboOutputDir};

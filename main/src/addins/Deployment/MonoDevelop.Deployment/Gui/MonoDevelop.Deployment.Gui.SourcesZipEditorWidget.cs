@@ -7,11 +7,11 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Label label4;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBox comboFormat;
+		private global::Gtk.ComboBoxText comboFormat;
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Entry entryZip;
-		private global::Gtk.ComboBox comboZip;
+		private global::Gtk.ComboBoxText comboZip;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
@@ -43,7 +43,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboFormat = global::Gtk.ComboBox.NewText ();
+			this.comboFormat = new global::Gtk.ComboBoxText ();
 			this.comboFormat.Name = "comboFormat";
 			this.table1.Add (this.comboFormat);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboFormat]));
@@ -75,7 +75,7 @@ namespace MonoDevelop.Deployment.Gui
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryZip]));
 			w4.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboZip = global::Gtk.ComboBox.NewText ();
+			this.comboZip = new global::Gtk.ComboBoxText ();
 			this.comboZip.Name = "comboZip";
 			this.hbox1.Add (this.comboZip);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboZip]));

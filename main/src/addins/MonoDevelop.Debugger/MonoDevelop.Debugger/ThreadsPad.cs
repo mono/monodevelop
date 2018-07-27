@@ -195,14 +195,14 @@ namespace MonoDevelop.Debugger
 			clipboard.Text = bufferText;
 		}
 
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			DebuggingService.CallStackChanged -= OnStackChanged;
-			DebuggingService.PausedEvent -= OnDebuggerPaused;
-			DebuggingService.ResumedEvent -= OnDebuggerResumed;
-			DebuggingService.StoppedEvent -= OnDebuggerStopped;
-		}
+//		public override void Dispose ()
+//		{
+//			base.Dispose ();
+//			DebuggingService.CallStackChanged -= OnStackChanged;
+//			DebuggingService.PausedEvent -= OnDebuggerPaused;
+//			DebuggingService.ResumedEvent -= OnDebuggerResumed;
+//			DebuggingService.StoppedEvent -= OnDebuggerStopped;
+//		}
 
 		void OnStackChanged (object s, EventArgs a)
 		{

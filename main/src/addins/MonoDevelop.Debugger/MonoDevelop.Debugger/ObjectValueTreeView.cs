@@ -207,44 +207,44 @@ namespace MonoDevelop.Debugger
 				}
 			}
 
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				if (Compact)
-					this.Ellipsize = Pango.EllipsizeMode.None;
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				if (Compact)
-					this.Ellipsize = Pango.EllipsizeMode.End;
-			}
+//			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//			{
+//				if (Compact)
+//					this.Ellipsize = Pango.EllipsizeMode.None;
+//				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+//				if (Compact)
+//					this.Ellipsize = Pango.EllipsizeMode.End;
+//			}
 		}
 
 		class CellRendererColorPreview : CellRenderer
 		{
-			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
-			{
-				var darkColor = Color.WithIncreasedLight (-0.15);
+//			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+//			{
+//				var darkColor = Color.WithIncreasedLight (-0.15);
+//
+//				using (Cairo.Context cr = Gdk.CairoHelper.Create (window)) {
+//					double center_x = cell_area.X + Math.Round ((double)(cell_area.Width / 2d));
+//					double center_y = cell_area.Y + Math.Round ((double)(cell_area.Height / 2d));
+//
+//					// TODO: VV: On retina this should be LineWidth = 0.5 and Arc size needs to match
+//
+//					// @1x:
+//					cr.LineWidth = 1;
+//					cr.Arc (center_x, center_y, 5.5f, 0, 2 * Math.PI);
+//
+//					cr.SetSourceRGBA (Color.Red, Color.Green, Color.Blue, 1);
+//					cr.FillPreserve ();
+//					cr.SetSourceRGBA (darkColor.Red, darkColor.Green, darkColor.Blue, 1);
+//					cr.Stroke ();
+//				}
+//			}
 
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (window)) {
-					double center_x = cell_area.X + Math.Round ((double)(cell_area.Width / 2d));
-					double center_y = cell_area.Y + Math.Round ((double)(cell_area.Height / 2d));
-
-					// TODO: VV: On retina this should be LineWidth = 0.5 and Arc size needs to match
-
-					// @1x:
-					cr.LineWidth = 1;
-					cr.Arc (center_x, center_y, 5.5f, 0, 2 * Math.PI);
-
-					cr.SetSourceRGBA (Color.Red, Color.Green, Color.Blue, 1);
-					cr.FillPreserve ();
-					cr.SetSourceRGBA (darkColor.Red, darkColor.Green, darkColor.Blue, 1);
-					cr.Stroke ();
-				}
-			}
-
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				x_offset = y_offset = 0;
-				height = width = 16;
-			}
+//			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//			{
+//				x_offset = y_offset = 0;
+//				height = width = 16;
+//			}
 
 			public Xwt.Drawing.Color Color { get; set; }
 		}
@@ -252,60 +252,60 @@ namespace MonoDevelop.Debugger
 		class CellRendererRoundedButton : CellRendererText {
 			const int TopBottomPadding = 1;
 
-			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
-			{
-				if (string.IsNullOrEmpty (Text)) {
-					return;
-				}
-				using (var cr = Gdk.CairoHelper.Create (window)) {
-					using (var layout = new Pango.Layout (widget.PangoContext)) {
-						layout.SetText (Text);
-						layout.FontDescription = FontDesc;
-						layout.FontDescription.Family = Family;
-						int w, h;
-						layout.GetPixelSize (out w, out h);
-						int xpad = (int)Xpad;
-						cr.RoundedRectangle (
-							cell_area.X + xpad + 0.5,
-							cell_area.Y + TopBottomPadding + 0.5,
-							w + (cell_area.Height - 2 * TopBottomPadding) - 1,
-							cell_area.Height - TopBottomPadding * 2 - 1,
-							(cell_area.Height - (TopBottomPadding * 2)) / 2);
-						cr.LineWidth = 1;
-						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBackground.ToCairoColor ());
-						cr.FillPreserve ();
-						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBorder.ToCairoColor ());
-						cr.Stroke ();
+//			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+//			{
+//				if (string.IsNullOrEmpty (Text)) {
+//					return;
+//				}
+//				using (var cr = Gdk.CairoHelper.Create (window)) {
+//					using (var layout = new Pango.Layout (widget.PangoContext)) {
+//						layout.SetText (Text);
+//						layout.FontDescription = FontDesc;
+//						layout.FontDescription.Family = Family;
+//						int w, h;
+//						layout.GetPixelSize (out w, out h);
+//						int xpad = (int)Xpad;
+//						cr.RoundedRectangle (
+//							cell_area.X + xpad + 0.5,
+//							cell_area.Y + TopBottomPadding + 0.5,
+//							w + (cell_area.Height - 2 * TopBottomPadding) - 1,
+//							cell_area.Height - TopBottomPadding * 2 - 1,
+//							(cell_area.Height - (TopBottomPadding * 2)) / 2);
+//						cr.LineWidth = 1;
+//						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBackground.ToCairoColor ());
+//						cr.FillPreserve ();
+//						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonBorder.ToCairoColor ());
+//						cr.Stroke ();
+//
+//						int YOffset = (cell_area.Height - h) / 2;
+//						if (((ObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
+//							YOffset += 1;
+//						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
+//						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
+//								   cell_area.Y + YOffset);
+//						cr.ShowLayout (layout);
+//					}
+//				}
+//			}
 
-						int YOffset = (cell_area.Height - h) / 2;
-						if (((ObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
-							YOffset += 1;
-						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
-						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
-								   cell_area.Y + YOffset);
-						cr.ShowLayout (layout);
-					}
-				}
-			}
-
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				x_offset = y_offset = 0;
-				if (string.IsNullOrEmpty (Text)) {
-					width = 0;
-					height = 0;
-					return;
-				}
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					layout.SetText (Text);
-					layout.FontDescription = FontDesc;
-					layout.FontDescription.Family = Family;
-					int w, h;
-					layout.GetPixelSize (out w, out h);
-					width = w + (height - 2 * TopBottomPadding) + 2 * (int)Xpad;
-				}
-			}
+//			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//			{
+//				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+//				x_offset = y_offset = 0;
+//				if (string.IsNullOrEmpty (Text)) {
+//					width = 0;
+//					height = 0;
+//					return;
+//				}
+//				using (var layout = new Pango.Layout (widget.PangoContext)) {
+//					layout.SetText (Text);
+//					layout.FontDescription = FontDesc;
+//					layout.FontDescription.Family = Family;
+//					int w, h;
+//					layout.GetPixelSize (out w, out h);
+//					width = w + (height - 2 * TopBottomPadding) + 2 * (int)Xpad;
+//				}
+//			}
 		}
 
 		public ObjectValueTreeView ()

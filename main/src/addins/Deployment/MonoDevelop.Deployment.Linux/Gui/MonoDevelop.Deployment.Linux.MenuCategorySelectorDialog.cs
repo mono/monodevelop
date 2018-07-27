@@ -20,7 +20,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.Title = global::Mono.Unix.Catalog.GetString ("Menu Category Selection");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -55,7 +55,7 @@ namespace MonoDevelop.Deployment.Linux
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.ActionArea
-			global::Gtk.HButtonBox w6 = this.ActionArea;
+			global::Gtk.HButtonBox w6 = (Gtk.HButtonBox)this.ActionArea;
 			w6.Name = "dialog1_ActionArea";
 			w6.Spacing = 10;
 			w6.BorderWidth = ((uint)(5));

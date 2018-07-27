@@ -29,7 +29,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.Name = "MonoDevelop.Deployment.Gui.EditPackageDialog";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Deployment.Gui.EditPackageDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -151,7 +151,7 @@ namespace MonoDevelop.Deployment.Gui
 			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w13.Position = 0;
 			// Internal child MonoDevelop.Deployment.Gui.EditPackageDialog.ActionArea
-			global::Gtk.HButtonBox w14 = this.ActionArea;
+			global::Gtk.HButtonBox w14 = (Gtk.HButtonBox)this.ActionArea;
 			w14.Name = "dialog1_ActionArea";
 			w14.Spacing = 6;
 			w14.BorderWidth = ((uint)(5));

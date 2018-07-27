@@ -14,9 +14,9 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.CheckButton cbRunTarget;
 		private global::MonoDevelop.Components.FileEntry fileEntryMakefilePath;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.ComboBox comboAssemblyName;
+		private global::Gtk.ComboBoxText comboAssemblyName;
 		private global::Gtk.HBox hbox2;
-		private global::Gtk.ComboBox comboOutputDir;
+		private global::Gtk.ComboBoxText comboOutputDir;
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.Entry BuildTargetName;
 		private global::Gtk.HBox hbox4;
@@ -39,10 +39,10 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.CheckButton cbKeepFilesSync;
 		private global::Gtk.CheckButton cbKeepOthersSync;
 		private global::Gtk.CheckButton cbKeepResourcesSync;
-		private global::Gtk.ComboBox comboDeployFilesVar;
-		private global::Gtk.ComboBox comboFilesVar;
-		private global::Gtk.ComboBox comboOthersVar;
-		private global::Gtk.ComboBox comboResourcesVar;
+		private global::Gtk.ComboBoxText comboDeployFilesVar;
+		private global::Gtk.ComboBoxText comboFilesVar;
+		private global::Gtk.ComboBoxText comboOthersVar;
+		private global::Gtk.ComboBoxText comboResourcesVar;
 		private global::Gtk.Entry entryDeployFilesPattern;
 		private global::Gtk.Entry entryFilesPattern;
 		private global::Gtk.Entry entryResourcesPattern;
@@ -57,9 +57,9 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.HSeparator hseparator5;
 		private global::Gtk.Table table4;
 		private global::Gtk.CheckButton cbAutotoolsProject;
-		private global::Gtk.ComboBox comboAsmRefVar;
-		private global::Gtk.ComboBox comboPackageRefVar;
-		private global::Gtk.ComboBox comboProjectRefVar;
+		private global::Gtk.ComboBoxText comboAsmRefVar;
+		private global::Gtk.ComboBoxText comboPackageRefVar;
+		private global::Gtk.ComboBoxText comboProjectRefVar;
 		private global::Gtk.Entry entryAsmRefPattern;
 		private global::Gtk.Entry entryPackageRefPattern;
 		private global::Gtk.Entry entryProjectRefPattern;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.Entry entryErrorRegex;
 		private global::Gtk.Entry entryWarningRegex;
 		private global::Gtk.HBox hbox6;
-		private global::Gtk.ComboBox comboMessageType;
+		private global::Gtk.ComboBoxText comboMessageType;
 		private global::Gtk.Label lblErrorRegex;
 		private global::Gtk.Label lblMessageType;
 		private global::Gtk.Label lblWarningRegex;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Autotools
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboAssemblyName = global::Gtk.ComboBox.NewText ();
+			this.comboAssemblyName = new global::Gtk.ComboBoxText ();
 			this.comboAssemblyName.WidthRequest = 300;
 			this.comboAssemblyName.Name = "comboAssemblyName";
 			this.hbox1.Add (this.comboAssemblyName);
@@ -199,7 +199,7 @@ namespace MonoDevelop.Autotools
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.comboOutputDir = global::Gtk.ComboBox.NewText ();
+			this.comboOutputDir = new global::Gtk.ComboBoxText ();
 			this.comboOutputDir.WidthRequest = 300;
 			this.comboOutputDir.Name = "comboOutputDir";
 			this.hbox2.Add (this.comboOutputDir);
@@ -457,7 +457,7 @@ namespace MonoDevelop.Autotools
 			w31.XOptions = ((global::Gtk.AttachOptions)(4));
 			w31.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.comboDeployFilesVar = global::Gtk.ComboBox.NewText ();
+			this.comboDeployFilesVar = new global::Gtk.ComboBoxText ();
 			this.comboDeployFilesVar.WidthRequest = 200;
 			this.comboDeployFilesVar.Name = "comboDeployFilesVar";
 			this.table3.Add (this.comboDeployFilesVar);
@@ -468,7 +468,7 @@ namespace MonoDevelop.Autotools
 			w32.RightAttach = ((uint)(2));
 			w32.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.comboFilesVar = global::Gtk.ComboBox.NewText ();
+			this.comboFilesVar = new global::Gtk.ComboBoxText ();
 			this.comboFilesVar.WidthRequest = 200;
 			this.comboFilesVar.Name = "comboFilesVar";
 			this.table3.Add (this.comboFilesVar);
@@ -479,7 +479,7 @@ namespace MonoDevelop.Autotools
 			w33.RightAttach = ((uint)(2));
 			w33.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.comboOthersVar = global::Gtk.ComboBox.NewText ();
+			this.comboOthersVar = new global::Gtk.ComboBoxText ();
 			this.comboOthersVar.WidthRequest = 200;
 			this.comboOthersVar.Name = "comboOthersVar";
 			this.table3.Add (this.comboOthersVar);
@@ -490,7 +490,7 @@ namespace MonoDevelop.Autotools
 			w34.RightAttach = ((uint)(2));
 			w34.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.comboResourcesVar = global::Gtk.ComboBox.NewText ();
+			this.comboResourcesVar = new global::Gtk.ComboBoxText ();
 			this.comboResourcesVar.WidthRequest = 200;
 			this.comboResourcesVar.Name = "comboResourcesVar";
 			this.table3.Add (this.comboResourcesVar);
@@ -655,7 +655,7 @@ namespace MonoDevelop.Autotools
 			w48.RightAttach = ((uint)(3));
 			w48.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.comboAsmRefVar = global::Gtk.ComboBox.NewText ();
+			this.comboAsmRefVar = new global::Gtk.ComboBoxText ();
 			this.comboAsmRefVar.WidthRequest = 200;
 			this.comboAsmRefVar.Name = "comboAsmRefVar";
 			this.table4.Add (this.comboAsmRefVar);
@@ -666,7 +666,7 @@ namespace MonoDevelop.Autotools
 			w49.RightAttach = ((uint)(2));
 			w49.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.comboPackageRefVar = global::Gtk.ComboBox.NewText ();
+			this.comboPackageRefVar = new global::Gtk.ComboBoxText ();
 			this.comboPackageRefVar.WidthRequest = 200;
 			this.comboPackageRefVar.Name = "comboPackageRefVar";
 			this.table4.Add (this.comboPackageRefVar);
@@ -677,7 +677,7 @@ namespace MonoDevelop.Autotools
 			w50.RightAttach = ((uint)(2));
 			w50.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.comboProjectRefVar = global::Gtk.ComboBox.NewText ();
+			this.comboProjectRefVar = new global::Gtk.ComboBoxText ();
 			this.comboProjectRefVar.WidthRequest = 200;
 			this.comboProjectRefVar.Name = "comboProjectRefVar";
 			this.table4.Add (this.comboProjectRefVar);
@@ -904,7 +904,7 @@ namespace MonoDevelop.Autotools
 			this.hbox6 = new global::Gtk.HBox ();
 			this.hbox6.Name = "hbox6";
 			// Container child hbox6.Gtk.Box+BoxChild
-			this.comboMessageType = global::Gtk.ComboBox.NewText ();
+			this.comboMessageType = new global::Gtk.ComboBoxText ();
 			this.comboMessageType.WidthRequest = 150;
 			this.comboMessageType.Name = "comboMessageType";
 			this.hbox6.Add (this.comboMessageType);

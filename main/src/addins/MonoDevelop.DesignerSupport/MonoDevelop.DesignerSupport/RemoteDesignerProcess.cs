@@ -55,8 +55,8 @@ namespace MonoDevelop.DesignerSupport
 			
 			designerFrame = new Gtk.Frame ();
 			propGridFrame = new Gtk.Frame ();
-			designerFrame.Shadow = ShadowType.None;
-			propGridFrame.Shadow = ShadowType.None;
+//			designerFrame.Shadow = ShadowType.None;
+//			propGridFrame.Shadow = ShadowType.None;
 			designerFrame.BorderWidth = 0;
 			
 			designerFrame.Show ();
@@ -151,7 +151,7 @@ namespace MonoDevelop.DesignerSupport
 			Frame padFrame = new Gtk.Frame ();
 			padFrame.Add (label);
 			padFrame.BorderWidth = 10;
-			padFrame.Shadow = ShadowType.None;
+//			padFrame.Shadow = ShadowType.None;
 			
 			ScrolledWindow scrollW = new ScrolledWindow ();
 			scrollW.AddWithViewport (padFrame);

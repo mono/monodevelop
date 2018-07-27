@@ -171,7 +171,7 @@ namespace MonoDevelop.DesignerSupport
 
 			public WrappedCentreLabel ()
 			{
-				WidgetFlags |= Gtk.WidgetFlags.NoWindow;
+				this.HasWindow = false;
 			}
 
 			public WrappedCentreLabel (string text)

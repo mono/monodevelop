@@ -681,53 +681,53 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 			Pango.FontDescription font = Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11");
 
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					layout.FontDescription = font;
-					Pango.Rectangle ink, logical;
-					layout.SetMarkup ("<b>" + Text + "</b>");
-					layout.GetPixelExtents (out ink, out logical);
-					width = logical.Width + 10;
-					height = logical.Height + 2;
+//			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//			{
+//				using (var layout = new Pango.Layout (widget.PangoContext)) {
+//					layout.FontDescription = font;
+//					Pango.Rectangle ink, logical;
+//					layout.SetMarkup ("<b>" + Text + "</b>");
+//					layout.GetPixelExtents (out ink, out logical);
+//					width = logical.Width + 10;
+//					height = logical.Height + 2;
+//
+//					x_offset = 0;
+//					y_offset = 0;
+//				}
+//			}
 
-					x_offset = 0;
-					y_offset = 0;
-				}
-			}
-
-			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
-			{
-				using (var cr = Gdk.CairoHelper.Create (window)) {
-					cr.Rectangle (background_area.X, background_area.Y, background_area.Width, background_area.Height);
-
-					using (var layout = new Pango.Layout (widget.PangoContext)) {
-						layout.FontDescription = font;
-
-						if ((flags & CellRendererState.Selected) != 0) {
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue); // selected
-							cr.Fill ();
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Blue);
-						} else {
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); // background
-							cr.Fill ();
-							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeTextColor.Red,
-											 Styles.ExceptionCaughtDialog.TreeTextColor.Green,
-											 Styles.ExceptionCaughtDialog.TreeTextColor.Blue);
-						}
-
-						layout.SetMarkup (Text);
-						cr.Translate (cell_area.X + 10, cell_area.Y + 1);
-						cr.ShowLayout (layout);
-					}
-				}
-			}
+//			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+//			{
+//				using (var cr = Gdk.CairoHelper.Create (window)) {
+//					cr.Rectangle (background_area.X, background_area.Y, background_area.Width, background_area.Height);
+//
+//					using (var layout = new Pango.Layout (widget.PangoContext)) {
+//						layout.FontDescription = font;
+//
+//						if ((flags & CellRendererState.Selected) != 0) {
+//							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Red,
+//											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
+//											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue); // selected
+//							cr.Fill ();
+//							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Red,
+//											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Green,
+//											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Blue);
+//						} else {
+//							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
+//											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
+//											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); // background
+//							cr.Fill ();
+//							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeTextColor.Red,
+//											 Styles.ExceptionCaughtDialog.TreeTextColor.Green,
+//											 Styles.ExceptionCaughtDialog.TreeTextColor.Blue);
+//						}
+//
+//						layout.SetMarkup (Text);
+//						cr.Translate (cell_area.X + 10, cell_area.Y + 1);
+//						cr.ShowLayout (layout);
+//					}
+//				}
+//			}
 		}
 
 		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)

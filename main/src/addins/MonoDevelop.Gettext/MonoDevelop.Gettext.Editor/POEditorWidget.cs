@@ -272,21 +272,21 @@ namespace MonoDevelop.Gettext
 			}
 		}
 
-		void CatalogIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void CatalogIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
 			((CellRendererImage)cell).Image = ImageService.GetIcon (GetStockForEntry (entry), IconSize.Menu);
 			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
 		}
 		
-		void FuzzyToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void FuzzyToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
 			((CellRendererToggle)cell).Active = entry.IsFuzzy;
 			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
 		}
 		
-		void OriginalTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void OriginalTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
 			((CellRendererText)cell).Text = EscapeForTreeView (entry.String);
@@ -294,7 +294,7 @@ namespace MonoDevelop.Gettext
 			((CellRendererText)cell).ForegroundGdk = GetForeColorForEntry (entry);
 		}
 		
-		void TranslationTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void TranslationTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
 			((CellRendererText)cell).Text = EscapeForTreeView (entry.GetTranslation (0));
@@ -375,7 +375,7 @@ namespace MonoDevelop.Gettext
 			Menu sub = new Menu ();
 			searchInMenu.Submenu = sub;
 			Gtk.RadioMenuItem  original = null, translated = null, both = null;
-			GLib.SList group = new GLib.SList (IntPtr.Zero);
+			var group = new Gtk.RadioMenuItem [0];
 			original = new Gtk.RadioMenuItem (group, GettextCatalog.GetString ("_Original"));
 			group = original.Group;
 			original.ButtonPressEvent += delegate { original.Activate (); };
@@ -832,17 +832,17 @@ namespace MonoDevelop.Gettext
 				
 			}
 			
-			newStore.SetSortFunc (0, delegate (TreeModel model, TreeIter iter1, TreeIter iter2) {
+			newStore.SetSortFunc (0, delegate (ITreeModel model, TreeIter iter1, TreeIter iter2) {
 				CatalogEntry entry1 = (CatalogEntry)model.GetValue (iter1, 0);
 				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
 				return GetTypeSortIndicator (entry1).CompareTo (GetTypeSortIndicator (entry2));
 			});
-			newStore.SetSortFunc (1, delegate (TreeModel model, TreeIter iter1, TreeIter iter2) {
+			newStore.SetSortFunc (1, delegate (ITreeModel model, TreeIter iter1, TreeIter iter2) {
 				CatalogEntry entry1 = (CatalogEntry)model.GetValue (iter1, 0);
 				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
 				return entry1.String.CompareTo (entry2.String);
 			});
-			newStore.SetSortFunc (2, delegate (TreeModel model, TreeIter iter1, TreeIter iter2) {
+			newStore.SetSortFunc (2, delegate (ITreeModel model, TreeIter iter1, TreeIter iter2) {
 				CatalogEntry entry1 = (CatalogEntry)model.GetValue (iter1, 0);
 				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
 				return entry1.GetTranslation (0).CompareTo (entry2.GetTranslation (0));

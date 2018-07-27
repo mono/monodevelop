@@ -7,7 +7,7 @@ namespace MonoDevelop.Deployment
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label labelFiles;
-		private global::Gtk.ComboBox comboConfigs;
+		private global::Gtk.ComboBoxText comboConfigs;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.TreeView fileList;
 		private global::Gtk.HBox hbox2;
@@ -37,7 +37,7 @@ namespace MonoDevelop.Deployment
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboConfigs = global::Gtk.ComboBox.NewText ();
+			this.comboConfigs = new global::Gtk.ComboBoxText ();
 			this.comboConfigs.Name = "comboConfigs";
 			this.hbox1.Add (this.comboConfigs);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboConfigs]));
