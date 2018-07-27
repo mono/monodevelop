@@ -7,12 +7,12 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Label label4;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBox comboConfiguration;
-		private global::Gtk.ComboBox comboPlatform;
+		private global::Gtk.ComboBoxText comboConfiguration;
+		private global::Gtk.ComboBoxText comboPlatform;
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Entry entryZip;
-		private global::Gtk.ComboBox comboZip;
+		private global::Gtk.ComboBoxText comboZip;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboConfiguration = global::Gtk.ComboBox.NewText ();
+			this.comboConfiguration = new global::Gtk.ComboBoxText ();
 			this.comboConfiguration.Name = "comboConfiguration";
 			this.table1.Add (this.comboConfiguration);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboConfiguration]));
@@ -54,7 +54,7 @@ namespace MonoDevelop.Deployment.Gui
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboPlatform = global::Gtk.ComboBox.NewText ();
+			this.comboPlatform = new global::Gtk.ComboBoxText ();
 			this.comboPlatform.Name = "comboPlatform";
 			this.table1.Add (this.comboPlatform);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboPlatform]));
@@ -88,7 +88,7 @@ namespace MonoDevelop.Deployment.Gui
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryZip]));
 			w5.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboZip = global::Gtk.ComboBox.NewText ();
+			this.comboZip = new global::Gtk.ComboBoxText ();
 			this.comboZip.Name = "comboZip";
 			this.hbox1.Add (this.comboZip);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboZip]));

@@ -15,7 +15,7 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.Label label3;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
-		private global::Gtk.ComboBox comboConfigs;
+		private global::Gtk.ComboBoxText comboConfigs;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
 		
@@ -27,9 +27,9 @@ namespace MonoDevelop.Autotools
 			this.Title = global::Mono.Unix.Catalog.GetString ("Generate Makefiles");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Resizable = false;
-			this.AllowGrow = false;
+//			this.AllowGrow = false;
 			// Internal child MonoDevelop.Autotools.GenerateMakefilesDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -57,7 +57,7 @@ namespace MonoDevelop.Autotools
 			this.rbSimple.Name = "rbSimple";
 			this.rbSimple.DrawIndicator = true;
 			this.rbSimple.UseUnderline = true;
-			this.rbSimple.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.rbSimple.Group = new Gtk.RadioButton [0];
 			this.rbSimple.Remove (this.rbSimple.Child);
 			// Container child rbSimple.Gtk.Container+ContainerChild
 			this.label4 = new global::Gtk.Label ();
@@ -132,7 +132,7 @@ namespace MonoDevelop.Autotools
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboConfigs = global::Gtk.ComboBox.NewText ();
+			this.comboConfigs = new global::Gtk.ComboBoxText ();
 			this.comboConfigs.Name = "comboConfigs";
 			this.hbox1.Add (this.comboConfigs);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboConfigs]));
@@ -151,7 +151,7 @@ namespace MonoDevelop.Autotools
 			w13.Expand = false;
 			w13.Fill = false;
 			// Internal child MonoDevelop.Autotools.GenerateMakefilesDialog.ActionArea
-			global::Gtk.HButtonBox w14 = this.ActionArea;
+			global::Gtk.HButtonBox w14 = (Gtk.HButtonBox)this.ActionArea;
 			w14.Name = "dialog1_ActionArea";
 			w14.Spacing = 6;
 			w14.BorderWidth = ((uint)(5));

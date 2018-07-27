@@ -14,7 +14,7 @@ namespace MonoDevelop.Autotools
 		private global::Gtk.HBox boxConfig;
 		private global::Gtk.Label label4;
 		private global::Gtk.Label label3;
-		private global::Gtk.ComboBox comboConfigs;
+		private global::Gtk.ComboBoxText comboConfigs;
 		private global::Gtk.HBox boxConfig1;
 		private global::Gtk.Label label5;
 		private global::Gtk.Label label6;
@@ -72,7 +72,7 @@ namespace MonoDevelop.Autotools
 			this.radioUseExisting.Active = true;
 			this.radioUseExisting.DrawIndicator = true;
 			this.radioUseExisting.UseUnderline = true;
-			this.radioUseExisting.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioUseExisting.Group = new Gtk.RadioButton [0];
 			this.vbox2.Add (this.radioUseExisting);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radioUseExisting]));
 			w4.Position = 1;
@@ -117,7 +117,7 @@ namespace MonoDevelop.Autotools
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child boxConfig.Gtk.Box+BoxChild
-			this.comboConfigs = global::Gtk.ComboBox.NewText ();
+			this.comboConfigs = new global::Gtk.ComboBoxText ();
 			this.comboConfigs.Name = "comboConfigs";
 			this.boxConfig.Add (this.comboConfigs);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxConfig [this.comboConfigs]));
@@ -174,7 +174,7 @@ namespace MonoDevelop.Autotools
 			this.rbAutotools.Active = true;
 			this.rbAutotools.DrawIndicator = true;
 			this.rbAutotools.UseUnderline = true;
-			this.rbAutotools.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.rbAutotools.Group = new Gtk.RadioButton [0];
 			this.rbAutotools.Remove (this.rbAutotools.Child);
 			// Container child rbAutotools.Gtk.Container+ContainerChild
 			this.label9 = new global::Gtk.Label ();

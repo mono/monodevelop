@@ -91,7 +91,7 @@ namespace MonoDevelop.RegexToolkit
 			Show ();
 		}
 		
-		static void ElementDescriptionFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void ElementDescriptionFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			string str = (string)model.GetValue (iter, 2);
 			if (string.IsNullOrEmpty (str)) {

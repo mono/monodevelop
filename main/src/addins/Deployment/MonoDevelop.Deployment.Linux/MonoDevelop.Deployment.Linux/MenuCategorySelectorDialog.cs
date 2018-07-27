@@ -57,7 +57,7 @@ namespace MonoDevelop.Deployment.Linux
 			get { return selection; }
 		}
 		
-		private int CompareNodes (TreeModel model, TreeIter iter1, TreeIter iter2)
+		private int CompareNodes (ITreeModel model, TreeIter iter1, TreeIter iter2)
 		{
 			if ((string) store.GetValue (iter1, 0) == "__other")
 				return 1;

@@ -9,11 +9,11 @@ namespace MonoDevelop.Deployment.Linux
 		private global::Gtk.VBox vbox4;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Label label9;
-		private global::Gtk.ComboBox comboType;
+		private global::Gtk.ComboBoxText comboType;
 		private global::Gtk.HSeparator hseparator4;
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.Label label1;
-		private global::Gtk.ComboBox comboLocales;
+		private global::Gtk.ComboBoxText comboLocales;
 		private global::Gtk.Button buttonNewLocale;
 		private global::Gtk.Table table6;
 		private global::Gtk.Entry entryComment;
@@ -115,7 +115,7 @@ namespace MonoDevelop.Deployment.Linux
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.comboType = global::Gtk.ComboBox.NewText ();
+			this.comboType = new global::Gtk.ComboBoxText ();
 			this.comboType.AppendText (global::Mono.Unix.Catalog.GetString ("Application"));
 			this.comboType.AppendText (global::Mono.Unix.Catalog.GetString ("Link"));
 			this.comboType.AppendText (global::Mono.Unix.Catalog.GetString ("Directory"));
@@ -154,7 +154,7 @@ namespace MonoDevelop.Deployment.Linux
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.comboLocales = global::Gtk.ComboBox.NewText ();
+			this.comboLocales = new global::Gtk.ComboBoxText ();
 			this.comboLocales.Name = "comboLocales";
 			this.hbox3.Add (this.comboLocales);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.comboLocales]));
@@ -538,7 +538,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.radioAlwaysShow.Name = "radioAlwaysShow";
 			this.radioAlwaysShow.Active = true;
 			this.radioAlwaysShow.DrawIndicator = true;
-			this.radioAlwaysShow.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioAlwaysShow.Group = new Gtk.RadioButton [0];
 			this.boxMenu.Add (this.radioAlwaysShow);
 			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.boxMenu [this.radioAlwaysShow]));
 			w46.Position = 4;

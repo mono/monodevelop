@@ -62,7 +62,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			MonoDevelop.Ide.Gui.Styles.Changed += HandleThemeChanged;
 		}
 
-		static void ImageDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
+		static void ImageDataFunc (TreeViewColumn tree_column, CellRenderer cell, ITreeModel tree_model, TreeIter iter)
 		{
 
 			var isError = (bool)tree_model.GetValue (iter, 2);
