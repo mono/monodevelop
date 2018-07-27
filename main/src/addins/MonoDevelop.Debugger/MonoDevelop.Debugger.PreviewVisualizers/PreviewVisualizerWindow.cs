@@ -91,7 +91,7 @@ namespace MonoDevelop.Debugger
 			} else {
 				headerTable.Attach (new Label (), 2, 3, 0, 1, AttachOptions.Fill | AttachOptions.Expand, AttachOptions.Fill | AttachOptions.Expand, 10, 0);
 			}
-			mainBox.PackStart (headerTable);
+			mainBox.PackStart (headerTable, false, true, 0);
 			mainBox.ShowAll ();
 
 			var previewVisualizer = DebuggingService.GetPreviewVisualizer (val);
@@ -109,7 +109,7 @@ namespace MonoDevelop.Debugger
 			alignment.SetPadding (3, 5, 5, 5);
 			alignment.Show ();
 			alignment.Add (widget);
-			mainBox.PackStart (alignment);
+			mainBox.PackStart (alignment, false, true, 0);
 			ContentBox.Add (mainBox);
 		}
 

@@ -20,7 +20,7 @@ namespace MonoDevelop.Debugger
 			this.Title = global::Mono.Unix.Catalog.GetString ("Expression Evaluator");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Debugger.ExpressionEvaluatorDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -82,7 +82,7 @@ namespace MonoDevelop.Debugger
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w7.Position = 0;
 			// Internal child MonoDevelop.Debugger.ExpressionEvaluatorDialog.ActionArea
-			global::Gtk.HButtonBox w8 = this.ActionArea;
+			global::Gtk.HButtonBox w8 = (Gtk.HButtonBox)this.ActionArea;
 			w8.Name = "dialog1_ActionArea";
 			w8.Spacing = 6;
 			w8.BorderWidth = ((uint)(5));

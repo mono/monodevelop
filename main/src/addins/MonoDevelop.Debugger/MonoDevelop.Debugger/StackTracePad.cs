@@ -298,15 +298,15 @@ namespace MonoDevelop.Debugger
 
 			if (tree.GetPathAtPos (x, y, out path, out col, out cx, out cy)) {
 				tree.GetCellArea (path, col);
-				foreach (CellRenderer cr in col.CellRenderers) {
-					int xo, w;
-
-					col.CellGetPosition (cr, out xo, out w);
-					if (cr.Visible && cx >= xo && cx < xo + w) {
-						cellRenderer = cr;
-						return true;
-					}
-				}
+//				foreach (CellRenderer cr in col.CellRenderers) {
+//					int xo, w;
+//
+//					col.CellGetPosition (cr, out xo, out w);
+//					if (cr.Visible && cx >= xo && cx < xo + w) {
+//						cellRenderer = cr;
+//						return true;
+//					}
+//				}
 			}
 
 			cellRenderer = null;
