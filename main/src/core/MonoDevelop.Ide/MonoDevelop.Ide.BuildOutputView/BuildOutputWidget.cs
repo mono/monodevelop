@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			// FIXME: DocumentToolbar does not support native widgets
 			// Toolbar items must use Gtk, for now
-			Xwt.Toolkit.Load (ToolkitType.Gtk).Invoke (() => {
+			Xwt.Toolkit.Load (ToolkitType.Gtk3).Invoke (() => {
 				showDiagnosticsButton = new CheckBox (GettextCatalog.GetString ("Diagnostic log verbosity"));
 				showDiagnosticsButton.HeightRequest = 17;
 				showDiagnosticsButton.Accessible.Identifier = "BuildOutputWidget.ShowDiagnosticsButton";

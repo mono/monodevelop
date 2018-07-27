@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide
 		{
 			base.InternalSetup(rootDir);
 
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
+			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk3);
 			Gtk.Application.Init();
 			DesktopService.Initialize();
 		}

@@ -43,7 +43,7 @@ namespace MonoDevelop.Components
 
 		static TooltipPopoverWindow ()
 		{
-			preferredEngine = Platform.IsWindows? Toolkit.Load (ToolkitType.Gtk) : Toolkit.NativeEngine;
+			preferredEngine = Platform.IsWindows? Toolkit.Load (ToolkitType.Gtk3) : Toolkit.NativeEngine;
 		}
 
 		public static TooltipPopoverWindow Create (bool tryNative = true)

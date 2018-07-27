@@ -160,7 +160,7 @@ namespace MonoDevelop.Components
 				return ((AbstractXwtControl)d).Widget;
 			
 			object nativeWidget;
-			if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.Gtk && (nativeWidget = d?.GetNativeWidget<Gtk.Widget> ()) != null) {
+			if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.Gtk3 && (nativeWidget = d?.GetNativeWidget<Gtk.Widget> ()) != null) {
 				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget, Xwt.NativeWidgetSizing.DefaultPreferredSize);
 			}
 #if MAC
