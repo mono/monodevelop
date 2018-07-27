@@ -69,6 +69,7 @@ namespace MonoDevelop.Components
 			if (showBorderLine) {
 				min_height += HScrollbar.Visible? 1 : 2;
 			}
+			natural_height = min_height;
 		}
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
@@ -79,6 +80,7 @@ namespace MonoDevelop.Components
 			if (showBorderLine) {
 				min_width += VScrollbar.Visible? 1 : 2;
 			}
+			natural_width = min_width;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
