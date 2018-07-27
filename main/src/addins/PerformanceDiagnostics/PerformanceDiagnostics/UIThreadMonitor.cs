@@ -163,7 +163,7 @@ namespace PerformanceDiagnosticsAddIn
 		string GetArguments (int port, bool sample)
 		{
 			var arguments = new StringBuilder ();
-			arguments.Append ($"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location} {port} {Process.GetCurrentProcess ().Id}");
+			arguments.Append ($"\"{typeof (UIThreadMonitorDaemon.MainClass).Assembly.Location}\" {port} {Process.GetCurrentProcess ().Id}");
 
 			if (!sample)
 				arguments.Append (" --noSample");
