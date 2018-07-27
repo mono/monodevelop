@@ -306,15 +306,13 @@ namespace MonoDevelop.Components
 		
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			natural_height = 0;
-			min_height = height + topPadding + bottomPadding;
+			min_height = natural_height = height + topPadding + bottomPadding;
 		}
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			natural_width = 0;
 			EnsureWidths ();
-			min_width = Math.Max (WidthRequest, 0);
+			min_width = natural_width = Math.Max (WidthRequest, 0);
 		}
 
 		int[] GetCurrentWidths (out bool widthReduced)

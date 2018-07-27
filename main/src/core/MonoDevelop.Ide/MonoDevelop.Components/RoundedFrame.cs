@@ -102,7 +102,6 @@ namespace MonoDevelop.Components
 
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			natural_height = 0;
 			if (child != null && child.Visible) {
 				// Add the child's width/height
 				Requisition child_requisition = child.SizeRequest ();
@@ -113,11 +112,11 @@ namespace MonoDevelop.Components
 			
 			// Add the frame border
 			min_height += ((int)BorderWidth + frame_width) * 2;
+			natural_height = min_height;
 		}
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			natural_width = 0;
 			if (child != null && child.Visible) {
 				// Add the child's width/height
 				Requisition child_requisition = child.SizeRequest ();
@@ -128,6 +127,7 @@ namespace MonoDevelop.Components
 			
 			// Add the frame border
 			min_width += ((int)BorderWidth + frame_width) * 2;
+			natural_width = min_width;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

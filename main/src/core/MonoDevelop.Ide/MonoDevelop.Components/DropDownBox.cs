@@ -185,8 +185,6 @@ namespace MonoDevelop.Components
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
 			int width, height;
-			natural_width = 0;
-			min_width = 0;
 			layout.GetPixelSize (out width, out height);
 			
 			if (Pixbuf != null) {
@@ -198,14 +196,12 @@ namespace MonoDevelop.Components
 			int arrowHeight = height / 2; 
 			int arrowWidth = arrowHeight + 1;
 			
-			min_width = FixedWidth > 0 ? FixedWidth : width + arrowWidth + leftSpacing;
+			min_width = natural_width = FixedWidth > 0 ? FixedWidth : width + arrowWidth + leftSpacing;
 		}
 		
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
 			int width, height;
-			natural_height = 0;
-			min_height = 0;
 			layout.GetPixelSize (out width, out height);
 			
 			if (Pixbuf != null) {
@@ -216,7 +212,7 @@ namespace MonoDevelop.Components
 			
 			int arrowHeight = height / 2; 
 			
-			min_height = FixedHeight >0 ? FixedHeight : height + ySpacing * 2;
+			min_height = natural_height = FixedHeight >0 ? FixedHeight : height + ySpacing * 2;
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)

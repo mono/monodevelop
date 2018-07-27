@@ -134,22 +134,22 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			natural_width = 0;
 			min_width = 0;
 			if (layout != null) {
 				LayoutWidgets ();
 				min_width = layout.SizeRequest ().Width;
 			}
+			natural_width = min_width;
 		}
 
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			natural_height = 0;
 			min_height = 0;
 			if (layout != null) {
 				LayoutWidgets ();
 				min_height = layout.SizeRequest ().Height;
 			}
+			natural_height = min_height;
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle rect)

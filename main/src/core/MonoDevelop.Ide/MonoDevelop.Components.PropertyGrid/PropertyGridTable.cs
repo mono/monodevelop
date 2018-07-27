@@ -450,8 +450,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			min_width = 20;
-			natural_width = 0;
+			min_width = natural_width = 20;
 
 			foreach (var c in children)
 				c.Key.SizeRequest ();
@@ -459,12 +458,11 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			natural_height = 0;
 			int dx = (int)((double)Allocation.Width * dividerPosition) - PropertyContentLeftPadding;
 			if (dx < 0) dx = 0;
 			int y = 0;
 			MeasureHeight (rows, ref y);
-			min_height = y;
+			min_height = natural_height = y;
 
 			foreach (var c in children)
 				c.Key.SizeRequest ();

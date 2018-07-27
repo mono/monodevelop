@@ -209,8 +209,7 @@ namespace MonoDevelop.Components
 		
 		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			natural_height = 0;
-			min_height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
+			min_height = natural_height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
 		}
 
 //		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
