@@ -30,6 +30,7 @@ using Pango;
 using System;
 using System.Text;
 using MonoDevelop.Components;
+using Cairo;
 
 namespace Mono.TextEditor.PopupWindow
 {
@@ -150,7 +151,7 @@ namespace Mono.TextEditor.PopupWindow
 				return base.OnMotionNotifyEvent (e);
 			
 			int winWidth, winHeight;
-			this.GdkWindow.GetSize (out winWidth, out winHeight);
+//			this.GdkWindow.GetSize (out winWidth, out winHeight);
 			
 	/*		int ypos = (int) e.Y;
 			if (ypos < 0) {
@@ -166,14 +167,14 @@ namespace Mono.TextEditor.PopupWindow
 		Adjustment hadj;
 		Adjustment vadj;
 
-		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
-		{
-			this.hadj = hadj;
-			this.vadj = vadj;
-			if (this.vadj != null)
-				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
-			base.OnSetScrollAdjustments (hadj, vadj);
-		}
+//		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
+//		{
+//			this.hadj = hadj;
+//			this.vadj = vadj;
+//			if (this.vadj != null)
+//				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
+//			base.OnSetScrollAdjustments (hadj, vadj);
+//		}
 
 		void SetAdjustments (Gdk.Rectangle allocation)
 		{
@@ -189,12 +190,12 @@ namespace Mono.TextEditor.PopupWindow
 			base.OnSizeAllocated (allocation);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			base.OnExposeEvent (args);
-			DrawList (args);
-	  		return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose args)
+//		{
+//			base.OnExposeEvent (args);
+//			DrawList (args);
+//	  		return true;
+//		}
 		
 		public int TextOffset {
 			get {

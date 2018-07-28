@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Mono.Unix;
 using MonoDevelop.Components;
+using Cairo;
 
 namespace Mono.TextEditor.PopupWindow
 {
@@ -474,60 +475,58 @@ namespace Mono.TextEditor.PopupWindow
 		const int yDescriptionBorder = 8;
 		const int yTitleBorder = 8;
 
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
+		protected override bool OnDrawn (Context g)
 		{
-			using (var g = Gdk.CairoHelper.Create (args.Window)) {
-				g.Translate (Allocation.X, Allocation.Y);
-				g.LineWidth = 1;
-				titleLayout.SetMarkup (TitleText);
-				int width, height;
-				titleLayout.GetPixelSize (out width, out height);
-				var tw = SupportsAlpha ? triangleWidth : 0;
-				var th = SupportsAlpha ? triangleHeight : 0;
-				width += xDescriptionBorder * 2;
+			g.Translate (Allocation.X, Allocation.Y);
+			g.LineWidth = 1;
+			titleLayout.SetMarkup (TitleText);
+			int width, height;
+			titleLayout.GetPixelSize (out width, out height);
+			var tw = SupportsAlpha ? triangleWidth : 0;
+			var th = SupportsAlpha ? triangleHeight : 0;
+			width += xDescriptionBorder * 2;
 
-				if (SupportsAlpha) {
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
-				} else {
-					g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				}
+			if (SupportsAlpha) {
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
+			} else {
+				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+			}
+			g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
+			g.FillPreserve ();
+			g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
+			g.Stroke ();
+
+
+			g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
+			g.SetSourceColor (Styles.InsertionCursorTitleTextColor.ToCairoColor ());
+			g.ShowLayout (titleLayout);
+
+			if (SupportsAlpha) {
+				g.MoveTo (tw, Allocation.Height / 2 - th / 2);
+				g.LineTo (0, Allocation.Height / 2);
+				g.LineTo (tw, Allocation.Height / 2 + th / 2);
+				g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
+				g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
+				g.ClosePath ();
 				g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
-				g.FillPreserve ();
+				g.Fill ();
+
+				g.MoveTo (tw, Allocation.Height / 2 - th / 2);
+				g.LineTo (0, Allocation.Height / 2);
+				g.LineTo (tw, Allocation.Height / 2 + th / 2);
 				g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
 				g.Stroke ();
-				
-
-				g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
-				g.SetSourceColor (Styles.InsertionCursorTitleTextColor.ToCairoColor ());
-				g.ShowLayout (titleLayout);
-
-				if (SupportsAlpha) {
-					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
-					g.LineTo (0, Allocation.Height / 2);
-					g.LineTo (tw, Allocation.Height / 2 + th / 2);
-					g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
-					g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
-					g.ClosePath ();
-					g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
-					g.Fill ();
-
-					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
-					g.LineTo (0, Allocation.Height / 2);
-					g.LineTo (tw, Allocation.Height / 2 + th / 2);
-					g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
-					g.Stroke ();
-				}
-
-				int y = height + yTitleBorder + yDescriptionBorder;
-				int x = tw + xDescriptionBorder;
-				g.SetSourceColor (Styles.InsertionCursorTextColor.ToCairoColor ());
-
-				foreach (var desc in descTexts) {
-					desc.Render (g, x, y + 4);
-					y += desc.Height + 8;
-				}
 			}
-			return base.OnExposeEvent (args);
+
+			int y = height + yTitleBorder + yDescriptionBorder;
+			int x = tw + xDescriptionBorder;
+			g.SetSourceColor (Styles.InsertionCursorTextColor.ToCairoColor ());
+
+			foreach (var desc in descTexts) {
+				desc.Render (g, x, y + 4);
+				y += desc.Height + 8;
+			}
+			return base.OnDrawn (g);
 		}
 	}
 }

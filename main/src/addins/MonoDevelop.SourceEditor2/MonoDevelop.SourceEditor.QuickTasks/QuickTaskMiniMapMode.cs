@@ -151,10 +151,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				vadjustment.Value = position;
 			}
 
-			protected override void OnSizeRequested (ref Requisition requisition)
+			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 			{
-				base.OnSizeRequested (ref requisition);
-				requisition.Width = 150;
+				base.OnGetPreferredWidth (out minimum_width, out natural_width);
+				minimum_width = natural_width = 150;
 			}
 
 			void DestroyBgBuffer ()
