@@ -678,10 +678,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.DrawImage (this, img, Math.Round ((Allocation.Width - img.Width) / 2), -1);
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
-			requisition.Width = MonoDevelop.Core.Platform.IsWindows ? win81ScrollbarWidth : 15;
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
+			minimum_width = natural_width = MonoDevelop.Core.Platform.IsWindows ? win81ScrollbarWidth : 15;
 		}
 
 		double LineToY (int logicalLine)

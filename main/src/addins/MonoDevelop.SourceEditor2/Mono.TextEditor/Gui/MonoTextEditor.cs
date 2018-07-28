@@ -179,9 +179,15 @@ namespace Mono.TextEditor
 			SetChildrenPositions (allocation);
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
+			containerChildren.ForEach (c => c.Child.SizeRequest ());
+		}
+
+		protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight (out minimum_height, out natural_height);
 			containerChildren.ForEach (c => c.Child.SizeRequest ());
 		}
 

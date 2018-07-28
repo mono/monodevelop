@@ -100,12 +100,12 @@ namespace Mono.TextEditor.Theatrics
 				Child.Destroy ();
 			if (vAdjustment != null) {
 				vAdjustment.Changed -= HandleAdjustmentChanged;
-				vAdjustment.Destroy ();
+//				vAdjustment.Destroy ();
 				vAdjustment = null;
 			}
 			if (hAdjustment != null) {
 				hAdjustment.Changed -= HandleAdjustmentChanged;
-				hAdjustment.Destroy ();
+//				hAdjustment.Destroy ();
 				hAdjustment = null;
 			}
 			if (vScrollBar != null) {
@@ -161,8 +161,8 @@ namespace Mono.TextEditor.Theatrics
 		protected override void OnAdded (Widget widget)
 		{
 			base.OnAdded (widget);
-			if (widget == Child)
-				widget.SetScrollAdjustments (hAdjustment, vAdjustment);
+//			if (widget == Child)
+//				widget.SetScrollAdjustments (hAdjustment, vAdjustment);
 		}
 		
 		protected override void OnRemoved (Widget widget)
@@ -232,14 +232,22 @@ namespace Mono.TextEditor.Theatrics
 			
 			return (dx != 0.0 || dy != 0.0) || base.OnScrollEvent (evnt);
 		}
-		
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
+			if (Child != null)
+				Child.SizeRequest ();
+			hScrollBar.SizeRequest ();
+			children.ForEach (Child => Child.Child.SizeRequest ());
+		}
+
+		protected override void OnGetPreferredHeight (out int minimum_height, out int natural_width)
+		{
+			base.OnGetPreferredHeight (out minimum_height, out natural_width);
 			if (Child != null)
 				Child.SizeRequest ();
 			vScrollBar.SizeRequest ();
-			hScrollBar.SizeRequest ();
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 		
