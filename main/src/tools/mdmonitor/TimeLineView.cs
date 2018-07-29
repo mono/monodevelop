@@ -346,181 +346,181 @@ namespace Mono.Instrumentation.Monitor
 		}
 
 		
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			if (data == null)
-				BuildData ();
-			
-			hostSpots.Clear ();
-			int ytop = padding;
-			int markerX = 3;
-			int lx = markerX + MarkerWidth + 1;
-			int tx = 250;
-			int ty = ytop;
-			int maxx = lx;
-			int maxy = 0;
-			
-			DateTime initialTime = mainValue.TimeStamp;
-			
-			Cairo.Context ctx = CairoHelper.Create (GdkWindow);
-
-			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
-				gc.RgbFgColor = Style.White;
-				GdkWindow.DrawRectangle (gc, true, 0, 0, Allocation.Width, Allocation.Height);
-
-				// Draw full time marker
-
-				ctx.NewPath ();
-				ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth / 2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
-				HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
-				hsl.L = 0.8;
-				ctx.SetSourceColor (hsl);
-				ctx.Fill ();
-
-				// Draw values
-
-				foreach (CounterValueInfo val in data) {
-					DrawValue (ctx, gc, initialTime, ytop, lx, tx, ref ty, ref maxx, ref maxy, 0, val);
-				}
-
-				if (ty > maxy)
-					maxy = ty;
-
-				int totalms = (int)mainValue.Duration.TotalMilliseconds;
-				int marks = (totalms / 1000) + 1;
-
-				ctx.LineWidth = 1;
-				gc.RgbFgColor = Style.Foreground (Gtk.StateType.Normal);
-
-				for (int n = 0; n <= marks; n++) {
-					ctx.NewPath ();
-					int y = ytop + (int)(n * scale) + baseTime;
-					ctx.MoveTo (markerX, y + 0.5);
-					ctx.LineTo (markerX + MarkerWidth, y + 0.5);
-					ctx.SetSourceColor (Style.Foreground (Gtk.StateType.Normal).ToCairoColor ());
-					ctx.Stroke ();
-
-					y += 2;
-					layout.SetText (n + "s");
-					GdkWindow.DrawLayout (gc, markerX + 1, y + 2, layout);
-
-					int tw, th;
-					layout.GetPixelSize (out tw, out th);
-					y += th;
-
-					if (y > maxy)
-					maxy = y;
-			}
-			}
-			
-			((IDisposable)ctx).Dispose ();
-			
-			maxy += padding;
-			maxx += padding;
-			
-			if (lastHeight != maxy || lastWidth != maxx) {
-				lastWidth = maxx;
-				lastHeight = maxy;
-				SetSizeRequest (maxx, maxy);
-			}
-
-			return true;
-		}
+//		protected override bool OnExposeEvent (EventExpose evnt)
+//		{
+//			if (data == null)
+//				BuildData ();
+//			
+//			hostSpots.Clear ();
+//			int ytop = padding;
+//			int markerX = 3;
+//			int lx = markerX + MarkerWidth + 1;
+//			int tx = 250;
+//			int ty = ytop;
+//			int maxx = lx;
+//			int maxy = 0;
+//			
+//			DateTime initialTime = mainValue.TimeStamp;
+//			
+//			Cairo.Context ctx = CairoHelper.Create (GdkWindow);
+//
+//			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+//				gc.RgbFgColor = Style.White;
+//				GdkWindow.DrawRectangle (gc, true, 0, 0, Allocation.Width, Allocation.Height);
+//
+//				// Draw full time marker
+//
+//				ctx.NewPath ();
+//				ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth / 2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
+//				HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
+//				hsl.L = 0.8;
+//				ctx.SetSourceColor (hsl);
+//				ctx.Fill ();
+//
+//				// Draw values
+//
+//				foreach (CounterValueInfo val in data) {
+//					DrawValue (ctx, gc, initialTime, ytop, lx, tx, ref ty, ref maxx, ref maxy, 0, val);
+//				}
+//
+//				if (ty > maxy)
+//					maxy = ty;
+//
+//				int totalms = (int)mainValue.Duration.TotalMilliseconds;
+//				int marks = (totalms / 1000) + 1;
+//
+//				ctx.LineWidth = 1;
+//				gc.RgbFgColor = Style.Foreground (Gtk.StateType.Normal);
+//
+//				for (int n = 0; n <= marks; n++) {
+//					ctx.NewPath ();
+//					int y = ytop + (int)(n * scale) + baseTime;
+//					ctx.MoveTo (markerX, y + 0.5);
+//					ctx.LineTo (markerX + MarkerWidth, y + 0.5);
+//					ctx.SetSourceColor (Style.Foreground (Gtk.StateType.Normal).ToCairoColor ());
+//					ctx.Stroke ();
+//
+//					y += 2;
+//					layout.SetText (n + "s");
+//					GdkWindow.DrawLayout (gc, markerX + 1, y + 2, layout);
+//
+//					int tw, th;
+//					layout.GetPixelSize (out tw, out th);
+//					y += th;
+//
+//					if (y > maxy)
+//					maxy = y;
+//			}
+//			}
+//			
+//			((IDisposable)ctx).Dispose ();
+//			
+//			maxy += padding;
+//			maxx += padding;
+//			
+//			if (lastHeight != maxy || lastWidth != maxx) {
+//				lastWidth = maxx;
+//				lastHeight = maxy;
+//				SetSizeRequest (maxx, maxy);
+//			}
+//
+//			return true;
+//		}
 		
-		void DrawValue (Cairo.Context ctx, Gdk.GC gc, DateTime initialTime, int ytop, int lx, int tx, ref int ty, ref int maxx, ref int maxy, int indent, CounterValueInfo val)
-		{
-			Gdk.Color color;
-			if (val.Counter != null)
-				color = val.Counter.GetColor ();
-			else
-				color = Style.Black;
-			
-			// Draw text
-			gc.RgbFgColor = color;
-			
-			double ms = (val.Time - initialTime).TotalMilliseconds;
-			
-			string txt = (ms / 1000).ToString ("0.00000") + ": " + (val.Duration.TotalMilliseconds / 1000).ToString ("0.00000") + " " + val.Trace;
-			layout.SetText (txt);
-			GdkWindow.DrawLayout (gc, tx + indent, ty, layout);
-			int tw, th;
-			layout.GetPixelSize (out tw, out th);
-			if (tx + tw + indent > maxx)
-				maxx = tx + tw + indent;
-			
-			HotSpot hp = AddHotSpot (tx + indent, ty, tw, th);
-			int tempTy = ty;
-			hp.Action = delegate {
-				int ytm = ytop + (int) ((ms * scale) / 1000);
-				SetBaseTime ((int) (tempTy + (th / 2) + 0.5) - ytm);
-			};
-			hp.OnMouseOver += delegate {
-				overValue = val;
-				QueueDraw ();
-			};
-			hp.Action += delegate {
-				focusedValue = val;
-				QueueDraw ();
-			};
-			
-			// Draw time marker
-			int ytime = ytop + (int) ((ms * scale) / 1000) + baseTime;
-			
-			if (val == focusedValue || val == overValue) {
-				ctx.NewPath ();
-				double dx = val == focusedValue ? 0 : 2;
-				ctx.Rectangle (lx + 0.5 + dx - SelectedValuePadding, ytime + 0.5, LineEndWidth - dx*2 + SelectedValuePadding, ((val.Duration.TotalMilliseconds * scale) / 1000));
-				HslColor hsl = color;
-				hsl.L = val == focusedValue ? 0.9 : 0.8;
-				ctx.SetSourceColor (hsl);
-				ctx.Fill ();
-			}
-			
-			ctx.NewPath ();
-			ctx.LineWidth = 1;
-			ctx.MoveTo (lx + 0.5, ytime + 0.5);
-			ctx.LineTo (lx + LineEndWidth + 0.5, ytime + 0.5);
-			ctx.LineTo (tx - 3 - LineEndWidth + 0.5, ty + (th / 2) + 0.5);
-			ctx.LineTo (tx + indent - 3 + 0.5, ty + (th / 2) + 0.5);
-			ctx.SetSourceColor (color.ToCairoColor ());
-			ctx.Stroke ();
-			
-			// Expander
-			
-			bool incLine = true;
-			
-			if (val.CanExpand) {
-				double ex = tx + indent - 3 - ExpanderSize - 2 + 0.5;
-				double ey = ty + (th / 2) - (ExpanderSize/2) + 0.5;
-				hp = AddHotSpot (ex, ey, ExpanderSize, ExpanderSize);
-				DrawExpander (ctx, ex, ey, val.Expanded, false);
-				hp.OnMouseOver = delegate {
-					using (Cairo.Context c = CairoHelper.Create (GdkWindow)) {
-						DrawExpander (c, ex, ey, val.Expanded, true);
-					}
-				};
-				hp.OnMouseLeave = delegate {
-					using (Cairo.Context c = CairoHelper.Create (GdkWindow)) {
-						DrawExpander (c, ex, ey, val.Expanded, false);
-					}
-				};
-				hp.Action = delegate {
-					ToggleExpand (val);
-				};
-				
-				if (val.Expanded && val.ExpandedTimerTraces.Count > 0) {
-					ty += th + LineSpacing;
-					foreach (CounterValueInfo cv in val.ExpandedTimerTraces)
-						DrawValue (ctx, gc, initialTime, ytop, lx, tx, ref ty, ref maxx, ref maxy, indent + ChildIndent, cv);
-					incLine = false;
-				}
-			}
-			if (incLine)
-				ty += th + LineSpacing;
-			
-			if (ytime > maxy)
-				maxy = ytime;
-		}
+//		void DrawValue (Cairo.Context ctx, Gdk.GC gc, DateTime initialTime, int ytop, int lx, int tx, ref int ty, ref int maxx, ref int maxy, int indent, CounterValueInfo val)
+//		{
+//			Gdk.Color color;
+//			if (val.Counter != null)
+//				color = val.Counter.GetColor ();
+//			else
+//				color = Style.Black;
+//			
+//			// Draw text
+//			gc.RgbFgColor = color;
+//			
+//			double ms = (val.Time - initialTime).TotalMilliseconds;
+//			
+//			string txt = (ms / 1000).ToString ("0.00000") + ": " + (val.Duration.TotalMilliseconds / 1000).ToString ("0.00000") + " " + val.Trace;
+//			layout.SetText (txt);
+//			GdkWindow.DrawLayout (gc, tx + indent, ty, layout);
+//			int tw, th;
+//			layout.GetPixelSize (out tw, out th);
+//			if (tx + tw + indent > maxx)
+//				maxx = tx + tw + indent;
+//			
+//			HotSpot hp = AddHotSpot (tx + indent, ty, tw, th);
+//			int tempTy = ty;
+//			hp.Action = delegate {
+//				int ytm = ytop + (int) ((ms * scale) / 1000);
+//				SetBaseTime ((int) (tempTy + (th / 2) + 0.5) - ytm);
+//			};
+//			hp.OnMouseOver += delegate {
+//				overValue = val;
+//				QueueDraw ();
+//			};
+//			hp.Action += delegate {
+//				focusedValue = val;
+//				QueueDraw ();
+//			};
+//			
+//			// Draw time marker
+//			int ytime = ytop + (int) ((ms * scale) / 1000) + baseTime;
+//			
+//			if (val == focusedValue || val == overValue) {
+//				ctx.NewPath ();
+//				double dx = val == focusedValue ? 0 : 2;
+//				ctx.Rectangle (lx + 0.5 + dx - SelectedValuePadding, ytime + 0.5, LineEndWidth - dx*2 + SelectedValuePadding, ((val.Duration.TotalMilliseconds * scale) / 1000));
+//				HslColor hsl = color;
+//				hsl.L = val == focusedValue ? 0.9 : 0.8;
+//				ctx.SetSourceColor (hsl);
+//				ctx.Fill ();
+//			}
+//			
+//			ctx.NewPath ();
+//			ctx.LineWidth = 1;
+//			ctx.MoveTo (lx + 0.5, ytime + 0.5);
+//			ctx.LineTo (lx + LineEndWidth + 0.5, ytime + 0.5);
+//			ctx.LineTo (tx - 3 - LineEndWidth + 0.5, ty + (th / 2) + 0.5);
+//			ctx.LineTo (tx + indent - 3 + 0.5, ty + (th / 2) + 0.5);
+//			ctx.SetSourceColor (color.ToCairoColor ());
+//			ctx.Stroke ();
+//			
+//			// Expander
+//			
+//			bool incLine = true;
+//			
+//			if (val.CanExpand) {
+//				double ex = tx + indent - 3 - ExpanderSize - 2 + 0.5;
+//				double ey = ty + (th / 2) - (ExpanderSize/2) + 0.5;
+//				hp = AddHotSpot (ex, ey, ExpanderSize, ExpanderSize);
+//				DrawExpander (ctx, ex, ey, val.Expanded, false);
+//				hp.OnMouseOver = delegate {
+//					using (Cairo.Context c = CairoHelper.Create (GdkWindow)) {
+//						DrawExpander (c, ex, ey, val.Expanded, true);
+//					}
+//				};
+//				hp.OnMouseLeave = delegate {
+//					using (Cairo.Context c = CairoHelper.Create (GdkWindow)) {
+//						DrawExpander (c, ex, ey, val.Expanded, false);
+//					}
+//				};
+//				hp.Action = delegate {
+//					ToggleExpand (val);
+//				};
+//				
+//				if (val.Expanded && val.ExpandedTimerTraces.Count > 0) {
+//					ty += th + LineSpacing;
+//					foreach (CounterValueInfo cv in val.ExpandedTimerTraces)
+//						DrawValue (ctx, gc, initialTime, ytop, lx, tx, ref ty, ref maxx, ref maxy, indent + ChildIndent, cv);
+//					incLine = false;
+//				}
+//			}
+//			if (incLine)
+//				ty += th + LineSpacing;
+//			
+//			if (ytime > maxy)
+//				maxy = ytime;
+//		}
 		
 		void DrawExpander (Cairo.Context ctx, double ex, double ey, bool expanded, bool hilight)
 		{

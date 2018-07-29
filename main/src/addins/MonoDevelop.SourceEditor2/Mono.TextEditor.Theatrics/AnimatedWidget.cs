@@ -63,7 +63,7 @@ namespace Mono.TextEditor.Theatrics
 		private readonly bool horizontal;
 		private double percent;
 		private Rectangle widget_alloc;
-		private Pixmap canvas;
+//		private Pixmap canvas;
 
 		public AnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, bool horizontal)
 		{
@@ -95,13 +95,13 @@ namespace Mono.TextEditor.Theatrics
 				return;
 			}
 			
-			canvas = new Pixmap (GdkWindow, widget_alloc.Width, widget_alloc.Height);
-			if (Platform.IsMac) {
-				//FIXME: quick hack to make less ugly on Mac, because Mac GTK doesn't yet support offscreen drawing
-				canvas.DrawRectangle (Style.BackgroundGC (State), true, 0, 0, widget_alloc.Width, widget_alloc.Height);
-			} else {
-				canvas.DrawDrawable (Style.BackgroundGC (State), GdkWindow, widget_alloc.X, widget_alloc.Y, 0, 0, widget_alloc.Width, widget_alloc.Height);
-			}
+//			canvas = new Pixmap (GdkWindow, widget_alloc.Width, widget_alloc.Height);
+//			if (Platform.IsMac) {
+//				//FIXME: quick hack to make less ugly on Mac, because Mac GTK doesn't yet support offscreen drawing
+//				canvas.DrawRectangle (Style.BackgroundGC (State), true, 0, 0, widget_alloc.Width, widget_alloc.Height);
+//			} else {
+//				canvas.DrawDrawable (Style.BackgroundGC (State), GdkWindow, widget_alloc.X, widget_alloc.Y, 0, 0, widget_alloc.Width, widget_alloc.Height);
+//			}
 			
 			if (AnimationState != AnimationState.Going) {
 				WidgetDestroyed (this, args);

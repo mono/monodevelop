@@ -356,7 +356,7 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.ShowAll ();
 		}
 
-		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
+		int CompareNodes (Gtk.ITreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
 		{
 			int col, val=0;
 			SortType type;
@@ -1119,7 +1119,7 @@ namespace MonoDevelop.VersionControl.Views
 			while (filestore.IterNext (ref it));
 		}
 
-		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			if (disposed)
 				return;

@@ -273,27 +273,27 @@ namespace MonoDevelop.SourceEditor
 					return;
 				suppressScrollbar = value;
 
-				if (suppressScrollbar) {
-					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;
-					scrolledWindow.VScrollbar.ExposeEvent += SuppressExpose;
-				} else {
-					scrolledWindow.VScrollbar.SizeRequested -= SuppressSize;
-					scrolledWindow.VScrollbar.ExposeEvent -= SuppressExpose;
-				}
+//				if (suppressScrollbar) {
+//					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;
+//					scrolledWindow.VScrollbar.ExposeEvent += SuppressExpose;
+//				} else {
+//					scrolledWindow.VScrollbar.SizeRequested -= SuppressSize;
+//					scrolledWindow.VScrollbar.ExposeEvent -= SuppressExpose;
+//				}
 			}
 
-			[GLib.ConnectBefore]
-			static void SuppressExpose (object o, ExposeEventArgs args)
-			{
-				args.RetVal = true;
-			}
+//			[GLib.ConnectBefore]
+//			static void SuppressExpose (object o, ExposeEventArgs args)
+//			{
+//				args.RetVal = true;
+//			}
 
-			[GLib.ConnectBefore]
-			static void SuppressSize (object o, SizeRequestedArgs args)
-			{
-				args.Requisition = Requisition.Zero;
-				args.RetVal = true;
-			}
+//			[GLib.ConnectBefore]
+//			static void SuppressSize (object o, SizeRequestedArgs args)
+//			{
+//				args.Requisition = Requisition.Zero;
+//				args.RetVal = true;
+//			}
 			
 			public void AddQuickTaskProvider (IQuickTaskProvider p)
 			{
@@ -335,8 +335,8 @@ namespace MonoDevelop.SourceEditor
 				SetSuppressScrollbar (false);
 				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
-				scrolledWindow.Vadjustment.Destroy ();
-				scrolledWindow.Hadjustment.Destroy ();
+//				scrolledWindow.Vadjustment.Destroy ();
+//				scrolledWindow.Hadjustment.Destroy ();
 				scrolledWindow.Destroy ();
 				scrolledWindow = null;
 				strip.Destroy ();

@@ -354,7 +354,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		// TODO: Make static.
-		void TitleColDataFunc (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter)
+		void TitleColDataFunc (TreeViewColumn treeColumn, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)model.GetValue (iter, 1);
 			if (provider == null) {
@@ -366,7 +366,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		// TODO: Make static.
-		void ComboDataFunc (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter)
+		void ComboDataFunc (TreeViewColumn treeColumn, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 			if (provider == null) {

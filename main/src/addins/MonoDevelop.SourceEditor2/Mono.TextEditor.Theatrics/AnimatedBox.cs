@@ -61,8 +61,8 @@ namespace Mono.TextEditor.Theatrics
 		protected AnimatedBox (bool horizontal)
 		{
 			GtkWorkarounds.FixContainerLeak (this);
-			
-			WidgetFlags |= WidgetFlags.NoWindow;
+
+			this.HasWindow = false;
 			this.horizontal = horizontal;
 			stage.ActorStep += OnActorStep;
 			border_stage.Iteration += OnBorderIteration;
@@ -179,30 +179,44 @@ namespace Mono.TextEditor.Theatrics
 			PackStart (widget, duration, easing, blocking);
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
 			int width = 0;
-			int height = 0;
-			
+
 			if (horizontal) {
 				width = start_border + end_border;
-			} else {
-				height = start_border + end_border;
 			}
-			
+
 			foreach (AnimatedWidget widget in Widgets) {
 				Requisition req = widget.SizeRequest ();
 				if (horizontal) {
 					width += req.Width;
-					height = System.Math.Max (height, req.Height);
 				} else {
 					width = System.Math.Max (width, req.Width);
+				}
+			}
+
+			minimum_width = natural_width = width;
+		}
+
+		protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
+		{
+			int height = 0;
+
+			if (!horizontal) {
+				height = start_border + end_border;
+			}
+
+			foreach (AnimatedWidget widget in Widgets) {
+				Requisition req = widget.SizeRequest ();
+				if (horizontal) {
+					height = System.Math.Max (height, req.Height);
+				} else {
 					height += req.Height;
 				}
 			}
-			
-			requisition.Width = width;
-			requisition.Height = height;
+
+			minimum_height = natural_height = height;
 		}
 
 		protected override void OnSizeAllocated (Rectangle allocation)

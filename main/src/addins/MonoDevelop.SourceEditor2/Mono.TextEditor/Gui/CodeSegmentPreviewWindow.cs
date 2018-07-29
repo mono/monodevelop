@@ -138,13 +138,13 @@ namespace Mono.TextEditor
 			informLayout = informLayout.Kill ();
 			fontDescription = fontDescription.Kill ();
 			fontInform = fontInform.Kill ();
-			if (textGC != null) {
-				textGC.Dispose ();
-				textBgGC.Dispose ();
-				foldGC.Dispose ();
-				foldBgGC.Dispose ();
-				textGC = textBgGC = foldGC = foldBgGC = null;
-			}
+//			if (textGC != null) {
+//				textGC.Dispose ();
+//				textBgGC.Dispose ();
+//				foldGC.Dispose ();
+//				foldBgGC.Dispose ();
+//				textGC = textBgGC = foldGC = foldBgGC = null;
+//			}
 			editor = null;
 			base.OnDestroyed ();
 		}

@@ -92,9 +92,9 @@ namespace MonoDevelop.SourceEditor
 			Gtk.Widget oldWidget = null;
 			this.FocusChildSet += delegate (object sender, Gtk.FocusChildSetArgs args) {
 				// only store state when the focus comes from a non child widget
-				if (args.Widget != null && oldWidget == null)
-					StoreWidgetState ();
-				oldWidget = args.Widget;
+//				if (args.Widget != null && oldWidget == null)
+//					StoreWidgetState ();
+//				oldWidget = args.Widget;
 			};
 			
 			this.entryLineNumber.Changed += delegate {

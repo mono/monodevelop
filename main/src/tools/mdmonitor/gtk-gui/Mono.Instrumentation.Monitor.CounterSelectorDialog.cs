@@ -17,7 +17,7 @@ namespace Mono.Instrumentation.Monitor
 			this.Title = global::Mono.Unix.Catalog.GetString ("Select Counter");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child Mono.Instrumentation.Monitor.CounterSelectorDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -34,7 +34,7 @@ namespace Mono.Instrumentation.Monitor
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1 [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			// Internal child Mono.Instrumentation.Monitor.CounterSelectorDialog.ActionArea
-			global::Gtk.HButtonBox w4 = this.ActionArea;
+			global::Gtk.HButtonBox w4 = (Gtk.HButtonBox)this.ActionArea;
 			w4.Name = "dialog1_ActionArea";
 			w4.Spacing = 10;
 			w4.BorderWidth = ((uint)(5));

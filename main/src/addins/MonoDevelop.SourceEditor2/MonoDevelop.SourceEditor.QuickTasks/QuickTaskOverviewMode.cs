@@ -432,7 +432,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void UpdateState (StateType state)
 		{
 			if (State != state) {
-				State = state;
+//				State = state;
 				QueueDraw ();
 			}
 		}
@@ -911,56 +911,52 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		IndicatorDrawingState currentDrawingState = IndicatorDrawingState.Create ();
 		SurfaceWrapper backgroundSurface, indicatorSurface, swapIndicatorSurface;
-		protected override bool OnExposeEvent (Gdk.EventExpose e)
+		protected override bool OnDrawn (Cairo.Context cr)
 		{
 			if (TextEditor == null)
 				return true;
 
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+			cr.Save ();
+			var allocation = Allocation;
+			var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (this) : 1.0;
+			cr.Scale (1 / displayScale, 1 / displayScale);
+			if (indicatorSurface != null) {
+				cr.SetSourceSurface (indicatorSurface.Surface, 0, 0);
+				cr.Paint ();
+			} else {
+				CachedDraw (cr,
+							ref backgroundSurface,
+							allocation,
+							draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
+			}
+			if (TextEditor == null)
+				return true;
 
-				cr.Save ();
-				var allocation = Allocation;
-				var displayScale = Core.Platform.IsMac ? GtkWorkarounds.GetScaleFactor (this) : 1.0;
-				cr.Scale (1 / displayScale, 1 / displayScale);
-				if (indicatorSurface != null) {
-					cr.SetSourceSurface (indicatorSurface.Surface, 0, 0);
-					cr.Paint ();
-				} else {
-					CachedDraw (cr,
-								ref backgroundSurface,
-								allocation,
-								draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
-				}
-				if (TextEditor == null)
-					return true;
+			DrawCaret (cr);
 
-				DrawCaret (cr);
+			if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
+				DrawBar (cr);
 
-				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
-					DrawBar (cr);
+			cr.Restore ();
 
-				cr.Restore ();
+			if (HasFocus) {
+				switch (currentFocus) {
+				case FocusWidget.Indicator:
+					cr.LineWidth = 1.0;
 
-				if (HasFocus) {
-					switch (currentFocus) {
-					case FocusWidget.Indicator:
-						cr.LineWidth = 1.0;
+					cr.SetSourceColor (Styles.FocusColor.ToCairoColor ());
+					cr.Rectangle (1, 1, Allocation.Width - 2, Allocation.Width - 2);
+					cr.SetDash (new double [] { 1, 1 }, 0.5);
+					cr.Stroke ();
+					break;
 
-						cr.SetSourceColor (Styles.FocusColor.ToCairoColor ());
-						cr.Rectangle (1, 1, Allocation.Width - 2, Allocation.Width - 2);
-						cr.SetDash (new double [] { 1, 1 }, 0.5);
-						cr.Stroke ();
-						break;
+				case FocusWidget.Tasks:
+					break;
 
-					case FocusWidget.Tasks:
-						break;
-
-					case FocusWidget.Usages:
-						break;
-					}
+				case FocusWidget.Usages:
+					break;
 				}
 			}
-
 			return false;
 		}
 

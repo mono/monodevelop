@@ -107,6 +107,9 @@
     <Reference Include="cairo-sharp, Version=1.10.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Package>gtk-sharp-3.0</Package>
     </Reference>
+    <Reference Include="gio-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gio-sharp-3.0</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.SourceEditor.dll.config">
