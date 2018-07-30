@@ -21,6 +21,54 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.TypeSystem
 open ExtCore.Control
 
+type FSharpCompletionContext(editor:TextEditor, baseContext:CodeCompletionContext) =
+    inherit CodeCompletionContext()
+
+    override x.GetCoordinatesAsync() =
+        let line = editor.GetLine editor.CaretLine
+        let marker = editor.GetLineMarkers line |> Seq.tryPick(Option.tryCast<SignatureHelpMarker>)
+
+        let task = baseContext.GetCoordinatesAsync()
+
+        match marker with
+        | Some m ->
+            let struct (x, y, lineHeight) = task.Result
+            // We need to add the height of the signature help marker to the Y coordinate
+            // The line height is the height of the text plus the height of the marker
+            Task.FromResult struct (x, y + (lineHeight / 2), lineHeight)
+        | None -> task
+
+type FSharpCompletionWidget(editor:TextEditor, completionWidget:ICompletionWidget) =
+    interface ICompletionWidget with
+        member x.CaretOffset
+            with get() = completionWidget.CaretOffset
+            and set(offset) = completionWidget.CaretOffset <- offset
+        member x.TextLength = completionWidget.TextLength
+        member x.SelectedLength = completionWidget.SelectedLength
+        member x.GetText(startOffset, endOffset) =
+            completionWidget.GetText(startOffset, endOffset)
+        member x.GetChar offset = completionWidget.GetChar offset
+        member x.Replace(offset, count, text) = completionWidget.Replace(offset, count, text)
+        member x.GtkStyle = completionWidget.GtkStyle
+        member x.ZoomLevel = completionWidget.ZoomLevel
+        member x.CreateCodeCompletionContext triggerOffset =
+            let context = completionWidget.CreateCodeCompletionContext triggerOffset
+            FSharpCompletionContext(editor, context,
+                TriggerOffset = triggerOffset,
+                TriggerLine = context.TriggerLine,
+                TriggerLineOffset = context.TriggerLineOffset,
+                TriggerWordLength = context.TriggerWordLength) :> _
+
+        member x.CurrentCodeCompletionContext
+            with get() = completionWidget.CurrentCodeCompletionContext
+        member x.GetCompletionText ctx = completionWidget.GetCompletionText ctx
+        member x.SetCompletionText (ctx, partialWord, completeWord) =
+            completionWidget.SetCompletionText (ctx, partialWord, completeWord)
+        member x.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset) =
+            completionWidget.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset)
+        [<CLIEvent>]
+        member x.CompletionContextChanged = completionWidget.CompletionContextChanged
+
 type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
                            DisplayText = name,
@@ -792,6 +840,7 @@ module ParameterHinting =
             return ParameterHintingResult.Empty
         }
 
+
     // Returns the index of the parameter where the cursor is currently positioned.
     // -1 means the cursor is outside the method parameter list
     // 0 means no parameter entered
@@ -833,7 +882,8 @@ type FSharpTextEditorCompletion() =
 
     override x.CompletionLanguage = "F#"
     override x.Initialize() =
-        do x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
+        x.Editor.IndentationTracker <- FSharpIndentationTracker(x.Editor)
+        x.CompletionWidget <- FSharpCompletionWidget(x.Editor, x.Editor.GetContent<ICompletionWidget>())
         base.Initialize()
 
     /// Provide parameter and method overload information when you type '(', '<' or ','

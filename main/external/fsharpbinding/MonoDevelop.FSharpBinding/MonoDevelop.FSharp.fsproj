@@ -95,6 +95,7 @@
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpOutlineTextEditorExtension.fs" />
     <Compile Include="FSharpIndentationTracker.fs" />
+    <Compile Include="TypeSignatureHelp.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
     <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
@@ -122,7 +123,6 @@
     <Compile Include="HighlightUnusedCode.fs" />
     <Compile Include="ScriptDebugging.fs" />
     <Compile Include="FSharpProjectCompilerOptions.fs" />
-    <Compile Include="TypeSignatureHelp.fs" />
     <Compile Include="FindReferenceUsages.fs" />
   </ItemGroup>
   <ItemGroup>
