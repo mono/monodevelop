@@ -72,6 +72,7 @@ namespace MonoDevelop.DotNetCore
 			FilePath projectFile;
 			string migrationFile;
 			if (project == null) {
+				projectFile = null;
 				migrationFile = solution.FileName;
 			} else {
 				projectFile = project.FileName;
