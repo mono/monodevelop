@@ -73,7 +73,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		
 	}
 	
-	class EventEditor: ComboBoxEntry, IPropertyEditor
+	class EventEditor: ComboBox, IPropertyEditor
 	{
 		bool isNull;
 		PropertyDescriptor prop;

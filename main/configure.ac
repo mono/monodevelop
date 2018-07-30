@@ -128,15 +128,13 @@ fi
 
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.6
-GTKSHARP_REQUIRED_VERSION=2.12.8
+GTKSHARP_REQUIRED_VERSION=2.99.3
 MONODOC_REQUIRED_VERSION=1.0
 
-PKG_CHECK_MODULES(GLIB_SHARP, glib-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION)
+PKG_CHECK_MODULES(GLIB_SHARP, glib-sharp-3.0 >= $GTKSHARP_REQUIRED_VERSION)
 AC_SUBST(GLIB_SHARP_LIBS)
-PKG_CHECK_MODULES(GTK_SHARP, gtk-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION)
+PKG_CHECK_MODULES(GTK_SHARP, gtk-sharp-3.0 >= $GTKSHARP_REQUIRED_VERSION)
 AC_SUBST(GTK_SHARP_LIBS)
-PKG_CHECK_MODULES(GLADE_SHARP, glade-sharp-2.0 >= $GTKSHARP_REQUIRED_VERSION)
-AC_SUBST(GLADE_SHARP_LIBS)
 
 PKG_CHECK_MODULES(MONODOC, monodoc >= $MONODOC_REQUIRED_VERSION)
 AC_SUBST(MONODOC_LIBS)
@@ -331,9 +329,6 @@ src/addins/CSharpBinding/AspNet/Makefile
 src/addins/ILAsmBinding/Makefile
 src/addins/VBNetBinding/Makefile
 src/addins/ChangeLogAddIn/Makefile
-src/addins/MonoDevelop.GtkCore/Makefile
-src/addins/MonoDevelop.GtkCore/libstetic/Makefile
-src/addins/MonoDevelop.GtkCore/libsteticui/Makefile
 src/addins/TextTemplating/Makefile
 src/addins/TextTemplating/MonoDevelop.TextTemplating/Makefile
 src/addins/AspNet/Makefile

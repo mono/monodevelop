@@ -62,13 +62,13 @@ namespace MonoDevelop.Xml.Editor
 			registeredSchemasView.SearchColumn = -1; // disable the interactive search
 
 			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Namespace"), textRenderer,
-				(TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) => {
+				(TreeViewColumn col, CellRenderer cell, ITreeModel model, TreeIter iter) => {
 					((CellRendererText)cell).Text = GetSchema (iter).NamespaceUri;
 				}
 			);
 			
 			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Type"), textRenderer,
-				(TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) => {
+				(TreeViewColumn col, CellRenderer cell, ITreeModel model, TreeIter iter) => {
 					((CellRendererText)cell).Text = GetSchema (iter).ReadOnly? 
 						  GettextCatalog.GetString ("Built in") 
 						: GettextCatalog.GetString ("User schema");
@@ -192,13 +192,13 @@ namespace MonoDevelop.Xml.Editor
 			return (XmlSchemaCompletionData) registeredSchemasStore.GetValue (iter, 0);
 		}
 		
-		IEnumerable<object> WalkStore (TreeModel model, int column)
+		IEnumerable<object> WalkStore (ITreeModel model, int column)
 		{
 			foreach (TreeIter iter in WalkStore (model))
 				yield return model.GetValue (iter, column);
 		}
 		
-		IEnumerable<TreeIter> WalkStore (TreeModel model)
+		IEnumerable<TreeIter> WalkStore (ITreeModel model)
 		{
 			TreeIter iter;
 			bool valid = model.GetIterFirst (out iter);
@@ -208,7 +208,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}
 
-		static int SortSchemas (TreeModel model, TreeIter a, TreeIter b)
+		static int SortSchemas (ITreeModel model, TreeIter a, TreeIter b)
 		{
 			var listStore = (ListStore)model;
 			return string.Compare (GetSchema (listStore, a).NamespaceUri, GetSchema (listStore, b).NamespaceUri, StringComparison.Ordinal);
@@ -476,7 +476,7 @@ namespace MonoDevelop.Xml.Editor
 		void ScrollToSelection (TreeView view)
 		{
 			TreeIter iter;
-			TreeModel model;
+			ITreeModel model;
 			if (!registeredSchemasView.Selection.GetSelected (out model, out iter))
 				return;
 			view.ScrollToCell (model.GetPath (iter), null, false, 0, 0);

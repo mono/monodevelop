@@ -1158,7 +1158,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}
 		
-		void outlineTreeDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		void outlineTreeDataFunc (TreeViewColumn column, CellRenderer cell, ITreeModel model, TreeIter iter)
 		{
 			var txtRenderer = (CellRendererText) cell;
 			var n = (XNode) model.GetValue (iter, 0);

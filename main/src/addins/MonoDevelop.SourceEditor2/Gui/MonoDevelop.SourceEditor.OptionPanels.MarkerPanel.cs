@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.Label label1;
 
-		private global::Gtk.ComboBox showWhitespacesCombobox;
+		private global::Gtk.ComboBoxText showWhitespacesCombobox;
 
 		protected virtual void Build()
 		{
@@ -239,7 +239,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w14.XOptions = ((global::Gtk.AttachOptions)(4));
 			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.showWhitespacesCombobox = global::Gtk.ComboBox.NewText();
+			this.showWhitespacesCombobox = new global::Gtk.ComboBoxText();
 			this.showWhitespacesCombobox.Name = "showWhitespacesCombobox";
 			this.table1.Add(this.showWhitespacesCombobox);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1[this.showWhitespacesCombobox]));

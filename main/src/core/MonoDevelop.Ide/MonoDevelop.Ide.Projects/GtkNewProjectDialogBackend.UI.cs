@@ -148,15 +148,15 @@ namespace MonoDevelop.Ide.Projects
 			topLabelHBox.PackStart (topBannerLabel, false, false, 20);
 			topLabelEventBox.Add (topLabelHBox);
 
-			VBox.PackStart (topBannerTopEdgeLineEventBox, false, false, 0);
-			VBox.PackStart (topLabelEventBox, false, false, 0);
-			VBox.PackStart (topBannerBottomEdgeLineEventBox, false, false, 0);
+			ContentArea.PackStart (topBannerTopEdgeLineEventBox, false, false, 0);
+			ContentArea.PackStart (topLabelEventBox, false, false, 0);
+			ContentArea.PackStart (topBannerBottomEdgeLineEventBox, false, false, 0);
 
 			// Main templates section.
 			centreVBox = new VBox ();
 			centreVBox.Accessible.SetShouldIgnore (true);
 			centreVBox.Name = "centreVBox";
-			VBox.PackStart (centreVBox, true, true, 0);
+			ContentArea.PackStart (centreVBox, true, true, 0);
 			templatesHBox = new HBox ();
 			templatesHBox.Accessible.SetShouldIgnore (true);
 			templatesHBox.Name = "templatesHBox";
@@ -268,13 +268,13 @@ namespace MonoDevelop.Ide.Projects
 			templateSectionSeparatorEventBox.Name = "templateSectionSeparatorEventBox";
 			templateSectionSeparatorEventBox.HeightRequest = 1;
 			templateSectionSeparatorEventBox.ModifyBg (StateType.Normal, templateSectionSeparatorColor);
-			VBox.PackStart (templateSectionSeparatorEventBox, false, false, 0);
+			ContentArea.PackStart (templateSectionSeparatorEventBox, false, false, 0);
 
 			// Buttons at bottom of dialog.
 			var bottomHBox = new HBox ();
 			bottomHBox.Accessible.SetShouldIgnore (true);
 			bottomHBox.Name = "bottomHBox";
-			VBox.PackStart (bottomHBox, false, false, 0);
+			ContentArea.PackStart (bottomHBox, false, false, 0);
 
 			// Cancel button - bottom left.
 			var cancelButtonBox = new HButtonBox ();
@@ -296,7 +296,7 @@ namespace MonoDevelop.Ide.Projects
 			previousNextButtonBox.Name = "previousNextButtonBox";
 			previousNextButtonBox.BorderWidth = 16;
 			previousNextButtonBox.Spacing = 9;
-			bottomHBox.PackStart (previousNextButtonBox);
+			bottomHBox.PackStart (previousNextButtonBox, false, true, 0);
 			previousNextButtonBox.Layout = ButtonBoxStyle.End;
 
 			previousButton = new Button ();
@@ -305,7 +305,7 @@ namespace MonoDevelop.Ide.Projects
 			previousButton.Accessible.Description = GettextCatalog.GetString ("Return to the previous page");
 			previousButton.Label = GettextCatalog.GetString ("Previous");
 			previousButton.Sensitive = false;
-			previousNextButtonBox.PackEnd (previousButton);
+			previousNextButtonBox.PackEnd (previousButton, false, true, 0);
 
 			// Next button - bottom right.
 			nextButton = new Button ();
@@ -313,10 +313,10 @@ namespace MonoDevelop.Ide.Projects
 			nextButton.Accessible.Name = "nextButton";
 			nextButton.Accessible.Description = GettextCatalog.GetString ("Move to the next page");
 			nextButton.Label = GettextCatalog.GetString ("Next");
-			previousNextButtonBox.PackEnd (nextButton);
+			previousNextButtonBox.PackEnd (nextButton, false, true, 0);
 
 			// Remove default button action area.
-			VBox.Remove (ActionArea);
+			ContentArea.Remove (ActionArea);
 
 			if (Child != null) {
 				Child.ShowAll ();
@@ -374,15 +374,20 @@ namespace MonoDevelop.Ide.Projects
 		/// widgets which will sometimes shrink the dialog. The size also changes
 		/// on moving from page to page so override the requisition if it is too small.
 		/// </summary>
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredHeight (out min_height, out natural_height);
 
-			if (requisition.Height < DefaultHeight)
-				requisition.Height = DefaultHeight;
+			if (min_height < DefaultHeight)
+				min_height = DefaultHeight;
+		}
 
-			if (requisition.Width < DefaultWidth)
-				requisition.Width = DefaultWidth;
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			base.OnGetPreferredWidth (out min_width, out natural_width);
+
+			if (min_width < DefaultWidth)
+				min_width = DefaultWidth;
 		}
 	}
 }

@@ -304,32 +304,32 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Translate (Allocation.X, Allocation.Y);
-				Gdk.Rectangle main = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				context.CachedDraw (ref backgroundSurface, main, 
-				                    opacity: (float)BackgroundOpacity,
-				                    draw: (ctx, opacity) => RenderBackground (ctx, main));
-
-				context.CachedDraw (ref titleSurface, RenderTitlePosition, TitleSize, new { Surface = backgroundSurface }, (float) TitleOpacity, (ctx, alpha) => {
-					ctx.SetSourceSurface (backgroundSurface.Surface, -TitlePosition.X, -TitlePosition.Y);
-					ctx.Rectangle (0, 0, TitleSize.Width, TitleSize.Height);
-					ctx.Fill ();
-					RenderTitle (ctx, new Gdk.Point (), alpha);
-				});
-				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, new { Surface = backgroundSurface } , (float) TextOpacity, (ctx, alpha) => {
-					ctx.SetSourceSurface (backgroundSurface.Surface, -TextPosition.X, -TextPosition.Y);
-					ctx.Rectangle (0, 0, TextSize.Width, TextSize.Height);
-					ctx.Fill ();
-					RenderText (ctx, new Gdk.Point (), alpha);
-				});
-				context.CachedDraw (ref buttonSurface, ButtonPosistion, ButtonSize, new { Hovered = ButtonHovered }, (float)ButtonOpacity, (ctx, alpha) => RenderButton (ctx, new Gdk.Point (), alpha, ButtonHovered));
-				RenderPreview (context, RenderIconPosition, IconOpacity);
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+//				context.Translate (Allocation.X, Allocation.Y);
+//				Gdk.Rectangle main = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+//				context.CachedDraw (ref backgroundSurface, main, 
+//				                    opacity: (float)BackgroundOpacity,
+//				                    draw: (ctx, opacity) => RenderBackground (ctx, main));
+//
+//				context.CachedDraw (ref titleSurface, RenderTitlePosition, TitleSize, new { Surface = backgroundSurface }, (float) TitleOpacity, (ctx, alpha) => {
+//					ctx.SetSourceSurface (backgroundSurface.Surface, -TitlePosition.X, -TitlePosition.Y);
+//					ctx.Rectangle (0, 0, TitleSize.Width, TitleSize.Height);
+//					ctx.Fill ();
+//					RenderTitle (ctx, new Gdk.Point (), alpha);
+//				});
+//				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, new { Surface = backgroundSurface } , (float) TextOpacity, (ctx, alpha) => {
+//					ctx.SetSourceSurface (backgroundSurface.Surface, -TextPosition.X, -TextPosition.Y);
+//					ctx.Rectangle (0, 0, TextSize.Width, TextSize.Height);
+//					ctx.Fill ();
+//					RenderText (ctx, new Gdk.Point (), alpha);
+//				});
+//				context.CachedDraw (ref buttonSurface, ButtonPosistion, ButtonSize, new { Hovered = ButtonHovered }, (float)ButtonOpacity, (ctx, alpha) => RenderButton (ctx, new Gdk.Point (), alpha, ButtonHovered));
+//				RenderPreview (context, RenderIconPosition, IconOpacity);
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{

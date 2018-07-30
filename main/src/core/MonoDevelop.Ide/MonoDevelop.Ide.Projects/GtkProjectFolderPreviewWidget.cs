@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Projects
 			folderTreeView.AppendColumn (column);
 		}
 
-		static bool TreeViewSelection (TreeSelection selection, TreeModel model, TreePath path, bool path_currently_selected)
+		static bool TreeViewSelection (TreeSelection selection, ITreeModel model, TreePath path, bool path_currently_selected)
 		{
 			return false;
 		}

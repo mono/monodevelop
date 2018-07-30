@@ -6,7 +6,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	{
 		private global::Gtk.Table table1;
 
-		private global::Gtk.ComboBox comboboxBaseStyle;
+		private global::Gtk.ComboBoxText comboboxBaseStyle;
 
 		private global::Gtk.Entry entryDescription;
 
@@ -31,7 +31,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboboxBaseStyle = global::Gtk.ComboBox.NewText();
+			this.comboboxBaseStyle = new global::Gtk.ComboBoxText();
 			this.comboboxBaseStyle.Name = "comboboxBaseStyle";
 			this.table1.Add(this.comboboxBaseStyle);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.comboboxBaseStyle]));
@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w8.Expand = false;
 			w8.Fill = false;
 			// Internal child MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.ActionArea
-			global::Gtk.HButtonBox w9 = this.ActionArea;
+			global::Gtk.HButtonBox w9 = (Gtk.HButtonBox)this.ActionArea;
 			w9.Name = "dialog1_ActionArea";
 			w9.Spacing = 10;
 			w9.BorderWidth = ((uint)(5));

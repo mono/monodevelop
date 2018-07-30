@@ -328,9 +328,9 @@ namespace MonoDevelop.Components
 				((int)(resultColor.A * 255)).ToString ("x2"));
 		}
 
-		internal Gdk.GC CreateGC (Gdk.Drawable drawable)
-		{
-			return new Gdk.GC (drawable) { RgbBgColor = this, RgbFgColor = this };
-		}
+//		internal Gdk.GC CreateGC (Gdk.Drawable drawable)
+//		{
+//			return new Gdk.GC (drawable) { RgbBgColor = this, RgbFgColor = this };
+//		}
 	}
 }

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Mono.Unix;
 using MonoDevelop.Components;
+using Cairo;
 
 namespace Mono.TextEditor.PopupWindow
 {
@@ -59,11 +60,11 @@ namespace Mono.TextEditor.PopupWindow
 
 		void CheckScreenColormap ()
 		{
-			Colormap = Screen.RgbaColormap;
-			if (Colormap == null) {
-				Colormap = Screen.RgbColormap;
-				SupportsAlpha = false;
-			} else
+//			Colormap = Screen.RgbaColormap;
+//			if (Colormap == null) {
+//				Colormap = Screen.RgbColormap;
+//				SupportsAlpha = false;
+//			} else
 				SupportsAlpha = true;
 		}
 		
@@ -84,16 +85,14 @@ namespace Mono.TextEditor.PopupWindow
 			layout = new Pango.Layout (PangoContext);
 		}
 
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
 			int descriptionWidth = 1;
-			int totalHeight = yBorder * 2 + 1;
-			
+
 			int width, height;
 			layout.SetText (TitleText);
 			layout.GetPixelSize (out width, out height);
-			totalHeight += height;
 			xSpacer = 0;
 			foreach (var pair in Items) {
 				int w1, w2;
@@ -104,13 +103,31 @@ namespace Mono.TextEditor.PopupWindow
 				layout.GetPixelSize (out w2, out height);
 				descriptionWidth = System.Math.Max (descriptionWidth, w2);
 				xSpacer = System.Math.Max (xSpacer, w1);
-				
-				totalHeight += height;
 			}
 			xSpacer += xBorder * 2 + 1;
-			
-			requisition.Width = descriptionWidth + xSpacer + xBorder * 2 + 1;
-			requisition.Height = totalHeight;
+
+			minimum_width = natural_width = descriptionWidth + xSpacer + xBorder * 2 + 1;
+		}
+
+		protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight (out minimum_height, out natural_height);
+			int totalHeight = yBorder * 2 + 1;
+
+			int width, height;
+			layout.SetText (TitleText);
+			layout.GetPixelSize (out width, out height);
+			totalHeight += height;
+			foreach (var pair in Items) {
+				int w1, w2;
+				layout.SetMarkup (pair.Key);
+				layout.GetPixelSize (out w1, out height);
+
+				layout.SetMarkup (pair.Value);
+				layout.GetPixelSize (out w2, out height);
+				totalHeight += height;
+			}
+			minimum_height = natural_height = totalHeight;
 		}
 		
 		int xSpacer = 0;
@@ -127,89 +144,84 @@ namespace Mono.TextEditor.PopupWindow
 		
 		const int xBorder = 4;
 		const int yBorder = 2;
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{	
-			using (var g = Gdk.CairoHelper.Create (args.Window)) {
-				g.Translate (Allocation.X, Allocation.Y);
-				g.LineWidth = 1;
-				
-				Gdk.GC gc = new Gdk.GC (args.Window);
-				layout.SetMarkup (TitleText);
-				int width, height;
-				layout.GetPixelSize (out width, out height);
-				width += xBorder * 2;
-				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, 0.5, 0.5, height + yBorder * 2 + 1.5, width, height + yBorder * 2);
-				g.SetSourceColor (Styles.TableLayoutModeTitleBackgroundColor.ToCairoColor ());
-				g.FillPreserve ();
-				g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
-				g.Stroke ();
 
+		protected override bool OnDrawn (Context g)
+		{
+			g.Translate (Allocation.X, Allocation.Y);
+			g.LineWidth = 1;
+//			Gdk.GC gc = new Gdk.GC (args.Window);
+			layout.SetMarkup (TitleText);
+			int width, height;
+			layout.GetPixelSize (out width, out height);
+			width += xBorder * 2;
+			FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, 0.5, 0.5, height + yBorder * 2 + 1.5, width, height + yBorder * 2);
+			g.SetSourceColor (Styles.TableLayoutModeTitleBackgroundColor.ToCairoColor ());
+			g.FillPreserve ();
+			g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
+			g.Stroke ();
+
+			g.Save ();
+			g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
+			g.Translate (xBorder, yBorder);
+			g.ShowLayout (layout);
+			g.Restore ();
+
+			FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, 0.5, height * 2 + yBorder * 2 + 0.5, height, Allocation.Width - 1, Allocation.Height - height * 2 - yBorder * 2 - 1);
+			g.SetSourceColor (Styles.TableLayoutModeBackgroundColor.ToCairoColor ());
+			g.FillPreserve ();
+			g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
+			g.Stroke ();
+
+			g.MoveTo (xSpacer + 0.5, height * 2 + yBorder * 2);
+			g.LineTo (xSpacer + 0.5, Allocation.Height - 1);
+			g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
+			g.Stroke ();
+
+			int y = height + yBorder * 2;
+
+			for (int i = 0; i < Items.Count; i++) {
+				KeyValuePair<string, string> pair = Items [i];
+
+				layout.SetMarkup (pair.Key);
+				layout.GetPixelSize (out width, out height);
+
+				if (i == 0) {
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, false, false, 0, y + 0.5, height + 1.5, Allocation.Width, height);
+					g.SetSourceColor (Styles.TableLayoutModeCategoryBackgroundColor.ToCairoColor ());
+					g.FillPreserve ();
+					g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
+					g.Stroke ();
+
+					g.MoveTo (xSpacer + 0.5, height + yBorder * 2 + 1);
+					g.LineTo (xSpacer + 0.5, height * 2 + yBorder * 2 + 1);
+					g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
+					g.Stroke ();
+				}
+
+//				gc.RgbFgColor = (HslColor)(i == 0 ? Styles.TableLayoutModeBackgroundColor : Styles.TableLayoutModeTextColor).ToCairoColor ();
 				g.Save ();
 				g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
-				g.Translate (xBorder, yBorder);
+				g.Translate (xBorder, y);
 				g.ShowLayout (layout);
 				g.Restore ();
 
-				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, 0.5, height * 2 + yBorder * 2 + 0.5, height, Allocation.Width - 1, Allocation.Height - height * 2 - yBorder * 2 - 1);
-				g.SetSourceColor (Styles.TableLayoutModeBackgroundColor.ToCairoColor ());
-				g.FillPreserve ();
-				g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
-				g.Stroke ();
-				
-				g.MoveTo (xSpacer + 0.5, height * 2 + yBorder * 2);
-				g.LineTo (xSpacer + 0.5, Allocation.Height - 1);
-				g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
-				g.Stroke ();
-				
-				int y = height + yBorder * 2;
-				
-				for (int i = 0; i < Items.Count; i++) {
-					KeyValuePair<string, string> pair = Items[i];
-					
-					layout.SetMarkup (pair.Key);
-					layout.GetPixelSize (out width, out height);
-					
-					if (i == 0) {
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, false, false, 0, y + 0.5, height + 1.5, Allocation.Width, height);
-						g.SetSourceColor (Styles.TableLayoutModeCategoryBackgroundColor.ToCairoColor ());
-						g.FillPreserve ();
-						g.SetSourceColor (Styles.TableLayoutModeBorderColor.ToCairoColor ());
-						g.Stroke ();
-						
-						g.MoveTo (xSpacer + 0.5, height + yBorder * 2 + 1);
-						g.LineTo (xSpacer + 0.5, height * 2 + yBorder * 2 + 1);
-						g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
-						g.Stroke ();
-					}
-					
-					gc.RgbFgColor = (HslColor)(i == 0 ? Styles.TableLayoutModeBackgroundColor : Styles.TableLayoutModeTextColor).ToCairoColor ();
-					g.Save ();
-					g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
-					g.Translate (xBorder, y);
-					g.ShowLayout (layout);
-					g.Restore ();
+				g.Save ();
+				g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
+				g.Translate (xSpacer + xBorder, y);
+				layout.SetMarkup (pair.Value);
+				g.ShowLayout (layout);
+				g.Restore ();
 
-					g.Save ();
-					g.SetSourceColor (Styles.TableLayoutModeTextColor.ToCairoColor ());
-					g.Translate (xSpacer + xBorder, y);
-					layout.SetMarkup (pair.Value);
-					g.ShowLayout (layout);
-					g.Restore ();
-
-					// draw top line
-					if (i > 0) {
-						g.MoveTo (1, y + 0.5);
-						g.LineTo (Allocation.Width - 1, y + 0.5);
-						g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
-						g.Stroke ();
-					}
-					y += height;
+				// draw top line
+				if (i > 0) {
+					g.MoveTo (1, y + 0.5);
+					g.LineTo (Allocation.Width - 1, y + 0.5);
+					g.SetSourceColor (Styles.TableLayoutModeGridColor.ToCairoColor ());
+					g.Stroke ();
 				}
-				gc.Dispose ();
+				y += height;
 			}
-
-			return base.OnExposeEvent (args);
+			return base.OnDrawn (g);
 		}
 	}
 
@@ -425,29 +437,40 @@ namespace Mono.TextEditor.PopupWindow
 			titleLayout.FontDescription = desc;
 		}
 
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
 			int descriptionWidth = 1;
+
+			int width, height;
+			titleLayout.SetText (TitleText);
+			titleLayout.GetPixelSize (out width, out height);
+			xSpacer = 0;
+
+			int w2 = descTexts.Max (x => x.Width + x.Spacing * 2);
+			xSpacer = System.Math.Max (width, w2);
+
+			xSpacer += xDescriptionBorder * 2 + 1;
+
+			minimum_width = natural_width = triangleWidth + descriptionWidth + xSpacer;
+		}
+
+		protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight (out minimum_height, out natural_height);
 			int totalHeight = yTitleBorder * 2 + yDescriptionBorder * 2 + 1;
-			
+
 			int width, height;
 			titleLayout.SetText (TitleText);
 			titleLayout.GetPixelSize (out width, out height);
 			totalHeight += height;
-			xSpacer = 0;
 
 			int h2 = descTexts.Sum (x => x.Height + x.Spacing);
-			int w2 = descTexts.Max (x => x.Width + x.Spacing * 2);
 			totalHeight += h2 + 4;
-			xSpacer = System.Math.Max (width, w2);
 
-			xSpacer += xDescriptionBorder * 2 + 1;
-			
-			requisition.Width = triangleWidth + descriptionWidth + xSpacer;
-			requisition.Height = totalHeight;
+			minimum_height = natural_height = totalHeight;
 		}
-		
+
 		int xSpacer = 0;
 		
 		protected override void OnDestroyed ()
@@ -474,60 +497,58 @@ namespace Mono.TextEditor.PopupWindow
 		const int yDescriptionBorder = 8;
 		const int yTitleBorder = 8;
 
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
+		protected override bool OnDrawn (Context g)
 		{
-			using (var g = Gdk.CairoHelper.Create (args.Window)) {
-				g.Translate (Allocation.X, Allocation.Y);
-				g.LineWidth = 1;
-				titleLayout.SetMarkup (TitleText);
-				int width, height;
-				titleLayout.GetPixelSize (out width, out height);
-				var tw = SupportsAlpha ? triangleWidth : 0;
-				var th = SupportsAlpha ? triangleHeight : 0;
-				width += xDescriptionBorder * 2;
+			g.Translate (Allocation.X, Allocation.Y);
+			g.LineWidth = 1;
+			titleLayout.SetMarkup (TitleText);
+			int width, height;
+			titleLayout.GetPixelSize (out width, out height);
+			var tw = SupportsAlpha ? triangleWidth : 0;
+			var th = SupportsAlpha ? triangleHeight : 0;
+			width += xDescriptionBorder * 2;
 
-				if (SupportsAlpha) {
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
-				} else {
-					g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				}
+			if (SupportsAlpha) {
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
+			} else {
+				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+			}
+			g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
+			g.FillPreserve ();
+			g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
+			g.Stroke ();
+
+
+			g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
+			g.SetSourceColor (Styles.InsertionCursorTitleTextColor.ToCairoColor ());
+			g.ShowLayout (titleLayout);
+
+			if (SupportsAlpha) {
+				g.MoveTo (tw, Allocation.Height / 2 - th / 2);
+				g.LineTo (0, Allocation.Height / 2);
+				g.LineTo (tw, Allocation.Height / 2 + th / 2);
+				g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
+				g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
+				g.ClosePath ();
 				g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
-				g.FillPreserve ();
+				g.Fill ();
+
+				g.MoveTo (tw, Allocation.Height / 2 - th / 2);
+				g.LineTo (0, Allocation.Height / 2);
+				g.LineTo (tw, Allocation.Height / 2 + th / 2);
 				g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
 				g.Stroke ();
-				
-
-				g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
-				g.SetSourceColor (Styles.InsertionCursorTitleTextColor.ToCairoColor ());
-				g.ShowLayout (titleLayout);
-
-				if (SupportsAlpha) {
-					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
-					g.LineTo (0, Allocation.Height / 2);
-					g.LineTo (tw, Allocation.Height / 2 + th / 2);
-					g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
-					g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
-					g.ClosePath ();
-					g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
-					g.Fill ();
-
-					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
-					g.LineTo (0, Allocation.Height / 2);
-					g.LineTo (tw, Allocation.Height / 2 + th / 2);
-					g.SetSourceColor (Styles.InsertionCursorBorderColor.ToCairoColor ());
-					g.Stroke ();
-				}
-
-				int y = height + yTitleBorder + yDescriptionBorder;
-				int x = tw + xDescriptionBorder;
-				g.SetSourceColor (Styles.InsertionCursorTextColor.ToCairoColor ());
-
-				foreach (var desc in descTexts) {
-					desc.Render (g, x, y + 4);
-					y += desc.Height + 8;
-				}
 			}
-			return base.OnExposeEvent (args);
+
+			int y = height + yTitleBorder + yDescriptionBorder;
+			int x = tw + xDescriptionBorder;
+			g.SetSourceColor (Styles.InsertionCursorTextColor.ToCairoColor ());
+
+			foreach (var desc in descTexts) {
+				desc.Render (g, x, y + 4);
+				y += desc.Height + 8;
+			}
+			return base.OnDrawn (g);
 		}
 	}
 }

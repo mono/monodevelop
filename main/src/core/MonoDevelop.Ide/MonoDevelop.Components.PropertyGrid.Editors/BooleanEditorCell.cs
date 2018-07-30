@@ -70,25 +70,25 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			height = indicatorSize;
 		}
 		
-		public override void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, Gtk.StateType state)
-		{
-			if (style == null)
-				InitializeStyle (Container);
-			
-			Gtk.ShadowType sh = (bool) Value ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
-
-			int s = indicatorSize - 1;
-			if (s > bounds.Height)
-				s = bounds.Height;
-			if (s > bounds.Width)
-				s = bounds.Width;
-
-			Gtk.Style.PaintCheck (style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + (bounds.Height - s)/2, s, s);
-		}
+//		public override void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, Gtk.StateType state)
+//		{
+//			if (style == null)
+//				InitializeStyle (Container);
+//			
+//			Gtk.ShadowType sh = (bool) Value ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
+//
+//			int s = indicatorSize - 1;
+//			if (s > bounds.Height)
+//				s = bounds.Height;
+//			if (s > bounds.Width)
+//				s = bounds.Width;
+//
+//			Gtk.Style.PaintCheck (style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + (bounds.Height - s)/2, s, s);
+//		}
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)
 		{
-			return new BooleanEditor { State = state };
+			return new BooleanEditor {   };
 		}
 	}
 	

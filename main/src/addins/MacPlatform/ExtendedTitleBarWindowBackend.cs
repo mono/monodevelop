@@ -110,7 +110,7 @@ namespace MonoDevelop.MacIntegration
 			};
 
 			toolbar = new CustomToolbar ();
-			toolbar.Background = (Gdk.Pixbuf)Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeImage (image);
+			toolbar.Background = (Gdk.Pixbuf)Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk3).GetNativeImage (image);
 			toolbar.TitleBarHeight = MacPlatformService.GetTitleBarHeight ();
 			MainBox.PackStart (toolbar, false, false, 0);
 			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;

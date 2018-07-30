@@ -21,7 +21,7 @@ namespace MonoDevelop.Gettext.Editor
 		private global::Gtk.TextView textviewComments;
 		private global::Gtk.Label label3;
 		private global::Gtk.Table table2;
-		private global::Gtk.ComboBoxEntry comboboxentryCharset;
+		private global::Gtk.ComboBoxText comboboxentryCharset;
 		private global::Gtk.Entry entryLanguageGroupEmail;
 		private global::Gtk.Entry entryLanguageGroupName;
 		private global::Gtk.Entry entryTranslatorEmail;
@@ -221,7 +221,7 @@ namespace MonoDevelop.Gettext.Editor
 			this.table2.ColumnSpacing = ((uint)(6));
 			this.table2.BorderWidth = ((uint)(8));
 			// Container child table2.Gtk.Table+TableChild
-			this.comboboxentryCharset = new global::Gtk.ComboBoxEntry ();
+			this.comboboxentryCharset = new global::Gtk.ComboBoxText ();
 			this.comboboxentryCharset.Name = "comboboxentryCharset";
 			this.table2.Add (this.comboboxentryCharset);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table2 [this.comboboxentryCharset]));

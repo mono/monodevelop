@@ -93,45 +93,45 @@ namespace MonoDevelop.Components.MainToolbar
 			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
-		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
+		static bool RuntimeIsSeparator (ITreeModel model, TreeIter iter)
 		{
 			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
 			return runtime == null || runtime.IsSeparator;
 		}
 
-		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
-			var renderer = (CellRendererText) cell;
-
-			if (runtime == null || runtime.IsSeparator) {
-				renderer.Xpad = (uint)0;
-				return;
-			}
-
-			using (var mutableModel = runtime.GetMutableModel ()) {
-				renderer.Visible = mutableModel.Visible;
-				renderer.Sensitive = mutableModel.Enabled;
-				renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
-
-				if (!runtimeCombo.PopupShown) {
-					// no need to ident text when the combo dropdown is not showing
-					if (Platform.IsWindows)
-						renderer.Xpad = 3;
-					renderer.Text = mutableModel.FullDisplayString;
-					renderer.Attributes = normalAttributes;
-				} else {
-					renderer.Text = mutableModel.DisplayString;
-					renderer.Attributes = runtime.Notable ? boldAttributes : normalAttributes;
-				}
-
-			}
-		}
+//		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, ITreeModel model, TreeIter iter)
+//		{
+//			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
+//			var renderer = (CellRendererText) cell;
+//
+//			if (runtime == null || runtime.IsSeparator) {
+//				renderer.Xpad = (uint)0;
+//				return;
+//			}
+//
+//			using (var mutableModel = runtime.GetMutableModel ()) {
+//				renderer.Visible = mutableModel.Visible;
+//				renderer.Sensitive = mutableModel.Enabled;
+//				renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
+//
+//				if (!runtimeCombo.PopupShown) {
+//					// no need to ident text when the combo dropdown is not showing
+//					if (Platform.IsWindows)
+//						renderer.Xpad = 3;
+//					renderer.Text = mutableModel.FullDisplayString;
+//					renderer.Attributes = normalAttributes;
+//				} else {
+//					renderer.Text = mutableModel.DisplayString;
+//					renderer.Attributes = runtime.Notable ? boldAttributes : normalAttributes;
+//				}
+//
+//			}
+//		}
 
 		TreeIter lastSelection = TreeIter.Zero;
 		public MainToolbar ()
 		{
-			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
+//			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
 			AddWidget (button);
 			AddSpace (8);
@@ -167,7 +167,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (Platform.IsWindows)
 				ctx.Ellipsize = Pango.EllipsizeMode.Middle;
 			runtimeCombo.PackStart (ctx, true);
-			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
+//			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
 
 			var runtimeComboVBox = new VBox ();
@@ -272,7 +272,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			this.ShowAll ();
-			this.statusArea.statusIconBox.HideAll ();
+			this.statusArea.statusIconBox.Hide();
 		}
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
@@ -343,38 +343,38 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackStart (widget, false, false, 0);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Rectangle (
-					evnt.Area.X,
-					evnt.Area.Y,
-					evnt.Area.Width,
-					evnt.Area.Height
-				);
-				context.Clip ();
-				context.LineWidth = 1;
-				if (Background != null && Background.Width > 0) {
-					for (int x=0; x < Allocation.Width; x += Background.Width) {
-						Background.Show (context, x, -TitleBarHeight);
-					}
-				} else {
-					context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-					using (var lg = new LinearGradient (0, 0, 0, Allocation.Height)) {
-						lg.AddColorStop (0, Style.Light (StateType.Normal).ToCairoColor ());
-						lg.AddColorStop (1, Style.Mid (StateType.Normal).ToCairoColor ());
-						context.SetSource (lg);
-					}
-					context.Fill ();
-
-				}
-				context.MoveTo (0, Allocation.Height - 0.5);
-				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomBorderColor.ToCairoColor ());
-				context.Stroke ();
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+//				context.Rectangle (
+//					evnt.Area.X,
+//					evnt.Area.Y,
+//					evnt.Area.Width,
+//					evnt.Area.Height
+//				);
+//				context.Clip ();
+//				context.LineWidth = 1;
+//				if (Background != null && Background.Width > 0) {
+//					for (int x=0; x < Allocation.Width; x += Background.Width) {
+//						Background.Show (context, x, -TitleBarHeight);
+//					}
+//				} else {
+//					context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+//					using (var lg = new LinearGradient (0, 0, 0, Allocation.Height)) {
+//						lg.AddColorStop (0, Style.Light (StateType.Normal).ToCairoColor ());
+//						lg.AddColorStop (1, Style.Mid (StateType.Normal).ToCairoColor ());
+//						context.SetSource (lg);
+//					}
+//					context.Fill ();
+//
+//				}
+//				context.MoveTo (0, Allocation.Height - 0.5);
+//				context.RelLineTo (Allocation.Width, 0);
+//				context.SetSourceColor (Styles.ToolbarBottomBorderColor.ToCairoColor ());
+//				context.Stroke ();
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		void HandleStartButtonClicked (object sender, EventArgs e)
 		{

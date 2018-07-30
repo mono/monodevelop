@@ -18,7 +18,7 @@ namespace MonoDevelop.Debugger
 			this.Title = global::Mono.Unix.Catalog.GetString("The Debugger is Busy");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Debugger.BusyEvaluatorDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -40,7 +40,7 @@ namespace MonoDevelop.Debugger
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
 			w3.Position = 0;
 			// Internal child MonoDevelop.Debugger.BusyEvaluatorDialog.ActionArea
-			global::Gtk.HButtonBox w4 = this.ActionArea;
+			global::Gtk.HButtonBox w4 = (Gtk.HButtonBox)this.ActionArea;
 			w4.Name = "dialog1_ActionArea";
 			w4.Spacing = 10;
 			w4.BorderWidth = ((uint)(5));

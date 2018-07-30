@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 			Dialog.Content = container;
 
-			if (Toolkit.CurrentEngine.Type == ToolkitType.Gtk) {
+			if (Toolkit.CurrentEngine.Type == ToolkitType.Gtk3) {
 				var nativeNext = nextButton.Surface.NativeWidget as Gtk.Button;
 				nativeNext.CanDefault = true;
 				nativeNext.GrabDefault ();

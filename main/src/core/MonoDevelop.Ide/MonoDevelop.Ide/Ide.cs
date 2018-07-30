@@ -33,7 +33,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 using Mono.Addins;
-using Mono.Addins.Gui;
+using Mono.Addins.GuiGtk3;
 using Mono.Addins.Setup;
 using MonoDevelop.Components.Commands;
 
@@ -339,8 +339,8 @@ namespace MonoDevelop.Ide
 			};
 			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
-
-			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
+			
+//			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
 		}
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
@@ -406,9 +406,9 @@ namespace MonoDevelop.Ide
 					}
 				} else if (file.FileName.HasExtension ("mpack")) {
 					var service = new SetupService (AddinManager.Registry);
-					AddinManagerWindow.RunToInstallFile (Workbench.RootWindow,
-					                                     service,
-					                                     file.FileName.FullPath);
+//					AddinManagerWindow.RunToInstallFile (Workbench.RootWindow,
+//					                                     service,
+//					                                     file.FileName.FullPath);
 				} else {
 					filteredFiles.Add (file);
 				}

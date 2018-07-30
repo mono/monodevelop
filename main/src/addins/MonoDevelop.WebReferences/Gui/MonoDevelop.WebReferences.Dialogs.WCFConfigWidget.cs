@@ -8,7 +8,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		private global::Gtk.Table wcfOptions;
 		
-		private global::Gtk.ComboBox dictionaryCollection;
+		private global::Gtk.ComboBoxText dictionaryCollection;
 		
 		private global::Gtk.Label label1;
 		
@@ -18,11 +18,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		private global::Gtk.Label label4;
 		
-		private global::Gtk.ComboBox listAccess;
+		private global::Gtk.ComboBoxText listAccess;
 		
-		private global::Gtk.ComboBox listAsync;
+		private global::Gtk.ComboBoxText listAsync;
 		
-		private global::Gtk.ComboBox listCollection;
+		private global::Gtk.ComboBoxText listCollection;
 
 		protected virtual void Build ()
 		{
@@ -40,7 +40,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.wcfOptions.RowSpacing = ((uint)(6));
 			this.wcfOptions.ColumnSpacing = ((uint)(6));
 			// Container child wcfOptions.Gtk.Table+TableChild
-			this.dictionaryCollection = global::Gtk.ComboBox.NewText ();
+			this.dictionaryCollection = new global::Gtk.ComboBoxText ();
 			this.dictionaryCollection.Name = "dictionaryCollection";
 			this.wcfOptions.Add (this.dictionaryCollection);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.dictionaryCollection]));
@@ -93,7 +93,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
-			this.listAccess = global::Gtk.ComboBox.NewText ();
+			this.listAccess = new global::Gtk.ComboBoxText ();
 			this.listAccess.AppendText (global::Mono.Unix.Catalog.GetString ("Public"));
 			this.listAccess.AppendText (global::Mono.Unix.Catalog.GetString ("Internal"));
 			this.listAccess.Name = "listAccess";
@@ -107,7 +107,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w6.XOptions = ((global::Gtk.AttachOptions)(7));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
-			this.listAsync = global::Gtk.ComboBox.NewText ();
+			this.listAsync = new global::Gtk.ComboBoxText ();
 			this.listAsync.AppendText (global::Mono.Unix.Catalog.GetString ("No"));
 			this.listAsync.AppendText (global::Mono.Unix.Catalog.GetString ("Async"));
 			this.listAsync.Name = "listAsync";
@@ -121,7 +121,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
-			this.listCollection = global::Gtk.ComboBox.NewText ();
+			this.listCollection = new global::Gtk.ComboBoxText ();
 			this.listCollection.Name = "listCollection";
 			this.wcfOptions.Add (this.listCollection);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listCollection]));

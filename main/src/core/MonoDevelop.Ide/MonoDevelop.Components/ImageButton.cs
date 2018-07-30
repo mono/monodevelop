@@ -99,15 +99,15 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (HasFocus && image != null) {
-				Gtk.Style.PaintFocus (Style, GdkWindow, State, Allocation, this, "button",
-				                      Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-			}
-
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			if (HasFocus && image != null) {
+//				Gtk.Style.PaintFocus (Style, GdkWindow, State, Allocation, this, "button",
+//				                      Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+//			}
+//
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{

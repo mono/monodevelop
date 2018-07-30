@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.Label label1;
 
-		private global::Gtk.ComboBox indentationCombobox;
+		private global::Gtk.ComboBoxText indentationCombobox;
 
 		private global::Gtk.CheckButton tabAsReindentCheckbutton;
 
@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.Label label2;
 
-		private global::Gtk.ComboBox controlLeftRightCombobox;
+		private global::Gtk.ComboBoxText controlLeftRightCombobox;
 
 		protected virtual void Build()
 		{
@@ -228,7 +228,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w14.Expand = false;
 			w14.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.indentationCombobox = global::Gtk.ComboBox.NewText();
+			this.indentationCombobox = new global::Gtk.ComboBoxText();
 			this.indentationCombobox.Name = "indentationCombobox";
 			this.hbox1.Add(this.indentationCombobox);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.indentationCombobox]));
@@ -304,7 +304,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w22.Expand = false;
 			w22.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.controlLeftRightCombobox = global::Gtk.ComboBox.NewText();
+			this.controlLeftRightCombobox = new global::Gtk.ComboBoxText();
 			this.controlLeftRightCombobox.Name = "controlLeftRightCombobox";
 			this.hbox3.Add(this.controlLeftRightCombobox);
 			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.controlLeftRightCombobox]));

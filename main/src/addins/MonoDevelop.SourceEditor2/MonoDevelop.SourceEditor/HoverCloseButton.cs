@@ -39,10 +39,10 @@ namespace MonoDevelop.SourceEditor
 			Events |= EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
-			requisition.Width = requisition.Height = 16;
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
+			minimum_width = natural_width = 16;
 		}
 
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
@@ -84,13 +84,13 @@ namespace MonoDevelop.SourceEditor
 				handler (this, e);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var cr = CairoHelper.Create (evnt.Window)) {
-				DrawCloseButton (cr, new Gdk.Point (Allocation.X + Allocation.Width / 2, Allocation.Y + Allocation.Height / 2), hovered, 1.0, 0);
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var cr = CairoHelper.Create (evnt.Window)) {
+//				DrawCloseButton (cr, new Gdk.Point (Allocation.X + Allocation.Width / 2, Allocation.Y + Allocation.Height / 2), hovered, 1.0, 0);
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		static void DrawCloseButton (Cairo.Context context, Gdk.Point center, bool hovered, double opacity, double animationProgress)
 		{

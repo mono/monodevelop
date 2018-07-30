@@ -79,19 +79,19 @@ namespace MonoDevelop.Components
 			public PoupHandlerWrapper (ContextMenu menu, Gtk.Menu gtkMenu)
 			{
 				this.menu = menu;
-				gtkMenu.ExposeEvent += HandleExposeEvent;
+				//gtkMenu.ExposeEvent += HandleExposeEvent;
 			}
 
-			void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
-			{
-				var gtkMenu = (Gtk.Menu)o;
-				gtkMenu.ExposeEvent -= HandleExposeEvent;
-				int ox, oy;
-				gtkMenu.ParentWindow.GetOrigin (out ox, out oy);
-				int rx, ry;
-				IdeApp.Workbench.RootWindow.GdkWindow.GetOrigin (out rx, out ry);
-				menu.Items [0].FireSelectedEvent (new Xwt.Rectangle (ox - rx, oy - ry, gtkMenu.Allocation.Width, gtkMenu.Allocation.Height));
-			}
+//			void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
+//			{
+//				var gtkMenu = (Gtk.Menu)o;
+//				gtkMenu.ExposeEvent -= HandleExposeEvent;
+//				int ox, oy;
+//				gtkMenu.ParentWindow.GetOrigin (out ox, out oy);
+//				int rx, ry;
+//				IdeApp.Workbench.RootWindow.GdkWindow.GetOrigin (out rx, out ry);
+//				menu.Items [0].FireSelectedEvent (new Xwt.Rectangle (ox - rx, oy - ry, gtkMenu.Allocation.Width, gtkMenu.Allocation.Height));
+//			}
 		}
 
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu)

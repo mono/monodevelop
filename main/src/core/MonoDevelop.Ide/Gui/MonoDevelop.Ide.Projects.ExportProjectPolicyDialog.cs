@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::Mono.Unix.Catalog.GetString ("Export Policies");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 			this.radioCustom.Name = "radioCustom";
 			this.radioCustom.DrawIndicator = true;
 			this.radioCustom.UseUnderline = true;
-			this.radioCustom.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioCustom.Group = new global::Gtk.RadioButton [0];
 			this.vbox4.Add (this.radioCustom);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radioCustom]));
 			w2.Position = 0;
@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w16.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.ActionArea
-			global::Gtk.HButtonBox w17 = this.ActionArea;
+			global::Gtk.HButtonBox w17 = (Gtk.HButtonBox)this.ActionArea;
 			w17.Name = "dialog1_ActionArea";
 			w17.Spacing = 10;
 			w17.BorderWidth = ((uint)(5));

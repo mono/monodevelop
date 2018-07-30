@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			Init ();
 		}
 		
-		public PadTreeView (TreeModel model) : base (model)
+		public PadTreeView (ITreeModel model) : base (model)
 		{
 			Init ();
 		}

@@ -30,6 +30,7 @@ using Pango;
 using System;
 using System.Text;
 using MonoDevelop.Components;
+using Cairo;
 
 namespace Mono.TextEditor.PopupWindow
 {
@@ -150,7 +151,7 @@ namespace Mono.TextEditor.PopupWindow
 				return base.OnMotionNotifyEvent (e);
 			
 			int winWidth, winHeight;
-			this.GdkWindow.GetSize (out winWidth, out winHeight);
+//			this.GdkWindow.GetSize (out winWidth, out winHeight);
 			
 	/*		int ypos = (int) e.Y;
 			if (ypos < 0) {
@@ -166,14 +167,14 @@ namespace Mono.TextEditor.PopupWindow
 		Adjustment hadj;
 		Adjustment vadj;
 
-		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
-		{
-			this.hadj = hadj;
-			this.vadj = vadj;
-			if (this.vadj != null)
-				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
-			base.OnSetScrollAdjustments (hadj, vadj);
-		}
+//		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
+//		{
+//			this.hadj = hadj;
+//			this.vadj = vadj;
+//			if (this.vadj != null)
+//				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
+//			base.OnSetScrollAdjustments (hadj, vadj);
+//		}
 
 		void SetAdjustments (Gdk.Rectangle allocation)
 		{
@@ -189,12 +190,12 @@ namespace Mono.TextEditor.PopupWindow
 			base.OnSizeAllocated (allocation);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			base.OnExposeEvent (args);
-			DrawList (args);
-	  		return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose args)
+//		{
+//			base.OnExposeEvent (args);
+//			DrawList (args);
+//	  		return true;
+//		}
 		
 		public int TextOffset {
 			get {
@@ -212,10 +213,10 @@ namespace Mono.TextEditor.PopupWindow
 			var window = args.Window;
 			
 			int winWidth, winHeight;
-			window.GetSize (out winWidth, out winHeight);
+//			window.GetSize (out winWidth, out winHeight);
 			
 			int ypos = margin;
-			int lineWidth = winWidth - margin*2;
+//			int lineWidth = winWidth - margin*2;
 			int xpos = margin + padding;
 
 			using (var cr = this.CreateXwtContext ()) {
@@ -226,67 +227,67 @@ namespace Mono.TextEditor.PopupWindow
 				int n = 0;
 				n = (int)(vadj.Value / rowHeight);
 
-				while (ypos < winHeight - margin && n < win.DataProvider.Count) {
-					bool hasMarkup = false;
-					IMarkupListDataProvider<T> markupListDataProvider = win.DataProvider as IMarkupListDataProvider<T>;
-					if (markupListDataProvider != null) {
-						if (markupListDataProvider.HasMarkup (n)) {
-							layout.Markup = (markupListDataProvider.GetMarkup (n) ?? "&lt;null&gt;");
-							hasMarkup = true;
-						}
-					}
-				
-					if (!hasMarkup)
-						layout.Text = (win.DataProvider.GetText (n) ?? "<null>");
-				
-					Xwt.Drawing.Image icon = win.DataProvider.GetIcon (n);
-					int iconHeight, iconWidth;
-				
-					if (icon != null) {
-						iconWidth = (int)icon.Width;
-						iconHeight = (int)icon.Height;
-					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
-						iconHeight = iconWidth = 24;
-					}
-				
-					var s = layout.GetSize ();
-					int typos, iypos;
-					int he = (int)s.Height;
-
-					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				
-					if (n == selection) {
-						if (!disableSelection) {
-							cr.Rectangle (margin, ypos, lineWidth, he + padding);
-							cr.SetColor (this.Style.Base (StateType.Selected).ToXwtColor ());
-							cr.Fill ();
-
-							cr.SetColor (this.Style.Text (StateType.Selected).ToXwtColor ());
-							cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
-						} else {
-							cr.Rectangle (margin, ypos, lineWidth, he + padding);
-							cr.SetColor (this.Style.Base (StateType.Selected).ToXwtColor ());
-							cr.Stroke ();
-
-							cr.SetColor (textColor);
-							cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
-						}
-					} else {
-						cr.SetColor (textColor);
-						cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
-					}
-				
-					if (icon != null)
-						cr.DrawImage (icon, xpos, iypos);
-				
-					ypos += rowHeight;
-					n++;
-				
-					//reset the markup or it carries over to the next SetText
-					if (hasMarkup)
-						layout.Markup = string.Empty;
-				}
+//				while (ypos < winHeight - margin && n < win.DataProvider.Count) {
+//					bool hasMarkup = false;
+//					IMarkupListDataProvider<T> markupListDataProvider = win.DataProvider as IMarkupListDataProvider<T>;
+//					if (markupListDataProvider != null) {
+//						if (markupListDataProvider.HasMarkup (n)) {
+//							layout.Markup = (markupListDataProvider.GetMarkup (n) ?? "&lt;null&gt;");
+//							hasMarkup = true;
+//						}
+//					}
+//				
+//					if (!hasMarkup)
+//						layout.Text = (win.DataProvider.GetText (n) ?? "<null>");
+//				
+//					Xwt.Drawing.Image icon = win.DataProvider.GetIcon (n);
+//					int iconHeight, iconWidth;
+//				
+//					if (icon != null) {
+//						iconWidth = (int)icon.Width;
+//						iconHeight = (int)icon.Height;
+//					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+//						iconHeight = iconWidth = 24;
+//					}
+//				
+//					var s = layout.GetSize ();
+//					int typos, iypos;
+//					int he = (int)s.Height;
+//
+//					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
+//					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
+//				
+//					if (n == selection) {
+//						if (!disableSelection) {
+//							cr.Rectangle (margin, ypos, lineWidth, he + padding);
+//							cr.SetColor (this.Style.Base (StateType.Selected).ToXwtColor ());
+//							cr.Fill ();
+//
+//							cr.SetColor (this.Style.Text (StateType.Selected).ToXwtColor ());
+//							cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
+//						} else {
+//							cr.Rectangle (margin, ypos, lineWidth, he + padding);
+//							cr.SetColor (this.Style.Base (StateType.Selected).ToXwtColor ());
+//							cr.Stroke ();
+//
+//							cr.SetColor (textColor);
+//							cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
+//						}
+//					} else {
+//						cr.SetColor (textColor);
+//						cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
+//					}
+//				
+//					if (icon != null)
+//						cr.DrawImage (icon, xpos, iypos);
+//				
+//					ypos += rowHeight;
+//					n++;
+//				
+//					//reset the markup or it carries over to the next SetText
+//					if (hasMarkup)
+//						layout.Markup = string.Empty;
+//				}
 			}
 		}
 		

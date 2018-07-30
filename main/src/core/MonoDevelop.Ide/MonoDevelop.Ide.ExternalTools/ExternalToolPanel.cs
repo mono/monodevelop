@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		{
 			if (toolListBox.Selection.CountSelectedRows () == 1) {
 				TreeIter selectedItem;
-				TreeModel ls;				
+				ITreeModel ls;				
 				((ListStore)toolListBox.Model).GetIter (out selectedItem, (TreePath)toolListBox.Selection.GetSelectedRows (out ls)[0]);
 				// we know we have a selected item so get it's index
 				// use that to get the path of the item before it, and swap the two
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		{
 			if (toolListBox.Selection.CountSelectedRows () == 1) {
 				TreeIter selectedItem;
-				TreeModel ls;				
+				ITreeModel ls;				
 				((ListStore)toolListBox.Model).GetIter (out selectedItem, (TreePath) toolListBox.Selection.GetSelectedRows(out ls)[0]);
 				// swap it with the next one
 				TreeIter toSwap = selectedItem;
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			get {
 				if (toolListBox.Selection.CountSelectedRows () == 1) {
 					TreeIter selectedIter;
-					TreeModel ls;
+					ITreeModel ls;
 					((ListStore) toolListBox.Model).GetIter (out selectedIter, (TreePath) toolListBox.Selection.GetSelectedRows (out ls)[0]);
 					return selectedIter;
 				}
@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			get {
 				if (toolListBox.Selection.CountSelectedRows () == 1) {
 					TreeIter selectedIter;
-					TreeModel ls;
+					ITreeModel ls;
 					((ListStore) toolListBox.Model).GetIter (out selectedIter, (TreePath) toolListBox.Selection.GetSelectedRows (out ls)[0]);
 					return toolListBox.Model.GetValue(selectedIter, 1) as ExternalTool;
 				}
@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.ExternalTools
 				int maxIndex = 0;
 				// first copy the selected item paths into a temp array
 				TreeIter[] selectedIters = new TreeIter[selectedItemCount];
-				TreeModel lv;
+				ITreeModel lv;
 				TreePath[] pathList = toolListBox.Selection.GetSelectedRows (out lv);
 				for (int i = 0; i < selectedItemCount; i++) {
 					TreePath path = (TreePath) pathList[i];
@@ -414,7 +414,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		{
 			if (toolListBox.Selection.CountSelectedRows () == 1) {
 				TreeIter selectedIter;
-				TreeModel lv;
+				ITreeModel lv;
 				((ListStore) toolListBox.Model).GetIter(out selectedIter, (TreePath) toolListBox.Selection.GetSelectedRows (out lv)[0]);
 				
 				// return index of first level node (since only 1 level list model)

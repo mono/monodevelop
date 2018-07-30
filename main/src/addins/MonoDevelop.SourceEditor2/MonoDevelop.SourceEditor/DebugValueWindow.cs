@@ -78,8 +78,7 @@ namespace MonoDevelop.SourceEditor
 		public DebugValueWindow (TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
-			this.AllowShrink = false;
-			this.AllowGrow = false;
+			this.Resizable = false;
 			this.Decorated = false;
 
 			TransientFor = (Gtk.Window) (editor.GetNativeWidget <Gtk.Widget> ()).Toplevel;

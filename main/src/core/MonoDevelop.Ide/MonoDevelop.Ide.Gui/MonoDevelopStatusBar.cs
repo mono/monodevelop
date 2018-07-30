@@ -81,10 +81,10 @@ namespace MonoDevelop.Ide
 
 				var im = new Xwt.ImageView (px).ToGtkWidget ();
 				im.Accessible.Role = Atk.Role.Filler;
-				b.PackStart (im);
+				b.PackStart (im, false, true, 0);
 				var label = new Gtk.Label (GettextCatalog.GetString ("Feedback"));
 				label.Accessible.Role = Atk.Role.Filler;
-				b.PackStart (label);
+				b.PackStart (label, false, true, 0);
 				Gtk.Alignment al = new Gtk.Alignment (0f, 0f, 1f, 1f);
 				al.Accessible.Role = Atk.Role.Filler;
 				al.RightPadding = 5;
@@ -220,18 +220,18 @@ namespace MonoDevelop.Ide
 			return rect;
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			bool ret = base.OnExposeEvent (evnt);
-			if (HasResizeGrip) {
-				Gdk.Rectangle rect = GetGripRect ();
-				int w = rect.Width - Style.Xthickness;
-				int h = Allocation.Height - Style.YThickness;
-				if (h < 18 - Style.YThickness) h = 18 - Style.YThickness;
-				Gdk.WindowEdge edge = Direction == TextDirection.Ltr ? Gdk.WindowEdge.SouthEast : Gdk.WindowEdge.SouthWest;
-				Gtk.Style.PaintResizeGrip (Style, GdkWindow, State, evnt.Area, this, "statusbar", edge, rect.X, rect.Y, w, h);
-			}
- 			return ret;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			bool ret = base.OnExposeEvent (evnt);
+//			if (HasResizeGrip) {
+//				Gdk.Rectangle rect = GetGripRect ();
+//				int w = rect.Width - Style.Xthickness;
+//				int h = Allocation.Height - Style.YThickness;
+//				if (h < 18 - Style.YThickness) h = 18 - Style.YThickness;
+//				Gdk.WindowEdge edge = Direction == TextDirection.Ltr ? Gdk.WindowEdge.SouthEast : Gdk.WindowEdge.SouthWest;
+//				Gtk.Style.PaintResizeGrip (Style, GdkWindow, State, evnt.Area, this, "statusbar", edge, rect.X, rect.Y, w, h);
+//			}
+// 			return ret;
+//		}
 	}
 }

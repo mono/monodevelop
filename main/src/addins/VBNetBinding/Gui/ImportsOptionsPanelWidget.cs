@@ -81,7 +81,7 @@ namespace MonoDevelop.VBNetBinding
 			bool removed = false;
 
 			Console.WriteLine ("OnCmdRemoveClicked");
-			treeview1.Selection.SelectedForeach (delegate (Gtk.TreeModel model, Gtk.TreePath path, Gtk.TreeIter iter) 
+			treeview1.Selection.SelectedForeach (delegate (Gtk.ITreeModel model, Gtk.TreePath path, Gtk.TreeIter iter) 
 			{
 				string import;
 				GLib.Value value = new GLib.Value ();

@@ -216,7 +216,7 @@ namespace MonoDevelop.Debugger.Soft
 				
 				var table = new Gtk.Table (5, 2, false);
 				table.BorderWidth = 6;
-				VBox.PackStart (table, true, true, 0);
+				ContentArea.PackStart (table, true, true, 0);
 				
 				table.Attach (new Gtk.Label ("Command:") { Xalign = 0 },   0, 1, 0, 1);
 				table.Attach (new Gtk.Label ("Arguments:") { Xalign = 0 }, 0, 1, 1, 2);
@@ -290,7 +290,7 @@ namespace MonoDevelop.Debugger.Soft
 				
 				CheckValid ();
 				
-				VBox.ShowAll ();
+				ContentArea.ShowAll ();
 			}
 			
 			int? ParsePort (string port)

@@ -21,7 +21,6 @@ SUBDIRS = \
 	MonoDevelop.UnitTesting.NUnit \
 	MonoDeveloperExtensions \
 	VBNetBinding \
-	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
 	MonoDevelop.WebReferences \
 	MonoDevelop.RegexToolkit \

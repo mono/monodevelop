@@ -97,7 +97,7 @@ namespace MonoDevelop.Refactoring
 			FillChanges ();
 		}
 		
-		void SetLocationTextData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void SetLocationTextData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererText cellRendererText = (CellRendererText)cell;
 			Change change = store.GetValue (iter, objColumn) as Change;
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			try {
 				CellRendererDiff cellRendererDiff = (CellRendererDiff)cell;

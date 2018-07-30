@@ -96,15 +96,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal Gdk.GC CreateBgGC (Gdk.Drawable drawable)
-		{
-			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Foreground, RgbFgColor = (HslColor)Background };
-		}
+//		internal Gdk.GC CreateBgGC (Gdk.Drawable drawable)
+//		{
+//			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Foreground, RgbFgColor = (HslColor)Background };
+//		}
 		
-		internal Gdk.GC CreateFgGC (Gdk.Drawable drawable)
-		{
-			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Background, RgbFgColor = (HslColor)Foreground };
-		}
+//		internal Gdk.GC CreateFgGC (Gdk.Drawable drawable)
+//		{
+//			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Background, RgbFgColor = (HslColor)Foreground };
+//		}
 
 		public override string ToString ()
 		{

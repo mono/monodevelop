@@ -148,7 +148,7 @@ namespace MonoDevelop.Components.Docking
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
 			sepBox.ButtonReleaseEvent += OnSizeButtonRelease;
 			sepBox.MotionNotifyEvent += OnSizeMotion;
-			sepBox.ExposeEvent += OnGripExpose;
+//			sepBox.ExposeEvent += OnGripExpose;
 			sepBox.EnterNotifyEvent += delegate { insideGrip = true; sepBox.QueueDraw (); };
 			sepBox.LeaveNotifyEvent += delegate { insideGrip = false; sepBox.QueueDraw (); };
 		}
@@ -361,16 +361,16 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		void OnGripExpose (object sender, Gtk.ExposeEventArgs args)
-		{
-			var w = (EventBox) sender;
-			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
-			
-			using (var ctx = CairoHelper.Create (args.Event.Window)) {
-				ctx.SetSourceColor (w.Style.Background (s).ToCairoColor ());
-				ctx.Paint ();
-			}
-		}
+//		void OnGripExpose (object sender, Gtk.ExposeEventArgs args)
+//		{
+//			var w = (EventBox) sender;
+//			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
+//			
+//			using (var ctx = CairoHelper.Create (args.Event.Window)) {
+//				ctx.SetSourceColor (w.Style.Background (s).ToCairoColor ());
+//				ctx.Paint ();
+//			}
+//		}
 	}
 	
 	class ScrollableContainer: EventBox
@@ -396,15 +396,24 @@ namespace MonoDevelop.Components.Docking
 			QueueResize ();
 		}
 		
-		protected override void OnSizeRequested (ref Requisition req)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			base.OnSizeRequested (ref req);
+			base.OnGetPreferredHeight (out min_height, out natural_height);
 			if (scrollMode || Child == null) {
-				req.Width = 0;
-				req.Height = 0;
+				min_height = 0;
 			}
 			else
-				req = Child.SizeRequest ();
+				min_height = Child.SizeRequest ().Height;
+		}
+
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			base.OnGetPreferredWidth (out min_width, out natural_width);
+			if (scrollMode || Child == null) {
+				min_width = 0;
+			}
+			else
+				min_width = Child.SizeRequest ().Width;
 		}
 
 		protected override void OnSizeAllocated (Rectangle alloc)

@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			this.Build ();
 			
-			comboMode.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
+			comboMode.RowSeparatorFunc = delegate (ITreeModel model, TreeIter iter) {
 				string item = (string) comboMode.Model.GetValue (iter, 0);
 				return item == "--";
 			};

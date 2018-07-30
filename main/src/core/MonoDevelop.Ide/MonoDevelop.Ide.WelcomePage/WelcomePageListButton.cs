@@ -331,61 +331,61 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (mouseOver)
-					DrawHoverBackground (ctx);
-
-				// Draw the icon
-				DrawIcon (ctx);
-
-				// Draw the text
-
-				int textWidth = Allocation.Width - LeftTextPadding - InternalPadding * 2;
-
-				using (var titleLayout = new Pango.Layout (PangoContext))
-				{
-					titleLayout.Width = Pango.Units.FromPixels (textWidth);
-					titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, title));
-
-					Pango.Layout subtitleLayout = null;
-
-					if (!string.IsNullOrEmpty (subtitle))
-					{
-						subtitleLayout = new Pango.Layout (PangoContext);
-						subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
-						subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
-					}
-
-					int height = 0;
-					int w, h1, h2;
-					titleLayout.GetPixelSize (out w, out h1);
-					height += h1;
-
-					if (subtitleLayout != null)
-					{
-						height += Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-						subtitleLayout.GetPixelSize (out w, out h2);
-						height += h2;
-					}
-
-					int tx = Allocation.X + InternalPadding + LeftTextPadding;
-					int ty = Allocation.Y + (Allocation.Height - height) / 2;
-					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, tx, ty);
-
-					if (subtitleLayout != null)
-					{
-						ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
-						subtitleLayout.Dispose ();
-					}
-				}
-			}
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
+//				if (mouseOver)
+//					DrawHoverBackground (ctx);
+//
+//				// Draw the icon
+//				DrawIcon (ctx);
+//
+//				// Draw the text
+//
+//				int textWidth = Allocation.Width - LeftTextPadding - InternalPadding * 2;
+//
+//				using (var titleLayout = new Pango.Layout (PangoContext))
+//				{
+//					titleLayout.Width = Pango.Units.FromPixels (textWidth);
+//					titleLayout.Ellipsize = Pango.EllipsizeMode.End;
+//					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, title));
+//
+//					Pango.Layout subtitleLayout = null;
+//
+//					if (!string.IsNullOrEmpty (subtitle))
+//					{
+//						subtitleLayout = new Pango.Layout (PangoContext);
+//						subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
+//						subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
+//						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
+//					}
+//
+//					int height = 0;
+//					int w, h1, h2;
+//					titleLayout.GetPixelSize (out w, out h1);
+//					height += h1;
+//
+//					if (subtitleLayout != null)
+//					{
+//						height += Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
+//						subtitleLayout.GetPixelSize (out w, out h2);
+//						height += h2;
+//					}
+//
+//					int tx = Allocation.X + InternalPadding + LeftTextPadding;
+//					int ty = Allocation.Y + (Allocation.Height - height) / 2;
+//					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, tx, ty);
+//
+//					if (subtitleLayout != null)
+//					{
+//						ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
+//						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
+//						subtitleLayout.Dispose ();
+//					}
+//				}
+//			}
+//			return true;
+//		}
 
 		protected override void OnDestroyed ()
 		{

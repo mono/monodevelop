@@ -7,7 +7,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
-		private global::Gtk.ComboBox comboHandlers;
+		private global::Gtk.ComboBoxText comboHandlers;
 		private global::Gtk.HSeparator hseparator1;
 		private global::Gtk.EventBox editorBox;
 		
@@ -37,7 +37,7 @@ namespace MonoDevelop.Deployment.Gui
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboHandlers = global::Gtk.ComboBox.NewText ();
+			this.comboHandlers = new global::Gtk.ComboBoxText ();
 			this.comboHandlers.Name = "comboHandlers";
 			this.hbox1.Add (this.comboHandlers);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboHandlers]));

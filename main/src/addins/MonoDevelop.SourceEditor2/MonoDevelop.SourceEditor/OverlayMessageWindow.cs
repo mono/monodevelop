@@ -75,14 +75,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
 
-			if (SizeFunc != null) {
-				requisition.Width = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
+			if (sizeFunc != null) {
+				minimum_width = natural_width = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
 			}
-
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -101,24 +100,24 @@ namespace MonoDevelop.SourceEditor
 			textEditor.MoveTopLevelWidget (this, (textEditor.Allocation.Width - alloc.Width) / 2, textEditor.Allocation.Height - alloc.Height - 8);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var cr = CairoHelper.Create (evnt.Window)) {
-				cr.LineWidth = 1;
-				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationTextBackground));
-				cr.Fill ();
-				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationTextBackground));
-				cr.FillPreserve ();
-
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationBorder));
-				cr.Stroke();
-			}
-
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var cr = CairoHelper.Create (evnt.Window)) {
+//				cr.LineWidth = 1;
+//				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+//
+//				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationTextBackground));
+//				cr.Fill ();
+//				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
+//				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationTextBackground));
+//				cr.FillPreserve ();
+//
+//				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationBorder));
+//				cr.Stroke();
+//			}
+//
+//			return base.OnExposeEvent (evnt);
+//		}
 
 	}
 }

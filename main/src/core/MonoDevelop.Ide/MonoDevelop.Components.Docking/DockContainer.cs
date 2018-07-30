@@ -132,12 +132,24 @@ namespace MonoDevelop.Components.Docking
 				layout.StoreAllocation ();
 		}
 		
-		protected override void OnSizeRequested (ref Requisition req)
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
+			min_width = 0;
 			if (layout != null) {
 				LayoutWidgets ();
-				req = layout.SizeRequest ();
+				min_width = layout.SizeRequest ().Width;
 			}
+			natural_width = min_width;
+		}
+
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
+		{
+			min_height = 0;
+			if (layout != null) {
+				LayoutWidgets ();
+				min_height = layout.SizeRequest ().Height;
+			}
+			natural_height = min_height;
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle rect)
@@ -193,15 +205,15 @@ namespace MonoDevelop.Components.Docking
 					callback (s);
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			bool res = base.OnExposeEvent (evnt);
-			
-			if (layout != null) {
-				layout.Draw (evnt.Area, null, 0);
-			}
-			return res;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			bool res = base.OnExposeEvent (evnt);
+//			
+//			if (layout != null) {
+//				layout.Draw (evnt.Area, null, 0);
+//			}
+//			return res;
+//		}
 
 		protected override void OnAdded (Widget widget)
 		{
@@ -351,17 +363,17 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override void OnRealized ()
 		{
-			WidgetFlags |= WidgetFlags.Realized;
-			
+			this.IsRealized = true;
+
 			Gdk.WindowAttr attributes = new Gdk.WindowAttr ();
 			attributes.X = Allocation.X;
 			attributes.Y = Allocation.Y;
 			attributes.Height = Allocation.Height;
 			attributes.Width = Allocation.Width;
 			attributes.WindowType = Gdk.WindowType.Child;
-			attributes.Wclass = Gdk.WindowClass.InputOutput;
+//			attributes.Wclass = Gdk.WindowClass.InputOutput;
 			attributes.Visual = Visual;
-			attributes.Colormap = Colormap;
+//			attributes.Colormap = Colormap;
 			attributes.EventMask = (int)(Events |
 				Gdk.EventMask.ExposureMask |
 				Gdk.EventMask.Button1MotionMask |
@@ -371,15 +383,15 @@ namespace MonoDevelop.Components.Docking
 			Gdk.WindowAttributesType attributes_mask =
 				Gdk.WindowAttributesType.X |
 				Gdk.WindowAttributesType.Y |
-				Gdk.WindowAttributesType.Colormap |
+//				Gdk.WindowAttributesType.Colormap |
 				Gdk.WindowAttributesType.Visual;
 			GdkWindow = new Gdk.Window (ParentWindow, attributes, (int)attributes_mask);
 			GdkWindow.UserData = Handle;
 
 			Style = Style.Attach (GdkWindow);
 			Style.SetBackground (GdkWindow, State);
-			this.WidgetFlags &= ~WidgetFlags.NoWindow;
-			
+			this.HasWindow = true;
+
 			//GdkWindow.SetBackPixmap (null, true);
 
 			ModifyBase (StateType.Normal, Styles.DockFrameBackground.ToGdkColor ());
@@ -390,7 +402,7 @@ namespace MonoDevelop.Components.Docking
 			if (this.GdkWindow != null) {
 				this.GdkWindow.UserData = IntPtr.Zero;
 				this.GdkWindow.Destroy ();
-				this.WidgetFlags |= WidgetFlags.NoWindow;
+				this.HasWindow = false;
 			}
 			base.OnUnrealized ();
 		}

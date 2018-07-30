@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide
 			this.DefaultWidth = 700;
 			this.DefaultHeight = 450;
 			// Internal child MonoDevelop.Ide.SelectEncodingsDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog-vbox5";
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide
 			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(w1 [this.table5]));
 			w20.Position = 0;
 			// Internal child MonoDevelop.Ide.SelectEncodingsDialog.ActionArea
-			global::Gtk.HButtonBox w21 = this.ActionArea;
+			global::Gtk.HButtonBox w21 = (Gtk.HButtonBox)this.ActionArea;
 			w21.Name = "dialog-action_area5";
 			w21.Spacing = 6;
 			w21.BorderWidth = ((uint)(5));

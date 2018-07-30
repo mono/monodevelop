@@ -29,7 +29,7 @@
 using System;
 using Mono.Addins;
 using Mono.Addins.Setup;
-using Mono.Addins.Gui;
+using Mono.Addins.GuiGtk3;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 

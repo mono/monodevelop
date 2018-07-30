@@ -6,7 +6,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.HSeparator hseparator2;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.ComboBox comboType;
+		private global::Gtk.ComboBoxText comboType;
 		private global::Gtk.Button buttonRemove;
 		private global::Gtk.Table tableData;
 		private global::Gtk.Entry entryCommand;
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboType = global::Gtk.ComboBox.NewText ();
+			this.comboType = new global::Gtk.ComboBoxText ();
 			this.comboType.CanFocus = true;
 			this.comboType.Name = "comboType";
 			this.hbox1.Add (this.comboType);

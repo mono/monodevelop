@@ -7,9 +7,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		private global::Gtk.Table table1;
 
-		private global::Gtk.ComboBox comboLanguage;
+		private global::Gtk.ComboBoxText comboLanguage;
 
-		private global::Gtk.ComboBox comboTheme;
+		private global::Gtk.ComboBoxText comboTheme;
 
 		private global::Gtk.Label label2;
 
@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboLanguage = global::Gtk.ComboBox.NewText ();
+			this.comboLanguage = new global::Gtk.ComboBoxText ();
 			this.comboLanguage.Name = "comboLanguage";
 			this.table1.Add (this.comboLanguage);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboLanguage]));
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.comboTheme = global::Gtk.ComboBox.NewText ();
+			this.comboTheme = new global::Gtk.ComboBoxText ();
 			this.comboTheme.Name = "comboTheme";
 			this.table1.Add (this.comboTheme);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboTheme]));

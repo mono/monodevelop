@@ -171,7 +171,7 @@ namespace MonoDevelop.Components.MainToolbar
 			headerColor = Styles.GlobalSearch.HeaderTextColor;
 			selectionBackgroundColor = Styles.GlobalSearch.SelectionBackgroundColor;
 
-			Toolkit.Load (ToolkitType.Gtk).Invoke (() => declarationviewwindow = new TooltipInformationWindow ());
+			Toolkit.Load (ToolkitType.Gtk3).Invoke (() => declarationviewwindow = new TooltipInformationWindow ());
 
 			categories.Add (new RoslynSearchCategory ());
 			categories.Add (new FileSearchCategory ());

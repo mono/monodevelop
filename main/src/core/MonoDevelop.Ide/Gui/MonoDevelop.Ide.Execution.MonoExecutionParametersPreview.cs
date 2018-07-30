@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Execution
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Execution.MonoExecutionParametersPreview.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Execution
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.GtkScrolledWindow]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.Ide.Execution.MonoExecutionParametersPreview.ActionArea
-			global::Gtk.HButtonBox w6 = this.ActionArea;
+			global::Gtk.HButtonBox w6 = (Gtk.HButtonBox)this.ActionArea;
 			w6.Name = "dialog1_ActionArea";
 			w6.Spacing = 10;
 			w6.BorderWidth = ((uint)(5));

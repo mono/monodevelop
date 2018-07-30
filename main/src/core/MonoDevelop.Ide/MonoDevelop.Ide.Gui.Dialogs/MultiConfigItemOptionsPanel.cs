@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Gtk.ComboBox configCombo;
 		Gtk.ListStore configListStore;
 		const int configListStoreConfigNameColumn = 1;
-		Gtk.ComboBox platformCombo;
+		Gtk.ComboBoxText platformCombo;
 		List<ItemConfiguration> currentConfigs = new List<ItemConfiguration> ();
 		List<string> platforms = new List<string> ();
 		Gtk.Widget panelWidget;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			configCombo.AddAttribute (cell, "text", 0);
 			combosBox.PackStart (configCombo, false, false, 0);
 			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Platform:")), false, false, 0);
-			platformCombo = Gtk.ComboBox.NewText ();
+			platformCombo = new Gtk.ComboBoxText ();
 			platformCombo.Name = "panelWidgetPlatformCombo";
 			combosBox.PackStart (platformCombo, false, false, 0);
 			cbox.PackStart (new Gtk.HSeparator (), false, false, 0);

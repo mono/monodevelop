@@ -68,7 +68,7 @@ namespace MonoDevelop.VBNetBinding
 			store.AppendValues ("Windows");
 			store.AppendValues ("Console");
 			txtMyType.Model = store;
-			txtMyType.TextColumn = 0;
+//			txtMyType.TextColumn = 0;
 			switch (this.project.MyType) {
 			case "WindowsForms":
 				txtMyType.Active = 0;

@@ -90,9 +90,9 @@ namespace MonoDevelop.Deployment
 			this.Modal = true;
 			this.BorderWidth = ((uint)(6));
 			this.Resizable = false;
-			this.AllowGrow = false;
+//			this.AllowGrow = false;
 			// Internal child MonoDevelop.Deployment.FileReplaceDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.Spacing = 4;
 			w1.BorderWidth = ((uint)(2));
@@ -175,7 +175,7 @@ namespace MonoDevelop.Deployment
 			this.radioReplace.Name = "radioReplace";
 			this.radioReplace.DrawIndicator = true;
 			this.radioReplace.UseUnderline = true;
-			this.radioReplace.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioReplace.Group = new Gtk.RadioButton [0];
 			this.radioReplace.Remove (this.radioReplace.Child);
 			// Container child radioReplace.Gtk.Container+ContainerChild
 			this.vbox5 = new global::Gtk.VBox ();
@@ -418,7 +418,7 @@ namespace MonoDevelop.Deployment
 			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox2]));
 			w37.Position = 2;
 			// Internal child MonoDevelop.Deployment.FileReplaceDialog.ActionArea
-			global::Gtk.HButtonBox w38 = this.ActionArea;
+			global::Gtk.HButtonBox w38 = (Gtk.HButtonBox)this.ActionArea;
 			w38.Name = "dialog1_ActionArea";
 			w38.Spacing = 6;
 			w38.BorderWidth = ((uint)(5));

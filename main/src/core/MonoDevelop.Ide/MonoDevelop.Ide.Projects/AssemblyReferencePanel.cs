@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Projects
 			BorderWidth = 6;
 		}
 
-		private int Sort (TreeModel model, TreeIter left, TreeIter right)
+		private int Sort (ITreeModel model, TreeIter left, TreeIter right)
 		{
 			int result = 0;
 

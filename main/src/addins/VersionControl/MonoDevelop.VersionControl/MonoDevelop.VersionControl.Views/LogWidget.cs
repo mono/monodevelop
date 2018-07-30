@@ -510,7 +510,7 @@ namespace MonoDevelop.VersionControl.Views
 			base.OnDestroyed ();
 		}
 		
-		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
@@ -529,7 +529,7 @@ namespace MonoDevelop.VersionControl.Views
 			renderer.Text = string.Format ("{0} {1:HH:mm}", day, rev.Time);
 		}	
 		
-		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			var renderer = (RevisionGraphCellRenderer)cell;
 			Gtk.TreeIter node;
@@ -540,7 +540,7 @@ namespace MonoDevelop.VersionControl.Views
 			renderer.LastNode =  node.Equals (iter);
 		}
 
-		static string GetCurrentFilter (Gtk.TreeModel model)
+		static string GetCurrentFilter (Gtk.ITreeModel model)
 		{
 			TreeIter filterIter;
 			string filter = string.Empty;
@@ -550,7 +550,7 @@ namespace MonoDevelop.VersionControl.Views
 			return filter;
 		}
 		
-		static void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			string filter = GetCurrentFilter (model);
 
@@ -570,7 +570,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static void AuthorFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void AuthorFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			string filter = GetCurrentFilter (model);
 
@@ -588,7 +588,7 @@ namespace MonoDevelop.VersionControl.Views
 				renderer.Markup = EscapeWithFilterMarker (author, filter);
 		}
 		
-		static void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererImage renderer = (CellRendererImage)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
@@ -606,7 +606,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static void RevisionFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void RevisionFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			string filter = GetCurrentFilter (model);
 
@@ -618,7 +618,7 @@ namespace MonoDevelop.VersionControl.Views
 				renderer.Markup = EscapeWithFilterMarker (rev, filter);
 		}
 		
-		static void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererDiff rc = (CellRendererDiff)cell;
 			string[] lines = (string[])model.GetValue (iter, colDiff);

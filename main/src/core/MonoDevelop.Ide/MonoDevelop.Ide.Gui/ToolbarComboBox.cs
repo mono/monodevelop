@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui
 	public class ToolbarComboBox: CustomItem
 	{
 		Gtk.Alignment align;
-		Gtk.ComboBox combo;
+		Gtk.ComboBoxText combo;
 		Gtk.CellRendererText ctx;
 		
 		public ToolbarComboBox () 
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 			align.LeftPadding = 3;
 			align.RightPadding = 3;
 			
-			combo = new Gtk.ComboBox ();
+			combo = new Gtk.ComboBoxText ();
 			combo.Model = new Gtk.ListStore (typeof(string));
 			ctx = new Gtk.CellRendererText ();
 			combo.PackStart (ctx, true);
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui
 			ShowAll ();
 		}
 		
-		protected Gtk.ComboBox Combo {
+		protected Gtk.ComboBoxText Combo {
 			get { return combo; }
 		}
 		

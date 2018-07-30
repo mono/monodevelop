@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		static readonly string customPolicyText = GettextCatalog.GetString ("(Custom)");
 		
-		void OnSetPolicyData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void OnSetPolicyData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			MimeTypePanelData mt = (MimeTypePanelData) store.GetValue (iter, 0);
 

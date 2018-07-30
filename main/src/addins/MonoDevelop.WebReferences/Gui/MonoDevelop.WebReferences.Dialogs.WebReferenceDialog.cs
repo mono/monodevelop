@@ -34,7 +34,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		private global::Gtk.HBox hbox1;
 		
-		private global::Gtk.ComboBox comboModel;
+		private global::Gtk.ComboBoxText comboModel;
 		
 		private global::Gtk.Label label1;
 		
@@ -77,7 +77,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.Title = global::Mono.Unix.Catalog.GetString ("Add Web Reference");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.VBox
-			global::Gtk.VBox w2 = this.VBox;
+			global::Gtk.VBox w2 = (Gtk.VBox)this.ContentArea;
 			w2.Events = ((global::Gdk.EventMask)(256));
 			w2.Name = "dlgWindow";
 			w2.BorderWidth = ((uint)(2));
@@ -162,7 +162,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboModel = global::Gtk.ComboBox.NewText ();
+			this.comboModel = new global::Gtk.ComboBoxText ();
 			this.comboModel.AppendText (global::Mono.Unix.Catalog.GetString ("Windows Communication Foundation (WCF)"));
 			this.comboModel.AppendText (global::Mono.Unix.Catalog.GetString (".NET 2.0 Web Services"));
 			this.comboModel.Name = "comboModel";
@@ -244,7 +244,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(w2 [this.vbxContainer]));
 			w17.Position = 0;
 			// Internal child MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.ActionArea
-			global::Gtk.HButtonBox w18 = this.ActionArea;
+			global::Gtk.HButtonBox w18 = (Gtk.HButtonBox)this.ActionArea;
 			w18.Events = ((global::Gdk.EventMask)(256));
 			w18.Name = "pnlActionArea";
 			w18.Spacing = 6;

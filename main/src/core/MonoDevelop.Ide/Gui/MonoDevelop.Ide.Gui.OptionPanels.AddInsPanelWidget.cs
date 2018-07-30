@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.radioHour.Active = true;
 			this.radioHour.DrawIndicator = true;
 			this.radioHour.UseUnderline = true;
-			this.radioHour.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioHour.Group = new global::Gtk.RadioButton [0];
 			this.vbox5.Add (this.radioHour);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.radioHour]));
 			w2.Position = 0;
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.radioBeta.Active = true;
 			this.radioBeta.DrawIndicator = true;
 			this.radioBeta.UseUnderline = true;
-			this.radioBeta.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioBeta.Group = new global::Gtk.RadioButton [0];
 			this.vbox6.Add (this.radioBeta);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.radioBeta]));
 			w9.Position = 0;

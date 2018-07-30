@@ -110,30 +110,49 @@ namespace MonoDevelop.SourceEditor
 
 			readonly int maxTextWidth = (int)(260 * Pango.Scale.PangoScale);
 
-			protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 			{
-				base.OnSizeRequested (ref requisition);
+				base.OnGetPreferredWidth (out minimum_width, out natural_width);
+
+				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
+					drawingLayout.FontDescription = cache.tooltipFontDescription;
+
+					foreach (var msg in marker.Errors) {
+						if (marker.Layouts.Count == 1)
+							drawingLayout.Width = maxTextWidth;
+						drawingLayout.SetText (msg.FullErrorMessage);
+						int w;
+						int h;
+						drawingLayout.GetPixelSize (out w, out h);
+						if (marker.Layouts.Count > 1)
+							w += (int)warningPixbuf.Width + iconTextSpacing;
+
+						minimum_width = natural_width = Math.Max (w + textBorder * 2, minimum_width);
+					}
+				}
+			}
+
+			protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
+			{
+				base.OnGetPreferredHeight (out minimum_height, out natural_height);
 				double y = verticalTextBorder * 2 - verticalTextSpace + (MonoDevelop.Core.Platform.IsWindows ? 10 : 2);
 
 				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
 					drawingLayout.FontDescription = cache.tooltipFontDescription;
 
 					foreach (var msg in marker.Errors) {
-						if (marker.Layouts.Count == 1) 
+						if (marker.Layouts.Count == 1)
 							drawingLayout.Width = maxTextWidth;
 						drawingLayout.SetText (msg.FullErrorMessage);
 						int w;
 						int h;
 						drawingLayout.GetPixelSize (out w, out h);
-						if (marker.Layouts.Count > 1) 
-							w += (int)warningPixbuf.Width + iconTextSpacing;
 
-						requisition.Width = Math.Max (w + textBorder * 2, requisition.Width);
 						y += h + verticalTextSpace - 3;
 					}
 				}
 
-				requisition.Height = (int)y;
+				minimum_height = natural_height = (int)y;
 			}
 
 			protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)

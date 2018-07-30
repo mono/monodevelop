@@ -84,7 +84,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		private global::Gtk.Table tableNewProject;
 		
-		private global::Gtk.ComboBox comboCreateProject;
+		private global::Gtk.ComboBoxText comboCreateProject;
 		
 		private global::Gtk.Entry entryProjectName;
 		
@@ -100,7 +100,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		private global::Gtk.Label label12;
 		
-		private global::Gtk.ComboBox comboSelProject;
+		private global::Gtk.ComboBoxText comboSelProject;
 		
 		private global::Gtk.Label label8;
 		
@@ -119,7 +119,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.Title = global::Mono.Unix.Catalog.GetString ("Create Package");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Deployment.Gui.DeployDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Events = ((global::Gdk.EventMask)(256));
 			w1.Name = "dialog_VBox";
 			w1.BorderWidth = ((uint)(2));
@@ -416,7 +416,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.radioCreateProject.Active = true;
 			this.radioCreateProject.DrawIndicator = true;
 			this.radioCreateProject.UseUnderline = true;
-			this.radioCreateProject.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radioCreateProject.Group = new Gtk.RadioButton [0];
 			this.vboxSaveProject.Add (this.radioCreateProject);
 			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vboxSaveProject [this.radioCreateProject]));
 			w30.Position = 2;
@@ -441,7 +441,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.tableNewProject.RowSpacing = ((uint)(6));
 			this.tableNewProject.ColumnSpacing = ((uint)(6));
 			// Container child tableNewProject.Gtk.Table+TableChild
-			this.comboCreateProject = global::Gtk.ComboBox.NewText ();
+			this.comboCreateProject = new global::Gtk.ComboBoxText ();
 			this.comboCreateProject.Name = "comboCreateProject";
 			this.tableNewProject.Add (this.comboCreateProject);
 			global::Gtk.Table.TableChild w32 = ((global::Gtk.Table.TableChild)(this.tableNewProject [this.comboCreateProject]));
@@ -528,7 +528,7 @@ namespace MonoDevelop.Deployment.Gui
 			w40.Expand = false;
 			w40.Fill = false;
 			// Container child boxAddProject.Gtk.Box+BoxChild
-			this.comboSelProject = global::Gtk.ComboBox.NewText ();
+			this.comboSelProject = new global::Gtk.ComboBoxText ();
 			this.comboSelProject.Name = "comboSelProject";
 			this.boxAddProject.Add (this.comboSelProject);
 			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.boxAddProject [this.comboSelProject]));
@@ -566,7 +566,7 @@ namespace MonoDevelop.Deployment.Gui
 			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
 			w47.Position = 0;
 			// Internal child MonoDevelop.Deployment.Gui.DeployDialog.ActionArea
-			global::Gtk.HButtonBox w48 = this.ActionArea;
+			global::Gtk.HButtonBox w48 = (Gtk.HButtonBox)this.ActionArea;
 			w48.Name = "MonoDevelop.Deployment.DeployDialog_ActionArea";
 			w48.Spacing = 6;
 			w48.BorderWidth = ((uint)(5));

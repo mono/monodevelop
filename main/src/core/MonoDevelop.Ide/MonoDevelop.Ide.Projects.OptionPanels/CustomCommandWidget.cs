@@ -83,8 +83,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			this.entry = entry;
 			UpdateControls ();
-			this.WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
-			
+			this.NoShowAll = true;
+
 			StringTagModelDescription tagModel;
 			if (entry is SolutionFolderItem)
 				tagModel = ((SolutionFolderItem)entry).GetStringTagModelDescription (configSelector);
@@ -92,7 +92,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				tagModel = ((WorkspaceItem)entry).GetStringTagModelDescription ();
 			else
 				tagModel = new StringTagModelDescription ();
-
 			tagSelectorDirectory.TagModel = tagModel;
 			tagSelectorDirectory.TargetEntry = workingdirEntry;
 			tagSelectorDirectory.Accessible.SetCommonAttributes ("CustomCommand.TagSelectorDirectory",
@@ -190,7 +189,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 						cmd = new CustomCommand ();
 						cmd.Type = supportedTypes [comboType.Active - 1];
 						updating = true;
-						comboType.RemoveText (0);
+						comboType.Remove (0);
 						updating = false;
 						if (CommandCreated != null)
 							CommandCreated (this, EventArgs.Empty);

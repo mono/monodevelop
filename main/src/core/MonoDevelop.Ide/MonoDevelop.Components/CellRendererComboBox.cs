@@ -41,7 +41,7 @@ namespace MonoDevelop.Components
 		public CellRendererComboBox ()
 		{
 			Mode |= Gtk.CellRendererMode.Editable;
-			Gtk.ComboBox dummyEntry = Gtk.ComboBox.NewText ();
+			Gtk.ComboBoxText dummyEntry = new Gtk.ComboBoxText ();
 			rowHeight = dummyEntry.SizeRequest ().Height + (2 * dummyEntry.Style?.YThickness ?? 0);
 			Ypad = 0;
 		}
@@ -51,29 +51,29 @@ namespace MonoDevelop.Components
 			set { values = value; }
 		}
 		
-		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-		{
-			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-			if (height < rowHeight)
-				height = rowHeight;
-		}
+//		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+//		{
+//			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+//			if (height < rowHeight)
+//				height = rowHeight;
+//		}
 		
-		public override CellEditable StartEditing (Gdk.Event ev, Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, CellRendererState flags)
-		{
-			this.path = path;
-
-			Gtk.ComboBox combo = Gtk.ComboBox.NewText ();
-			foreach (string s in values)
-				combo.AppendText (s);
-			
-			combo.Active = Array.IndexOf (values, Text);
-			combo.Changed += new EventHandler (SelectionChanged);
-			return new TreeViewCellContainer (combo);
-		}
+//		public override ICellEditable StartEditing (Gdk.Event ev, Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, CellRendererState flags)
+//		{
+//			this.path = path;
+//
+//			Gtk.ComboBox combo = Gtk.ComboBox.NewText ();
+//			foreach (string s in values)
+//				combo.AppendText (s);
+//			
+//			combo.Active = Array.IndexOf (values, Text);
+//			combo.Changed += new EventHandler (SelectionChanged);
+//			return new TreeViewCellContainer (combo);
+//		}
 		
 		void SelectionChanged (object s, EventArgs a)
 		{
-			Gtk.ComboBox combo = (Gtk.ComboBox) s;
+			Gtk.ComboBoxText combo = (Gtk.ComboBoxText) s;
 			if (Changed != null)
 				Changed (this, new ComboSelectionChangedArgs (path, combo.Active, combo.ActiveText));
 		}

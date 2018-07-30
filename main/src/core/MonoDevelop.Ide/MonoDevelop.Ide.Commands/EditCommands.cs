@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
-				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
+				Gtk.IEditable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.IEditable;
 				if (editable != null) {
 					int cm;
 					int cme;
@@ -142,8 +142,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.Focus;
-			if (focus is Gtk.Editable)
-				info.Enabled = ((Gtk.Editable)focus).IsEditable;
+			if (focus is Gtk.IEditable)
+				info.Enabled = ((Gtk.IEditable)focus).IsEditable;
 			else if (focus is Gtk.TextView)
 				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Commands
 			#endif
 
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
-				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
+				Gtk.IEditable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.IEditable;
 				if (editable != null) {
 					editable.CopyClipboard ();
 					return;
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
+			info.Enabled = (focus is Gtk.IEditable || focus is Gtk.TextView);
 #if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;
 			info.Enabled |= macfocus is AppKit.NSText || macfocus?.RespondsToSelector (copySelector) == true;
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Commands
 			#endif
 
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
-				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
+				Gtk.IEditable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.IEditable;
 				if (editable != null) {
 					editable.CutClipboard ();
 					return;
@@ -262,8 +262,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			if (focus is Gtk.Editable)
-				info.Enabled = ((Gtk.Editable)focus).IsEditable;
+			if (focus is Gtk.IEditable)
+				info.Enabled = ((Gtk.IEditable)focus).IsEditable;
 			else if (focus is Gtk.TextView)
 				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			#endif
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
-				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
+				Gtk.IEditable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.IEditable;
 				if (editable != null) {
 					editable.PasteClipboard ();
 					return;
@@ -330,8 +330,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			if (focus is Gtk.Editable)
-				info.Enabled = ((Gtk.Editable)focus).IsEditable;
+			if (focus is Gtk.IEditable)
+				info.Enabled = ((Gtk.IEditable)focus).IsEditable;
 			else if (focus is Gtk.TextView)
 				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
@@ -387,7 +387,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			#endif
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
-				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
+				Gtk.IEditable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.IEditable;
 				if (editable != null) {
 					editable.SelectRegion (0, -1);
 					return;
@@ -416,7 +416,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
+			info.Enabled = (focus is Gtk.IEditable || focus is Gtk.TextView);
 
 #if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;

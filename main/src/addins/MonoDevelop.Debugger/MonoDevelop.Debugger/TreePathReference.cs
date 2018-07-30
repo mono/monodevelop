@@ -34,7 +34,7 @@ namespace MonoDevelop.Debugger
 		int[] indices;
 		TreePath path;
 
-		public TreePathReference (TreeModel model, TreePath path)
+		public TreePathReference (ITreeModel model, TreePath path)
 		{
 			model.RowsReordered += HandleRowsReordered;
 			model.RowInserted += HandleRowInserted;
@@ -122,7 +122,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public TreeModel Model {
+		public ITreeModel Model {
 			get; private set;
 		}
 

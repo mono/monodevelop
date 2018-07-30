@@ -110,39 +110,39 @@ namespace MonoDevelop.Ide.WelcomePage
 			root.Add (box);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
-				ctx.LineWidth = 1;
-				var rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-
-				var shadowColor = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.ShadowColor);
-				int inset = 2;
-				var ss = Styles.WelcomeScreen.Pad.ShadowSize; 
-				var r = new Cairo.Rectangle (rect.X + ss + 0.5, rect.Y + ss + 0.5, rect.Width - ss * 2 - 1, rect.Height - ss * 2 - 1);
-				var sr = new Cairo.Rectangle (r.X + inset, r.Y + inset + Styles.WelcomeScreen.Pad.ShadowVerticalOffset, r.Width - inset * 2, r.Height - inset * 2);
-				int size = Styles.WelcomeScreen.Pad.ShadowSize;
-				double alpha = 0.2;
-				double alphaDec = 0.2 / (double)size;
-				for (int n=0; n<size; n++) {
-					sr = new Cairo.Rectangle (sr.X - 1, sr.Y - 1, sr.Width + 2, sr.Height + 2);
-					CairoExtensions.RoundedRectangle (ctx, sr.X, sr.Y, sr.Width, sr.Height, 4);
-					shadowColor.A = alpha;
-					ctx.SetSourceColor (shadowColor);
-					ctx.Stroke ();
-					alpha -= alphaDec;
-				}
-
-				CairoExtensions.RoundedRectangle (ctx, r.X, r.Y, r.Width, r.Height, 4);
-				ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BackgroundColor));
-				ctx.FillPreserve ();
-				ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BorderColor));
-				ctx.Stroke ();
-			}
-
-			PropagateExpose (Child, evnt);
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
+//				ctx.LineWidth = 1;
+//				var rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+//
+//				var shadowColor = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.ShadowColor);
+//				int inset = 2;
+//				var ss = Styles.WelcomeScreen.Pad.ShadowSize; 
+//				var r = new Cairo.Rectangle (rect.X + ss + 0.5, rect.Y + ss + 0.5, rect.Width - ss * 2 - 1, rect.Height - ss * 2 - 1);
+//				var sr = new Cairo.Rectangle (r.X + inset, r.Y + inset + Styles.WelcomeScreen.Pad.ShadowVerticalOffset, r.Width - inset * 2, r.Height - inset * 2);
+//				int size = Styles.WelcomeScreen.Pad.ShadowSize;
+//				double alpha = 0.2;
+//				double alphaDec = 0.2 / (double)size;
+//				for (int n=0; n<size; n++) {
+//					sr = new Cairo.Rectangle (sr.X - 1, sr.Y - 1, sr.Width + 2, sr.Height + 2);
+//					CairoExtensions.RoundedRectangle (ctx, sr.X, sr.Y, sr.Width, sr.Height, 4);
+//					shadowColor.A = alpha;
+//					ctx.SetSourceColor (shadowColor);
+//					ctx.Stroke ();
+//					alpha -= alphaDec;
+//				}
+//
+//				CairoExtensions.RoundedRectangle (ctx, r.X, r.Y, r.Width, r.Height, 4);
+//				ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BackgroundColor));
+//				ctx.FillPreserve ();
+//				ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BorderColor));
+//				ctx.Stroke ();
+//			}
+//
+//			PropagateExpose (Child, evnt);
+//			return true;
+//		}
 
 		public static string FormatText (string fontFace, int fontSize, Pango.Weight weight, string color, string text)
 		{

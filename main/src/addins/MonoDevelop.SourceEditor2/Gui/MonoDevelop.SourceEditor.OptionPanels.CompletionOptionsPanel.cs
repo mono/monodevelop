@@ -205,7 +205,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.openingRadiobutton.Name = "openingRadiobutton";
 			this.openingRadiobutton.DrawIndicator = true;
 			this.openingRadiobutton.UseUnderline = true;
-			this.openingRadiobutton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.openingRadiobutton.Group = new Gtk.RadioButton [0];
 			this.hbox2.Add (this.openingRadiobutton);
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.openingRadiobutton]));
 			w14.Position = 1;

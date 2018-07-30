@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace MonoDevelop.Core
@@ -33,8 +35,36 @@ namespace MonoDevelop.Core
 	{
 		internal override void AppendOperatingSystem (StringBuilder sb)
 		{
-			sb.AppendLine ("\tLinux");
+			string OSName = "", OSVersion = "";
+			try {
+				foreach (var line in File.ReadAllLines ("/etc/os-release")) {
+					var parsedline = Parse (line);
+					if (parsedline.Key.Equals ("NAME")) {
+						OSName = parsedline.Value;
+					}
+					if (parsedline.Key.Equals ("VERSION")) {
+						OSVersion = parsedline.Value;
+					}
+				}
+			} catch {
+				OSName = "Linux";
+				OSVersion = "Unknown";
+			}
+			if (string.IsNullOrWhiteSpace (OSName) || string.IsNullOrWhiteSpace (OSVersion)) {
+				OSName = "Linux";
+				OSVersion = "Unknown";
+			}
+			sb.AppendLine ("\t" + OSName + " " + OSVersion);
 			base.AppendOperatingSystem (sb);
+		}
+
+		KeyValuePair<string,string> Parse (string inputstring)
+		{
+			string [] parsed = inputstring.Split ('=');
+			if (parsed.Length != 2) {
+				return new KeyValuePair<string, string> ();
+			}
+			return new KeyValuePair<string, string> (parsed [0], parsed [1].Trim ('"'));
 		}
 	}
 }

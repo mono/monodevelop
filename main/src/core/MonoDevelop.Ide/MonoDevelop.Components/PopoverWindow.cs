@@ -71,14 +71,14 @@ namespace MonoDevelop.Components
 
 			disableSizeCheck = false;
 
-			SizeRequested += (object o, SizeRequestedArgs args) => {
-				if (this.AnimationIsRunning("Resize") && !disableSizeCheck) {
-					Gtk.Requisition result = new Gtk.Requisition ();
-					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, targetSize.Width));
-					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, targetSize.Height));
-					args.Requisition = result;
-				}
-			};
+//			SizeRequested += (object o, SizeRequestedArgs args) => {
+//				if (this.AnimationIsRunning("Resize") && !disableSizeCheck) {
+//					Gtk.Requisition result = new Gtk.Requisition ();
+//					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, targetSize.Width));
+//					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, targetSize.Height));
+//					args.Requisition = result;
+//				}
+//			};
 
 			UpdatePadding ();
 		}
@@ -209,7 +209,7 @@ namespace MonoDevelop.Components
 			
 			return Gdk.Rectangle.Zero;
 		}
-		
+
 		void IAnimatable.BatchBegin () { }
 		void IAnimatable.BatchCommit () { QueueDraw (); }
 
@@ -223,7 +223,8 @@ namespace MonoDevelop.Components
 			disableSizeCheck = true;
 			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
 			// use OnSizeRequested instead of SizeRequest to bypass internal GTK caching
-			OnSizeRequested (ref sizeReq);
+			OnGetPreferredWidth (out sizeReq.Width, out sizeReq.Width);
+			OnGetPreferredHeight (out sizeReq.Height, out sizeReq.Height);
 			disableSizeCheck = false;
 
 			Gdk.Size size = new Gdk.Size (sizeReq.Width, sizeReq.Height);
@@ -255,7 +256,7 @@ namespace MonoDevelop.Components
 		{
 			disableSizeCheck = true;
 			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
-			OnSizeRequested (ref sizeReq);
+//			OnSizeRequested (ref sizeReq);
 			disableSizeCheck = false;
 
 			if (sizeReq.Width == paintSize.Width && sizeReq.Height == paintSize.Height)
@@ -416,11 +417,11 @@ namespace MonoDevelop.Components
 		void CheckScreenColormap ()
 		{
 			SupportsAlpha = Screen.IsComposited;
-			if (SupportsAlpha) {
-				Colormap = Screen.RgbaColormap;
-			} else {
-				Colormap = Screen.RgbColormap;
-			}
+//			if (SupportsAlpha) {
+//				Colormap = Screen.RgbaColormap;
+//			} else {
+//				Colormap = Screen.RgbColormap;
+//			}
 		}
 
 		protected override void OnScreenChanged (Gdk.Screen previous_screen)
@@ -429,48 +430,48 @@ namespace MonoDevelop.Components
 			CheckScreenColormap ();
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			bool retVal;
-			bool changed;
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Save ();
-				if (SupportsAlpha) {
-					context.Operator = Cairo.Operator.Source;
-					context.SetSourceRGBA (1, 1, 1, 0);
-				} else {
-					context.Operator = Cairo.Operator.Over;
-					context.SetSourceRGB (1, 1, 1);
-				}
-				context.Paint ();
-				context.Restore ();
-
-				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
-				retVal = base.OnExposeEvent (evnt);
-
-				changed = Theme.SetBorderPath (context, BorderAllocation, position);
-				context.Operator = Cairo.Operator.DestIn;
-				context.SetSourceRGBA (1, 1, 1, 1);
-				context.Fill ();
-				context.Operator = Cairo.Operator.Over;
-
-				// protect against overriden methods which leave in a bad state
-				context.Save ();
-				if (Theme.DrawPager) {
-					Theme.RenderPager (context, 
-					                   PangoContext,
-					                   BorderAllocation);
-				}
-
-				Theme.RenderShadow (context, BorderAllocation, position);
-				context.Restore ();
-			}
-
-			if (changed)
-				GtkWorkarounds.UpdateNativeShadow (this);
-
-			return retVal;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			bool retVal;
+//			bool changed;
+//			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+//				context.Save ();
+//				if (SupportsAlpha) {
+//					context.Operator = Cairo.Operator.Source;
+//					context.SetSourceRGBA (1, 1, 1, 0);
+//				} else {
+//					context.Operator = Cairo.Operator.Over;
+//					context.SetSourceRGB (1, 1, 1);
+//				}
+//				context.Paint ();
+//				context.Restore ();
+//
+//				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
+//				retVal = base.OnExposeEvent (evnt);
+//
+//				changed = Theme.SetBorderPath (context, BorderAllocation, position);
+//				context.Operator = Cairo.Operator.DestIn;
+//				context.SetSourceRGBA (1, 1, 1, 1);
+//				context.Fill ();
+//				context.Operator = Cairo.Operator.Over;
+//
+//				// protect against overriden methods which leave in a bad state
+//				context.Save ();
+//				if (Theme.DrawPager) {
+//					Theme.RenderPager (context, 
+//					                   PangoContext,
+//					                   BorderAllocation);
+//				}
+//
+//				Theme.RenderShadow (context, BorderAllocation, position);
+//				context.Restore ();
+//			}
+//
+//			if (changed)
+//				GtkWorkarounds.UpdateNativeShadow (this);
+//
+//			return retVal;
+//		}
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
 		{

@@ -42,7 +42,7 @@ namespace MonoDevelop.Gettext
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.Gettext.TranslationProjectOptionsDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
@@ -125,7 +125,7 @@ namespace MonoDevelop.Gettext
 			this.radiobuttonRelPath.Name = "radiobuttonRelPath";
 			this.radiobuttonRelPath.DrawIndicator = true;
 			this.radiobuttonRelPath.UseUnderline = true;
-			this.radiobuttonRelPath.Group = new global::GLib.SList (global::System.IntPtr.Zero);
+			this.radiobuttonRelPath.Group = new Gtk.RadioButton [0];
 			this.table1.Add (this.radiobuttonRelPath);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.radiobuttonRelPath]));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -249,7 +249,7 @@ namespace MonoDevelop.Gettext
 			w23.Expand = false;
 			w23.Fill = false;
 			// Internal child MonoDevelop.Gettext.TranslationProjectOptionsDialog.ActionArea
-			global::Gtk.HButtonBox w24 = this.ActionArea;
+			global::Gtk.HButtonBox w24 = (Gtk.HButtonBox)this.ActionArea;
 			w24.Name = "dialog1_ActionArea";
 			w24.Spacing = 6;
 			w24.BorderWidth = ((uint)(5));

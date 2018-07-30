@@ -188,7 +188,7 @@ namespace MonoDevelop.Components
 			Gtk.Window parentWindow = parent.Toplevel as Gtk.Window;
 			if (parentWindow != null)
 				try {
-					TransientFor = Toolkit.Load (ToolkitType.Gtk).WrapWindow (parentWindow);
+					TransientFor = Toolkit.Load (ToolkitType.Gtk3).WrapWindow (parentWindow);
 				} catch {
 					if (MessageDialog.RootWindow != null)
 						TransientFor = MessageDialog.RootWindow;
@@ -243,7 +243,7 @@ namespace MonoDevelop.Components
 		static Toolkit GetToolkitForWidget (object nativeWidget)
 		{
 			if (nativeWidget is Gtk.Widget)
-				return Toolkit.Load (ToolkitType.Gtk);
+				return Toolkit.Load (ToolkitType.Gtk3);
 			#if MAC
 			if (nativeWidget is AppKit.NSView)
 				return Toolkit.Load (ToolkitType.XamMac);

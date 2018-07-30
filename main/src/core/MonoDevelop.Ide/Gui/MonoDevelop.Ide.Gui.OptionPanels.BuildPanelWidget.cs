@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.saveChangesRadioButton.Name = "saveChangesRadioButton";
 			this.saveChangesRadioButton.DrawIndicator = true;
 			this.saveChangesRadioButton.UseUnderline = true;
-			this.saveChangesRadioButton.Group = new global::GLib.SList(global::System.IntPtr.Zero);
+			this.saveChangesRadioButton.Group = new global::Gtk.RadioButton[0];
 			this.vbox67.Add(this.saveChangesRadioButton);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.saveChangesRadioButton]));
 			w9.Position = 0;

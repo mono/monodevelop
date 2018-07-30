@@ -334,33 +334,33 @@ namespace MonoDevelop.Ide.Gui
 				TooltipInfoSpacing = 0;
 			else
 				TooltipInfoSpacing = -4;
-			LoadStyle ();
+//			LoadStyle ();
 		}
 
 		internal static void LoadStyle ()
 		{
-			Gtk.Style defaultStyle;
+			Gtk.StyleContext defaultStyle;
 			Gtk.Widget styledWidget;
-			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null) {
+//			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null) {
 				styledWidget = new Gtk.Label (String.Empty);
-				defaultStyle = styledWidget.Style;
-			} else {
-				styledWidget = IdeApp.Workbench.RootWindow;
-				defaultStyle = Gtk.Rc.GetStyle (styledWidget);
-			}
+				defaultStyle = styledWidget.StyleContext;
+//			} else {
+//				styledWidget = IdeApp.Workbench.RootWindow;
+//				defaultStyle = Gtk.Rc.GetStyle (styledWidget);
+//			}
 
-			BackgroundColor = defaultStyle.Background (Gtk.StateType.Normal).ToXwtColor ();	// must be the bg color from Gtkrc
-			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToXwtColor ();	// must be the base color from Gtkrc
-			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToXwtColor ();	// must be the text color from Gtkrc
-			BaseSelectionBackgroundColor = defaultStyle.Base (Gtk.StateType.Selected).ToXwtColor ();
-			BaseSelectionTextColor = defaultStyle.Text (Gtk.StateType.Selected).ToXwtColor ();
+//			BackgroundColor = defaultStyle.Background.ToXwtColor ();	// must be the bg color from Gtkrc
+//			BaseBackgroundColor = defaultStyle.Base (Gtk.StateType.Normal).ToXwtColor ();	// must be the base color from Gtkrc
+//			BaseForegroundColor = defaultStyle.Foreground (Gtk.StateType.Normal).ToXwtColor ();	// must be the text color from Gtkrc
+//			BaseSelectionBackgroundColor = defaultStyle.Base (Gtk.StateType.Selected).ToXwtColor ();
+//			BaseSelectionTextColor = defaultStyle.Text (Gtk.StateType.Selected).ToXwtColor ();
 
-			LinkForegroundColor = ((Gdk.Color)styledWidget.StyleGetProperty ("link-color")).ToXwtColor ();
+			LinkForegroundColor = Colors.Blue;//((Gdk.Color)styledWidget.StyleGetProperty ("link-color")).ToXwtColor ();
 			if (LinkForegroundColor == Colors.Black) // the style returs black when not initialized
 				LinkForegroundColor = Colors.Blue;   // set the link color to generic blue until initialization is finished
 
-			DefaultFont = defaultStyle.FontDescription.Copy ();
-			DefaultFontName = DefaultFont.ToString ();
+//			DefaultFont = defaultStyle.FontDescription.Copy ();
+//			DefaultFontName = DefaultFont.ToString ();
 
 			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				LoadLightStyle ();

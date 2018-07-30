@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public RoundButton ()
 		{
-			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
+			this.AppPaintable = true;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.LeaveNotifyMask | EventMask.PointerMotionMask;
 			VisibleWindow = false;
 			SetSizeRequest (height, height);
@@ -71,26 +71,27 @@ namespace MonoDevelop.Components.MainToolbar
 			iconBuildDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-build-disabled-32.png");
 		}
 
-		StateType hoverState = StateType.Prelight;
+		StateFlags hoverState = StateFlags.Prelight;
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 
-			State = IsInside (evnt.X, evnt.Y) ? hoverState : StateType.Normal;;
+			this.SetStateFlags( IsInside (evnt.X, evnt.Y) ? hoverState : StateFlags.Normal, true);;
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
 
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
-			State = StateType.Normal;
+			this.SetStateFlags (StateFlags.Normal, true);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 1 && IsInside (evnt.X, evnt.Y)) {
-				hoverState = State = StateType.Selected;
+				hoverState = StateFlags.Selected;
+				this.SetStateFlags (hoverState, true);
 			}
 			return true;
 		}
@@ -99,8 +100,8 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (State == StateType.Selected)
 				OnClicked (EventArgs.Empty);
-			State = IsInside (evnt.X, evnt.Y) ? StateType.Prelight : StateType.Normal;;
-			hoverState = StateType.Prelight; 
+			this.SetStateFlags( IsInside (evnt.X, evnt.Y) ? StateFlags.Prelight : StateFlags.Normal, true);;
+			hoverState = StateFlags.Prelight; 
 			return true;
 		}
 
@@ -111,11 +112,16 @@ namespace MonoDevelop.Components.MainToolbar
 			return Math.Sqrt (xr * xr + yr * yr) <= height / 2;
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
 		{
-			requisition.Width = (int) btnNormal.Size.Width;
-			requisition.Height = (int) btnNormal.Size.Height + 2;
-			base.OnSizeRequested (ref requisition);
+			min_height = (int) btnNormal.Size.Height + 2;
+			base.OnGetPreferredHeight (out min_height, out natural_height);
+		}
+
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
+		{
+			min_width = (int) btnNormal.Size.Width;
+			base.OnGetPreferredWidth (out min_width, out natural_width);
 		}
 
 		Xwt.Drawing.Image GetIcon()
@@ -142,15 +148,15 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				DrawBackground (context, Allocation, 15, State);
-				var icon = GetIcon();
-				context.DrawImage (this, icon, Allocation.X + Math.Max (0, (Allocation.Width - icon.Width) / 2), Allocation.Y + Math.Max (0, (Allocation.Height - icon.Height) / 2));
-			}
-			return base.OnExposeEvent (evnt);
-		}
+//		protected override bool OnExposeEvent (EventExpose evnt)
+//		{
+//			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+//				DrawBackground (context, Allocation, 15, State);
+//				var icon = GetIcon();
+//				context.DrawImage (this, icon, Allocation.X + Math.Max (0, (Allocation.Width - icon.Width) / 2), Allocation.Y + Math.Max (0, (Allocation.Height - icon.Height) / 2));
+//			}
+//			return base.OnExposeEvent (evnt);
+//		}
 
 		void DrawBackground (Cairo.Context context, Gdk.Rectangle region, int radius, StateType state)
 		{

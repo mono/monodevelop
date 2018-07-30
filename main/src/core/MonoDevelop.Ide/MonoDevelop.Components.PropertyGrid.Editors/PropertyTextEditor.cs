@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		string initialText;
 		object currentValue;
 		Entry entry;
-		ComboBox combo;
+		ComboBoxText combo;
 		ListStore store;
 		bool changed;
 
@@ -59,13 +59,13 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 				//if converter doesn't allow nonstandard values, or can't convert from strings, don't have an entry
 				if (session.Property.Converter.GetStandardValuesExclusive (session) || !session.Property.Converter.CanConvertFrom (session, typeof(string))) {
-					combo = new ComboBox (store);
+					combo = (ComboBoxText)new ComboBox (store);
 					var crt = new CellRendererText ();
 					combo.PackStart (crt, true);
 					combo.AddAttribute (crt, "text", 0);
 				} else {
-					combo = new ComboBoxEntry (store, 0);
-					entry = ((ComboBoxEntry)combo).Entry;
+					combo = (ComboBoxText)new ComboBox (store);
+					entry = ((ComboBox)combo).Entry;
 					entry.HeightRequest = combo.SizeRequest ().Height;
 				}
 

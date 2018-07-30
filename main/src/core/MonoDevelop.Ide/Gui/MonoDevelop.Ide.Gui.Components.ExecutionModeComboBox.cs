@@ -3,7 +3,7 @@ namespace MonoDevelop.Ide.Gui.Components
 {
 	public partial class ExecutionModeComboBox
 	{
-		private global::Gtk.ComboBox comboMode;
+		private global::Gtk.ComboBoxText comboMode;
 
 		protected virtual void Build ()
 		{
@@ -12,7 +12,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			MonoDevelop.Components.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox";
 			// Container child MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.Gtk.Container+ContainerChild
-			this.comboMode = global::Gtk.ComboBox.NewText ();
+			this.comboMode = new global::Gtk.ComboBoxText ();
 			this.comboMode.Name = "comboMode";
 			this.Add (this.comboMode);
 			if ((this.Child != null)) {

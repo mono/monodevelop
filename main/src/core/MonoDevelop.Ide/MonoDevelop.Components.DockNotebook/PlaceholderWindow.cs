@@ -246,18 +246,18 @@ namespace MonoDevelop.Components.DockNotebook
 			base.OnRealized ();
 			GdkWindow.Opacity = 0.4;
 		}
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			int w, h;
-			GetSize (out w, out h);
-
-			using (var ctx = CairoHelper.Create (evnt.Window)) {
-				ctx.SetSourceColor (new Cairo.Color (0.17, 0.55, 0.79));
-				ctx.Rectangle (Allocation.ToCairoRect ());
-				ctx.Fill ();
-			}
-			return true;
-		}
+//		protected override bool OnExposeEvent (EventExpose evnt)
+//		{
+//			int w, h;
+//			GetSize (out w, out h);
+//
+//			using (var ctx = CairoHelper.Create (evnt.Window)) {
+//				ctx.SetSourceColor (new Cairo.Color (0.17, 0.55, 0.79));
+//				ctx.Rectangle (Allocation.ToCairoRect ());
+//				ctx.Fill ();
+//			}
+//			return true;
+//		}
 
 		public void Relocate (int x, int y, int w, int h, bool animate)
 		{

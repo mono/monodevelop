@@ -6,13 +6,13 @@ namespace MonoDevelop.VBNetBinding
 	{
 		private global::Gtk.VBox vbox5;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBoxEntry cmbCodePage;
-		private global::Gtk.ComboBox cmbOptionCompare;
-		private global::Gtk.ComboBox cmbOptionExplicit;
-		private global::Gtk.ComboBox cmbOptionInfer;
-		private global::Gtk.ComboBox cmbOptionStrict;
+		private global::Gtk.ComboBoxText cmbCodePage;
+		private global::Gtk.ComboBoxText cmbOptionCompare;
+		private global::Gtk.ComboBoxText cmbOptionExplicit;
+		private global::Gtk.ComboBoxText cmbOptionInfer;
+		private global::Gtk.ComboBoxText cmbOptionStrict;
 		private global::Gtk.ComboBox compileTargetCombo;
-		private global::Gtk.ComboBoxEntry entryMainClass;
+		private global::Gtk.ComboBoxText entryMainClass;
 		private global::MonoDevelop.Components.FileEntry iconEntry;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label3;
@@ -23,7 +23,7 @@ namespace MonoDevelop.VBNetBinding
 		private global::Gtk.Label label8;
 		private global::Gtk.Label label86;
 		private global::Gtk.Label label88;
-		private global::Gtk.ComboBoxEntry txtMyType;
+		private global::Gtk.ComboBoxText txtMyType;
 		
 		protected virtual void Build ()
 		{
@@ -41,7 +41,7 @@ namespace MonoDevelop.VBNetBinding
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.cmbCodePage = global::Gtk.ComboBoxEntry.NewText ();
+			this.cmbCodePage = new global::Gtk.ComboBoxText ();
 			this.cmbCodePage.Name = "cmbCodePage";
 			this.table1.Add (this.cmbCodePage);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.cmbCodePage]));
@@ -52,7 +52,7 @@ namespace MonoDevelop.VBNetBinding
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.cmbOptionCompare = new global::Gtk.ComboBox ();
+			this.cmbOptionCompare = new global::Gtk.ComboBoxText ();
 			this.cmbOptionCompare.Name = "cmbOptionCompare";
 			this.table1.Add (this.cmbOptionCompare);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.cmbOptionCompare]));
@@ -63,7 +63,7 @@ namespace MonoDevelop.VBNetBinding
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.cmbOptionExplicit = new global::Gtk.ComboBox ();
+			this.cmbOptionExplicit = new global::Gtk.ComboBoxText ();
 			this.cmbOptionExplicit.Name = "cmbOptionExplicit";
 			this.table1.Add (this.cmbOptionExplicit);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.cmbOptionExplicit]));
@@ -74,7 +74,7 @@ namespace MonoDevelop.VBNetBinding
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.cmbOptionInfer = new global::Gtk.ComboBox ();
+			this.cmbOptionInfer = new global::Gtk.ComboBoxText ();
 			this.cmbOptionInfer.Name = "cmbOptionInfer";
 			this.table1.Add (this.cmbOptionInfer);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.cmbOptionInfer]));
@@ -85,7 +85,7 @@ namespace MonoDevelop.VBNetBinding
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.cmbOptionStrict = new global::Gtk.ComboBox ();
+			this.cmbOptionStrict = new global::Gtk.ComboBoxText ();
 			this.cmbOptionStrict.Name = "cmbOptionStrict";
 			this.table1.Add (this.cmbOptionStrict);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.cmbOptionStrict]));
@@ -105,7 +105,7 @@ namespace MonoDevelop.VBNetBinding
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entryMainClass = new global::Gtk.ComboBoxEntry ();
+			this.entryMainClass = new global::Gtk.ComboBoxText ();
 			this.entryMainClass.Name = "entryMainClass";
 			this.table1.Add (this.entryMainClass);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryMainClass]));
@@ -225,7 +225,7 @@ namespace MonoDevelop.VBNetBinding
 			w17.XOptions = ((global::Gtk.AttachOptions)(4));
 			w17.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.txtMyType = new global::Gtk.ComboBoxEntry ();
+			this.txtMyType = new global::Gtk.ComboBoxText ();
 			this.txtMyType.Name = "txtMyType";
 			this.table1.Add (this.txtMyType);
 			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.txtMyType]));

@@ -48,7 +48,7 @@ namespace MonoDevelop.Components
 
 		public static implicit operator Gtk.Window (XwtWindowControl d)
 		{
-			return Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeWindow (d.Window) as Gtk.Window;
+			return Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk3).GetNativeWindow (d.Window) as Gtk.Window;
 		}
 	}
 }

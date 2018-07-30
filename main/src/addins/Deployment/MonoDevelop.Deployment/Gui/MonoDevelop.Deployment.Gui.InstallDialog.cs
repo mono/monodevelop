@@ -22,7 +22,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.Title = global::Mono.Unix.Catalog.GetString ("Install Project");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Deployment.Gui.InstallDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Events = ((global::Gdk.EventMask)(256));
 			w1.Name = "dialog_VBox";
 			w1.BorderWidth = ((uint)(2));
@@ -85,7 +85,7 @@ namespace MonoDevelop.Deployment.Gui
 			w7.Expand = false;
 			w7.Fill = false;
 			// Internal child MonoDevelop.Deployment.Gui.InstallDialog.ActionArea
-			global::Gtk.HButtonBox w8 = this.ActionArea;
+			global::Gtk.HButtonBox w8 = (Gtk.HButtonBox)this.ActionArea;
 			w8.Name = "MonoDevelop.Deployment.InstallDialog_ActionArea";
 			w8.Spacing = 10;
 			w8.BorderWidth = ((uint)(5));

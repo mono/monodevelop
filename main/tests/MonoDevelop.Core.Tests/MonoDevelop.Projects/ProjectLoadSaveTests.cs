@@ -1122,7 +1122,7 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void LoadReferenceWithSpaces_bug43510 ()
 		{
-			var pref = ProjectReference.CreateAssemblyReference (" gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f");
+			var pref = ProjectReference.CreateAssemblyReference (" gtk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f");
 			var p = (DotNetProject)Services.ProjectService.CreateProject ("C#");
 			p.References.Add (pref);
 			Assert.IsTrue (pref.IsValid);

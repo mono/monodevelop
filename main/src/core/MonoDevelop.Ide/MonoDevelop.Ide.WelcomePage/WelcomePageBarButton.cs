@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			OnUpdateStyle ();
 			if (label != null) {
 				box.Remove (label);
-				box.PackStart (label = CreateLabel ());
+				box.PackStart (label = CreateLabel (), false, true, 0);
 				box.ShowAll ();
 				Update ();
 			}

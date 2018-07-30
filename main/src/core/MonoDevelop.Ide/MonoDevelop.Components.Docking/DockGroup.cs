@@ -873,11 +873,11 @@ namespace MonoDevelop.Components.Docking
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
 
-			Gdk.GC hgc = null;
+//			Gdk.GC hgc = null;
 
 			if (areasList == null && oper == DrawSeparatorOperation.Draw) {
-				hgc = new Gdk.GC (Frame.Container.GdkWindow);
-				hgc.RgbFgColor = Styles.DockFrameBackground.ToGdkColor ();
+//				hgc = new Gdk.GC (Frame.Container.GdkWindow);
+//				hgc.RgbFgColor = Styles.DockFrameBackground.ToGdkColor ();
 			}
 
 			for (int n=0; n<VisibleObjects.Count; n++) {
@@ -900,7 +900,7 @@ namespace MonoDevelop.Components.Docking
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
 						break;
 					case DrawSeparatorOperation.Draw:
-						Frame.Container.GdkWindow.DrawRectangle (hgc, true, x, y, hw, hh);
+//						Frame.Container.GdkWindow.DrawRectangle (hgc, true, x, y, hw, hh);
 						break;
 					case DrawSeparatorOperation.Allocate:
 						Frame.Container.AllocateSplitter (this, n, new Gdk.Rectangle (x, y, hw, hh));
@@ -913,8 +913,8 @@ namespace MonoDevelop.Components.Docking
 						y += Frame.HandleSize + Frame.HandlePadding;
 				}
 			}
-			if (hgc != null)
-				hgc.Dispose ();
+//			if (hgc != null)
+//				hgc.Dispose ();
 		}
 		
 		public void ResizeItem (int index, int newSize)

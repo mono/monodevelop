@@ -63,7 +63,7 @@ namespace MonoDevelop.Components
 		}
 		public FixedWidthWrapLabel ()
 		{
-			WidgetFlags |= WidgetFlags.NoWindow;
+			this.HasWindow = true;
 		}
 		
 		public FixedWidthWrapLabel (string text)
@@ -142,14 +142,22 @@ namespace MonoDevelop.Components
 			base.OnStyleSet (previous_style);
 		}
 		
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int min_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out min_width, out natural_width);
 			UpdateLayout ();
 			int lw, lh;
 			layout.GetPixelSize (out lw, out lh);
-			requisition.Height = lh;
-			requisition.Width = lw;
+			min_width = lw;
+		}
+
+		protected override void OnGetPreferredHeight (out int min_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight (out min_height, out natural_height);
+			UpdateLayout ();
+			int lw, lh;
+			layout.GetPixelSize (out lw, out lh);
+			min_height = lh;
 		}
 		
 //		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -165,18 +173,18 @@ namespace MonoDevelop.Components
 //		}
 
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			UpdateLayout ();
-			if (evnt.Window != GdkWindow) {
-				return base.OnExposeEvent (evnt);
-			}
-            
-			Gtk.Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, 
-			    this, null, Allocation.X, Allocation.Y, layout);
-			
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+//		{
+//			UpdateLayout ();
+//			if (evnt.Window != GdkWindow) {
+//				return base.OnExposeEvent (evnt);
+//			}
+//            
+//			Gtk.Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, 
+//			    this, null, Allocation.X, Allocation.Y, layout);
+//			
+//			return true;
+//		}
         
 		public string Markup {
 			get { return text; }

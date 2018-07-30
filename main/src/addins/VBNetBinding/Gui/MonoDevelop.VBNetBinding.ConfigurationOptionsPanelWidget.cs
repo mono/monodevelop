@@ -9,7 +9,7 @@ namespace MonoDevelop.VBNetBinding
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label76;
 		private global::Gtk.Table table1;
-		private global::Gtk.ComboBox cmbDebugType;
+		private global::Gtk.ComboBoxText cmbDebugType;
 		private global::Gtk.ComboBox cmbDefineDEBUG;
 		private global::Gtk.ComboBox cmbDefineTRACE;
 		private global::Gtk.ComboBox cmbOptimize;
@@ -80,7 +80,7 @@ namespace MonoDevelop.VBNetBinding
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.cmbDebugType = new global::Gtk.ComboBox ();
+			this.cmbDebugType = new global::Gtk.ComboBoxText ();
 			this.cmbDebugType.Name = "cmbDebugType";
 			this.table1.Add (this.cmbDebugType);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.cmbDebugType]));

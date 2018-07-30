@@ -294,13 +294,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 
-			vb2.SizeRequested += (o, args) => {
-				var w = Math.Max (headLabel.WidthRequest, headLabel.RealWidth);
-				var req = new Gtk.Requisition ();
-				req.Height = args.Requisition.Height;
-				req.Width = (int)Math.Max (w + PaddingLeft + PaddingTop, args.Requisition.Width);
-				args.Args[0] = req;
-			};
+//			vb2.SizeRequested += (o, args) => {
+//				var w = Math.Max (headLabel.WidthRequest, headLabel.RealWidth);
+//				var req = new Gtk.Requisition ();
+//				req.Height = args.Requisition.Height;
+//				req.Width = (int)Math.Max (w + PaddingLeft + PaddingTop, args.Requisition.Width);
+//				args.Args[0] = req;
+//			};
 
 			Content = BackendHost.ToolkitEngine.WrapWidget (vb2, Xwt.NativeWidgetSizing.DefaultPreferredSize);
 

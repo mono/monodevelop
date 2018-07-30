@@ -60,7 +60,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set {
 				listMode = value;
 				this.QueueResize ();
-				this.ScrollToSelectedItem ();
+//				this.ScrollToSelectedItem ();
 			}
 		}
 		
@@ -81,7 +81,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set {
 				showCategories = value;
 				this.QueueResize ();
-				this.ScrollToSelectedItem ();
+//				this.ScrollToSelectedItem ();
 			}
 		}
 		
@@ -153,7 +153,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			handCursor = new Cursor (CursorType.Hand1);
 
 			var actionHandler = new ActionDelegate (this);
-			actionHandler.PerformShowMenu += PerformShowMenu;
+//			actionHandler.PerformShowMenu += PerformShowMenu;
 		}
 
 		protected override void OnStyleSet (Gtk.Style previous_style)
@@ -182,7 +182,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		protected override void OnDestroyed ()
 		{
-			HideTooltipWindow ();
+//			HideTooltipWindow ();
 			if (this.layout != null) {
 				this.layout.Dispose ();
 				this.layout = null;
@@ -208,123 +208,123 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		const int ItemIconTextItemSpacing = 4;
 		const int IconModePadding = 2;
 
-		protected override bool OnExposeEvent (Gdk.EventExpose e)
-		{
-			Cairo.Context cr = Gdk.CairoHelper.Create (e.Window);
-
-			Gdk.Rectangle area = e.Area;
-
-			if (this.categories.Count == 0 || !string.IsNullOrEmpty (CustomMessage)) {
-				Pango.Layout messageLayout = new Pango.Layout (this.PangoContext);
-				messageLayout.Alignment = Pango.Alignment.Center;
-				messageLayout.Width = (int)(Allocation.Width * 2 / 3 * Pango.Scale.PangoScale);
-				if (!string.IsNullOrEmpty (CustomMessage))
-					messageLayout.SetText (CustomMessage);
-				else
-					messageLayout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("There are no tools available for the current document."));
-				cr.MoveTo (Allocation.Width * 1 / 6, 12);
-				cr.SetSourceColor (Style.Text (StateType.Normal).ToCairoColor ());
-				Pango.CairoHelper.ShowLayout (cr, messageLayout);
-				messageLayout.Dispose ();
-				((IDisposable)cr).Dispose ();
-				return true;
-			}
-
-			var backColor = Style.Base (StateType.Normal).ToCairoColor ();
-			cr.SetSourceColor (backColor);
-			cr.Rectangle (area.X, area.Y, area.Width, area.Height);
-			cr.Fill ();
-
-			int xpos = (this.hAdjustement != null ? (int)this.hAdjustement.Value : 0);
-			int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
-			int ypos = -vadjustment;
-			Category lastCategory = null;
-			int lastCategoryYpos = 0;
-
-			cr.LineWidth = 1;
-
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
-
-				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
-					return true;
-				cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
-				cr.SetSourceColor (Ide.Gui.Styles.PadCategoryBackgroundColor.ToCairoColor ());
-				cr.Fill ();
-
-				if (lastCategory == null || lastCategory.IsExpanded || lastCategory.AnimatingExpand) {
-					cr.MoveTo (xpos, ypos + 0.5);
-					cr.LineTo (itemDimension.Width, ypos + 0.5);
-				}
-				cr.MoveTo (0, ypos + itemDimension.Height - 0.5);
-				cr.LineTo (xpos + Allocation.Width, ypos + itemDimension.Height - 0.5);
-				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
-				cr.Stroke ();
-
-				headerLayout.SetMarkup (category.Text);
-				int width, height;
-				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor.ToCairoColor ());
-				layout.GetPixelSize (out width, out height);
-				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
-				Pango.CairoHelper.ShowLayout (cr, headerLayout);
-
-				var img = category.IsExpanded ? discloseUp : discloseDown;
-				cr.DrawImage (this, img, Allocation.Width - img.Width - CategoryRightPadding, ypos + Math.Round ((itemDimension.Height - img.Height) / 2));
-
-				lastCategory = category;
-				lastCategoryYpos = ypos + itemDimension.Height;
-
-				return true;
-			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
-				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
-					return true;
-
-				var icon = item.Icon;
-				if (!icon.HasFixedSize) {
-					var maxIconSize = Math.Min (itemDimension.Width, itemDimension.Height);
-					var fittingIconSize = maxIconSize > 32 ? Xwt.IconSize.Large : maxIconSize > 16 ? Xwt.IconSize.Medium : Xwt.IconSize.Small;
-					icon = item.Icon.WithSize (fittingIconSize);
-				}
-				if (item == SelectedItem) {
-					icon = icon.WithStyles ("sel");
-					cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
-					cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
-					cr.Fill ();
-				}
-				if (listMode || !curCategory.CanIconizeItems)  {
-					cr.DrawImage (this, icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
-					layout.SetMarkup (item.Text);
-					int width, height;
-					layout.GetPixelSize (out width, out height);
-					cr.SetSourceColor (Style.Text (item != this.SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
-					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
-					Pango.CairoHelper.ShowLayout (cr, layout);
-				} else {
-					cr.DrawImage (this, icon, xpos + Math.Round ((itemDimension.Width  - icon.Width) / 2), ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
-				}
-					
-				if (item == mouseOverItem) {
-					cr.SetSourceColor (Style.Dark (StateType.Prelight).ToCairoColor ());
-					cr.Rectangle (xpos + 0.5, ypos + 0.5, itemDimension.Width - 1, itemDimension.Height - 1);
-					cr.Stroke ();
-				}
-
-				return true;
-			});
-
-			ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
-
-			if (lastCategory != null && lastCategory.AnimatingExpand) {
-				// Closing line when animating the last group of the toolbox
-				cr.MoveTo (area.X, ypos + 0.5);
-				cr.RelLineTo (area.Width, 0);
-				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
-				cr.Stroke ();
-			}
-
-			((IDisposable)cr).Dispose ();
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose e)
+//		{
+//			Cairo.Context cr = Gdk.CairoHelper.Create (e.Window);
+//
+//			Gdk.Rectangle area = e.Area;
+//
+//			if (this.categories.Count == 0 || !string.IsNullOrEmpty (CustomMessage)) {
+//				Pango.Layout messageLayout = new Pango.Layout (this.PangoContext);
+//				messageLayout.Alignment = Pango.Alignment.Center;
+//				messageLayout.Width = (int)(Allocation.Width * 2 / 3 * Pango.Scale.PangoScale);
+//				if (!string.IsNullOrEmpty (CustomMessage))
+//					messageLayout.SetText (CustomMessage);
+//				else
+//					messageLayout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("There are no tools available for the current document."));
+//				cr.MoveTo (Allocation.Width * 1 / 6, 12);
+//				cr.SetSourceColor (Style.Text (StateType.Normal).ToCairoColor ());
+//				Pango.CairoHelper.ShowLayout (cr, messageLayout);
+//				messageLayout.Dispose ();
+//				((IDisposable)cr).Dispose ();
+//				return true;
+//			}
+//
+//			var backColor = Style.Base (StateType.Normal).ToCairoColor ();
+//			cr.SetSourceColor (backColor);
+//			cr.Rectangle (area.X, area.Y, area.Width, area.Height);
+//			cr.Fill ();
+//
+//			int xpos = (this.hAdjustement != null ? (int)this.hAdjustement.Value : 0);
+//			int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
+//			int ypos = -vadjustment;
+//			Category lastCategory = null;
+//			int lastCategoryYpos = 0;
+//
+//			cr.LineWidth = 1;
+//
+//			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
+//				ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
+//
+//				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
+//					return true;
+//				cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+//				cr.SetSourceColor (Ide.Gui.Styles.PadCategoryBackgroundColor.ToCairoColor ());
+//				cr.Fill ();
+//
+//				if (lastCategory == null || lastCategory.IsExpanded || lastCategory.AnimatingExpand) {
+//					cr.MoveTo (xpos, ypos + 0.5);
+//					cr.LineTo (itemDimension.Width, ypos + 0.5);
+//				}
+//				cr.MoveTo (0, ypos + itemDimension.Height - 0.5);
+//				cr.LineTo (xpos + Allocation.Width, ypos + itemDimension.Height - 0.5);
+//				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
+//				cr.Stroke ();
+//
+//				headerLayout.SetMarkup (category.Text);
+//				int width, height;
+//				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor.ToCairoColor ());
+//				layout.GetPixelSize (out width, out height);
+//				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
+//				Pango.CairoHelper.ShowLayout (cr, headerLayout);
+//
+//				var img = category.IsExpanded ? discloseUp : discloseDown;
+//				cr.DrawImage (this, img, Allocation.Width - img.Width - CategoryRightPadding, ypos + Math.Round ((itemDimension.Height - img.Height) / 2));
+//
+//				lastCategory = category;
+//				lastCategoryYpos = ypos + itemDimension.Height;
+//
+//				return true;
+//			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
+//				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
+//					return true;
+//
+//				var icon = item.Icon;
+//				if (!icon.HasFixedSize) {
+//					var maxIconSize = Math.Min (itemDimension.Width, itemDimension.Height);
+//					var fittingIconSize = maxIconSize > 32 ? Xwt.IconSize.Large : maxIconSize > 16 ? Xwt.IconSize.Medium : Xwt.IconSize.Small;
+//					icon = item.Icon.WithSize (fittingIconSize);
+//				}
+//				if (item == SelectedItem) {
+//					icon = icon.WithStyles ("sel");
+//					cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
+//					cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+//					cr.Fill ();
+//				}
+//				if (listMode || !curCategory.CanIconizeItems)  {
+//					cr.DrawImage (this, icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
+//					layout.SetMarkup (item.Text);
+//					int width, height;
+//					layout.GetPixelSize (out width, out height);
+//					cr.SetSourceColor (Style.Text (item != this.SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
+//					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
+//					Pango.CairoHelper.ShowLayout (cr, layout);
+//				} else {
+//					cr.DrawImage (this, icon, xpos + Math.Round ((itemDimension.Width  - icon.Width) / 2), ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
+//				}
+//					
+//				if (item == mouseOverItem) {
+//					cr.SetSourceColor (Style.Dark (StateType.Prelight).ToCairoColor ());
+//					cr.Rectangle (xpos + 0.5, ypos + 0.5, itemDimension.Width - 1, itemDimension.Height - 1);
+//					cr.Stroke ();
+//				}
+//
+//				return true;
+//			});
+//
+//			ProcessExpandAnimation (cr, lastCategory, lastCategoryYpos, backColor, area, ref ypos);
+//
+//			if (lastCategory != null && lastCategory.AnimatingExpand) {
+//				// Closing line when animating the last group of the toolbox
+//				cr.MoveTo (area.X, ypos + 0.5);
+//				cr.RelLineTo (area.Width, 0);
+//				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryBorderColor.ToCairoColor ());
+//				cr.Stroke ();
+//			}
+//
+//			((IDisposable)cr).Dispose ();
+//			return true;
+//		}
 
 		void ProcessExpandAnimation (Cairo.Context cr, Category lastCategory, int lastCategoryYpos, Cairo.Color backColor, Gdk.Rectangle area, ref int ypos)
 		{
@@ -332,11 +332,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				int newypos = lastCategory.IsExpanded ? lastCategoryYpos + lastCategory.AnimationHeight : ypos + lastCategory.AnimationHeight;
 				if (newypos < lastCategoryYpos) {
 					newypos = lastCategoryYpos;
-					StopExpandAnimation (lastCategory);
+//					StopExpandAnimation (lastCategory);
 				}
 				if (newypos > ypos) {
 					newypos = ypos;
-					StopExpandAnimation (lastCategory);
+//					StopExpandAnimation (lastCategory);
 				}
 
 				// Clear the area where the category will be drawn since it will be
@@ -348,158 +348,158 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}		
 		
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
-		{
-			Item nextItem;
-			
-			// Handle keyboard toolip popup
-			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
-				if (this.SelectedItem != null) {
-					int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
-					Gdk.Rectangle rect = GetItemExtends (SelectedItem);
-					ShowTooltip (SelectedItem, 0,rect.X, rect.Bottom - vadjustment );
-				}
-				return true;
-			}
-			
-			switch (evnt.Key) {
-			case Gdk.Key.KP_Enter:
-			case Gdk.Key.Return:
-				if (this.SelectedItem != null) 
-					this.OnActivateSelectedItem (EventArgs.Empty);
-				return true;
-			case Gdk.Key.KP_Up:
-			case Gdk.Key.Up:
-				if (this.listMode || this.SelectedItem is Category) {
-					this.SelectedItem = GetPrevItem (this.SelectedItem);
-				} else {
-					nextItem = GetItemAbove (this.SelectedItem);
-					this.SelectedItem = nextItem != this.SelectedItem ? nextItem : GetCategory (this.SelectedItem);
-				}
-				this.QueueDraw ();
-				return true;
-			case Gdk.Key.KP_Down:
-			case Gdk.Key.Down:
-				if (this.listMode || this.SelectedItem is Category) {
-					this.SelectedItem = GetNextItem (this.SelectedItem);
-				} else {
-					nextItem = GetItemBelow (this.SelectedItem);
-					if (nextItem == this.SelectedItem) {
-						Category category = GetCategory (this.SelectedItem);
-						nextItem = GetNextCategory (category);
-						if (nextItem == category)
-							nextItem = this.SelectedItem;
-					}
-					this.SelectedItem = nextItem;
-				}
-				this.QueueDraw ();
-				return true;
-				
-			case Gdk.Key.KP_Left:
-			case Gdk.Key.Left:
-				if (this.SelectedItem is Category) {
-					SetCategoryExpanded ((Category)this.SelectedItem, false);
-				} else {
-					if (this.listMode) {
-						this.SelectedItem = GetCategory (this.SelectedItem);
-					} else {
-						this.SelectedItem = GetItemLeft (this.SelectedItem);
-					}
-				}
-				this.QueueDraw ();
-				return true;
-				
-			case Gdk.Key.KP_Right:
-			case Gdk.Key.Right:
-				if (this.SelectedItem is Category) {
-					Category selectedCategory = ((Category)this.SelectedItem);
-					if (selectedCategory.IsExpanded) {
-						if (selectedCategory.ItemCount > 0)
-							this.SelectedItem = selectedCategory.Items[0];
-					} else {
-						SetCategoryExpanded (selectedCategory, true);
-					}
-				} else {
-					if (this.listMode) {
-						// nothing
-					} else {
-						this.SelectedItem = GetItemRight (this.SelectedItem);
-					}
-				}
-				this.QueueDraw ();
-				return true;
-				
-			}
-			return false;
-		}
+//		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+//		{
+//			Item nextItem;
+//			
+//			// Handle keyboard toolip popup
+//			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
+//				if (this.SelectedItem != null) {
+//					int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
+//					Gdk.Rectangle rect = GetItemExtends (SelectedItem);
+//					ShowTooltip (SelectedItem, 0,rect.X, rect.Bottom - vadjustment );
+//				}
+//				return true;
+//			}
+//			
+//			switch (evnt.Key) {
+//			case Gdk.Key.KP_Enter:
+//			case Gdk.Key.Return:
+//				if (this.SelectedItem != null) 
+//					this.OnActivateSelectedItem (EventArgs.Empty);
+//				return true;
+//			case Gdk.Key.KP_Up:
+//			case Gdk.Key.Up:
+//				if (this.listMode || this.SelectedItem is Category) {
+//					this.SelectedItem = GetPrevItem (this.SelectedItem);
+//				} else {
+//					nextItem = GetItemAbove (this.SelectedItem);
+//					this.SelectedItem = nextItem != this.SelectedItem ? nextItem : GetCategory (this.SelectedItem);
+//				}
+//				this.QueueDraw ();
+//				return true;
+//			case Gdk.Key.KP_Down:
+//			case Gdk.Key.Down:
+//				if (this.listMode || this.SelectedItem is Category) {
+//					this.SelectedItem = GetNextItem (this.SelectedItem);
+//				} else {
+//					nextItem = GetItemBelow (this.SelectedItem);
+//					if (nextItem == this.SelectedItem) {
+//						Category category = GetCategory (this.SelectedItem);
+//						nextItem = GetNextCategory (category);
+//						if (nextItem == category)
+//							nextItem = this.SelectedItem;
+//					}
+//					this.SelectedItem = nextItem;
+//				}
+//				this.QueueDraw ();
+//				return true;
+//				
+//			case Gdk.Key.KP_Left:
+//			case Gdk.Key.Left:
+//				if (this.SelectedItem is Category) {
+//					SetCategoryExpanded ((Category)this.SelectedItem, false);
+//				} else {
+//					if (this.listMode) {
+//						this.SelectedItem = GetCategory (this.SelectedItem);
+//					} else {
+//						this.SelectedItem = GetItemLeft (this.SelectedItem);
+//					}
+//				}
+//				this.QueueDraw ();
+//				return true;
+//				
+//			case Gdk.Key.KP_Right:
+//			case Gdk.Key.Right:
+//				if (this.SelectedItem is Category) {
+//					Category selectedCategory = ((Category)this.SelectedItem);
+//					if (selectedCategory.IsExpanded) {
+//						if (selectedCategory.ItemCount > 0)
+//							this.SelectedItem = selectedCategory.Items[0];
+//					} else {
+//						SetCategoryExpanded (selectedCategory, true);
+//					}
+//				} else {
+//					if (this.listMode) {
+//						// nothing
+//					} else {
+//						this.SelectedItem = GetItemRight (this.SelectedItem);
+//					}
+//				}
+//				this.QueueDraw ();
+//				return true;
+//				
+//			}
+//			return false;
+//		}
 
-		protected override void OnUnrealized ()
-		{
-			HideTooltipWindow ();
-			base.OnUnrealized ();
-		}
+//		protected override void OnUnrealized ()
+//		{
+//			HideTooltipWindow ();
+//			base.OnUnrealized ();
+//		}
 		
-		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		
-		{
-			if (evnt.Mode == CrossingMode.Normal) {
-				HideTooltipWindow ();
-				ClearMouseOverItem ();
-			}
-			GdkWindow.Cursor = null;
-			return base.OnLeaveNotifyEvent (evnt);
-		}
+//		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		
+//		{
+//			if (evnt.Mode == CrossingMode.Normal) {
+//				HideTooltipWindow ();
+//				ClearMouseOverItem ();
+//			}
+//			GdkWindow.Cursor = null;
+//			return base.OnLeaveNotifyEvent (evnt);
+//		}
 		
-		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
-		{
-			HideTooltipWindow ();
-			ClearMouseOverItem ();
-			return base.OnScrollEvent (evnt);
-		}
+//		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+//		{
+//			HideTooltipWindow ();
+//			ClearMouseOverItem ();
+//			return base.OnScrollEvent (evnt);
+//		}
 		
 		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
 		
-		protected override bool OnButtonPressEvent (Gdk.EventButton e)
-		{
-			this.GrabFocus ();
-			HideTooltipWindow ();
-			if (this.mouseOverItem is Category) {
-				if (!e.TriggersContextMenu () && e.Button == 1 && e.Type == EventType.ButtonPress) {
-					Category mouseOverCateogry = (Category)this.mouseOverItem;
-					SetCategoryExpanded (mouseOverCateogry, !mouseOverCateogry.IsExpanded);
-					return true;
-				}
-				this.SelectedItem = mouseOverItem;
-				this.QueueResize ();
-			} else {
-				this.SelectedItem = mouseOverItem;
-				this.QueueDraw ();
-			}
-			if (e.TriggersContextMenu ()) {
-				if (DoPopupMenu != null) {
-					DoPopupMenu (e);
-					return true;
-				}
-			} else if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) { 
-				this.OnActivateSelectedItem (EventArgs.Empty);
-				return true;
-			}
-			return base.OnButtonPressEvent (e);
-		}
+//		protected override bool OnButtonPressEvent (Gdk.EventButton e)
+//		{
+//			this.GrabFocus ();
+//			HideTooltipWindow ();
+//			if (this.mouseOverItem is Category) {
+//				if (!e.TriggersContextMenu () && e.Button == 1 && e.Type == EventType.ButtonPress) {
+//					Category mouseOverCateogry = (Category)this.mouseOverItem;
+//					SetCategoryExpanded (mouseOverCateogry, !mouseOverCateogry.IsExpanded);
+//					return true;
+//				}
+//				this.SelectedItem = mouseOverItem;
+//				this.QueueResize ();
+//			} else {
+//				this.SelectedItem = mouseOverItem;
+//				this.QueueDraw ();
+//			}
+//			if (e.TriggersContextMenu ()) {
+//				if (DoPopupMenu != null) {
+//					DoPopupMenu (e);
+//					return true;
+//				}
+//			} else if (e.Type == EventType.TwoButtonPress && this.SelectedItem != null) { 
+//				this.OnActivateSelectedItem (EventArgs.Empty);
+//				return true;
+//			}
+//			return base.OnButtonPressEvent (e);
+//		}
 
-		void PerformShowMenu (object sender, EventArgs args)
-		{
-			DoPopupMenu?.Invoke (null);
-		}
+//		void PerformShowMenu (object sender, EventArgs args)
+//		{
+//			DoPopupMenu?.Invoke (null);
+//		}
 
 		void SetCategoryExpanded (Category cat, bool expanded)
 		{
 			if (cat.IsExpanded == expanded)
 				return;
 			cat.IsExpanded = expanded;
-			if (cat.IsExpanded)
-				StartExpandAnimation (cat);
-			else
-				StartCollapseAnimation (cat);
+//			if (cat.IsExpanded)
+//				StartExpandAnimation (cat);
+//			else
+//				StartCollapseAnimation (cat);
 		}
 
 		void StartExpandAnimation (Category cat)
@@ -509,11 +509,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			cat.AnimationHeight = 0;
 			cat.AnimatingExpand = true;
-			cat.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, delegate {
-				cat.AnimationHeight += animationStepSize;
-				QueueResize ();
-				return true;
-			});
+//			cat.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, delegate {
+//				cat.AnimationHeight += animationStepSize;
+//				QueueResize ();
+//				return true;
+//			});
 		}
 
 		void StartCollapseAnimation (Category cat)
@@ -523,11 +523,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			cat.AnimationHeight = 0;
 			cat.AnimatingExpand = true;
-			cat.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, delegate {
-				cat.AnimationHeight -= animationStepSize;
-				QueueResize ();
-				return true;
-			});
+//			cat.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, delegate {
+//				cat.AnimationHeight -= animationStepSize;
+//				QueueResize ();
+//				return true;
+//			});
 		}
 
 		void StopExpandAnimation (Category cat)
@@ -540,59 +540,60 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		protected override bool OnPopupMenu ()
 		{
-			if (DoPopupMenu != null) {
-				DoPopupMenu (null);
-				return true;
-			}
-			return base.OnPopupMenu ();
+			//			if (DoPopupMenu != null) {
+			//				DoPopupMenu (null);
+			//				return true;
+			//			}
+			//			return base.OnPopupMenu ();
+			return false;
 		}
 		
-		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
-		{
-			int xpos = 0;
-			int ypos = 0;
-			HideTooltipWindow ();
-			var oldItem = mouseOverItem;
-			mouseOverItem = null;
-			Gdk.Rectangle newItemExtents = Gdk.Rectangle.Zero;
-			this.mouseX = (int)e.X + (int)(this.hAdjustement != null ? this.hAdjustement.Value : 0);
-			this.mouseY = (int)e.Y + (int)(this.vAdjustement != null ? this.vAdjustement.Value : 0);
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
-				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
-					mouseOverItem = category;
-					GdkWindow.Cursor = handCursor;
-					if (!e.State.HasFlag (ModifierType.Button1Mask))
-						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
-					newItemExtents = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
-					return false;
-				}
-				return true;
-			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
-				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
-				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
-					mouseOverItem = item;
-					GdkWindow.Cursor = null;
-					if (!e.State.HasFlag (ModifierType.Button1Mask))
-						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
-					newItemExtents = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
-					return false;
-				}
-				return true;
-			});
-
-			if (mouseOverItem == null)
-				GdkWindow.Cursor = null;
-			
-			if (oldItem != mouseOverItem) {
-				this.QueueDraw ();
-				var oldItemExtents = GetItemExtends (oldItem);
-				QueueDrawArea (oldItemExtents.X, oldItemExtents.Y, oldItemExtents.Width, oldItemExtents.Height);
-				QueueDrawArea (newItemExtents.X, newItemExtents.Y, newItemExtents.Width, newItemExtents.Height);
-			}
-			
-			return base.OnMotionNotifyEvent (e);
-		}
+//		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
+//		{
+//			int xpos = 0;
+//			int ypos = 0;
+//			HideTooltipWindow ();
+//			var oldItem = mouseOverItem;
+//			mouseOverItem = null;
+//			Gdk.Rectangle newItemExtents = Gdk.Rectangle.Zero;
+//			this.mouseX = (int)e.X + (int)(this.hAdjustement != null ? this.hAdjustement.Value : 0);
+//			this.mouseY = (int)e.Y + (int)(this.vAdjustement != null ? this.vAdjustement.Value : 0);
+//			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
+//				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
+//				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
+//					mouseOverItem = category;
+//					GdkWindow.Cursor = handCursor;
+//					if (!e.State.HasFlag (ModifierType.Button1Mask))
+//						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
+//					newItemExtents = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+//					return false;
+//				}
+//				return true;
+//			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
+//				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
+//				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
+//					mouseOverItem = item;
+//					GdkWindow.Cursor = null;
+//					if (!e.State.HasFlag (ModifierType.Button1Mask))
+//						ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
+//					newItemExtents = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
+//					return false;
+//				}
+//				return true;
+//			});
+//
+//			if (mouseOverItem == null)
+//				GdkWindow.Cursor = null;
+//			
+//			if (oldItem != mouseOverItem) {
+//				this.QueueDraw ();
+//				var oldItemExtents = GetItemExtends (oldItem);
+//				QueueDrawArea (oldItemExtents.X, oldItemExtents.Y, oldItemExtents.Width, oldItemExtents.Height);
+//				QueueDrawArea (newItemExtents.X, newItemExtents.Y, newItemExtents.Width, newItemExtents.Height);
+//			}
+//			
+//			return base.OnMotionNotifyEvent (e);
+//		}
 		
 		#region Item selection logic
 		Item selectedItem  = null;
@@ -811,21 +812,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				this.vAdjustement.Value = rect.Bottom - this.Allocation.Height;
 		}
 		
-		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
-		{
-			this.hAdjustement = hAdjustement;
-			if (this.hAdjustement != null) {
-				this.hAdjustement.ValueChanged += delegate {
-					this.QueueDraw ();
-				};
-			}
-			this.vAdjustement = vAdjustement;
-			if (this.vAdjustement != null) {
-				this.vAdjustement.ValueChanged += delegate {
-					this.QueueDraw ();
-				};
-			}
-		}
+//		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+//		{
+//			this.hAdjustement = hAdjustement;
+//			if (this.hAdjustement != null) {
+//				this.hAdjustement.ValueChanged += delegate {
+//					this.QueueDraw ();
+//				};
+//			}
+//			this.vAdjustement = vAdjustement;
+//			if (this.vAdjustement != null) {
+//				this.vAdjustement.ValueChanged += delegate {
+//					this.QueueDraw ();
+//				};
+//			}
+//		}
 		#endregion
 		
 		#region Item & Category iteration
@@ -901,45 +902,45 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region Control size management
 		bool realSizeRequest;
-		protected override void OnSizeRequested (ref Requisition req)
-		{
-			if (!realSizeRequest) {
-				// Request a minimal width, to size recalculation infinite loops with
-				// small widths, due to the vscrollbar being shown and hidden.
-				req.Width = 50;
-				req.Height = 0;
-				return;
-			}
-			int xpos = 0;
-			int ypos = 0;
-			Iterate (ref xpos, ref ypos, null, null);
-			req.Width  = 50; 
-			req.Height = ypos;
-			if (this.vAdjustement != null) {
-				this.vAdjustement.SetBounds (0, 
-				                             ypos, 
-				                             20,
-				                             Allocation.Height,
-				                             Allocation.Height);
-				if (ypos < Allocation.Height)
-					this.vAdjustement.Value = 0;
-				if (vAdjustement.Value + vAdjustement.PageSize > vAdjustement.Upper)
-					vAdjustement.Value = vAdjustement.Upper - vAdjustement.PageSize;
-				if (vAdjustement.Value < 0)
-					vAdjustement.Value = 0;
-			}
-		}
+//		protected override void OnSizeRequested (ref Requisition req)
+//		{
+//			if (!realSizeRequest) {
+//				// Request a minimal width, to size recalculation infinite loops with
+//				// small widths, due to the vscrollbar being shown and hidden.
+//				req.Width = 50;
+//				req.Height = 0;
+//				return;
+//			}
+//			int xpos = 0;
+//			int ypos = 0;
+//			Iterate (ref xpos, ref ypos, null, null);
+//			req.Width  = 50; 
+//			req.Height = ypos;
+//			if (this.vAdjustement != null) {
+//				this.vAdjustement.SetBounds (0, 
+//				                             ypos, 
+//				                             20,
+//				                             Allocation.Height,
+//				                             Allocation.Height);
+//				if (ypos < Allocation.Height)
+//					this.vAdjustement.Value = 0;
+//				if (vAdjustement.Value + vAdjustement.PageSize > vAdjustement.Upper)
+//					vAdjustement.Value = vAdjustement.Upper - vAdjustement.PageSize;
+//				if (vAdjustement.Value < 0)
+//					vAdjustement.Value = 0;
+//			}
+//		}
 		
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			if (!realSizeRequest) {
-				realSizeRequest = true;
-				QueueResize ();
-			}
-			else
-				realSizeRequest = false;
-		}
+//		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+//		{
+//			base.OnSizeAllocated (allocation);
+//			if (!realSizeRequest) {
+//				realSizeRequest = true;
+//				QueueResize ();
+//			}
+//			else
+//				realSizeRequest = false;
+//		}
 		
 		#endregion
 		

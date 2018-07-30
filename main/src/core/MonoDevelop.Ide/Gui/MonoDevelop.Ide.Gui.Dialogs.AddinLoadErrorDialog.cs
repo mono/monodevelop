@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.BorderWidth = ((uint)(6));
 			this.DefaultHeight = 350;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.VBox
-			global::Gtk.VBox w1 = this.VBox;
+			global::Gtk.VBox w1 = (Gtk.VBox)this.ContentArea;
 			w1.Name = "dialog-vbox1";
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
 			w8.Position = 0;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.ActionArea
-			global::Gtk.HButtonBox w9 = this.ActionArea;
+			global::Gtk.HButtonBox w9 = (Gtk.HButtonBox)this.ActionArea;
 			w9.Name = "GtkDialog_ActionArea";
 			w9.Spacing = 6;
 			w9.BorderWidth = ((uint)(5));

@@ -85,7 +85,7 @@ namespace Mono.TextEditor
 			this.Direction = TextDirection.Ltr;
 			uiThread = Thread.CurrentThread;
 			GtkWorkarounds.FixContainerLeak (this);
-			WidgetFlags |= WidgetFlags.NoWindow;
+			this.HasWindow = false;
 			LayoutCache = new LayoutCache (this);
 			this.textArea = new TextArea (doc, options, initialMode);
 			this.textArea.Initialize (this, doc, options, initialMode);
@@ -146,22 +146,22 @@ namespace Mono.TextEditor
 
 		Adjustment hAdjustement;
 		Adjustment vAdjustement;
-		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
-		{
-			UnregisterAdjustments ();
-			this.vAdjustement = vAdjustement;
-			this.hAdjustement = hAdjustement;
-			base.OnSetScrollAdjustments (hAdjustement, vAdjustement);
-			textArea.SetTextEditorScrollAdjustments (hAdjustement, vAdjustement);
-			if (hAdjustement != null) {
-				hAdjustement.ValueChanged += HandleAdjustmentValueChange;
-			}
-
-			if (vAdjustement != null) {
-				vAdjustement.ValueChanged += HandleAdjustmentValueChange;
-			}
-			OnScrollAdjustmentsSet ();
-		}
+//		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+//		{
+//			UnregisterAdjustments ();
+//			this.vAdjustement = vAdjustement;
+//			this.hAdjustement = hAdjustement;
+//			base.OnSetScrollAdjustments (hAdjustement, vAdjustement);
+//			textArea.SetTextEditorScrollAdjustments (hAdjustement, vAdjustement);
+//			if (hAdjustement != null) {
+//				hAdjustement.ValueChanged += HandleAdjustmentValueChange;
+//			}
+//
+//			if (vAdjustement != null) {
+//				vAdjustement.ValueChanged += HandleAdjustmentValueChange;
+//			}
+//			OnScrollAdjustmentsSet ();
+//		}
 
 		void HandleAdjustmentValueChange (object sender, EventArgs e)
 		{
@@ -179,9 +179,15 @@ namespace Mono.TextEditor
 			SetChildrenPositions (allocation);
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 		{
-			base.OnSizeRequested (ref requisition);
+			base.OnGetPreferredWidth (out minimum_width, out natural_width);
+			containerChildren.ForEach (c => c.Child.SizeRequest ());
+		}
+
+		protected override void OnGetPreferredHeight (out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight (out minimum_height, out natural_height);
 			containerChildren.ForEach (c => c.Child.SizeRequest ());
 		}
 

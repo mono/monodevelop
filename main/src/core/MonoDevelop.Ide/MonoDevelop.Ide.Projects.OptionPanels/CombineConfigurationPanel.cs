@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 		
-		void OnSetConfigurationsData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void OnSetConfigurationsData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.ITreeModel model, Gtk.TreeIter iter)
 		{
 			var item = (SolutionItem) store.GetValue (iter, ProjectCol);
 			ConfigurationData data = parentDialog.ConfigurationData.FindConfigurationData (item);

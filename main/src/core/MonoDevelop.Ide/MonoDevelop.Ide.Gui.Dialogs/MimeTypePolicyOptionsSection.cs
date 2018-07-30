@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	class MimeTypePolicyOptionsSection: OptionsPanel
 	{
-		ComboBox policyCombo;
+		ComboBoxText policyCombo;
 		ListStore store;
 		PolicyBag bag;
 		PolicySet polSet;
@@ -96,13 +96,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			hbox.PackStart (label, false, false, 0);
 			
 			store = new ListStore (typeof (string), typeof (PolicySet));
-			policyCombo = new ComboBox (store);
+			policyCombo = new ComboBoxText ();
+			policyCombo.Model = store;
 			CellRenderer renderer = new CellRendererText ();
 			policyCombo.PackStart (renderer, true);
 			policyCombo.AddAttribute (renderer, "text", 0);
 			
 			label.MnemonicWidget = policyCombo;
-			policyCombo.RowSeparatorFunc = (TreeModel model, TreeIter iter) =>
+			policyCombo.RowSeparatorFunc = (ITreeModel model, TreeIter iter) =>
 				((string) model.GetValue (iter, 0)) == "--";
 			hbox.PackStart (policyCombo, false, false, 0);
 			

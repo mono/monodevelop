@@ -449,144 +449,144 @@ namespace MonoDevelop.Components.Chart
 			return (((double) minTickStep) * (GetEnd (ad) - GetStart (ad))) / (double) GetAreaSize (ad);
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			Gdk.Window win = GdkWindow;
-			int rwidth, rheight;
-			
-			Cairo.Context ctx = CairoHelper.Create (win);
-			
-			win.GetSize (out rwidth, out rheight);
-			
-			if (autoStartY || autoEndY) {
-				double nstartY = double.MaxValue;
-				double nendY = double.MinValue;
-				GetValueRange (AxisDimension.Y, out nstartY, out nendY);
-				
-				if (!autoStartY) nstartY = startY;
-				if (!autoEndY) nendY = endY;
-				if (nendY < nstartY) nendY = nstartY;
-				
-				if (nstartY != startY || nendY != endY) {
-					yrangeChanged = true;
-					startY = nstartY;
-					endY = nendY;
-				}
-			}
-			
-			if (autoStartX || autoEndX) {
-				double nstartX = double.MaxValue;
-				double nendX = double.MinValue;
-				GetValueRange (AxisDimension.X, out nstartX, out nendX);
-				
-				if (!autoStartX) nstartX = startX;
-				if (!autoEndX) nendX = endX;
-				if (nendX < nstartX) nendX = nstartX;
-				
-				if (nstartX != startX || nendX != endX) {
-					xrangeChanged = true;
-					startX = nstartX;
-					endX = nendX;
-				}
-			}
-			
-			if (yrangeChanged) {
-				FixOrigins ();
-				int right = rwidth - 2 - AreaBorderWidth;
-				left = AreaBorderWidth;
-				left += MeasureAxisSize (AxisPosition.Left) + 1;
-				right -= MeasureAxisSize (AxisPosition.Right) + 1;
-				yrangeChanged = false;
-				width = right - left + 1;
-				if (width <= 0) width = 1;
-			}
-			
-			if (xrangeChanged) {
-				FixOrigins ();
-				int bottom = rheight - 2 - AreaBorderWidth;
-				top = AreaBorderWidth;
-				bottom -= MeasureAxisSize (AxisPosition.Bottom);
-				top += MeasureAxisSize (AxisPosition.Top);
-				
-				// Make room for cursor handles
-				foreach (ChartCursor cursor in cursors) {
-					if (cursor.Dimension == AxisDimension.X && top - AreaBorderWidth < cursor.HandleSize)
-						top = cursor.HandleSize + AreaBorderWidth;
-				}
-				
-				xrangeChanged = false;
-				height = bottom - top + 1;
-				if (height <= 0) height = 1;
-			}
-			
-			if (AutoScaleMargin != 0 && height > 0) {
-				double margin = (double)AutoScaleMargin * (endY - startY) / (double) height;
-				if (autoStartY) startY -= margin;
-				if (autoEndY) endY += margin;
-			}
-
-//			Console.WriteLine ("L:" + left + " T:" + top + " W:" + width + " H:" + height);
-			
-			// Draw the background
-
-			if (backgroundDisplay == BackgroundDisplay.Gradient) {
-				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
-
-				// FIXME: VV: Remove gradient features
-				using (var pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2)) {
-					pat.AddColorStop (0, backroundColor);
-					Cairo.Color endc = new Cairo.Color (1,1,1);
-					pat.AddColorStop (1, endc);
-					ctx.SetSource (pat);
-					ctx.Fill ();
-				}
-			} else {
-				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
-				ctx.SetSourceColor (backroundColor);
-				ctx.Fill ();
-			}
-//			win.DrawRectangle (Style.WhiteGC, true, left - 1, top - 1, width + 2, height + 2);
-			win.DrawRectangle (Style.BlackGC, false, left - AreaBorderWidth, top - AreaBorderWidth, width + AreaBorderWidth*2, height + AreaBorderWidth*2);
-			
-			// Draw selected area
-			
-			if (enableSelection) {
-				int sx, sy, ex, ey;
-				GetPoint (selectionStart.Value, selectionStart.Value, out sx, out sy);
-				GetPoint (selectionEnd.Value, selectionEnd.Value, out ex, out ey);
-				if (sx > ex) {
-					int tmp = sx; sx = ex; ex = tmp;
-				}
-				using (Gdk.GC sgc = new Gdk.GC (GdkWindow)) {
-					sgc.RgbFgColor = new Color (225, 225, 225);
-					win.DrawRectangle (sgc, true, sx, top, ex - sx, height + 1);
-				}
-			}
-			
-			// Draw axes
-			
-			Gdk.GC gc = Style.BlackGC;
-			
-			foreach (Axis ax in axis)
-				DrawAxis (win, gc, ax);
-			
-			// Draw values
-			foreach (Serie serie in series)
-				if (serie.Visible)
-					DrawSerie (ctx, serie);
-
-			// Draw cursors
-			foreach (ChartCursor cursor in cursors)
-				DrawCursor (cursor);
-			
-			// Draw cursor labels
-			foreach (ChartCursor cursor in cursors)
-				if (cursor.ShowValueLabel)
-					DrawCursorLabel (cursor);
-			
-			((IDisposable)ctx).Dispose ();
-			return true;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose args)
+//		{
+//			Gdk.Window win = GdkWindow;
+//			int rwidth, rheight;
+//			
+//			Cairo.Context ctx = CairoHelper.Create (win);
+//			
+//			win.GetSize (out rwidth, out rheight);
+//			
+//			if (autoStartY || autoEndY) {
+//				double nstartY = double.MaxValue;
+//				double nendY = double.MinValue;
+//				GetValueRange (AxisDimension.Y, out nstartY, out nendY);
+//				
+//				if (!autoStartY) nstartY = startY;
+//				if (!autoEndY) nendY = endY;
+//				if (nendY < nstartY) nendY = nstartY;
+//				
+//				if (nstartY != startY || nendY != endY) {
+//					yrangeChanged = true;
+//					startY = nstartY;
+//					endY = nendY;
+//				}
+//			}
+//			
+//			if (autoStartX || autoEndX) {
+//				double nstartX = double.MaxValue;
+//				double nendX = double.MinValue;
+//				GetValueRange (AxisDimension.X, out nstartX, out nendX);
+//				
+//				if (!autoStartX) nstartX = startX;
+//				if (!autoEndX) nendX = endX;
+//				if (nendX < nstartX) nendX = nstartX;
+//				
+//				if (nstartX != startX || nendX != endX) {
+//					xrangeChanged = true;
+//					startX = nstartX;
+//					endX = nendX;
+//				}
+//			}
+//			
+//			if (yrangeChanged) {
+//				FixOrigins ();
+//				int right = rwidth - 2 - AreaBorderWidth;
+//				left = AreaBorderWidth;
+//				left += MeasureAxisSize (AxisPosition.Left) + 1;
+//				right -= MeasureAxisSize (AxisPosition.Right) + 1;
+//				yrangeChanged = false;
+//				width = right - left + 1;
+//				if (width <= 0) width = 1;
+//			}
+//			
+//			if (xrangeChanged) {
+//				FixOrigins ();
+//				int bottom = rheight - 2 - AreaBorderWidth;
+//				top = AreaBorderWidth;
+//				bottom -= MeasureAxisSize (AxisPosition.Bottom);
+//				top += MeasureAxisSize (AxisPosition.Top);
+//				
+//				// Make room for cursor handles
+//				foreach (ChartCursor cursor in cursors) {
+//					if (cursor.Dimension == AxisDimension.X && top - AreaBorderWidth < cursor.HandleSize)
+//						top = cursor.HandleSize + AreaBorderWidth;
+//				}
+//				
+//				xrangeChanged = false;
+//				height = bottom - top + 1;
+//				if (height <= 0) height = 1;
+//			}
+//			
+//			if (AutoScaleMargin != 0 && height > 0) {
+//				double margin = (double)AutoScaleMargin * (endY - startY) / (double) height;
+//				if (autoStartY) startY -= margin;
+//				if (autoEndY) endY += margin;
+//			}
+//
+////			Console.WriteLine ("L:" + left + " T:" + top + " W:" + width + " H:" + height);
+//			
+//			// Draw the background
+//
+//			if (backgroundDisplay == BackgroundDisplay.Gradient) {
+//				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
+//
+//				// FIXME: VV: Remove gradient features
+//				using (var pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2)) {
+//					pat.AddColorStop (0, backroundColor);
+//					Cairo.Color endc = new Cairo.Color (1,1,1);
+//					pat.AddColorStop (1, endc);
+//					ctx.SetSource (pat);
+//					ctx.Fill ();
+//				}
+//			} else {
+//				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
+//				ctx.SetSourceColor (backroundColor);
+//				ctx.Fill ();
+//			}
+////			win.DrawRectangle (Style.WhiteGC, true, left - 1, top - 1, width + 2, height + 2);
+//			win.DrawRectangle (Style.BlackGC, false, left - AreaBorderWidth, top - AreaBorderWidth, width + AreaBorderWidth*2, height + AreaBorderWidth*2);
+//			
+//			// Draw selected area
+//			
+//			if (enableSelection) {
+//				int sx, sy, ex, ey;
+//				GetPoint (selectionStart.Value, selectionStart.Value, out sx, out sy);
+//				GetPoint (selectionEnd.Value, selectionEnd.Value, out ex, out ey);
+//				if (sx > ex) {
+//					int tmp = sx; sx = ex; ex = tmp;
+//				}
+//				using (Gdk.GC sgc = new Gdk.GC (GdkWindow)) {
+//					sgc.RgbFgColor = new Color (225, 225, 225);
+//					win.DrawRectangle (sgc, true, sx, top, ex - sx, height + 1);
+//				}
+//			}
+//			
+//			// Draw axes
+//			
+//			Gdk.GC gc = Style.BlackGC;
+//			
+//			foreach (Axis ax in axis)
+//				DrawAxis (win, gc, ax);
+//			
+//			// Draw values
+//			foreach (Serie serie in series)
+//				if (serie.Visible)
+//					DrawSerie (ctx, serie);
+//
+//			// Draw cursors
+//			foreach (ChartCursor cursor in cursors)
+//				DrawCursor (cursor);
+//			
+//			// Draw cursor labels
+//			foreach (ChartCursor cursor in cursors)
+//				if (cursor.ShowValueLabel)
+//					DrawCursorLabel (cursor);
+//			
+//			((IDisposable)ctx).Dispose ();
+//			return true;
+//		}
 		
 		void GetValueRange (AxisDimension ad, out double min, out double max)
 		{
@@ -604,138 +604,138 @@ namespace MonoDevelop.Components.Chart
 			}
 		}
 		
-		void DrawAxis (Gdk.Window win, Gdk.GC gc, Axis ax)
-		{
-			double minStep = GetMinTickStep (ax.Dimension);
-			
-			TickEnumerator enumSmall = ax.GetTickEnumerator (minStep);
-			if (enumSmall == null)
-				return;
-				
-			TickEnumerator enumBig = ax.GetTickEnumerator (minStep * 2);
-			
-			if (enumBig == null) {
-				DrawTicks (win, gc, enumSmall, ax.Position, ax.Dimension, ax.TickSize, ax.ShowLabels);
-			} else {
-				DrawTicks (win, gc, enumSmall, ax.Position, ax.Dimension, ax.TickSize / 2, false);
-				DrawTicks (win, gc, enumBig, ax.Position, ax.Dimension, ax.TickSize, ax.ShowLabels);
-			}
-		}
+//		void DrawAxis (Gdk.Window win, Gdk.GC gc, Axis ax)
+//		{
+//			double minStep = GetMinTickStep (ax.Dimension);
+//			
+//			TickEnumerator enumSmall = ax.GetTickEnumerator (minStep);
+//			if (enumSmall == null)
+//				return;
+//				
+//			TickEnumerator enumBig = ax.GetTickEnumerator (minStep * 2);
+//			
+//			if (enumBig == null) {
+//				DrawTicks (win, gc, enumSmall, ax.Position, ax.Dimension, ax.TickSize, ax.ShowLabels);
+//			} else {
+//				DrawTicks (win, gc, enumSmall, ax.Position, ax.Dimension, ax.TickSize / 2, false);
+//				DrawTicks (win, gc, enumBig, ax.Position, ax.Dimension, ax.TickSize, ax.ShowLabels);
+//			}
+//		}
 		
-		void DrawTicks (Gdk.Window win, Gdk.GC gc, TickEnumerator e, AxisPosition pos, AxisDimension ad, int tickSize, bool showLabels)
-		{
-			int rwidth, rheight;
-			win.GetSize (out rwidth, out rheight);
-			
-			Pango.Layout layout = null;
-			
-			if (showLabels) {
-				layout = new Pango.Layout (this.PangoContext);
-				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
-			}
-			
-			bool isX = pos == AxisPosition.Top || pos == AxisPosition.Bottom;
-			bool isTop = pos == AxisPosition.Top || pos == AxisPosition.Right;
-			
-			double start = GetStart (ad);
-			double end = GetEnd (ad);
-			
-			e.Init (GetOrigin (ad));
-			
-			while (e.CurrentValue > start)
-				e.MovePrevious ();
-			
-			int lastPosLabel;
-			int lastPos;
-			int lastTw = 0;
-			
-			if (isX) {
-				lastPosLabel = reverseXAxis ? left + width + MinLabelGapX : left - MinLabelGapX;
-				lastPos = left - minTickStep*2;
-			}
-			else {
-				lastPosLabel = reverseYAxis ? top - MinLabelGapY : rheight + MinLabelGapY;
-				lastPos = top + height + minTickStep*2;
-			}
-			
-			for ( ; e.CurrentValue <= end; e.MoveNext ())
-			{
-				int px, py;
-				int tw = 0, th = 0;
-				int tick = tickSize;
-				
-				GetPoint (e.CurrentValue, e.CurrentValue, out px, out py);
-				
-				if (showLabels) {
-					layout.SetMarkup (e.CurrentLabel);
-					layout.GetPixelSize (out tw, out th);
-				}
-
-				if (isX) {
-					if (Math.Abs ((long)px - (long)lastPos) < minTickStep || px < left || px > left + width)
-						continue;
-					lastPos = px;
-					
-					bool labelFits = false;
-					if ((Math.Abs (px - lastPosLabel) - (tw/2) - (lastTw/2)) >= MinLabelGapX) {
-						lastPosLabel = px;
-						lastTw = tw;
-						labelFits = true;
-					}
-					
-					if (isTop) {
-						if (showLabels) {
-							if (labelFits)
-								win.DrawLayout (gc, px - (tw/2), top - AreaBorderWidth - th, layout);
-							else
-								tick = tick / 2;
-						}
-						win.DrawLine (gc, px, top, px, top + tick);
-					}
-					else {
-						if (showLabels) {
-							if (labelFits)
-								win.DrawLayout (gc, px - (tw/2), top + height + AreaBorderWidth, layout);
-							else
-								tick = tick / 2;
-						}
-						win.DrawLine (gc, px, top + height, px, top + height - tick);
-					}
-				}
-				else {
-					if (Math.Abs ((long)lastPos - (long)py) < minTickStep || py < top || py > top + height)
-						continue;
-					lastPos = py;
-					
-					bool labelFits = false;
-					if ((Math.Abs (py - lastPosLabel) - (th/2) - (lastTw/2)) >= MinLabelGapY) {
-						lastPosLabel = py;
-						lastTw = th;
-						labelFits = true;
-					}
-					
-					if (isTop) {
-						if (showLabels) {
-							if (labelFits)
-								win.DrawLayout (gc, left + width + AreaBorderWidth + 1, py - (th/2), layout);
-							else
-								tick = tick / 2;
-						}
-						win.DrawLine (gc, left + width, py, left + width - tick, py);
-					}
-					else {
-						if (showLabels) {
-							if (labelFits)
-								win.DrawLayout (gc, left - AreaBorderWidth - tw - 1, py - (th/2), layout);
-							else
-								tick = tick / 2;
-						}
-						win.DrawLine (gc, left, py, left + tick, py);
-					}
-				}
-			}
-			layout?.Dispose ();
-		}
+//		void DrawTicks (Gdk.Window win, Gdk.GC gc, TickEnumerator e, AxisPosition pos, AxisDimension ad, int tickSize, bool showLabels)
+//		{
+//			int rwidth, rheight;
+//			win.GetSize (out rwidth, out rheight);
+//			
+//			Pango.Layout layout = null;
+//			
+//			if (showLabels) {
+//				layout = new Pango.Layout (this.PangoContext);
+//				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+//			}
+//			
+//			bool isX = pos == AxisPosition.Top || pos == AxisPosition.Bottom;
+//			bool isTop = pos == AxisPosition.Top || pos == AxisPosition.Right;
+//			
+//			double start = GetStart (ad);
+//			double end = GetEnd (ad);
+//			
+//			e.Init (GetOrigin (ad));
+//			
+//			while (e.CurrentValue > start)
+//				e.MovePrevious ();
+//			
+//			int lastPosLabel;
+//			int lastPos;
+//			int lastTw = 0;
+//			
+//			if (isX) {
+//				lastPosLabel = reverseXAxis ? left + width + MinLabelGapX : left - MinLabelGapX;
+//				lastPos = left - minTickStep*2;
+//			}
+//			else {
+//				lastPosLabel = reverseYAxis ? top - MinLabelGapY : rheight + MinLabelGapY;
+//				lastPos = top + height + minTickStep*2;
+//			}
+//			
+//			for ( ; e.CurrentValue <= end; e.MoveNext ())
+//			{
+//				int px, py;
+//				int tw = 0, th = 0;
+//				int tick = tickSize;
+//				
+//				GetPoint (e.CurrentValue, e.CurrentValue, out px, out py);
+//				
+//				if (showLabels) {
+//					layout.SetMarkup (e.CurrentLabel);
+//					layout.GetPixelSize (out tw, out th);
+//				}
+//
+//				if (isX) {
+//					if (Math.Abs ((long)px - (long)lastPos) < minTickStep || px < left || px > left + width)
+//						continue;
+//					lastPos = px;
+//					
+//					bool labelFits = false;
+//					if ((Math.Abs (px - lastPosLabel) - (tw/2) - (lastTw/2)) >= MinLabelGapX) {
+//						lastPosLabel = px;
+//						lastTw = tw;
+//						labelFits = true;
+//					}
+//					
+//					if (isTop) {
+//						if (showLabels) {
+//							if (labelFits)
+//								win.DrawLayout (gc, px - (tw/2), top - AreaBorderWidth - th, layout);
+//							else
+//								tick = tick / 2;
+//						}
+//						win.DrawLine (gc, px, top, px, top + tick);
+//					}
+//					else {
+//						if (showLabels) {
+//							if (labelFits)
+//								win.DrawLayout (gc, px - (tw/2), top + height + AreaBorderWidth, layout);
+//							else
+//								tick = tick / 2;
+//						}
+//						win.DrawLine (gc, px, top + height, px, top + height - tick);
+//					}
+//				}
+//				else {
+//					if (Math.Abs ((long)lastPos - (long)py) < minTickStep || py < top || py > top + height)
+//						continue;
+//					lastPos = py;
+//					
+//					bool labelFits = false;
+//					if ((Math.Abs (py - lastPosLabel) - (th/2) - (lastTw/2)) >= MinLabelGapY) {
+//						lastPosLabel = py;
+//						lastTw = th;
+//						labelFits = true;
+//					}
+//					
+//					if (isTop) {
+//						if (showLabels) {
+//							if (labelFits)
+//								win.DrawLayout (gc, left + width + AreaBorderWidth + 1, py - (th/2), layout);
+//							else
+//								tick = tick / 2;
+//						}
+//						win.DrawLine (gc, left + width, py, left + width - tick, py);
+//					}
+//					else {
+//						if (showLabels) {
+//							if (labelFits)
+//								win.DrawLayout (gc, left - AreaBorderWidth - tw - 1, py - (th/2), layout);
+//							else
+//								tick = tick / 2;
+//						}
+//						win.DrawLine (gc, left, py, left + tick, py);
+//					}
+//				}
+//			}
+//			layout?.Dispose ();
+//		}
 		
 		int MeasureAxisSize (AxisPosition pos)
 		{
@@ -835,70 +835,70 @@ namespace MonoDevelop.Components.Chart
 		
 		void DrawCursor (ChartCursor cursor)
 		{
-			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
-				gc.RgbFgColor = cursor.Color;
-
-				int x, y;
-				GetPoint (cursor.Value, cursor.Value, out x, out y);
-
-				if (cursor.Dimension == AxisDimension.X) {
-					int cy = top - AreaBorderWidth - 1;
-					Point [] ps = new Point [4];
-					ps [0] = new Point (x, cy);
-					ps [1] = new Point (x + (cursor.HandleSize / 2), cy - cursor.HandleSize + 1);
-					ps [2] = new Point (x - (cursor.HandleSize / 2), cy - cursor.HandleSize + 1);
-					ps [3] = ps [0];
-					GdkWindow.DrawPolygon (gc, false, ps);
-					if (activeCursor == cursor)
-						GdkWindow.DrawPolygon (gc, true, ps);
-					GdkWindow.DrawLine (gc, x, top, x, top + height);
-				} else {
-					throw new NotSupportedException ();
-				}
-			}
+//			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+//				gc.RgbFgColor = cursor.Color;
+//
+//				int x, y;
+//				GetPoint (cursor.Value, cursor.Value, out x, out y);
+//
+//				if (cursor.Dimension == AxisDimension.X) {
+//					int cy = top - AreaBorderWidth - 1;
+//					Point [] ps = new Point [4];
+//					ps [0] = new Point (x, cy);
+//					ps [1] = new Point (x + (cursor.HandleSize / 2), cy - cursor.HandleSize + 1);
+//					ps [2] = new Point (x - (cursor.HandleSize / 2), cy - cursor.HandleSize + 1);
+//					ps [3] = ps [0];
+//					GdkWindow.DrawPolygon (gc, false, ps);
+//					if (activeCursor == cursor)
+//						GdkWindow.DrawPolygon (gc, true, ps);
+//					GdkWindow.DrawLine (gc, x, top, x, top + height);
+//				} else {
+//					throw new NotSupportedException ();
+//				}
+//			}
 		}
 		
 		void DrawCursorLabel (ChartCursor cursor)
 		{
-			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
-				gc.RgbFgColor = cursor.Color;
-
-				int x, y;
-				GetPoint (cursor.Value, cursor.Value, out x, out y);
-
-				if (cursor.Dimension == AxisDimension.X) {
-
-					string text;
-
-					if (cursor.LabelAxis != null) {
-						double minStep = GetMinTickStep (cursor.Dimension);
-						TickEnumerator tenum = cursor.LabelAxis.GetTickEnumerator (minStep);
-						tenum.Init (cursor.Value);
-						text = tenum.CurrentLabel;
-					} else {
-						text = GetValueLabel (cursor.Dimension, cursor.Value);
-					}
-
-					if (text != null && text.Length > 0) {
-						Pango.Layout layout = new Pango.Layout (this.PangoContext);
-						layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
-						layout.SetMarkup (text);
-
-						int tw, th;
-						layout.GetPixelSize (out tw, out th);
-						int tl = x - tw / 2;
-						int tt = top + 4;
-						if (tl + tw + 2 >= left + width) tl = left + width - tw - 1;
-						if (tl < left + 1) tl = left + 1;
-						GdkWindow.DrawRectangle (Style.WhiteGC, true, tl - 1, tt - 1, tw + 2, th + 2);
-						GdkWindow.DrawRectangle (Style.BlackGC, false, tl - 2, tt - 2, tw + 3, th + 3);
-						GdkWindow.DrawLayout (gc, tl, tt, layout);
-						layout.Dispose ();
-					}
-				} else {
-					throw new NotSupportedException ();
-				}
-			}
+//			using (Gdk.GC gc = new Gdk.GC (GdkWindow)) {
+//				gc.RgbFgColor = cursor.Color;
+//
+//				int x, y;
+//				GetPoint (cursor.Value, cursor.Value, out x, out y);
+//
+//				if (cursor.Dimension == AxisDimension.X) {
+//
+//					string text;
+//
+//					if (cursor.LabelAxis != null) {
+//						double minStep = GetMinTickStep (cursor.Dimension);
+//						TickEnumerator tenum = cursor.LabelAxis.GetTickEnumerator (minStep);
+//						tenum.Init (cursor.Value);
+//						text = tenum.CurrentLabel;
+//					} else {
+//						text = GetValueLabel (cursor.Dimension, cursor.Value);
+//					}
+//
+//					if (text != null && text.Length > 0) {
+//						Pango.Layout layout = new Pango.Layout (this.PangoContext);
+//						layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+//						layout.SetMarkup (text);
+//
+//						int tw, th;
+//						layout.GetPixelSize (out tw, out th);
+//						int tl = x - tw / 2;
+//						int tt = top + 4;
+//						if (tl + tw + 2 >= left + width) tl = left + width - tw - 1;
+//						if (tl < left + 1) tl = left + 1;
+//						GdkWindow.DrawRectangle (Style.WhiteGC, true, tl - 1, tt - 1, tw + 2, th + 2);
+//						GdkWindow.DrawRectangle (Style.BlackGC, false, tl - 2, tt - 2, tw + 3, th + 3);
+//						GdkWindow.DrawLayout (gc, tl, tt, layout);
+//						layout.Dispose ();
+//					}
+//				} else {
+//					throw new NotSupportedException ();
+//				}
+//			}
 		}
 		
 		void GetPoint (double wx, double wy, out int x, out int y)
@@ -947,7 +947,7 @@ namespace MonoDevelop.Components.Chart
 			return null;
 		}
 		
-		internal void OnLayoutChanged ()
+		/*internal*/public void OnLayoutChanged ()
 		{
 			xrangeChanged = true;
 			yrangeChanged = true;

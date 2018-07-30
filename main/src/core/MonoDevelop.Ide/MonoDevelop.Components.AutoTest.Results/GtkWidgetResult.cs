@@ -106,7 +106,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			// Check for the combobox first and try to use the active text.
 			// If the active text fails then
-			ComboBox cb = resultWidget as ComboBox;
+			ComboBoxText cb = resultWidget as ComboBoxText;
 			if (cb != null) {
 				string activeText = cb.ActiveText;
 				if (activeText == null) {
@@ -152,7 +152,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		protected TreeModel ModelFromWidget (Widget widget)
+		protected ITreeModel ModelFromWidget (Widget widget)
 		{
 			TreeView tv = widget as TreeView;
 			if (tv != null) {
@@ -169,7 +169,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Model (string column)
 		{
-			TreeModel model = ModelFromWidget (resultWidget);
+			ITreeModel model = ModelFromWidget (resultWidget);
 			if (model == null) {
 				return null;
 			}
@@ -183,7 +183,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return columnNumber == -1 ? null : new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		protected int GetColumnNumber (string column, TreeModel model)
+		protected int GetColumnNumber (string column, ITreeModel model)
 		{
 			Type modelType = model.GetType ();
 			SemanticModelAttribute attr = modelType.GetCustomAttribute<SemanticModelAttribute> ();
@@ -490,36 +490,36 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		bool flashState;
 
-		void OnFlashWidget (object o, ExposeEventArgs args)
-		{
-			flashState = !flashState;
-
-			if (flashState) {
-				return;
-			}
-
-			using (var cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow)) {
-				cr.SetSourceRGB (1.0, 0.0, 0.0);
-
-				Gdk.Rectangle allocation = resultWidget.Allocation;
-				Gdk.CairoHelper.Rectangle (cr, allocation);
-				cr.Stroke ();
-			}
-		}
+//		void OnFlashWidget (object o, ExposeEventArgs args)
+//		{
+//			flashState = !flashState;
+//
+//			if (flashState) {
+//				return;
+//			}
+//
+//			using (var cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow)) {
+//				cr.SetSourceRGB (1.0, 0.0, 0.0);
+//
+//				Gdk.Rectangle allocation = resultWidget.Allocation;
+//				Gdk.CairoHelper.Rectangle (cr, allocation);
+//				cr.Stroke ();
+//			}
+//		}
 
 		public override void Flash ()
 		{
 			int flashCount = 10;
 
 			flashState = true;
-			resultWidget.ExposeEvent += OnFlashWidget;
+//			resultWidget.ExposeEvent += OnFlashWidget;
 
 			GLib.Timeout.Add (1000, () => {
 				resultWidget.QueueDraw ();
 				flashCount--;
 
 				if (flashCount == 0) {
-					resultWidget.ExposeEvent -= OnFlashWidget;
+//					resultWidget.ExposeEvent -= OnFlashWidget;
 					return false;
 				}
 				return true;

@@ -209,8 +209,8 @@ namespace MonoDevelop.Components.Commands
 					label.Xalign = 0.0f;
 					label.Show ();
 					
-					((Gtk.Box) child).PackStart (label);
-					((Gtk.Box) child).PackStart (accel_label);
+					((Gtk.Box) child).PackStart (label, false, true, 0);
+					((Gtk.Box) child).PackStart (accel_label, false, true, 0);
 					child.Show ();
 					
 					this.Remove (Child);

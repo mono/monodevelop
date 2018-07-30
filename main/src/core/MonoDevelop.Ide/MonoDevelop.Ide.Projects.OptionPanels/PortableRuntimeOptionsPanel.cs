@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		const string NetStandardPclCompatPackageName = "Microsoft.NETCore.Portable.Compatibility";
 		const string NetStandardPclCompatPackageVersion = "1.0.1";
 
-		ComboBox netStandardCombo;
+		ComboBoxText netStandardCombo;
 		Entry targetFrameworkEntry;
 		RadioButton netstandardRadio;
 		RadioButton pclRadio;
@@ -133,25 +133,25 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			Spacing = 6;
 
-			PackStart (new Label { Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Target Framework")), Xalign = 0f });
+			PackStart (new Label { Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Target Framework")), Xalign = 0f }, false, true, 0);
 
 			var fxAlignment = new Alignment (0f, 0f, 1f, 1f) { LeftPadding = 12 };
-			PackStart (fxAlignment);
+			PackStart (fxAlignment, false, true, 0);
 			var radioBox = new VBox { Spacing = 10 };
 			fxAlignment.Add (radioBox);
 
 			var netstandardPickerHbox = new HBox { Spacing = 10 };
-			radioBox.PackStart (netstandardPickerHbox);
+			radioBox.PackStart (netstandardPickerHbox, false, true, 0);
 			netstandardRadio = new RadioButton (GettextCatalog.GetString (".NET Standard Platform:"));
 			netstandardPickerHbox.PackStart (netstandardRadio, false, false, 0);
-			netstandardPickerHbox.PackStart (netStandardCombo = ComboBox.NewText (), false, false, 0);
+			netstandardPickerHbox.PackStart (netStandardCombo = new ComboBoxText (), false, false, 0);
 
 			var netstandardDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with all frameworks that support the selected <a href='{0}'>.NET Standard</a> version.", netstandardDocsUrl), Xalign = 0f };
 			GtkWorkarounds.SetLinkHandler (netstandardDesc, HandleLink);
-			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = netstandardDesc, LeftPadding = 24 });
+			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = netstandardDesc, LeftPadding = 24 }, false, true, 0);
 
 			var pclPickerHbox = new HBox { Spacing = 10 };
-			radioBox.PackStart (pclPickerHbox);
+			radioBox.PackStart (pclPickerHbox, false, true, 0);
 			pclRadio = new RadioButton (netstandardRadio, GettextCatalog.GetString (".NET Portable:"));
 			pclPickerHbox.PackStart (pclRadio, false, false, 0);
 			pclPickerHbox.PackStart (targetFrameworkEntry = new Entry { IsEditable = false, WidthChars = 20, Name = "targetFrameworkEntry" }, false, false, 0);
@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			var pclDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with the frameworks supported by the selected <a href='{0}'>PCL profile</a>.", pcldDocsUrl), Xalign = 0f };
 			GtkWorkarounds.SetLinkHandler (pclDesc, HandleLink);
-			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = pclDesc, LeftPadding = 24 });
+			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = pclDesc, LeftPadding = 24 }, false, true, 0);
 
 			frameworkPickerButton.Clicked += PickFramework;
 

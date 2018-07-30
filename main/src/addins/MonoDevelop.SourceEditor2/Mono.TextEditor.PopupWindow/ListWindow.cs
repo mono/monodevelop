@@ -368,15 +368,15 @@ namespace Mono.TextEditor.PopupWindow
 		{
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			base.OnExposeEvent (args);
-			
-			int winWidth, winHeight;
-			this.GetSize (out winWidth, out winHeight);
-			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
-			return false;
-		}
+//		protected override bool OnExposeEvent (Gdk.EventExpose args)
+//		{
+//			base.OnExposeEvent (args);
+//			
+//			int winWidth, winHeight;
+//			this.GetSize (out winWidth, out winHeight);
+//			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
+//			return false;
+//		}
 		
 		public int TextOffset {
 			get { return list.TextOffset + (int) this.BorderWidth; }

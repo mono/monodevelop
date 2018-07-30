@@ -165,17 +165,17 @@ namespace MonoDevelop.Components
             return base.OnButtonReleaseEvent(evnt);
         }
 
-        protected override bool OnExposeEvent(Gdk.EventExpose evnt)
-        {
-            base.OnExposeEvent(evnt);
-
-            if(HasFocus && draw_focus) {
-                Style.PaintFocus(Style, GdkWindow, StateType.Normal, evnt.Area, this, "button",
-                    0, 0, Allocation.Width, Allocation.Height);
-            }
-
-            return true;
-        }
+//        protected override bool OnExposeEvent(Gdk.EventExpose evnt)
+//        {
+//            base.OnExposeEvent(evnt);
+//
+//            if(HasFocus && draw_focus) {
+//                Style.PaintFocus(Style, GdkWindow, StateType.Normal, evnt.Area, this, "button",
+//                    0, 0, Allocation.Width, Allocation.Height);
+//            }
+//
+//            return true;
+//        }
 
         private void UpdateImage()
         {
