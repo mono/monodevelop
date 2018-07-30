@@ -598,7 +598,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					((Notebook)c).Page = 0;
 			}
 
-			if (!DesktopService.AccessibilityInUse) {
+			if (!DesktopService.AccessibilityInUse && !DesktopService.AccessibilityKeyboardFocusInUse) {
 				// Don't automatically expand trees if using accessibility
 				// as it can be confusing with screen readers
 				tree.ExpandToPath (store.GetPath (page.Iter));

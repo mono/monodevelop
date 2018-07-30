@@ -289,6 +289,7 @@ namespace MonoDevelop.MacIntegration
 				Gtk.Rc.ParseString ("style \"default\" { engine \"xamarin\" { focusstyle = 2 } }");
 				Gtk.Rc.ParseString ("style \"radio-or-check-box\" { engine \"xamarin\" { focusstyle = 2 } } ");
 			}
+			AccessibilityKeyboardFocusInUse = (keyboardMode != 0);
 
 			// Disallow window tabbing globally
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Sierra)

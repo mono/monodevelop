@@ -586,6 +586,7 @@ namespace MonoDevelop.Ide.Desktop
 		}
 
 		public static bool AccessibilityInUse { get; protected set; }
+		public static bool AccessibilityKeyboardFocusInUse { get; protected set; }
 
 		internal virtual string GetNativeRuntimeDescription ()
 		{
