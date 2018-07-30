@@ -5,6 +5,7 @@
 		<CustomBeforeMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
 		<CustomAfterMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.targets</CustomAfterMicrosoftCommonTargets>
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <Features>strict</Features>
 	</PropertyGroup>
 	<!-- import common targets if they were not imported already by an MSBuild Sdk -->
 	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(MicrosoftCommonPropsHasBeenImported)' != 'true'" />
