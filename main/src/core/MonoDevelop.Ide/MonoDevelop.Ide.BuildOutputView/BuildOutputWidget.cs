@@ -659,8 +659,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 							processingCompletion.TrySetResult (null);
 
 							ViewContentName = filePathLocation.IsEmpty ?
-															  $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
-															  (string)filePathLocation;
+							                                  GettextCatalog.GetString ("Build Output {0}.binlog", DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")) :
+							                                  (string)filePathLocation;
 							FileNameChanged?.Invoke (this, ViewContentName);
 						});
 					}
