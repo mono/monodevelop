@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Mac;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -1111,6 +1112,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (textField.IsMouseInRect (location, textField.Frame) && sourcePad != null) {
 				sourcePad.BringToFront (true);
 			}
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			// 49 is <space>
+			if (theEvent.KeyCode == 49) {
+				sourcePad?.BringToFront (true);
+				return;
+			}
+			base.KeyDown (theEvent);
+		}
+
+		public override bool AcceptsFirstResponder ()
+		{
+			return true;
 		}
 
 		public override CGRect Frame {
