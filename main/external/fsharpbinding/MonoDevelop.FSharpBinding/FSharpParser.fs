@@ -144,10 +144,9 @@ type FSharpParser() =
                         let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
                         let obsolete = isObsolete parseOptions.FileName parseOptions.Content.Version cancellationToken
                         try
-                            let! pendingParseResults = Async.StartChild(languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete), ServiceSettings.maximumTimeout)
                             LoggingService.logDebug "FSharpParser: Parse and check results retrieved on %s" shortFilename
                             let defines = CompilerArguments.getDefineSymbols filePath proj
-                            let! results = pendingParseResults
+                            let! results = languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete)
                             //if you ever want to see the current parse tree
                             //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> ""
                             return! ParsedDocument.create parseOptions results defines (Some location) line
