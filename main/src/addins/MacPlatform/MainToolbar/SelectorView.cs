@@ -545,7 +545,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				if (theEvent.Characters == "\t") {
 					focusedCellIndex++;
-					if(focusedCellIndex > VisibleCellIds.Length){
+					if(focusedCellIndex >= VisibleCellIds.Length){
 						if (NextKeyView != null) {
 							Window.MakeFirstResponder (NextKeyView);
 							SetSelection ();
