@@ -34,6 +34,8 @@ namespace MonoDevelop.CodeActions
 
 		public int TotalItems { get; set; }
 
+		public string Description { get; set; }
+
 		public void AddItems (int count)
 		{
 			TotalItems += count;
