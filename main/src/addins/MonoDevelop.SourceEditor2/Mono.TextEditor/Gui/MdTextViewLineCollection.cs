@@ -41,6 +41,7 @@ namespace Mono.TextEditor
 	{
 		readonly MonoTextEditor textEditor;
 		readonly ITextSourceVersion version;
+		ITextSnapshot textSnapshot;
 
 		public MdTextViewLineCollection (MonoTextEditor textEditor) : base (64)
 		{
@@ -53,6 +54,12 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return;
+
+			if (Count == 0)
+				this.textSnapshot = textEditor.TextSnapshot;
+			else
+				System.Diagnostics.Debug.Assert (this.textSnapshot == textEditor.TextSnapshot);
+
 			var newLine = new MdTextViewLine (this, textEditor, line, logicalLineNumber, textEditor.TextViewMargin.GetLayout (line));
 			for (int i = 0; i < Count; i++) {
 				if (((MdTextViewLine)this [i]).LineNumber == logicalLineNumber) {
@@ -108,10 +115,33 @@ namespace Mono.TextEditor
 
 		internal void OnVisualBufferChanged (object sender, TextContentChangedEventArgs e)
 		{
-			// make sure all lines are on the same snapshot after text changes
-			foreach (MdTextViewLine line in this) {
-				line.TranslateToSnapshot (e.After);
+			var modifiedLines = new HashSet<int> ();
+			if (textSnapshot != null) {
+				foreach (ITextChange tc in e.Changes) {
+					ITrackingSpan textChangeOldSpan = e.Before.CreateTrackingSpan (tc.OldSpan, SpanTrackingMode.EdgeInclusive);
+					Span textVersionSpan = textChangeOldSpan.GetSpan (textSnapshot);
+
+					int oldStartLineNumber = textSnapshot.GetLineNumberFromPosition (textVersionSpan.Start);
+					int oldEndLineNumber = textSnapshot.GetLineNumberFromPosition (textVersionSpan.End);
+					for (int i = oldStartLineNumber; i <= oldEndLineNumber; i++) {
+						modifiedLines.Add (i);
+					}
+				}
 			}
+
+			// Recreate MdTextViewLine for the current snapshot for all lines except those
+            //   modified as those will get recreated during render
+			var oldTextViewLines = this.Cast<MdTextViewLine>().ToList();
+			this.Clear ();
+
+			foreach(MdTextViewLine line in oldTextViewLines) {
+				int lineNumber = line.LineNumber;
+				if (!modifiedLines.Contains (lineNumber - 1)) {
+					Add (lineNumber, textEditor.Document.GetLine (lineNumber));
+				}
+			}
+
+			textSnapshot = e.After;
 		}
 
 		public bool IsValid => version.CompareAge (textEditor.Document.Version) == 0;
