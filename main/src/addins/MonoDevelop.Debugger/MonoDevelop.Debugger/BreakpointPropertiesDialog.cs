@@ -37,6 +37,7 @@ using Xwt.Drawing;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
+using MetadataReferenceProperties = Microsoft.CodeAnalysis.MetadataReferenceProperties;
 
 namespace MonoDevelop.Debugger
 {
@@ -619,23 +620,30 @@ namespace MonoDevelop.Debugger
 			classes.Add ("System.Exception");
 			try {
 				Microsoft.CodeAnalysis.Compilation compilation = null;
-				Microsoft.CodeAnalysis.ProjectId dummyProjectId = null;
-				if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-					compilation = await TypeSystemService.GetCompilationAsync (IdeApp.ProjectOperations.CurrentSelectedProject);
+				MonoDevelopWorkspace workspace = null;
+
+				var project = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (project != null) {
+					var roslynProj = TypeSystemService.GetProject (project);
+					if (roslynProj != null) {
+						workspace = (MonoDevelopWorkspace)roslynProj.Solution.Workspace;
+						compilation = await roslynProj.GetCompilationAsync ();
+					}
 				}
+
 				if (compilation == null) {
+					var service = workspace.MetadataReferenceManager;
+					var corlib = service.GetOrCreateMetadataReferenceSnapshot (System.Reflection.Assembly.GetAssembly (typeof (object)).Location, MetadataReferenceProperties.Assembly);
+					var system = service.GetOrCreateMetadataReferenceSnapshot (System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location, MetadataReferenceProperties.Assembly);
+
 					//no need to unload this assembly context, it's not cached.
-					dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
 					compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
-											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (object)).Location))//corlib
-											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location));//System.dll
+					                       .AddReferences (corlib)
+					                       .AddReferences (system);
 				}
 				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
 				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
 					classes.Add (t.GetFullMetadataName ());
-				}
-				if (dummyProjectId != null) {
-					MetadataReferenceCache.RemoveReferences (dummyProjectId);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Failed to obtain exceptions list in breakpoint dialog.", e);

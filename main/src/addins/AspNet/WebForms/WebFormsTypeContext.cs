@@ -452,9 +452,9 @@ namespace MonoDevelop.AspNet.WebForms
 
 		MetadataReference LoadMetadataReference (string path)
 		{
-			var projectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("WebFormsTypeContext");
-			var reference = MetadataReferenceCache.LoadReference (projectId, path);
-			MetadataReferenceCache.RemoveReferences (projectId);
+			var roslynProject = TypeSystemService.GetProject (Project);
+			var workspace = (MonoDevelopWorkspace)roslynProject.Solution.Workspace;
+			var reference = workspace.MetadataReferenceManager.GetOrCreateMetadataReferenceSnapshot (path, MetadataReferenceProperties.Assembly);
 
 			return reference;
 		}
