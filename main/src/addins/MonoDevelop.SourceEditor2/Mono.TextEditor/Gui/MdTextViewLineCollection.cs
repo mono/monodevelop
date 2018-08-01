@@ -41,6 +41,7 @@ namespace Mono.TextEditor
 	{
 		readonly MonoTextEditor textEditor;
 		readonly ITextSourceVersion version;
+		ITextSnapshot textSnapshot;
 
 		public MdTextViewLineCollection (MonoTextEditor textEditor) : base (64)
 		{
@@ -53,6 +54,12 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return;
+
+			if (Count == 0)
+				this.textSnapshot = textEditor.TextSnapshot;
+			else
+				System.Diagnostics.Debug.Assert (this.textSnapshot == textEditor.TextSnapshot);
+
 			var newLine = new MdTextViewLine (this, textEditor, line, logicalLineNumber, textEditor.TextViewMargin.GetLayout (line));
 			for (int i = 0; i < Count; i++) {
 				if (((MdTextViewLine)this [i]).LineNumber == logicalLineNumber) {
@@ -106,12 +113,55 @@ namespace Mono.TextEditor
 			}
 		}
 
+		private readonly HashSet<int> modifiedLinesCache = new HashSet<int> ();
+		private readonly List<MdTextViewLine> reusedLinesCache = new List<MdTextViewLine> ();
+
 		internal void OnVisualBufferChanged (object sender, TextContentChangedEventArgs e)
 		{
-			// make sure all lines are on the same snapshot after text changes
-			foreach (MdTextViewLine line in this) {
-				line.TranslateToSnapshot (e.After);
+			if (textSnapshot != null) {
+				foreach (ITextChange textChange in e.Changes) {
+					Span textChangeCurrentSpan;
+					if (e.Before == textSnapshot) {
+						textChangeCurrentSpan = textChange.OldSpan;
+					} else if (e.After == textSnapshot) {
+						textChangeCurrentSpan = textChange.NewSpan;
+					} else {
+						ITrackingSpan textChangeOldSpan = e.Before.CreateTrackingSpan (textChange.OldSpan, SpanTrackingMode.EdgeInclusive);
+						textChangeCurrentSpan = textChangeOldSpan.GetSpan (textSnapshot);
+					}
+
+					var startLine = textSnapshot.GetLineFromPosition (textChangeCurrentSpan.Start);
+					var endLine = startLine;
+					if (startLine.EndIncludingLineBreak.Position < textChangeCurrentSpan.End) {
+						endLine = textSnapshot.GetLineFromPosition (textChangeCurrentSpan.End);
+					}
+
+					for (int i = startLine.LineNumber; i <= endLine.LineNumber; i++) {
+						modifiedLinesCache.Add (i);
+					}
+				}
 			}
+
+			// Recreate MdTextViewLine for the current snapshot for all lines except those
+			// modified as those will get recreated during render
+			foreach (MdTextViewLine line in this) {
+				int lineNumber = line.LineNumber;
+				if (!modifiedLinesCache.Contains(lineNumber - 1)) {
+					reusedLinesCache.Add (line);
+				}
+			}
+
+			this.Clear ();
+
+			foreach(MdTextViewLine line in reusedLinesCache) {
+				int lineNumber = line.LineNumber;
+				Add (lineNumber, textEditor.Document.GetLine (lineNumber));
+			}
+
+			modifiedLinesCache.Clear ();
+			reusedLinesCache.Clear ();
+
+			textSnapshot = e.After;
 		}
 
 		public bool IsValid => version.CompareAge (textEditor.Document.Version) == 0;
