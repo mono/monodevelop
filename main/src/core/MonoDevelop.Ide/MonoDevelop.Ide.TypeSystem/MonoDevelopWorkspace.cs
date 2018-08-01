@@ -613,7 +613,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 
 				lock (workspace.updatingProjectDataLock) {
-					MonoDevelop.Projects.FileWatcherService.WatchDirectories (this, null).Ignore ();
 					lock (metadataReferences) {
 						foreach (var reference in metadataReferences)
 							reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
