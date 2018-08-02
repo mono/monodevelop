@@ -45,6 +45,10 @@ namespace Mono.TextEditor
 			MonoTextEditor textEditor;
 			SnapshotSpan lineSpan;
 			int lineBreakLength;
+
+			/// <summary>
+			/// 1-based
+			/// </summary>
 			public int LineNumber { get; private set; }
 
 			public MdTextViewLine(MdTextViewLineCollection collection, MonoTextEditor textEditor, DocumentLine line, int lineNumber, TextViewMargin.LayoutWrapper layoutWrapper)
@@ -62,15 +66,6 @@ namespace Mono.TextEditor
 			public object IdentityTag => indentityTag;
 
 			public ITextSnapshot Snapshot => lineSpan.Snapshot;
-
-			public void TranslateToSnapshot(ITextSnapshot newSnapshot)
-			{
-				if (Snapshot == newSnapshot) {
-					return;
-				}
-
-				lineSpan = lineSpan.TranslateTo (newSnapshot, SpanTrackingMode.EdgeExclusive);
-			}
 
 			public bool IsFirstTextViewLineForSnapshotLine => collection[0] == this;
 
