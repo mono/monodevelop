@@ -236,7 +236,7 @@
       <HintPath>..\..\..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180226.4\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180503.2\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
