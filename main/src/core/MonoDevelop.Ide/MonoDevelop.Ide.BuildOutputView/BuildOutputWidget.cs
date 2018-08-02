@@ -529,16 +529,19 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (dataSource == null)
 				return;
 
-			// Cleanup previous search
-			if (currentSearch != null) {
+			using (Counters.SearchBuildLog.BeginTiming ()) {
+				// Cleanup previous search
+				if (currentSearch != null) {
+					RefreshSearchMatches (dataSource, currentSearch);
+					Counters.SearchBuildLog.Trace ("Cleared previous search matches");
+				}
+
+				currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
+				var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
 				RefreshSearchMatches (dataSource, currentSearch);
+
+				Find (firstMatch);
 			}
-
-			currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
-			var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
-			RefreshSearchMatches (dataSource, currentSearch);
-
-			Find (firstMatch);
 		}
 
 		public void FindNext (object sender, EventArgs args)
@@ -636,28 +639,31 @@ namespace MonoDevelop.Ide.BuildOutputView
 				await SetSpinnerVisibility (true);
 
 				try {
-					BuildOutput.ProcessProjects ();
+					var metadata = new BuildOutputCounterMetadata ();
+					using (Counters.ProcessBuildLog.BeginTiming (metadata)) {
+						BuildOutput.ProcessProjects (showDiagnostics, metadata);
 
-					await InvokeAsync (() => {
-						currentSearch = null;
-						searchEntry.Entry.Text = String.Empty;
-						Find (null);
+						await InvokeAsync (() => {
+							currentSearch = null;
+							searchEntry.Entry.Text = String.Empty;
+							Find (null);
 
-						var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
-						(treeView.Columns [0].Views [0] as BuildOutputTreeCellView).BuildOutputNodeField = buildOutputDataSource.BuildOutputNodeField;
+							var buildOutputDataSource = new BuildOutputDataSource (BuildOutput.GetRootNodes (showDiagnostics));
+							(treeView.Columns [0].Views [0] as BuildOutputTreeCellView).BuildOutputNodeField = buildOutputDataSource.BuildOutputNodeField;
 
-						treeView.DataSource = buildOutputDataSource;
-						cellView.OnDataSourceChanged ();
+							treeView.DataSource = buildOutputDataSource;
+							cellView.OnDataSourceChanged ();
 
-						// Expand root nodes and nodes with errors
-						ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
-						processingCompletion.TrySetResult (null);
+							// Expand root nodes and nodes with errors
+							ExpandErrorOrWarningsNodes (treeView, buildOutputDataSource, false);
+							processingCompletion.TrySetResult (null);
 
-						ViewContentName = filePathLocation.IsEmpty ?
-														  $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog" :
-														  (string)filePathLocation;
-						FileNameChanged?.Invoke (this, ViewContentName);
-					});
+							ViewContentName = filePathLocation.IsEmpty ?
+															  GettextCatalog.GetString ("Build Output {0}.binlog", DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")) :
+															  (string)filePathLocation;
+							FileNameChanged?.Invoke (this, ViewContentName);
+						});
+					}
 				} catch (Exception ex) {
 					processingCompletion.TrySetException (ex);
 				}
