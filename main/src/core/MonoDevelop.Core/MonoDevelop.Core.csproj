@@ -54,7 +54,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
   <ItemGroup>
     <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.0.0.3403-beta4\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
+      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.1.0.3652\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
     <Reference Include="Humanizer.Core">
       <HintPath>..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
