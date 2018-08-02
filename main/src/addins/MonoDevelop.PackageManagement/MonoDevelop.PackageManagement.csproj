@@ -42,6 +42,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.IO.Compression">
       <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
