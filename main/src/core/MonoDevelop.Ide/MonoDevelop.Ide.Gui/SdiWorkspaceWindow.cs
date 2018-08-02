@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.tabControl = tabControl;
 			this.tab = tabLabel;
-			SetTitleEvent(null, null);
+			SetTitleEvent (false);
 			SetDockNotebookTabTitle ();
 		}
 
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 			box.Show ();
 			Add (box);
 			
-			SetTitleEvent(null, null);
+			SetTitleEvent (false);
 		}
 
 		internal void CreateCommandHandler ()
@@ -441,6 +441,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SetTitleEvent(object sender, EventArgs e)
 		{
+			SetTitleEvent ();
+		}
+
+		void SetTitleEvent(bool allowMarkFileDirty = true)
+		{
 			if (content == null)
 				return;
 				
@@ -473,7 +478,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (content.IsDirty) {
-				if (!String.IsNullOrEmpty (content.ContentName))
+				if (allowMarkFileDirty && !String.IsNullOrEmpty (content.ContentName))
 					IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
