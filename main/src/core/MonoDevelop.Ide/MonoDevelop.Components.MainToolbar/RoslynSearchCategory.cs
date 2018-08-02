@@ -74,54 +74,60 @@ namespace MonoDevelop.Components.MainToolbar
 			return tags.Contains (tag);
 		}
 
+		static readonly IImmutableSet<string> typeKinds = ImmutableHashSet.Create (
+			NavigateToItemKind.Class,
+			NavigateToItemKind.Delegate,
+			NavigateToItemKind.Enum,
+			NavigateToItemKind.Interface,
+			NavigateToItemKind.Structure
+		);
+
+		static readonly IImmutableSet<string> memberKinds = ImmutableHashSet.Create (
+			NavigateToItemKind.Constant,
+			NavigateToItemKind.EnumItem,
+			NavigateToItemKind.Event,
+			NavigateToItemKind.Field,
+			NavigateToItemKind.Method,
+			NavigateToItemKind.Property
+		);
+
+		static readonly IImmutableSet<string> classKinds = ImmutableHashSet.Create (NavigateToItemKind.Class);
+		static readonly IImmutableSet<string> delegateKinds = ImmutableHashSet.Create (NavigateToItemKind.Delegate);
+		static readonly IImmutableSet<string> eventKinds = ImmutableHashSet.Create (NavigateToItemKind.Event);
+		static readonly IImmutableSet<string> fieldKinds = ImmutableHashSet.Create (NavigateToItemKind.Field, NavigateToItemKind.Constant);
+		static readonly IImmutableSet<string> interfaceKinds = ImmutableHashSet.Create (NavigateToItemKind.Interface);
+		static readonly IImmutableSet<string> methodKinds = ImmutableHashSet.Create (NavigateToItemKind.Method);
+		static readonly IImmutableSet<string> propertyKinds = ImmutableHashSet.Create (NavigateToItemKind.Property);
+		static readonly IImmutableSet<string> structKinds = ImmutableHashSet.Create (NavigateToItemKind.Structure);
+
 		static IImmutableSet<string> GetTagKinds (string tag)
 		{
-			var set = ImmutableHashSet.CreateBuilder<string> ();
 			switch (tag) {
 			case "type":
 			case "t":
-				set.Add (NavigateToItemKind.Class);
-				set.Add (NavigateToItemKind.Delegate);
-				set.Add (NavigateToItemKind.Enum);
-				set.Add (NavigateToItemKind.Interface);
-				set.Add (NavigateToItemKind.Structure);
-				break;
+				return typeKinds;
 			case "class":
-				set.Add (NavigateToItemKind.Class);
-				break;
+				return classKinds;
 			case "struct":
-				set.Add (NavigateToItemKind.Structure);
-				break;
+				return structKinds;
 			case "interface":
-				set.Add (NavigateToItemKind.Interface);
-				break;
+				return interfaceKinds;
 			case "delegate":
-				set.Add (NavigateToItemKind.Delegate);
-				break;
+				return delegateKinds;
 			case "member":
 			case "m":
-				set.Add (NavigateToItemKind.Constant);
-				set.Add (NavigateToItemKind.Event);
-				set.Add (NavigateToItemKind.Field);
-				set.Add (NavigateToItemKind.Method);
-				set.Add (NavigateToItemKind.Property);
-				break;
+				return memberKinds;
 			case "method":
-				set.Add (NavigateToItemKind.Method);
-				break;
+				return methodKinds;
 			case "property":
-				set.Add (NavigateToItemKind.Property);
-				break;
+				return propertyKinds;
 			case "field":
-				set.Add (NavigateToItemKind.Field);
-				set.Add (NavigateToItemKind.Constant);
-				break;
+				return fieldKinds;
 			case "event":
-				set.Add (NavigateToItemKind.Event);
-				break;
+				return eventKinds;
 			}
 
-			return set.ToImmutable ();
+			return null;
 		}
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern searchPattern, CancellationToken token)
@@ -144,7 +150,7 @@ namespace MonoDevelop.Components.MainToolbar
 												var searchService = proj.LanguageServices.GetService<INavigateToSearchService_RemoveInterfaceAboveAndRenameThisAfterInternalsVisibleToUsersUpdate> ();
 												if (searchService == null)
 													return ImmutableArray<INavigateToSearchResult>.Empty;
-												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, kinds, token).ConfigureAwait (false);
+												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, kinds ?? searchService.KindsProvided, token).ConfigureAwait (false);
 											}
 										})
 					).ConfigureAwait (false);
