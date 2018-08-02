@@ -37,7 +37,7 @@ using UnitTests;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	public class RoslynSearchCategoryTests
+	public class RoslynSearchCategoryTests : IdeTestBase
 	{
 		static async Task<List<SearchResult>> Search (string pattern)
 		{
