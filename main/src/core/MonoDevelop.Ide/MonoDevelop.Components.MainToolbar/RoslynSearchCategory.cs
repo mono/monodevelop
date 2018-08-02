@@ -130,6 +130,25 @@ namespace MonoDevelop.Components.MainToolbar
 			return null;
 		}
 
+		static INavigateToSearchService_RemoveInterfaceAboveAndRenameThisAfterInternalsVisibleToUsersUpdate TryGetNavigateToSearchService (Project project)
+		{
+			var languageServices = project.LanguageServices;
+			// TODO: remove this once INavigateToSearchService_RemoveInterfaceAboveAndRenameThisAfterInternalsVisibleToUsersUpdate is removed and just use INavigateToSearchService
+			var searchService = languageServices.GetService<INavigateToSearchService_RemoveInterfaceAboveAndRenameThisAfterInternalsVisibleToUsersUpdate> ();
+			if (searchService != null)
+				return searchService;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0612 // Type or member is obsolete
+			var legacyService = languageServices.GetService<INavigateToSearchService> ();
+			if (legacyService != null)
+				return new ShimNavigateToSearchService (legacyService);
+#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
+
+			return null;
+		}
+
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
 			if (string.IsNullOrEmpty (searchPattern.Pattern))
@@ -147,7 +166,7 @@ namespace MonoDevelop.Components.MainToolbar
 										.SelectMany (sol => sol.Projects)
 										.Select (async proj => {
 											using (proj.Solution.Services.CacheService?.EnableCaching (proj.Id)) {
-												var searchService = proj.LanguageServices.GetService<INavigateToSearchService_RemoveInterfaceAboveAndRenameThisAfterInternalsVisibleToUsersUpdate> ();
+												var searchService = TryGetNavigateToSearchService (proj);
 												if (searchService == null)
 													return ImmutableArray<INavigateToSearchResult>.Empty;
 												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, kinds ?? searchService.KindsProvided, token).ConfigureAwait (false);
