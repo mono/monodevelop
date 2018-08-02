@@ -56,64 +56,6 @@ namespace MonoDevelop.Components.MainToolbar
 			sortOrder = FirstCategory;
 		}
 
-		static bool IsType (INavigateToSearchResult result)
-		{
-			switch (result.Kind) {
-			case NavigateToItemKind.Class:
-			case NavigateToItemKind.Delegate:
-			case NavigateToItemKind.Enum:
-			case NavigateToItemKind.Structure:
-			case NavigateToItemKind.Interface:
-				return true;
-			}
-			return false;
-		}
-
-		static bool IsMember (INavigateToSearchResult result)
-		{
-			switch (result.Kind) {
-			case NavigateToItemKind.Constant:
-			case NavigateToItemKind.Event:
-			case NavigateToItemKind.Field:
-			case NavigateToItemKind.Method:
-			case NavigateToItemKind.Property:
-				return true;
-			}
-			return false;
-		}
-
-		static bool MatchesTag (string tag, INavigateToSearchResult result)
-		{
-			if (string.IsNullOrWhiteSpace (tag))
-				return true;
-
-			switch (tag) {
-			case "type":
-			case "t":
-				return IsType (result);
-			case "class":
-				return result.Kind == NavigateToItemKind.Class;
-			case "struct":
-				return result.Kind == NavigateToItemKind.Structure;
-			case "interface":
-				return result.Kind == NavigateToItemKind.Interface;
-			case "delegate":
-				return result.Kind == NavigateToItemKind.Delegate;
-			case "member":
-			case "m":
-				return IsMember (result);
-			case "method":
-				return result.Kind == NavigateToItemKind.Method;
-			case "property":
-				return result.Kind == NavigateToItemKind.Property;
-			case "field":
-				return result.Kind == NavigateToItemKind.Field || result.Kind == NavigateToItemKind.Constant;
-			case "event":
-				return result.Kind == NavigateToItemKind.Event;
-			}
-
-			return false;
-		}
 		static readonly string [] tags = new [] {
 				// Types
 				"type", "t", "class", "struct", "interface", "enum", "delegate",
@@ -132,6 +74,56 @@ namespace MonoDevelop.Components.MainToolbar
 			return tags.Contains (tag);
 		}
 
+		static IImmutableSet<string> GetTagKinds (string tag)
+		{
+			var set = ImmutableHashSet.CreateBuilder<string> ();
+			switch (tag) {
+			case "type":
+			case "t":
+				set.Add (NavigateToItemKind.Class);
+				set.Add (NavigateToItemKind.Delegate);
+				set.Add (NavigateToItemKind.Enum);
+				set.Add (NavigateToItemKind.Interface);
+				set.Add (NavigateToItemKind.Structure);
+				break;
+			case "class":
+				set.Add (NavigateToItemKind.Class);
+				break;
+			case "struct":
+				set.Add (NavigateToItemKind.Structure);
+				break;
+			case "interface":
+				set.Add (NavigateToItemKind.Interface);
+				break;
+			case "delegate":
+				set.Add (NavigateToItemKind.Delegate);
+				break;
+			case "member":
+			case "m":
+				set.Add (NavigateToItemKind.Constant);
+				set.Add (NavigateToItemKind.Event);
+				set.Add (NavigateToItemKind.Field);
+				set.Add (NavigateToItemKind.Method);
+				set.Add (NavigateToItemKind.Property);
+				break;
+			case "method":
+				set.Add (NavigateToItemKind.Method);
+				break;
+			case "property":
+				set.Add (NavigateToItemKind.Property);
+				break;
+			case "field":
+				set.Add (NavigateToItemKind.Field);
+				set.Add (NavigateToItemKind.Constant);
+				break;
+			case "event":
+				set.Add (NavigateToItemKind.Event);
+				break;
+			}
+
+			return set.ToImmutable ();
+		}
+
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
 			if (string.IsNullOrEmpty (searchPattern.Pattern))
@@ -142,25 +134,23 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			return Task.Run (async delegate {
 				try {
+					var kinds = GetTagKinds (searchPattern.Tag);
 					// Maybe use language services instead of AbstractNavigateToSearchService
 					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
 										.Select (ws => ws.CurrentSolution)
 										.SelectMany (sol => sol.Projects)
 										.Select (async proj => {
 											using (proj.Solution.Services.CacheService?.EnableCaching (proj.Id)) {
-												var searchService = proj.LanguageServices.GetService<INavigateToSearchService> ();
+												var searchService = proj.LanguageServices.GetService<INavigateToSearchService_RemoveInterfaceAboveAndRenameThisAfterInternalsVisibleToUsersUpdate> ();
 												if (searchService == null)
 													return ImmutableArray<INavigateToSearchResult>.Empty;
-												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, token).ConfigureAwait (false);
+												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, kinds, token).ConfigureAwait (false);
 											}
 										})
 					).ConfigureAwait (false);
 
 					foreach (var results in aggregatedResults) {
 						foreach (var result in results) {
-							if (!MatchesTag (searchPattern.Tag, result))
-								continue;
-
 							int laneLength = result.NameMatchSpans.Length;
 							int index = laneLength > 0 ? result.NameMatchSpans [0].Start : -1;
 
