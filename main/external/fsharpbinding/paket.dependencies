@@ -12,3 +12,4 @@ nuget FAKE
 nuget Newtonsoft.Json
 nuget StrongNamer
 nuget System.Reactive.Linq
+nuget System.Reflection.Metadata 1.6.0
