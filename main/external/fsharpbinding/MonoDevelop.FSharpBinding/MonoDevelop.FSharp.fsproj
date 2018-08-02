@@ -101,6 +101,7 @@
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpOutlineTextEditorExtension.fs" />
     <Compile Include="FSharpIndentationTracker.fs" />
+    <Compile Include="TypeSignatureHelp.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
     <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
