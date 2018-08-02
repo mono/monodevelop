@@ -120,6 +120,7 @@ module signatureHelp =
         | _ -> None
 
     let displaySignatures (context:DocumentContext) (editor:TextEditor) recalculate =
+        LoggingService.logDebug "Displaying type signatures"
         let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
         let editorFont = data.Options.Font
         let font = new Pango.FontDescription(AbsoluteSize=float(editorFont.Size) * SignatureHelpMarker.FontScale, Family=editorFont.Family)
@@ -141,6 +142,7 @@ module signatureHelp =
                 Math.Min(data.LineCount,
                     data.HeightTree.YToLineNumber (data.VAdjustment.Value+data.VAdjustment.PageSize))
 
+            let screenHeightLines = bottomVisibleLine - topVisibleLine
             let funs =
                 symbols
                 |> List.choose getFunctionInformation
@@ -174,15 +176,13 @@ module signatureHelp =
                     match marker, recalculate with
                     | Some marker', false when marker'.Text <> "" -> ()
                     | _ -> 
-                        let marker = marker |> Option.getOrElse(fun() -> addMarker "" range.StartLine line isFSharp)
-                        if range.StartLine >= topVisibleLine && range.EndLine <= bottomVisibleLine then
+                        if range.StartLine >= topVisibleLine - screenHeightLines && range.EndLine <= bottomVisibleLine + screenHeightLines then
                             async {
                                 let lineText = editor.GetLineText(range.StartLine)
                                 let! tooltip = ast.GetToolTip(range.StartLine, range.StartColumn, lineText)
                                 tooltip |> Option.iter(fun (tooltip, lineNr) ->
-                                    let text = extractSignature tooltip marker.IsFromFSharpType
-                                    marker.Text <- text
-                                    marker.Font <- font
+                                    let text = extractSignature tooltip isFSharp
+                                    let marker = marker |> Option.getOrElse(fun() -> addMarker text range.StartLine line isFSharp)
                                     runInMainThread (fun() -> document.CommitLineUpdate lineNr))
                             } |> Async.StartImmediate)))
 
@@ -226,8 +226,8 @@ type SignatureHelp() as x =
 
               PropertyService.PropertyChanged
                   .Subscribe(fun p -> if p.Key = Settings.showTypeSignatures then
-                                              match (p.NewValue :?> bool) with
-                                              | true -> signatureHelp.displaySignatures x.DocumentContext x.Editor true
-                                              | false -> removeAllMarkers())]
+                                          match (p.NewValue :?> bool) with
+                                          | true -> signatureHelp.displaySignatures x.DocumentContext x.Editor true
+                                          | false -> removeAllMarkers())]
 
     override x.Dispose() = disposables |> List.iter(fun disp -> disp.Dispose())
