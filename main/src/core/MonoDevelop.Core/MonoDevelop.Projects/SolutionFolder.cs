@@ -404,9 +404,22 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (false);
 		}
 
+		// note: although executing folders isn't supported, this may still get called when
+		// executing unit tests
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			yield break;
+			if (IsRoot) {
+				yield return ParentSolution;
+				yield break;
+			}
+
+			foreach (var item in GetAllItems ()) {
+				if (item is IBuildTarget bt) {
+					foreach (var dep in bt.GetExecutionDependencies ()) {
+						yield return dep;
+					}
+				}
+			}
 		}
 
 		/// <remarks>

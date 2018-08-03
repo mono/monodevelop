@@ -310,9 +310,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[ThreadSafe]
+		[Obsolete ("This should be implemented by subclasses that implement IBuildTarget")]
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			yield break;
+			throw new InvalidOperationException ("Must be reimplemented by subclasses");
 		}
 
 		protected bool Loading { get; private set; }

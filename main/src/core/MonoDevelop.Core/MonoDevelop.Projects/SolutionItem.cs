@@ -371,7 +371,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
 		{
-			yield break;
+			yield return this;
 		}
 
 		/// <summary>

@@ -750,6 +750,16 @@ namespace MonoDevelop.Projects
 			return CanExecute (context, configuration, (SolutionRunConfiguration)runConfiguration);
 		}
 
+		public new IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			return SolutionExtension.OnGetExecutionDependencies ();
+		}
+
+		protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+		{
+			yield return this;
+		}
+
 		public IEnumerable<SolutionRunConfiguration> GetRunConfigurations ()
 		{
 			return SolutionExtension.OnGetRunConfigurations ();
@@ -1508,6 +1518,11 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration)
 			{
 				yield break;
+			}
+
+			protected internal override IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+			{
+				return Solution.OnGetExecutionDependencies ();
 			}
 
 			internal protected override bool OnGetSupportsFormat (MSBuildFileFormat format)
