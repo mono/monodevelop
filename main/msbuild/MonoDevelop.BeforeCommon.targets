@@ -18,6 +18,8 @@
 		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<!-- don't warn about missing doc comments -->
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
+		<!-- set the language version to the latest usable C# -->
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(MDConfigIsDebug)'=='true'">
