@@ -1433,7 +1433,7 @@ namespace MonoDevelop.Ide
 			if (r.Failed)
 				return false;
 
-			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionTargets);
+			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionTargets.SelectMany (et => et.GetExecutionDependencies ()));
 
 			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
 				return true;
