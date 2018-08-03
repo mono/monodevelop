@@ -5,7 +5,6 @@ XAMMAC_PDB=$(XAMMAC_LIB_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.pdb
 
 if ENABLE_MACPLATFORM
 all: Xamarin.Mac.dll Xamarin.Mac.registrar.full.a libxammac.dylib Xamarin.Mac.buildinfo
-	$(MAKE) -C monomac/src
 
 Xamarin.Mac.dll: $(XAMMAC_LIB_PATH)/@MAC_ARCHITECTURE@/full/Xamarin.Mac.dll
 	cp $< $@
@@ -22,7 +21,6 @@ Xamarin.Mac.buildinfo: $(XAMMAC_PATH)/buildinfo
 	cp $< $@
 
 clean:
-	$(MAKE) -C monomac/src clean
 	rm -f Xamarin.Mac.Registrar.full.a
 	rm -f Xamarin.Mac.dll*
 	rm -f Xamarin.Mac.pdb
