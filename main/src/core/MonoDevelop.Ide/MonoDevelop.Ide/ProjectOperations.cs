@@ -1364,6 +1364,23 @@ namespace MonoDevelop.Ide
 			return new [] { executionTarget };
 		}
 
+		// given a solution RunConfiguration, determine the matching project RunConfigurations
+		static RunConfiguration GetProjectRunConfiguration (IRunTarget target, RunConfiguration config)
+		{
+			if (config is SingleItemSolutionRunConfiguration src) {
+				if (src.Item == target) {
+					return src.RunConfiguration;
+				}
+			}
+			else if (config is MultiItemSolutionRunConfiguration mrc) {
+				foreach (var item in mrc.Items) {
+					if (item.SolutionItem == target)
+						return item.RunConfiguration;
+				}
+			}
+			return config;
+		}
+
 		Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
 			// When executing a solution we are actually going to execute the startup project(s), so we only need to build it/them
@@ -1373,8 +1390,10 @@ namespace MonoDevelop.Ide
 				buildTargets, configuration,
 				IdeApp.Preferences.BuildBeforeExecuting, IdeApp.Preferences.RunWithWarnings,
 				(target, monitor) => {
-					if (target is IRunTarget)
-						return ((IRunTarget)target).PrepareExecution (monitor, context, configuration, runConfiguration);
+					if (target is IRunTarget runTarget) {
+						var projectRunConfig = GetProjectRunConfiguration (runTarget, runConfiguration);
+						return runTarget.PrepareExecution (monitor, context, configuration, projectRunConfig);
+					}
 					return target.PrepareExecution (monitor, context, configuration);
 				}
 			);
