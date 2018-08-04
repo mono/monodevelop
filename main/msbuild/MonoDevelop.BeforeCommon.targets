@@ -20,6 +20,7 @@
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
 	</PropertyGroup>
 
+	<!-- https://aka.ms/roslyn-packages has a list that maps Roslyn version to latest language version -->
 	<!-- Set the roslyn language version to the latest stable version our provisioned csc supports -->
 	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
 		<LangVersion>7.2</LangVersion>
