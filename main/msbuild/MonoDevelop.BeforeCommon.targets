@@ -18,8 +18,15 @@
 		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<!-- don't warn about missing doc comments -->
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
-		<!-- set the language version to the latest usable C# -->
-		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<!-- Set the roslyn language version to the latest stable version our provisioned csc supports -->
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
+		<LangVersion>7.2</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.vbproj'">
+		<LangVersion>15.5</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(MDConfigIsDebug)'=='true'">
