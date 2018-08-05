@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": defaultTargets = value; return;
 				case "ToolsVersion": toolsVersion = value; return;
-				case "Sdk": Sdk = value; return;
+				case "Sdk": ProjectSdk = value; return;
 			}
 			base.ReadAttribute (name, value);
 		}
@@ -323,7 +323,7 @@ namespace MonoDevelop.Projects.MSBuild
 				case "DefaultTargets": return defaultTargets;
 				case "ToolsVersion": return toolsVersion;
 				case "xmlns": return string.IsNullOrEmpty (Namespace) ? null : Namespace;
-				case "Sdk": return Sdk;
+				case "Sdk": return ProjectSdk;
 			}
 			return base.WriteAttribute (name);
 		}
@@ -339,6 +339,7 @@ namespace MonoDevelop.Projects.MSBuild
 				case "Target": ob = new MSBuildTarget (); break;
 				case "Choose": ob = new MSBuildChoose (); break;
 				case "ProjectExtensions": ob = new MSBuildProjectExtensions (); break;
+				case "Sdk": ob = new MSBuildSdk (); break;
 				default: ob = new MSBuildXmlElement (); break;
 			}
 			if (ob != null) {
@@ -438,6 +439,12 @@ namespace MonoDevelop.Projects.MSBuild
 			NotifyChanged ();
 
 			ImportChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal void NotifySdkChanged ()
+		{
+			NotifyChanged ();
+			sdkArray = null;
 		}
 
 		/// <summary>
@@ -555,12 +562,101 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		string sdk;
-		string[] sdkArray;
+		string[] sdkArray = null;
 		public string Sdk {
-			get => sdk;
+			get {
+				if (sdkArray == null) {
+					GenerateSdkArray ();
+				}
+				return sdk;
+			}
 			set {
-				sdk = value;
-				sdkArray = null;
+				if (sdk != value) {
+					// Setting an Sdk will reset to the default set to the project (i.e. remove any Sdk node,
+					// and all Sdk imports
+					ClearAllSdks ();
+					ProjectSdk = value;
+					NotifySdkChanged ();
+				}
+			}
+		}
+
+		string implicitSdk;
+		public string SdkWithImplicitImports {
+			get {
+				if (sdkArray == null) {
+					GenerateSdkArray ();
+				}
+				return implicitSdk;
+			}
+		}
+
+		void GenerateSdkArray()
+		{
+			// All sdks defined throughout the project
+			HashSet<string> sdks = new HashSet<string> ();
+			// Only defines the sdks that require an implicit import (Project node or Sdk node)
+			HashSet<string> implicitSdks = new HashSet<string> ();
+			if(ProjectSdk != null) {
+				foreach(string sdk in ProjectSdk.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+					sdks.Add (sdk);
+					implicitSdks.Add (sdk);
+				}
+			}
+
+			MSBuildSdk sdkNode = GetChildren ().OfType<MSBuildSdk>().FirstOrDefault();
+			if(sdkNode != null && !string.IsNullOrEmpty(sdkNode.Name)) {
+				// Sdk node defines name and version separately
+				string version = "";
+				if (!string.IsNullOrEmpty (sdkNode.Version)) {
+					version = $"/{sdkNode.Version}";
+				}
+				string sdkName = $"{sdkNode.Name}{version}";
+				sdks.Add (sdkName);
+				implicitSdks.Add (sdkName);
+			}
+
+			// Check all import nodes for other sdks
+			foreach(MSBuildImport import in ImportGroups.SelectMany(x => x.Imports).Concat(Imports)) {
+				if(!string.IsNullOrEmpty(import.Sdk)) {
+					sdks.Add (import.Sdk);
+				}
+			}
+
+			sdkArray = sdks.ToArray ();
+			sdk = string.Join (";", sdkArray);
+			implicitSdk = string.Join (";", implicitSdks);
+		}
+
+		void ClearAllSdks()
+		{
+			projectSdk = null;
+
+			foreach(MSBuildSdk sdkNode in GetChildren ().OfType<MSBuildSdk> ()) {
+				Remove (sdkNode);
+			}
+
+			foreach(MSBuildImport import in Imports) {
+				if(import.Sdk != null) {
+					Remove (import);
+				}
+			}
+
+			foreach(MSBuildImportGroup importGroup in ImportGroups) {
+				foreach(MSBuildImport import in importGroup.Imports) {
+					if(import.Sdk != null) {
+						importGroup.RemoveImport (import);
+					}
+				}
+			}
+		}
+
+		string projectSdk;
+		public string ProjectSdk {
+			get => projectSdk;
+			set {
+				projectSdk = value;
+				NotifySdkChanged ();
 			}
 		}
 
@@ -985,13 +1081,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public string[] GetReferencedSDKs ()
 		{
-			if (!string.IsNullOrEmpty (Sdk)) {
-				if (sdkArray == null)
-					sdkArray = Sdk.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-				return sdkArray;
-			}
-			else
-				return Array.Empty<string> ();
+			return sdkArray;
 		}
 
 		XmlNamespaceManager GetNamespaceManagerForProject ()

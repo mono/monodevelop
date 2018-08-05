@@ -556,6 +556,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildEvaluationContext.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildImport.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildObject.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildSdk.cs" />
     <Compile Include="MonoDevelop.Projects\IPropertySet.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IMSBuildPropertySet.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroupEvaluated.cs" />

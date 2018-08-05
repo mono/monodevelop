@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.MSBuild
 			context.InitEvaluation (pi.Project);
 			var objects = pi.Project.GetAllObjects ();
 
-			if (!string.IsNullOrEmpty (pi.Project.Sdk)) {
+			if (!string.IsNullOrEmpty (pi.Project.SdkWithImplicitImports)) {
 				var rootProject = pi.GetRootMSBuildProject ();
 				var sdkPaths = pi.Project.Sdk
 				                 .Split (sdkPathSeparator, StringSplitOptions.RemoveEmptyEntries)
