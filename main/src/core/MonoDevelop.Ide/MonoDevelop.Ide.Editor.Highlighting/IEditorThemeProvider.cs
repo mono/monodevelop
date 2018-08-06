@@ -65,6 +65,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		EditorTheme theme;
 
+		static HashSet<string> faultedThemes = new HashSet<string> ();
+
 		public EditorTheme GetEditorTheme ()
 		{
 			if (theme != null)
@@ -75,7 +77,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				return theme;
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading theme :" + Name, e);
+				if (faultedThemes.Add (Name)) {
+					MessageService.ShowError (GettextCatalog.GetString ("Error while loading theme :" + Name), e);
+					LoggingService.LogError ("Error while loading theme :" + Name, e);
+				}
 				return null;
 			}
 		}
