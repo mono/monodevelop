@@ -170,8 +170,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (var bundle in languageBundles) {
 				for (int i = 0; i < bundle.EditorThemes.Count; ++i) {
 					var style = bundle.EditorThemes[i];
-					if (style.Name == name)
-						return style.GetEditorTheme ();
+					if (style.Name == name) {
+						var loadedTheme = style.GetEditorTheme ();
+						if (loadedTheme != null) // == null means loading error occurred.
+							return loadedTheme;
+					}
 				}
 			}
 			LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
