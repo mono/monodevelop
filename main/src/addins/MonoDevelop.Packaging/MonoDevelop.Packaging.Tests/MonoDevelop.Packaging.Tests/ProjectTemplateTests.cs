@@ -156,6 +156,7 @@ namespace MonoDevelop.Packaging.Tests
 		}
 
 		[Test]
+		[Ignore] // https://github.com/mono/monodevelop/issues/5602
 		public async Task CreateMultiPlatformProjectFromTemplateWithPCLOnly ()
 		{
 			string templateId = "MonoDevelop.Packaging.CrossPlatformLibrary";
