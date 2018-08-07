@@ -249,6 +249,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdatePadIcon ();
 
 			IdeApp.ProjectOperations.StartBuild += OnBuildStarted;
+			IdeApp.ProjectOperations.StartClean += OnBuildStarted;
 		}
 
 		void searchPatternChanged (object sender, EventArgs e)
@@ -343,6 +344,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
 			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
+			IdeApp.ProjectOperations.StartClean -= OnBuildStarted;
 
 			TaskService.Errors.TasksRemoved -= ShowResults;
 			TaskService.Errors.TasksAdded -= TaskAdded;
