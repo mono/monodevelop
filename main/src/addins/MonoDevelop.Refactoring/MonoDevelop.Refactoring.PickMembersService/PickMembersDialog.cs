@@ -166,13 +166,15 @@ namespace MonoDevelop.Refactoring.PickMembersService
 				treeStore.SetValue (row, symbolTextField, member.ToDisplayString (memberDisplayFormat));
 				treeStore.SetValue (row, symbolIconField, ImageService.GetIcon (MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (member)));
 			}
-			foreach (var option in options) {
-				var checkBox = new CheckBox (option.Title);
-				checkBox.State = option.Value ? CheckBoxState.On : CheckBoxState.Off;
-				checkBox.Toggled += delegate {
-					option.Value = !option.Value;
-				};
-				contentVBox.PackStart (checkBox);
+			if (!options.IsDefaultOrEmpty) {
+				foreach (var option in options) {
+					var checkBox = new CheckBox (option.Title);
+					checkBox.State = option.Value ? CheckBoxState.On : CheckBoxState.Off;
+					checkBox.Toggled += delegate {
+						option.Value = !option.Value;
+					};
+					contentVBox.PackStart (checkBox);
+				}
 			}
 		}
 
