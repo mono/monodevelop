@@ -58,6 +58,7 @@
     <Compile Include="Mono.TextEditor.Tests\DiffTrackerTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextViewTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextLinkModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextEditorKeyPressTimingsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
