@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
 using Microsoft.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
@@ -69,9 +70,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			WorkspaceTaskQueue CreateQueue ()
 			{
-				// At this point, we have to know what the UI thread is.
-				Contract.ThrowIfTrue (ForegroundThreadAffinitizedObject.CurrentForegroundThreadData.Kind == ForegroundThreadDataKind.Unknown);
-				return new WorkspaceTaskQueue (_factory, ForegroundThreadAffinitizedObject.CurrentForegroundThreadData.TaskScheduler);
+				return new WorkspaceTaskQueue (_factory, Runtime.MainTaskScheduler ?? TaskScheduler.Default);
 			}
 
 			public Task ScheduleTask (Action taskAction, string taskName, CancellationToken cancellationToken = default(CancellationToken))
