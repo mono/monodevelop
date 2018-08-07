@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 			8, 16, 32, 64, 128, 256, 512, 1024
 		);
 
-		public void StartTimer (Gdk.EventKey evt)
+		public void StartTimer (long eventTime)
 		{
 			if (activeCountIndex == numberOfCountSpaces) {
 				// just drop these events now
@@ -75,7 +75,7 @@ namespace Mono.TextEditor
 			droppedEvents = 0;
 
 			// evt.Time is the time in ms since system startup (on macOS at least)
-			activeCounts[activeCountIndex++] = evt.Time;
+			activeCounts[activeCountIndex++] = eventTime;
 		}
 
 		int CalculateBucket (TimeSpan duration)
@@ -127,6 +127,8 @@ namespace Mono.TextEditor
 				return;
 			}
 
+			// Gdk key events are wrapped to uint32, so if we use longs here, we will get keypresses that
+			// seemingly last for days.
 			var sinceStartup = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
 
 			if (complete) {
@@ -148,15 +150,8 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void ReportTimings (Mono.TextEditor.TextDocument document)
+		internal TypingTimingMetadata GetTypingTimingMetadata (string extension)
 		{
-			if (count == 0) {
-				// No timings recorded.
-				return;
-			}
-
-			string extension = document.FileName.Extension;
-
 			var average = totalTime.TotalMilliseconds / count;
 			var metadata = new TypingTimingMetadata {
 				Average = average,
@@ -169,6 +164,20 @@ namespace Mono.TextEditor
 				metadata.Extension = extension;
 
 			metadata.AddBuckets (buckets);
+
+			return metadata;
+		}
+
+		public void ReportTimings (Mono.TextEditor.TextDocument document)
+		{
+			if (count == 0) {
+				// No timings recorded.
+				return;
+			}
+
+			string extension = document.FileName.Extension;
+
+			var metadata = GetTypingTimingMetadata (extension);
 			MonoDevelop.SourceEditor.Counters.Typing.Inc (metadata);
 		}
 	}
