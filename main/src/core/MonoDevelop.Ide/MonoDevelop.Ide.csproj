@@ -8821,6 +8821,30 @@
     <EmbeddedResource Include="icons\build-task-success-16~sel%402x.png">
       <LogicalName>build-task-success-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-open~dark%402x.png">
+      <LogicalName>tree-chevron-open~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-open~dark.png">
+      <LogicalName>tree-chevron-open~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-open%402x.png">
+      <LogicalName>tree-chevron-open@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-open.png">
+      <LogicalName>tree-chevron-open.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-closed~dark%402x.png">
+      <LogicalName>tree-chevron-closed~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-closed~dark.png">
+      <LogicalName>tree-chevron-closed~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-closed%402x.png">
+      <LogicalName>tree-chevron-closed@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-chevron-closed.png">
+      <LogicalName>tree-chevron-closed.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
