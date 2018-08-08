@@ -41,6 +41,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Gui;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -174,7 +175,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void BreakpointsChanged (object sender, Mono.Debugging.Client.BreakEventArgs e)
 		{
-			QueueDraw ();
+			DrawIndicatorSurface (0, true);
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -716,21 +717,23 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void Caret_PositionChanged (object sender, CaretLocationEventArgs e)
 		{
-			if (drawnCaretLine != TextEditor.Caret.Line)
-				QueueDraw ();
+			if (drawnCaretLine != TextEditor.Caret.Line) {
+				int caretY = (int)GetYPosition (TextEditor.Caret.Line);
+				QueueDrawArea (0, Math.Min (caretY, drawnCaretY) - 1, Allocation.Width, Math.Abs (caretY - drawnCaretY) + 2);
+			}
 		}
 
-		int drawnCaretLine;
+		int drawnCaretLine, drawnCaretY;
 		protected void DrawCaret (Cairo.Context cr)
 		{
 			if (TextEditor.EditorTheme == null)
 				return;
 			drawnCaretLine = TextEditor.Caret.Line;
-			int y = (int)GetYPosition (drawnCaretLine);
+			drawnCaretY = (int)GetYPosition (drawnCaretLine);
 
 			cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground));
 			var w = Math.Floor (Allocation.Width * 0.618);
-			cr.Rectangle (Allocation.Width - w, y - 1, w, 2);
+			cr.Rectangle (Allocation.Width - w, drawnCaretY - 1, w, 2);
 			cr.Fill ();
 		}
 
@@ -962,15 +965,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					cr.Paint ();
 				} else {
 					CachedDraw (cr,
-								ref backgroundSurface,
-								allocation,
-								draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
+					            ref backgroundSurface,
+					            e.Area,
+					            draw: (c, o) => DrawBackground (c, allocation), forceScale: displayScale);
 				}
 				if (TextEditor == null)
 					return true;
 
 				DrawCaret (cr);
-				DrawBreakpoints (cr);
 				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
 					DrawBar (cr);
 
@@ -1002,26 +1004,28 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		CancellationTokenSource src;
 
 		uint indicatorIdleTimout;
-		void DrawIndicatorSurface (uint timeout = 250)
+		void DrawIndicatorSurface (uint timeout = 250, bool forceUpdate = false)
 		{
 			RemoveIndicatorIdleHandler ();
 			if (timeout == 0) {
-				IndicatorSurfaceTimeoutHandler ();
+				IndicatorSurfaceTimeoutHandler (forceUpdate);
 			} else {
-				indicatorIdleTimout = GLib.Timeout.Add (timeout, IndicatorSurfaceTimeoutHandler);
+				indicatorIdleTimout = GLib.Timeout.Add (timeout, delegate {
+					IndicatorSurfaceTimeoutHandler (forceUpdate);
+					return false;
+				});
 			}
 		}
 
-		bool IndicatorSurfaceTimeoutHandler ()
+		void IndicatorSurfaceTimeoutHandler (bool forceUpdate)
 		{
 			indicatorIdleTimout = 0;
 			if (!IsRealized)
-				return false;
+				return;
 			var allocation = Allocation;
 			src?.Cancel ();
 			src = new CancellationTokenSource ();
-			new IdleUpdater (this, src.Token).Start ();
-			return false;
+			new IdleUpdater (this, src.Token) { ForceUpdate = forceUpdate }.Start ();
 		}
 
 		void RemoveIndicatorIdleHandler ()
