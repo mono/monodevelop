@@ -1249,7 +1249,7 @@ namespace Mono.TextEditor
 			if (currentFocus == FocusMargin.TextView) {
 				long time;
 #if MAC
-				time = (long)AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp;
+				time = (long)TimeSpan.FromSeconds (AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp).TotalMilliseconds;
 #else
 				// Warning, Gdk returns uint32 as time value, so this might overflow.
 				time = evt.Time;
