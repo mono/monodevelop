@@ -1247,7 +1247,14 @@ namespace Mono.TextEditor
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
 			if (currentFocus == FocusMargin.TextView) {
-				keyPressTimings.StartTimer (evt);
+				long time;
+#if MAC
+				time = (long)AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp;
+#else
+				// Warning, Gdk returns uint32 as time value, so this might overflow.
+				time = evt.Time;
+#endif
+				keyPressTimings.StartTimer (time);
 				return HandleTextKey (evt);
 			} else if (currentFocus != FocusMargin.None) {
 				return HandleMarginKeyCommand (evt);
