@@ -104,6 +104,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public static readonly Xwt.Drawing.Image WarningIcon = ImageService.GetIcon (Ide.Gui.Stock.BuildWarning, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image WarningIconSmall = ImageService.GetIcon (Ide.Gui.Stock.BuildWarningSmall, Gtk.IconSize.Menu);
 		public static readonly Xwt.Drawing.Image FolderIcon = ImageService.GetIcon (Ide.Gui.Stock.OpenFolder, Gtk.IconSize.Menu);
+		public static readonly Xwt.Drawing.Image EmptyIcon = ImageService.GetIcon (Ide.Gui.Stock.Empty);
 	}
 
 	enum TextSelectionState
@@ -257,14 +258,18 @@ namespace MonoDevelop.Ide.BuildOutputView
 			}
 
 			public BuildOutputNode Node { get; private set; }
+			readonly public Image Icon;
 
 			public bool IsRootNode => Node.Parent == null;
+
+			public bool HasIcon => Icon != Resources.EmptyIcon;
 
 			public ViewStatus (BuildOutputNode node)
 			{
 				if (node == null)
 					throw new ArgumentNullException (nameof (node));
 				Node = node;
+				Icon = Node.GetImage ();
 				layout.Font = GetFont (node);
 			}
 
@@ -272,7 +277,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 			{
 				if (IsRootNode) {
 					return defaultBoldFont;
-				} else if (node.IsCommandLine) {
+				}
+				if (node.IsCommandLine) {
 					return monospaceFont;
 				}
 				return defaultFont;
@@ -468,8 +474,10 @@ namespace MonoDevelop.Ide.BuildOutputView
 			//Draw the node background
 			FillCellBackground (ctx, buildOutputNode, status);
 
-			//Draw the image row
-			DrawImage (ctx, cellArea, buildOutputNode.GetImage (), cellArea.Left, ImageSize, isSelected, ImagePadding);
+			if (status.HasIcon) {
+				//Draw the image row
+				DrawImage (ctx, cellArea, status.Icon, cellArea.Left, ImageSize, isSelected, ImagePadding);
+			}
 
 			// If the height required by the text is not the same as what was calculated in OnGetRequiredSize(), it means that
 			// the required height has changed and CalcLayout will return false. In that case call QueueResize(),
