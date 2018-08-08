@@ -439,6 +439,13 @@ namespace MonoDevelop.Ide
 		{
 			if (args.Change == ExtensionChange.Add) {
 				try {
+#if DEBUG
+					// Only show this in debug builds for now, we want to enable this later for addins that might delay
+					// IDE startup.
+					if (args.ExtensionNode is TypeExtensionNode node) {
+						LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
+					}
+#endif
 					if (typeof(CommandHandler).IsInstanceOfType (args.ExtensionObject))
 						typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
 					else
