@@ -523,11 +523,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projectId = projectId;
 				workspaceRef = new WeakReference<MonoDevelopWorkspace> (ws);
 
-				lock (this.metadataReferences) {
-					foreach (var metadataReference in metadataReferences) {
-						AddMetadataReference_NoLock (metadataReference);
-					}
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
+				foreach (var metadataReference in metadataReferences) {
+					AddMetadataReference_NoLock (metadataReference, ws);
 				}
+
 				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
@@ -535,36 +535,35 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var reference = (MonoDevelopMetadataReference)sender;
 				// If we didn't contain the reference, bail
-				if (!RemoveMetadataReference (reference) || !workspaceRef.TryGetTarget (out var workspace))
+				if (!workspaceRef.TryGetTarget (out var workspace))
 					return;
 
 				lock (workspace.updatingProjectDataLock) {
+					if (!RemoveMetadataReference_NoLock (reference, workspace))
+						return;
+
 					workspace.OnMetadataReferenceRemoved (projectId, reference.CurrentSnapshot);
 
 					reference.UpdateSnapshot ();
-					lock (metadataReferences) {
-						AddMetadataReference_NoLock (reference);
-					}
+					AddMetadataReference_NoLock (reference, workspace);
 					workspace.OnMetadataReferenceAdded (projectId, reference.CurrentSnapshot);
 				}
 			}
 
-			internal void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference)
+			internal void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
-				System.Diagnostics.Debug.Assert (Monitor.IsEntered (metadataReferences));
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
-				lock (metadataReferences) {
-					metadataReferences.Add (metadataReference);
-				}
+				metadataReferences.Add (metadataReference);
 				metadataReference.UpdatedOnDisk += OnMetadataReferenceUpdated;
 			}
 
-			internal bool RemoveMetadataReference (MonoDevelopMetadataReference metadataReference)
+			internal bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
-				lock (metadataReferences) {
-					metadataReference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
-					return metadataReferences.Remove (metadataReference);
-				}
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
+
+				metadataReference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
+				return metadataReferences.Remove (metadataReference);
 			}
 
 			internal DocumentId GetOrCreateDocumentId (string name, ProjectData previous)
@@ -618,10 +617,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 
 				lock (workspace.updatingProjectDataLock) {
-					lock (metadataReferences) {
-						foreach (var reference in metadataReferences)
-							reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
-					}
+					foreach (var reference in metadataReferences)
+						reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
 				}
 			}
 		}
