@@ -8820,6 +8820,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build-task-success-16~sel%402x.png">
       <LogicalName>build-task-success-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-chevron-open~dark%402x.png">
       <LogicalName>tree-chevron-open~dark@2x.png</LogicalName>
     </EmbeddedResource>
