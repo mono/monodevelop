@@ -566,7 +566,7 @@ namespace MonoDevelop.Core
 		public static Counter DirectoriesRemoved = InstrumentationService.CreateCounter ("Directories removed", "File Service");
 		public static Counter DirectoriesCreated = InstrumentationService.CreateCounter ("Directories created", "File Service");
 		public static Counter DirectoriesRenamed = InstrumentationService.CreateCounter ("Directories renamed", "File Service");
-		
+
 		public static Counter LogErrors = InstrumentationService.CreateCounter ("Errors", "Log");
 		public static Counter LogWarnings = InstrumentationService.CreateCounter ("Warnings", "Log");
 		public static Counter LogMessages = InstrumentationService.CreateCounter ("Information messages", "Log");
