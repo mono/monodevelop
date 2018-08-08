@@ -52,6 +52,7 @@
       <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parser\ActiveElementStartPathTestFixture.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Schema\SchemaValidationTests.cs" />
     <Compile Include="Utils\XsltTransformTest.cs" />
     <Compile Include="ExpandSelectionTests.cs" />
+    <Compile Include="CodeCompletion\XmlCodeCompletionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\schemas\XMLSchema.xsd">
@@ -125,6 +127,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CodeCompletion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
