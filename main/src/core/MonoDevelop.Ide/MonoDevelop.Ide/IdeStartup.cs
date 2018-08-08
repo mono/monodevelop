@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide
 		static Stopwatch startupSectionTimer = new Stopwatch ();
 		static Stopwatch timeToCodeTimer = new Stopwatch ();
 		static Dictionary<string, long> sectionTimings = new Dictionary<string, long> ();
+		static bool hideWelcomePage;
 
 		static TimeToCodeMetadata ttcMetadata;
 
@@ -278,8 +279,9 @@ namespace MonoDevelop.Ide
 				// which is then replaced with a second empty Apple menu.
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
-				IdeApp.Initialize (monitor);
 
+				hideWelcomePage = startupInfo.HasFiles;
+				IdeApp.Initialize (monitor, hideWelcomePage);
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
 
@@ -453,6 +455,12 @@ namespace MonoDevelop.Ide
 		static bool OnIdle ()
 		{
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
+			// OpenDocuments appears when the app is idle.
+			LoggingService.LogWarning ("Showing welcome page");
+			if (!hideWelcomePage) {
+				WelcomePage.WelcomePageService.ShowWelcomePage ();
+				Counters.Initialization.Trace ("Showed welcome page");
+			}
 			return false;
 		}
 
