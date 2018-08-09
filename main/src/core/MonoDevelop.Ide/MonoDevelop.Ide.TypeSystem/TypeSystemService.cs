@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					
 					foreach (var w in workspaces) {
 						foreach (var p in w.CurrentSolution.ProjectIds) {
-							if (w.GetDocumentId (p, file.FileName) != null) {
+							if (w.ProjectHandler.GetDocumentId (p, file.FileName) != null) {
 								filesToUpdate.Add (file.FileName);
 								goto found;
 							}
@@ -231,14 +231,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				var result = await parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
 					var ws = workspaces.First () ;
-					var projectId = ws.GetProjectId (options.Project);
+					var projectId = ws.ProjectHandler.GetProjectId (options.Project);
 
 					if (projectId != null) {
 						var projectFile = options.Project.GetProjectFile (options.FileName);
 						if (projectFile != null) {
 							ws.UpdateProjectionEntry (projectFile, result.Projections);
 							foreach (var projection in result.Projections) {
-								var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
+								var docId = ws.ProjectHandler.GetDocumentId (projectId, projection.Document.FileName);
 								if (docId != null) {
 									ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
 								}
@@ -653,7 +653,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor, DocumentContext context)
 		{
 			foreach (var w in workspaces) {
-				if (w.Contains (analysisDocument.ProjectId)) {
+				if (w.ProjectHandler.Contains (analysisDocument.ProjectId)) {
 					w.InformDocumentOpen (analysisDocument, editor, context); 
 					return;
 				}
@@ -682,7 +682,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
 			foreach (var w in workspaces) {
-				var projectId = w.GetProjectId (project);
+				var projectId = w.ProjectHandler.GetProjectId (project);
 				if (projectId != null) {
 					return projectId;
 				}
@@ -708,7 +708,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException (nameof(project));
 			foreach (var w in workspaces) {
-				var documentId = w.GetMonoProject (project);
+				var documentId = w.ProjectHandler.GetMonoProject (project);
 				if (documentId != null) {
 					return documentId;
 				}
