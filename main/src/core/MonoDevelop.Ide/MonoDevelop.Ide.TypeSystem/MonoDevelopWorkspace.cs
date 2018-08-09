@@ -97,8 +97,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
 			this.Id = WorkspaceId.Next ();
+			ProjectionData = new ProjectionMap ();
 			ProjectMap = new ProjectDataMap (this);
-			ProjectHandler = new ProjectSystemHandler (this, ProjectMap);
+			ProjectHandler = new ProjectSystemHandler (this, ProjectMap, ProjectionData);
 			manager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
 
 			if (IdeApp.Workspace != null && solution != null) {
@@ -142,6 +143,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
+		ProjectionMap ProjectionData { get; }
 
 		bool lowMemoryLogged;
 		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)

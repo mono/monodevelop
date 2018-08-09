@@ -55,14 +55,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			return projectData?.DocumentData.Get (name);
 		}
 
+		internal IReadOnlyList<ProjectionEntry> ProjectionList => ProjectionData.ProjectionList;
 		/// <summary>
 		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
 		/// back to the original physical file.
 		/// </summary>
 		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
-			=> ProjectHandler.TryGetOriginalFileFromProjection (fileName, offset, out originalName, out originalOffset);
+			=> ProjectionData.TryGetOriginalFileFromProjection (fileName, offset, out originalName, out originalOffset);
 
 		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
-			=> ProjectHandler.UpdateProjectionEntry (projectFile, projections);
+			=> ProjectionData.UpdateProjectionEntry (projectFile, projections);
 	}
 }

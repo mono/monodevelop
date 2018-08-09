@@ -44,20 +44,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			readonly MonoDevelopWorkspace workspace;
 			readonly ProjectDataMap projectMap;
+			readonly ProjectionMap projectionData;
 			readonly MetadataReferenceHandler metadataHandler;
 
 			bool added;
 			readonly object addLock = new object ();
-			readonly object projectionListUpdateLock = new object ();
 
-			ImmutableList<ProjectionEntry> projectionList = ImmutableList<ProjectionEntry>.Empty;
 			internal List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 			SolutionData solutionData;
 
-			public ProjectSystemHandler (MonoDevelopWorkspace workspace, ProjectDataMap projectMap)
+			public ProjectSystemHandler (MonoDevelopWorkspace workspace, ProjectDataMap projectMap, ProjectionMap projectionData)
 			{
 				this.workspace = workspace;
 				this.projectMap = projectMap;
+				this.projectionData = projectionData;
 
 				metadataHandler = new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap);
 			}
@@ -197,17 +197,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return false;
 			}
 
-			void ClearOldProjectionList ()
-			{
-				ImmutableList<ProjectionEntry> toDispose;
-				lock (projectionListUpdateLock) {
-					toDispose = projectionList;
-					projectionList = projectionList.Clear ();
-				}
-				foreach (var p in toDispose)
-					p.Dispose ();
-			}
-
 			internal Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution sol, CancellationToken ct)
 			{
 				return Task.Run (delegate {
@@ -217,7 +206,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				async Task<SolutionInfo> CreateSolutionInfoInternal (MonoDevelop.Projects.Solution solution, CancellationToken token)
 				{
 					using (var timer = Counters.AnalysisTimer.BeginTiming ()) {
-						ClearOldProjectionList ();
+						projectionData.ClearOldProjectionList ();
 
 						solutionData = new SolutionData ();
 
@@ -318,8 +307,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						false
 					);
 				}
-				lock (projectionListUpdateLock)
-					projectionList = projectionList.Add (entry);
+				projectionData.AddProjectionEntry (entry);
 			}
 
 			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
@@ -336,64 +324,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					f.Name,
 					isGenerated: false
 				);
-			}
-
-			internal IReadOnlyList<ProjectionEntry> ProjectionList => projectionList;
-
-			internal class ProjectionEntry : IDisposable
-			{
-				public MonoDevelop.Projects.ProjectFile File;
-				public IReadOnlyList<Projection> Projections;
-
-				public void Dispose ()
-				{
-					Runtime.RunInMainThread (delegate {
-						foreach (var p in Projections)
-							p.Dispose ();
-					});
-				}
-			}
-
-			internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
-			{
-				if (projectFile == null)
-					throw new ArgumentNullException (nameof (projectFile));
-				if (projections == null)
-					throw new ArgumentNullException (nameof (projections));
-
-				lock (projectionListUpdateLock) {
-					foreach (var entry in projectionList) {
-						if (entry?.File?.FilePath == projectFile.FilePath) {
-							projectionList = projectionList.Remove (entry);
-							// Since it's disposing projected editor, it needs to dispose in MainThread.
-							Runtime.RunInMainThread (() => entry.Dispose ()).Ignore ();
-							break;
-						}
-					}
-					projectionList = projectionList.Add (new ProjectionEntry { File = projectFile, Projections = projections });
-				}
-			}
-
-			/// <summary>
-			/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
-			/// back to the original physical file.
-			/// </summary>
-			internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
-			{
-				foreach (var projectionEntry in ProjectionList) {
-					var projection = projectionEntry.Projections.FirstOrDefault (p => FilePath.PathComparer.Equals (p.Document.FileName, fileName));
-					if (projection == null)
-						continue;
-
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
-						originalName = projectionEntry.File.FilePath;
-						return true;
-					}
-				}
-
-				originalName = fileName;
-				originalOffset = offset;
-				return false;
 			}
 		}
 	}
