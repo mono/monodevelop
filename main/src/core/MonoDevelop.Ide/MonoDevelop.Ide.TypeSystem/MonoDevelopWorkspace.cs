@@ -96,7 +96,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
-			this.Id = WorkspaceId.Next ();
+			MonoDevelopSolution = solution;
+
 			ProjectionData = new ProjectionMap ();
 			ProjectMap = new ProjectDataMap (this);
 			ProjectHandler = new ProjectSystemHandler (this, ProjectMap, ProjectionData);
