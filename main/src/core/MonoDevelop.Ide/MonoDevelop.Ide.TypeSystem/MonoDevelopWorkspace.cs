@@ -94,6 +94,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
+		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => metadataReferenceManager.Value;
+		ProjectionMap ProjectionData { get; }
+		ProjectDataMap ProjectMap { get; }
+		ProjectSystemHandler ProjectHandler { get; }
+		OpenDocumentsData OpenDocuments { get; } = new OpenDocumentsData ();
+
 		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
 			MonoDevelopSolution = solution;
@@ -140,12 +146,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (solution != null)
 				DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
 		}
-
-		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => metadataReferenceManager.Value;
-		ProjectDataMap ProjectMap { get; }
-		ProjectSystemHandler ProjectHandler { get; }
-		ProjectionMap ProjectionData { get; }
-		OpenDocumentsData OpenDocuments { get; }
 
 		bool lowMemoryLogged;
 		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
