@@ -144,7 +144,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
 			TextEditor = parent.TextEditor;
 			caret = TextEditor.Caret;
-			//			caret.PositionChanged += CaretPositionChanged;
+			caret.PositionChanged += CaretPositionChanged;
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
 			textViewMargin = TextEditor.TextViewMargin;
 			textViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
@@ -153,7 +153,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			heightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
 			HasTooltip = true;
-			TextEditor.Caret.PositionChanged += Caret_PositionChanged;
 			parentStrip.SourceEditorView.Breakpoints.BreakEventAdded += BreakpointsChanged;
 			parentStrip.SourceEditorView.Breakpoints.BreakEventRemoved += BreakpointsChanged;
 			fadeInStage.ActorStep += delegate (Actor<QuickTaskOverviewMode> actor) {
@@ -190,10 +189,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void CaretPositionChanged (object sender, EventArgs e)
 		{
-			var line = caret.Line;
-			if (caretLine != line) {
-				caretLine = line;
-				QueueDraw ();
+			if (drawnCaretLine != TextEditor.Caret.Line) {
+				int caretY = (int)GetYPosition (TextEditor.Caret.Line);
+				QueueDrawArea (0, Math.Min (caretY, drawnCaretY) - 1, Allocation.Width, Math.Abs (caretY - drawnCaretY) + 2);
 			}
 		}
 
@@ -201,7 +199,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			parentStrip.SourceEditorView.Breakpoints.BreakEventAdded -= BreakpointsChanged;
 			parentStrip.SourceEditorView.Breakpoints.BreakEventRemoved -= BreakpointsChanged;
-			TextEditor.Caret.PositionChanged -= Caret_PositionChanged;
 
 			DisposeProxies ();
 			DestroyBackgroundSurface ();
@@ -712,15 +709,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			var line = 0.5 + (y - IndicatorHeight) / (Allocation.Height - IndicatorHeight) * (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
 			return TextEditor.GetTextEditorData ().VisualToLogicalLine ((int)line);
-		}
-
-
-		void Caret_PositionChanged (object sender, CaretLocationEventArgs e)
-		{
-			if (drawnCaretLine != TextEditor.Caret.Line) {
-				int caretY = (int)GetYPosition (TextEditor.Caret.Line);
-				QueueDrawArea (0, Math.Min (caretY, drawnCaretY) - 1, Allocation.Width, Math.Abs (caretY - drawnCaretY) + 2);
-			}
 		}
 
 		int drawnCaretLine, drawnCaretY;
