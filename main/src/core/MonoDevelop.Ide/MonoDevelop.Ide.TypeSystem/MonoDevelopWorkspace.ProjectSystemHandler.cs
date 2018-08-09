@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 					} else {
-						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData)) {
+						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, duplicates)) {
 							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData);
 							if (!duplicates.Add (projectedId))
 								continue;
@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return Tuple.Create (documents, additionalDocuments);
 			}
 
-			IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates = null)
+			IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
 			{
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
