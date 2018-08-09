@@ -185,6 +185,7 @@ namespace MonoDevelop.Projects.MSBuild
 					var settings = new XmlReaderSettings {
 						DtdProcessing = DtdProcessing.Ignore,
 						IgnoreWhitespace = true,
+						IgnoreComments = true,
 					};
 					var projectRootElement = ProjectRootElement.Create (XmlReader.Create (new StringReader (content), settings), engine);
 					projectRootElement.FullPath = file;
