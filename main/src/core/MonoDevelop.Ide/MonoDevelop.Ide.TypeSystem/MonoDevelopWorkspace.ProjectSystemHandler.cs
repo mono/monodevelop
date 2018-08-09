@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly MonoDevelopWorkspace workspace;
 			readonly ProjectDataMap projectMap;
 			readonly ProjectionMap projectionData;
-			readonly MetadataReferenceHandler metadataHandler;
+			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 
 			bool added;
 			readonly object addLock = new object ();
@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projectMap = projectMap;
 				this.projectionData = projectionData;
 
-				metadataHandler = new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap);
+				metadataHandler = new Lazy<MetadataReferenceHandler>(() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 			}
 
 #region Solution mapping
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
 
-				var (references, projectReferences) = await metadataHandler.CreateReferences (p, token);
+				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token);
 				if (token.IsCancellationRequested)
 					return null;
 
@@ -234,6 +234,15 @@ namespace MonoDevelop.Ide.TypeSystem
 						return solutionInfo;
 					}
 				}
+			}
+
+			static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
+			{
+				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
+				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+				if (node?.Parser == null)
+					return false;
+				return node?.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages) == true;
 			}
 
 			Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles, ProjectData oldProjectData)

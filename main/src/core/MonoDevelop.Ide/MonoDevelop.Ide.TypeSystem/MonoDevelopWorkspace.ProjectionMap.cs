@@ -99,6 +99,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var p in toDispose)
 					p.Dispose ();
 			}
+
+			internal (Projection, string) Get (string filePath)
+			{
+				Projection projection = null;
+				foreach (var entry in projectionList) {
+					var p = entry.Projections.FirstOrDefault (proj => proj?.Document?.FileName != null && FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
+					if (p != null) {
+						filePath = entry.File.FilePath;
+						projection = p;
+						break;
+					}
+				}
+
+				return (projection, filePath);
+			}
 		}
 
 		internal class ProjectionEntry : IDisposable

@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		bool disposed;
 		bool freezeProjectModify;
 
-		Lazy<MonoDevelopMetadataReferenceManager> manager;
+		Lazy<MonoDevelopMetadataReferenceManager> metadataReferenceManager;
 		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
 
 		static MonoDevelopWorkspace ()
@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectionData = new ProjectionMap ();
 			ProjectMap = new ProjectDataMap (this);
 			ProjectHandler = new ProjectSystemHandler (this, ProjectMap, ProjectionData);
-			manager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
+			metadataReferenceManager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
 
 			if (IdeApp.Workspace != null && solution != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
 		}
 
-		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
+		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => metadataReferenceManager.Value;
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 		ProjectionMap ProjectionData { get; }
@@ -286,17 +286,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static event EventHandler LoadingFinished;
 
-		static void OnLoadingFinished (EventArgs e)
-		{
-			var handler = LoadingFinished;
-			if (handler != null)
-				handler (null, e);
-		}
-
 		internal void HideStatusIcon ()
 		{
 			TypeSystemService.HideTypeInformationGatheringIcon (() => {
-				OnLoadingFinished (EventArgs.Empty);
+				LoadingFinished?.Invoke (this, EventArgs.Empty);
 				WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
 			});
 		}
@@ -337,15 +330,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void UnloadSolution ()
 		{
 			OnSolutionRemoved ();
-		}
-
-		static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
-		{
-			var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
-			var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
-			if (node?.Parser == null)
-				return false;
-			return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 		}
 
 		#region Open documents
@@ -481,18 +465,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			bool isOpen;
-			var filePath = document.FilePath;
-			Projection projection = null;
-			foreach (var entry in ProjectionList) {
-				var p = entry.Projections.FirstOrDefault (proj => proj?.Document?.FileName != null && FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
-				if (p != null) {
-					filePath = entry.File.FilePath;
-					projection = p;
-					break;
-				}
-			}
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
+			var (projection, filePath) = ProjectionData.Get (document.FilePath);
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
 			// Guard against already done changes in linked files.
 			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
 			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
