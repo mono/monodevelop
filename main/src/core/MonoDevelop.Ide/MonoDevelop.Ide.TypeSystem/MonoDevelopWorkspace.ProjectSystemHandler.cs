@@ -105,8 +105,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> ();
 			}
 
-			static Func<SolutionData, string, TextLoader> CreateTextLoader = (data, fileName) => data.Files.GetOrAdd (fileName, a => new MonoDevelopTextLoader (a));
-
 			internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
 			{
 				var projectId = projectMap.GetOrCreateId (p, oldProject);
@@ -330,10 +328,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					filePath,
 					folders,
 					sourceCodeKind,
-					CreateTextLoader (data, f.Name),
+					CreateTextLoader (f.Name),
 					f.Name,
 					isGenerated: false
 				);
+
+				TextLoader CreateTextLoader (string fileName) => data.Files.GetOrAdd (fileName, a => new MonoDevelopTextLoader (a));
 			}
 
 			static IEnumerable<string> GetFolders (string projectName, MonoDevelop.Projects.ProjectFile f)
