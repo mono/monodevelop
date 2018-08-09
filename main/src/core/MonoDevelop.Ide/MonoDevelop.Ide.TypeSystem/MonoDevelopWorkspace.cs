@@ -497,7 +497,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			bool isOpen;
 			var filePath = document.FilePath;
 			Projection projection = null;
-			foreach (var entry in ProjectHandler.ProjectionList) {
+			foreach (var entry in ProjectionList) {
 				var p = entry.Projections.FirstOrDefault (proj => proj?.Document?.FileName != null && FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
 				if (p != null) {
 					filePath = entry.File.FilePath;
