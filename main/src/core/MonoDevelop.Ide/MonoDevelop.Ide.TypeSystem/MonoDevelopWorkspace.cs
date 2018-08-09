@@ -145,6 +145,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 		ProjectionMap ProjectionData { get; }
+		OpenDocumentsData OpenDocuments { get; }
 
 		bool lowMemoryLogged;
 		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
@@ -348,11 +349,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Open documents
-		public override bool CanOpenDocuments {
-			get {
-				return true;
-			}
-		}
+		public override bool CanOpenDocuments => true;
 
 		public override void OpenDocument (DocumentId documentId, bool activate = true)
 		{
@@ -386,12 +383,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		Dictionary<DocumentId, (SourceTextContainer Container, TextEditor Editor, DocumentContext Context)> openDocuments = new Dictionary<DocumentId, (SourceTextContainer, TextEditor, DocumentContext)> ();
 		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
 		{
 			var document = InternalInformDocumentOpen (documentId, editor, context);
-			if (document as Document != null) {
-				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
+			if (document is Document doc) {
+				foreach (var linkedDoc in doc.GetLinkedDocumentIds ()) {
 					InternalInformDocumentOpen (linkedDoc, editor, context);
 				}
 			}
@@ -403,13 +399,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				return null;
 			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
-			if (document == null || openDocuments.ContainsKey(documentId)) {
+			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
 			var textContainer = editor.TextView.TextBuffer.AsTextContainer ();
-			lock (openDocuments) {
-				openDocuments.Add (documentId, (textContainer, editor, context));
-			}
+			OpenDocuments.Add (documentId, textContainer, editor, context);
+
 			if (document is Document) {
 				OnDocumentOpened (documentId, textContainer);
 			} else {
@@ -420,17 +415,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		ProjectChanges projectChanges;
 
-		protected override void OnDocumentTextChanged (Document document)
-		{
-			base.OnDocumentTextChanged (document);
-		}
-
 		protected override void OnDocumentClosing (DocumentId documentId)
 		{
 			base.OnDocumentClosing (documentId);
-			lock (openDocuments) {
-				openDocuments.Remove (documentId);
-			}
+			OpenDocuments.Close (documentId);
 		}
 
 //		internal override bool CanChangeActiveContextDocument {
@@ -442,20 +430,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void InformDocumentClose (DocumentId analysisDocument, string filePath)
 		{
 			try {
-				lock (openDocuments) {
-					if (openDocuments.ContainsKey(analysisDocument)) {
-						openDocuments.Remove (analysisDocument);
-					} else {
-						//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
-						//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
-						return;
-					}
+				if (!OpenDocuments.Remove (analysisDocument)) {
+					//Apparently something else opened this file via AddAndOpenDocumentInternal(e.g. .cshtml)
+					//it's job of whatever opened to also call CloseAndRemoveDocumentInternal
+					return;
 				}
+
 				if (!CurrentSolution.ContainsDocument (analysisDocument))
 					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
-				openDocuments.Remove (analysisDocument);
+				// FIXME: Is this really needed?
+				OpenDocuments.Remove (analysisDocument);
 
 				if (document == null) {
 					var ad = this.GetAdditionalDocument (analysisDocument);
@@ -1100,17 +1086,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							try {
 								lock (projectModifyLock) {
 									// correct openDocument ids - they may change due to project reload.
-									foreach (var openDoc in openDocuments) {
-										if (openDoc.Value.Context.Project == project) {
-											var doc = openDoc.Value.Context.AnalysisDocument;
-											if (doc == null)
-												continue;
-											var newDocument = t.Result.Documents.FirstOrDefault (d => d.FilePath == doc.FilePath);
-											if (newDocument == null || newDocument.Id == doc.Id)
-												continue;
-											openDoc.Value.Context.UpdateDocumentId (newDocument.Id);
-										}
-									}
+									OpenDocuments.CorrectDocumentIds (project, t.Result);
 									OnProjectReloaded (t.Result);
 								}
 							} catch (Exception e) {

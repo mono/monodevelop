@@ -150,7 +150,6 @@ namespace MonoDevelop.Ide.TypeSystem
 							references.Select (x => x.CurrentSnapshot),
 							additionalDocuments: documents.Item2
 						);
-						projectData.Info = info;
 						return info;
 					}
 				}
@@ -287,16 +286,18 @@ namespace MonoDevelop.Ide.TypeSystem
 					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (f.FilePath),
 				};
 				var projections = node.Parser.GenerateProjections (options);
-				var entry = new ProjectionEntry ();
-				entry.File = f;
 				var list = new List<Projection> ();
-				entry.Projections = list;
+				var entry = new ProjectionEntry {
+					File = f,
+					Projections = list,
+				};
+
 				foreach (var projection in projections.Result) {
 					list.Add (projection);
 					if (duplicates != null && !duplicates.Add (documentMap.GetOrCreate (projection.Document.FileName, oldProjectData)))
 						continue;
 					var plainName = projection.Document.FileName.FileName;
-					var folders = new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+					var folders = GetFolders (p.Name, f);
 					yield return DocumentInfo.Create (
 						documentMap.GetOrCreate (projection.Document.FileName, oldProjectData),
 						plainName,
@@ -313,7 +314,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
 			{
 				var filePath = f.FilePath;
-				var folders = new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+				var folders = GetFolders (projectName, f);
 
 				return DocumentInfo.Create (
 					id.DocumentData.GetOrCreate (filePath),
@@ -324,6 +325,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					f.Name,
 					isGenerated: false
 				);
+			}
+
+			static IEnumerable<string> GetFolders (string projectName, MonoDevelop.Projects.ProjectFile f)
+			{
+				return new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
 			}
 		}
 	}

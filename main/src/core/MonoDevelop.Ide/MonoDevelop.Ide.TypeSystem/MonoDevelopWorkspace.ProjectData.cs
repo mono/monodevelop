@@ -38,12 +38,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly WeakReference<MonoDevelopWorkspace> workspaceRef;
 			readonly ProjectId projectId;
 			readonly List<MonoDevelopMetadataReference> metadataReferences = new List<MonoDevelopMetadataReference> ();
-			internal DocumentMap DocumentData { get; } 
-
-			public ProjectInfo Info {
-				get;
-				set;
-			}
+			internal DocumentMap DocumentData { get; }
 
 			public ProjectData (ProjectId projectId, List<MonoDevelopMetadataReference> metadataReferences, MonoDevelopWorkspace ws)
 			{
