@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			noSaveRadioButton.Active = action == BeforeCompileAction.Nothing;
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
+			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity.Value;
 			buildBeforeTestCheckBox.Active = IdeApp.Preferences.BuildBeforeRunningTests;
 			skipBuildingUnmodifiedProjectsCheckbox.Active = Runtime.Preferences.SkipBuildingUnmodifiedProjects;
 			parallelBuildCheckbox.Active = MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value;
@@ -87,12 +88,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			                                                    GettextCatalog.GetString ("Check to not save changes before building"));
 			promptChangesRadioButton.SetCommonAccessibilityAttributes ("BuildPanel.promptSave", "",
 			                                                           GettextCatalog.GetString ("Check to be prompted to save changes before building"));
+
+			verbosityCombo.SetCommonAccessibilityAttributes ("BuildPanel.verbosity", "",
+			                                                 GettextCatalog.GetString ("Select the verbosity level of the build"));
 		}
 		
 		public void Store ()
 		{
 			IdeApp.Preferences.RunWithWarnings.Value = runWithWarningsCheckBox.Active;
 			IdeApp.Preferences.BuildBeforeExecuting.Value = buildBeforeRunCheckBox.Active;
+			IdeApp.Preferences.MSBuildVerbosity.Value = (MSBuildVerbosity)verbosityCombo.Active;
 			IdeApp.Preferences.BuildBeforeRunningTests.Value = buildBeforeTestCheckBox.Active;
 			Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value = skipBuildingUnmodifiedProjectsCheckbox.Active;
 			MonoDevelop.Core.Runtime.Preferences.ParallelBuild.Value = parallelBuildCheckbox.Active;
