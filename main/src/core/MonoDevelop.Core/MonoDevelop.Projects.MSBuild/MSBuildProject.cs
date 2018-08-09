@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (name) {
 				case "DefaultTargets": defaultTargets = value; return;
 				case "ToolsVersion": toolsVersion = value; return;
-				case "Sdk": ProjectSdk = value; return;
+				case "Sdk": Sdk = value; return;
 			}
 			base.ReadAttribute (name, value);
 		}
@@ -323,7 +323,7 @@ namespace MonoDevelop.Projects.MSBuild
 				case "DefaultTargets": return defaultTargets;
 				case "ToolsVersion": return toolsVersion;
 				case "xmlns": return string.IsNullOrEmpty (Namespace) ? null : Namespace;
-				case "Sdk": return ProjectSdk;
+				case "Sdk": return Sdk;
 			}
 			return base.WriteAttribute (name);
 		}
@@ -561,45 +561,67 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string sdk;
-		string[] sdkArray = null;
-		public string Sdk {
-			get {
-				if (sdkArray == null) {
-					GenerateSdkArray ();
+		public class SdkDefinition
+		{
+			public SdkDefinition(string nameAndVersion, bool isImplicit)
+			{
+				string[] splitName = nameAndVersion?.Split (new char[] { '/' }, 2);
+				string name = null;
+				string version = null;
+				if(splitName != null) {
+					if(splitName.Length > 0) {
+						name = splitName[0];
+					}
+					if(splitName.Length > 1) {
+						version = splitName[1];
+					}
 				}
-				return sdk;
+				Name = name;
+				Version = version;
+				Implicit = isImplicit;
 			}
-			set {
-				if (sdk != value) {
-					// Setting an Sdk will reset to the default set to the project (i.e. remove any Sdk node,
-					// and all Sdk imports
-					ClearAllSdks ();
-					ProjectSdk = value;
-					NotifySdkChanged ();
+
+			public SdkDefinition(string name, string version, bool isImplicit)
+			{
+				Name = name;
+				Version = version;
+				Implicit = isImplicit;
+			}
+
+			public string Name {
+				get;
+				private set;
+			}
+
+			public string Version {
+				get;
+				private set;
+			}
+
+			public bool Implicit {
+				get;
+				private set;
+			}
+
+			public string QualifiedName {
+				get {
+					return !string.IsNullOrEmpty(Version) ? $"{Name}/{Version}" : Name;
 				}
 			}
 		}
 
-		string implicitSdk;
-		public string SdkWithImplicitImports {
-			get {
-				if (sdkArray == null) {
-					GenerateSdkArray ();
-				}
-				return implicitSdk;
-			}
-		}
-
+		SdkDefinition[] sdkArray = null;
+		string fullSdkName = null;
 		void GenerateSdkArray()
 		{
-			// All sdks defined throughout the project
-			HashSet<string> sdks = new HashSet<string> ();
+			// Sdks that are defined explicitly
+			HashSet<string> explicitSdks = new HashSet<string> ();
 			// Only defines the sdks that require an implicit import (Project node or Sdk node)
 			HashSet<string> implicitSdks = new HashSet<string> ();
-			if(ProjectSdk != null) {
-				foreach(string sdk in ProjectSdk.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
-					sdks.Add (sdk);
+			if(Sdk != null) {
+				foreach(string sdk in Sdk.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+										 .Select(x => x.Trim())
+										 .Where(x => x.Length > 0)) {
 					implicitSdks.Add (sdk);
 				}
 			}
@@ -612,25 +634,30 @@ namespace MonoDevelop.Projects.MSBuild
 					version = $"/{sdkNode.Version}";
 				}
 				string sdkName = $"{sdkNode.Name}{version}";
-				sdks.Add (sdkName);
 				implicitSdks.Add (sdkName);
 			}
 
 			// Check all import nodes for other sdks
 			foreach(MSBuildImport import in ImportGroups.SelectMany(x => x.Imports).Concat(Imports)) {
 				if(!string.IsNullOrEmpty(import.Sdk)) {
-					sdks.Add (import.Sdk);
+					explicitSdks.Add (import.Sdk);
 				}
 			}
 
-			sdkArray = sdks.ToArray ();
-			sdk = string.Join (";", sdkArray);
-			implicitSdk = string.Join (";", implicitSdks);
+			List<SdkDefinition> sdkList = new List<SdkDefinition> ();
+			foreach(string sdk in explicitSdks) {
+				sdkList.Add (new SdkDefinition (sdk, false));
+			}
+			foreach(string sdk in implicitSdks.Where(x => !explicitSdks.Contains(x))) {
+				sdkList.Add (new SdkDefinition (sdk, true));
+			}
+			sdkArray = sdkList.ToArray ();
+			fullSdkName = string.Join (";", GetReferencedSDKs ().Select (x => x.QualifiedName));
 		}
 
 		void ClearAllSdks()
 		{
-			projectSdk = null;
+			sdk = null;
 
 			foreach(MSBuildSdk sdkNode in GetChildren ().OfType<MSBuildSdk> ()) {
 				Remove (sdkNode);
@@ -651,18 +678,18 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		string projectSdk;
-		public string ProjectSdk {
-			get => projectSdk;
+		string sdk;
+		public string Sdk {
+			get => sdk;
 			set {
-				projectSdk = value;
+				sdk = value;
 				NotifySdkChanged ();
 			}
 		}
 
 		public override string Namespace {
 			get {
-				if (Sdk != null)
+				if (GetProjectSdksName() != null)
 					return string.Empty;
 				return Schema;
 			}
@@ -1079,10 +1106,40 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Returns a list of SDKs referenced by this project
 		/// </summary>
-		public string[] GetReferencedSDKs ()
+		public SdkDefinition[] GetReferencedSDKs ()
 		{
+			if (sdkArray == null) {
+				GenerateSdkArray ();
+			}
 			return sdkArray;
 		}
+
+		/// <summary>
+		/// Returns an Sdk attribute name defining all Sdks used in the project (implicit & explicit)
+		/// </summary>
+		public string GetProjectSdksName()
+		{
+			if (sdkArray == null) {
+				GenerateSdkArray ();
+			}
+			return fullSdkName;
+		}
+
+		/// <summary>
+		/// Sets the Sdk attribute for the current project. This will clear every other previous definition
+		/// and will set an explicit sdk attribute on the project node.
+		/// </summary>
+		public void SetProjectSdk(string sdk)
+		{
+			if (sdk != GetProjectSdksName ()) {
+				// Setting an Sdk will reset to the default set to the project (i.e. remove any Sdk node,
+				// and all Sdk imports
+				ClearAllSdks ();
+				Sdk = sdk;
+				NotifySdkChanged ();
+			}
+		}
+
 
 		XmlNamespaceManager GetNamespaceManagerForProject ()
 		{

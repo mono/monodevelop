@@ -171,7 +171,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool IsDotNetCoreProject (this Project project)
 		{
-			return project.MSBuildProject.Sdk != null;
+			return project.MSBuildProject.GetProjectSdksName() != null;
 		}
 
 		public static bool HasPackageReferences (this DotNetProject project)
