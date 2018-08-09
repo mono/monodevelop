@@ -54,29 +54,28 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projectMap = projectMap;
 			}
 
-			List<MonoDevelopMetadataReference> CreateDefaultMetadataReferences ()
+			ImmutableArray<MonoDevelopMetadataReference> CreateDefaultMetadataReferences ()
 			{
-				var result = new List<MonoDevelopMetadataReference> ();
+				var builder = ImmutableArray.CreateBuilder<MonoDevelopMetadataReference> (DefaultAssemblies.Length);
 
 				foreach (var asm in DefaultAssemblies) {
 					var metadataReference = manager.GetOrCreateMetadataReference (asm, MetadataReferenceProperties.Assembly);
-					result.Add (metadataReference);
+					builder.Add (metadataReference);
 				}
-				return result;
+				return builder.MoveToImmutable ();
 			}
 
-			// TODO: Return ImmutableArrays here so roslyn will not copy the collections
-			public async Task<(List<MonoDevelopMetadataReference>, IEnumerable<ProjectReference>)> CreateReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
+			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, IEnumerable<ProjectReference>)> CreateReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
 			{
 				var metadataReferences = await CreateMetadataReferences (proj, token).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
-					return (null, null);
+					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, null);
 
 				var projectReferences = await CreateProjectReferences (proj, token).ConfigureAwait (false);
 				return (metadataReferences, projectReferences);
 			}
 
-			async Task<List<MonoDevelopMetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
+			async Task<ImmutableArray<MonoDevelopMetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
 			{
 				// create some default references for unsupported project types.
 				if (!(proj is MonoDevelop.Projects.DotNetProject netProject)) {
@@ -92,11 +91,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				};
 
 				if (!await AddMetadataAssemblyReferences (data))
-					return data.Result;
+					return ImmutableArray<MonoDevelopMetadataReference>.Empty;;
 
 				if (!AddMetadataProjectReferences (data))
-					return data.Result;
-				return data.Result;
+					return ImmutableArray<MonoDevelopMetadataReference>.Empty; ;
+				return data.Result.ToImmutableArray ();
 			}
 
 			class AddMetadataReferencesData
@@ -155,10 +154,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return true;
 			}
 
-			async Task<IEnumerable<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+			async Task<ImmutableArray<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
 			{
 				if (!(p is MonoDevelop.Projects.DotNetProject netProj))
-					return Enumerable.Empty<ProjectReference> ();
+					return ImmutableArray<ProjectReference>.Empty;
 
 				List<MonoDevelop.Projects.AssemblyReference> references;
 				try {
@@ -166,9 +165,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting referenced projects.", e);
-					return Enumerable.Empty<ProjectReference> ();
+					return ImmutableArray<ProjectReference>.Empty;
 				};
-				return CreateProjectReferencesFromAssemblyReferences (netProj, references);
+				return CreateProjectReferencesFromAssemblyReferences (netProj, references).ToImmutableArray ();
 			}
 
 			IEnumerable<ProjectReference> CreateProjectReferencesFromAssemblyReferences (MonoDevelop.Projects.DotNetProject p, List<MonoDevelop.Projects.AssemblyReference> references)

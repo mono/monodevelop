@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
@@ -37,14 +38,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			readonly WeakReference<MonoDevelopWorkspace> workspaceRef;
 			readonly ProjectId projectId;
-			readonly List<MonoDevelopMetadataReference> metadataReferences = new List<MonoDevelopMetadataReference> ();
+			readonly List<MonoDevelopMetadataReference> metadataReferences;
 			internal DocumentMap DocumentData { get; }
 
-			public ProjectData (ProjectId projectId, List<MonoDevelopMetadataReference> metadataReferences, MonoDevelopWorkspace ws)
+			public ProjectData (ProjectId projectId, ImmutableArray<MonoDevelopMetadataReference> metadataReferences, MonoDevelopWorkspace ws)
 			{
 				this.projectId = projectId;
 				workspaceRef = new WeakReference<MonoDevelopWorkspace> (ws);
 				DocumentData = new DocumentMap (projectId);
+				this.metadataReferences = new List<MonoDevelopMetadataReference> (metadataReferences.Length);
 
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 				foreach (var metadataReference in metadataReferences) {

@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal ProjectData CreateData (ProjectId id, List<MonoDevelopMetadataReference> metadataReferences)
+			internal ProjectData CreateData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences)
 			{
 				lock (projectDataMap) {
 					var result = new ProjectData (id, metadataReferences, Workspace);
