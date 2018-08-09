@@ -149,6 +149,7 @@ namespace MonoDevelop.UserInterfaceTesting
 		public void OpenExampleSolutionAndWait (out bool waitForPackages)
 		{
 			var sln = Path.Combine (MainPath, "build/tests/TestSolutions/ExampleFormsSolution/ExampleFormsSolution.sln");
+			Console.WriteLine ($"[UITEST] Attempting to load solution from {sln}");
 
 			if (!File.Exists (sln)) {
 				throw new FileNotFoundException ("Could not find test solution", sln);
