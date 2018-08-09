@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
 			{
-				lock (projectIdToMdProjectMap) {
+				lock (gate) {
 					return projectIdToMdProjectMap.TryGetValue (projectId, out var result) ? result : null;
 				}
 			}
