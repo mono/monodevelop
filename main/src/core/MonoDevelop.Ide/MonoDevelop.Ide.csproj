@@ -4189,6 +4189,10 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.ShimNavigateToSearchService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectSystemHandler.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectData.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectDataMap.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.DocumentMap.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.Shims.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.MetadataReferenceHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

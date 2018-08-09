@@ -37,8 +37,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			readonly WeakReference<MonoDevelopWorkspace> workspaceRef;
 			readonly ProjectId projectId;
-			readonly Dictionary<string, DocumentId> documentIdMap;
 			readonly List<MonoDevelopMetadataReference> metadataReferences = new List<MonoDevelopMetadataReference> ();
+			internal DocumentMap DocumentData { get; } 
 
 			public ProjectInfo Info {
 				get;
@@ -49,12 +49,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				this.projectId = projectId;
 				workspaceRef = new WeakReference<MonoDevelopWorkspace> (ws);
+				DocumentData = new DocumentMap (projectId);
 
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 				foreach (var metadataReference in metadataReferences) {
 					AddMetadataReference_NoLock (metadataReference, ws);
 				}
-				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
 			void OnMetadataReferenceUpdated (object sender, EventArgs args)
@@ -91,58 +91,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				return metadataReferences.Remove (metadataReference);
 			}
 
-			internal DocumentId GetOrCreateDocumentId (string name, ProjectData previous)
-			{
-				if (previous != null) {
-					var oldId = previous.GetDocumentId (name);
-					if (oldId != null) {
-						AddDocumentId (oldId, name);
-						return oldId;
-					}
-				}
-				return GetOrCreateDocumentId (name);
-			}
-
-			internal DocumentId GetOrCreateDocumentId (string name)
-			{
-				lock (documentIdMap) {
-					if (!documentIdMap.TryGetValue (name, out DocumentId result)) {
-						result = DocumentId.CreateNewId (projectId, name);
-						documentIdMap [name] = result;
-					}
-					return result;
-				}
-			}
-
-			internal void AddDocumentId (DocumentId id, string name)
-			{
-				lock (documentIdMap) {
-					documentIdMap [name] = id;
-				}
-			}
-
-			public DocumentId GetDocumentId (string name)
-			{
-				if (!documentIdMap.TryGetValue (name, out DocumentId result)) {
-					return null;
-				}
-				return result;
-			}
-
-			internal void RemoveDocument (string name)
-			{
-				documentIdMap.Remove (name);
-			}
-
 			public void Dispose ()
 			{
-				if (!workspaceRef.TryGetTarget (out var workspace))
+				if (!workspaceRef.TryGetTarget (out var ws))
 					return;
 
-				lock (workspace.updatingProjectDataLock) {
-					foreach (var reference in metadataReferences)
-						reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
-				}
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
+				foreach (var reference in metadataReferences)
+					reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
 			}
 		}
 	}

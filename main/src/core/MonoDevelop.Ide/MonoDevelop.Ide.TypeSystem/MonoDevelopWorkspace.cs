@@ -97,7 +97,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
 			this.Id = WorkspaceId.Next ();
-			ProjectHandler = new ProjectSystemHandler (this);
+			ProjectMap = new ProjectDataMap (this);
+			ProjectHandler = new ProjectSystemHandler (this, ProjectMap);
 			manager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
 
 			if (IdeApp.Workspace != null && solution != null) {
@@ -139,7 +140,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
-		internal ProjectSystemHandler ProjectHandler { get; }
+		ProjectDataMap ProjectMap { get; }
+		ProjectSystemHandler ProjectHandler { get; }
 
 		bool lowMemoryLogged;
 		void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
@@ -322,26 +324,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
-		{
-			var sol = (MonoDevelop.Projects.Solution)args.Item;
-			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
-			var solId = workspace.ProjectHandler.GetSolutionId (sol);
-			if (solId == null)
-				return;
-
-			NotifySolutionModified (sol, solId, workspace);
-		}
-
-		static void NotifySolutionModified (MonoDevelop.Projects.Solution sol, SolutionId solId, MonoDevelopWorkspace workspace)
-		{
-			if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
-				return;
-
-			var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
-			locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
-		}
-
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default)
 		{
 			var newTokenSource = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
@@ -362,14 +344,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 		}
 
-		internal static readonly string [] DefaultAssemblies = {
-			typeof(string).Assembly.Location,                                // mscorlib
-			typeof(System.Text.RegularExpressions.Regex).Assembly.Location,  // System
-			typeof(System.Linq.Enumerable).Assembly.Location,                // System.Core
-			typeof(System.Data.VersionNotFoundException).Assembly.Location,  // System.Data
-			typeof(System.Xml.XmlDocument).Assembly.Location,                // System.Xml
-		};
-
 		#region Open documents
 		public override bool CanOpenDocuments {
 			get {
@@ -381,7 +355,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var doc = GetDocument (documentId);
 			if (doc != null) {
-				var mdProject = ProjectHandler.GetMonoProject (doc.Project);
+				var mdProject = GetMonoProject (doc.Project);
 				if (doc != null) {
 					IdeApp.Workbench.OpenDocument (doc.FilePath, mdProject, activate);
 				}
@@ -556,7 +530,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				delta = ApplyChanges (projection, data, changes);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				if (formatter != null && formatter.SupportsPartialDocumentFormatting) {
-					var mp = ProjectHandler.GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
+					var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
 					string currentText = data.Text;
 
 					foreach (var change in changes) {
@@ -740,10 +714,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				};
 				var projections = await node.Parser.GenerateProjections (options);
 				UpdateProjectionEntry (file, projections);
-				var projectId = ProjectHandler.GetProjectId (project);
-				var projectdata = ProjectHandler.GetProjectData (projectId);
+				var projectId = ProjectMap.GetId (project);
+				var projectdata = ProjectMap.GetData (projectId);
 				foreach (var projected in projections) {
-					OnDocumentTextChanged (projectdata.GetDocumentId (projected.Document.FileName), new MonoDevelopSourceText (projected.Document), PreservationMode.PreserveValue);
+					OnDocumentTextChanged (projectdata.DocumentData.Get (projected.Document.FileName), new MonoDevelopSourceText (projected.Document), PreservationMode.PreserveValue);
 				}
 			}
 		}
@@ -850,7 +824,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			if (id.ProjectId != null) {
 				var project = CurrentSolution.GetProject (id.ProjectId);
-				mdProject = ProjectHandler.GetMonoProject (project);
+				mdProject = GetMonoProject (project);
 				if (mdProject == null)
 					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
 			}
@@ -879,8 +853,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			if (mdProject != null) {
-				var data = ProjectHandler.GetProjectData (id.ProjectId);
-				data.AddDocumentId (info.Id, path);
+				var data = ProjectMap.GetData (id.ProjectId);
+				data.DocumentData.Add (info.Id, path);
 				var file = new MonoDevelop.Projects.ProjectFile (path);
 				mdProject.Files.Add (file);
 				tryApplyState_changedProjects.Add (mdProject);
@@ -892,7 +866,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyDocumentRemoved (DocumentId documentId)
 		{
 			var document = GetDocument (documentId);
-			var mdProject = ProjectHandler.GetMonoProject (documentId.ProjectId);
+			var mdProject = GetMonoProject (documentId.ProjectId);
 			if (document == null || mdProject == null) {
 				return;
 			}
@@ -921,7 +895,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var path = filePath;
 
 			if (string.IsNullOrEmpty (path)) {
-				var monoProject = ProjectHandler.GetMonoProject (id.ProjectId);
+				var monoProject = GetMonoProject (id.ProjectId);
 
 				// If the first namespace name matches the name of the project, then we don't want to
 				// generate a folder for that.  The project is implicitly a folder with that name.
@@ -950,7 +924,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
 		{
-			var mdProject = ProjectHandler.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
 				return;
@@ -977,7 +951,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
 		{
-			var mdProject = ProjectHandler.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
 				return;
@@ -999,8 +973,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyProjectReferenceAdded (ProjectId projectId, ProjectReference projectReference)
 		{
-			var mdProject = ProjectHandler.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
-			var projectToReference = ProjectHandler.GetMonoProject (projectReference.ProjectId);
+			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = ProjectMap.GetMonoProject (projectReference.ProjectId);
 			if (mdProject == null || projectToReference == null)
 				return;
 			var mdRef = MonoDevelop.Projects.ProjectReference.CreateProjectReference (projectToReference);
@@ -1011,8 +985,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyProjectReferenceRemoved (ProjectId projectId, ProjectReference projectReference)
 		{
-			var mdProject = ProjectHandler.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
-			var projectToReference = ProjectHandler.GetMonoProject (projectReference.ProjectId);
+			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = ProjectMap.GetMonoProject (projectReference.ProjectId);
 			if (mdProject == null || projectToReference == null)
 				return;
 			foreach (var pr in mdProject.References.OfType<MonoDevelop.Projects.ProjectReference>()) {
@@ -1046,9 +1020,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal async void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
-			foreach (var kv in ProjectHandler.projectDataMap) {
+			foreach (var kv in ProjectMap.projectDataMap) {
 				var projectId = kv.Key;
-				var docId = ProjectHandler.GetDocumentId (projectId, fileName);
+				var docId = GetDocumentId (projectId, fileName);
 				if (docId != null) {
 					try {
 						if (this.GetDocument (docId) != null) {
@@ -1060,7 +1034,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						LoggingService.LogWarning ("Roslyn error on text change", e);
 					}
 				}
-				var monoProject = ProjectHandler.GetMonoProject (projectId);
+				var monoProject = ProjectMap.GetMonoProject (projectId);
 				if (monoProject != null) {
 					var pf = monoProject.GetProjectFile (fileName);
 					if (pf != null) {
@@ -1081,12 +1055,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
-			var id = ProjectHandler.GetProjectId (project);
+			var id = ProjectMap.GetId (project);
 			if (id != null) {
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
 				}
-				ProjectHandler.RemoveProject (project, id);
+				ProjectMap.RemoveProject (project, id);
 				UnloadMonoProject (project);
 
 				OnProjectRemoved (id);
@@ -1107,7 +1081,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var project = sender as MonoDevelop.Projects.DotNetProject;
 					if (project == null)
 						return;
-					var projectId = ProjectHandler.GetProjectId (project);
+					var projectId = ProjectMap.GetId (project);
 					if (projectModifiedCts.TryGetValue (project, out var cts))
 						cts.Cancel ();
 					cts = new CancellationTokenSource ();
@@ -1149,18 +1123,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		#endregion
-
-		#region Internal API compat shims
-		/// <summary>
-		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
-		/// back to the original physical file.
-		/// </summary>
-		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
-			=> ProjectHandler.TryGetOriginalFileFromProjection (fileName, offset, out originalName, out originalOffset);
-
-		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
-			=> ProjectHandler.UpdateProjectionEntry (projectFile, projections);
 		#endregion
 	}
 

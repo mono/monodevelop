@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var solution = sender as MonoDevelop.Projects.Solution;
 			if (project != null) {
 				var ws = GetWorkspace (solution);
-				ws.ProjectHandler.RemoveProject (project);
+				ws.RemoveProject (project);
 			}
 		}
 
