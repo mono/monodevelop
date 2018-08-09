@@ -473,17 +473,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			SourceText formerText;
 			lock (tryApplyState_documentTextChangedContents) {
-				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out formerText)) {
+				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out SourceText formerText)) {
 					if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
 						return;
 				}
 				tryApplyState_documentTextChangedContents[filePath] = text;
 			}
 
-			SourceText oldFile;
-			if (!isOpen || !document.TryGetText (out oldFile)) {
+			if (!isOpen || !document.TryGetText (out SourceText oldFile)) {
 				oldFile = await document.GetTextAsync ();
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
@@ -501,8 +499,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var startOffset = change.Span.Start - delta;
 
 						if (projection != null) {
-							int originalOffset;
-							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+							if (projection.TryConvertFromProjectionToOriginal (startOffset, out int originalOffset))
 								startOffset = originalOffset;
 						}
 
@@ -545,8 +542,7 @@ namespace MonoDevelop.Ide.TypeSystem
 									delta -= change.Span.Length - change.NewText.Length;
 									var startOffset = change.Span.Start - delta;
 									if (projection != null) {
-										int originalOffset;
-										if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+										if (projection.TryConvertFromProjectionToOriginal (startOffset, out int originalOffset))
 											startOffset = originalOffset;
 									}
 									if (change.NewText.Length == 0) {
@@ -692,9 +688,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var offset = change.Span.Start;
 
 				if (projection != null) {
-					int originalOffset;
 					//If change is outside projection segments don't apply it...
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
+					if (projection.TryConvertFromProjectionToOriginal (offset, out int originalOffset)) {
 						offset = originalOffset;
 						data.ReplaceText (offset, change.Span.Length, change.NewText);
 						delta += change.Span.Length - change.NewText.Length;
