@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool disposed;
-		object updatingProjectDataLock = new object ();
+		readonly object updatingProjectDataLock = new object ();
 		Lazy<MonoDevelopMetadataReferenceManager> manager;
 		Lazy<MetadataReferenceHandler> metadataHandler;
 		ProjectionData Projections { get; }
@@ -1031,7 +1031,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region Project modification handlers
 
 		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
-		object projectModifyLock = new object ();
+		readonly object projectModifyLock = new object ();
 		bool freezeProjectModify;
 		Dictionary<MonoDevelop.Projects.DotNetProject, CancellationTokenSource> projectModifiedCts = new Dictionary<MonoDevelop.Projects.DotNetProject, CancellationTokenSource> ();
 		void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
