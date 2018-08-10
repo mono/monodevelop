@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 					} else {
-						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, duplicates)) {
+						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, null)) {
 							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData);
 							if (!duplicates.Add (projectedId))
 								continue;
