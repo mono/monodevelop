@@ -128,8 +128,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			// FIXME: Should be ImmutableArray.
-			internal ProjectData CreateData (ProjectId id, List<MonoDevelopMetadataReference> metadataReferences)
+			internal ProjectData CreateData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences)
 			{
 				lock (Workspace.updatingProjectDataLock) {
 					var result = new ProjectData (id, metadataReferences, Workspace);
