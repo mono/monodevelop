@@ -67,15 +67,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				ProjectId MigrateOldProjectInfo ()
 				{
-					if (!projectIdMap.ContainsKey (p)) {
-						p.Modified += Workspace.OnProjectModified;
-					}
+					if (projectIdMap.TryGetValue (p, out var id))
+						return id;
 
+					p.Modified += Workspace.OnProjectModified;
 					if (oldProject == null)
 						return null;
 
 					oldProject.Modified -= Workspace.OnProjectModified;
-					if (projectIdMap.TryGetValue (oldProject, out var id)) {
+					if (projectIdMap.TryGetValue (oldProject, out id)) {
 						projectIdMap.Remove (oldProject);
 						projectIdMap [p] = id;
 						projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (id, p);
