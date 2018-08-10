@@ -883,7 +883,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord)]
 		internal void OnSelectionMovePrevWord ()
 		{
-			var anchor = MainSelection.Anchor;
+			var anchor = IsSomethingSelected ? MainSelection.Anchor : Caret.Location;
 			EditorOperations.MoveToPreviousWord (false);
 			SetSelection (anchor, Caret.Location);
 		}
@@ -891,7 +891,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord)]
 		internal void OnSelectionMoveNextWord ()
 		{
-			var anchor = MainSelection.Anchor;
+			var anchor = IsSomethingSelected ? MainSelection.Anchor : Caret.Location;
 			EditorOperations.MoveToNextWord (false);
 			SetSelection (anchor, Caret.Location);
 		}
