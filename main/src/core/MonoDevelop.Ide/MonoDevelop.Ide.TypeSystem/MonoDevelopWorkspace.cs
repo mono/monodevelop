@@ -77,6 +77,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		object updatingProjectDataLock = new object ();
 		Lazy<MonoDevelopMetadataReferenceManager> manager;
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
+		ProjectDataMap ProjectMap { get; }
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution {
 			get {
@@ -108,6 +109,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.monoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
+
+			ProjectMap = new ProjectDataMap (this);
 			manager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
 
 			if (IdeApp.Workspace != null && solution != null) {
@@ -439,10 +442,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		ConcurrentDictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new ConcurrentDictionary<MonoDevelop.Projects.Project, ProjectId> ();
-		ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project> projectIdToMdProjectMap = ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project>.Empty;
-		ConcurrentDictionary<ProjectId, ProjectData> projectDataMap = new ConcurrentDictionary<ProjectId, ProjectData> ();
-
 		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
 		{
 			return GetMonoProject (project.Id);
@@ -450,65 +449,27 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
 		{
-			projectIdToMdProjectMap.TryGetValue (projectId, out var result);
-			return result;
+			return ProjectMap.GetMonoProject (projectId);
 		}
 
 		internal bool Contains (ProjectId projectId) 
 		{
-			return projectDataMap.ContainsKey (projectId);
+			return ProjectMap.Contains (projectId);
 		}
 
 		internal ProjectId GetProjectId (MonoDevelop.Projects.Project p)
 		{
-			lock (projectIdMap) {
-				ProjectId result;
-				if (projectIdMap.TryGetValue (p, out result))
-					return result;
-				return null;
-			}
+			return ProjectMap.GetId (p);
 		}
 
 		internal ProjectId GetOrCreateProjectId (MonoDevelop.Projects.Project p)
 		{
-			lock (projectIdMap) {
-				if (!projectIdMap.TryGetValue (p, out ProjectId result)) {
-					result = ProjectId.CreateNewId (p.Name);
-					projectIdMap [p] = result;
-					projectIdToMdProjectMap = projectIdToMdProjectMap.Add (result, p);
-				}
-				return result;
-			}
-		}
-
-		ProjectData GetProjectData (ProjectId id)
-		{
-			lock (projectDataMap) {
-				projectDataMap.TryGetValue (id, out ProjectData result);
-				return result;
-			}
-		}
-
-		ProjectData RemoveProjectData (ProjectId id)
-		{
-			lock (projectDataMap) {
-				projectDataMap.TryRemove (id, out ProjectData result);
-				return result;
-			}
-		}
-
-		ProjectData CreateProjectData (ProjectId id, List<MonoDevelopMetadataReference> metadataReferences)
-		{
-			lock (projectDataMap) {
-				var result = new ProjectData (id, metadataReferences, this);
-				projectDataMap [id] = result;
-				return result;
-			}
+			return ProjectMap.GetOrCreateId (p, null);
 		}
 
 		internal DocumentId GetDocumentId (ProjectId projectId, string name)
 		{
-			var data = GetProjectData (projectId);
+			var data = ProjectMap.GetData (projectId);
 			if (data == null)
 				return null;
 			return data.DocumentData.Get (name);
@@ -523,20 +484,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
 		{
-			if (!projectIdMap.ContainsKey (p)) {
-				p.Modified += OnProjectModified;
-			}
-
-			if (oldProject != null) {
-				lock (projectIdMap) {
-					oldProject.Modified -= OnProjectModified;
-					projectIdMap.TryRemove (oldProject, out var id);
-					projectIdMap[p] = id;
-					projectIdToMdProjectMap = projectIdToMdProjectMap.SetItem (id, p);
-				}
-			}
-
-			var projectId = GetOrCreateProjectId (p);
+			var projectId = ProjectMap.GetOrCreateId (p, oldProject);
 
 			var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
 			if (token.IsCancellationRequested)
@@ -559,8 +507,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			lock (updatingProjectDataLock) {
 				//when reloading e.g. after a save, preserve document IDs
-				using (var oldProjectData = RemoveProjectData (projectId)) {
-					var projectData = CreateProjectData (projectId, references);
+				using (var oldProjectData = ProjectMap.RemoveData (projectId)) {
+					var projectData = ProjectMap.CreateData (projectId, references);
 
 					var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
 					if (documents == null)
@@ -1200,7 +1148,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projections = await node.Parser.GenerateProjections (options);
 				UpdateProjectionEntry (file, projections);
 				var projectId = GetProjectId (project);
-				var projectdata = GetProjectData (projectId);
+				var projectdata = ProjectMap.GetData (projectId);
 				foreach (var projected in projections) {
 					OnDocumentTextChanged (projectdata.DocumentData.Get (projected.Document.FileName), new MonoDevelopSourceText (projected.Document), PreservationMode.PreserveValue);
 				}
@@ -1338,7 +1286,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			if (mdProject != null) {
-				var data = GetProjectData (id.ProjectId);
+				var data = ProjectMap.GetData (id.ProjectId);
 				data.DocumentData.Add (info.Id, path);
 				var file = new MonoDevelop.Projects.ProjectFile (path);
 				mdProject.Files.Add (file);
@@ -1502,30 +1450,34 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
-		internal async void UpdateFileContent (string fileName, string text)
+		internal void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
-			foreach (var kv in this.projectDataMap) {
-				var projectId = kv.Key;
-				var docId = this.GetDocumentId (projectId, fileName);
-				if (docId != null) {
-					try {
-						if (this.GetDocument (docId) != null) {
-							base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
-						} else if (this.GetAdditionalDocument (docId) != null) {
-							base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+			lock (updatingProjectDataLock) {
+				foreach (var kv in ProjectMap.projectDataMap) {
+					var projectId = kv.Key;
+					var docId = this.GetDocumentId (projectId, fileName);
+					if (docId != null) {
+						try {
+							if (this.GetDocument (docId) != null) {
+								base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+							} else if (this.GetAdditionalDocument (docId) != null) {
+								base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+							}
+						} catch (Exception e) {
+							LoggingService.LogWarning ("Roslyn error on text change", e);
 						}
-					} catch (Exception e) {
-						LoggingService.LogWarning ("Roslyn error on text change", e);
 					}
-				}
-				var monoProject = GetMonoProject (projectId);
-				if (monoProject != null) {
-					var pf = monoProject.GetProjectFile (fileName);
-					if (pf != null) {
-						var mimeType = DesktopService.GetMimeTypeForUri (fileName);
-						if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
-							await TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType).ConfigureAwait (false);
+					var monoProject = GetMonoProject (projectId);
+					if (monoProject != null) {
+						var pf = monoProject.GetProjectFile (fileName);
+						if (pf != null) {
+							var mimeType = DesktopService.GetMimeTypeForUri (fileName);
+							if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName)) {
+								var parseOptions = new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction };
+								TypeSystemService.ParseProjection (parseOptions, mimeType).ConfigureAwait (false);
+							}
+						}
 					}
 				}
 			}
@@ -1538,12 +1490,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
 				}
-				ProjectId val;
-				projectIdMap.TryRemove (project, out val);
-				projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (val);
-				ProjectData val2;
-				projectDataMap.TryRemove (id, out val2);
 
+				ProjectMap.RemoveProject (project, id);
 				UnloadMonoProject (project);
 
 				OnProjectRemoved (id);
