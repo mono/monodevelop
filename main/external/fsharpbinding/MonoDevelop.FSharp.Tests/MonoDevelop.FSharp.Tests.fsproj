@@ -104,6 +104,7 @@
       <HintPath>..\MonoDevelop.FSharpi.Service\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
   <ItemGroup>
     <Compile Include="TestBase.fs" />

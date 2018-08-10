@@ -190,5 +190,6 @@
     </When>
   </Choose>
   <Import Project="..\packages\StrongNamer\build\StrongNamer.targets" Condition="Exists('..\packages\StrongNamer\build\StrongNamer.targets')" Label="Paket" />
+  <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
 </Project>

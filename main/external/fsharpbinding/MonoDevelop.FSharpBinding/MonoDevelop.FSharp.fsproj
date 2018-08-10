@@ -47,6 +47,7 @@
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
   <Target Name="BeforeBuild">
     <ItemGroup>
