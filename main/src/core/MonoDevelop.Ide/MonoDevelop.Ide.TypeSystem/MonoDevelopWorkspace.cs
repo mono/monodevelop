@@ -440,39 +440,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
-		{
-			return GetMonoProject (project.Id);
-		}
-
-		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
-		{
-			return ProjectMap.GetMonoProject (projectId);
-		}
-
-		internal bool Contains (ProjectId projectId) 
-		{
-			return ProjectMap.Contains (projectId);
-		}
-
-		internal ProjectId GetProjectId (MonoDevelop.Projects.Project p)
-		{
-			return ProjectMap.GetId (p);
-		}
-
-		internal ProjectId GetOrCreateProjectId (MonoDevelop.Projects.Project p)
-		{
-			return ProjectMap.GetOrCreateId (p, null);
-		}
-
-		internal DocumentId GetDocumentId (ProjectId projectId, string name)
-		{
-			var data = ProjectMap.GetData (projectId);
-			if (data == null)
-				return null;
-			return data.DocumentData.Get (name);
-		}
-
 		void UnloadMonoProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
@@ -533,11 +500,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
-		{
-			Projections.UpdateProjectionEntry (projectFile, projections);
-		}
-
 		internal class SolutionData
 		{
 			public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> (); 
@@ -558,8 +520,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				false
 			);
 		}
-
-		internal IReadOnlyList<ProjectionEntry> ProjectionList => Projections.ProjectionList;
 
 		static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
 		{
@@ -1494,15 +1454,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
-		/// back to the original physical file.
-		/// </summary>
-		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
-		{
-			return Projections.TryGetOriginalFileFromProjection (fileName, offset, out originalName, out originalOffset);
-		}
 	}
 
 	//	static class MonoDevelopWorkspaceFeatures
