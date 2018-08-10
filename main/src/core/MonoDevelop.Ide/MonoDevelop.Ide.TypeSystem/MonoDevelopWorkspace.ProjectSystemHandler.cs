@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node?.Parser == null)
 					return false;
-				return node?.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages) == true;
+				return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 			}
 
 			Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.ProjectFile [] sourceFiles, ProjectData oldProjectData)
