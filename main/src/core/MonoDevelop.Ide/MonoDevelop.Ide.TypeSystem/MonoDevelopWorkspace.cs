@@ -79,6 +79,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 		OpenDocumentsData OpenDocuments { get; }
 		ProjectDataMap ProjectMap { get; }
+		ProjectionData Projections { get; }
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution {
 			get {
@@ -342,13 +343,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					var projects = new ConcurrentBag<ProjectInfo> ();
 					var mdProjects = solution.GetAllProjects ();
-					ImmutableList<ProjectionEntry> toDispose;
-					lock (projectionListUpdateLock) {
-						toDispose = projectionList;
-						projectionList = projectionList.Clear ();
-					}
-					foreach (var p in toDispose)
-						p.Dispose ();
+
+					Projections.ClearOldProjectionList ();
 					
 					solutionData = new SolutionData ();
 					List<Task> allTasks = new List<Task> ();
@@ -539,22 +535,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
 		{
-			if (projectFile == null)
-				throw new ArgumentNullException (nameof (projectFile));
-			if (projections == null)
-				throw new ArgumentNullException (nameof (projections));
-			lock (projectionListUpdateLock) {
-				foreach (var entry in projectionList) {
-					if (entry?.File?.FilePath == projectFile.FilePath) {
-						projectionList = projectionList.Remove (entry);
-						// Since it's disposing projected editor, it needs to dispose in MainThread.
-						Runtime.RunInMainThread(() => entry.Dispose()).Ignore();
-						break;
-					}
-				}
-				projectionList = projectionList.Add (new ProjectionEntry { File = projectFile, Projections = projections });
-			}
-
+			Projections.UpdateProjectionEntry (projectFile, projections);
 		}
 
 		internal class SolutionData
@@ -577,28 +558,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				false
 			);
 		}
-		object projectionListUpdateLock = new object ();
-		ImmutableList<ProjectionEntry> projectionList = ImmutableList<ProjectionEntry>.Empty;
 
-		internal IReadOnlyList<ProjectionEntry> ProjectionList {
-			get {
-				return projectionList;
-			}
-		}
-
-		internal class ProjectionEntry : IDisposable
-		{
-			public MonoDevelop.Projects.ProjectFile File;
-			public IReadOnlyList<Projection> Projections;
-
-			public void Dispose ()
-			{
-				Runtime.RunInMainThread (delegate {
-					foreach (var p in Projections)
-						p.Dispose ();
-				});
-			}
-		}
+		internal IReadOnlyList<ProjectionEntry> ProjectionList => Projections.ProjectionList;
 
 		static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
 		{
@@ -679,8 +640,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					false
 				);
 			}
-			lock (projectionListUpdateLock)
-				projectionList = projectionList.Add (entry);
+			Projections.AddProjectionEntry (entry);
 		}
 
 		internal static readonly string [] DefaultAssemblies = {
@@ -920,16 +880,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			bool isOpen;
-			var filePath = document.FilePath;
-			Projection projection = null;
-			foreach (var entry in ProjectionList) {
-				var p = entry.Projections.FirstOrDefault (proj => proj?.Document?.FileName != null && FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
-				if (p != null) {
-					filePath = entry.File.FilePath;
-					projection = p;
-					break;
-				}
-			}
+
+			var (projection, filePath) = Projections.Get (document.FilePath);
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 			// Guard against already done changes in linked files.
 			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
@@ -1549,19 +1501,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </summary>
 		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
 		{
-			foreach (var projectionEntry in ProjectionList) {
-				var projection = projectionEntry.Projections.FirstOrDefault (p => FilePath.PathComparer.Equals (p.Document.FileName, fileName));
-				if (projection != null) {
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
-						originalName = projectionEntry.File.FilePath;
-						return true;
-					}
-				}
-			}
-
-			originalName = fileName;
-			originalOffset = offset;
-			return false;
+			return Projections.TryGetOriginalFileFromProjection (fileName, offset, out originalName, out originalOffset);
 		}
 	}
 

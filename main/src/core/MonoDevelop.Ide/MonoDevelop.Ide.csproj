@@ -4191,6 +4191,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectDataMap.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.OpenDocumentsData.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
