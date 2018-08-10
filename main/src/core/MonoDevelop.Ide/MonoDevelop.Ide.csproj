@@ -4194,6 +4194,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectionData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.Shims.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.MetadataReferenceHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectSystemHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
