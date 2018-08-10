@@ -376,8 +376,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				protocolClient.SendRequest (new SetBreakpointsRequest (
 					source,
 					sourceFile.Select (b => new SourceBreakpoint {
-						Line = b.Line,
-						Column = b.Column,
+						Line = b.OriginalLine,
+						Column = b.OriginalColumn,
 						Condition = b.ConditionExpression
 						//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
 					}).ToList ()), (obj) => {
