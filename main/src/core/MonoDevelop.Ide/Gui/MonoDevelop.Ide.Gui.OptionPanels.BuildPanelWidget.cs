@@ -15,6 +15,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		private global::Gtk.CheckButton skipBuildingUnmodifiedProjectsCheckbox;
 
+		private global::Gtk.ComboBox verbosityCombo;
+
 		private global::Gtk.Label buildAndRunOptionsLabel;
 
 		private global::Gtk.HBox hbox44;
@@ -87,6 +89,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w4.Position = 3;
 			w4.Expand = false;
 			w4.Fill = false;
+			// Log verbosity settings
+			var logContainer = new global::Gtk.HBox ();
+			logContainer.Spacing = 6;
+			var label = new global::Gtk.Label();		
+ 			label.Name = "label1";		
+ 			label.LabelProp = global::Mono.Unix.Catalog.GetString("Log _verbosity:");		
+ 			label.UseUnderline = true;
+			logContainer.PackStart (label, false, false, 6);
+			this.verbosityCombo = global::Gtk.ComboBox.NewText ();
+			this.verbosityCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Quiet"));
+			this.verbosityCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Minimal"));
+			this.verbosityCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Normal"));
+			this.verbosityCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Detailed"));
+			this.verbosityCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Diagnostic"));
+			this.verbosityCombo.Name = "verbosityCombo";
+			this.verbosityCombo.Active = 2;
+			logContainer.PackStart (this.verbosityCombo, false, false, 6);
+			this.vbox66.Add (logContainer);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox66 [logContainer]));
+			w5.Position = 4;
+			w5.Expand = false;
+			w5.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.skipBuildingUnmodifiedProjectsCheckbox = new global::Gtk.CheckButton();
 			this.skipBuildingUnmodifiedProjectsCheckbox.CanFocus = true;
