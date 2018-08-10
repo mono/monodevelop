@@ -1043,6 +1043,10 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public string[] GetReferencedSDKs (bool includeImplicitSdks, bool includeExplicitSdks)
 		{
+			if(sdkArray == null) {
+				GenerateSdkArray ();
+			}
+
 			if (includeImplicitSdks && includeExplicitSdks) {
 				return sdkArray;
 			} else if (includeImplicitSdks) {
