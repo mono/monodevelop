@@ -41,13 +41,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly List<MonoDevelopMetadataReference> metadataReferences;
 			internal DocumentMap DocumentData { get; }
 
-			// FIXME: This should be an ImmutableArray
-			public ProjectData (ProjectId projectId, List<MonoDevelopMetadataReference> metadataReferences, MonoDevelopWorkspace ws)
+			public ProjectData (ProjectId projectId, ImmutableArray<MonoDevelopMetadataReference> metadataReferences, MonoDevelopWorkspace ws)
 			{
 				this.projectId = projectId;
 				workspaceRef = new WeakReference<MonoDevelopWorkspace> (ws);
 				DocumentData = new DocumentMap (projectId);
-				this.metadataReferences = new List<MonoDevelopMetadataReference> (metadataReferences.Count);
+				this.metadataReferences = new List<MonoDevelopMetadataReference> (metadataReferences.Length);
 
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 				foreach (var metadataReference in metadataReferences) {
