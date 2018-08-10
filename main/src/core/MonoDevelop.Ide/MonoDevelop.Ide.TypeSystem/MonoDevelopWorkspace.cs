@@ -980,9 +980,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
-		internal void UpdateFileContent (string fileName, string text)
+		internal Task UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
+			var tasks = new List<Task> ();
 			lock (updatingProjectDataLock) {
 				foreach (var kv in ProjectMap.projectDataMap) {
 					var projectId = kv.Key;
@@ -1005,12 +1006,15 @@ namespace MonoDevelop.Ide.TypeSystem
 							var mimeType = DesktopService.GetMimeTypeForUri (fileName);
 							if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName)) {
 								var parseOptions = new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction };
-								TypeSystemService.ParseProjection (parseOptions, mimeType).ConfigureAwait (false);
+								var task = TypeSystemService.ParseProjection (parseOptions, mimeType);
+								tasks.Add (task);
 							}
 						}
 					}
 				}
 			}
+
+			return Task.WhenAll (tasks);
 		}
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)

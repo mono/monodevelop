@@ -116,12 +116,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (filesToUpdate.Count == 0)
 					return;
 
-				Task.Run (delegate {
+				Task.Run (async delegate {
 					try {
 						foreach (var file in filesToUpdate) {
 							var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file).Text;
 							foreach (var w in workspaces)
-								w.UpdateFileContent (file, text);
+								await w.UpdateFileContent (file, text);
 						}
 
 						Gtk.Application.Invoke ((o, args) => {
