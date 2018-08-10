@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 				}
 
-				foreach (var project in modifiedProjects) {
+				foreach (var project in modifiedWhileLoading) {
 					// TODO: Maybe optimize this so we don't do O(n^2)
 					if (solution.ContainsItem (project)) {
 						return true;
