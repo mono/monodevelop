@@ -54,13 +54,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal void Close (DocumentId documentId)
-			{				
-				lock (openDocuments) {
-					openDocuments.Remove (documentId);
-				}
-			}
-
 			internal bool Remove (DocumentId documentId)
 			{
 				lock (openDocuments) {

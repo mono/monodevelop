@@ -402,7 +402,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void OnDocumentClosing (DocumentId documentId)
 		{
 			base.OnDocumentClosing (documentId);
-			OpenDocuments.Close (documentId);
+			OpenDocuments.Remove (documentId);
 		}
 
 //		internal override bool CanChangeActiveContextDocument {
@@ -882,7 +882,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
 		{
-			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
 				return;
@@ -909,7 +909,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
 		{
-			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
 			var path = GetMetadataPath (metadataReference);
 			if (mdProject == null || path == null)
 				return;
@@ -931,8 +931,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyProjectReferenceAdded (ProjectId projectId, ProjectReference projectReference)
 		{
-			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
-			var projectToReference = ProjectMap.GetMonoProject (projectReference.ProjectId);
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
 			if (mdProject == null || projectToReference == null)
 				return;
 			var mdRef = MonoDevelop.Projects.ProjectReference.CreateProjectReference (projectToReference);
@@ -943,8 +943,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyProjectReferenceRemoved (ProjectId projectId, ProjectReference projectReference)
 		{
-			var mdProject = ProjectMap.GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
-			var projectToReference = ProjectMap.GetMonoProject (projectReference.ProjectId);
+			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			var projectToReference = GetMonoProject (projectReference.ProjectId);
 			if (mdProject == null || projectToReference == null)
 				return;
 			foreach (var pr in mdProject.References.OfType<MonoDevelop.Projects.ProjectReference>()) {
@@ -993,7 +993,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							LoggingService.LogWarning ("Roslyn error on text change", e);
 						}
 					}
-					var monoProject = ProjectMap.GetMonoProject (projectId);
+					var monoProject = GetMonoProject (projectId);
 					if (monoProject != null) {
 						var pf = monoProject.GetProjectFile (fileName);
 						if (pf != null) {
@@ -1043,7 +1043,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var project = sender as MonoDevelop.Projects.DotNetProject;
 					if (project == null)
 						return;
-					var projectId = ProjectMap.GetId (project);
+					var projectId = GetProjectId (project);
 					if (projectModifiedCts.TryGetValue (project, out var cts))
 						cts.Cancel ();
 					cts = new CancellationTokenSource ();
