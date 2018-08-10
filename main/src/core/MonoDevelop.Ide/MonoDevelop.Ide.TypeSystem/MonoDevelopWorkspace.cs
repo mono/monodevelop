@@ -71,27 +71,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool disposed;
-		readonly MonoDevelop.Projects.Solution monoDevelopSolution;
 		object updatingProjectDataLock = new object ();
 		Lazy<MonoDevelopMetadataReferenceManager> manager;
 		Lazy<MetadataReferenceHandler> metadataHandler;
-		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 		ProjectionData Projections { get; }
 		OpenDocumentsData OpenDocuments { get; }
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
-		public MonoDevelop.Projects.Solution MonoDevelopSolution {
-			get {
-				return monoDevelopSolution;
-			}
-		}
+		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; }
 
-		internal static HostServices HostServices {
-			get {
-				return CompositionManager.Instance.HostServices;
-			}
-		}
+		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
+		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
 
 		static MonoDevelopWorkspace ()
 		{
@@ -109,7 +100,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
-			this.monoDevelopSolution = solution;
+			this.MonoDevelopSolution = solution;
 			this.Id = WorkspaceId.Next ();
 
 			Projections = new ProjectionData ();
@@ -268,8 +259,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
-			if (monoDevelopSolution != null) {
-				foreach (var prj in monoDevelopSolution.GetAllProjects ()) {
+			if (MonoDevelopSolution != null) {
+				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
 					UnloadMonoProject (prj);
 				}
 			}
@@ -296,17 +287,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static event EventHandler LoadingFinished;
 
-		static void OnLoadingFinished (EventArgs e)
-		{
-			var handler = LoadingFinished;
-			if (handler != null)
-				handler (null, e);
-		}
-
 		internal void HideStatusIcon ()
 		{
 			TypeSystemService.HideTypeInformationGatheringIcon (() => {
-				OnLoadingFinished (EventArgs.Empty);
+				LoadingFinished?.Invoke (this, EventArgs.Empty);
 				WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
 			});
 		}
@@ -325,7 +309,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			try {
-				var si = await ProjectHandler.CreateSolutionInfo (monoDevelopSolution, token).ConfigureAwait (false);
+				var si = await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, token).ConfigureAwait (false);
 				if (si != null)
 					OnSolutionReloaded (si);
 			} catch (OperationCanceledException) {
@@ -340,7 +324,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ProjectHandler.CreateSolutionInfo (monoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
+			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
 
 		internal void UnloadSolution ()
@@ -356,11 +340,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region Open documents
-		public override bool CanOpenDocuments {
-			get {
-				return true;
-			}
-		}
+		public override bool CanOpenDocuments => true;
 
 		public override void OpenDocument (DocumentId documentId, bool activate = true)
 		{
@@ -424,11 +404,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		ProjectChanges projectChanges;
-
-		protected override void OnDocumentTextChanged (Document document)
-		{
-			base.OnDocumentTextChanged (document);
-		}
 
 		protected override void OnDocumentClosing (DocumentId documentId)
 		{
@@ -495,27 +470,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			bool isOpen;
-
 			var (projection, filePath) = Projections.Get (document.FilePath);
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
 			// Guard against already done changes in linked files.
 			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
 			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
 				return;
 			}
 
-			SourceText formerText;
 			lock (tryApplyState_documentTextChangedContents) {
-				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out formerText)) {
+				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out SourceText formerText)) {
 					if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
 						return;
 				}
 				tryApplyState_documentTextChangedContents[filePath] = text;
 			}
 
-			SourceText oldFile;
-			if (!isOpen || !document.TryGetText (out oldFile)) {
+			if (!isOpen || !document.TryGetText (out SourceText oldFile)) {
 				oldFile = await document.GetTextAsync ();
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
@@ -533,8 +504,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var startOffset = change.Span.Start - delta;
 
 						if (projection != null) {
-							int originalOffset;
-							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+							if (projection.TryConvertFromProjectionToOriginal (startOffset, out int originalOffset))
 								startOffset = originalOffset;
 						}
 
@@ -577,8 +547,7 @@ namespace MonoDevelop.Ide.TypeSystem
 									delta -= change.Span.Length - change.NewText.Length;
 									var startOffset = change.Span.Start - delta;
 									if (projection != null) {
-										int originalOffset;
-										if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+										if (projection.TryConvertFromProjectionToOriginal (startOffset, out int originalOffset))
 											startOffset = originalOffset;
 									}
 									if (change.NewText.Length == 0) {
@@ -724,9 +693,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var offset = change.Span.Start;
 
 				if (projection != null) {
-					int originalOffset;
 					//If change is outside projection segments don't apply it...
-					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
+					if (projection.TryConvertFromProjectionToOriginal (offset, out int originalOffset)) {
 						offset = originalOffset;
 						data.ReplaceText (offset, change.Span.Length, change.NewText);
 						delta += change.Span.Length - change.NewText.Length;
@@ -902,7 +870,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				if (folders.Any ()) {
-					string baseDirectory = Path.Combine (monoProject?.BaseDirectory ?? monoDevelopSolution.BaseDirectory, Path.Combine (folders.ToArray ()));
+					string baseDirectory = Path.Combine (monoProject?.BaseDirectory ?? MonoDevelopSolution.BaseDirectory, Path.Combine (folders.ToArray ()));
 					try {
 						if (createDirectory && !Directory.Exists (baseDirectory))
 							Directory.CreateDirectory (baseDirectory);
