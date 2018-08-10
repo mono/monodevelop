@@ -46,6 +46,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
 			=> ProjectMap.GetMonoProject (projectId);
 
+		internal Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
+			=> ProjectHandler.LoadProject (p, token, oldProject);
+
 		internal DocumentId GetDocumentId (ProjectId projectId, string name)
 		{
 			var projectData = ProjectMap.GetData (projectId);
