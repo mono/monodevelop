@@ -65,11 +65,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				return builder.MoveToImmutable ();
 			}
 
-			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, IEnumerable<ProjectReference>)> CreateReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
+			public async Task<(ImmutableArray<MonoDevelopMetadataReference>, ImmutableArray<ProjectReference>)> CreateReferences (MonoDevelop.Projects.Project proj, CancellationToken token)
 			{
 				var metadataReferences = await CreateMetadataReferences (proj, token).ConfigureAwait (false);
 				if (token.IsCancellationRequested)
-					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, null);
+					return (ImmutableArray<MonoDevelopMetadataReference>.Empty, ImmutableArray<ProjectReference>.Empty);
 
 				var projectReferences = await CreateProjectReferences (proj, token).ConfigureAwait (false);
 				return (metadataReferences, projectReferences);

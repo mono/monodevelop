@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 						solutionData = new SolutionData ();
 
-						var projectInfos = await CreateProjectInfos (solution.GetAllProjects (), token);
+						var projectInfos = await CreateProjectInfos (solution.GetAllProjects (), token).ConfigureAwait(false);
 						if (IsModifiedWhileLoading (solution)) {
 							return await CreateSolutionInfoInternal (solution, token).ConfigureAwait (false);
 						}

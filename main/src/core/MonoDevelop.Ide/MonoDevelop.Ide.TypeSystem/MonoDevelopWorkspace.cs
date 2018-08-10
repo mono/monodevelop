@@ -975,30 +975,34 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
-		internal async void UpdateFileContent (string fileName, string text)
+		internal void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
-			foreach (var kv in ProjectMap.projectDataMap) {
-				var projectId = kv.Key;
-				var docId = GetDocumentId (projectId, fileName);
-				if (docId != null) {
-					try {
-						if (this.GetDocument (docId) != null) {
-							base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
-						} else if (this.GetAdditionalDocument (docId) != null) {
-							base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+			lock (ProjectMap.projectDataMap) {
+				foreach (var kv in ProjectMap.projectDataMap) {
+					var projectId = kv.Key;
+					var docId = GetDocumentId (projectId, fileName);
+					if (docId != null) {
+						try {
+							if (this.GetDocument (docId) != null) {
+								base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+							} else if (this.GetAdditionalDocument (docId) != null) {
+								base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+							}
+						} catch (Exception e) {
+							LoggingService.LogWarning ("Roslyn error on text change", e);
 						}
-					} catch (Exception e) {
-						LoggingService.LogWarning ("Roslyn error on text change", e);
 					}
-				}
-				var monoProject = ProjectMap.GetMonoProject (projectId);
-				if (monoProject != null) {
-					var pf = monoProject.GetProjectFile (fileName);
-					if (pf != null) {
-						var mimeType = DesktopService.GetMimeTypeForUri (fileName);
-						if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
-							await TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction }, mimeType).ConfigureAwait (false);
+					var monoProject = ProjectMap.GetMonoProject (projectId);
+					if (monoProject != null) {
+						var pf = monoProject.GetProjectFile (fileName);
+						if (pf != null) {
+							var mimeType = DesktopService.GetMimeTypeForUri (fileName);
+							if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName)) {
+								var parseOptions = new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction };
+								TypeSystemService.ParseProjection (parseOptions, mimeType).Ignore ();
+							}
+						}
 					}
 				}
 			}
