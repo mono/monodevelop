@@ -67,8 +67,8 @@ namespace MonoDevelop.Ide.Projects
 			FilePath projFile = Util.GetSampleProject ("DotNetCoreSdkFormat", "DotNetCoreProjectSdk", "DotNetCoreProjectSdk.csproj");
 
 			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
-				Assert.AreEqual (p.MSBuildProject.GetProjectSdksName (), "Microsoft.NET.Sdk");
-				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs ().Where (x => x.Implicit).Count (), 1);
+				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (), new string[] { "Microsoft.NET.Sdk" });
+				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (true, false).Length, 1);
 			}
 		}
 
@@ -78,8 +78,8 @@ namespace MonoDevelop.Ide.Projects
 			FilePath projFile = Util.GetSampleProject ("DotNetCoreSdkFormat", "DotNetCoreSdkNode", "DotNetCoreSdkNode.csproj");
 
 			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
-				Assert.AreEqual (p.MSBuildProject.GetProjectSdksName (), "Microsoft.NET.Sdk");
-				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs ().Where (x => x.Implicit).Count (), 1);
+				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (), new string[] { "Microsoft.NET.Sdk" });
+				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (true, false).Length, 1);
 			}
 		}
 
@@ -89,8 +89,8 @@ namespace MonoDevelop.Ide.Projects
 			FilePath projFile = Util.GetSampleProject ("DotNetCoreSdkFormat", "DotNetCoreImportSdk", "DotNetCoreImportSdk.csproj");
 
 			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
-				Assert.AreEqual (p.MSBuildProject.GetProjectSdksName (), "Microsoft.NET.Sdk");
-				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs ().Where (x => x.Implicit).Count (), 0);
+				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (), new string[] { "Microsoft.NET.Sdk" });
+				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (true, false).Length, 0);
 			}
 		}
 	}

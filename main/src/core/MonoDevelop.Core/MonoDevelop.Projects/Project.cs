@@ -1450,7 +1450,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		static string[] GetTargetFrameworks (MSBuildProject project)
 		{
-			if (string.IsNullOrEmpty (project.GetProjectSdksName()))
+			if (project.GetReferencedSDKs().Length == 0)
 				return null;
 
 			var propertyGroup = project.GetGlobalPropertyGroup ();
@@ -1561,7 +1561,7 @@ namespace MonoDevelop.Projects
 			if (projectSdks.Length > 0) {
 				if (sdks == null)
 					sdks = new HashSet<string> ();
-				sdks.UnionWith (projectSdks.Select(x => x.QualifiedName));
+				sdks.UnionWith (projectSdks);
 			}
 
 			var dotNetProject = project as DotNetProject;

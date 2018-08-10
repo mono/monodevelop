@@ -561,57 +561,9 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		public class SdkDefinition
-		{
-			public SdkDefinition(string nameAndVersion, bool isImplicit)
-			{
-				string[] splitName = nameAndVersion?.Split (new char[] { '/' }, 2);
-				string name = null;
-				string version = null;
-				if(splitName != null) {
-					if(splitName.Length > 0) {
-						name = splitName[0];
-					}
-					if(splitName.Length > 1) {
-						version = splitName[1];
-					}
-				}
-				Name = name;
-				Version = version;
-				Implicit = isImplicit;
-			}
-
-			public SdkDefinition(string name, string version, bool isImplicit)
-			{
-				Name = name;
-				Version = version;
-				Implicit = isImplicit;
-			}
-
-			public string Name {
-				get;
-				private set;
-			}
-
-			public string Version {
-				get;
-				private set;
-			}
-
-			public bool Implicit {
-				get;
-				private set;
-			}
-
-			public string QualifiedName {
-				get {
-					return !string.IsNullOrEmpty(Version) ? $"{Name}/{Version}" : Name;
-				}
-			}
-		}
-
-		SdkDefinition[] sdkArray = null;
-		string fullSdkName = null;
+		string[] sdkArray = null;
+		string[] implicitSdkArray = null;
+		string[] explicitSdkArray = null;
 		void GenerateSdkArray()
 		{
 			// Sdks that are defined explicitly
@@ -644,15 +596,9 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			List<SdkDefinition> sdkList = new List<SdkDefinition> ();
-			foreach(string sdk in explicitSdks) {
-				sdkList.Add (new SdkDefinition (sdk, false));
-			}
-			foreach(string sdk in implicitSdks.Where(x => !explicitSdks.Contains(x))) {
-				sdkList.Add (new SdkDefinition (sdk, true));
-			}
-			sdkArray = sdkList.ToArray ();
-			fullSdkName = string.Join (";", GetReferencedSDKs ().Select (x => x.QualifiedName));
+			explicitSdkArray = explicitSdks.ToArray ();
+			implicitSdkArray = implicitSdks.Where (x => !explicitSdks.Contains (x)).ToArray ();
+			sdkArray = explicitSdks.Concat (implicitSdks).ToArray ();
 		}
 
 		void ClearAllSdks()
@@ -689,7 +635,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public override string Namespace {
 			get {
-				if (GetProjectSdksName() != null)
+				if (GetReferencedSDKs().Length > 0)
 					return string.Empty;
 				return Schema;
 			}
@@ -1106,7 +1052,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Returns a list of SDKs referenced by this project
 		/// </summary>
-		public SdkDefinition[] GetReferencedSDKs ()
+		public string[] GetReferencedSDKs()
 		{
 			if (sdkArray == null) {
 				GenerateSdkArray ();
@@ -1115,14 +1061,20 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		/// <summary>
-		/// Returns an Sdk attribute name defining all Sdks used in the project (implicit & explicit)
+		/// Returns a list of SDKs referenced by this project, selecting implicit and/or explicit sdks
+		/// in the process
 		/// </summary>
-		public string GetProjectSdksName()
+		public string[] GetReferencedSDKs (bool includeImplicitSdks, bool includeExplicitSdks)
 		{
-			if (sdkArray == null) {
-				GenerateSdkArray ();
+			if (includeImplicitSdks && includeExplicitSdks) {
+				return sdkArray;
+			} else if (includeImplicitSdks) {
+				return implicitSdkArray;
+			} else if (includeExplicitSdks) {
+				return explicitSdkArray;
+			} else {
+				return Array.Empty<string> ();
 			}
-			return fullSdkName;
 		}
 
 		/// <summary>
@@ -1131,7 +1083,8 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public void SetProjectSdk(string sdk)
 		{
-			if (sdk != GetProjectSdksName ()) {
+			string currentSdk = string.Join (";", GetReferencedSDKs ());
+			if (sdk != currentSdk) {
 				// Setting an Sdk will reset to the default set to the project (i.e. remove any Sdk node,
 				// and all Sdk imports
 				ClearAllSdks ();
