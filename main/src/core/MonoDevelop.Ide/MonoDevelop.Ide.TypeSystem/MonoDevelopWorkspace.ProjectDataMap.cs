@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (val);
 				}
 
-				lock (projectDataMap) {
+				lock (Workspace.updatingProjectDataLock) {
 					projectDataMap.Remove (id);
 				}
 			}
@@ -106,14 +106,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal bool Contains (ProjectId projectId)
 			{
-				lock (projectDataMap) {
+				lock (Workspace.updatingProjectDataLock) {
 					return projectDataMap.ContainsKey (projectId);
 				}
 			}
 
 			internal ProjectData GetData (ProjectId id)
 			{
-				lock (projectDataMap) {
+				lock (Workspace.updatingProjectDataLock) {
 					projectDataMap.TryGetValue (id, out ProjectData result);
 					return result;
 				}
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal ProjectData RemoveData (ProjectId id)
 			{
-				lock (projectDataMap) {
+				lock (Workspace.updatingProjectDataLock) {
 					if (projectDataMap.TryGetValue (id, out ProjectData result))
 						projectDataMap.Remove (id);
 					return result;
@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal ProjectData CreateData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences)
 			{
-				lock (projectDataMap) {
+				lock (Workspace.updatingProjectDataLock) {
 					var result = new ProjectData (id, metadataReferences, Workspace);
 					projectDataMap [id] = result;
 					return result;

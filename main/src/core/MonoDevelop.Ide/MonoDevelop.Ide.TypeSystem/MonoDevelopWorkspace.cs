@@ -978,7 +978,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
-			lock (ProjectMap.projectDataMap) {
+			lock (updatingProjectDataLock) {
 				foreach (var kv in ProjectMap.projectDataMap) {
 					var projectId = kv.Key;
 					var docId = GetDocumentId (projectId, fileName);
@@ -1017,7 +1017,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
-			var id = ProjectMap.GetId (project);
+			var id = GetProjectId (project);
 			if (id != null) {
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
