@@ -32,7 +32,13 @@ namespace Mono.TextEditor
 	class DefaultIndentationTracker : IndentationTracker
 	{
 		readonly TextDocument doc;
-			
+
+		public override IndentationTrackerFeatures SupportedFeatures {
+			get {
+				return IndentationTrackerFeatures.SkipFixVirtualIndentation;
+			}
+		}
+
 		public DefaultIndentationTracker (TextDocument doc)
 		{
 			this.doc = doc;
