@@ -57,7 +57,7 @@ using MonoDevelop.Ide.RoslynServices;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopWorkspace : Workspace
+	public partial class MonoDevelopWorkspace : Workspace
 	{
 		public const string ServiceLayer = nameof(MonoDevelopWorkspace);
 
