@@ -347,7 +347,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             | None -> return Seq.empty
         }
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, ?referencedAssemblies) =
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, referencedAssemblies) =
         let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously project)
         let config =
             match IdeApp.Workspace with
@@ -404,8 +404,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 match project with
                 | Some proj ->
                     let proj = proj :?> DotNetProject
-                    let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously proj)
-                    let opts = x.GetProjectOptionsFromProjectFile (proj, referencedAssemblies)
+                    let asms = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously proj)
+                    let opts = x.GetProjectOptionsFromProjectFile (proj, asms)
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
                         // Print contents of check option for debugging purposes
