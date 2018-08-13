@@ -871,31 +871,27 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord)]
 		internal void OnMovePrevWord ()
 		{
-			EditorOperations.MoveToPreviousWord (false);
+			RunAction (CaretMoveActions.PreviousWord);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord)]
 		internal void OnMoveNextWord ()
 		{
-			EditorOperations.MoveToNextWord (false);
+			RunAction (CaretMoveActions.NextWord);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord)]
 		internal void OnSelectionMovePrevWord ()
 		{
-			var anchor = IsSomethingSelected ? MainSelection.Anchor : Caret.Location;
-			EditorOperations.MoveToPreviousWord (false);
-			SetSelection (anchor, Caret.Location);
+			RunAction (SelectionActions.MovePreviousWord);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord)]
 		internal void OnSelectionMoveNextWord ()
 		{
-			var anchor = IsSomethingSelected ? MainSelection.Anchor : Caret.Location;
-			EditorOperations.MoveToNextWord (false);
-			SetSelection (anchor, Caret.Location);
+			RunAction (SelectionActions.MoveNextWord);
 		}
-
+		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevSubword)]
 		internal void OnMovePrevSubword ()
 		{
