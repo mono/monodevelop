@@ -347,16 +347,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             | None -> return Seq.empty
         }
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, referencedAssemblies) =
-        let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously project)
-        let config =
-            match IdeApp.Workspace with
-            | null -> ConfigurationSelector.Default
-            | ws ->
-               match ws.ActiveConfiguration with
-               | null -> ConfigurationSelector.Default
-               | config -> config
-
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, config:ConfigurationSelector, referencedAssemblies) =
         let getReferencedProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
@@ -386,7 +377,18 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties, ?referencedAssemblies) : FSharpProjectOptions option =
-        let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
+        let config =
+            match IdeApp.Workspace with
+            | null -> ConfigurationSelector.Default
+            | ws ->
+               match ws.ActiveConfiguration with
+               | null -> ConfigurationSelector.Default
+               | config -> config
+        let configId =
+            match IdeApp.Workspace with
+            | null -> null
+            | ws -> ws.ActiveConfigurationId
+        let properties = defaultArg properties ["Configuration", configId]
         let key = (projFilename, properties)
 
         lock projectInfoCache (fun () ->
@@ -405,7 +407,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 | Some proj ->
                     let proj = proj :?> DotNetProject
                     let asms = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously proj)
-                    let opts = x.GetProjectOptionsFromProjectFile (proj, asms)
+                    let opts = x.GetProjectOptionsFromProjectFile (proj, config, asms)
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
                         // Print contents of check option for debugging purposes

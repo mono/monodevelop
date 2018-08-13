@@ -67,12 +67,12 @@ type ``Template tests``() =
                     solution.Items
                     |> Seq.filter(fun i -> i :? DotNetProject)
                     |> Seq.cast<DotNetProject> |> List.ofSeq
-
+                let config = CompilerArguments.getConfig()
                 for project in projects do
                     let checker = FSharpChecker.Create()
-                    let! refs = project.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
+                    let! refs = project.GetReferencedAssemblies (config) |> Async.AwaitTask
 
-                    let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, refs)
+                    let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, config, refs)
                     let! checkResult = checker.ParseAndCheckProject projectOptions.Value
                     for error in checkResult.Errors do
                         yield "Editor error", error.FileName, error.Message
