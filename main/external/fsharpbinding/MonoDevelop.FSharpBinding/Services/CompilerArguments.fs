@@ -212,16 +212,8 @@ module CompilerArguments =
 
        let wrapf = if shouldWrap then wrapFile else id
 
-       let getReferencedAssemblies (project:DotNetProject) =
-            let hasExplicitFSharpCore =
-                project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
-
-            LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
-
-            if hasExplicitFSharpCore then
-                projectAssemblyReferences |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))
-            else
-                projectAssemblyReferences
+       let getReferencedAssemblies =
+            projectAssemblyReferences |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))
 
        [
         let portableRefs =
@@ -245,7 +237,7 @@ module CompilerArguments =
             |> Seq.collect Project.getAssemblyLocations
             |> Seq.append portableRefs
 
-            |> Seq.append (getReferencedAssemblies project |> Seq.map getAbsolutePath)
+            |> Seq.append (getReferencedAssemblies |> Seq.map getAbsolutePath)
             |> Seq.distinct
 
         let find assemblyName=
