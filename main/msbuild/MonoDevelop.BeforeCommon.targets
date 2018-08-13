@@ -4,11 +4,17 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
+	<!-- F# targets import these specifically, prevent them being reimported-->
+	<PropertyGroup>
+		<CustomBeforeMicrosoftCommonTargets></CustomBeforeMicrosoftCommonTargets>
+	</PropertyGroup>
+
 	<!-- force a bunch of default values for consistency -->
 	<PropertyGroup>
 		<MDConfigIsRelease>$(Configuration.Contains('Release'))</MDConfigIsRelease>
 		<MDConfigIsDebug>$(Configuration.Contains('Debug'))</MDConfigIsDebug>
 		<Optimize>$(MDConfigIsRelease)</Optimize>
+		<Tailcalls>$(Optimize)</Tailcalls>
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>portable</DebugType>
 		<WarningLevel>4</WarningLevel>
