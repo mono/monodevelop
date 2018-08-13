@@ -89,13 +89,18 @@ type CodeGenerationPanel() =
         match item.ToLower() with
         | "full" -> 0
         | "pdbonly" -> 1
-        | _ -> 0
+        | "portable" -> 2
+        | "embedded" -> 3
+        | "none" -> 4
+        | _ -> 4
 
     let indexToDebugInformation i =
         match i with
         | 0 -> "full"
         | 1 -> "pdbonly"
-        | _ -> "full"
+        | 2 -> "portable"
+        | 3 -> "embedded"
+        | _ -> "none"
 
     let platformInformationToIndex (item:string) =
         match item.ToLower() with
