@@ -44,6 +44,7 @@ namespace MonoDevelop.Refactoring.Rename
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
 		Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> rename;
+		ISymbol symbol;
 
 		internal List<string> ChangedDocuments { get; set; }
 
@@ -56,6 +57,7 @@ namespace MonoDevelop.Refactoring.Rename
 		public RenameItemDialog (ISymbol symbol, RenameRefactoring rename)
 		{
 			this.Build ();
+			this.symbol = symbol;
 
 			string title;
 			if (symbol is ITypeSymbol) {
@@ -203,43 +205,48 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			var changes = await this.rename (properties);
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
+			try {
+				var changes = await this.rename (properties);
+				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
 
 
-			if (ChangedDocuments != null) {
-				AlertButton result = null;
-				var msg = new QuestionMessage ();
-				msg.Buttons.Add (AlertButton.MakeWriteable);
-				msg.Buttons.Add (AlertButton.Cancel);
-				msg.AllowApplyToAll = true;
+				if (ChangedDocuments != null) {
+					AlertButton result = null;
+					var msg = new QuestionMessage ();
+					msg.Buttons.Add (AlertButton.MakeWriteable);
+					msg.Buttons.Add (AlertButton.Cancel);
+					msg.AllowApplyToAll = true;
 
-				foreach (var path in ChangedDocuments) {
-					try {
-						var attr = File.GetAttributes (path);
-						if (attr.HasFlag (FileAttributes.ReadOnly)) {
-							msg.Text = GettextCatalog.GetString ("File {0} is read-only", path);
-							msg.SecondaryText = GettextCatalog.GetString ("Would you like to make the file writable?");
-							result = MessageService.AskQuestion (msg);
+					foreach (var path in ChangedDocuments) {
+						try {
+							var attr = File.GetAttributes (path);
+							if (attr.HasFlag (FileAttributes.ReadOnly)) {
+								msg.Text = GettextCatalog.GetString ("File {0} is read-only", path);
+								msg.SecondaryText = GettextCatalog.GetString ("Would you like to make the file writable?");
+								result = MessageService.AskQuestion (msg);
 
-							if (result == AlertButton.Cancel) {
-								return;
-							} else if (result == AlertButton.MakeWriteable) {
-								try {
-									File.SetAttributes (path, attr & ~FileAttributes.ReadOnly);
-								} catch (Exception ex) {
-									MessageService.ShowError (ex.Message);
+								if (result == AlertButton.Cancel) {
 									return;
+								} else if (result == AlertButton.MakeWriteable) {
+									try {
+										File.SetAttributes (path, attr & ~FileAttributes.ReadOnly);
+									} catch (Exception ex) {
+										MessageService.ShowError (ex.Message);
+										return;
+									}
 								}
 							}
+						} catch (Exception ex) {
+							MessageService.ShowError (ex.Message);
+							return;
 						}
-					} catch (Exception ex) {
-						MessageService.ShowError (ex.Message);
-						return;
 					}
 				}
+				RefactoringService.AcceptChanges (monitor, changes);
+			} catch (Exception ex) {
+				MessageService.ShowError(GettextCatalog.GetString ("Error while renaming symbol {0}", this.symbol.Name), ex);
+				LoggingService.LogError ("Error while renaming symbol " + this.symbol.Name, ex);
 			}
-			RefactoringService.AcceptChanges (monitor, changes);
 		}
 		
 		async void OnPreviewClicked (object sender, EventArgs e)

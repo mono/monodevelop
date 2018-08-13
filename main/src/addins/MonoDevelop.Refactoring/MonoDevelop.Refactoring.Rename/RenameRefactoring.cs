@@ -82,6 +82,16 @@ namespace MonoDevelop.Refactoring.Rename
 		public async Task Rename (ISymbol symbol)
 		{
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
+			if (!symbol.IsDefinedInSource ())
+				return;
+			foreach (var location in symbol.Locations)
+			{
+				if (location.IsInSource && ws.CurrentSolution.GetDocument (location.SourceTree) == null) {
+					LoggingService.LogError ("Error location.SourceTree document not found.");
+					MessageService.ShowError ("Can't rename " + symbol.Name + ". If a retry doesn't work please file a bug.");
+					return;
+				}
+			}
 
 			var currentSolution = ws.CurrentSolution;
 			var cts = new CancellationTokenSource ();
@@ -181,9 +191,8 @@ namespace MonoDevelop.Refactoring.Rename
 		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
-
-			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var changes = new List<Change> ();
+			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var documents = new List<Microsoft.CodeAnalysis.Document> ();
 			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {
 				documents.AddRange (projectChange.GetChangedDocuments ().Select(d => newSolution.GetDocument (d)));
