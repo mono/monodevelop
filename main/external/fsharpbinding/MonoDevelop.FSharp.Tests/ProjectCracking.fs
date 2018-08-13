@@ -24,8 +24,9 @@ module ``Project Cracking`` =
 
         let s = w :?> Solution
         let fsproj = s.Items.[0] :?> FSharpProject
-        do! fsproj.GetReferences()
-        let opts = languageService.GetProjectOptionsFromProjectFile fsproj
+        let config = CompilerArguments.getConfig()
+        let! refs = fsproj.GetReferencedAssemblies (config) |> Async.AwaitTask
+        let opts = languageService.GetProjectOptionsFromProjectFile (fsproj, config, refs)
         return opts.Value.OtherOptions
     }
 

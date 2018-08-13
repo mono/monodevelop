@@ -30,8 +30,7 @@ type CompilerArgumentsTests() =
             testProject.FileName <- Path.GetTempFileName() |> FilePath
 
             let! _ = testProject.SaveAsync monitor |> Async.AwaitTask
-            do! testProject.ReevaluateProject(monitor) |> ignore
-                testProject.GetReferences()
+            do! testProject.ReevaluateProject(monitor)
             return testProject
         }
 
@@ -39,10 +38,11 @@ type CompilerArgumentsTests() =
         async {
             use! testProject = createFSharpProject()
             let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
+            let! asms = testProject.GetReferences (CompilerArguments.getConfig())
             let _ = testProject.AddReference assemblyName
             let references =
                 CompilerArguments.generateReferences(testProject, 
-                                                     testProject.ReferencedAssemblies,
+                                                     asms,
                                                      Some (FSharpCompilerVersion.FSharp_3_1),
                                                      FSharpTargetFramework.NET_4_5,
                                                      ConfigurationSelector.Default,
@@ -82,9 +82,10 @@ type CompilerArgumentsTests() =
                 // we need to use a path to FSharp.Core.dll that exists on disk
                 let fscorePath = typeof<FSharp.Core.PrintfFormat<_,_,_,_>>.Assembly.Location
                 let reference = testProject.AddReference fscorePath
+                let! asms = testProject.GetReferences (CompilerArguments.getConfig())
                 let references =
                     CompilerArguments.generateReferences(testProject,
-                                                         testProject.ReferencedAssemblies,
+                                                         asms,
                                                          Some (FSharpCompilerVersion.FSharp_3_1),
                                                          FSharpTargetFramework.NET_4_5,
                                                          ConfigurationSelector.Default,
