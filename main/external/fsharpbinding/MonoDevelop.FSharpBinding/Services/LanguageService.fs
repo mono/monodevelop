@@ -406,7 +406,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 match project with
                 | Some proj ->
                     let proj = proj :?> DotNetProject
-                    let asms = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously proj)
+                    let asms = if referencedAssemblies.IsSome then referencedAssemblies.Value else x.GetReferencedAssembliesSynchronously proj
                     let opts = x.GetProjectOptionsFromProjectFile (proj, config, asms)
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
