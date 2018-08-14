@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 open System
+open System.Collections
 open System.Text
 open System.Threading.Tasks
 open System.IO
@@ -9,6 +10,11 @@ open ExtCore
 module Seq =
     let tryHead items =
         if Seq.isEmpty items then None else Some (Seq.head items)
+
+    let ofType<'T> (items:IEnumerable) : seq<'T> =
+        items
+        |> Seq.cast<obj>
+        |> Seq.choose (fun i -> match i with | :? 'T as t -> Some t |_ -> None)
         
 module List =
     

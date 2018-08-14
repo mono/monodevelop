@@ -15,6 +15,7 @@ open MonoDevelop.Ide.Templates
 open MonoDevelop.PackageManagement.Tests.Helpers
 open MonoDevelop.Projects
 open MonoDevelop.Projects.MSBuild
+open MonoDevelop.FSharp.Shared
 open NUnit.Framework
 
 [<TestFixture>]
@@ -65,8 +66,7 @@ type ``Template tests``() =
                 // xbuild worked, now check for editor squiggles
                 let projects =
                     solution.Items
-                    |> Seq.filter(fun i -> i :? DotNetProject)
-                    |> Seq.cast<DotNetProject> |> List.ofSeq
+                    |> Seq.ofType<DotNetProject> |> List.ofSeq
                 let config = CompilerArguments.getConfig()
                 for project in projects do
                     let checker = FSharpChecker.Create()
