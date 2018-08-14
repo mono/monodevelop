@@ -6,4 +6,4 @@ GacPackage=false
 Name: MonoDevelop Core Mac Add-ins
 Description: MonoDevelop Core Mac Add-ins
 Version: @VERSION@
-Libs: -r:${libdir}/AddIns/MacPlatform.dll -r:${libdir}/AddIns/MonoMac.dll -r:${libdir}/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll
+Libs: -r:${libdir}/AddIns/MacPlatform.dll -r:${libdir}/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll
