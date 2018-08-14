@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=5d1a3e0e23a9f7935b932d94ddb0ee40dc5ad985
+DEP_NEEDED_VERSION[0]=1d0661352e3790471396bc38ecd65243cf355e74
 DEP_BRANCH_AND_REMOTE[0]="release-7.6-bump-android-sdk-installer origin/release-7.6-bump-android-sdk-installer"
 
 # heap-shot
