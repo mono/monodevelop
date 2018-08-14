@@ -45,7 +45,6 @@ type CompilerArgumentsTests() =
                                                      asms,
                                                      Some (FSharpCompilerVersion.FSharp_3_1),
                                                      FSharpTargetFramework.NET_4_5,
-                                                     ConfigurationSelector.Default,
                                                      true) 
 
             //The two paths for mscorlib and FSharp.Core should match
@@ -88,7 +87,6 @@ type CompilerArgumentsTests() =
                                                          asms,
                                                          Some (FSharpCompilerVersion.FSharp_3_1),
                                                          FSharpTargetFramework.NET_4_5,
-                                                         ConfigurationSelector.Default,
                                                          true)
                 let testPaths = references |> List.map makeTestableReference
                 testPaths |> should contain (reference.HintPath.FullPath |> string)
