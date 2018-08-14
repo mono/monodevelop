@@ -57,9 +57,9 @@ type ``Template tests``() =
 
     let getErrorsForProject (solution:Solution) =
         asyncSeq {
-
+            let config = solution.DefaultConfigurationSelector
             let ctx = TargetEvaluationContext (LogVerbosity=MSBuildVerbosity.Quiet)
-            let! result = solution.Build(monitor, solution.DefaultConfigurationSelector, ctx) |> Async.AwaitTask
+            let! result = solution.Build(monitor, config, ctx) |> Async.AwaitTask
             match result.HasWarnings, result.HasErrors with
             //| "Xamarin.tvOS.FSharp.SingleViewApp", _, false //MTOUCH : warning MT0094: Both profiling (--profiling) and incremental builds (--fastdev) is not supported when building for tvOS. Incremental builds have ben disabled.]
             | false, false ->
@@ -67,11 +67,9 @@ type ``Template tests``() =
                 let projects =
                     solution.Items
                     |> Seq.ofType<DotNetProject> |> List.ofSeq
-                let config = CompilerArguments.getConfig()
                 for project in projects do
                     let checker = FSharpChecker.Create()
                     let! refs = project.GetReferencedAssemblies (config) |> Async.AwaitTask
-
                     let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, config, refs)
                     let! checkResult = checker.ParseAndCheckProject projectOptions.Value
                     for error in checkResult.Errors do

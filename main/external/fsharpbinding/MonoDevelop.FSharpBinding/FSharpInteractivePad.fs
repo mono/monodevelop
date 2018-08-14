@@ -409,7 +409,7 @@ type FSharpInteractivePad(editor:TextEditor) as this =
     member x.LoadReferences(project:FSharpProject) =
         LoggingService.LogDebug ("FSI:  #LoadReferences")
         async {
-            let! orderedReferences = project.GetOrderedReferences ()
+            let! orderedReferences = project.GetOrderedReferences (CompilerArguments.getConfig())
             orderedReferences |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path))
         } |> Async.StartImmediate
 

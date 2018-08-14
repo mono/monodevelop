@@ -477,16 +477,14 @@ module CompilerArguments =
             | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
             | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
-  let getArgumentsFromProject (proj:DotNetProject) (referencedAssemblies) =
+  let getArgumentsFromProject (proj:DotNetProject) (config:ConfigurationSelector) (referencedAssemblies) =
         maybe {
-            let config = getConfig()
             let! projConfig = proj.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
             let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
             return generateProjectOptions (proj, referencedAssemblies, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
         }
 
-  let getReferencesFromProject (proj:DotNetProject) referencedAssemblies =
-        let config = getConfig()
+  let getReferencesFromProject (proj:DotNetProject, config:ConfigurationSelector, referencedAssemblies) =
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         generateReferences(proj, referencedAssemblies, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
 

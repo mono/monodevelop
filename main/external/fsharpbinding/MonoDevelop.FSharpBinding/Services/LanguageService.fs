@@ -336,8 +336,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projectFile)
         |> Option.map(fun p -> p :?> DotNetProject)
 
-    member x.GetReferencedAssembliesSynchronously (project:DotNetProject) =
-        project.GetReferencedAssemblies(CompilerArguments.getConfig()).Result
+    member x.GetReferencedAssembliesSynchronously (project:DotNetProject, config:ConfigurationSelector) =
+        (project.GetReferencedAssemblies config).Result
 
     member x.GetReferencedAssembliesAsync projectFile =
         async {
@@ -357,7 +357,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         let rec getOptions referencedProject =
             // hack: we use the referencedAssemblies of the root project for the dependencies' options as well
             // which is obviously wrong, but it doesn't seem to matter in this case
-            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
+            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject config referencedAssemblies
             match projectOptions with
             | Some projOptions ->
                 let referencedProjectOptions =
@@ -410,7 +410,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 match project with
                 | Some proj ->
                     let proj = proj :?> DotNetProject
-                    let asms = if referencedAssemblies.IsSome then referencedAssemblies.Value else x.GetReferencedAssembliesSynchronously proj
+                    let asms = if referencedAssemblies.IsSome then referencedAssemblies.Value else x.GetReferencedAssembliesSynchronously (proj, config)
                     let opts = x.GetProjectOptionsFromProjectFile (proj, config, asms)
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')

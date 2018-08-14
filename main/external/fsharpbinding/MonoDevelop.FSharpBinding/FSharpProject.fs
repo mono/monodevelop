@@ -245,7 +245,7 @@ type FSharpProject() as self =
 
     [<Obsolete>]
     override x.OnCompileSources(items, config, configSel, monitor) =
-        let asms = (x.GetReferences (CompilerArguments.getConfig())).Result
+        let asms = (x.GetReferences configSel).Result
         CompilerService.Compile(items, config, asms, configSel, monitor)
 
     override x.OnCreateCompilationParameters(config, kind) =
@@ -308,12 +308,12 @@ type FSharpProject() as self =
         base.OnModified(e)
         if not self.Loading && not self.IsReevaluating then MDLanguageService.invalidateProjectFile self.FileName
 
-    member x.GetOrderedReferences() =
+    member x.GetOrderedReferences(config:ConfigurationSelector) =
         async {
             let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
-            let! asms = x.GetReferences (CompilerArguments.getConfig()) |> Async.AwaitTask
+            let! asms = x.GetReferences config |> Async.AwaitTask
             let references =
-                CompilerArguments.getReferencesFromProject x asms
+                CompilerArguments.getReferencesFromProject (x, config, asms)
                 |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
                                           then None
                                           else

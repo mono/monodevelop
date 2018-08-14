@@ -115,7 +115,7 @@ module Interactive =
             use monitor = new ConsoleProgressMonitor()
             use! sol = Services.ProjectService.ReadWorkspaceItem (monitor, sln |> FilePath) |> Async.AwaitTask
             use project = sol.GetAllItems<FSharpProject> () |> Seq.head
-            let! refs = project.GetOrderedReferences()
+            let! refs = project.GetOrderedReferences(CompilerArguments.getConfig())
             refs
             |> List.iter (fun a -> sendInput session (sprintf  @"#r ""%s"";;" a.Path))
             let finished = new AutoResetEvent(false)
