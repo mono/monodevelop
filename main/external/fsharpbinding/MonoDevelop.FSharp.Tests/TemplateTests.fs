@@ -69,7 +69,7 @@ type ``Template tests``() =
                     |> Seq.ofType<DotNetProject> |> List.ofSeq
                 for project in projects do
                     let checker = FSharpChecker.Create()
-                    let! refs = project.GetReferencedAssemblies (config) |> Async.AwaitTask
+                    let! refs = project.GetReferences (config) |> Async.AwaitTask
                     let projectOptions = languageService.GetProjectOptionsFromProjectFile (project, config, refs)
                     let! checkResult = checker.ParseAndCheckProject projectOptions.Value
                     for error in checkResult.Errors do

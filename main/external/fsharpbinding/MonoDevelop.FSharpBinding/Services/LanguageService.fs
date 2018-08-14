@@ -272,10 +272,15 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-    let optionsForDependentProject p =
+    let optionsForDependentProject projectFile =
+        let project = x.GetProjectFromFileName projectFile
         async {
-            let! assemblies = x.GetReferencedAssembliesAsync p
-            return x.GetProjectCheckerOptions(p, [], assemblies)
+            let! assemblies = async {
+                match project with
+                | Some (proj:DotNetProject) -> return! proj.GetReferences(CompilerArguments.getConfig()) |> Async.AwaitTask
+                | None -> return new List<AssemblyReference> ()
+            }
+            return x.GetProjectCheckerOptions(projectFile, [], assemblies)
         }
 
     member x.Checker = checker
@@ -335,17 +340,6 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         IdeApp.Workspace.GetAllProjects()
         |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projectFile)
         |> Option.map(fun p -> p :?> DotNetProject)
-
-    member x.GetReferencedAssembliesSynchronously (project:DotNetProject, config:ConfigurationSelector) =
-        (project.GetReferencedAssemblies config).Result
-
-    member x.GetReferencedAssembliesAsync projectFile =
-        async {
-            let project = x.GetProjectFromFileName projectFile
-            match project with
-            | Some proj -> return! proj.GetReferencedAssemblies(CompilerArguments.getConfig()) |> Async.AwaitTask
-            | None -> return Seq.empty
-        }
 
     member x.GetProjectOptionsFromProjectFile(project:DotNetProject, config:ConfigurationSelector, referencedAssemblies: AssemblyReference seq) =
 
@@ -410,7 +404,8 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 match project with
                 | Some proj ->
                     let proj = proj :?> DotNetProject
-                    let asms = if referencedAssemblies.IsSome then referencedAssemblies.Value else x.GetReferencedAssembliesSynchronously (proj, config)
+                    //fixme eliminate this .Result
+                    let asms = if referencedAssemblies.IsSome then referencedAssemblies.Value else (proj.GetReferences config).Result
                     let opts = x.GetProjectOptionsFromProjectFile (proj, config, asms)
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
