@@ -347,18 +347,22 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             | None -> return Seq.empty
         }
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, config:ConfigurationSelector, referencedAssemblies) =
-        let getReferencedProjects (project:DotNetProject) =
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, config:ConfigurationSelector, referencedAssemblies: AssemblyReference seq) =
+
+        // hack: we can't just pull the refs out of referencedAssemblies as we use this for referenced projects as well
+        let getReferencedFSharpProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
 
         let rec getOptions referencedProject =
+            // hack: we use the referencedAssemblies of the root project for the dependencies' options as well
+            // which is obviously wrong, but it doesn't seem to matter in this case
             let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
             match projectOptions with
             | Some projOptions ->
                 let referencedProjectOptions =
                     referencedProject
-                    |> getReferencedProjects
+                    |> getReferencedFSharpProjects
                     |> Seq.fold (fun acc reference ->
                                      match getOptions reference with
                                      | Some outFile, Some opts  -> (outFile, opts) :: acc
