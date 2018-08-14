@@ -163,6 +163,10 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\tests\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
+    </ProjectReference>
     <Compile Include="SolutionPadOrdering.fs" />
     <None Include="..\..\..\build\AddIns\FSharpBinding\MonoDevelop.FSharpInteractive.Service.exe">
       <Link>MonoDevelop.FSharpInteractive.Service.exe</Link>
