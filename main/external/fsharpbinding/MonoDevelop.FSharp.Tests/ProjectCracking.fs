@@ -20,13 +20,13 @@ module ``Project Cracking`` =
     let monitor = new ConsoleProgressMonitor()
 
     let getProjectOptions sln = async {
-        let! w = Services.ProjectService.ReadWorkspaceItem (monitor, FilePath(sln)) |> Async.AwaitTask
+        let! (w:WorkspaceItem) = Services.ProjectService.ReadWorkspaceItem (monitor, FilePath(sln))
 
         let s = w :?> Solution
         let fsproj = s.Items.[0] :?> FSharpProject
         let config = CompilerArguments.getConfig()
-        let! refs = fsproj.GetReferences (config) |> Async.AwaitTask
-        let opts = languageService.GetProjectOptionsFromProjectFile (fsproj, config, refs)
+        let! refs = fsproj.GetReferences (config)
+        let opts = languageService.GetProjectOptionsFromProjectFile fsproj config refs
         return opts.Value.OtherOptions
     }
 

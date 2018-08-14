@@ -311,7 +311,7 @@ type FSharpProject() as self =
     member x.GetOrderedReferences(config:ConfigurationSelector) =
         async {
             let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
-            let! asms = x.GetReferences config |> Async.AwaitTask
+            let! asms = x.GetReferences config
             let references =
                 CompilerArguments.getReferencesFromProject (x, config, asms)
                 |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")

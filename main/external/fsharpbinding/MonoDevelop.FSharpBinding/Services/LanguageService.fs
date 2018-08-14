@@ -341,7 +341,7 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projectFile)
         |> Option.map(fun p -> p :?> DotNetProject)
 
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, config:ConfigurationSelector, referencedAssemblies: AssemblyReference seq) =
+    member x.GetProjectOptionsFromProjectFile (project:DotNetProject) (config:ConfigurationSelector) (referencedAssemblies:AssemblyReference seq) =
 
         // hack: we can't just pull the refs out of referencedAssemblies as we use this for referenced projects as well
         let getReferencedFSharpProjects (project:DotNetProject) =
@@ -405,8 +405,10 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 | Some proj ->
                     let proj = proj :?> DotNetProject
                     //fixme eliminate this .Result
-                    let asms = if referencedAssemblies.IsSome then referencedAssemblies.Value else (proj.GetReferences config).Result
-                    let opts = x.GetProjectOptionsFromProjectFile (proj, config, asms)
+                    let asms = match referencedAssemblies with
+                               | Some a -> a
+                               | None -> (proj.GetReferences config).Result
+                    let opts = x.GetProjectOptionsFromProjectFile proj config asms
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
                         // Print contents of check option for debugging purposes
