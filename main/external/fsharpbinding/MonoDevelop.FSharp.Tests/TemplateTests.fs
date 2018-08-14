@@ -20,6 +20,7 @@ open NUnit.Framework
 
 [<TestFixture>]
 type ``Template tests``() =
+    inherit UnitTests.TestBase()
     let toTask computation : Task = Async.StartAsTask computation :> _
 
     let monitor = new ConsoleProgressMonitor()
@@ -182,8 +183,7 @@ type ``Template tests``() =
     [<Ignore("Waiting for dotnet core SDK 2.0 to be installed on Wrench")>]
     member x.``Can build netcoreapp11 MVC web app``()=
         async {
-            let directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-            let projectPath = directoryName / ".." / ".." / "Samples" / "aspnetcoremvc11.sln"
+            let projectPath = UnitTests.Util.GetSampleProject ("fsharp-aspnetcoremvc11", "aspnetcoremvc11.sln")
 
             let! w = Services.ProjectService.ReadWorkspaceItem (monitor, FilePath(projectPath)) |> Async.AwaitTask
 

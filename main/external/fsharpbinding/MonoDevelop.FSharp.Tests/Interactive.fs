@@ -110,9 +110,8 @@ module Interactive =
     let ``Interactive send references uses real assemblies #43307``() =
         async {
             let! session = createSession()
-            let directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-            let sln = directoryName / "Samples" / "bug43307" / "bug43307.sln"
-            use monitor = new ConsoleProgressMonitor()
+            let sln = UnitTests.Util.GetSampleProject ("bug43307", "bug43307.sln")
+            use monitor = UnitTests.Util.GetMonitor ()
             use! sol = Services.ProjectService.ReadWorkspaceItem (monitor, sln |> FilePath) |> Async.AwaitTask
             use project = sol.GetAllItems<FSharpProject> () |> Seq.head
             let! refs = project.GetOrderedReferences(CompilerArguments.getConfig())
