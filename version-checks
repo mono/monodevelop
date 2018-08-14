@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=79c5e92a6a433d35a49d74da8109934d14a909b4
+DEP_NEEDED_VERSION[0]=d50b126c06c9e5eeb0542b9f3b20dcc8841e78bd
 DEP_BRANCH_AND_REMOTE[0]="master origin/migrate-openjdk"
 
 # heap-shot
