@@ -883,37 +883,6 @@ $selected$$end$
 	
 }]]></Code>
 	</CodeTemplate>
-	
-	<CodeTemplate version="2.0">
-		<Header>
-			<_Group>C#</_Group>
-			<Version>1.0</Version>
-			<MimeType>text/x-csharp</MimeType>
-			<Context>InExpression</Context>
-			<Shortcut>(...)</Shortcut>
-			<_Description>Template for parentheses</_Description>
-			<TemplateType>SurroundsWith</TemplateType>
-		</Header>
-		<Code><![CDATA[($selected$)]]></Code>
-	</CodeTemplate>
-	
-	<CodeTemplate version="2.0">
-		<Header>
-			<_Group>C#</_Group>
-			<Version>1.0</Version>
-			<MimeType>text/x-csharp</MimeType>
-			<Context>InExpression</Context>
-			<Shortcut>((type)...)</Shortcut>
-			<_Description>Template for type cast</_Description>
-			<TemplateType>SurroundsWith</TemplateType>
-		</Header>
-		<Variables>
-			<Variable name="type" isEditable="true" isIdentifier="true">
-				<Default>cast_to</Default>
-			</Variable>
-		</Variables>
-		<Code><![CDATA[(($type$)$selected$)]]></Code>
-	</CodeTemplate>
 
 	<CodeTemplate version="2.0">
 		<Header>

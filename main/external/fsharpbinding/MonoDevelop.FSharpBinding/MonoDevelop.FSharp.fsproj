@@ -6,10 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</ProjectGuid>
-    <OutputType>Library</OutputType>
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
-    <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>False</UsePartialTypes>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
@@ -17,21 +15,12 @@
     <SignAssembly>true</SignAssembly>
     <OtherFlags>--publicsign</OtherFlags>
     <AssemblyOriginatorKeyFile>..\..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
-    <FscDebugType>full</FscDebugType>
-    <FscDebugFileExt>.mdb</FscDebugFileExt>
+    <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
-    <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
-    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
-    <WarningLevel>3</WarningLevel>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <StartAction>Program</StartAction>
     <Externalconsole>true</Externalconsole>
-    <StartAction>Program</StartAction>
-    <OtherFlags>--publicsign --warnon:1182</OtherFlags>
-    <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
     <StartWorkingDirectory>$(MSBuildProjectDirectory)\..\..\..\build\bin</StartWorkingDirectory>
   </PropertyGroup>
@@ -39,16 +28,8 @@
     <RemoveDir Directories="..\bin\" />
   </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
-    <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
-    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
-    <WarningLevel>3</WarningLevel>
-    <OptimizeCode>true</OptimizeCode>
-    <GenerateXmlDoc>false</GenerateXmlDoc>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
   <Target Name="BeforeBuild">
     <ItemGroup>

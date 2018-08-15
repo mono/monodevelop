@@ -265,7 +265,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			objects = objects.ToList ();
 
-			LogBeginEvaluationStage (context, "Evaluating Properies");
+			LogBeginEvaluationStage (context, "Evaluating Properties");
 			LogBeginEvalProject (context, pi);
 
 			EvaluateObjects (pi, context, objects, false);
