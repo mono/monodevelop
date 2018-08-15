@@ -295,6 +295,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
+			bool needsRefresh = false;
+
 			using (var context = Gdk.CairoHelper.Create (args.Window)) {
 				var scalef = GtkWorkarounds.GetScaleFactor (this);
 				context.LineWidth = 1;
@@ -446,13 +448,13 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 					if (Math.Min (maxListWidth, wi + xpos + iconWidth + 2) > listWidth) {
 						box.WidthRequest = listWidth = Math.Min (maxListWidth, wi + xpos + iconWidth + 2 + iconTextSpacing);
-						textView.QueueSpaceReservationStackRefresh ();
+						needsRefresh = true;
 					} else {
 						//workaround for the vscrollbar display - the calculated width needs to be the width ofthe render region.
 						if (Allocation.Width < listWidth) {
 							if (listWidth - Allocation.Width < 30) {
 								box.WidthRequest = listWidth + listWidth - Allocation.Width;
-								textView.QueueSpaceReservationStackRefresh ();
+								needsRefresh = true;
 							}
 						}
 					}
@@ -460,8 +462,22 @@ namespace MonoDevelop.Ide.Completion.Presentation
 					return true;
 				});
 
+				if (needsRefresh) {
+					QueueSpaceReservationStackRefresh ();
+				}
+
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Need to postpone this after the current painting on the UI thread is done,
+		/// otherwise the stack refresh will close the current completion while it's mid-painting.
+		/// See VSTS 662457.
+		/// </summary>
+		void QueueSpaceReservationStackRefresh ()
+		{
+			Task.Run (() => textView.QueueSpaceReservationStackRefresh ());
 		}
 
 		public int TextOffset {
