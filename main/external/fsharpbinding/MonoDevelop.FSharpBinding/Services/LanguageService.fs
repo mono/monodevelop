@@ -376,12 +376,10 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties, ?referencedAssemblies) : FSharpProjectOptions option =
         let config =
-            match IdeApp.Workspace with
-            | null -> ConfigurationSelector.Default
-            | ws ->
-               match ws.ActiveConfiguration with
-               | null -> ConfigurationSelector.Default
-               | config -> config
+            maybe {
+                let! ws = IdeApp.Workspace |> Option.ofObj
+                return! ws.ActiveConfiguration |> Option.ofObj
+            } |> Option.defaultValue ConfigurationSelector.Default
         let configId =
             match IdeApp.Workspace with
             | null -> null
