@@ -37,6 +37,7 @@ using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
 using MonoDevelop.Debugger;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Tags;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -120,7 +121,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			var result = new Mono.Debugging.Client.CompletionData ();
 			foreach (var roslynCompletion in roslynCompletions.Items) {
-				if (roslynCompletion.Tags.Contains (CompletionTags.Snippet))
+				if (roslynCompletion.Tags.Contains (WellKnownTags.Snippet))
 					continue;
 				result.Items.Add (new Mono.Debugging.Client.CompletionItem (roslynCompletion.DisplayText, RoslynTagsToDebuggerFlags (roslynCompletion.Tags)));
 			}
@@ -133,61 +134,61 @@ namespace MonoDevelop.CSharp.Completion
 			var result = Mono.Debugging.Client.ObjectValueFlags.None;
 			foreach (var tag in tags) {
 				switch (tag) {
-				case CompletionTags.Public:
+				case WellKnownTags.Public:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Public;
 					break;
-				case CompletionTags.Protected:
+				case WellKnownTags.Protected:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Protected;
 					break;
-				case CompletionTags.Private:
+				case WellKnownTags.Private:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Private;
 					break;
-				case CompletionTags.Internal:
+				case WellKnownTags.Internal:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Internal;
 					break;
-				case CompletionTags.File:
-				case CompletionTags.Project:
-				case CompletionTags.Folder:
-				case CompletionTags.Assembly:
-				case CompletionTags.Intrinsic:
-				case CompletionTags.Keyword:
-				case CompletionTags.Label:
-				case CompletionTags.Snippet:
-				case CompletionTags.Error:
-				case CompletionTags.Warning:
-				case CompletionTags.Module:
-				case CompletionTags.Operator:
+				case WellKnownTags.File:
+				case WellKnownTags.Project:
+				case WellKnownTags.Folder:
+				case WellKnownTags.Assembly:
+				case WellKnownTags.Intrinsic:
+				case WellKnownTags.Keyword:
+				case WellKnownTags.Label:
+				case WellKnownTags.Snippet:
+				case WellKnownTags.Error:
+				case WellKnownTags.Warning:
+				case WellKnownTags.Module:
+				case WellKnownTags.Operator:
 					break;
-				case CompletionTags.Local:
-				case CompletionTags.Constant:
-				case CompletionTags.RangeVariable:
-				case CompletionTags.Reference:
+				case WellKnownTags.Local:
+				case WellKnownTags.Constant:
+				case WellKnownTags.RangeVariable:
+				case WellKnownTags.Reference:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Variable;
 					break;
-				case CompletionTags.Class:
-				case CompletionTags.Enum:
-				case CompletionTags.Delegate:
-				case CompletionTags.Interface:
-				case CompletionTags.Structure:
-				case CompletionTags.TypeParameter:
+				case WellKnownTags.Class:
+				case WellKnownTags.Enum:
+				case WellKnownTags.Delegate:
+				case WellKnownTags.Interface:
+				case WellKnownTags.Structure:
+				case WellKnownTags.TypeParameter:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Type;
 					break;
-				case CompletionTags.EnumMember:
-				case CompletionTags.Event:
-				case CompletionTags.Field:
+				case WellKnownTags.EnumMember:
+				case WellKnownTags.Event:
+				case WellKnownTags.Field:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Field;
 					break;
-				case CompletionTags.Namespace:
+				case WellKnownTags.Namespace:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Namespace;
 					break;
-				case CompletionTags.ExtensionMethod:
-				case CompletionTags.Method:
+				case WellKnownTags.ExtensionMethod:
+				case WellKnownTags.Method:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Method;
 					break;
-				case CompletionTags.Parameter:
+				case WellKnownTags.Parameter:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Parameter;
 					break;
-				case CompletionTags.Property:
+				case WellKnownTags.Property:
 					result |= Mono.Debugging.Client.ObjectValueFlags.Property;
 					break;
 				}
