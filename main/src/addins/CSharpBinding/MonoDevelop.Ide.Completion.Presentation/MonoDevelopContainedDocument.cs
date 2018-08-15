@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private void FinishInitialization ()
 		{
-			var document = LanguageBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
+			var document = LanguageBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChangesSafe ();
 			var project = document.Project;
 
 			_workspace = project.Solution.Workspace;
@@ -451,7 +451,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		private IHierarchicalDifferenceCollection DiffStrings (string leftTextWithReplacement, string rightTextWithReplacement)
 		{
-			var document = LanguageBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges (); ;
+			var document = LanguageBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChangesSafe ();
 
 			var diffService = _differenceSelectorService.GetTextDifferencingService (
 				_workspace.Services.GetLanguageServices (document.Project.Language).GetService<IContentTypeLanguageService> ().GetDefaultContentType ());
