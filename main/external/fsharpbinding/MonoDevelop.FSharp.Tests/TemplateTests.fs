@@ -23,7 +23,7 @@ type ``Template tests``() =
     inherit UnitTests.TestBase()
     let toTask computation : Task = Async.StartAsTask computation :> _
 
-    let monitor = new ConsoleProgressMonitor()
+    let monitor = UnitTests.Util.GetMonitor ()
     do
         FixtureSetup.initialiseMonoDevelop()
         let getField name =
@@ -54,7 +54,7 @@ type ``Template tests``() =
         |> Seq.filter(fun t -> t.Id.IndexOf("SharedAssets") = -1) // shared assets projects can't be built standalone
         |> List.ofSeq
 
-    let templatesDir = FilePath(".").FullPath.ToString() / "buildtemplates"
+    let templatesDir = UnitTests.Util.TmpDir / "fsharp-buildtemplates"
 
     let getErrorsForProject (solution:Solution) =
         asyncSeq {
@@ -160,8 +160,7 @@ type ``Template tests``() =
               </packageSources>
             </configuration>
             """
-        if not (Directory.Exists templatesDir) then
-            Directory.CreateDirectory templatesDir |> ignore
+        Directory.CreateDirectory templatesDir |> ignore
         let configFileName = templatesDir/"NuGet.Config"
         File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
 
