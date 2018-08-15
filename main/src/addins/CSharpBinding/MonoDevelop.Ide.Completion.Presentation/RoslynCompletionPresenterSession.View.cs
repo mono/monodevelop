@@ -648,7 +648,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 			TooltipInformation description = null;
 			try {
-				var document = _subjectBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChanges ();
+				var document = _subjectBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChangesSafe ();
 				description = await RoslynCompletionData.CreateTooltipInformation (document, completionItem, false, token);
 			} catch {
 			}
