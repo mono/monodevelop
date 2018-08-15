@@ -114,6 +114,17 @@ module Interactive =
             use monitor = UnitTests.Util.GetMonitor ()
             use! sol = Services.ProjectService.ReadWorkspaceItem (monitor, sln |> FilePath) |> Async.AwaitTask
             use project = sol.GetAllItems<FSharpProject> () |> Seq.head
+
+            //workaround the fact that the project doesn't have a stable relative path
+            //to newtonsoft.json under the test harness by removing and re-adding with known path
+            let jsonAsmLoc = typeof<Newtonsoft.Json.JsonConvert>.Assembly.Location
+            let jsonRef =
+                project.References
+                |> Seq.filter (fun r -> r.Include.Equals "Newtonsoft.Json")
+                |> Seq.head
+            do project.References.Remove (jsonRef) |> ignore
+            project.References.Add (ProjectReference.CreateAssemblyFileReference (jsonAsmLoc |> FilePath))
+
             let! refs = project.GetOrderedReferences(CompilerArguments.getConfig())
             refs
             |> List.iter (fun a -> sendInput session (sprintf  @"#r ""%s"";;" a.Path))
