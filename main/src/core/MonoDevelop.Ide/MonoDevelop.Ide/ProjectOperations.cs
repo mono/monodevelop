@@ -1346,21 +1346,54 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		static IBuildTarget[] GetBuildTargetsForExecution (IBuildTarget executionTarget, RunConfiguration runConfiguration)
+		{
+			if (executionTarget is Solution sol) {
+				if (runConfiguration is SingleItemSolutionRunConfiguration src) {
+					return new [] { src.Item };
+				}
+				if (runConfiguration is MultiItemSolutionRunConfiguration mrc) {
+					var buildTargets = new IBuildTarget [mrc.Items.Count];
+					int i = 0;
+					foreach (var item in mrc.Items) {
+						buildTargets [i++] = item.SolutionItem;
+					}
+					return buildTargets;
+				}
+			}
+			return new [] { executionTarget };
+		}
+
+		// given a solution RunConfiguration, determine the matching project RunConfigurations
+		static RunConfiguration GetProjectRunConfiguration (IRunTarget target, RunConfiguration config)
+		{
+			if (config is SingleItemSolutionRunConfiguration src) {
+				if (src.Item == target) {
+					return src.RunConfiguration;
+				}
+			}
+			else if (config is MultiItemSolutionRunConfiguration mrc) {
+				foreach (var item in mrc.Items) {
+					if (item.SolutionItem == target)
+						return item.RunConfiguration;
+				}
+			}
+			return config;
+		}
+
 		Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
-			var buildTarget = executionTarget;
-
-			// When executing a solution we are actually going to execute the startup project. So we only need to build that project.
-			// TODO: handle multi-startup solutions.
-			if (buildTarget is Solution sol && sol.StartupItem != null)
-				buildTarget = sol.StartupItem;
+			// When executing a solution we are actually going to execute the startup project(s), so we only need to build it/them
+			IBuildTarget [] buildTargets = GetBuildTargetsForExecution (executionTarget, runConfiguration);
 
 			return CheckAndBuildForExecute (
-				new [] { buildTarget }, configuration,
+				buildTargets, configuration,
 				IdeApp.Preferences.BuildBeforeExecuting, IdeApp.Preferences.RunWithWarnings,
 				(target, monitor) => {
-					if (target is IRunTarget)
-						return ((IRunTarget)target).PrepareExecution (monitor, context, configuration, runConfiguration);
+					if (target is IRunTarget runTarget) {
+						var projectRunConfig = GetProjectRunConfiguration (runTarget, runConfiguration);
+						return runTarget.PrepareExecution (monitor, context, configuration, projectRunConfig);
+					}
 					return target.PrepareExecution (monitor, context, configuration);
 				}
 			);
