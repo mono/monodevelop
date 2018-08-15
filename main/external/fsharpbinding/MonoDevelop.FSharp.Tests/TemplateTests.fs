@@ -180,22 +180,22 @@ type ``Template tests``() =
         } |> toTask
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
-    [<Ignore("Waiting for dotnet core SDK 2.0 to be installed on Wrench")>]
     member x.``Can build netcoreapp11 MVC web app``()=
         async {
             let projectPath = UnitTests.Util.GetSampleProject ("fsharp-aspnetcoremvc11", "aspnetcoremvc11.sln")
 
             let! w = Services.ProjectService.ReadWorkspaceItem (monitor, FilePath(projectPath)) |> Async.AwaitTask
 
-            let solution = w :?> Solution
+            use solution = w :?> Solution
 
             let project =
                 solution.Items
-                |> Seq.filter(fun i -> i :? DotNetProject)
-                |> Seq.cast<DotNetProject>
+                |> Seq.ofType<DotNetProject>
                 |> Seq.head
 
             let! res = project.RunTarget(monitor, "Restore", ConfigurationSelector.Default)
+            do! project.ReevaluateProject (monitor)
+
             let fsharpFiles =
                 project.Files
                 |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
@@ -212,7 +212,6 @@ type ``Template tests``() =
             wwwrootFiles |> Seq.length |> should equal 41
             wwwrootFiles |> Seq.iter(fun imported -> imported |> should equal true)
             let errors = getErrorsForProject solution |> AsyncSeq.toSeq |> List.ofSeq
-            solution.Dispose()
             match errors with
             | [] -> Assert.Pass()
             | errors -> Assert.Fail (sprintf "%A" errors)
