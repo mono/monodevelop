@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
+	[DebuggerDisplay ("{FilePath}")]
 	public sealed class AssemblyReference
 	{
 		IReadOnlyPropertySet metadata;

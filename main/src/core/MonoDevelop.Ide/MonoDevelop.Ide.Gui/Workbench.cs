@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Document ActiveDocument {
 			get {
-				if (workbench.ActiveWorkbenchWindow == null)
+				if (workbench?.ActiveWorkbenchWindow == null)
 					return null;
 				return WrapDocument (workbench.ActiveWorkbenchWindow); 
 			}

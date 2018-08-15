@@ -5,40 +5,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.FSharpi.Service</RootNamespace>
-    <AssemblyName>MonoDevelop.FSharpInteractive.Service</AssemblyName>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
+    <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
+    <GenerateTailCalls>true</GenerateTailCalls>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <ExternalConsole>true</ExternalConsole>
-    <PlatformTarget>
-    </PlatformTarget>
-    <GenerateTailCalls>true</GenerateTailCalls>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\AddIns\FSharpBinding</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <ExternalConsole>true</ExternalConsole>
-    <GenerateTailCalls>true</GenerateTailCalls>
-    <PlatformTarget>
-    </PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -190,5 +168,6 @@
     </When>
   </Choose>
   <Import Project="..\packages\StrongNamer\build\StrongNamer.targets" Condition="Exists('..\packages\StrongNamer\build\StrongNamer.targets')" Label="Paket" />
+  <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
 </Project>

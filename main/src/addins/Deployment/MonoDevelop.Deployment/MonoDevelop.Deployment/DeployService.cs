@@ -174,10 +174,31 @@ namespace MonoDevelop.Deployment
 			}
 		}
 
+		// Temporary hack in place to build with GAC'd SharpZipLib on Windows
+		static void SetAsciiTranslate (TarArchive archive)
+		{
+#if WIN32
+			archive.SetAsciiTranslation (false);
+#else
+			archive.AsciiTranslate = false;
+#endif
+		}
+
+		static void CloseArchive (TarArchive archive)
+		{
+#if WIN32
+			archive?.CloseArchive ();
+#else
+			archive?.Close ();
+#endif
+		}
+
 		static void CreateTarArchive (ProgressMonitor mon, string folder, Stream outStream)
 		{
-			using (var archive = TarArchive.CreateOutputTarArchive (outStream)) {
-				archive.AsciiTranslate = false;
+			TarArchive archive = null;
+			try {
+				archive = TarArchive.CreateOutputTarArchive (outStream);
+				SetAsciiTranslate (archive);
 				archive.RootPath = folder;
 				archive.ProgressMessageEvent += delegate (TarArchive ac, TarEntry e, string message) {
 					if (message != null)
@@ -207,6 +228,8 @@ namespace MonoDevelop.Deployment
 					TarOutputStream tarOut = (TarOutputStream)tarOutField.GetValue (archive);
 					tarOut.Finish ();
 				}
+			} finally {
+				CloseArchive (archive);
 			}
 		}
 

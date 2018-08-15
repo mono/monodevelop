@@ -4,11 +4,17 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
+	<!-- F# targets import these specifically, prevent them being reimported-->
+	<PropertyGroup>
+		<CustomBeforeMicrosoftCommonTargets></CustomBeforeMicrosoftCommonTargets>
+	</PropertyGroup>
+
 	<!-- force a bunch of default values for consistency -->
 	<PropertyGroup>
 		<MDConfigIsRelease>$(Configuration.Contains('Release'))</MDConfigIsRelease>
 		<MDConfigIsDebug>$(Configuration.Contains('Debug'))</MDConfigIsDebug>
 		<Optimize>$(MDConfigIsRelease)</Optimize>
+		<Tailcalls>$(Optimize)</Tailcalls>
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>portable</DebugType>
 		<WarningLevel>4</WarningLevel>
@@ -18,6 +24,16 @@
 		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<!-- don't warn about missing doc comments -->
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
+	</PropertyGroup>
+
+	<!-- https://aka.ms/roslyn-packages has a list that maps Roslyn version to latest language version -->
+	<!-- Set the roslyn language version to the latest stable version our provisioned csc supports -->
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
+		<LangVersion>7.2</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.vbproj'">
+		<LangVersion>15.5</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(MDConfigIsDebug)'=='true'">

@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var token = src.Token;
 			var caretLocation = Editor.CaretLocation;
 			var parsedDocument = DocumentContext.ParsedDocument;
+			if (parsedDocument == null)
+				return;
 			Task.Run (async () => {
 				try {
 					var ctx = DocumentContext;
