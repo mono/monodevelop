@@ -272,10 +272,15 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-    let optionsForDependentProject p =
+    let optionsForDependentProject projectFile =
+        let project = x.GetProjectFromFileName projectFile
         async {
-            let! assemblies = x.GetReferencedAssembliesAsync p
-            return x.GetProjectCheckerOptions(p, [], assemblies)
+            let! assemblies = async {
+                match project with
+                | Some (proj:DotNetProject) -> return! proj.GetReferences(CompilerArguments.getConfig()) |> Async.AwaitTask
+                | None -> return new List<AssemblyReference> ()
+            }
+            return x.GetProjectCheckerOptions(projectFile, [], assemblies)
         }
 
     member x.Checker = checker
@@ -336,38 +341,22 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
         |> Seq.tryFind (fun p -> p.FileName.FullPath.ToString() = projectFile)
         |> Option.map(fun p -> p :?> DotNetProject)
 
-    member x.GetReferencedAssembliesSynchronously (project:DotNetProject) =
-        project.GetReferencedAssemblies(CompilerArguments.getConfig()).Result
+    member x.GetProjectOptionsFromProjectFile (project:DotNetProject) (config:ConfigurationSelector) (referencedAssemblies:AssemblyReference seq) =
 
-    member x.GetReferencedAssembliesAsync projectFile =
-        async {
-            let project = x.GetProjectFromFileName projectFile
-            match project with
-            | Some proj -> return! proj.GetReferencedAssemblies(CompilerArguments.getConfig()) |> Async.AwaitTask
-            | None -> return Seq.empty
-        }
-
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, ?referencedAssemblies) =
-        let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously project)
-        let config =
-            match IdeApp.Workspace with
-            | null -> ConfigurationSelector.Default
-            | ws ->
-               match ws.ActiveConfiguration with
-               | null -> ConfigurationSelector.Default
-               | config -> config
-
-        let getReferencedProjects (project:DotNetProject) =
+        // hack: we can't just pull the refs out of referencedAssemblies as we use this for referenced projects as well
+        let getReferencedFSharpProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
 
         let rec getOptions referencedProject =
-            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject referencedAssemblies
+            // hack: we use the referencedAssemblies of the root project for the dependencies' options as well
+            // which is obviously wrong, but it doesn't seem to matter in this case
+            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject config referencedAssemblies
             match projectOptions with
             | Some projOptions ->
                 let referencedProjectOptions =
                     referencedProject
-                    |> getReferencedProjects
+                    |> getReferencedFSharpProjects
                     |> Seq.fold (fun acc reference ->
                                      match getOptions reference with
                                      | Some outFile, Some opts  -> (outFile, opts) :: acc
@@ -386,7 +375,16 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
 
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties, ?referencedAssemblies) : FSharpProjectOptions option =
-        let properties = defaultArg properties ["Configuration", IdeApp.Workspace.ActiveConfigurationId]
+        let config =
+            maybe {
+                let! ws = IdeApp.Workspace |> Option.ofObj
+                return! ws.ActiveConfiguration |> Option.ofObj
+            } |> Option.defaultValue ConfigurationSelector.Default
+        let configId =
+            match IdeApp.Workspace with
+            | null -> null
+            | ws -> ws.ActiveConfigurationId
+        let properties = defaultArg properties ["Configuration", configId]
         let key = (projFilename, properties)
 
         lock projectInfoCache (fun () ->
@@ -404,8 +402,11 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
                 match project with
                 | Some proj ->
                     let proj = proj :?> DotNetProject
-                    let referencedAssemblies = defaultArg referencedAssemblies (x.GetReferencedAssembliesSynchronously proj)
-                    let opts = x.GetProjectOptionsFromProjectFile (proj, referencedAssemblies)
+                    //fixme eliminate this .Result
+                    let asms = match referencedAssemblies with
+                               | Some a -> a
+                               | None -> (proj.GetReferences config).Result
+                    let opts = x.GetProjectOptionsFromProjectFile proj config asms
                     opts |> Option.bind(fun opts' ->
                         projectInfoCache := cache.Add (key, opts')
                         // Print contents of check option for debugging purposes
