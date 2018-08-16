@@ -229,13 +229,19 @@ namespace MonoDevelop.Core.Assemblies
 				cacheKey += "_" + moniker.Profile;
 			}
 
-			FrameworkInfo fxInfo;
+			FrameworkInfo fxInfo = null;
 
 			var cachedListFile = fxCacheDir.Combine (cacheKey + ".xml");
 			var cachedListInfo = new FileInfo (cachedListFile);
 			if (cachedListInfo.Exists && cachedListInfo.LastWriteTime == fxListInfo.LastWriteTime) {
 				fxInfo = FrameworkInfo.Load (moniker, cachedListFile);
-			} else {
+				//if Mono was upgraded since caching, the cached location may no longer be valid
+				if (!Directory.Exists (fxInfo.TargetFrameworkDirectory)) {
+					fxInfo = null;
+				}
+			}
+
+			if (fxInfo == null) {
 				fxInfo = FrameworkInfo.Load (moniker, fxListFile);
 				var supportedFrameworksDir = dir.Combine ("SupportedFrameworks");
 				if (Directory.Exists (supportedFrameworksDir)) {
