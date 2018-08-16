@@ -304,11 +304,11 @@ namespace MonoDevelop.Ide.Desktop
 			}
 		}
 
-		static Lazy<IFilePathRegistryService> filePathRegistryService = CompositionManager.GetExport<IFilePathRegistryService> ();
+		static Lazy<IFileToContentTypeService> fileToContentTypeService = CompositionManager.GetExport<IFileToContentTypeService> ();
 		MimeTypeNode FindMimeTypeForFile (string fileName)
 		{
 			try {
-				IContentType contentType = filePathRegistryService.Value.GetContentTypeForPath (fileName);
+				IContentType contentType = fileToContentTypeService.Value.GetContentTypeForFilePath (fileName);
 				if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
 					string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType (contentType);
 					if (mimeType != null) {
@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide.Desktop
 					}
 				}
 			} catch (Exception ex) {
-				LoggingService.LogError ("IFilePathRegistryService query failed", ex);
+				LoggingService.LogError ("IFilePathToContentTypeProvider query failed", ex);
 			}
 
 			foreach (MimeTypeNode mt in MimeTypeNodes.All) {
