@@ -163,6 +163,12 @@ type ``Template tests``() =
         Directory.CreateDirectory templatesDir |> ignore
         let configFileName = templatesDir/"NuGet.Config"
         File.WriteAllText (configFileName, config, Text.Encoding.UTF8)
+        // HACK: Work around issue in "Xamarin Forms FSharp ClassLibrary" test
+        // the template is broken and doesn't define a framework, so gets the default net45
+        // however the base tests UnitTests.TestBase change the default to net40 resulting in
+        //"Could not install package 'FSharp.Core 4.3.3'. You are trying to install this package into a project that targets '.NETFramework,Version=v4.0',"
+        MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
+            <- Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``FSharp portable project``() =
