@@ -28,6 +28,7 @@ using System;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnitTests;
+using Mono.Addins;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -219,6 +220,85 @@ namespace MonoDevelop.Ide
 
 			Assert.IsTrue (solutionLoaded);
 			Assert.IsFalse (reloaded);
+		}
+
+		/// <summary>
+		/// Tests that if the parser takes a long time to return a projection it is ignored instead
+		/// of being used by the type system.
+		/// </summary>
+		[Test]
+		public async Task CancelledParsedProjectionIsIgnored ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			var parsers = TypeSystemService.Parsers;
+			try {
+				var projectionParser = new TypeSystemParserNode ();
+				projectionParser.BuildActions = new [] { "Compile" };
+				projectionParser.MimeType = "text/csharp";
+
+				var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+				var field = typeof (TypeExtensionNode).GetField ("type", flags);
+				field.SetValue (projectionParser, typeof (ProjectionParser));
+
+				var newParsers = new List<TypeSystemParserNode> ();
+				newParsers.Add (projectionParser);
+				TypeSystemService.Parsers = newParsers;
+
+				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+					using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+
+						var source1 = new CancellationTokenSource ();
+						var source2 = new CancellationTokenSource ();
+
+						var options = new ParseOptions {
+							FileName = "first.xaml.cs"
+						};
+						var task1 = TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
+						source1.Cancel ();
+
+						options = new ParseOptions {
+							FileName = "second.xaml.cs"
+						};
+						var task2 = TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
+
+						var result1 = await task1;
+						var result2 = await task2;
+
+						Assert.IsNotNull (result2);
+						Assert.IsNull (result1);
+					}
+				}
+			} finally {
+				TypeSystemService.Parsers = parsers;
+			}
+		}
+
+		class ProjectionParser : TypeSystemParser
+		{
+			public override Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken = default)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public override bool CanGenerateProjection (string mimeType, string buildAction, string [] supportedLanguages)
+			{
+				return true;
+			}
+
+			public async override Task<ParsedDocumentProjection> GenerateParsedDocumentProjection (ParseOptions options, CancellationToken cancellationToken = default)
+			{
+				string fileName = Path.GetFileName (options.FileName);
+				if (fileName == "first.xaml.cs") {
+					await Task.Delay (2000).ConfigureAwait (false);
+				}
+				var projections = new List<Editor.Projection.Projection> ();
+				var projection = new ParsedDocumentProjection (
+					new DefaultParsedDocument (options.FileName),
+					projections.AsReadOnly ()
+				);
+				return projection;
+			}
 		}
 	}
 }

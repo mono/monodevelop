@@ -936,6 +936,9 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			// HACK: all the logic below is replicating things MSBuild does in ResolveReferences but not
+			// in the subtargets we currently call, ResolveAssemblyReferences
+
 			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			bool noStdLib = false;
 			if (config != null)
@@ -987,6 +990,22 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
+
+			// we do this here rather than PortableDotNetProjectFlavor because F# doesn't use the flavor for PCLs
+			if (TargetFramework.Id.Identifier == ".NETPortable" && TargetFramework.Id.Version != "5.0") {
+				var props = new MSBuildPropertyGroupEvaluated (null);
+				const string resolvedFrom = "ImplicitlyExpandTargetFramework";
+				var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
+				props.SetProperty (property.Name, property);
+
+				foreach (var asm in TargetRuntime.AssemblyContext.GetAssemblies (TargetFramework)) {
+					if (asm.Package.IsFrameworkPackage) {
+						var ar = new AssemblyReference (asm.Location, props);
+						result.Add (ar);
+					}
+				}
+			}
+
 			return result;
 		}
 

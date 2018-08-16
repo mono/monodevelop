@@ -408,10 +408,10 @@ type FSharpInteractivePad(editor:TextEditor) as this =
 
     member x.LoadReferences(project:FSharpProject) =
         LoggingService.LogDebug ("FSI:  #LoadReferences")
-        let orderedreferences = project.GetOrderedReferences()
-
-        orderedreferences
-        |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path))
+        async {
+            let! orderedReferences = project.GetOrderedReferences (CompilerArguments.getConfig())
+            orderedReferences |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path))
+        } |> Async.StartImmediate
 
     override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
         LoggingService.LogDebug ("InteractivePad: created!")
@@ -599,7 +599,6 @@ type FSharpFsiEditorCompletion() =
       override x.Run() =
           async {
               let project = IdeApp.Workbench.ActiveDocument.Project :?> FSharpProject
-              do! project.GetReferences()
               FSharpInteractivePad.Fsi
               |> Option.iter (fun fsi -> fsi.LoadReferences(project)
                                          FSharpInteractivePad.BringToFront(false))
