@@ -52,9 +52,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		static string[] filesSkippedInParseThread = new string[0];
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
-		static IEnumerable<TypeSystemParserNode> Parsers {
+		internal static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
+			}
+			set {
+				parsers = value;
 			}
 		}
 
@@ -229,6 +232,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
 				var result = await parser.GenerateParsedDocumentProjection (options, cancellationToken);
+				if (cancellationToken.IsCancellationRequested)
+					return null;
+
 				if (options.Project != null) {
 					var ws = workspaces.First () ;
 					var projectId = ws.GetProjectId (options.Project);
