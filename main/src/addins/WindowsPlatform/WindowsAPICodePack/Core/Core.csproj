@@ -8,6 +8,8 @@
     <AssemblyName>Microsoft.WindowsAPICodePack</AssemblyName>
     <OutputPath>..\..\..\..\..\build\AddIns\WindowsPlatform</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <!-- see https://github.com/mono/monodevelop/issues/5501 -->
+    <ShortEmbeddedResourceIDs>False</ShortEmbeddedResourceIDs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -60,8 +62,7 @@
     <Compile Include="PowerManagement\BatteryState.cs" />
     <Compile Include="PowerManagement\EventManager.cs" />
     <Compile Include="PowerManagement\ExecutionState.cs" />
-    <Compile Include="PowerManagement\MessageManager.cs">
-    </Compile>
+    <Compile Include="PowerManagement\MessageManager.cs" />
     <Compile Include="PowerManagement\PersonalityGuids.cs" />
     <Compile Include="PowerManagement\Power.cs" />
     <Compile Include="PowerManagement\PowerManager.cs" />
