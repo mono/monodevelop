@@ -824,6 +824,26 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (1, result.ErrorCount, "#1");
 			}
 		}
+
+		/// <summary>
+		/// The project's OutputPath is based on an MSBuild property imported from another MSBuild file.
+		/// This test ensures that when building the debug build the assembly is created in the correct directory.
+		/// </summary>
+		[Test]
+		public async Task BuildProjectWithImportedOutputPathProperty ()
+		{
+			FilePath solFile = Util.GetSampleProject ("ImportedOutputPathProperty", "ImportedOutputPathProperty.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var project = sol.GetAllProjects ().Single ();
+				var outputDirectory = project.BaseDirectory.Combine ("target", "Debug", "Common");
+				var outputAssembly = outputDirectory.Combine ("ImportedOutputPathProperty.dll");
+
+				var result = await sol.Build (Util.GetMonitor (), "Debug");
+
+				Assert.AreEqual (0, result.ErrorCount);
+				Assert.IsTrue (File.Exists (outputAssembly), "Output assembly not built in correct location.");
+			}
+		}
 	}
 
 	class EvalContextCreationTestExtension : ProjectExtension

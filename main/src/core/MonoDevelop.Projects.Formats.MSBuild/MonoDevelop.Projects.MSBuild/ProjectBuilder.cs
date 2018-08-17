@@ -196,8 +196,11 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
-				p.SetGlobalProperty ("Configuration", configuration);
+			// Always set the configuration. This ensures that imported projects that use the
+			// Configuration have properties evaluated correctly.
+			p.SetGlobalProperty ("Configuration", configuration);
+
+			if ((p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
 				if (!string.IsNullOrEmpty (platform))
 					p.SetGlobalProperty ("Platform", platform);
 				else
