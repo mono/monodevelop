@@ -102,6 +102,33 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		[Test]
+		public async Task CheckAndBuildForExecute_SkipUpToDate ()
+		{
+			using (var executionDep = new ProjectWithExecutionDeps ("Dependency"))
+			using (var executing = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (executionDep, executing)) {
+
+				executing.IsBuildUpToDate = true;
+				executing.OverrideExecutionDependencies = new [] { executionDep };
+				executionDep.ItemDependencies.Add (executing);
+
+				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				Assert.IsTrue (success);
+				Assert.IsTrue (executionDep.WasBuilt);
+
+				// this is kinda hacky but until the tests ignore user prefs when run locally it's necessary
+				Assert.AreEqual (!Runtime.Preferences.SkipBuildingUnmodifiedProjects, executing.WasBuilt);
+
+				executionDep.WasBuilt = executing.WasBuilt = false;
+
+				success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				Assert.IsTrue (success);
+				Assert.IsFalse (executionDep.WasBuilt);
+				Assert.IsFalse (executing.WasBuilt);
+			}
+		}
+
 		[DebuggerDisplay ("Project {Name}")]
 		class ProjectWithExecutionDeps : Project
 		{
@@ -112,7 +139,8 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			public IBuildTarget[] OverrideExecutionDependencies { get; set; }
-			public bool WasBuilt { get; private set; }
+			public bool WasBuilt { get; set; }
+			public bool IsBuildUpToDate { get; set; }
 
 			protected override IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
 			{
@@ -121,8 +149,14 @@ namespace MonoDevelop.Ide.Projects
 
 			protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 			{
+				IsBuildUpToDate = true;
 				WasBuilt = true;
 				return Task.FromResult (new BuildResult { BuildCount = 1 });
+			}
+
+			protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+			{
+				return !IsBuildUpToDate;
 			}
 		}
 	}
