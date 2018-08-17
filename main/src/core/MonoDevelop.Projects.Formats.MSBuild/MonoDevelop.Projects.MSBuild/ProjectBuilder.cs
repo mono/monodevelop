@@ -196,16 +196,14 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			// Always set the configuration. This ensures that imported projects that use the
-			// Configuration have properties evaluated correctly.
+			// Always set the configuration and platform. This ensures that imported projects that use the
+			// Configuration or Platform have properties evaluated correctly.
 			p.SetGlobalProperty ("Configuration", configuration);
 
-			if ((p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
-				if (!string.IsNullOrEmpty (platform))
-					p.SetGlobalProperty ("Platform", platform);
-				else
-					p.RemoveGlobalProperty ("Platform");
-			}
+			if (!string.IsNullOrEmpty (platform))
+				p.SetGlobalProperty ("Platform", platform);
+			else
+				p.RemoveGlobalProperty ("Platform");
 
 			// The CurrentSolutionConfigurationContents property only needs to be set once
 			// for the project actually being built

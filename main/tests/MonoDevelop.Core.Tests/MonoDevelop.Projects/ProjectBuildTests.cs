@@ -826,7 +826,7 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// The project's OutputPath is based on an MSBuild property imported from another MSBuild file.
+		/// The project's OutputPath is based on an MSBuild property that uses the Configuration and is imported from another MSBuild file.
 		/// This test ensures that when building the debug build the assembly is created in the correct directory.
 		/// </summary>
 		[Test]
@@ -837,6 +837,25 @@ namespace MonoDevelop.Projects
 				var project = sol.GetAllProjects ().Single ();
 				var outputDirectory = project.BaseDirectory.Combine ("target", "Debug", "Common");
 				var outputAssembly = outputDirectory.Combine ("ImportedOutputPathProperty.dll");
+
+				var result = await sol.Build (Util.GetMonitor (), "Debug");
+
+				Assert.AreEqual (0, result.ErrorCount);
+				Assert.IsTrue (File.Exists (outputAssembly), "Output assembly not built in correct location.");
+			}
+		}
+
+		/// <summary>
+		/// Similar to the above test but uses the Platform property inste
+		/// </summary>
+		[Test]
+		public async Task BuildProjectWithImportedPlatformOutputPathProperty ()
+		{
+			FilePath solFile = Util.GetSampleProject ("ImportedOutputPathProperty", "ImportedPlatformOutputPathProperty.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var project = sol.GetAllProjects ().Single ();
+				var outputDirectory = project.BaseDirectory.Combine ("target", "AnyCPU", "Common");
+				var outputAssembly = outputDirectory.Combine ("ImportedPlatformOutputPathProperty.dll");
 
 				var result = await sol.Build (Util.GetMonitor (), "Debug");
 
