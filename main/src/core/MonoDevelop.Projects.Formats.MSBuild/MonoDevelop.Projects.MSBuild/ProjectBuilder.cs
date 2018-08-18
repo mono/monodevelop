@@ -166,8 +166,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		Project ConfigureProject (string file, string configuration, string platform, string slnConfigContents)
 		{			
+			bool firstConfigure = false;
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
+				firstConfigure = true;
 				var projectDir = Path.GetDirectoryName (file);
 
 				// HACK: workaround to MSBuild bug #53019. We need to ensure that $(BaseIntermediateOutputPath) exists before
@@ -196,14 +198,13 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			// Always set the configuration and platform. This ensures that imported projects that use the
-			// Configuration or Platform have properties evaluated correctly.
-			p.SetGlobalProperty ("Configuration", configuration);
-
-			if (!string.IsNullOrEmpty (platform))
-				p.SetGlobalProperty ("Platform", platform);
-			else
-				p.RemoveGlobalProperty ("Platform");
+			if (firstConfigure || p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
+				p.SetGlobalProperty ("Configuration", configuration);
+				if (!string.IsNullOrEmpty (platform))
+					p.SetGlobalProperty ("Platform", platform);
+				else
+					p.RemoveGlobalProperty ("Platform");
+			}
 
 			// The CurrentSolutionConfigurationContents property only needs to be set once
 			// for the project actually being built
