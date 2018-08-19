@@ -1039,24 +1039,16 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		/// <summary>
-		/// Returns a list of SDKs referenced by this project, selecting implicit and/or explicit sdks
-		/// in the process
+		/// Returns a list of SDKs referenced by this project that are not imported using an
+		/// Import element.
 		/// </summary>
-		public string[] GetReferencedSDKs (bool includeImplicitSdks, bool includeExplicitSdks)
+		internal string[] GetImplicitlyImportedSdks ()
 		{
 			if (sdkArray == null) {
 				GenerateSdkArray ();
 			}
 
-			if (includeImplicitSdks && includeExplicitSdks) {
-				return sdkArray;
-			} else if (includeImplicitSdks) {
-				return implicitSdkArray;
-			} else if (includeExplicitSdks) {
-				return explicitSdkArray;
-			} else {
-				return Array.Empty<string> ();
-			}
+			return implicitSdkArray;
 		}
 
 		XmlNamespaceManager GetNamespaceManagerForProject ()

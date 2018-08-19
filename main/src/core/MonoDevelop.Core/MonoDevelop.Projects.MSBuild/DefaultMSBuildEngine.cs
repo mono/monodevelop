@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.MSBuild
 			context.InitEvaluation (pi.Project);
 			var objects = pi.Project.GetAllObjects ();
 
-			string[] implicitSdks = pi.Project.GetReferencedSDKs (true, false);
+			string[] implicitSdks = pi.Project.GetImplicitlyImportedSdks ();
 			if (implicitSdks.Length > 0) {
 				var rootProject = pi.GetRootMSBuildProject ();
 

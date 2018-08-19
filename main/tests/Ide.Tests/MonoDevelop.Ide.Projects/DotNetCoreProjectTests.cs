@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Projects
 
 			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
 				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (), new string[] { "Microsoft.NET.Sdk" });
-				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (true, false).Length, 1);
+				Assert.AreEqual (p.MSBuildProject.GetImplicitlyImportedSdks ().Length, 1);
 			}
 		}
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Projects
 
 			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
 				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (), new string[] { "Microsoft.NET.Sdk" });
-				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (true, false).Length, 1);
+				Assert.AreEqual (p.MSBuildProject.GetImplicitlyImportedSdks ().Length, 1);
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Projects
 
 			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
 				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (), new string[] { "Microsoft.NET.Sdk" });
-				Assert.AreEqual (p.MSBuildProject.GetReferencedSDKs (true, false).Length, 0);
+				Assert.AreEqual (p.MSBuildProject.GetImplicitlyImportedSdks ().Length, 0);
 			}
 		}
 	}
