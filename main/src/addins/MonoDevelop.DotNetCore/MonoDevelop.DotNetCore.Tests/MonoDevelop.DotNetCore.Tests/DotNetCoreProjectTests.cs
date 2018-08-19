@@ -387,5 +387,25 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.IsTrue (projectExtension.IsWeb);
 			}
 		}
+
+		[Test]
+		public async Task LoadDotNetCoreProjectWithSdkNode ()
+		{
+			string projFile = Util.GetSampleProject ("DotNetCoreSdkFormat", "DotNetCoreSdkNode", "DotNetCoreSdkNode.csproj");
+
+			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				Assert.IsTrue (p.HasFlavor<DotNetCoreProjectExtension> ());
+			}
+		}
+
+		[Test]
+		public async Task LoadDotNetCoreProjectWithSdkImports ()
+		{
+			string projFile = Util.GetSampleProject ("DotNetCoreSdkFormat", "DotNetCoreImportSdk", "DotNetCoreImportSdk.csproj");
+
+			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				Assert.IsTrue (p.HasFlavor<DotNetCoreProjectExtension> ());
+			}
+		}
 	}
 }
