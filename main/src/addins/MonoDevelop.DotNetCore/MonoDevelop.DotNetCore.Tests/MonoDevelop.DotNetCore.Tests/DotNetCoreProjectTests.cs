@@ -368,5 +368,24 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual ("Library", outputTypeProperty);
 			Assert.AreEqual (CompileTarget.Library, project.CompileTarget);
 		}
+
+		[Test]
+		public async Task IsWeb_ProjectHasSdkAttribute ()
+		{
+			string projFile = Util.GetSampleProject ("DotNetCoreSdkFormat", "DotNetCoreProjectSdk", "DotNetCoreProjectSdk.csproj");
+
+			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectExtension = p.AsFlavor<DotNetCoreProjectExtension> ();
+
+				Assert.AreEqual ("Microsoft.NET.Sdk", p.MSBuildProject.Sdk);
+				Assert.IsFalse (projectExtension.IsWeb);
+
+				p.MSBuildProject.Sdk = "Microsoft.NET.Sdk.Web";
+				Assert.IsTrue (projectExtension.IsWeb);
+
+				p.MSBuildProject.Sdk = "Microsoft.NET.Sdk;Microsoft.NET.Sdk.Web";
+				Assert.IsTrue (projectExtension.IsWeb);
+			}
+		}
 	}
 }
