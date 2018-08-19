@@ -98,7 +98,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool CanCreate (DotNetProject project)
 		{
-			return project.MSBuildProject.GetReferencedSDKs().Length > 0;
+			return project.MSBuildProject.GetReferencedSDKs ().Any ();
 		}
 
 		public static NuGetProject Create (DotNetProject project)

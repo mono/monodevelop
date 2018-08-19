@@ -65,11 +65,11 @@ namespace MonoDevelop.DotNetCore
 				// 1) An Sdk attribute on the Project node
 				// 2) An Sdk node as a child of the Project node
 				// 3) An Sdk attribute on any Import node
-				XmlDocument document = new XmlDocument ();
+				var document = new XmlDocument ();
 				document.Load (new StreamReader (file));
 				XmlNode projectNode = document.SelectSingleNode ("/Project");
 				if (projectNode != null) {
-					XmlAttribute sdkAttr = projectNode.Attributes["Sdk"];
+					XmlAttribute sdkAttr = projectNode.Attributes ["Sdk"];
 					if (sdkAttr != null) {
 						// Found an Sdk definition on the root Project node
 						return sdkAttr.Value;
@@ -77,7 +77,7 @@ namespace MonoDevelop.DotNetCore
 
 					var childSdkNode = projectNode.SelectSingleNode ("Sdk");
 					if (childSdkNode != null) {
-						var name = childSdkNode.Attributes["Name"];
+						var name = childSdkNode.Attributes ["Name"];
 						if (name != null) {
 							// Found an Sdk definition on an Sdk node
 							return name.Value;
@@ -85,7 +85,7 @@ namespace MonoDevelop.DotNetCore
 					}
 
 					foreach (XmlNode importNode in projectNode.SelectNodes ("//Import")) {
-						sdkAttr = importNode.Attributes["Sdk"];
+						sdkAttr = importNode.Attributes ["Sdk"];
 						if (sdkAttr != null) {
 							return sdkAttr.Value;
 						}

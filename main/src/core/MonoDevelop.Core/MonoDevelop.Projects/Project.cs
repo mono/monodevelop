@@ -1450,7 +1450,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		static string[] GetTargetFrameworks (MSBuildProject project)
 		{
-			if (project.GetReferencedSDKs().Length == 0)
+			if (!project.GetReferencedSDKs ().Any ())
 				return null;
 
 			var propertyGroup = project.GetGlobalPropertyGroup ();
