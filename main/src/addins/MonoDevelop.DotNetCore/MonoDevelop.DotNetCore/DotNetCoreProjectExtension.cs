@@ -416,7 +416,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected bool IsWebProject (DotNetProject project)
 		{
-			return (project.MSBuildProject.GetReferencedSDKs ()?.FirstOrDefault (x => x?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) != -1) != null);
+			return (project.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) != -1) != null);
 		}
 
 		public bool IsWeb {
