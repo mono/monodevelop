@@ -113,6 +113,11 @@ namespace MonoDevelop.Projects
 			return next.GetExecutionTargets (solution, configuration, runConfiguration);
 		}
 
+		internal protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+		{
+			return next.OnGetExecutionDependencies ();
+		}
+
 		internal protected virtual IEnumerable<SolutionRunConfiguration> OnGetRunConfigurations ()
 		{
 			return next.OnGetRunConfigurations ();
