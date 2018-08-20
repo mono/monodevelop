@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-07 16:40:37+0300\n"
+"POT-Creation-Date: 2018-08-20 14:25:20+0300\n"
 "PO-Revision-Date: 2010-10-13 23:48:17+0200\n"
 "Last-Translator: André Offringa <offringa@gmail.com>\n"
 "Language-Team: Dutch\n"
@@ -487,7 +487,7 @@ msgid "+?"
 msgstr "+?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1703
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1737
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:173
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:142
 msgid "---------------------- Done ----------------------"
@@ -699,7 +699,7 @@ msgstr "{0} van {1}"
 msgid "1/1"
 msgstr ""
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:164
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:164
 msgid "1234"
 msgstr ""
 
@@ -715,15 +715,15 @@ msgstr ""
 msgid "3D based graphical application"
 msgstr "3D-gebaseerde grafische toepassing "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2314
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2348
 msgid "3rd copy"
 msgstr "3e kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2315
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2349
 msgid "4th copy"
 msgstr "4e kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2350
 msgid "5th copy"
 msgstr "5e kopie"
 
@@ -731,19 +731,19 @@ msgstr "5e kopie"
 msgid "64-bit"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2317
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2351
 msgid "6th copy"
 msgstr "6e kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2318
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2352
 msgid "7th copy"
 msgstr "7e kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2319
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2353
 msgid "8th copy"
 msgstr "8ste kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2320
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2354
 msgid "9th copy"
 msgstr "9e kopie"
 
@@ -876,17 +876,17 @@ msgstr "Parseerfout:"
 msgid "<b>Expires on:</b>"
 msgstr "<b>Verloopt op:</b>"
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:115
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:115
 #, fuzzy
 msgid "<b>F# Default Compiler</b>"
 msgstr "Standaard C-compiler:"
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:204
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:204
 #, fuzzy
 msgid "<b>F# Editor</b>"
 msgstr "<b>Lettertype</b>"
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:63
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:63
 #, fuzzy
 msgid "<b>F# Interactive</b>"
 msgstr "<b>Lettertype</b>"
@@ -895,7 +895,7 @@ msgstr "<b>Lettertype</b>"
 msgid "<b>File Format Incompatibility Detected</b>"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:107
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:131
 #, fuzzy
 msgid "<b>File Save Options Before Building</b>"
 msgstr "<b>Bestand bewaaropties</b>"
@@ -905,7 +905,7 @@ msgid "<b>Fingerprint:</b>"
 msgstr "<b>Vingerafdruk:</b>"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:86
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:88
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:88
 msgid "<b>General Options</b>"
 msgstr "<b>Algemene opties</b>"
 
@@ -1121,7 +1121,7 @@ msgstr "<b>Waarschuwingen</b>"
 
 #: ../src/addins/VBNetBinding/Gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:184
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:284
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:303
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:305
 msgid "<b>Warnings</b>"
 msgstr "<b>Waarschuwingen</b>"
 
@@ -2581,7 +2581,7 @@ msgstr ""
 msgid "Adding failed"
 msgstr "Bestanden toevoegen..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1871
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1905
 msgid "Adding files..."
 msgstr "Bestanden toevoegen..."
 
@@ -2671,7 +2671,7 @@ msgstr ""
 msgid "Adds the Service Capability"
 msgstr ""
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:80
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:80
 #, fuzzy
 msgid "Advance to next line"
 msgstr "Ga naar de volgende regel"
@@ -2933,7 +2933,7 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2009
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2043
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -2970,7 +2970,7 @@ msgstr ""
 msgid "An outline is not available for the current document."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs:136
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs:139
 msgid "An overview of the current file's messages, warnings and errors"
 msgstr ""
 
@@ -3029,7 +3029,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:375
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:382
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:146
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:209
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:211
 msgid "Any CPU"
 msgstr ""
 
@@ -4055,7 +4055,7 @@ msgstr "Bou_wen"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1462
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1496
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -4110,7 +4110,7 @@ msgstr "Bouw de oplossing"
 msgid "Build and run the current solution"
 msgstr "Wis recente projecten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1715
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1749
 #, fuzzy
 msgid "Build canceled."
 msgstr "Bouwen geannuleerd"
@@ -4129,8 +4129,8 @@ msgstr "Wis recente projecten"
 msgid "Build failed"
 msgstr "Bouwen mislukt."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1599
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1723
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1633
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1757
 msgid "Build failed."
 msgstr "Bouwen mislukt."
 
@@ -4143,12 +4143,12 @@ msgstr "Bouwen mislukt. Bekijk bouw-uitvoerpaneel."
 msgid "Build processes:"
 msgstr "Bouw project {0}"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:82
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:84
 #, fuzzy
 msgid "Build project before executing unit tests"
 msgstr "Oplossing bouwen alvorens uit te voeren"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:46
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:48
 #, fuzzy
 msgid "Build project before running"
 msgstr "Oplossing bouwen alvorens uit te voeren"
@@ -4168,7 +4168,7 @@ msgstr "Bouw oplossing {0}"
 msgid "Build succeeded"
 msgstr "Bouwen geannuleerd"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1717
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
 msgid "Build successful."
 msgstr "Succesvol gebouwd."
 
@@ -4190,12 +4190,12 @@ msgstr "Wis recente projecten"
 msgid "Build {0}"
 msgstr "Bouw {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1719
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1721
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1753
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1755
 msgid "Build: "
 msgstr "Bouw: "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:602
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:615
 #, fuzzy
 msgid "Building solution {0} ({1})"
 msgstr "Bouwen van oplossing {0}"
@@ -4210,7 +4210,7 @@ msgstr "Bezig met bouwen van {0}"
 msgid "Building {0} ({1})"
 msgstr "Bezig met bouwen van project: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1003
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1013
 #, fuzzy
 msgid "Building {0} items in solution {1} ({2})"
 msgstr "Bouwen van oplossing {0}"
@@ -4286,10 +4286,8 @@ msgstr "Instellingen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:847
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:867
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:889
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:902
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:920
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:936
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:950
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:905
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:919
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:203
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:118
@@ -4444,7 +4442,7 @@ msgstr ""
 msgid "Camera tools, etc."
 msgstr "Camera hulpmiddelen, enz."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1877
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1896
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4489,17 +4487,17 @@ msgstr "Kan map {0} niet verwijderen"
 msgid "Can't remove file {0}"
 msgstr "Kan bestand {0} niet verwijderen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:760
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:762
 #, fuzzy
 msgid "Can't save file"
 msgstr "Kan bestand {0} niet verwijderen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:804
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:806
 #, fuzzy
 msgid "Can't save file - access denied"
 msgstr "Open een bestand in de huidige oplossing..."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:783
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:785
 #, fuzzy
 msgid "Can't save file with current codepage."
 msgstr "Open een bestand in de huidige oplossing..."
@@ -4572,7 +4570,7 @@ msgstr ""
 "De map {0} kon niet aangemaakt worden, omdat er al een bestand met deze naam "
 "bestaat."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1885
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1904
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 #, fuzzy
 msgid "Cannot execute \"{0}\""
@@ -4640,7 +4638,7 @@ msgstr ""
 msgid "Categories"
 msgstr "Categoriën"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:683
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:685
 msgid "Category"
 msgstr "Categorie"
 
@@ -4942,17 +4940,17 @@ msgstr ""
 msgid "Check to automatically set the search pattern case sensitivity"
 msgstr "C_onverteer tabs naar spaties"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:89
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:90
 #, fuzzy
 msgid "Check to be prompted to save changes before building"
 msgstr "Nieuwe pakketten voor het project aanmaken"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:74
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:75
 #, fuzzy
 msgid "Check to build the solution before running"
 msgstr "Oplossing bouwen alvorens uit te voeren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:78
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:79
 msgid "Check to build the solution before running tests"
 msgstr ""
 
@@ -5005,7 +5003,7 @@ msgstr "Genereer _Xml-documentatie"
 msgid "Check to enable line folding"
 msgstr "_Genereer overflow controles"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:82
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:83
 #, fuzzy
 msgid "Check to enable parallel building"
 msgstr "Nieuwe pakketten voor het project aanmaken"
@@ -5093,7 +5091,7 @@ msgstr ""
 msgid "Check to make Backspace remove indentation"
 msgstr "<b>Inspringen van labels</b>"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:87
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:88
 #, fuzzy
 msgid "Check to not save changes before building"
 msgstr "_Bewaar wijzigingen in open documenten"
@@ -5126,11 +5124,11 @@ msgstr "Genereer _Xml-documentatie"
 msgid "Check to require the user to accept the NuGet package's license"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:76
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:77
 msgid "Check to run the solution even if the build had warnings"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:85
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:86
 #, fuzzy
 msgid "Check to save changes before building"
 msgstr "_Bewaar wijzigingen in open documenten"
@@ -5166,7 +5164,7 @@ msgstr "Ga een karakter naar rechts"
 msgid "Check to show the column ruler"
 msgstr "_Kolomlineal weergeven,"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:80
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:81
 msgid "Check to skip building unmodified projects"
 msgstr ""
 
@@ -5401,7 +5399,7 @@ msgstr "Schoonmaken"
 msgid "Cleaning project"
 msgstr "Schoonmaken van project"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:585
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:598
 #, fuzzy
 msgid "Cleaning solution {0} ({1})"
 msgstr "Opslaan van oplossing: {0}"
@@ -5411,7 +5409,7 @@ msgstr "Opslaan van oplossing: {0}"
 msgid "Cleaning {0} ({1})"
 msgstr "Bezig met bouwen van project: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:949
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:959
 #, fuzzy
 msgid "Cleaning {0} items in solution {1} ({2})"
 msgstr "Opslaan van oplossing: {0}"
@@ -5545,15 +5543,15 @@ msgstr "Selectie omzetten naar kleine letters"
 msgid "Click to move the selected tool up the list"
 msgstr "Selectie omzetten naar hoofdletters"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:362
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:372
 msgid "Click to navigate to the next error"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:376
 msgid "Click to navigate to the next message"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:374
 msgid "Click to navigate to the next warning"
 msgstr ""
 
@@ -5582,7 +5580,7 @@ msgstr ""
 msgid "Client Certificate Required"
 msgstr "Certificaat van client vereist"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2202
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2204
 #, fuzzy
 msgid "Clipboard ring"
 msgstr "Programmeren"
@@ -5600,12 +5598,12 @@ msgstr "_Sluit bestand"
 msgid "Close All Files"
 msgstr "_Sluit bestand"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:635
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:634
 #, fuzzy
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2400
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2434
 #, fuzzy
 msgid "Close Project"
 msgstr "Consoleproject"
@@ -5756,7 +5754,7 @@ msgstr "Reset opties"
 msgid "Code Snippets"
 msgstr "Reset opties"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2461
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2495
 msgid "Code completion database generation"
 msgstr ""
 
@@ -5806,7 +5804,7 @@ msgstr "Kleur:"
 msgid "Column is not a number."
 msgstr "_Regelnummer:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:481
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:483
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:355
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:454
 msgid "Columns"
@@ -5856,7 +5854,7 @@ msgstr "Uitvoeren mislukt."
 msgid "Command execution failed: {0}"
 msgstr "Bezig met laden van oplossingsbestand {0}"
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:232
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:234
 #, fuzzy
 msgid "Command line parameters:"
 msgstr "Compileropties"
@@ -6066,7 +6064,7 @@ msgstr "Configuratie"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1766
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2150
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2200
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1866
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1885
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Bezig met aanmaken van {0} voor project {1}"
@@ -6267,7 +6265,7 @@ msgstr "Commentaar"
 msgid "Continue"
 msgstr "Containers"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:637
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:636
 #, fuzzy
 msgid "Continue Anyway"
 msgstr "Containers"
@@ -6447,13 +6445,13 @@ msgstr "Kopiëren van taak"
 msgid "Copy Task Description"
 msgstr "Beschrijving"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:50
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:60
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CopyCommentsFromBaseCodeRefactoringProvider.cs:62
 #, fuzzy
 msgid "Copy comments from base"
 msgstr "Kopiëer commentaartaak"
 
-#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:50
+#: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CopyCommentsFromBaseCodeRefactoringProvider.cs:60
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CopyCommentsFromBaseCodeRefactoringProvider.cs:62
 #, fuzzy
 msgid "Copy comments from interface"
@@ -6486,7 +6484,7 @@ msgstr "<b>Uitvoermap</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2182
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2216
 msgid "Copying files..."
 msgstr "Bezig met bestanden kopiëren..."
 
@@ -6530,7 +6528,7 @@ msgid ""
 "Could not create credential response object because the response was invalid."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2163
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2197
 msgid "Could not create directory '{0}'."
 msgstr "De map '{0}' kon niet worden aangemaakt."
 
@@ -6562,7 +6560,7 @@ msgid ""
 "project configurations."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2136
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2170
 msgid "Could not get any file from '{0}'."
 msgstr "Geen enkel bestand uit '{0}' konden geopend worden."
 
@@ -6607,7 +6605,7 @@ msgid "Could not load solution item: {0}"
 msgstr "Kon oplossingonderdeel niet laden: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:388
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:408
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:405
 msgid "Could not load solution: {0}"
 msgstr "Kon oplossing niet opvragen: {0}"
 
@@ -6625,7 +6623,7 @@ msgstr "Kon project niet opvragen: {0}"
 msgid "Could not mount FUSE filesystem."
 msgstr "Het FUSE-bestandssysteem kon niet gemount worden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:428
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:425
 #, fuzzy
 msgid "Could not open file: {0}"
 msgstr "Bestand {0} kon niet worden geupdate"
@@ -7538,11 +7536,11 @@ msgstr "Wis recente projecten"
 msgid "Custom project started building"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:754
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:753
 msgid "CustomizerAssemblyPath"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:759
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:758
 #, fuzzy
 msgid "CustomizerType"
 msgstr "Anders"
@@ -7567,8 +7565,8 @@ msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:941
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:983
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:951
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:993
 #, fuzzy
 msgid "Cyclic dependencies are not supported."
 msgstr "Cyclische projectreferenties zijn niet toegestaan."
@@ -7691,7 +7689,7 @@ msgid "Debug current project"
 msgstr "Wis recente projecten"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:235
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:243
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:245
 #, fuzzy
 msgid "Debug information:"
 msgstr "Debuginformatie opnemen"
@@ -7815,7 +7813,7 @@ msgid "Define DEBUG:"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:246
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:265
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:267
 msgid "Define S_ymbols:"
 msgstr "Definieer S_ymbolen:"
 
@@ -8073,7 +8071,7 @@ msgstr "Uitrolbestanden"
 msgid "Derived Symbols"
 msgstr "Definieer symbolen:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:664
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:666
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:121
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:106
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:103
@@ -8143,6 +8141,11 @@ msgstr "Toepassing voor bureaupublicaties en kleurenbeheer"
 msgid "Detach"
 msgstr "Zoek"
 
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:104
+#, fuzzy
+msgid "Detailed"
+msgstr "Details"
+
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.cs:103
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:569
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.ErrorDialog.cs:92
@@ -8179,6 +8182,10 @@ msgstr "Internetpagina's voor ontwikkeling"
 #, fuzzy
 msgid "Development Dependency:"
 msgstr "Internetpagina's voor ontwikkeling"
+
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:105
+msgid "Diagnostic"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:144
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:148
@@ -8230,7 +8237,7 @@ msgstr "Mappen"
 msgid "Directory"
 msgstr "Map"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2174
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2208
 #, fuzzy
 msgid "Directory '{0}' could not be moved."
 msgstr "De map '{0}' kon niet verwijderd worden."
@@ -8892,6 +8899,7 @@ msgid "Email: {0}{1}{2}"
 msgstr "Uitvoeren van: {0} {1} {2}"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:174
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:188
 #, fuzzy
 msgid "Embedded"
 msgstr "Voeg toe"
@@ -9076,7 +9084,7 @@ msgid "Enable _Folding"
 msgstr "Code in_vouwen inschakelen"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:118
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:133
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:133
 msgid "Enable _optimizations"
 msgstr "_Optimalisaties inschakelen"
 
@@ -9084,7 +9092,7 @@ msgstr "_Optimalisaties inschakelen"
 msgid "Enable _selection surrounding keys"
 msgstr ""
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:120
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:120
 #, fuzzy
 msgid "Enable _tail calls"
 msgstr "_Optimalisaties inschakelen"
@@ -9136,7 +9144,7 @@ msgstr "Wis alle breakpoints"
 msgid "Enable or Disable Breakpoint"
 msgstr "Wis alle breakpoints"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:70
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:72
 msgid "Enable parallel build of projects"
 msgstr ""
 
@@ -9653,7 +9661,7 @@ msgstr "Gelijk aan {n} (lazy {n})."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:59
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:71
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:768
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:770
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:92
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.ErrorDialog.cs:23
@@ -10218,7 +10226,7 @@ msgstr "Expressie"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:662
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:758
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:817
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1085
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1054
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:281
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:302
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:323
@@ -10521,7 +10529,7 @@ msgid "Fields"
 msgstr "Veld"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:376
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:671
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:673
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:125
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:151
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:193
@@ -10535,12 +10543,12 @@ msgstr "Veld"
 msgid "File"
 msgstr "Bestand"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2220
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2254
 #, fuzzy
 msgid "File '{0}' could not be copied."
 msgstr "Het bestand '{0}' kon niet worden geopend."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2218
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2252
 #, fuzzy
 msgid "File '{0}' could not be moved."
 msgstr "Het bestand '{0}' kon niet worden geopend."
@@ -11243,7 +11251,7 @@ msgid "From: {0}"
 msgstr "Vorm {0}"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:171
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:185
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:185
 #, fuzzy
 msgid "Full"
 msgstr "Volledige naam"
@@ -11257,14 +11265,14 @@ msgstr "Layout"
 msgid "Full path of the file."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1107
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1129
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1076
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1098
 #, fuzzy
 msgid "Function arguments"
 msgstr "_Extra argumenten:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1103
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1125
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1072
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1094
 #, fuzzy
 msgid "Function name"
 msgstr "Een actiespel"
@@ -11362,7 +11370,7 @@ msgstr ""
 msgid "Garbage Collector"
 msgstr "_Doelmap"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:747
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:753
 #, fuzzy
 msgid "Gathering class information"
 msgstr "Bezig met verzamelen van klasseinformatie..."
@@ -11442,7 +11450,7 @@ msgstr "Property hernoemen"
 msgid "Generate XML documentation:"
 msgstr "Genereer _Xml-documentatie"
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:170
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:170
 #, fuzzy
 msgid "Generate _xml documentation"
 msgstr "Genereer _Xml-documentatie"
@@ -11868,12 +11876,12 @@ msgstr "Methode hernoemen"
 msgid "Go to _Interface Property"
 msgstr "Property hernoemen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:459
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:461
 #, fuzzy
 msgid "Go to _Log"
 msgstr "_Ga naar regel"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:455
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:457
 #, fuzzy
 msgid "Go to _Reference"
 msgstr "Foutreferenties weergeven"
@@ -12191,7 +12199,7 @@ msgstr "Huidige re_gel oplichten"
 msgid "Highlight _identifier references"
 msgstr "Huidige re_gel oplichten"
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:220
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:220
 #, fuzzy
 msgid "Highlight mutable variables"
 msgstr "Tab-karakters oplichten"
@@ -12224,14 +12232,14 @@ msgstr "Controltoets vasthouden om te openen in huidige werkruimte."
 msgid "Host name:"
 msgstr "Hostnaam:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:965
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:977
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:989
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1001
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1013
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1025
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1037
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1049
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:934
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:946
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:958
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:970
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:982
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:994
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1006
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1018
 msgid "Html"
 msgstr ""
 
@@ -12356,7 +12364,7 @@ msgid ""
 "If an extension method is called as static method convert it to method syntax"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1147
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1116
 #, fuzzy
 msgid "If condition"
 msgstr "Configuratie"
@@ -12864,7 +12872,7 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:667
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:664
 msgid "Information about the Instrumentation Service"
 msgstr ""
 
@@ -12935,7 +12943,7 @@ msgstr "Achter toevoegen"
 msgid "Insert Before"
 msgstr "Voor toevoegen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1496
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1498
 #, fuzzy
 msgid "Insert Breakpoint"
 msgstr "Schakel breakpoint aan of uit"
@@ -12944,7 +12952,7 @@ msgstr "Schakel breakpoint aan of uit"
 msgid "Insert ChangeLog Entry"
 msgstr "Wijzigingslogboek-invoer invoegen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1259
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1256
 #, fuzzy
 msgid "Insert Code"
 msgstr "Voor toevoegen"
@@ -12954,7 +12962,7 @@ msgstr "Voor toevoegen"
 msgid "Insert Documentation Comments"
 msgstr "Documentatie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1250
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1247
 #, fuzzy
 msgid "Insert Field"
 msgstr "Voor toevoegen"
@@ -12963,12 +12971,12 @@ msgstr "Voor toevoegen"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1250
 #, fuzzy
 msgid "Insert Method"
 msgstr "Maanden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1253
 #, fuzzy
 msgid "Insert Property"
 msgstr "Property hernoemen"
@@ -13198,7 +13206,7 @@ msgstr "_Installeerd add-ins..."
 msgid "Installing…"
 msgstr "_Deinstalleer..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:665
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:662
 #, fuzzy
 msgid "Instrumentation"
 msgstr "<b>Inspringen</b>"
@@ -13207,7 +13215,7 @@ msgstr "<b>Inspringen</b>"
 msgid "Instrumentation Monitor"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:666
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:663
 msgid "Instrumentation service enabled"
 msgstr ""
 
@@ -13437,7 +13445,7 @@ msgid "Italian"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:149
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:212
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:214
 msgid "Itanium"
 msgstr ""
 
@@ -13508,8 +13516,8 @@ msgstr "Open een bestand in de huidige oplossing..."
 msgid "Jump to first error or warning:"
 msgstr "Spring naar de eerste fout of waarschuwing:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:1399
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:1419
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:1426
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:1446
 #, fuzzy
 msgid "Jump to line {0}"
 msgstr "Oplossing openen"
@@ -13540,7 +13548,7 @@ msgstr "ASP.NET bestanden"
 msgid "Keep Current Identifiers"
 msgstr "Huidige bestand"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1780
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1814
 #, fuzzy
 msgid "Keep file path"
 msgstr "Makefile-pad:"
@@ -13837,7 +13845,7 @@ msgstr ""
 msgid "Light:"
 msgstr "_Kopiëren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:659
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:661
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:118
 msgid "Line"
 msgstr "Regel"
@@ -13904,7 +13912,7 @@ msgstr ""
 msgid "Load/Save"
 msgstr "Opvragen/opslaan"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:239
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:237
 msgid "Loading Workbench"
 msgstr "Bezig met laden van werkruimte"
 
@@ -14054,6 +14062,10 @@ msgstr "Waarschuwingsniveau:"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:386
 msgid "Log Mask"
 msgstr "Log Masker"
+
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:97
+msgid "Log _verbosity:"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:375
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:385
@@ -14696,6 +14708,10 @@ msgstr "Mime-type"
 msgid "Mime types"
 msgstr "Mime-types"
 
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:102
+msgid "Minimal"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:582
 msgid "Minimize"
 msgstr ""
@@ -14887,7 +14903,7 @@ msgstr ""
 "mogelijk om alternatieve commando's in te voeren welke beschikbaar worden in "
 "het project of het oplossingmenu."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:285
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:284
 #, fuzzy
 msgid "MonoDevelop failed to start"
 msgstr "MonoDevelop oplossingbestanden"
@@ -14910,7 +14926,7 @@ msgstr "MonoDevelop oplossingbestanden"
 msgid "More"
 msgstr "Meer..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:636
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:635
 #, fuzzy
 msgid "More Information"
 msgstr "Oplossing informatie"
@@ -14995,7 +15011,7 @@ msgid "Moving files"
 msgstr "Bezig met bestanden kopiëren..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2180
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2214
 #, fuzzy
 msgid "Moving files..."
 msgstr "Bezig met bestanden kopiëren..."
@@ -15642,7 +15658,7 @@ msgstr "Geen verschil gevonden"
 msgid "No documentation available."
 msgstr "Mono documentatiebibliotheek"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:352
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:362
 #, fuzzy
 msgid "No errors or warnings"
 msgstr "Geen verdere fouten of waarschuwingen"
@@ -15809,7 +15825,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:70
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:75
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:308
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:187
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 msgid "None"
 msgstr "Geen"
 
@@ -15818,6 +15834,7 @@ msgid "Nordic"
 msgstr "Noors"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:65
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:103
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:250
 msgid "Normal"
 msgstr "Normaal"
@@ -16200,7 +16217,7 @@ msgstr "Operatie uitgevoerd met foutmeldingen."
 msgid "Operation completed with warnings."
 msgstr "Operatie uitgevoerd met waarschuwingen."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:769
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:771
 #, fuzzy
 msgid "Operation failed."
 msgstr "Het bewaren is mislukt."
@@ -16327,7 +16344,7 @@ msgstr "Windows"
 msgid "Other entries"
 msgstr "Andere invoer"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1465
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1499
 #, fuzzy
 msgid "Outdated Build"
 msgstr "Na het bouwen"
@@ -16779,7 +16796,7 @@ msgstr "_Plakken"
 msgid "Paste the clipboard"
 msgstr "Plakken van het plakbord"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:679
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:681
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:129
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:110
@@ -16787,7 +16804,7 @@ msgstr "Plakken van het plakbord"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:82
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:119
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ImplicitFrameworkAssemblyReferenceDescriptor.cs:51
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:177
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:177
 msgid "Path"
 msgstr "Pad"
 
@@ -16809,7 +16826,7 @@ msgstr "Het gespecificeerde pad voor configure.in is ongeldig: {0}"
 msgid "Path to the assembly."
 msgstr "_Onderteken deze assembly"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1205
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1174
 msgid "Path to ui description file (widgets.ui)"
 msgstr "Pad naar ui omschrijvings bestand (widgets.ui)"
 
@@ -16962,7 +16979,7 @@ msgid "Platform specific"
 msgstr "Meervoudvormen:"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:224
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:254
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:256
 #, fuzzy
 msgid "Platform target:"
 msgstr "Meervoudvormen:"
@@ -17114,6 +17131,7 @@ msgid "Port:"
 msgstr "Poort:"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:173
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:187
 #, fuzzy
 msgid "Portable"
 msgstr "Voeg resource toe"
@@ -17235,7 +17253,7 @@ msgstr ""
 msgid "Presentation software"
 msgstr "Presentatiesoftware"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2182
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2184
 msgid "Press F2 to focus"
 msgstr ""
 
@@ -17319,7 +17337,7 @@ msgstr ""
 msgid "Print current document"
 msgstr "Print huidige document"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2170
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:2172
 msgid "Print operation failed."
 msgstr "Printopdracht mislukt."
 
@@ -17409,7 +17427,7 @@ msgstr "Progressie"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:192
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:27
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:675
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:677
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:133
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
@@ -17776,13 +17794,13 @@ msgstr "Bestanden toevoegen..."
 msgid "Pushing is only available for repositories with configured remotes."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1075
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1093
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1115
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1137
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1155
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1167
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1191
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1044
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1062
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1084
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1106
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1124
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1136
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1160
 #, fuzzy
 msgid "Python"
 msgstr "Pad"
@@ -17819,8 +17837,12 @@ msgstr "Eigenschappen voor bouwen"
 msgid "Quick Fix..."
 msgstr "Eigenschappen voor bouwen"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs:135
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs:138
 msgid "Quick Task Strip"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:101
+msgid "Quiet"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:491
@@ -19661,7 +19683,7 @@ msgstr "Op externe console uitvoeren"
 msgid "Run on external console"
 msgstr "Op externe console uitvoeren"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:58
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:60
 #, fuzzy
 msgid "Run project if build completed with warnings"
 msgstr "Operatie uitgevoerd met waarschuwingen."
@@ -19723,7 +19745,7 @@ msgstr "Uitvoeren van tests voor <b>{0}</b> configuratie <b>{1}</b>"
 msgid "Running web server..."
 msgstr "Bezig met uitvoeren "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1870
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1889
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:768
 #, fuzzy
@@ -19946,7 +19968,7 @@ msgstr "Sla alle open bestanden op"
 msgid "Save as .fsx"
 msgstr "Opslaan als..."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:787
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:789
 #, fuzzy
 msgid "Save as Unicode"
 msgstr "Unicode"
@@ -19967,7 +19989,7 @@ msgstr "Opslaan als..."
 msgid "Save build output"
 msgstr "Uitvoer weergeven"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1640
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1674
 #, fuzzy
 msgid "Save changed documents before building?"
 msgstr "_Bewaar wijzigingen in open documenten"
@@ -20904,6 +20926,11 @@ msgstr "Gebruikersinterface"
 msgid "Select the user interface theme"
 msgstr "Kies test in boom"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:93
+#, fuzzy
+msgid "Select the verbosity level of the build"
+msgstr "<b>Kies de te installeren add-ins en klik op volgende</b>"
+
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:137
 #, fuzzy
 msgid "Select the version of C# to use"
@@ -21496,7 +21523,7 @@ msgstr "Misluke testen weergeven"
 msgid "Show full (diagnostics enabled) or reduced log"
 msgstr ""
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:233
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:233
 msgid "Show function type signatures"
 msgstr ""
 
@@ -21762,7 +21789,7 @@ msgstr "Grootte"
 msgid "Size:"
 msgstr "Grootte"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1861
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1895
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr ""
@@ -21772,7 +21799,7 @@ msgstr ""
 msgid "Skip Patch"
 msgstr "Bestandspad"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:94
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:118
 msgid "Skip building unmodified projects"
 msgstr ""
 
@@ -21845,12 +21872,12 @@ msgstr ""
 msgid "Solution '{0}' is currently open"
 msgstr "Bezig met het vervangen van '{0}' in {1}."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1547
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1562
 #, fuzzy
 msgid "Solution Directory"
 msgstr "_Oplossingmap"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1545
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1560
 #, fuzzy
 msgid "Solution File"
 msgstr "Oplossingbestandsnaam"
@@ -21866,7 +21893,7 @@ msgstr "Oplossingbestandsnaam"
 msgid "Solution Item"
 msgstr "Oplossingsitem"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1546
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1561
 #, fuzzy
 msgid "Solution Name"
 msgstr "_Oplossingnaam:"
@@ -21973,7 +22000,7 @@ msgstr ""
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1641
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1675
 msgid "Some of the open documents have unsaved changes."
 msgstr ""
 
@@ -22001,7 +22028,7 @@ msgstr ""
 "Dit bestand {0} is gewijzigd buiten MonoDevelop. Weet u zeker dat u dit "
 "bestand wilt overschrijven?"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:784
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:786
 msgid ""
 "Some unicode characters in this file could not be saved with the current "
 "encoding.\n"
@@ -22033,7 +22060,7 @@ msgid "Sort the selected lines"
 msgstr "Knip de selectie"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:75
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:131
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:133
 #, fuzzy
 msgid "Source"
 msgstr "Bron:"
@@ -22955,7 +22982,7 @@ msgid "Switching to branch {0}"
 msgstr "Verander huidige layout"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:172
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:186
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:186
 msgid "Symbols only"
 msgstr ""
 
@@ -23198,11 +23225,11 @@ msgstr "Sjabloon voor 'if' statement"
 msgid "Template for 'lock' statement"
 msgstr "Sjabloon voor 'lock' statement"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:940
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:909
 msgid "Template for 'unchecked' block"
 msgstr "Sjabloon voor 'unchecked' blok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:954
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:923
 msgid "Template for 'unsafe' block"
 msgstr "Sjabloon voor 'unsafe' blok"
 
@@ -23222,11 +23249,11 @@ msgstr "Sjabloon voor Console.WriteLine"
 msgid "Template for a Struct"
 msgstr "Lege struct"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1171
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1140
 msgid "Template for a class deriving from gtk.Window"
 msgstr "Sjabloon voor klasse afgeleid van gtk.Window"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1195
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1164
 msgid "Template for a class loading contents from a gtkbuilder file"
 msgstr "Sjabloon voor klasse die de inhoud laadt van een gtkbuilder bestand"
 
@@ -23261,11 +23288,11 @@ msgstr "Sjabloon"
 msgid "Template for class declaration"
 msgstr "Sjabloon voor class declaratie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1119
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1088
 msgid "Template for class function block"
 msgstr "Sjabloon voor klasse functie blok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1066
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1035
 #, fuzzy
 msgid "Template for comment block"
 msgstr "Commentaartaak verwijderen"
@@ -23287,7 +23314,7 @@ msgstr "_Vraag om argumenten"
 msgid "Template for exception"
 msgstr "Sjabloon voor exception"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1097
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1066
 msgid "Template for function block"
 msgstr "Sjabloon voor functie blok"
 
@@ -23303,7 +23330,7 @@ msgstr "Sjabloon voor functie blok"
 msgid "Template for helper directive"
 msgstr "Sjabloon voor type cast"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1141
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1110
 #, fuzzy
 msgid "Template for if block"
 msgstr "Sjabloon"
@@ -23326,7 +23353,7 @@ msgstr "Sjabloon voor het achterwaarts itereren door een collectie"
 msgid "Template for iterating through a collection"
 msgstr "Sjabloon voor het itereren door een collectie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1128
 #, fuzzy
 msgid "Template for main block"
 msgstr "Sjabloon"
@@ -23341,11 +23368,6 @@ msgstr "Sjabloon voor destructor"
 #, fuzzy
 msgid "Template for namespace"
 msgstr "Geneste naamruimtes"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:894
-#, fuzzy
-msgid "Template for parentheses"
-msgstr "_Vraag om argumenten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:632
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:224
@@ -23371,15 +23393,11 @@ msgstr "Sjabloon voor switch statement"
 msgid "Template for try...catch"
 msgstr "Sjabloon voor try...catch"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:924
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:893
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:552
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:569
 msgid "Template for try...finally"
 msgstr "Sjabloon voor try...finally"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:907
-msgid "Template for type cast"
-msgstr "Sjabloon voor type cast"
 
 #: ../src/addins/AspNet/Razor/RazorCompletion.cs:73
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:47
@@ -23391,7 +23409,7 @@ msgstr "Sjabloon voor switch statement"
 msgid "Template for void Main method."
 msgstr "Sjabloon voor void Main methode."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1079
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1048
 #, fuzzy
 msgid "Template for while block"
 msgstr "Sjabloon"
@@ -23700,7 +23718,7 @@ msgid "The application could not be started"
 msgstr "Het project kon niet gemaakt worden"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1909
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1928
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:271
@@ -23857,7 +23875,7 @@ msgstr "Het bestand {0} kon niet worden verwijderd"
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "Het bestand '{0}' bestaat al. Wilt u het overschrijven?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2051
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2085
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "Het bestand '{0}' bestaat al. Wilt u het overschrijven?"
 
@@ -23928,7 +23946,7 @@ msgstr ""
 msgid "The file or directory '{0}' could not be deleted."
 msgstr "De map {0} kon niet worden verwijderd"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:761
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:763
 msgid "The file was marked as read only. Should the file be overwritten?"
 msgstr ""
 
@@ -23941,7 +23959,7 @@ msgstr "Het bestand '{0}' bestaat al. Wilt u het overschrijven?"
 msgid "The file {0} could not be deleted"
 msgstr "Het bestand {0} kon niet worden verwijderd"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1794
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1828
 #, fuzzy
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "{0} bevindt zich buiten de projectmap, wat zal ik doen?"
@@ -24114,7 +24132,7 @@ msgid ""
 "names include 'MyPackage' and 'MyPackage.Sample'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2037
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2071
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr ""
 
@@ -24131,7 +24149,7 @@ msgstr "Verwijder map"
 msgid "The location of the assembly."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:136
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:138
 #, fuzzy
 msgid "The main source editor"
 msgstr "Broncode bewerker"
@@ -24323,7 +24341,7 @@ msgstr ""
 "versie van Visual Studio biedt geen ondersteuning voor het framework waar "
 "het project op is gericht ({2})"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2397
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2431
 #, fuzzy
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
@@ -24375,7 +24393,7 @@ msgstr ""
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1466
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1500
 #, fuzzy
 msgid ""
 "The project you are executing has changes done after the last time it was "
@@ -24495,7 +24513,7 @@ msgstr "Item toevoegen..."
 msgid "The tooltip to display to the user for this variable."
 msgstr "De tooltip om de gebruiker te tonen voor deze variabele."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1209
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1178
 msgid "The top-most child of the window within the gtk.Builder file."
 msgstr "Het bovenste kind van het venster in het gtk.Builder bestand."
 
@@ -25054,7 +25072,7 @@ msgstr "Er bestaat al een layout met die naam"
 msgid "There is a warning for the print expression"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2027
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
 #, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "Er bestaat al een layout met die naam"
@@ -25077,7 +25095,7 @@ msgstr "Er bestaat al een layout met die naam"
 msgid "There is already a layout with that name"
 msgstr "Er bestaat al een layout met die naam"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1911
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1945
 #, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Er bestaat al een layout met die naam"
@@ -25143,7 +25161,7 @@ msgid ""
 "This file has line endings ({0}) which differ from the policy settings ({1})."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:717
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:719
 #, fuzzy
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
@@ -25769,7 +25787,7 @@ msgid "Treat as error:"
 msgstr "Behandel waarschuwingen als foutmeldingen"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:372
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:391
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:393
 msgid "Treat warnings as _errors"
 msgstr "Behandel waarschuwingen als _foutmeldingen"
 
@@ -25793,7 +25811,7 @@ msgstr "Kolommen"
 msgid "Two Editor Columns"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:469
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:471
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:60
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
@@ -26520,7 +26538,7 @@ msgstr ""
 msgid "Use '{0}' for increased performance"
 msgstr ""
 
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:126
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:126
 #, fuzzy
 msgid "Use Default"
 msgstr "Standaard"
@@ -26752,7 +26770,7 @@ msgstr "Reguliere expressie"
 msgid "Validating {0}..."
 msgstr "Updaten van {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:470
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:472
 msgid "Validity"
 msgstr "Correctheid"
 
@@ -27440,8 +27458,8 @@ msgstr "Widget-ontwerper"
 msgid "Window List"
 msgstr "Vensterlijst"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1177
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1201
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1146
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1170
 msgid "Window class name"
 msgstr "Venster klasse naam"
 
@@ -27487,17 +27505,17 @@ msgstr "Werkpad:"
 msgid "Workspace"
 msgstr "Werkruimte"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:689
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:690
 #, fuzzy
 msgid "Workspace Directory"
 msgstr "Werkmap:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:687
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:688
 #, fuzzy
 msgid "Workspace File"
 msgstr "Werkruimte"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:688
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:689
 #, fuzzy
 msgid "Workspace Name"
 msgstr "Werkruimte"
@@ -27649,7 +27667,7 @@ msgstr ""
 msgid "Xcode"
 msgstr "Unicode"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1062
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1031
 msgid "Xml"
 msgstr ""
 
@@ -28151,7 +28169,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/BaseFileEntry.cs:52
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:88
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:152
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:152
 msgid "_Browse..."
 msgstr "_Bladeren..."
 
@@ -28273,7 +28291,7 @@ msgid "_Convert tabs to spaces"
 msgstr "C_onverteer tabs naar spaties"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:40
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:474
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:476
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:153
 msgid "_Copy"
 msgstr "_Kopiëren"
@@ -28368,7 +28386,7 @@ msgstr ""
 msgid "_Diff"
 msgstr "Wijzigingen"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:157
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:181
 msgid "_Don't save changes to open documents "
 msgstr "Bewaar _geen wijzigingen in open documenten"
 
@@ -28533,7 +28551,7 @@ msgid "_Generate additional undo steps for formatting"
 msgstr "Genereer _extra commentaar"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:132
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:159
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:159
 msgid "_Generate overflow checks"
 msgstr "_Genereer overflow controles"
 
@@ -28549,7 +28567,7 @@ msgstr "_Ga naar declaratie"
 msgid "_Go to Schema Definition"
 msgstr "_Ga naar declaratie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:463
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:465
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:347
 #, fuzzy
 msgid "_Go to Task"
@@ -28599,7 +28617,7 @@ msgid "_Ignore all"
 msgstr "Negeren"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:347
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:366
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:368
 msgid "_Ignore warnings:"
 msgstr "_Negeer waarschuwingen:"
 
@@ -28939,7 +28957,7 @@ msgstr "Projectnaam:"
 msgid "_Prompt for arguments"
 msgstr "_Vraag om argumenten"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:146
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:170
 msgid "_Prompt to save changes to open documents"
 msgstr "_Navragen of wijzigingen in open documenten moeten worden opgeslagen"
 
@@ -29134,7 +29152,7 @@ msgstr "_Bewaar en beëindig"
 msgid "_Save and Quit"
 msgstr "_Bewaar en beëindig"
 
-#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:135
+#: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:159
 msgid "_Save changes to open documents"
 msgstr "_Bewaar wijzigingen in open documenten"
 
@@ -29460,7 +29478,7 @@ msgid "_Visualize changed lines"
 msgstr "Gewijzigde bestanden opslaan?"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:315
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:334
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:336
 msgid "_Warning Level:"
 msgstr "_Waarschuwingsniveau:"
 
@@ -29521,11 +29539,11 @@ msgstr ""
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2313
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2347
 msgid "another copy"
 msgstr "nog een kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:969
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:938
 msgid "bold block"
 msgstr "vetgedrukt blok"
 
@@ -29538,17 +29556,17 @@ msgstr ""
 msgid "columns"
 msgstr "Kolommen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:981
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:950
 #, fuzzy
 msgid "comment block"
 msgstr "Kopiëer commentaartaak"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2312
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2346
 #, fuzzy
 msgid "copy"
 msgstr "_Kopiëren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2321
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2355
 #, fuzzy
 msgid "copy {0}"
 msgstr "Bezig met openen van {0}"
@@ -29668,19 +29686,19 @@ msgid ""
 "query-clauses {0} condition [query-clauses]"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:993
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:962
 msgid "heading 1 block"
 msgstr "koptekst 1 blok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1005
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:974
 msgid "heading 2 block"
 msgstr "koptekst 2 blok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1017
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:986
 msgid "heading 3 block"
 msgstr "koptekst 3 blok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1029
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:998
 msgid "heading 4 block"
 msgstr "koptekst 4 blok"
 
@@ -29709,7 +29727,7 @@ msgstr[1] "in {0} bestanden."
 msgid "interface ({0})"
 msgstr "Interface <b>{0}</b>"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1041
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1010
 msgid "italic block"
 msgstr "cursief blok"
 
@@ -29784,7 +29802,7 @@ msgstr "pagina1"
 msgid "page2"
 msgstr "pagina1"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1053
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1022
 msgid "paragraph block"
 msgstr "paragraaf blok"
 
@@ -29873,12 +29891,12 @@ msgid "working copy"
 msgstr "Werkmap:"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:148
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:211
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:213
 msgid "x64"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:147
-#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:210
+#: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:212
 msgid "x86"
 msgstr ""
 
@@ -30068,7 +30086,7 @@ msgstr[1] ""
 msgid "{0} ChangeLog files will be updated."
 msgstr "{0} wijzigingslogboek-bestanden worden geupdate."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:948
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:950
 msgid "{0} Error"
 msgid_plural "{0} Errors"
 msgstr[0] "{0} fout"
@@ -30104,7 +30122,7 @@ msgstr "{0} binaire bestanden"
 msgid "{0} MBytes"
 msgstr "{0} bericht"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:960
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:962
 msgid "{0} Message"
 msgid_plural "{0} Messages"
 msgstr[0] "{0} bericht"
@@ -30126,7 +30144,7 @@ msgstr "{0} overeenkomst."
 msgid "{0} Status"
 msgstr "Status"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:954
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:956
 msgid "{0} Warning"
 msgid_plural "{0} Warnings"
 msgstr[0] "{0} waarschuwing"
@@ -30233,20 +30251,20 @@ msgstr "_Ga naar declaratie"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1235
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1711
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:356
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1745
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
 msgid_plural "{0} errors"
 msgstr[0] "{0} foutmelding"
 msgstr[1] "{0} foutmeldingen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputTreeCellView.cs:519
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputTreeCellView.cs:554
 #, fuzzy
 msgid "{0} errors"
 msgstr "{0} foutmelding"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:358
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:368
 #, fuzzy
 msgid "{0} errors and {1} warnings"
 msgstr "_Negeer waarschuwingen:"
@@ -30329,7 +30347,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:824
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:343
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:353
 #, fuzzy
 msgid "{0} match"
 msgid_plural "{0} matches"
@@ -30560,15 +30578,15 @@ msgstr "Operatie uitgevoerd met waarschuwingen."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1712
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1746
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
 msgid_plural "{0} warnings"
 msgstr[0] "{0} waarschuwing"
 msgstr[1] "{0} waarschuwingen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputTreeCellView.cs:534
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputTreeCellView.cs:569
 #, fuzzy
 msgid "{0} warnings"
 msgstr "{0} waarschuwing"
@@ -30597,7 +30615,7 @@ msgid ""
 "{0} {2} expression"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputTreeCellView.cs:357
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputTreeCellView.cs:388
 msgid "{0} | {1}     Started at {2}"
 msgstr ""
 
@@ -30640,12 +30658,12 @@ msgid ""
 "want to remove the service from project {1}?"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputNode.cs:384
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputNode.cs:383
 #, fuzzy
 msgid "{0}h {1}m"
 msgstr "{0} van {1}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputNode.cs:388
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputNode.cs:387
 #, fuzzy
 msgid "{0}m {1}s"
 msgstr "{0} van {1}"
@@ -32289,10 +32307,6 @@ msgstr "|"
 #, fuzzy
 #~ msgid "Destructor declaration"
 #~ msgstr "_Ga naar declaratie"
-
-#, fuzzy
-#~ msgid "Detailed"
-#~ msgstr "Details"
 
 #, fuzzy
 #~ msgid "DialogCollectionControlNameNull"
@@ -34542,10 +34556,6 @@ msgstr "|"
 #~ msgid "Searching string in decompiled code..."
 #~ msgstr "Zoekterm niet gevonden:"
 
-#, fuzzy
-#~ msgid "Select the verbosity level of the build"
-#~ msgstr "<b>Kies de te installeren add-ins en klik op volgende</b>"
-
 #~ msgid ""
 #~ "Select the widget classes you want make available in the widget palette:"
 #~ msgstr ""
@@ -34820,6 +34830,13 @@ msgstr "|"
 #, fuzzy
 #~ msgid "Te_mplate file:"
 #~ msgstr "Sjabloon"
+
+#, fuzzy
+#~ msgid "Template for parentheses"
+#~ msgstr "_Vraag om argumenten"
+
+#~ msgid "Template for type cast"
+#~ msgstr "Sjabloon voor type cast"
 
 #, fuzzy
 #~ msgid "Test Methods"
