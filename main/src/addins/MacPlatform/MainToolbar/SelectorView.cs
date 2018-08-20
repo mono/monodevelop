@@ -547,16 +547,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					focusedCellIndex++;
 					if(focusedCellIndex >= VisibleCellIds.Length){
 						if (NextKeyView != null) {
-							Window.MakeFirstResponder (NextKeyView);
 							SetSelection ();
 							focusedCellIndex = 0;
 							focusedItem = null;
-							return;
 						}
+					} else {
+						SetSelection ();
+						return;
 					}
 				}
 
-				SetSelection ();
 				base.KeyDown (theEvent);
 			}
 

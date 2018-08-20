@@ -62,6 +62,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			SearchBar = new SearchBar ();
 			AddSubview (SearchBar);
 
+			StatusBar.SearchBar = SearchBar;
+
 			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 		}
 

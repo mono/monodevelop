@@ -491,6 +491,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		readonly BuildResultsView buildResults;
 		readonly CancelButton cancelButton;
 
+		SearchBar searchBar;
+		internal SearchBar SearchBar {
+			get => searchBar;
+			set {
+				searchBar = value;
+				cancelButton.NextKeyView = value;
+			}
+		}
+
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
 			nfloat fontSize = NSFont.SystemFontSize;
@@ -737,15 +746,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		internal void RemoveStatusIcon (StatusIcon icon)
 		{
+			// For keyboard focus the icons are the reverse of the order they're stored in the list
+			// because they're displayed in order right to left
 			var index = statusIcons.IndexOf (icon);
 			if (index != -1) {
-				if (index == 0) {
-					NullableSetNextKeyView (cancelButton, statusIcons.Count > 1 ? statusIcons[1] : null);
+				if (index == statusIcons.Count - 1) {
+					cancelButton.NextKeyView = statusIcons.Count > 1 ? (NSView)statusIcons[index - 1] : (NSView)SearchBar;
 				} else {
-					var previous = statusIcons[index - 1];
-					var next = statusIcons.Count > index + 1 ? statusIcons[index + 1] : null;
+					var previous = statusIcons[index + 1];
+					var next = index > 0 ? (NSView)statusIcons[index - 1] : (NSView)cancelButton;
 
-					NullableSetNextKeyView (previous, next);
+					previous.NextKeyView = next;
 				}
 			}
 
@@ -849,11 +860,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			statusIcons.Add (statusIcon);
 
 			if (statusIcons.Count == 1) {
-				cancelButton.NextKeyView = statusIcon;
+				statusIcon.NextKeyView = SearchBar;
 			} else {
 				var previousIcon = statusIcons[statusIcons.Count - 2];
-				previousIcon.NextKeyView = statusIcon;
+				statusIcon.NextKeyView = previousIcon;
 			}
+			cancelButton.NextKeyView = statusIcon;
 
 			statusIcon.Entered += ShowPopoverForIcon;
 			statusIcon.Exited += DestroyPopover;
