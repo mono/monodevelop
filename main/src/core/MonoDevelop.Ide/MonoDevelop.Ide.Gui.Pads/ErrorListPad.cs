@@ -340,7 +340,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.Toggled -= FilterChanged;
 			msgBtn.Toggled -= FilterChanged;
 			logBtn.Toggled -= HandleTextLogToggled;
+#if ENABLE_BUILD_OUTPUT
 			buildLogBtn.Clicked -= HandleBinLogClicked;
+#endif
 			searchEntry.Entry.Changed -= searchPatternChanged;
 
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
@@ -1057,7 +1059,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Document buildOutputDoc;
 		void HandleBinLogClicked (object sender, EventArgs e)
 		{
+#if ENABLE_BUILD_OUTPUT
 			OpenBuildOutputViewDocument ();
+#endif
 		}
 
 		void OpenBuildOutputViewDocument () 
