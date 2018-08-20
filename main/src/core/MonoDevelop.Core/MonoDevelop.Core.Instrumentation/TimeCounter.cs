@@ -156,7 +156,7 @@ namespace MonoDevelop.Core.Instrumentation
 		public void End ()
 		{
 			if (!stopWatch.IsRunning) {
-				Console.WriteLine ("Timer already finished");
+				LoggingService.LogWarning ("Timer already finished");
 				return;
 			}
 
