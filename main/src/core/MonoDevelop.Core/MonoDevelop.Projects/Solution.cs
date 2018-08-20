@@ -946,7 +946,7 @@ namespace MonoDevelop.Projects
 
 			ReadOnlyCollection<SolutionItem> sortedItems;
 			try {
-				sortedItems = GetItemsAndDependenciesSortedForBuild (items, configuration);
+				sortedItems = GetItemsAndDependenciesSortedForBuild (items, slnConf, configuration);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
@@ -966,9 +966,9 @@ namespace MonoDevelop.Projects
 			try {
 				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
 
-				return result = await RunParallelBuildOperation (monitor, configuration, sortedItems, (ProgressMonitor m, SolutionItem item) => {
+				return result = await RunParallelBuildOperation (monitor, configuration, slnConf, sortedItems, (ProgressMonitor m, SolutionItem item) => {
 					return item.Clean (m, configuration, operationContext);
-				}, false);
+				}, false, false);
 			} finally {
 				if (operationStarted)
 					await EndBuildOperation (monitor, configuration, operationContext, result);
@@ -988,7 +988,7 @@ namespace MonoDevelop.Projects
 			ReadOnlyCollection<SolutionItem> sortedItems;
 
 			try {
-				sortedItems = GetItemsAndDependenciesSortedForBuild (items, configuration);
+				sortedItems = GetItemsAndDependenciesSortedForBuild (items, slnConf, configuration);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
@@ -1001,14 +1001,6 @@ namespace MonoDevelop.Projects
 			BuildResult result = null;
 
 			try {
-
-				if (Runtime.Preferences.SkipBuildingUnmodifiedProjects)
-					sortedItems = sortedItems.Where (si => {
-						if (si is Project p)
-							return p.FastCheckNeedsBuild (configuration);
-						return true;//Don't filter things that don't have FastCheckNeedsBuild
-					}).ToList ().AsReadOnly ();
-
 				monitor.BeginTask (
 					beginTaskMessage ?? GettextCatalog.GetString ("Building {0} items in solution {1} ({2})", sortedItems.Count, Name, configuration.ToString ()),
 					sortedItems.Count
@@ -1016,9 +1008,9 @@ namespace MonoDevelop.Projects
 
 				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
 
-				return result = await RunParallelBuildOperation (monitor, configuration, sortedItems, (ProgressMonitor m, SolutionItem item) => {
+				return result = await RunParallelBuildOperation (monitor, configuration, slnConf, sortedItems, (ProgressMonitor m, SolutionItem item) => {
 					return item.Build (m, configuration, false, operationContext);
-				}, false);
+				}, false, Runtime.Preferences.SkipBuildingUnmodifiedProjects);
 
 			} finally {
 				if (operationStarted)
@@ -1027,7 +1019,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		static async Task<BuildResult> RunParallelBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> sortedItems, Func<ProgressMonitor, SolutionItem, Task<BuildResult>> buildAction, bool ignoreFailed)
+		static async Task<BuildResult> RunParallelBuildOperation (
+			ProgressMonitor monitor, ConfigurationSelector configuration, SolutionConfiguration slnConf,
+			IEnumerable<SolutionItem> sortedItems, Func<ProgressMonitor, SolutionItem, Task<BuildResult>> buildAction,
+			bool ignoreFailed, bool skipUnmodified)
 		{
 			var toBuild = new List<SolutionItem> (sortedItems);
 			var cres = new BuildResult { BuildCount = 0 };
@@ -1042,7 +1037,7 @@ namespace MonoDevelop.Projects
 			foreach (var it in toBuild)
 				buildStatus.Add (it, new BuildStatus ());
 
-			// Start the build tasks for all itemsw
+			// Start the build tasks for all items
 
 			foreach (var itemToBuild in toBuild) {
 				if (monitor.CancellationToken.IsCancellationRequested)
@@ -1051,6 +1046,27 @@ namespace MonoDevelop.Projects
 				var item = itemToBuild;
 
 				var myStatus = buildStatus[item];
+
+				if (skipUnmodified && item is Project p && !p.FastCheckNeedsBuild (configuration)) {
+					myStatus.Result = BuildResult.CreateUpToDate (item);
+					myStatus.Task = Task.CompletedTask;
+					monitor.Step (1);
+					continue;
+				}
+
+				if (!slnConf.BuildEnabledForItem (item)) {
+					myStatus.Result = BuildResult.CreateSkipped (item);
+					myStatus.Task = Task.CompletedTask;
+
+					var mapped = slnConf.GetMappedConfiguration (item) ?? slnConf.Id;
+					monitor.Log.WriteLine (
+						"------ {0} ------\n{1}",
+						GettextCatalog.GetString ("Skipped Build: Project: {0}, Configuration: {1}", item.Name, mapped),
+						GettextCatalog.GetString ("Project not selected to build for this solution configuration")
+					);
+					monitor.Step (1);
+					continue;
+				}
 
 				var myMonitor = monitor.BeginAsyncStep (1);
 
@@ -1102,36 +1118,31 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Given a set of SolutionItems from this solution, collects them and their buildable dependencies, and toplogically sorts them in preparation for a build.
+		/// Given a set of SolutionItems from this solution, collects them and their buildable dependencies, and topologically sorts them in preparation for a build.
 		/// </summary>
-		ReadOnlyCollection<SolutionItem> GetItemsAndDependenciesSortedForBuild (IEnumerable<SolutionItem> items, ConfigurationSelector configuration)
+		/// <remarks>Nonrecursively includes skipped items so the build can report them.</remarks>
+		ReadOnlyCollection<SolutionItem> GetItemsAndDependenciesSortedForBuild (IEnumerable<SolutionItem> items, SolutionConfiguration slnConf, ConfigurationSelector configuration)
 		{
-			var slnConf = GetConfiguration (configuration);
 			var collected = new HashSet<SolutionItem> ();
 
 			foreach (var item in items) {
 				if (item.ParentSolution != this) {
 					throw new ArgumentException ("All items must be in this solution", nameof(items));
 				}
-				if (slnConf.BuildEnabledForItem (item) && collected.Add (item)) {
-					CollectBuildableDependencies (collected, item, configuration, slnConf);
+				CollectBuildableDeps (item);
+			}
+
+			void CollectBuildableDeps (SolutionItem item)
+			{
+				//we add skipped items but this their deps, so the build can report skips
+				if (collected.Add (item) && slnConf.BuildEnabledForItem (item)) {
+					foreach (var it in item.GetReferencedItems (configuration)) {
+						CollectBuildableDeps (it);
+					}
 				}
 			}
 
 			return SolutionItem.TopologicalSort (collected, configuration);
-		}
-
-		/// <summary>
-		/// Recursively collects buildable dependencies.
-		/// </summary>
-		internal static void CollectBuildableDependencies (HashSet<SolutionItem> collected, SolutionItem item, ConfigurationSelector configuration, SolutionConfiguration conf)
-		{
-			foreach (var it in item.GetReferencedItems (configuration)) {
-				if (collected.Contains (it) || !conf.BuildEnabledForItem (it))
-					continue;
-				collected.Add (it);
-				CollectBuildableDependencies (collected, it, configuration, conf);
-			}
 		}
 
 		[ThreadSafe]

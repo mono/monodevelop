@@ -35,27 +35,30 @@ namespace MonoDevelop.Projects
 {
 	public class BuildResult
 	{
-		int warningCount;
-		int errorCount;
-		int buildCount = 1;
 		List<BuildError> errors = new List<BuildError> ();
 		IBuildTarget sourceTarget;
 
 		public BuildResult()
+			: this (null, 1, 0, null)
 		{
 		}
-		
+
 		public BuildResult (string compilerOutput, int buildCount, int failedBuildCount)
+			: this (compilerOutput, buildCount, failedBuildCount, null)
 		{
-			CompilerOutput = compilerOutput;
-			this.buildCount = buildCount;
-			FailedBuildCount = failedBuildCount;
 		}
-		
+
 		public BuildResult (CompilerResults compilerResults, string compilerOutput)
+			: this (compilerOutput, 1, 0, compilerResults)
+		{
+		}
+
+		BuildResult (string compilerOutput, int buildCount, int failedBuildCount, CompilerResults compilerResults)
 		{
 			CompilerOutput = compilerOutput;
-			
+			BuildCount = buildCount;
+			FailedBuildCount = failedBuildCount;
+
 			if (compilerResults != null) {
 				foreach (CompilerError err in compilerResults.Errors) {
 					Append (new BuildError (err));
@@ -76,6 +79,22 @@ namespace MonoDevelop.Projects
 			return new BuildResult ();
 		}
 
+		public static BuildResult CreateSkipped (IBuildTarget sourceTarget)
+		{
+			return new BuildResult {
+				SkippedBuildCount = 1,
+				sourceTarget = sourceTarget
+			};
+		}
+
+		public static BuildResult CreateUpToDate (IBuildTarget sourceTarget)
+		{
+			return new BuildResult {
+				UpToDateBuildCount = 1,
+				sourceTarget = sourceTarget
+			};
+		}
+
 		public static BuildResult CreateCancelled ()
 		{
 			return new BuildResult ().AddError (GettextCatalog.GetString ("Cancelled"));
@@ -88,9 +107,9 @@ namespace MonoDevelop.Projects
 		public void ClearErrors ()
 		{
 			errors.Clear ();
-			warningCount = errorCount = 0;
-			buildCount = 1;
-			FailedBuildCount = 0;
+			WarningCount = ErrorCount = 0;
+			BuildCount = 1;
+			FailedBuildCount = SkippedBuildCount = UpToDateBuildCount = 0;
 			CompilerOutput = "";
 			sourceTarget = null;
 		}
@@ -115,8 +134,9 @@ namespace MonoDevelop.Projects
 		
 		public BuildResult AddWarning (string file, int line, int col, string errorNum, string text)
 		{
-			var ce = new BuildError (file, line, col, errorNum, text);
-			ce.IsWarning = true;
+			var ce = new BuildError (file, line, col, errorNum, text) {
+				IsWarning = true
+			};
 			Append (ce);
 			return this;
 		}
@@ -138,10 +158,12 @@ namespace MonoDevelop.Projects
 			if (res == null)
 				return this;
 			errors.AddRange (res.Errors);
-			warningCount += res.WarningCount;
-			errorCount += res.ErrorCount;
-			buildCount += res.BuildCount;
+			WarningCount += res.WarningCount;
+			ErrorCount += res.ErrorCount;
+			BuildCount += res.BuildCount;
 			FailedBuildCount += res.FailedBuildCount;
+			UpToDateBuildCount += res.UpToDateBuildCount;
+			SkippedBuildCount += res.SkippedBuildCount;
 			if (!string.IsNullOrEmpty (res.CompilerOutput))
 				CompilerOutput += "\n" + res.CompilerOutput;
 			return this;
@@ -162,9 +184,9 @@ namespace MonoDevelop.Projects
 			if (sourceTarget != null && error.SourceTarget == null)
 				error.SourceTarget = sourceTarget;
 			if (error.IsWarning)
-				warningCount++;
+				WarningCount++;
 			else {
-				errorCount++;
+				ErrorCount++;
 				if (FailedBuildCount == 0)
 					FailedBuildCount = 1;
 			}
@@ -178,21 +200,20 @@ namespace MonoDevelop.Projects
 		}
 
 		public string CompilerOutput { get; set; }
-		
-		public int WarningCount {
-			get { return warningCount; }
-		}
-		
-		public int ErrorCount {
-			get { return errorCount; }
-		}
-		
-		public int BuildCount {
-			get { return buildCount; }
-			set { buildCount = value; }
-		}
-		
+
+		public int WarningCount { get; private set; }
+
+		public int ErrorCount { get; private set; }
+
+		public int BuildCount { get; set; }
+
 		public int FailedBuildCount { get; set; }
+
+		public int SkippedBuildCount { get; set; }
+
+		public int UpToDateBuildCount { get; set; }
+
+		public int SuccessfulBuildCount => BuildCount - FailedBuildCount - SkippedBuildCount - UpToDateBuildCount;
 		
 		public bool Failed {
 			get { return FailedBuildCount > 0; }

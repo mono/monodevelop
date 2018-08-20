@@ -536,7 +536,9 @@ namespace MonoDevelop.Projects
 			var p = sol.Items.FirstOrDefault (pr => pr.Name == "ReferencingProject");
 
 			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector)"Debug", true);
-			Assert.AreEqual (1, res.BuildCount);
+			Assert.AreEqual (2, res.BuildCount);
+			Assert.AreEqual (1, res.SuccessfulBuildCount);
+			Assert.AreEqual (1, res.SkippedBuildCount);
 
 			sol.Dispose ();
 		}
