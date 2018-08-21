@@ -113,6 +113,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						}
 					}
 				}
+			} catch (OperationCanceledException) {
+				throw;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in RegexCompletionProvider", e);
 			}
