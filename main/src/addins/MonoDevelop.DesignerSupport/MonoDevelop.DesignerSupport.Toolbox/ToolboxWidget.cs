@@ -171,10 +171,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			layout = new Pango.Layout (this.PangoContext);
 			headerLayout = new Pango.Layout (this.PangoContext);
+
 			if (desc != null) {
 				layout.FontDescription = desc;
 				headerLayout.FontDescription = desc;
 			}
+
+			layout.Ellipsize = EllipsizeMode.End;
+
 			headerLayout.Attributes = new AttrList ();
 //			headerLayout.Attributes.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
 		}
@@ -294,10 +298,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (listMode || !curCategory.CanIconizeItems)  {
 					cr.DrawImage (this, icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
 					layout.SetMarkup (item.Text);
-					int width, height;
-					layout.GetPixelSize (out width, out height);
-					cr.SetSourceColor (Style.Text (item != this.SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
-					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
+					layout.Width = (int) ((itemDimension.Width - ItemIconTextItemSpacing - IconSize.Width - ItemLeftPadding * 2) * Pango.Scale.PangoScale);
+					layout.GetPixelSize (out var width, out var height);
+					cr.SetSourceColor (Style.Text (item != SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
+					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + Math.Round ((double)(itemDimension.Height - height) / 2));
 					Pango.CairoHelper.ShowLayout (cr, layout);
 				} else {
 					cr.DrawImage (this, icon, xpos + Math.Round ((itemDimension.Width  - icon.Width) / 2), ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
