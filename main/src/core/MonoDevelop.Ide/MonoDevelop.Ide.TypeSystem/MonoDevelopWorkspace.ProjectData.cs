@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
+			void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				metadataReference.UpdatedOnDisk += OnMetadataReferenceUpdated;
 			}
 
-			internal bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
+			bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
