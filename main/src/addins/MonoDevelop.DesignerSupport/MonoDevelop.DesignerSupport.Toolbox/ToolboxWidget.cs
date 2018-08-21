@@ -268,7 +268,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				headerLayout.SetMarkup (category.Text);
 				int width, height;
 				cr.SetSourceColor (MonoDevelop.Ide.Gui.Styles.PadCategoryLabelColor.ToCairoColor ());
-				layout.GetPixelSize (out width, out height);
+				headerLayout.GetPixelSize (out width, out height);
 				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
 				Pango.CairoHelper.ShowLayout (cr, headerLayout);
 
@@ -999,7 +999,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				set {
 					tooltip = value;
-					label.Markup = tooltip;
+					label.Text = tooltip;
 				}
 			}
 			
