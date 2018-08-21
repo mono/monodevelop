@@ -1,5 +1,5 @@
 //
-// MonoDevelopWorkspace.DocumentMapTests.cs
+// MonoDevelopWorkspaceProjectDataMapTests.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,40 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Microsoft.CodeAnalysis;
-using NUnit.Framework;
-
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[TestFixture]
-	public class MonoDevelopWorkspaceDocumentMapTests
+	public class MonoDevelopWorkspaceProjectDataMapTests
 	{
-		[Test]
-		public void TestSimpleCreation ()
+		public MonoDevelopWorkspaceProjectDataMapTests ()
 		{
-			var pid = ProjectId.CreateNewId ();
-			var map = new MonoDevelopWorkspace.DocumentMap (pid);
-
-			var doc0 = map.Get ("TestName");
-			Assert.IsNull (doc0);
-
-			var doc1 = map.GetOrCreate ("TestName");
-			var doc2 = map.GetOrCreate ("TestName");
-			var doc3 = map.Get ("TestName");
-
-			Assert.AreSame (doc1, doc2);
-			Assert.AreSame (doc1, doc3);
-
-			map.Add (DocumentId.CreateNewId (pid), "TestName");
-			var doc4 = map.Get ("TestName");
-			var doc5 = map.GetOrCreate ("TestName");
-
-			Assert.AreNotSame (doc1, doc4);
-			Assert.AreSame (doc4, doc5);
-
-			map.Remove ("TestName");
-
-			Assert.IsNull (map.Get ("TestName"));
 		}
 	}
 }
