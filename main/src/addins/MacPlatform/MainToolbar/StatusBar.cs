@@ -48,6 +48,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	class StatusIcon : NSButton, StatusBarIcon
 	{
 		StatusBar bar;
+		readonly ObjCRuntime.Selector OnButtonClickedSelector = new ObjCRuntime.Selector ("OnButtonActivated:");
 
 		public StatusIcon (StatusBar bar) : base (CGRect.Empty)
 		{
@@ -55,7 +56,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var trackingArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect | NSTrackingAreaOptions.MouseEnteredAndExited, this, null);
 			AddTrackingArea (trackingArea);
 
-			Activated += ButtonClicked;
+			Target = this;
+			Action = OnButtonClickedSelector;
+
 			this.bar = bar;
 		}
 
@@ -132,7 +135,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Exited?.Invoke (this, EventArgs.Empty);
 		}
 
-		void ButtonClicked (object sender, EventArgs args)
+		[Export ("OnButtonActivated:")]
+		void ButtonClicked (NSObject sender)
 		{
 			NotifyClicked (Xwt.PointerButton.Left);
 		}
