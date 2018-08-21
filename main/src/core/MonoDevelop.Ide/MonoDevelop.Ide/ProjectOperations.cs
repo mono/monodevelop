@@ -1388,7 +1388,7 @@ namespace MonoDevelop.Ide
 
 			return CheckAndBuildForExecute (
 				buildTargets, configuration,
-				IdeApp.Preferences.BuildBeforeExecuting, IdeApp.Preferences.RunWithWarnings,
+				IdeApp.Preferences.BuildBeforeExecuting, !IdeApp.Preferences.RunWithWarnings,
 				(target, monitor) => {
 					if (target is IRunTarget runTarget) {
 						var projectRunConfig = GetProjectRunConfiguration (runTarget, runConfiguration);
