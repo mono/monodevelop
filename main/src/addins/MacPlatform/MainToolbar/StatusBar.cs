@@ -1180,7 +1180,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void KeyDown (NSEvent theEvent)
 		{
 			// 36 is <Enter>
-			if (theEvent.KeyCode == 36) {
+			// 49 is <Space>
+			if (theEvent.KeyCode == 36 || theEvent.KeyCode == 49) {
 				sourcePad?.BringToFront (true);
 				return;
 			}
