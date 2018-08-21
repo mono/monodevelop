@@ -42,9 +42,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projectId = projectId;
 			}
 
-			internal DocumentId GetOrCreate (string name, ProjectData previous)
+			internal DocumentId GetOrCreate (string name, DocumentMap previous)
 			{
-				var oldId = previous?.DocumentData.Get (name);
+				var oldId = previous?.Get (name);
 				if (oldId != null) {
 					Add (oldId, name);
 					return oldId;

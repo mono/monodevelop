@@ -258,13 +258,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 
 					if (TypeSystemParserNode.IsCompileableFile (f, out SourceCodeKind sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-						var id = projectData.DocumentData.GetOrCreate (f.Name, oldProjectData);
+						var id = projectData.DocumentData.GetOrCreate (f.Name, oldProjectData?.DocumentData);
 						if (!duplicates.Add (id))
 							continue;
 						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
 					} else {
 						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, null)) {
-							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData);
+							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData?.DocumentData);
 							if (!duplicates.Add (projectedId))
 								continue;
 							documents.Add (projectedDocument);
@@ -301,12 +301,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				foreach (var projection in generatedProjections.Result) {
 					list.Add (projection);
-					if (duplicates != null && !duplicates.Add (documentMap.GetOrCreate (projection.Document.FileName, oldProjectData)))
+					if (duplicates != null && !duplicates.Add (documentMap.GetOrCreate (projection.Document.FileName, oldProjectData?.DocumentData)))
 						continue;
 					var plainName = projection.Document.FileName.FileName;
 					var folders = GetFolders (p.Name, f);
 					yield return DocumentInfo.Create (
-						documentMap.GetOrCreate (projection.Document.FileName, oldProjectData),
+						documentMap.GetOrCreate (projection.Document.FileName, oldProjectData?.DocumentData),
 						plainName,
 						folders,
 						SourceCodeKind.Regular,
