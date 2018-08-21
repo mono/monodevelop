@@ -34,7 +34,7 @@ namespace MonoDevelop.SourceEditor
 	static class ClipboardRingService
 	{
 		const int clipboardRingSize = 20;
-		const int toolboxNameMaxLength = 16;
+		const int toolboxNameMaxLength = 250;
 		static readonly List<TextToolboxNode> clipboardRing = new List<TextToolboxNode> ();
 
 		public static event EventHandler Updated;
@@ -70,7 +70,12 @@ namespace MonoDevelop.SourceEditor
 
 		static TextToolboxNode CreateClipboardToolboxItem (string text)
 		{
-			var item = new TextToolboxNode (text);
+			var item = new TextToolboxNode (text) {
+				Category = GettextCatalog.GetString ("Clipboard Ring"),
+				Icon = DesktopService.GetIconForFile ("a.txt", IconSize.Menu),
+				Name = EscapeAndTruncateName (text)
+			};
+
 			string [] lines = text.Split ('\n');
 			for (int i = 0; i < 3 && i < lines.Length; i++) {
 				if (i > 0)
@@ -81,14 +86,24 @@ namespace MonoDevelop.SourceEditor
 				item.Description += line;
 			}
 
-			item.Category = GettextCatalog.GetString ("Clipboard Ring");
-			item.Icon = DesktopService.GetIconForFile ("a.txt", IconSize.Menu);
-
-			item.Name = text.Length > toolboxNameMaxLength ? text.Substring (0, toolboxNameMaxLength) + "..." : text;
-			item.Name = item.Name.Replace ("\t", "\\t");
-			item.Name = item.Name.Replace ("\n", "\\n");
-
 			return item;
+		}
+
+		static string EscapeAndTruncateName (string text)
+		{
+			var sb = StringBuilderCache.Allocate ();
+			foreach (char ch in text) {
+				switch (ch) {
+				case '\t': sb.Append ("\\t"); break;
+				case '\r': sb.Append ("\\r"); break;
+				case '\n': sb.Append ("\\n"); break;
+				default: sb.Append (ch); break;
+				}
+				if (sb.Length >= toolboxNameMaxLength) {
+					break;
+				}
+			}
+			return StringBuilderCache.ReturnAndFree (sb);
 		}
 
 		public static IEnumerable<ItemToolboxNode> GetToolboxItems ()
