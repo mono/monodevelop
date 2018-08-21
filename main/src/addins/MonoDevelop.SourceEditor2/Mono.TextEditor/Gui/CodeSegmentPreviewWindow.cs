@@ -27,11 +27,9 @@
 //
 
 using System;
-
 using Gdk;
-using Gtk;
-using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 
@@ -46,11 +44,8 @@ namespace Mono.TextEditor
 		Pango.Layout layout;
 		Pango.Layout informLayout;
 		
-		public static string CodeSegmentPreviewInformString {
-			get;
-			set;
-		}
-		
+		public static string CodeSegmentPreviewInformString { get; set; } = GettextCatalog.GetString ("Press F2 to focus");
+
 		public bool HideCodeSegmentPreviewInformString {
 			get;
 			private set;

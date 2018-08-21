@@ -305,6 +305,7 @@
     <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAggregatorFactory.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionMetadata.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionStack.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\ClipboardRingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml" />
