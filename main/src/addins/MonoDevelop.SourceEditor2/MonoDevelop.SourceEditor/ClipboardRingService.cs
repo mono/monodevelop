@@ -35,8 +35,10 @@ namespace MonoDevelop.SourceEditor
 {
 	static class ClipboardRingService
 	{
+		const int clipboardRingItemMaxChars = 1024 * 1024 / 2; // 1MB
 		const int clipboardRingSize = 20;
 		const int toolboxNameMaxLength = 250;
+
 		static readonly List<ClipboardToolboxNode> clipboardRing = new List<ClipboardToolboxNode> ();
 
 		public static event EventHandler Updated;
@@ -50,6 +52,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (string.IsNullOrEmpty (text))
 				return;
+
+			// if too big, just reject it, truncation is unlikely to be useful
+			if (text.Length > clipboardRingItemMaxChars) {
+				LoggingService.LogWarning ($"Item '{EscapeAndTruncateName(text, 20)}...' is too big for clipboard ring");
+				return;
+			}
 
 			//if already in ring, grab the existing node
 			ClipboardToolboxNode newNode = null;
@@ -87,7 +95,7 @@ namespace MonoDevelop.SourceEditor
 			return item;
 		}
 
-		static string EscapeAndTruncateName (string text)
+		static string EscapeAndTruncateName (string text, int truncateAt)
 		{
 			var sb = StringBuilderCache.Allocate ();
 			foreach (char ch in text) {
@@ -97,7 +105,7 @@ namespace MonoDevelop.SourceEditor
 				case '\n': sb.Append ("\\n"); break;
 				default: sb.Append (ch); break;
 				}
-				if (sb.Length >= toolboxNameMaxLength) {
+				if (sb.Length >= truncateAt) {
 					break;
 				}
 			}
@@ -128,7 +136,7 @@ namespace MonoDevelop.SourceEditor
 
 			public override string Name {
 				get {
-					return base.Name.Length > 0 ? base.Name : (base.Name = EscapeAndTruncateName (Text));
+					return base.Name.Length > 0 ? base.Name : (base.Name = EscapeAndTruncateName (Text, toolboxNameMaxLength));
 				}
 				set => base.Name = value;
 			}
