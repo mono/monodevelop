@@ -257,6 +257,11 @@ namespace MonoDevelop.Ide.Templates
 			string dir = ReplaceParameters (directory, substitution, projectCreateInformation);
 			projectCreateInformation.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
 
+			// Ensure that any relative path (e.g. "./Droid") used by 'directory' for the project template is removed since this
+			// can cause a problem with the remote msbuild host trying to load the project multiple times into the build engine
+			// due to a mismatch in the filename being used.
+			projectCreateInformation.ProjectBasePath = projectCreateInformation.ProjectBasePath.FullPath;
+
 			if (ShouldCreateProject (projectCreateInformation) && !Directory.Exists (projectCreateInformation.ProjectBasePath))
 				Directory.CreateDirectory (projectCreateInformation.ProjectBasePath);
 
