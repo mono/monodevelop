@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Gtk;
 
@@ -28,6 +29,7 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -35,7 +37,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		const int clipboardRingSize = 20;
 		const int toolboxNameMaxLength = 250;
-		static readonly List<TextToolboxNode> clipboardRing = new List<TextToolboxNode> ();
+		static readonly List<ClipboardToolboxNode> clipboardRing = new List<ClipboardToolboxNode> ();
 
 		public static event EventHandler Updated;
 
@@ -50,7 +52,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 
 			//if already in ring, grab the existing node
-			TextToolboxNode newNode = null;
+			ClipboardToolboxNode newNode = null;
 			foreach (var node in clipboardRing) {
 				if (node.Text == text) {
 					clipboardRing.Remove (node);
@@ -68,13 +70,9 @@ namespace MonoDevelop.SourceEditor
 			Updated?.Invoke (null, EventArgs.Empty);
 		}
 
-		static TextToolboxNode CreateClipboardToolboxItem (string text)
+		static ClipboardToolboxNode CreateClipboardToolboxItem (string text)
 		{
-			var item = new TextToolboxNode (text) {
-				Category = GettextCatalog.GetString ("Clipboard Ring"),
-				Icon = DesktopService.GetIconForFile ("a.txt", IconSize.Menu),
-				Name = EscapeAndTruncateName (text)
-			};
+			var item = new ClipboardToolboxNode (text);
 
 			string [] lines = text.Split ('\n');
 			for (int i = 0; i < 3 && i < lines.Length; i++) {
@@ -109,6 +107,51 @@ namespace MonoDevelop.SourceEditor
 		public static IEnumerable<ItemToolboxNode> GetToolboxItems ()
 		{
 			return clipboardRing;
+		}
+
+		class ClipboardToolboxNode : ItemToolboxNode, ITextToolboxNode
+		{
+			static readonly ToolboxItemFilterAttribute filterAtt = new ToolboxItemFilterAttribute ("text/plain", ToolboxItemFilterType.Allow);
+			static readonly string category = GettextCatalog.GetString ("Clipboard Ring");
+			static readonly Xwt.Drawing.Image icon = DesktopService.GetIconForFile ("a.txt", IconSize.Menu);
+
+			public ClipboardToolboxNode (string text)
+			{
+				Text = text;
+
+				ItemFilters.Add (filterAtt);
+				Category = category;
+				Icon = icon;
+			}
+
+			public string Text { get; private set; }
+
+			public override string Name {
+				get {
+					return base.Name.Length > 0 ? base.Name : (base.Name = EscapeAndTruncateName (Text));
+				}
+				set => base.Name = value;
+			}
+
+			public override bool Filter (string keyword)
+			{
+				return Text.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0;
+			}
+
+			public string GetDragPreview (Document document)
+			{
+				return Text;
+			}
+
+			public void InsertAtCaret (Document document)
+			{
+				document.Editor.InsertAtCaret (Text);
+			}
+
+			public bool IsCompatibleWith (Document document)
+			{
+				return true;
+			}
 		}
 	}
 }
