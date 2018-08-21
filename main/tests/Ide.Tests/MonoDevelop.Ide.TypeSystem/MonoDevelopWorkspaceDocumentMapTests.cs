@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Assert.IsNull (doc0);
 
 			var doc1 = map.GetOrCreate ("TestName");
-			var doc2 = map.GetOrCreate ("TestName");
+			var doc2 = map.GetOrCreate ("TestName", map);
 			var doc3 = map.Get ("TestName");
 
 			Assert.AreSame (doc1, doc2);
@@ -58,6 +58,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			map.Remove ("TestName");
 
 			Assert.IsNull (map.Get ("TestName"));
+
+			var doc6 = map.GetOrCreate ("TestName", map);
+			Assert.AreSame (doc4, doc6);
 		}
 	}
 }

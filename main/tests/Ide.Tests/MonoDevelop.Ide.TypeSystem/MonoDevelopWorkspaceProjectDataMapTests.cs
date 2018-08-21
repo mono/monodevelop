@@ -24,12 +24,77 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using NUnit.Framework;
+
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopWorkspaceProjectDataMapTests
+	[TestFixture]
+	public class MonoDevelopWorkspaceProjectDataMapTests : IdeTestBase
 	{
-		public MonoDevelopWorkspaceProjectDataMapTests ()
+		[Test]
+		public void TestSimpleCreation ()
 		{
+			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
+			using (var workspace = new MonoDevelopWorkspace (null)) {
+				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
+
+				var pid = map.GetId (project);
+				Assert.IsNull (pid);
+
+				pid = map.GetOrCreateId (project, null);
+				Assert.IsNotNull (pid);
+
+				var projectInMap = map.GetMonoProject (pid);
+				Assert.AreSame (project, projectInMap);
+
+				map.RemoveProject (project, pid);
+				Assert.IsNull (map.GetId (project));
+			}
+		}
+
+		[Test]
+		public void TestDataHandling ()
+		{
+			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
+			using (var workspace = new MonoDevelopWorkspace (null)) {
+				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
+
+				var pid = map.GetOrCreateId (project, null);
+				var data = map.GetData (pid);
+
+				Assert.IsNull (data);
+				Assert.IsFalse (map.Contains (pid));
+
+				data = map.CreateData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty);
+
+				Assert.IsNotNull (data);
+				Assert.IsTrue (map.Contains (pid));
+
+				map.RemoveData (pid);
+
+				data = map.GetData (pid);
+
+				Assert.IsNull (data);
+				Assert.IsFalse (map.Contains (pid));
+			}
+		}
+
+		[Test]
+		public void TestMigration ()
+		{
+			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
+			using (var project2 = Services.ProjectService.CreateDotNetProject ("C#"))
+			using (var workspace = new MonoDevelopWorkspace (null)) {
+				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
+
+				var pid = map.GetOrCreateId (project, null);
+				Assert.IsNotNull (pid);
+
+				var pid2 = map.GetOrCreateId (project2, project);
+				Assert.AreSame (pid, pid2);
+			}
 		}
 	}
 }
