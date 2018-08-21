@@ -88,6 +88,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation"/>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
@@ -154,9 +155,6 @@
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
-      <HintPath>..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-    </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms">
       <HintPath>..\..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
     </Reference>
@@ -179,7 +177,7 @@
       <HintPath>..\..\..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.ReaderWriter">
       <HintPath>..\..\..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
@@ -212,6 +210,16 @@
     <Reference Include="System.Memory">
       <HintPath>..\..\..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.ImageCatalog">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.ImageCatalog.15.0.26606\lib\net45\Microsoft.VisualStudio.ImageCatalog.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.14.3.25408\lib\net20\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <HintPath>..\..\..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -800,4 +808,5 @@
   </Target>
   <Import Project="..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
   <Import Project="..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
+  <Import Project="..\..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.6.46\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="Exists('..\..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.6.46\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
 </Project>

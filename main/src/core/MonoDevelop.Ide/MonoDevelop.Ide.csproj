@@ -118,7 +118,7 @@
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
