@@ -48,19 +48,37 @@ namespace MonoDevelop.Ide.TypeSystem
 			Assert.AreSame (doc1, doc2);
 			Assert.AreSame (doc1, doc3);
 
-			map.Add (DocumentId.CreateNewId (pid), "TestName");
+			var docIdAdd = DocumentId.CreateNewId (pid);
+			map.Add (docIdAdd, "TestName");
+
 			var doc4 = map.Get ("TestName");
 			var doc5 = map.GetOrCreate ("TestName");
 
 			Assert.AreNotSame (doc1, doc4);
-			Assert.AreSame (doc4, doc5);
+			Assert.AreSame (docIdAdd, doc4);
+			Assert.AreSame (docIdAdd, doc5);
 
 			map.Remove ("TestName");
-
+		
 			Assert.IsNull (map.Get ("TestName"));
+		}
 
-			var doc6 = map.GetOrCreate ("TestName", map);
-			Assert.AreSame (doc4, doc6);
+		[Test]
+		public void TestMigration ()
+		{
+			var pid = ProjectId.CreateNewId ();
+			var map1 = new MonoDevelopWorkspace.DocumentMap (pid);
+			var map2 = new MonoDevelopWorkspace.DocumentMap (pid);
+
+			var doc1 = map1.GetOrCreate ("TestName");
+			var doc2 = map2.GetOrCreate ("TestName");
+
+			Assert.AreNotSame (doc1, doc2);
+
+			map2.Remove ("TestName");
+			var doc3 = map2.GetOrCreate ("TestName", map1);
+
+			Assert.AreSame (doc1, doc3);
 		}
 	}
 }
