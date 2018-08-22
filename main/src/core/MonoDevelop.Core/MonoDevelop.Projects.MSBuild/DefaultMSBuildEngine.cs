@@ -739,7 +739,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (knownItemFunctions.Contains (func)) {
 				itemFunction = func;
 				i++;
-				context.EvaluateParameters (expression, ref i, out itemFunctionArgs);
+				context.EvaluateParameters (expression.AsSpan (), ref i, out itemFunctionArgs);
 				return true;
 			}
 			return true;
@@ -794,7 +794,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			if (knownStringItemFunctions.Contains (itemFunction)) {
 				object res;
-				if (context.EvaluateMember (itemFunction, typeof (string), itemFunction, item.Include, itemFunctionArgs, out res)) {
+				if (context.EvaluateMember (itemFunction.AsSpan (), typeof (string), itemFunction, item.Include, itemFunctionArgs, out res)) {
 					evaluatedInclude = res.ToString ();
 					return true;
 				}
