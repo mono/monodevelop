@@ -234,7 +234,7 @@ namespace Mono.TextEditor.Tests
 function foo() {}",
 						@"<span foreground=""#719dcf"">function</span><span foreground=""#eeeeec""> foo(i</span><span foreground=""#719dcf"">:</span><span foreground=""#eeeeec""> </span><span foreground=""#4ec9b0"">string</span><span foreground=""#eeeeec"">) {}</span>
 <span foreground=""#719dcf"">function</span><span foreground=""#eeeeec""> foo() {}</span>",
-						"application/typescript");
+						"text/x-typescript");
 		}
 	}
 }
