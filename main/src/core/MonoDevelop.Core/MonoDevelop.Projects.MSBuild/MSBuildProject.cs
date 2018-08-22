@@ -1208,7 +1208,7 @@ namespace MonoDevelop.Projects.MSBuild
 			elem.ParentNode.RemoveChild (elem);
 
 			while (ws != null) {
-				var t = ws.InnerText;
+				var t = ws.InnerText.AsSpan ();
 				t = t.TrimEnd (' ');
 				bool hasNewLine = t.Length > 0 && (t [t.Length - 1] == '\r' || t [t.Length - 1] == '\n');
 				if (hasNewLine)
@@ -1221,19 +1221,19 @@ namespace MonoDevelop.Projects.MSBuild
 					if (hasNewLine)
 						break;
 				} else {
-					ws.InnerText = t;
+					ws.InnerText = t.ToString ();
 					break;
 				}
 			}
 		}
 
-		static string RemoveLineEnd (string s)
+		static ReadOnlySpan<char> RemoveLineEnd (ReadOnlySpan<char> s)
 		{
 			if (s [s.Length - 1] == '\n') {
 				if (s.Length > 1 && s [s.Length - 2] == '\r')
-					return s.Substring (0, s.Length - 2);
+					return s.Slice (0, s.Length - 2);
 			}
-			return s.Substring (0, s.Length - 1);
+			return s.Slice (0, s.Length - 1);
 		}
 
 		static string GetIndentString (XmlNode elem)
