@@ -510,22 +510,25 @@ namespace MonoDevelop.Projects.MSBuild
 				return false;
 			}
 
-			string prop = StringInternPool.AddShared (str.Slice (i, j - i).ToString ()).Trim ();
+			var propSpan = str.Slice (i, j - i).Trim ();
 			i = j + 1;
 
 			bool res = false;
-			if (prop.Length > 0) {
+			if (propSpan.Length > 0) {
 				switch (tag) {
 					case '$': {
 						bool nie;
-						res = EvaluateProperty (prop.AsSpan (), evaluatedItemsCollection != null, out val, out nie);
+						res = EvaluateProperty (propSpan, evaluatedItemsCollection != null, out val, out nie);
 						needsItemEvaluation |= nie;
 						break;
 					}
-				case '%': res = EvaluateMetadata (prop, out val); break;
+				case '%':
+					string prop = StringInternPool.AddShared (propSpan.ToString ());
+					res = EvaluateMetadata (prop, out val);
+					break;
 				case '@':
 					if (evaluatedItemsCollection != null)
-						res = EvaluateList (prop, evaluatedItemsCollection, out val);
+						res = EvaluateList (propSpan, evaluatedItemsCollection, out val);
 					else {
 						res = false;
 						needsItemEvaluation = true;
@@ -889,7 +892,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return val != null;
 		}
 
-		bool EvaluateList (string prop, List<MSBuildItemEvaluated> evaluatedItemsCollection, out object val)
+		bool EvaluateList (ReadOnlySpan<char> prop, List<MSBuildItemEvaluated> evaluatedItemsCollection, out object val)
 		{
 			string items;
 			var res = DefaultMSBuildEngine.ExecuteStringTransform (evaluatedItemsCollection, this, prop, out items);

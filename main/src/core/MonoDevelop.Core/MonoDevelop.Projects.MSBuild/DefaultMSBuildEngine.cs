@@ -546,7 +546,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (IsIncludeTransform (include)) {
 				// This is a transform
 				List<MSBuildItemEvaluated> evalItems;
-				var transformExp = include.Substring (2, include.Length - 3);
+				var transformExp = include.AsSpan (2, include.Length - 3);
 				if (ExecuteTransform (project, context, item, transformExp, out evalItems)) {
 					foreach (var newItem in evalItems) {
 						project.EvaluatedItemsIgnoringCondition.Add (newItem);
@@ -579,7 +579,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, string transformExp, out List<MSBuildItemEvaluated> items)
+		bool ExecuteTransform (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, ReadOnlySpan<char> transformExp, out List<MSBuildItemEvaluated> items)
 		{
 			bool ignoreMetadata = false;
 
@@ -652,7 +652,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		internal static bool ExecuteStringTransform (List<MSBuildItemEvaluated> evaluatedItemsCollection, MSBuildEvaluationContext context, string transformExp, out string items)
+		internal static bool ExecuteStringTransform (List<MSBuildItemEvaluated> evaluatedItemsCollection, MSBuildEvaluationContext context, ReadOnlySpan<char> transformExp, out string items)
 		{
 			// This method works mostly like ExecuteTransform, but instead of returning a list of items, it returns a string as result.
 			// Since there is no need to create full blown evaluated items, it can be more efficient than ExecuteTransform.
@@ -708,7 +708,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		static bool ParseTransformExpression (MSBuildEvaluationContext context, string include, out string itemName, out string expression, out string itemFunction, out object [] itemFunctionArgs)
+		static bool ParseTransformExpression (MSBuildEvaluationContext context, ReadOnlySpan<char> include, out string itemName, out string expression, out string itemFunction, out object [] itemFunctionArgs)
 		{
 			// This method parses the transforms and extracts: the name of the item list to transform, the whole transform expression (or null if there isn't). If the expression can be
 			// parsed as an item funciton, then it returns the function name and the list of arguments. Otherwise those parameters are null.
@@ -717,29 +717,30 @@ namespace MonoDevelop.Projects.MSBuild
 			itemFunction = null;
 			itemFunctionArgs = null;
 		
-			int i = include.IndexOf ("->", StringComparison.Ordinal);
+			int i = include.IndexOf ("->".AsSpan (), StringComparison.Ordinal);
 			if (i == -1) {
-				itemName = include.Trim ();
+				itemName = include.Trim ().ToString ();
 				return itemName.Length > 0;
 			}
-			itemName = include.Substring (0, i).Trim ();
+			itemName = include.Slice (0, i).Trim ().ToString ();
 			if (itemName.Length == 0)
 				return false;
 			
-			expression = include.Substring (i + 2).Trim ();
-			if (expression.Length > 1 && expression[0]=='\'' && expression[expression.Length - 1] == '\'') {
-				expression = expression.Substring (1, expression.Length - 2);
+			var expressionSpan = include.Slice (i + 2).Trim ();
+			if (expressionSpan.Length > 1 && expressionSpan [0]=='\'' && expressionSpan [expressionSpan.Length - 1] == '\'') {
+				expression = expressionSpan.Slice (1, expressionSpan.Length - 2).ToString ();
 				return true;
 			}
-			i = expression.IndexOf ('(');
+			expression = expressionSpan.ToString ();
+			i = expressionSpan.IndexOf ('(');
 			if (i == -1)
 				return true;
 
-			var func = expression.Substring (0, i).Trim ();
+			var func = expressionSpan.Slice (0, i).Trim ().ToString ();
 			if (knownItemFunctions.Contains (func)) {
 				itemFunction = func;
 				i++;
-				context.EvaluateParameters (expression.AsSpan (), ref i, out itemFunctionArgs);
+				context.EvaluateParameters (expressionSpan, ref i, out itemFunctionArgs);
 				return true;
 			}
 			return true;
@@ -946,10 +947,10 @@ namespace MonoDevelop.Projects.MSBuild
 			exclude = exclude.Replace ('/', '\\').Replace (@"\\", @"\");
 			var sb = StringBuilderCache.Allocate ();
 			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
-				var ex = ep.Trim ();
+				var ex = ep.AsSpan ().Trim ();
 				if (excludeDirectoriesOnly) {
-					if (ex.EndsWith (@"\**", StringComparison.OrdinalIgnoreCase))
-						ex = ex.Substring (0, ex.Length - 3);
+					if (ex.EndsWith (@"\**".AsSpan (), StringComparison.OrdinalIgnoreCase))
+						ex = ex.Slice (0, ex.Length - 3);
 					else
 						continue;
 				}
