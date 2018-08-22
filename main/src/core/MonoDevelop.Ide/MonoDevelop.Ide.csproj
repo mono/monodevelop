@@ -4196,6 +4196,8 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.MetadataReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectSystemHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\IInfoBarHost.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopAnalyzer.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\HostDiagnosticUpdateSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
