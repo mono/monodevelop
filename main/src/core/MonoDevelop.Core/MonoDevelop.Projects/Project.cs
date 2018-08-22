@@ -81,6 +81,8 @@ namespace MonoDevelop.Projects
 
 		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
 
+		CachingCoreCompileEvaluator<ProjectFile> compileEvaluator;
+
 		protected Project ()
 		{
 			runConfigurations = new RunConfigurationCollection (this);
@@ -89,6 +91,8 @@ namespace MonoDevelop.Projects
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
+
+			compileEvaluator = new CachingCoreCompileEvaluator<ProjectFile> (this, "Compile", CreateProjectFile);
         }
 
 		public ProjectItemCollection Items {
@@ -499,7 +503,7 @@ namespace MonoDevelop.Projects
 			results.AddRange (evaluatedItems);
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
-			var evaluatedCompileItems = await GetCompileItemsFromCoreCompileDependenciesAsync (monitor, configuration);
+			var evaluatedCompileItems = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (monitor, configuration);
 			var addedItems = evaluatedCompileItems.Where (i => results.All (pi => pi.FilePath != i.FilePath)).ToList ();
 			results.AddRange (addedItems);
 
@@ -561,100 +565,119 @@ namespace MonoDevelop.Projects
 			// Ensure MSBuild tasks used when building are up to date after imports changed.
 			ShutdownProjectBuilder ();
 
-			lock (evaluatedCompileItemsLock) {
-				// Do not re-evaluate if the compile items have never been evaluated.
-				if (evaluatedCompileItemsTask != null)
-					reevaluateCoreCompileDependsOn = true;
-			}
+			compileEvaluator.MarkDirty ();
 
 			Runtime.RunInMainThread (() => {
 				NotifyModified ("Files");
 			}).Ignore ();
 		}
 
-		object evaluatedCompileItemsLock = new object ();
-		string evaluatedCompileItemsConfiguration;
-		bool reevaluateCoreCompileDependsOn;
-		TaskCompletionSource<ProjectFile[]> evaluatedCompileItemsTask;
-
-		/// <summary>
-		/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
-		/// </summary>
-		async Task<ProjectFile[]> GetCompileItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			var config = configuration != null ? GetConfiguration (configuration) : DefaultConfiguration;
-			if (config == null)
-				return new ProjectFile [0];
-
-			// Check if there is already a task for getting the items for the provided configuration
-
-			TaskCompletionSource<ProjectFile []> currentTask = null;
-			bool startTask = false;
-			bool reevaluate = false;
-
-			lock (evaluatedCompileItemsLock) {
-
-				if (evaluatedCompileItemsConfiguration != config.Id || reevaluateCoreCompileDependsOn) {
-					// The configuration changed or query not yet done
-					evaluatedCompileItemsConfiguration = config.Id;
-					evaluatedCompileItemsTask = new TaskCompletionSource<ProjectFile []> ();
-					startTask = true;
-					reevaluate = reevaluateCoreCompileDependsOn;
-					reevaluateCoreCompileDependsOn = false;
-				}
-				currentTask = evaluatedCompileItemsTask;
-			}
-
-			if (reevaluate) {
-				// Ensure CoreCompileDependsOn is up to date.
-				await ReevaluateProject (monitor, resetCachedCompileItems: false);
-			}
-
-			if (startTask) {
-				var coreCompileDependsOn = sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
-
-				if (string.IsNullOrEmpty (coreCompileDependsOn)) {
-					currentTask.SetResult (new ProjectFile [0]);
-					return currentTask.Task.Result;
-				}
-
-				ProjectFile [] result = null;
-				var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
-				try {
-					// evaluate the Compile targets
-					var ctx = new TargetEvaluationContext ();
-					ctx.ItemsToEvaluate.Add ("Compile");
-					ctx.LoadReferencedProjects = false;
-					ctx.BuilderQueue = BuilderQueue.ShortOperations;
-					ctx.LogVerbosity = MSBuildVerbosity.Quiet;
-
-					var evalResult = await this.RunTarget (monitor, dependsList, config.Selector, ctx);
-					if (evalResult != null && evalResult.Items != null) {
-						result = evalResult
-							.Items
-							.Select (CreateProjectFile)
-							.ToArray ();
-					}
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
-				}
-				currentTask.SetResult (result ?? new ProjectFile [0]);
-			}
-
-			return await currentTask.Task;
-		}
-
-		void ResetCachedCompileItems ()
-		{
-			lock (evaluatedCompileItemsLock) {
-				evaluatedCompileItemsConfiguration = null;
-				reevaluateCoreCompileDependsOn = false;
-			}
-		}
-
 		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
 		{
 			return new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include), item.Name) { Project = this };
+		}
+
+		class CachingCoreCompileEvaluator<TResult>
+		{
+			Project project;
+			string itemGroup;
+			Func<IMSBuildItemEvaluated, TResult> transform;
+
+			readonly object evaluatedCompileItemsLock = new object ();
+			string evaluatedCompileItemsConfiguration;
+			bool reevaluateCoreCompileDependsOn;
+			TaskCompletionSource<TResult []> evaluatedCompileItemsTask;
+
+			public CachingCoreCompileEvaluator (Project project, string itemGroup, Func<IMSBuildItemEvaluated, TResult> transform)
+			{
+				this.project = project;
+				this.itemGroup = itemGroup;
+				this.transform = transform;
+			}
+
+			public void MarkDirty ()
+			{
+				lock (evaluatedCompileItemsLock) {
+					// Do not re-evaluate if the compile items have never been evaluated.
+					if (evaluatedCompileItemsTask != null)
+						reevaluateCoreCompileDependsOn = true;
+				}
+			}
+
+			/// <summary>
+			/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
+			/// </summary>
+			public async Task<TResult []> GetItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				var config = configuration != null ? project.GetConfiguration (configuration) : project.DefaultConfiguration;
+				if (config == null)
+					return Array.Empty<TResult> ();
+
+				// Check if there is already a task for getting the items for the provided configuration
+
+				TaskCompletionSource<TResult []> currentTask = null;
+				bool startTask = false;
+				bool reevaluate = false;
+
+				lock (evaluatedCompileItemsLock) {
+
+					if (evaluatedCompileItemsConfiguration != config.Id || reevaluateCoreCompileDependsOn) {
+						// The configuration changed or query not yet done
+						evaluatedCompileItemsConfiguration = config.Id;
+						evaluatedCompileItemsTask = new TaskCompletionSource<TResult []> ();
+						startTask = true;
+						reevaluate = reevaluateCoreCompileDependsOn;
+						reevaluateCoreCompileDependsOn = false;
+					}
+					currentTask = evaluatedCompileItemsTask;
+				}
+
+				if (reevaluate) {
+					// Ensure CoreCompileDependsOn is up to date.
+					await project.ReevaluateProject (monitor, resetCachedCompileItems: false);
+				}
+
+				if (startTask) {
+					var coreCompileDependsOn = project.sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
+
+					if (string.IsNullOrEmpty (coreCompileDependsOn)) {
+						currentTask.SetResult (new TResult [0]);
+						return currentTask.Task.Result;
+					}
+
+					TResult [] result = null;
+					var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
+					try {
+						// evaluate the Compile targets
+						var ctx = new TargetEvaluationContext ();
+						ctx.ItemsToEvaluate.Add (itemGroup);
+						ctx.LoadReferencedProjects = false;
+						ctx.BuilderQueue = BuilderQueue.ShortOperations;
+						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
+
+						var evalResult = await project.RunTarget (monitor, dependsList, config.Selector, ctx);
+						if (evalResult != null && evalResult.Items != null) {
+							result = evalResult
+								.Items
+								.Select (x => transform (x))
+								.ToArray ();
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
+					}
+					currentTask.SetResult (result ?? new TResult [0]);
+				}
+
+				return await currentTask.Task;
+			}
+
+			public void ResetCachedCompileItems ()
+			{
+				lock (evaluatedCompileItemsLock) {
+					evaluatedCompileItemsConfiguration = null;
+					reevaluateCoreCompileDependsOn = false;
+				}
+			}
 		}
 
 		/// <summary>
@@ -4129,7 +4152,7 @@ namespace MonoDevelop.Projects
 					}
 
 					if (resetCachedCompileItems)
-						ResetCachedCompileItems ();
+						compileEvaluator.ResetCachedCompileItems ();
 
 					if (!oldCapabilities.SetEquals (projectCapabilities))
 						NotifyProjectCapabilitiesChanged ();
