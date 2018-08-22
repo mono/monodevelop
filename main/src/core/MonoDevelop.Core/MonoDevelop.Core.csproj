@@ -210,12 +210,6 @@
     <Reference Include="System.Memory">
       <HintPath>..\..\..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.ImageCatalog">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.ImageCatalog.15.0.26606\lib\net45\Microsoft.VisualStudio.ImageCatalog.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.14.3.25408\lib\net20\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http">
       <HintPath>..\..\..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
     </Reference>
