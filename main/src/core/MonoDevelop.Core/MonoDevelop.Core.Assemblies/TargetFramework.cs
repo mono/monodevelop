@@ -238,6 +238,15 @@ namespace MonoDevelop.Core.Assemblies
 				//if Mono was upgraded since caching, the cached location may no longer be valid
 				if (!Directory.Exists (fxInfo.TargetFrameworkDirectory)) {
 					fxInfo = null;
+				} else if (fxInfo.SupportedFrameworks.Count > 0) {
+					// Ensure DisplayName was saved for the SupportedFrameworks. If missing invalidate the
+					// cache to ensure DisplayName is saved. Only check the first framework since the
+					// DisplayName was not being saved previously. The DisplayName will not be empty when
+					// saved even if the framework .xml file does not define it since the filename will be
+					// used as the DisplayName in that case.
+					if (string.IsNullOrEmpty (fxInfo.SupportedFrameworks [0].DisplayName)) {
+						fxInfo = null;
+					}
 				}
 			}
 
