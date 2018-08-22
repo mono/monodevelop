@@ -745,31 +745,6 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		static bool ReadItemFunctionArg (string include, ref int i, out string arg)
-		{
-			arg = null;
-			if (!SkipWhitespace (include, ref i))
-				return false;
-			var quote = include [i];
-			if (quote == ')')
-				return true;
-			if (quote != '"' && quote != '\'')
-				return false;
-			int k = include.IndexOf (quote, ++i);
-			if (k == -1)
-				return false;
-			arg = include.Substring (i, k - i);
-			i = k + 1;
-			return SkipWhitespace (include, ref i);
-		}
-
-		static bool SkipWhitespace (string include, ref int i)
-		{
-			while (i < include.Length && char.IsWhiteSpace (include [i]))
-				i++;
-			return i < include.Length;
-		}
-
 		static bool ExecuteTransformIncludeItemFunction (MSBuildEvaluationContext context, MSBuildItemEvaluated item, string itemFunction, object [] itemFunctionArgs, out string evaluatedInclude, out bool skip)
 		{
 			evaluatedInclude = null;
