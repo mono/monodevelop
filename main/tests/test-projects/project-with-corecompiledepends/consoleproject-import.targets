@@ -9,6 +9,7 @@
     <WriteLinesToFile File="GeneratedFile.g.cs" Lines="hello" Overwrite="true" />
     <ItemGroup Condition="Exists('GeneratedFile.g.cs')">
         <Compile Include="GeneratedFile.g.cs" />
-    </ItemGroup>    
+		<Analyzer Include="GeneratedAnalyzer.g.dll" />
+    </ItemGroup>
   </Target>
 </Project>
