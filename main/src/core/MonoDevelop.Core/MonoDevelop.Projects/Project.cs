@@ -82,6 +82,7 @@ namespace MonoDevelop.Projects
 		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
 
 		CachingCoreCompileEvaluator<ProjectFile> compileEvaluator;
+		CachingCoreCompileEvaluator<FilePath> analyzerEvaluator;
 
 		protected Project ()
 		{
@@ -93,7 +94,8 @@ namespace MonoDevelop.Projects
 			DependencyResolutionEnabled = true;
 
 			compileEvaluator = new CachingCoreCompileEvaluator<ProjectFile> (this, "Compile", CreateProjectFile);
-        }
+			analyzerEvaluator = new CachingCoreCompileEvaluator<FilePath> (this, "Analyzer", GetItemInclude);
+		}
 
 		public ProjectItemCollection Items {
 			get { return items; }
@@ -466,6 +468,32 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<FilePath []> GetAnalyzerFilesAsync (ConfigurationSelector configuration)
+		{
+			if (sourceProject == null)
+				return Task.FromResult (Array.Empty<FilePath> ());
+
+			return BindTask<FilePath []> (cancelToken => {
+				var cancelSource = new CancellationTokenSource ();
+				cancelToken.Register (() => cancelSource.Cancel ());
+
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return GetAnalyzerFilesAsync (monitor, configuration);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<FilePath []> GetAnalyzerFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetAnalyzerFiles (monitor, configuration);
+		}
+
+		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
 		public Task<ProjectFile[]> GetSourceFilesAsync (ConfigurationSelector configuration)
@@ -489,6 +517,15 @@ namespace MonoDevelop.Projects
 		public Task<ProjectFile []> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return ProjectExtension.OnGetSourceFiles (monitor, configuration);
+		}
+
+		/// <summary>
+		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		protected virtual async Task<FilePath[]> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var evaluatedAnalyzerItems = await analyzerEvaluator.GetItemsFromCoreCompileDependenciesAsync (monitor, configuration);
+			return evaluatedAnalyzerItems.ToArray ();
 		}
 
 		/// <summary>
@@ -566,6 +603,7 @@ namespace MonoDevelop.Projects
 			ShutdownProjectBuilder ();
 
 			compileEvaluator.MarkDirty ();
+			analyzerEvaluator.MarkDirty ();
 
 			Runtime.RunInMainThread (() => {
 				NotifyModified ("Files");
@@ -575,6 +613,11 @@ namespace MonoDevelop.Projects
 		ProjectFile CreateProjectFile (IMSBuildItemEvaluated item)
 		{
 			return new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include), item.Name) { Project = this };
+		}
+
+		FilePath GetItemInclude (IMSBuildItemEvaluated item)
+		{
+			return MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include);
 		}
 
 		class CachingCoreCompileEvaluator<TResult>
@@ -4706,6 +4749,12 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
 			{
 				return Project.OnFastCheckNeedsBuild (configuration, context);
+			}
+
+
+			internal protected override Task<FilePath []> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Project.OnGetAnalyzerFiles (monitor, configuration);
 			}
 
 			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
