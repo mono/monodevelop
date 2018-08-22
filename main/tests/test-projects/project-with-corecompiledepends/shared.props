@@ -4,5 +4,6 @@
     <Compile Include="Foo.cs">
       <Link>Foo.cs</Link>
     </Compile>
+    <Analyzer Include="Foo.dll"/>
   </ItemGroup>
 </Project>
