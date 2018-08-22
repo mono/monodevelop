@@ -170,6 +170,11 @@ namespace MonoDevelop.Projects
 			return next.OnReevaluateProject (monitor);
 		}
 
+		internal protected virtual Task<FilePath []> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return next.OnGetAnalyzerFiles (monitor, configuration);
+		}
+
 		internal protected virtual Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return next.OnGetSourceFiles (monitor, configuration);
