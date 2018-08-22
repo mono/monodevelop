@@ -453,7 +453,7 @@ namespace MonoDevelop.Projects.MSBuild
 					int j = i;
 					object val;
 					bool nie;
-					if (!EvaluateReference (str, evaluatedItemsCollection, ref j, out val, out nie))
+					if (!EvaluateReference (str.AsSpan (), evaluatedItemsCollection, ref j, out val, out nie))
 						allResolved = false;
 					needsItemEvaluation |= nie;
 					sb.Append (ValueToString (val));
@@ -493,7 +493,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return Evaluate (str, null, null, out needsItemEvaluation);
 		}
 
-		bool EvaluateReference (string str, List<MSBuildItemEvaluated> evaluatedItemsCollection, ref int i, out object val, out bool needsItemEvaluation)
+		bool EvaluateReference (ReadOnlySpan<char> str, List<MSBuildItemEvaluated> evaluatedItemsCollection, ref int i, out object val, out bool needsItemEvaluation)
 		{
 			needsItemEvaluation = false;
 
@@ -504,12 +504,13 @@ namespace MonoDevelop.Projects.MSBuild
 			i += 2;
 			int j = FindClosingChar (str, i, ')');
 			if (j == -1) {
-				val = StringInternPool.AddShared (str, start, str.Length - start);
 				i = str.Length;
+				str = str.Slice (start);
+				val = StringInternPool.AddShared (str.ToString ());
 				return false;
 			}
 
-			string prop = StringInternPool.AddShared (str, i, j - i).Trim ();
+			string prop = StringInternPool.AddShared (str.Slice (i, j - i).ToString ()).Trim ();
 			i = j + 1;
 
 			bool res = false;
@@ -517,7 +518,7 @@ namespace MonoDevelop.Projects.MSBuild
 				switch (tag) {
 					case '$': {
 						bool nie;
-						res = EvaluateProperty (prop, evaluatedItemsCollection != null, out val, out nie);
+						res = EvaluateProperty (prop.AsSpan (), evaluatedItemsCollection != null, out val, out nie);
 						needsItemEvaluation |= nie;
 						break;
 					}
@@ -533,7 +534,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 			if (!res)
-				val = StringInternPool.AddShared (str, start, j - start + 1);
+				val = StringInternPool.AddShared (str.Slice (start, j - start + 1).ToString ());
 
 			return res;
 		}
@@ -545,7 +546,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static char [] dotOrBracket = { '.', '[' };
 
-		bool EvaluateProperty (string prop, bool ignorePropsWithTransforms, out object val, out bool needsItemEvaluation)
+		bool EvaluateProperty (ReadOnlySpan<char> prop, bool ignorePropsWithTransforms, out object val, out bool needsItemEvaluation)
 		{
 			needsItemEvaluation = false;
 			val = null;
@@ -553,10 +554,10 @@ namespace MonoDevelop.Projects.MSBuild
 				int i = prop.IndexOf (']');
 				if (i == -1 || (prop.Length - i) < 3 || prop [i + 1] != ':' || prop [i + 2] != ':')
 					return false;
-				var typeName = prop.Substring (1, i - 1).Trim ();
+				var typeName = prop.Slice (1, i - 1).Trim ();
 				if (typeName.Length == 0)
 					return false;
-				var type = ResolveType (typeName);
+				var type = ResolveType (typeName.ToString ());
 				if (type == null)
 					return false;
 				i += 3;
@@ -566,17 +567,18 @@ namespace MonoDevelop.Projects.MSBuild
 			int n = prop.IndexOfAny (dotOrBracket);
 
 			if (n == -1) {
-				needsItemEvaluation |= (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (prop));
-				val = GetPropertyValue (prop) ?? string.Empty;
+				var propString = prop.ToString ();
+				needsItemEvaluation |= (!ignorePropsWithTransforms && propertiesWithTransforms.Contains (propString));
+				val = GetPropertyValue (propString) ?? string.Empty;
 				return true;
 			} else {
-				var pn = prop.Substring (0, n);
+				var pn = prop.Slice (0, n).ToString ();
 				val = GetPropertyValue (pn) ?? string.Empty;
 				return EvaluateMemberOrIndexer (typeof (string), val, prop, n, out val);
 			}
 		}
 
-		bool EvaluateMemberOrIndexer (Type type, object instance, string str, int i, out object val)
+		bool EvaluateMemberOrIndexer (Type type, object instance, ReadOnlySpan<char> str, int i, out object val)
 		{
 			// Position in string is either a '.' or a '['.
 
@@ -591,20 +593,22 @@ namespace MonoDevelop.Projects.MSBuild
 			return false;
 		}
 
-		internal bool EvaluateMember (Type type, object instance, string str, int i, out object val)
+		internal bool EvaluateMember (Type type, object instance, ReadOnlySpan<char> str, int i, out object val)
 		{
 			val = null;
 
 			// Find the delimiter of the member
-			int j = str.IndexOfAny (new [] { '.', ')', '(' }, i);
+			int j = str.Slice(i).IndexOfAny (new [] { '.', ')', '(' });
 			if (j == -1)
 				j = str.Length;
+			else
+				j += i;
 
-			var memberName = str.Substring (i, j - i).Trim ();
+			var memberName = str.Slice (i, j - i).Trim ();
 			if (memberName.Length == 0)
 				return false;
-			
-			var member = ResolveMember (type, memberName, instance == null);
+
+			var member = ResolveMember (type, memberName.ToString (), instance == null);
 			if (member == null || member.Length == 0)
 				return false;
 
@@ -631,7 +635,7 @@ namespace MonoDevelop.Projects.MSBuild
 					else
 						return false;
 				} catch (Exception ex) {
-					LoggingService.LogError ("MSBuild property evaluation failed: " + str, ex);
+					LoggingService.LogError ("MSBuild property evaluation failed: " + str.ToString (), ex);
 					return false;
 				}
 			}
@@ -644,7 +648,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		bool EvaluateIndexer (Type type, object instance, string str, int i, out object val)
+		bool EvaluateIndexer (Type type, object instance, ReadOnlySpan<char> str, int i, out object val)
 		{
 			val = null;
 			object [] parameters;
@@ -670,7 +674,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return true;
 		}
 
-		internal bool EvaluateMember (string str, Type type, string memberName, object instance, object [] parameterValues, out object val)
+		internal bool EvaluateMember (ReadOnlySpan<char> str, Type type, string memberName, object instance, object [] parameterValues, out object val)
 		{
 			val = null;
 			var member = ResolveMember (type, memberName, instance == null);
@@ -679,7 +683,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return EvaluateMethod (str, member, instance, parameterValues, out val);
 		}
 
-		bool EvaluateMethod (string str, MemberInfo[] member, object instance, object [] parameterValues, out object val)
+		bool EvaluateMethod (ReadOnlySpan<char> str, MemberInfo[] member, object instance, object [] parameterValues, out object val)
 		{
 			val = null;
 
@@ -738,14 +742,14 @@ namespace MonoDevelop.Projects.MSBuild
 				// Invoke the method
 				val = method.Invoke (instance, convertedArgs);
 			} catch (Exception ex) {
-				LoggingService.LogError ("MSBuild property evaluation failed: " + str, ex);
+				LoggingService.LogError ("MSBuild property evaluation failed: " + str.ToString (), ex);
 				return false;
 			}
 			return true;
 		}
 
 		static char[] parameterCloseChars = new[] { ',', ')', ']' };
-		internal bool EvaluateParameters (string str, ref int i, out object[] parameters)
+		internal bool EvaluateParameters (ReadOnlySpan<char> str, ref int i, out object[] parameters)
 		{
 			parameters = null;
 			var list = new List<object> ();
@@ -756,7 +760,7 @@ namespace MonoDevelop.Projects.MSBuild
 					return false;
 
 				var foundListEnd = str [j] == ')' || str [j] == ']';
-				var arg = str.Substring (i, j - i).Trim ();
+				var arg = str.Slice (i, j - i).Trim ();
 
 				if (arg.Length == 0 && foundListEnd && list.Count == 0) {
 					// Empty parameters list
@@ -767,9 +771,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 				// Trim enclosing quotation marks
 				if (arg.Length > 1 && IsQuote(arg [0]) && arg[arg.Length - 1] == arg [0])
-					arg = arg.Substring (1, arg.Length - 2);
+					arg = arg.Slice (1, arg.Length - 2);
 
-				list.Add (Evaluate (arg));
+				list.Add (Evaluate (arg.ToString ()));
 
 				if (foundListEnd) {
 					// End of parameters list
@@ -974,7 +978,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return -1;
 		}
 
-		int FindClosingChar (string str, int i, char closeChar)
+		int FindClosingChar (ReadOnlySpan<char> str, int i, char closeChar)
 		{
 			int pc = 0;
 			while (i < str.Length) {
@@ -986,9 +990,11 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (c == ')' || c == ']')
 					pc--;
 				else if (IsQuote (c)) {
-					i = str.IndexOf (c, i + 1);
+					int start = i + 1;
+					i = str.Slice (start).IndexOf (c);
 					if (i == -1)
 						return -1;
+					i += start;
 				}
 				i++;
 			}
@@ -1000,7 +1006,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return c == '"' || c == '\'' || c == '`';
 		}
 
-		static int FindClosingChar (string str, int i, char[] closeChar)
+		static int FindClosingChar (ReadOnlySpan<char> str, int i, char[] closeChar)
 		{
 			int pc = 0;
 			while (i < str.Length) {
@@ -1012,9 +1018,11 @@ namespace MonoDevelop.Projects.MSBuild
 				else if (c == ')' || c == ']')
 					pc--;
 				else if (IsQuote (c)) {
-					i = str.IndexOf (c, i + 1);
+					int start = i + 1;
+					i = str.Slice (i + 1).IndexOf (c);
 					if (i == -1)
 						return -1;
+					i += start;
 				}
 				i++;
 			}
