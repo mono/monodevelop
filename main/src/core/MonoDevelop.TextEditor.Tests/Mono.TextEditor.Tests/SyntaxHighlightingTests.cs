@@ -230,10 +230,8 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestVSTS665407 ()
 		{
-			TestOutput (@"function foo(i: string) {}
-function foo() {}",
-						@"<span foreground=""#719dcf"">function</span><span foreground=""#eeeeec""> foo(i</span><span foreground=""#719dcf"">:</span><span foreground=""#eeeeec""> </span><span foreground=""#4ec9b0"">string</span><span foreground=""#eeeeec"">) {}</span>
-<span foreground=""#719dcf"">function</span><span foreground=""#eeeeec""> foo() {}</span>",
+			TestOutput ("function foo(i: string) {}\nfunction foo() {}",
+						"<span foreground=\"#719dcf\">function</span><span foreground=\"#eeeeec\"> foo(i</span><span foreground=\"#719dcf\">:</span><span foreground=\"#eeeeec\"> </span><span foreground=\"#4ec9b0\">string</span><span foreground=\"#eeeeec\">) {}</span>\n<span foreground=\"#719dcf\">function</span><span foreground=\"#eeeeec\"> foo() {}</span>",
 						"text/x-typescript");
 		}
 	}
