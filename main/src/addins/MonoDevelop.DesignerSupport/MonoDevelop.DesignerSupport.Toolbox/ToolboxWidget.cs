@@ -946,9 +946,32 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				};
 			}
 
-			this.GdkWindow.GetOrigin (out var ox, out var oy);
-			tooltipWindow.Move (Math.Max (0, ox + tipX), oy + tipY);
+			//translate mouse position into screen coords
+			GdkWindow.GetOrigin (out var ox, out var oy);
+			int x = tipX + ox + Allocation.X;
+			int y = tipY + oy + Allocation.Y;
+
+			//get window size. might not work for all tooltips.
+			var req = tooltipWindow.SizeRequest ();
+			int w = req.Width;
+			int h = req.Height;
+
+			var geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (ox + x, oy + y));
+
+			//if hits right edge, shift in
+			if (x + w > geometry.Right)
+				x = geometry.Right - w;
+
+			//if hits bottom, flip above mouse
+			if (y + h > geometry.Bottom)
+				y = y - h - 20;
+
+			int destX = Math.Max (0, x);
+			int destY = Math.Max (0, y);
+
+			tooltipWindow.Move (destX, destY);
 			tooltipWindow.ShowAll ();
+
 			return false;
 		}
 
