@@ -193,6 +193,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				return false;
 			}
 
+			/// <summary>
+			/// This takes the modified projects that occurred during the solution load and re-plays
+			/// the modifications to the workspace as though they occurred after the load so any updated
+			/// references due to a NuGet restore are made available to the type system.
+			/// </summary>
+			void ReloadModifiedProjects ()
+			{
+				lock (workspace.projectModifyLock) {
+					if (!workspace.modifiedProjects.Any ())
+						return;
+					var modifiedWhileLoading = workspace.modifiedProjects;
+					workspace.modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+					foreach (var project in modifiedWhileLoading) {
+						var args = new MonoDevelop.Projects.SolutionItemModifiedEventArgs (project, "References");
+						workspace.OnProjectModified (project, args);
+					}
+				}
+			}
+
 			internal Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution sol, CancellationToken ct)
 			{
 				return Task.Run (delegate {
@@ -228,6 +247,11 @@ namespace MonoDevelop.Ide.TypeSystem
 								}
 							}
 						}
+						// Check for modified projects here after the solution has been added to the workspace
+						// in case a NuGet package restore finished after the IsModifiedWhileLoading check. This
+						// ensures the type system does not have missing references that may have been added by
+						// the restore.
+						ReloadModifiedProjects ();
 						return solutionInfo;
 					}
 				}
