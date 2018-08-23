@@ -44,13 +44,13 @@ namespace Mono.TextEditor
 
 		readonly HslColor colorText, colorBg, colorFold;
 
-		protected CodePreviewWindow (
+		public CodePreviewWindow (
 			Gdk.Window parentWindow,
 			string fontName = null,
 			EditorTheme theme = null)
 			: base (Gtk.WindowType.Popup)
 		{
-			ParentWindow = parentWindow;
+			ParentWindow = parentWindow ?? MonoDevelop.Ide.IdeApp.Workbench.RootWindow.GdkWindow;
 
 			AppPaintable = true;
 			SkipPagerHint = SkipTaskbarHint = true;

@@ -26,6 +26,7 @@ using System.ComponentModel;
 using Gtk;
 
 using Mono.TextEditor;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Ide;
@@ -55,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 
 			// if too big, just reject it, truncation is unlikely to be useful
 			if (text.Length > clipboardRingItemMaxChars) {
-				LoggingService.LogWarning ($"Item '{EscapeAndTruncateName(text, 20)}...' is too big for clipboard ring");
+				LoggingService.LogWarning ($"Item '{EscapeAndTruncateName(text, 20)}...' exceeeds clipboard ring size limit");
 				return;
 			}
 
@@ -117,7 +118,7 @@ namespace MonoDevelop.SourceEditor
 			return clipboardRing;
 		}
 
-		class ClipboardToolboxNode : ItemToolboxNode, ITextToolboxNode
+		class ClipboardToolboxNode : ItemToolboxNode, ITextToolboxNode, ICustomTooltipToolboxNode
 		{
 			static readonly ToolboxItemFilterAttribute filterAtt = new ToolboxItemFilterAttribute ("text/plain", ToolboxItemFilterType.Allow);
 			static readonly string category = GettextCatalog.GetString ("Clipboard Ring");
@@ -159,6 +160,14 @@ namespace MonoDevelop.SourceEditor
 			public bool IsCompatibleWith (Document document)
 			{
 				return true;
+			}
+
+			public bool HasTooltip => true;
+
+			public Components.Window CreateTooltipWindow (Control parent)
+			{
+				var w = parent.GetNativeWidget<Widget> ()?.GdkWindow;
+				return new CodePreviewWindow (w) { Text = Text };
 			}
 		}
 	}
