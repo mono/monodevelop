@@ -50,7 +50,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			bool added;
 			readonly object addLock = new object ();
 
-			internal List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 			SolutionData solutionData;
 
 			public ProjectSystemHandler (MonoDevelopWorkspace workspace, ProjectDataMap projectMap, ProjectionData projections)
@@ -181,8 +180,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				List<MonoDevelop.Projects.DotNetProject> modifiedWhileLoading;
 				lock (workspace.projectModifyLock) {
-					modifiedWhileLoading = modifiedProjects;
-					modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+					modifiedWhileLoading = workspace.modifiedProjects;
+					workspace.modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 				}
 
 				foreach (var project in modifiedWhileLoading) {
