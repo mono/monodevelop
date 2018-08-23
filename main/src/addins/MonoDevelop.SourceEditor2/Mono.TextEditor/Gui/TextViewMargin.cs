@@ -2502,8 +2502,8 @@ namespace Mono.TextEditor
 			this.previewWindow.GdkWindow.GetOrigin (out x, out y);
 			int w = previewWindow.Allocation.Width;
 			int h = previewWindow.Allocation.Height;
-			if (!previewWindow.HideCodeSegmentPreviewInformString)
-				h -= previewWindow.PreviewInformStringHeight;
+			if (previewWindow.HasFooterText)
+				h -= previewWindow.FooterTextHeight;
 			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
@@ -2564,7 +2564,6 @@ namespace Mono.TextEditor
 
 				int x = hintRectangle.Right;
 				int y = hintRectangle.Bottom;
-				previewWindow.CalculateSize ();
 				var req = previewWindow.SizeRequest ();
 				int w = req.Width;
 				int h = req.Height;
