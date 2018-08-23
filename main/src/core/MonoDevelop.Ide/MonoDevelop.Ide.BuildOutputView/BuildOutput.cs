@@ -431,19 +431,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 			cancellation = new CancellationTokenSource ();
 			var token = cancellation.Token;
 			return Task.Run (() => {
+				Console.WriteLine ($"{DateTime.Now.ToString ()}: Starting search...");
 				if (!string.IsNullOrEmpty (pattern)) {
 					// Perform search
 					foreach (var root in rootNodes) {
-						if (token.IsCancellationRequested) return null;
-						root.Search (currentSearchMatches, currentSearchPattern);
+						if (token.IsCancellationRequested) break;
+						Console.WriteLine ($"{DateTime.Now.ToString ()}: Searching in {root.Message}");
+						root.Search (currentSearchMatches, currentSearchPattern, token);
 					}
 
 					if (currentSearchMatches.Count > 0 && !token.IsCancellationRequested) {
 						currentMatchIndex = 0;
+						Console.WriteLine ($"{DateTime.Now.ToString ()}: Search found {currentSearchMatches.Count} matches");
 						return currentSearchMatches [0];
 					}
 				}
 
+				if (token.IsCancellationRequested) Console.WriteLine ($"{DateTime.Now.ToString ()}: Search canceled");
 				return null;
 			});
 		}
@@ -483,6 +487,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			return currentSearchMatches [currentMatchIndex];
 		}
+
+		public bool IsCanceled => cancellation?.IsCancellationRequested ?? false;
 
 		public void Cancel () => cancellation?.Cancel ();
 

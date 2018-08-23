@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using Xwt;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -334,7 +335,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return null;
 		}
 
-		public static void Search (this BuildOutputNode node, List<BuildOutputNode> matches, string pattern)
+		public static void Search (this BuildOutputNode node, List<BuildOutputNode> matches, string pattern, CancellationToken token)
 		{
 			if ((node.Message?.IndexOf (pattern, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0) {
 				matches.Add (node);
@@ -342,7 +343,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			if (node.HasChildren) {
 				foreach (var child in node.Children) {
-					Search (child, matches, pattern);
+					if (token.IsCancellationRequested) break;
+					Search (child, matches, pattern, token);
 				}
 			}
 		}

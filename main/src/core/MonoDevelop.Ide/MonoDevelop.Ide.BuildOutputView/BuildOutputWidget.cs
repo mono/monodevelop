@@ -518,6 +518,13 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		static void RefreshSearchMatches (BuildOutputDataSource dataSource, BuildOutputDataSearch search)
 		{
+			if (search.IsCanceled) {
+				// If search was canceled, we never highlighted matches for it,
+				// so avoid doing anything
+				return;
+			}
+
+			Console.WriteLine ($"{DateTime.Now.ToString ()}: Refreshing tree");
 			foreach (var match in search.AllMatches) {
 				dataSource.RaiseNodeChanged (match);
 			}
@@ -525,8 +532,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 		async void FindFirst (object sender, EventArgs args)
 		{
-			var dataSource = treeView.DataSource as BuildOutputDataSource;
-			if (dataSource == null)
+			if (!(treeView.DataSource is BuildOutputDataSource dataSource))
 				return;
 
 			using (Counters.SearchBuildLog.BeginTiming ()) {
@@ -539,9 +545,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
 				var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
-				if (firstMatch != null) {
+				if (firstMatch != null && ! currentSearch.IsCanceled) {
 					RefreshSearchMatches (dataSource, currentSearch);
-
 					Find (firstMatch);
 				}
 			}
