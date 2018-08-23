@@ -50,8 +50,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Xwt.Drawing.Image discloseUp;
 		Gdk.Cursor handCursor;
 
-		const uint animationTimeSpan = 10;
-		const int animationStepSize = 35;
+		const int animationDurationMs = 600;
 
 		public bool IsListMode {
 			get {
@@ -327,14 +326,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ProcessExpandAnimation (Cairo.Context cr, ToolboxWidgetCategory lastCategory, int lastCategoryYpos, Cairo.Color backColor, Gdk.Rectangle area, ref int ypos)
 		{
 			if (lastCategory != null && lastCategory.AnimatingExpand) {
-				int newypos = lastCategory.IsExpanded ? lastCategoryYpos + lastCategory.AnimationHeight : ypos + lastCategory.AnimationHeight;
-				if (newypos < lastCategoryYpos) {
-					newypos = lastCategoryYpos;
-					StopExpandAnimation (lastCategory);
-				}
-				if (newypos > ypos) {
-					newypos = ypos;
-					StopExpandAnimation (lastCategory);
+				int newypos;
+				if (lastCategory.IsExpanded) {
+					newypos = lastCategoryYpos + (int)(lastCategory.AnimationPosition * (ypos - lastCategoryYpos));
+				} else {
+					newypos = ypos - (int)(lastCategory.AnimationPosition * (ypos - lastCategoryYpos));
 				}
 
 				// Clear the area where the category will be drawn since it will be
@@ -493,46 +489,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (cat.IsExpanded == expanded)
 				return;
 			cat.IsExpanded = expanded;
-			if (cat.IsExpanded)
-				StartExpandAnimation (cat);
-			else
-				StartCollapseAnimation (cat);
+			StartExpandAnimation (cat);
 		}
+
+		Xwt.Motion.Tweener tweener;
 
 		void StartExpandAnimation (ToolboxWidgetCategory cat)
 		{
-			if (cat.AnimatingExpand)
-				GLib.Source.Remove (cat.AnimationHandle);
-
-			cat.AnimationHeight = 0;
-			cat.AnimatingExpand = true;
-			cat.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, () => {
-				cat.AnimationHeight += animationStepSize;
-				QueueResize ();
-				return true;
-			});
-		}
-
-		void StartCollapseAnimation (ToolboxWidgetCategory cat)
-		{
-			if (cat.AnimatingExpand)
-				GLib.Source.Remove (cat.AnimationHandle);
-
-			cat.AnimationHeight = 0;
-			cat.AnimatingExpand = true;
-			cat.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, () => {
-				cat.AnimationHeight -= animationStepSize;
-				QueueResize ();
-				return true;
-			});
-		}
-
-		void StopExpandAnimation (ToolboxWidgetCategory cat)
-		{
-			if (cat.AnimatingExpand) {
-				cat.AnimatingExpand = false;
-				GLib.Source.Remove (cat.AnimationHandle);
+			if (tweener != null) {
+				tweener.Stop ();
 			}
+
+			cat.AnimatingExpand = true;
+			cat.AnimationPosition = 0.0f;
+
+			tweener = new Xwt.Motion.Tweener (animationDurationMs, 10) { Easing = Xwt.Motion.Easing.SinOut };
+			tweener.ValueUpdated += (sender, e) => {
+				cat.AnimationPosition = tweener.Value;
+				QueueDraw ();
+			};
+			tweener.Finished += (sender, e) => {
+				cat.AnimatingExpand = false;
+				QueueDraw ();
+			};
+			tweener.Start ();
+			QueueDraw ();
 		}
 
 		protected override bool OnPopupMenu ()
@@ -1013,10 +994,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public bool IsExpanded { get; set; }
 
 		public bool AnimatingExpand { get; set; }
-		public uint AnimationHandle;
-		public int AnimationHeight;
 
 		List<ToolboxWidgetItem> items = new List<ToolboxWidgetItem> ();
+		internal double AnimationPosition;
 
 		public int ItemCount => items.Count;
 
