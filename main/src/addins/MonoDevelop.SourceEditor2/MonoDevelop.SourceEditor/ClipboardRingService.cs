@@ -166,6 +166,13 @@ namespace MonoDevelop.SourceEditor
 
 			public Components.Window CreateTooltipWindow (Control parent)
 			{
+				//large amounts of text are expensive to lay out, and the preview window
+				//doesn't need all that much anyway
+				var txt = Text;
+				if (txt.Length > 4096) {
+					txt = txt.Substring (0, 4096) + "...";
+				}
+
 				var w = parent.GetNativeWidget<Widget> ()?.GdkWindow;
 				return new CodePreviewWindow (w) { Text = Text };
 			}
