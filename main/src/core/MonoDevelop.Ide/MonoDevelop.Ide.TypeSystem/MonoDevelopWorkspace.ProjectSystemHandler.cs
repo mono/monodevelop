@@ -212,6 +212,26 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			/// <summary>
+			/// This checks that the new project was modified whilst it was being added to the
+			/// workspace and re-plays project modifications to the workspace as though they
+			/// happened after the project was added. This ensures any updated references due to
+			/// a NuGet restore are made available to the type system.
+			/// </summary>
+			internal void ReloadModifiedProject (MonoDevelop.Projects.Project project)
+			{
+				lock (workspace.projectModifyLock) {
+					if (!workspace.modifiedProjects.Any ())
+						return;
+
+					int removed = workspace.modifiedProjects.RemoveAll (p => p == project);
+					if (removed > 0) {
+						var args = new MonoDevelop.Projects.SolutionItemModifiedEventArgs (project, "References");
+						workspace.OnProjectModified (project, args);
+					}
+				}
+			}
+
 			internal Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution sol, CancellationToken ct)
 			{
 				return Task.Run (delegate {
