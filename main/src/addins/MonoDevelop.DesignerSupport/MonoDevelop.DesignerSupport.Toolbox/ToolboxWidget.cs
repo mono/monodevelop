@@ -935,7 +935,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#region Tooltips
 		const int TipTimer = 800;
-		CustomTooltipWindow tooltipWindow = null;
+		Gtk.Window tooltipWindow = null;
 		ToolboxWidgetItem tipItem;
 		int tipX, tipY;
 		uint tipTimeoutId;
@@ -955,11 +955,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool ShowTooltip ()
 		{
 			HideTooltipWindow ();
-			tooltipWindow = new CustomTooltipWindow ();
-			tooltipWindow.Tooltip = tipItem.Tooltip;
-			tooltipWindow.ParentWindow = this.GdkWindow;
-			int ox, oy;
-			this.GdkWindow.GetOrigin (out ox, out oy);
+
+			if (tipItem.Node is ICustomTooltipToolboxNode custom) {
+				tooltipWindow = custom.CreateTooltipWindow (this);
+			} else {
+				tooltipWindow = new CustomTooltipWindow  {
+					Tooltip = tipItem.Tooltip,
+					ParentWindow = this.GdkWindow
+				};
+			}
+
+			this.GdkWindow.GetOrigin (out var ox, out var oy);
 			tooltipWindow.Move (Math.Max (0, ox + tipX), oy + tipY);
 			tooltipWindow.ShowAll ();
 			return false;
@@ -969,7 +975,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			HideTooltipWindow ();
 
-			if (!string.IsNullOrEmpty (item.Tooltip)) {
+			if (!string.IsNullOrEmpty (item.Tooltip) || (item.Node is ICustomTooltipToolboxNode custom && custom.HasTooltip)) {
 				tipItem = item;
 				tipX = x;
 				tipY = y;
