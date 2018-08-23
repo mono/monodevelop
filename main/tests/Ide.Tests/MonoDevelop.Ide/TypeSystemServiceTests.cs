@@ -222,6 +222,52 @@ namespace MonoDevelop.Ide
 			Assert.IsFalse (reloaded);
 		}
 
+
+		/// <summary>
+		/// Tests the project's references are updated if the project is modified whilst it is being
+		/// added to its parent solution.
+		/// </summary>
+		[Test]
+		public async Task ProjectModifiedWhilstBeingAddedToSolution ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				try {
+					var workspace = await TypeSystemServiceTestExtensions.LoadSolution (sol);
+
+					var project = new ModifyReferencesDuringGetSourceFilesDotNetProject ();
+					project.FileName = Path.Combine (sol.BaseDirectory, "ProjectModifiedWhilstBeingAddedToSolution.csproj");
+					await project.SaveAsync (Util.GetMonitor ());
+					var reference = ProjectReference.CreateCustomReference (ReferenceType.Package, "System.ComponentModel.Composition");
+
+					var assemblyFileName = typeof (System.Xml.Linq.XName).Assembly.Location;
+					project.AddExtraReference (new AssemblyReference (assemblyFileName));
+
+					var projectLoadedTask = new TaskCompletionSource<bool> ();
+					workspace.WorkspaceChanged += (sender, e) => {
+						if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectReloaded) {
+							projectLoadedTask.TrySetResult (true);
+						}
+					};
+
+					sol.RootFolder.AddItem (project);
+
+					if (await Task.WhenAny (projectLoadedTask.Task, Task.Delay (5000)) != projectLoadedTask.Task)
+						Assert.Fail ("Timeout waiting for project to be reloaded by the type system service.");
+
+					var projectId = workspace.GetProjectId (project);
+					var projectInfo = workspace.CurrentSolution.GetProject (projectId);
+					var metadataReference = projectInfo.MetadataReferences
+						.OfType<Microsoft.CodeAnalysis.PortableExecutableReference> ()
+						.FirstOrDefault (r => r.FilePath.EndsWith ("System.Xml.Linq.dll", StringComparison.Ordinal));
+
+					Assert.IsNotNull (metadataReference, "System.Xml.Linq reference missing from type system information");
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Tests that if the parser takes a long time to return a projection it is ignored instead
 		/// of being used by the type system.
@@ -298,6 +344,59 @@ namespace MonoDevelop.Ide
 					projections.AsReadOnly ()
 				);
 				return projection;
+			}
+		}
+
+		class ModifyReferencesDuringGetSourceFilesDotNetProject : DotNetProject
+		{
+			public ModifyReferencesDuringGetSourceFilesDotNetProject ()
+				: base ("C#")
+			{
+				// Set the TypeGuid to be a C# project so the default file extension will
+				// be .csproj and not .mdproj
+				TypeGuid = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+				Initialize (this);
+			}
+
+			protected override DotNetCompilerParameters OnCreateCompilationParameters (DotNetProjectConfiguration config, ConfigurationKind kind)
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override ClrVersion [] OnGetSupportedClrVersions ()
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override async Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				var files = await base.OnGetSourceFiles (monitor, configuration);
+				if (!notifiedReferencesChanged) {
+					await Task.Run (async () => {
+						await Runtime.RunInMainThread (() => {
+							notifiedReferencesChanged = true;
+							NotifyModified ("References");
+						});
+					});
+				}
+				return files;
+			}
+
+			internal void AddExtraReference (AssemblyReference reference)
+			{
+				extraReferences.Add (reference);
+			}
+
+			List<AssemblyReference> extraReferences = new List<AssemblyReference> ();
+			bool notifiedReferencesChanged;
+
+			protected internal async override Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
+			{
+				var refs = await base.OnGetReferencedAssemblies (configuration);
+				if (notifiedReferencesChanged) {
+					refs.AddRange (extraReferences);
+				}
+				return refs;
 			}
 		}
 	}
