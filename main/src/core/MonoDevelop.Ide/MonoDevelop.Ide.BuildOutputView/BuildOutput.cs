@@ -27,18 +27,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Editor;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
-using Gtk;
 using Xwt;
 using System.Linq;
 using System.Collections.Immutable;
 using MonoDevelop.Projects.MSBuild;
+using System.Threading;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -384,6 +382,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 	class BuildOutputDataSearch
 	{
 		readonly IReadOnlyList<BuildOutputNode> rootNodes;
+		CancellationTokenSource cancellation;
 
 		public BuildOutputDataSearch (IReadOnlyList<BuildOutputNode> rootNodes)
 		{
@@ -423,19 +422,23 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public Task<BuildOutputNode> FirstMatch (string pattern)
 		{
 			// Initialize search data
+			cancellation?.Cancel ();
 			currentSearchMatches.Clear ();
 
 			currentSearchPattern = pattern;
 			currentMatchIndex = -1;
 
+			cancellation = new CancellationTokenSource ();
+			var token = cancellation.Token;
 			return Task.Run (() => {
 				if (!string.IsNullOrEmpty (pattern)) {
 					// Perform search
 					foreach (var root in rootNodes) {
+						if (token.IsCancellationRequested) return null;
 						root.Search (currentSearchMatches, currentSearchPattern);
 					}
 
-					if (currentSearchMatches.Count > 0) {
+					if (currentSearchMatches.Count > 0 && !token.IsCancellationRequested) {
 						currentMatchIndex = 0;
 						return currentSearchMatches [0];
 					}
@@ -480,6 +483,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			return currentSearchMatches [currentMatchIndex];
 		}
+
+		public void Cancel () => cancellation?.Cancel ();
 
 		#endregion
 	}
