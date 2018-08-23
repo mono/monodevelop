@@ -192,9 +192,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void refilter ()
 		{
-			foreach (Category cat in toolboxWidget.Categories) {
+			foreach (ToolboxWidgetCategory cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
-				foreach (Item child in cat.Items) {
+				foreach (ToolboxWidgetItem child in cat.Items) {
 					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.Entry.Text);
 					hasVisibleChild |= child.IsVisible;
 				}
@@ -244,13 +244,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region GUI population
 		
-		Dictionary<string, Category> categories = new Dictionary<string, Category> ();
+		Dictionary<string, ToolboxWidgetCategory> categories = new Dictionary<string, ToolboxWidgetCategory> ();
 		void AddItems (IEnumerable<ItemToolboxNode> nodes)
 		{
 			foreach (ItemToolboxNode itbn in nodes) {
-				Item newItem = new Item (itbn);
+				var newItem = new ToolboxWidgetItem (itbn);
 				if (!categories.ContainsKey (itbn.Category)) {
-					var cat = new Category (itbn.Category);
+					var cat = new ToolboxWidgetCategory (itbn.Category);
 					int prio;
 					if (!categoryPriorities.TryGetValue (itbn.Category, out prio))
 						prio = -1;
@@ -285,7 +285,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var cats = categories.Values.ToList ();
 			cats.Sort ((a,b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
 			cats.Reverse ();
-			foreach (Category category in cats) {
+			foreach (ToolboxWidgetCategory category in cats) {
 				category.IsExpanded = true;
 				toolboxWidget.AddCategory (category);
 			}
