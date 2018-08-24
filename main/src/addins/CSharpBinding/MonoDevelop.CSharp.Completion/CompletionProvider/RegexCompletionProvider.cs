@@ -70,48 +70,54 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 		public override async Task ProvideCompletionsAsync (Microsoft.CodeAnalysis.Completion.CompletionContext context)
 		{
-			var document = context.Document;
-			var position = context.Position;
-			var cancellationToken = context.CancellationToken;
+			try {
+				var document = context.Document;
+				var position = context.Position;
+				var cancellationToken = context.CancellationToken;
 
-			var semanticModel = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
+				var semanticModel = await document.GetSemanticModelForSpanAsync (new TextSpan (position, 0), cancellationToken).ConfigureAwait (false);
 
-			var workspace = document.Project.Solution.Workspace;
-			var ctx = CSharpSyntaxContext.CreateContext (workspace, semanticModel, position, cancellationToken);
-			if (context.Trigger.Character == '\\') {
-				if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null &&
-				ctx.TargetToken.Parent.Parent.IsKind (SyntaxKind.Argument)) {
-					var argument = ctx.TargetToken.Parent.Parent as ArgumentSyntax;
+				var workspace = document.Project.Solution.Workspace;
+				var ctx = CSharpSyntaxContext.CreateContext (workspace, semanticModel, position, cancellationToken);
+				if (context.Trigger.Character == '\\') {
+					if (ctx.TargetToken.Parent != null && ctx.TargetToken.Parent.Parent != null &&
+					ctx.TargetToken.Parent.Parent.IsKind (SyntaxKind.Argument)) {
+						var argument = ctx.TargetToken.Parent.Parent as ArgumentSyntax;
 
-					var symbolInfo = semanticModel.GetSymbolInfo (ctx.TargetToken.Parent.Parent.Parent.Parent);
-					if (symbolInfo.Symbol == null)
-						return;
-
-					if (IsRegexMatchMethod (symbolInfo)) {
-						if (((ArgumentListSyntax)argument.Parent).Arguments [1] != argument)
+						var symbolInfo = semanticModel.GetSymbolInfo (ctx.TargetToken.Parent.Parent.Parent.Parent);
+						if (symbolInfo.Symbol == null)
 							return;
-						AddFormatCompletionData (context, argument.Expression.ToString () [0] == '@');
-						return;
-					}
-					if (IsRegexConstructor (symbolInfo)) {
-						if (((ArgumentListSyntax)argument.Parent).Arguments [0] != argument)
+
+						if (IsRegexMatchMethod (symbolInfo)) {
+							if (((ArgumentListSyntax)argument.Parent).Arguments [1] != argument)
+								return;
+							AddFormatCompletionData (context, argument.Expression.ToString () [0] == '@');
 							return;
-						AddFormatCompletionData (context, argument.Expression.ToString () [0] == '@');
-						return;
+						}
+						if (IsRegexConstructor (symbolInfo)) {
+							if (((ArgumentListSyntax)argument.Parent).Arguments [0] != argument)
+								return;
+							AddFormatCompletionData (context, argument.Expression.ToString () [0] == '@');
+							return;
+						}
 					}
-				}
-			} else {
-				var ma = ctx.TargetToken.Parent as MemberAccessExpressionSyntax;
-				if (ma != null) {
-					var symbolInfo = semanticModel.GetSymbolInfo (ma.Expression);
-					var typeInfo = semanticModel.GetTypeInfo (ma.Expression);
-					var type = typeInfo.Type;
-					if (type != null && type.Name == "Match" && type.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions") {
-						foreach (var grp in GetGroups (ctx, symbolInfo.Symbol)) {
-							context.AddItem (FormatItemCompletionProvider.CreateCompletionItem ("Groups[\"" + grp + "\"]", null, null));
+				} else {
+					var ma = ctx.TargetToken.Parent as MemberAccessExpressionSyntax;
+					if (ma != null) {
+						var symbolInfo = semanticModel.GetSymbolInfo (ma.Expression);
+						var typeInfo = semanticModel.GetTypeInfo (ma.Expression);
+						var type = typeInfo.Type;
+						if (type != null && type.Name == "Match" && type.ContainingNamespace.GetFullName () == "System.Text.RegularExpressions") {
+							foreach (var grp in GetGroups (ctx, symbolInfo.Symbol)) {
+								context.AddItem (FormatItemCompletionProvider.CreateCompletionItem ("Groups[\"" + grp + "\"]", null, null));
+							}
 						}
 					}
 				}
+			} catch (OperationCanceledException) {
+				throw;
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in RegexCompletionProvider", e);
 			}
 		}
 
