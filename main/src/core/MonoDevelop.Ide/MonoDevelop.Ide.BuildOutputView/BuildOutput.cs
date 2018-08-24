@@ -434,7 +434,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (!string.IsNullOrEmpty (pattern)) {
 					// Perform search
 					foreach (var root in rootNodes) {
-						if (token.IsCancellationRequested) break;
+						if (token.IsCancellationRequested)
+							break;
 						root.Search (currentSearchMatches, currentSearchPattern, token);
 					}
 

@@ -343,7 +343,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			if (node.HasChildren) {
 				foreach (var child in node.Children) {
-					if (token.IsCancellationRequested) break;
+					if (token.IsCancellationRequested)
+						break;
 					Search (child, matches, pattern, token);
 				}
 			}

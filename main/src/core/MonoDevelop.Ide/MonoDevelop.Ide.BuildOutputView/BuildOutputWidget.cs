@@ -544,7 +544,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				currentSearch = new BuildOutputDataSearch (dataSource.RootNodes);
 				var firstMatch = await currentSearch.FirstMatch (searchEntry.Entry.Text);
-				if (firstMatch != null && ! currentSearch.IsCanceled) {
+				if (firstMatch != null && !currentSearch.IsCanceled) {
 					RefreshSearchMatches (dataSource, currentSearch);
 					Find (firstMatch);
 				}
