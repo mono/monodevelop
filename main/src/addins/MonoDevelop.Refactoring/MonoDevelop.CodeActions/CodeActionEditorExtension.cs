@@ -142,7 +142,14 @@ namespace MonoDevelop.CodeActions
 
 			return Task.Run (async delegate {
 				try {
+					var root = await ad.GetSyntaxRootAsync (cancellationToken);
+					if (root.Span.End < span.End) {
+						LoggingService.LogError ($"Error in GetCurrentFixesAsync span {span.Start}/{span.Length} not inside syntax root {root.Span.End} document length {Editor.Length}.");
+						return CodeActionContainer.Empty;
+					}
+
 					var fixes = await codeFixService.GetFixesAsync (ad, span, true, cancellationToken);
+
 					var refactorings = await codeRefactoringService.GetRefactoringsAsync (ad, span, cancellationToken);
 
 					var codeActionContainer = new CodeActionContainer (fixes, refactorings);
