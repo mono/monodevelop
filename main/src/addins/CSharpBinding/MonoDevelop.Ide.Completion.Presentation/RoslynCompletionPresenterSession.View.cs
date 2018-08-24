@@ -127,6 +127,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		protected override void OnDestroyed ()
 		{
+			HideDescription ();
 			base.OnDestroyed ();
 			if (layout != null) {
 				layout.Dispose ();
@@ -176,6 +177,9 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		public CompletionItem SelectedItem {
 			get {
+				if (SelectedItemIndex < 0 || SelectedItemIndex >= filteredItems.Count) {
+					return null;
+				}
 				return filteredItems [SelectedItemIndex];
 			}
 		}
@@ -621,10 +625,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			textView.LostAggregateFocus -= CloseOnTextviewLostFocus;
 			Instance = null;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = false;
-			if (descriptionWindow != null) {
-				descriptionWindow.Destroy ();
-				descriptionWindow = null;
-			}
+			HideDescription ();
 			var manager = textView.GetSpaceReservationManager ("completion");
 			if (agent != null)
 				manager.RemoveAgent (agent);
@@ -634,15 +635,11 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		XwtThemedPopup descriptionWindow;
 		private async Task UpdateDescription ()
 		{
-			if (descriptionWindow != null) {
-				descriptionWindow.Destroy ();
-				descriptionWindow = null;
-			}
-			descriptionCts.Cancel ();
+			HideDescription ();
+
 			if (SelectedItemIndex == -1)
 				return;
 			var completionItem = SelectedItem;
-			descriptionCts = new CancellationTokenSource ();
 			var token = descriptionCts.Token;
 
 
@@ -650,26 +647,25 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			try {
 				var document = _subjectBuffer.CurrentSnapshot.GetOpenDocumentInCurrentContextWithChangesSafe ();
 				description = await RoslynCompletionData.CreateTooltipInformation (document, completionItem, false, token);
+				Runtime.CheckMainThread ();
 			} catch {
 			}
-			if (token.IsCancellationRequested)
+			if (token.IsCancellationRequested || completionItem != SelectedItem)
 				return;
-			if (descriptionWindow != null) {
-				descriptionWindow.Destroy ();
-				descriptionWindow = null;
+			ShowDescription (description);
+		}
+
+		void ShowDescription (TooltipInformation description)
+		{
+			HideDescription ();
+
+			if (description == null) {
+				return;
 			}
-			if (description == null)
-				return;
+
 			var window = new TooltipInformationWindow ();
 			window.AddOverload (description);
 			descriptionWindow = window;
-			ShowDescription ();
-		}
-
-		void ShowDescription ()
-		{
-			if (descriptionWindow == null)
-				return;
 			var rect = GetRowArea (SelectedItemIndex);
 			int y = rect.Y + Theme.Padding - (int)vadj.Value;
 			descriptionWindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
@@ -678,15 +674,20 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		void HideDescription ()
 		{
-			descriptionWindow.Hide ();
-		}
+			Runtime.CheckMainThread ();
 
-		public new void Hide ()
-		{
+			descriptionCts.Cancel ();
+			descriptionCts = new CancellationTokenSource ();
+
 			if (descriptionWindow != null) {
 				descriptionWindow.Destroy ();
 				descriptionWindow = null;
 			}
+		}
+
+		public new void Hide ()
+		{
+			HideDescription ();
 			agent.Hide ();
 		}
 
