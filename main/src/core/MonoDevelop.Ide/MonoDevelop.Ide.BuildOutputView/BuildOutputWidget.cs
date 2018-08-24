@@ -524,7 +524,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 				return;
 			}
 
-			Console.WriteLine ($"{DateTime.Now.ToString ()}: Refreshing tree");
 			foreach (var match in search.AllMatches) {
 				dataSource.RaiseNodeChanged (match);
 			}
