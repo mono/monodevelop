@@ -73,13 +73,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public string Sdk {
 			get { return sdk; }
-			set { AssertCanModify (); sdk = value; NotifyImportChanged (); }
+			set { AssertCanModify (); sdk = value; NotifyImportChanged (); NotifySdkChanged (); }
 		}
 
 		void NotifyImportChanged ()
 		{
 			if (ParentProject != null)
 				ParentProject.NotifyImportChanged ();
+		}
+
+		void NotifySdkChanged ()
+		{
+			if (ParentProject != null)
+				ParentProject.NotifySdkChanged ();
 		}
 
 		internal override void Write (XmlWriter writer, WriteContext context)

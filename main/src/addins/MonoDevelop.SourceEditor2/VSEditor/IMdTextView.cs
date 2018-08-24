@@ -1,6 +1,6 @@
 namespace Microsoft.VisualStudio.Text.Editor
 {
-	internal interface IMdTextView : ITextView
+	internal interface IMdTextView : ITextView2
 	{
 		/// <summary>
 		/// Gets a named <see cref="ISpaceReservationManager"/>.

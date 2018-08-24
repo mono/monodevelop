@@ -64,6 +64,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelectorService { get; set; }
 
+        [Import]
+        internal IMultiSelectionBrokerFactory MultiSelectionBrokerFactory { get; set; }
 
         [ImportMany(typeof(ITextViewCreationListener))]
         internal List<Lazy<ITextViewCreationListener, IDeferrableContentTypeAndTextViewRoleMetadata>> TextViewCreationListeners { get; set; }

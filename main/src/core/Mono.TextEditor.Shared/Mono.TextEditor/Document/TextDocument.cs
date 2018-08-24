@@ -79,14 +79,14 @@ namespace Mono.TextEditor
 			}
 		}
 
-		private static Microsoft.VisualStudio.Utilities.IContentType GetContentTypeFromMimeType(string filePath, string mimeType)
+		private static IContentType GetContentTypeFromMimeType(string filePath, string mimeType)
 		{
 			if (filePath != null)
 			{
-				IFilePathRegistryService filePathRegistryService = CompositionManager.GetExportedValue<IFilePathRegistryService> ();
-
-				IContentType contentTypeFromPath = filePathRegistryService.GetContentTypeForPath (filePath);
-				if (contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
+				var fileToContentTypeService = CompositionManager.GetExportedValue<IFileToContentTypeService> ();
+				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
+				if (contentTypeFromPath != null && 
+					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
 				{
 					return contentTypeFromPath;
 				}

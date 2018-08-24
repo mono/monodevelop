@@ -38,7 +38,12 @@ namespace MonoDevelop.Components.Commands
 		{
 			Run (dataItem);
 		}
-		
+
+		internal void InternalRun ()
+		{
+			Run ();
+		}
+
 		internal void InternalUpdate (CommandInfo info)
 		{
 			Update (info);

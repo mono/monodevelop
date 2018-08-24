@@ -242,12 +242,6 @@
     <Compile Include="VSEditor\Language\Impl\Intellisense\SignatureHelp\SignatureHelpParameterBoldingClassfier.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\SignatureHelp\SignatureHelpSession.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\SignatureHelp\SignatureHelpSessionView.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\AsyncQuickInfoBroker.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\AsyncQuickInfoSession.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\QuickInfoController.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\QuickInfoTextViewCreationListener.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\SquiggleQuickInfoSource.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\SquiggleQuickInfoSourceProvider.cs" />
     <Compile Include="VSEditor\Language\Util\LanguageUtil\IntellisenseSourceCache.cs" />
     <Compile Include="VSEditor\Language\Util\LanguageUtil\IntellisenseUtilities.cs" />
     <Compile Include="VSEditor\Text\Def\TextUIWpf\Adornments\ToolTipPresenterStyle.cs" />

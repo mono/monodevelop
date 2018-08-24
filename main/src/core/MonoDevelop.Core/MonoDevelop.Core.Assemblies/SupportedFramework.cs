@@ -172,6 +172,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			WriteNonEmptyAttribute ("Profile", Profile);
 			WriteNonEmptyAttribute ("Identifier", Identifier);
+			WriteNonEmptyAttribute ("DisplayName", DisplayName);
 			WriteNonEmptyAttribute ("MinimumVersionDisplayName", MinimumVersionDisplayName);
 			WriteNonEmptyAttribute ("MonoSpecificVersion", MonoSpecificVersion);
 			WriteNonEmptyAttribute ("MonoSpecificVersionDisplayName", MonoSpecificVersionDisplayName);

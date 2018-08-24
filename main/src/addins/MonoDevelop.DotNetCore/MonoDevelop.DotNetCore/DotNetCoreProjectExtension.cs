@@ -78,7 +78,7 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		bool IsSdkProject (DotNetProject project)
 		{
-			return project.MSBuildProject.Sdk != null;
+			return project.MSBuildProject.GetReferencedSDKs ().Any ();
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
@@ -416,7 +416,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected bool IsWebProject (DotNetProject project)
 		{
-			return (project.MSBuildProject.Sdk?.IndexOf ("Microsoft.NET.Sdk.Web", System.StringComparison.OrdinalIgnoreCase) ?? -1) != -1;
+			return (project.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) != -1) != null);
 		}
 
 		public bool IsWeb {
