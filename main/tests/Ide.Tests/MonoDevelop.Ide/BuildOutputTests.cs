@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -115,7 +116,7 @@ namespace MonoDevelop.Ide
 		{
 			var result = GetTestNodes ();
 			var results = new List<BuildOutputNode> ();
-			result [0].Search (results, "Error");
+			result [0].Search (results, "Error", CancellationToken.None);
 			Assert.AreEqual (2, results.Count, "#1");
 		}
 
