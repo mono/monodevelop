@@ -113,6 +113,7 @@
     <Compile Include="MonoDevelop.FSW\PathTreeNodeTests.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeTests.cs" />
     <Compile Include="MonoDevelop.Projects\ExtensionChainTests.cs" />
+    <Compile Include="MonoDevelop.Core\PropertyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
