@@ -64,7 +64,11 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnExit ()
 		{
-			protocolClient?.SendRequestSync (new DisconnectRequest ());
+			try {
+				HasExited = true;
+				protocolClient.SendRequestSync (new DisconnectRequest ());
+			} catch {
+			}
 		}
 
 		protected override void OnFinish ()
@@ -150,8 +154,12 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		void DebugAgentProcess_Exited (object sender, EventArgs e)
 		{
 			if (protocolClient != null) {
-				protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
-				protocolClient.Stop ();
+				try {
+					HasExited = true;
+					protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
+					protocolClient.Stop ();
+				} catch {
+				}
 				protocolClient = null;
 			}
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
@@ -432,13 +440,24 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		public override void Dispose ()
 		{
+			HasExited = true;
 			base.Dispose ();
 			if (protocolClient != null) {
 				protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
-				protocolClient.SendRequestSync (new DisconnectRequest ());
-				protocolClient.Stop ();
+				try {
+					protocolClient.SendRequestSync (new DisconnectRequest ());
+					protocolClient.Stop ();
+				} catch {
+				}
 				protocolClient = null;
 			}
+		}
+
+		protected override bool HandleException (Exception ex)
+		{
+			if (HasExited)
+				return true;
+			return base.HandleException (ex);
 		}
 	}
 }
