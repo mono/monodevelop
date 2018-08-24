@@ -41,6 +41,7 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Shared.Extensions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -102,7 +103,11 @@ namespace MonoDevelop.CSharp.Formatting
 			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
 			if (formattingService == null || !formattingService.SupportsFormatOnPaste)
 				return;
-
+			var text = await doc.GetTextAsync ();
+			if (offset + length > text.Length) {
+				LoggingService.LogError ($"CSharpTextPasteHandler.PostFormatPastedText out of range {offset}/{length} in a document of length {text.Length} (editor length {indent.Editor.Length}).");
+				return;
+			}
 			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new TextSpan (offset, length), default (CancellationToken));
 			if (changes == null)
 				return;
