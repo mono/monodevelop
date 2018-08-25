@@ -102,6 +102,8 @@
     <Compile Include="Features\Completion\PreProcessorCompletionProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpCodeActionEditorExtensionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpResultsEditorExtensionTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Diagnostics\CSharpLocalizationConcatenationDiagnosticAnalyzerTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Diagnostics\CSharpGtkDestroyDiagnosticAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -187,6 +189,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.CSharpBinding.Diagnostics\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

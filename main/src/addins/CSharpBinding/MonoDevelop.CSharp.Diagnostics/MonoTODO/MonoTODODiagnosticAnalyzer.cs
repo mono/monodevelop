@@ -75,8 +75,7 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 			context.EnableConcurrentExecution ();
 			context.RegisterCompilationStartAction (compilationContext => {
 				var compilation = compilationContext.Compilation;
-				var monoTodoAttributeExists = GetSearchAssemblies (compilation)
-				                                   .Any (assemblySymbol => assemblySymbol.GetTypeByMetadataName (MonoTODOAttributeName) != null);
+				var monoTodoAttributeExists = compilation.GetTypeByMetadataName (MonoTODOAttributeName) != null;
 				if (!monoTodoAttributeExists)
 					return;
 
