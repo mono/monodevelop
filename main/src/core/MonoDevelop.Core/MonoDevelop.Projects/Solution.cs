@@ -966,7 +966,7 @@ namespace MonoDevelop.Projects
 			try {
 				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
 
-				return result = await RunParallelBuildOperation (monitor, configuration, slnConf, sortedItems, (ProgressMonitor m, SolutionItem item) => {
+				return result = await RunParallelBuildOperation (monitor, configuration, slnConf, sortedItems, operationContext, (ProgressMonitor m, SolutionItem item) => {
 					return item.Clean (m, configuration, operationContext);
 				}, false, false);
 			} finally {
@@ -1008,7 +1008,7 @@ namespace MonoDevelop.Projects
 
 				operationStarted = await BeginBuildOperation (monitor, configuration, operationContext);
 
-				return result = await RunParallelBuildOperation (monitor, configuration, slnConf, sortedItems, (ProgressMonitor m, SolutionItem item) => {
+				return result = await RunParallelBuildOperation (monitor, configuration, slnConf, sortedItems, operationContext, (ProgressMonitor m, SolutionItem item) => {
 					return item.Build (m, configuration, false, operationContext);
 				}, false, Runtime.Preferences.SkipBuildingUnmodifiedProjects);
 
@@ -1021,7 +1021,8 @@ namespace MonoDevelop.Projects
 
 		static async Task<BuildResult> RunParallelBuildOperation (
 			ProgressMonitor monitor, ConfigurationSelector configuration, SolutionConfiguration slnConf,
-			IEnumerable<SolutionItem> sortedItems, Func<ProgressMonitor, SolutionItem, Task<BuildResult>> buildAction,
+			IEnumerable<SolutionItem> sortedItems, OperationContext operationContext,
+			Func<ProgressMonitor, SolutionItem, Task<BuildResult>> buildAction,
 			bool ignoreFailed, bool skipUnmodified)
 		{
 			var toBuild = new List<SolutionItem> (sortedItems);
@@ -1047,7 +1048,7 @@ namespace MonoDevelop.Projects
 
 				var myStatus = buildStatus[item];
 
-				if (skipUnmodified && item is Project p && !p.FastCheckNeedsBuild (configuration)) {
+				if (skipUnmodified && item is Project p && !p.FastCheckNeedsBuild (configuration, (operationContext as TargetEvaluationContext) ?? new TargetEvaluationContext (operationContext))) {
 					myStatus.Result = BuildResult.CreateUpToDate (item);
 					myStatus.Task = Task.CompletedTask;
 					monitor.Step (1);
