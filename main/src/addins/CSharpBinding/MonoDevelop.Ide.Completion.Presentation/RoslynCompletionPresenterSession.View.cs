@@ -371,6 +371,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 					//	layout.Attributes = attrList;
 					//}
 
+					//TODO: Todd, can you sprinkle some magic on this to do
+					//textView.GetTextBufferFromSpan(triggerSpan).GetMimeType() instead fixed text/csharp?
 					Xwt.Drawing.Image icon = ImageService.GetIcon (RoslynCompletionData.GetIcon (item, "text/csharp"));
 					int iconHeight, iconWidth;
 					if (icon != null) {
