@@ -70,30 +70,14 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			clipboardRing.Add (newNode ?? CreateClipboardToolboxItem (text));
+			clipboardRing.Add (newNode ?? new ClipboardToolboxNode (text));
 
-			while (clipboardRing.Count > clipboardRingSize) {
-				clipboardRing.RemoveAt (0);
+			int overflow = clipboardRing.Count - clipboardRingSize;
+			if (overflow > 0) {
+				clipboardRing.RemoveRange (0, overflow);
 			}
 
 			Updated?.Invoke (null, EventArgs.Empty);
-		}
-
-		static ClipboardToolboxNode CreateClipboardToolboxItem (string text)
-		{
-			var item = new ClipboardToolboxNode (text);
-
-			string [] lines = text.Split ('\n');
-			for (int i = 0; i < 3 && i < lines.Length; i++) {
-				if (i > 0)
-					item.Description += Environment.NewLine;
-				string line = lines [i];
-				if (line.Length > 16)
-					line = line.Substring (0, 16) + "...";
-				item.Description += line;
-			}
-
-			return item;
 		}
 
 		static string EscapeAndTruncateName (string text, int truncateAt)
