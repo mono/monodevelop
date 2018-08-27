@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -227,20 +228,7 @@ namespace MonoDevelop.Core
 				writer.WriteStartElement (Node);
 
 			var toSerialize = new List<KeyValuePair<string, object>> ();
-
-			foreach (KeyValuePair<string, object> property in this.properties) {
-				//don't know how the value could be null but at least we can skip it to avoid breaking completely
-				if (property.Value == null)
-					continue;
-				//don't serialize default values
-				if (defaultValues.TryGetValue (property.Key, out object defaultValue)) {
-					if (property.Value.Equals (defaultValue)) {
-						continue;
-					}
-				}
-				toSerialize.Add (property);
-			}
-
+			toSerialize.AddRange (GetNonDefaultValueProperties ());
 			toSerialize.Sort (new StringKeyComparer ());
 
 			foreach (var property in toSerialize) {
@@ -301,6 +289,29 @@ namespace MonoDevelop.Core
 			}
 			catch (Exception ex) {
 				LoggingService.LogError ("Error writing properties file '{0}'\n{1}", tempFileName, ex);
+			}
+		}
+
+		IEnumerable<KeyValuePair<string, object>> GetNonDefaultValueProperties ()
+		{
+			foreach (KeyValuePair<string, object> property in this.properties) {
+				//don't know how the value could be null but at least we can skip it to avoid breaking completely
+				if (property.Value == null)
+					continue;
+				if (property.Value is Properties p) {
+					// Do not serialize Properties if it only has default values.
+					if (!p.GetNonDefaultValueProperties ().Any ()) {
+						continue;
+					}
+				} else {
+					//don't serialize default values
+					if (defaultValues.TryGetValue (property.Key, out object defaultValue)) {
+						if (property.Value.Equals (defaultValue)) {
+							continue;
+						}
+					}
+				}
+				yield return property;
 			}
 		}
 		
