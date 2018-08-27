@@ -322,6 +322,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal void ReloadModifiedProject (MonoDevelop.Projects.Project project)
+		{
+			ProjectHandler.ReloadModifiedProject (project);
+		}
+
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);

@@ -347,6 +347,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					else {
 						ws.OnProjectAdded (projectInfo);
 					}
+					ws.ReloadModifiedProject (project);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("OnSolutionItemAdded failed", ex);
