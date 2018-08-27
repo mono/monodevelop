@@ -162,6 +162,7 @@ namespace MonoDevelop.Projects
 		{
 			itemExtension = ExtensionChain.GetExtension<WorkspaceItemExtension> ();
 			base.OnExtensionChainInitialized ();
+			fileStatusTracker.TrackFileChanges ();
 		}
 
 		WorkspaceItemExtension itemExtension;
@@ -570,7 +571,6 @@ namespace MonoDevelop.Projects
 			lastSaveTime = new Dictionary<string,DateTime> ();
 			savingFlag = false;
 			reloadRequired = null;
-			FileService.FileChanged += HandleFileChanged;
 		}
 		
 		public void BeginSave ()
@@ -617,7 +617,13 @@ namespace MonoDevelop.Projects
 				return false;
 			}
 		}
-		
+
+		public void TrackFileChanges ()
+		{
+			FileService.FileChanged -= HandleFileChanged;
+			FileService.FileChanged += HandleFileChanged;
+		}
+
 		void HandleFileChanged (object sender, FileEventArgs e)
 		{
 			if (savingFlag || needsReload)
