@@ -439,10 +439,18 @@ namespace MonoDevelop.Ide
 		{
 			if (args.Change == ExtensionChange.Add) {
 				try {
-					if (typeof(CommandHandler).IsInstanceOfType (args.ExtensionObject))
-						typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
-					else
+#if DEBUG
+					// Only show this in debug builds for now, we want to enable this later for addins that might delay
+					// IDE startup.
+					if (args.ExtensionNode is TypeExtensionNode node) {
+						LoggingService.LogDebug ("Startup command handler: {0}", node.TypeName);
+					}
+#endif
+					if (args.ExtensionObject is CommandHandler handler) {
+						handler.InternalRun ();
+					} else {
 						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+					}
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 				}

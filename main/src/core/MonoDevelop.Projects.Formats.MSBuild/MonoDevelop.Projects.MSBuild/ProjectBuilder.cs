@@ -166,8 +166,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		Project ConfigureProject (string file, string configuration, string platform, string slnConfigContents)
 		{			
+			bool firstConfigure = false;
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
+				firstConfigure = true;
 				var projectDir = Path.GetDirectoryName (file);
 
 				// HACK: workaround to MSBuild bug #53019. We need to ensure that $(BaseIntermediateOutputPath) exists before
@@ -196,7 +198,7 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 			}
 
-			if (p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
+			if (firstConfigure || p.GetPropertyValue ("Configuration") != configuration || (p.GetPropertyValue ("Platform") ?? "") != (platform ?? "")) {
 				p.SetGlobalProperty ("Configuration", configuration);
 				if (!string.IsNullOrEmpty (platform))
 					p.SetGlobalProperty ("Platform", platform);

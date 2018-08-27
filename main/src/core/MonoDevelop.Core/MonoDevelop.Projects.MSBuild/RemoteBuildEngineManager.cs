@@ -567,10 +567,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (Platform.IsWindows) {
 					var extensionsPath = Path.GetDirectoryName (Path.GetDirectoryName (binDir));
+					var vsInstallRoot = Path.GetDirectoryName (extensionsPath);
+					var devEnvDir = Path.Combine (vsInstallRoot, @"Common7\IDE");
 					SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath", extensionsPath);
 					SetMSBuildConfigProperty (toolset, "MSBuildExtensionsPath32", extensionsPath);
 					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath", binDir);
 					SetMSBuildConfigProperty (toolset, "MSBuildToolsPath32", binDir);
+					SetMSBuildConfigProperty (toolset, "VsInstallRoot", vsInstallRoot);
+					SetMSBuildConfigProperty (toolset, "DevEnvDir", devEnvDir + "\\");
+					SetMSBuildConfigProperty (toolset, "NuGetRestoreTargets", Path.Combine(devEnvDir, @"CommonExtensions\Microsoft\NuGet\NuGet.targets"));
 
 					var sdksPath = Path.Combine (extensionsPath, "Sdks");
 					SetMSBuildConfigProperty (toolset, "MSBuildSDKsPath", sdksPath);
@@ -578,7 +583,7 @@ namespace MonoDevelop.Projects.MSBuild
 					var roslynTargetsPath = Path.Combine (binDir, "Roslyn");
 					SetMSBuildConfigProperty (toolset, "RoslynTargetsPath", roslynTargetsPath);
 
-					var vcTargetsPath = Path.Combine (extensionsPath, "Common7", "IDE", "VC", "VCTargets");
+					var vcTargetsPath = Path.Combine (devEnvDir, "VC", "VCTargets");
 					SetMSBuildConfigProperty (toolset, "VCTargetsPath", vcTargetsPath);
 				} else {
 					var path = MSBuildProjectService.GetProjectImportSearchPaths (runtime, false).FirstOrDefault (p => p.Property == "MSBuildSDKsPath");

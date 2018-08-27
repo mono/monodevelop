@@ -67,7 +67,18 @@ namespace Mono.TextEditor
 
 		ITextSelection selection;
 
-		internal IEditorOperations EditorOperations { get; private set; }
+		private IEditorOperations editorOperations;
+		internal IEditorOperations EditorOperations 
+		{
+			get {
+				if (editorOperations == null) {
+					// TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
+					editorOperations = factoryService.EditorOperationsProvider.GetEditorOperations (this);
+				}
+
+				return editorOperations;
+			}
+		}
 
 		bool hasAggregateFocus;
 
@@ -146,9 +157,6 @@ namespace Mono.TextEditor
 			selection = new TextSelection (this);
 
 			//			this.Loaded += OnLoaded;
-
-			// TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
-			EditorOperations =  factoryService.EditorOperationsProvider.GetEditorOperations (this);
 
 			connectionManager = new ConnectionManager (this, factoryService.TextViewConnectionListeners, factoryService.GuardedOperations);
 
@@ -317,6 +325,7 @@ namespace Mono.TextEditor
 		public event EventHandler ViewportLeftChanged;
 		public event EventHandler ViewportHeightChanged;
 		public event EventHandler ViewportWidthChanged;
+		public event EventHandler MaxTextRightCoordinateChanged;
 #pragma warning restore CS0067
 
 		public void Close ()
@@ -520,5 +529,17 @@ namespace Mono.TextEditor
 			get { return factoryService; }
 		}
 
+		public bool InOuterLayout => false;
+
+		private IMultiSelectionBroker multiSelectionBroker;
+		public IMultiSelectionBroker MultiSelectionBroker {
+			get {
+				if (multiSelectionBroker == null) {
+					multiSelectionBroker = factoryService.MultiSelectionBrokerFactory.CreateBroker (this);
+				}
+
+				return multiSelectionBroker;
+			}
+		}
 	}
 }

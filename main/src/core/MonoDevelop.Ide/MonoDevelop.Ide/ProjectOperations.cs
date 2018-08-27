@@ -1224,7 +1224,12 @@ namespace MonoDevelop.Ide
 			try {
 				if (result != null) {
 					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+
+					var msg = GettextCatalog.GetString (
+							"Clean: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped",
+							result.SuccessfulBuildCount, result.FailedBuildCount, result.UpToDateBuildCount, result.SkippedBuildCount
+						);
+					monitor.Log.WriteLine ( "========== " + msg + " ==========");
 
 					tt.Trace ("Updating task service");
 				
@@ -1433,7 +1438,8 @@ namespace MonoDevelop.Ide
 			if (r.Failed)
 				return false;
 
-			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionTargets);
+			var executionDeps = executionTargets.SelectMany (et => et.GetExecutionDependencies ());
+			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionDeps);
 
 			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
 				return true;
@@ -1733,7 +1739,12 @@ namespace MonoDevelop.Ide
 				if (result != null) {
 					lastResult = result;
 					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+
+					var msg = GettextCatalog.GetString (
+							"Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped",
+							result.SuccessfulBuildCount, result.FailedBuildCount, result.UpToDateBuildCount, result.SkippedBuildCount
+						);
+					monitor.Log.WriteLine ( "========== " + msg + " ==========");
 					
 					tt.Trace ("Updating task service");
 

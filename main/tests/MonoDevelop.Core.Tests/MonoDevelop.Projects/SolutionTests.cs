@@ -755,9 +755,9 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		[TestCase (true, 1)]
-		[TestCase (false, 3)]
-		public async Task SkipBuildingUnmodifiedProjects (bool enabled, int expectedBuildCount)
+		[TestCase (true, 1, 2)]
+		[TestCase (false, 3, 0)]
+		public async Task SkipBuildingUnmodifiedProjects (bool enabled, int expectedSuccessful, int expectedUpToDate)
 		{
 			var settingBefore = Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value;
 			try {
@@ -771,12 +771,13 @@ namespace MonoDevelop.Projects
 				var buildResult = await lib2.Build (Util.GetMonitor (), sol.Configurations [0].Selector, true);
 				Assert.AreEqual (2, buildResult.BuildCount);
 				buildResult = await sol.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
-				Assert.AreEqual (expectedBuildCount, buildResult.BuildCount);
+				Assert.AreEqual (expectedSuccessful + expectedUpToDate, buildResult.BuildCount);
 
 				FileService.NotifyFileChanged (p.Files.Single (f => Path.GetFileName (f.Name) == "Program.cs").FilePath);
 
 				buildResult = await p.Build (Util.GetMonitor (), sol.Configurations [0].Selector, true);
-				Assert.AreEqual (expectedBuildCount, buildResult.BuildCount);
+				Assert.AreEqual (expectedSuccessful, buildResult.SuccessfulBuildCount);
+				Assert.AreEqual (expectedUpToDate, buildResult.UpToDateBuildCount);
 
 				sol.Dispose ();
 			} finally {
@@ -924,9 +925,11 @@ namespace MonoDevelop.Projects
 					msbuildEndCount++;
 			};
 
-			var oldStatus = Runtime.Preferences.ParallelBuild.Value;
+			var oldPrefParallelBuild = Runtime.Preferences.ParallelBuild.Value;
+			var oldPrefSkipUnmodified = Runtime.Preferences.SkipBuildingUnmodifiedProjects.Value;
 			try {
 				Runtime.Preferences.ParallelBuild.Set (false);
+				Runtime.Preferences.SkipBuildingUnmodifiedProjects.Set (false);
 				FilePath solFile = Util.GetSampleProject ("build-session", "build-session.sln");
 				var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
@@ -1003,7 +1006,8 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (en);
 				WorkspaceObject.UnregisterCustomExtension (en2);
 
-				Runtime.Preferences.ParallelBuild.Set (oldStatus);
+				Runtime.Preferences.ParallelBuild.Set (oldPrefParallelBuild);
+				Runtime.Preferences.SkipBuildingUnmodifiedProjects.Set (oldPrefSkipUnmodified);
 			}
 		}
 	}
