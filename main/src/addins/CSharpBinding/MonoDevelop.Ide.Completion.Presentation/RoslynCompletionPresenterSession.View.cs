@@ -371,7 +371,9 @@ namespace MonoDevelop.Ide.Completion.Presentation
 					//	layout.Attributes = attrList;
 					//}
 
-					Xwt.Drawing.Image icon = ImageService.GetIcon (GetIcon (item));
+					//TODO: Todd, can you sprinkle some magic on this to do
+					//textView.GetTextBufferFromSpan(triggerSpan).GetMimeType() instead fixed text/csharp?
+					Xwt.Drawing.Image icon = ImageService.GetIcon (RoslynCompletionData.GetIcon (item, "text/csharp"));
 					int iconHeight, iconWidth;
 					if (icon != null) {
 						if (drawIconAsSelected)
@@ -710,93 +712,5 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			this.ModifyBg (StateType.Normal, Styles.CodeCompletion.BackgroundColor.ToGdkColor ());
 		}
 
-		string GetIcon (CompletionItem completionItem)
-		{
-			if (completionItem.Tags.Contains ("Snippet")) {
-				//TODO: Todd, can you sprinkle some magic on this to do
-				//textView.GetTextBufferFromSpan(triggerSpan).GetMimeType() instead fixed text/csharp?
-				var template = MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/csharp").FirstOrDefault (t => t.Shortcut == completionItem.DisplayText);
-				if (template != null)
-					return template.Icon;
-			}
-
-			var modifier = GetItemModifier (completionItem);
-			var type = GetItemType (completionItem);
-			return "md-" + modifier + type;
-		}
-
-		static Dictionary<string, string> roslynCompletionTypeTable = new Dictionary<string, string> {
-			{ "Field", "field" },
-			{ "Alias", "field" },
-			{ "ArrayType", "field" },
-			{ "Assembly", "field" },
-			{ "DynamicType", "field" },
-			{ "ErrorType", "field" },
-			{ "Label", "field" },
-			{ "NetModule", "field" },
-			{ "PointerType", "field" },
-			{ "RangeVariable", "field" },
-			{ "TypeParameter", "field" },
-			{ "Preprocessing", "field" },
-
-			{ "Constant", "literal" },
-
-			{ "Parameter", "variable" },
-			{ "Local", "variable" },
-
-			{ "Method", "method" },
-
-			{ "Namespace", "name-space" },
-
-			{ "Property", "property" },
-
-			{ "Event", "event" },
-
-			{ "Class", "class" },
-
-			{ "Delegate", "delegate" },
-
-			{ "Enum", "enum" },
-
-			{ "Interface", "interface" },
-
-			{ "Struct", "struct" },
-			{ "Structure", "struct" },
-
-			{ "Keyword", "keyword" },
-
-			{ "Snippet", "template"},
-
-			{ "EnumMember", "literal" },
-
-			{ "NewMethod", "newmethod" }
-		};
-
-		string GetItemType (CompletionItem completionItem)
-		{
-			foreach (var tag in completionItem.Tags) {
-				if (roslynCompletionTypeTable.TryGetValue (tag, out string result))
-					return result;
-			}
-			LoggingService.LogWarning ("RoslynCompletionData: Can't find item type '" + string.Join (",", completionItem.Tags) + "'");
-			return "literal";
-		}
-
-		static Dictionary<string, string> modifierTypeTable = new Dictionary<string, string> {
-			{ "Private", "private-" },
-			{ "ProtectedAndInternal", "ProtectedOrInternal-" },
-			{ "Protected", "protected-" },
-			{ "Internal", "internal-" },
-			{ "ProtectedOrInternal", "ProtectedOrInternal-" }
-		};
-
-		string GetItemModifier (CompletionItem completionItem)
-		{
-			foreach (var tag in completionItem.Tags) {
-				if (modifierTypeTable.TryGetValue (tag, out string result))
-					return result;
-			}
-			return "";
-		}
 	}
 }
