@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects
 		{
 			// If the project is not supported, don't try to update any metadata of the property,
 			// just leave what was read
-			if (OwnerProject.IsUnsupportedProject)
+			if (OwnerProject != null && OwnerProject.IsUnsupportedProject)
 				return;
 
 			base.Write (project, buildItem);
