@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=f797b46a3de1658cf2bfb8a6e919b8e7962651a7
-DEP_BRANCH_AND_REMOTE[0]="master origin/master"
+DEP_NEEDED_VERSION[0]=785a039390f931681a3a19c84387c7cbfb91ed37
+DEP_BRANCH_AND_REMOTE[0]="identity-tfs-token-type origin/identity-tfs-token-type"
 
 # heap-shot
 DEP[1]=heap-shot
