@@ -2265,7 +2265,7 @@ namespace Mono.TextEditor
 				foreach (var drawer in margin.MarginDrawer)
 					drawer.Draw (cr, cairoRectangle);
 			}
-			LayoutChanged?.Invoke (this, EventArgs.Empty);
+			RaiseLayoutChanged ();
 			if (setLongestLine) 
 				SetHAdjustment ();
 		}
@@ -3619,6 +3619,11 @@ namespace Mono.TextEditor
 		
 		internal List<MonoTextEditor.EditorContainerChild> containerChildren = new List<MonoTextEditor.EditorContainerChild> ();
 		internal event EventHandler LayoutChanged;
+
+		internal void RaiseLayoutChanged ()
+		{
+			LayoutChanged?.Invoke (this, EventArgs.Empty);
+		}
 
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{
