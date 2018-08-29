@@ -170,6 +170,9 @@ namespace Mono.TextEditor
 			//_visualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 			//_visualBuffer.ContentTypeChanged += OnVisualBufferContentTypeChanged;
 
+			// instantiate the MultiSelectionBroker
+			var broker = MultiSelectionBroker;
+
 			hasInitializeBeenCalled = true;
 		}
 
