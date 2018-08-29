@@ -1705,9 +1705,9 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		async Task<BuildResult> DoBeforeCompileAction ()
+		Task<BuildResult> DoBeforeCompileAction ()
 		{
-			return await ApplySavePolicy ();
+			return ApplySavePolicy ();
 		}
 
 		public async Task<BuildResult> ApplySavePolicy ()
