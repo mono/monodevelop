@@ -1177,11 +1177,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		bool isFirstResponder;
 		public override void KeyDown (NSEvent theEvent)
 		{
 			// 36 is <Enter>
 			// 49 is <Space>
-			if (theEvent.KeyCode == 36 || theEvent.KeyCode == 49) {
+			if (isFirstResponder && (theEvent.KeyCode == 36 || theEvent.KeyCode == 49)) {
 				sourcePad?.BringToFront (true);
 				return;
 			}
@@ -1195,7 +1196,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool BecomeFirstResponder ()
 		{
+			isFirstResponder = true;
 			return true;
+		}
+
+		public override bool ResignFirstResponder ()
+		{
+			isFirstResponder = false;
+			return base.ResignFirstResponder ();
 		}
 
 		public override CGRect Frame {
