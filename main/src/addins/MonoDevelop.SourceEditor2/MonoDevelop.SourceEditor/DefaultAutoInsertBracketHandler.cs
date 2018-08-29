@@ -41,6 +41,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (descriptor.KeyChar == '\'' && editor.MimeType == "text/fsharp")
 				return false;
+			if (editor.MimeType == "text/x-csharp")
+				return false;
 			int braceIndex = openBrackets.IndexOf (descriptor.KeyChar);
 			if (braceIndex < 0)
 				return false;

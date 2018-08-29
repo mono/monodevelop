@@ -1,11 +1,10 @@
 ﻿//
-// CurlyBraceCompletionSession.cs
+// NotificationOptionViewModel.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
-// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Microsoft.CodeAnalysis.CSharp;
-using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.CodeStyle;
+using Microsoft.VisualStudio.Imaging.Interop;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.CSharp.Features.AutoInsertBracket
+namespace MonoDevelop.Refactoring.Options
 {
-	internal class CurlyBraceCompletionSession : AbstractTokenBraceCompletionSession
+	/// <summary>
+	/// Represents a view model for <see cref="NotificationOption"/>
+	/// </summary>
+	internal class NotificationOptionViewModel
 	{
-		public CurlyBraceCompletionSession(DocumentContext ctx)
-			: base(ctx, (int)SyntaxKind.OpenBraceToken, (int)SyntaxKind.CloseBraceToken, '}')
+		public NotificationOptionViewModel (NotificationOption notification, IconId moniker)
 		{
+			Notification = notification;
+			Name = notification.Name;
+			Moniker = moniker;
 		}
+
+		public IconId Moniker { get; }
+
+		public string Name { get; }
+
+		public NotificationOption Notification { get; }
 	}
 }

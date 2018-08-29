@@ -63,8 +63,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			                                                                 GettextCatalog.GetString ("Check to use smart semicolon placement"));
 			checkbuttonFormatOnSave.SetCommonAccessibilityAttributes ("BehaviorPanel.formatOnSave", "",
 			                                                          GettextCatalog.GetString ("Check to reformat the document when saving"));
-			checkbuttonOnTheFlyFormatting.SetCommonAccessibilityAttributes ("BehaviorPanel.formatOnFly", "",
-			                                                                GettextCatalog.GetString ("Check to reformat the document while typing"));
 			checkbuttonAutoSetSearchPatternCasing.SetCommonAccessibilityAttributes ("BehaviorPanel.autoSearchPattern", "",
 			                                                                        GettextCatalog.GetString ("Check to automatically set the search pattern case sensitivity"));
 			checkbuttonEnableSelectionSurrounding.SetCommonAccessibilityAttributes ("BehaviorPanel.enableSelectionSurrounding", "",
@@ -86,7 +84,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			tabAsReindentCheckbutton.Active = DefaultSourceEditorOptions.Instance.TabIsReindent;
 			indentationCombobox.Active = Math.Min (2, (int)DefaultSourceEditorOptions.Instance.IndentStyle);
 			controlLeftRightCombobox.Active = (int)DefaultSourceEditorOptions.Instance.WordNavigationStyle;
-			checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			checkbuttonGenerateFormattingUndoStep.Active = DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep;
 
 
@@ -112,7 +109,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.IndentStyle = (MonoDevelop.Ide.Editor.IndentStyle)indentationCombobox.Active;
 			DefaultSourceEditorOptions.Instance.TabIsReindent = tabAsReindentCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.WordNavigationStyle = (WordNavigationStyle)controlLeftRightCombobox.Active;
-			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = checkbuttonOnTheFlyFormatting.Active;
 			DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = checkbuttonGenerateFormattingUndoStep.Active;
 			PropertyService.Set ("AutoSetPatternCasing", checkbuttonAutoSetSearchPatternCasing.Active);
 			PropertyService.Set ("AutoFormatDocumentOnSave", checkbuttonFormatOnSave.Active);

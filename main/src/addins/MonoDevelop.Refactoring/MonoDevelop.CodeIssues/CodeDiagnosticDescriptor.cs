@@ -65,23 +65,10 @@ namespace MonoDevelop.CodeIssues
 
 		public DiagnosticSeverity? DiagnosticSeverity {
 			get {
-				DiagnosticSeverity? result = null;
-
 				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
-					if (!result.HasValue)
-						result = GetSeverity(diagnostic);
-					if (result != GetSeverity(diagnostic))
-						return null;
+					return diagnostic.DefaultSeverity;
 				}
-				return result;
-			}
-
-			set {
-				if (!value.HasValue)
-					return;
-				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
-					SetSeverity (diagnostic, value.Value);
-				}
+				return null;
 			}
 		}
 
@@ -92,46 +79,11 @@ namespace MonoDevelop.CodeIssues
 		public bool IsEnabled {
 			get {
 				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
-					if (GetIsEnabled (diagnostic))
-						return true;
+					if (!diagnostic.IsEnabledByDefault)
+						return false;
 				}
-				return false;
+				return true;
 			}
-			set {
-				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
-					SetIsEnabled (diagnostic, value);
-				}
-			}
-		}
-
-		internal DiagnosticSeverity GetSeverity (DiagnosticDescriptor diagnostic)
-		{
-			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".severity", diagnostic.DefaultSeverity);
-		}
-
-		internal DiagnosticSeverity GetSeverity (string diagnosticId, DiagnosticSeverity defaultSeverity)
-		{
-			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnosticId + ".severity", defaultSeverity);
-		}
-
-		internal void SetSeverity (DiagnosticDescriptor diagnostic, DiagnosticSeverity severity)
-		{
-			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".severity", severity);
-		}
-
-		internal bool GetIsEnabled (DiagnosticDescriptor diagnostic)
-		{
-			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", diagnostic.IsEnabledByDefault);
-		}
-
-		internal bool GetIsEnabled (string diagnosticId, bool enabledByDefault)
-		{
-			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnosticId + ".enabled", enabledByDefault);
-		}
-
-		internal void SetIsEnabled (DiagnosticDescriptor diagnostic, bool value)
-		{
-			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);
 		}
 
 		internal CodeDiagnosticDescriptor (string[] languages, Type codeIssueType)

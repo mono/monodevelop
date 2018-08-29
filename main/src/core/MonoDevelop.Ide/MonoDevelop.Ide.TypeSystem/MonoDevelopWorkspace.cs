@@ -87,6 +87,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static MonoDevelopWorkspace ()
 		{
 			Tasks.CommentTasksProvider.Initialize ();
+			MonoDevelopRuleSetManager.EnsureGlobalRulesetExists ();
 		}
 
 		/// <summary>
@@ -246,7 +247,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (disposed)
 				return;
-			
+
 			disposed = true;
 
 			MetadataReferenceManager.ClearCache ();
@@ -320,6 +321,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			} finally {
 				HideStatusIcon ();
 			}
+    }
+
+		internal void ReloadModifiedProject (MonoDevelop.Projects.Project project)
+		{
+			ProjectHandler.ReloadModifiedProject (project);
 		}
 
 		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
@@ -440,13 +446,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				OnDocumentClosed (analysisDocument, loader);
 				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
-					OnDocumentClosed (linkedDoc, loader); 
+					OnDocumentClosed (linkedDoc, loader);
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Exception while closing document.", e); 
+				LoggingService.LogError ("Exception while closing document.", e);
 			}
 		}
-		
+
 		public override void CloseDocument (DocumentId documentId)
 		{
 		}
@@ -610,7 +616,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								case CSharpMethodKind:
 									insertionModeOperation = GettextCatalog.GetString ("Insert Method");
 									break;
-								case 8892: // C# property 
+								case 8892: // C# property
 									insertionModeOperation = GettextCatalog.GetString ("Insert Property");
 									break;
 								default:
@@ -751,7 +757,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					tryApplyState_documentTextChangedContents.Clear ();
 					tryApplyState_documentTextChangedTasks.Clear ();
 					tryApplyState_changedProjects.Clear ();
-					freezeProjectModify = false; 
+					freezeProjectModify = false;
 				}
 			}
 		}
@@ -801,7 +807,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
 			string formattedText;
-			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
+			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path));
 			if (formatter != null && mdProject != null) {
 				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
 			} else {
@@ -1019,7 +1025,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
-			var id = GetProjectId (project); 
+			var id = GetProjectId (project);
 			if (id != null) {
 				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
 					ClearOpenDocument (docId);
