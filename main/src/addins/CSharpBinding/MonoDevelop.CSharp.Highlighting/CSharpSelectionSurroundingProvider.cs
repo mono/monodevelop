@@ -29,6 +29,10 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Editor;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -116,6 +120,10 @@ namespace MonoDevelop.CSharp.Highlighting
 				int anchorOffset = selectionRange.Offset;
 				int leadOffset = selectionRange.EndOffset;
 				var text = editor.GetTextAt (selectionRange);
+
+				var formattingService = context.AnalysisDocument.GetLanguageService<IEditorFormattingService> ();
+
+
 				if (editor.Options.GenerateFormattingUndoStep) {
 					using (var undo = editor.OpenUndoGroup ()) {
 						editor.ReplaceText (selectionRange, start);
@@ -125,8 +133,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
 					}
 					if (unicodeKey == '{') {
-						using (var undo = editor.OpenUndoGroup ()) {
-							OnTheFlyFormatter.Format (editor, context, anchorOffset + start.Length - 1, leadOffset + start.Length + end.Length);
+						if (formattingService != null) {
+							var changes = formattingService.GetFormattingChangesAsync (context.AnalysisDocument, TextSpan.FromBounds (anchorOffset + start.Length - 1, leadOffset + start.Length + end.Length), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+							editor.ApplyTextChanges (changes);
 						}
 					}
 				} else {
@@ -134,7 +143,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						editor.InsertText (anchorOffset, start);
 						editor.InsertText (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
 						if (unicodeKey == '{') {
-							OnTheFlyFormatter.Format (editor, context, anchorOffset + start.Length, leadOffset + start.Length + end.Length);
+							if (formattingService != null) {
+								var changes = formattingService.GetFormattingChangesAsync (context.AnalysisDocument, TextSpan.FromBounds (anchorOffset + start.Length, leadOffset + start.Length), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+								editor.ApplyTextChanges (changes);
+							}
 						} else {
 							editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
 						}

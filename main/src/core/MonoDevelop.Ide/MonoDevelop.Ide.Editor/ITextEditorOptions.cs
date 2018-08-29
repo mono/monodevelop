@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.Editor
 		bool ShowIconMargin { get; }
 		bool ShowLineNumberMargin { get; }
 		bool ShowFoldMargin { get; }
+		bool EnableQuickDiff { get; }
+             
 		bool HighlightCaretLine { get; }
 		int RulerColumn { get; }
 		bool ShowRuler { get; }

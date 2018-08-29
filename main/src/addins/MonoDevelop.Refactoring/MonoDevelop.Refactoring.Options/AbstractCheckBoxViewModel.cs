@@ -1,10 +1,10 @@
 ﻿//
-// StringLiteralCompletionSession.cs
+// AbstractCheckBoxViewModel.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mikkrg@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 Microsoft Corporation. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,44 +25,38 @@
 // THE SOFTWARE.
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using System.Threading;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis.CSharp;
-using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.VisualStudio.LanguageServices.Implementation.Utilities;
 
-namespace MonoDevelop.CSharp.Features.AutoInsertBracket
+namespace MonoDevelop.Refactoring.Options
 {
-	internal class StringLiteralCompletionSession : AbstractTokenBraceCompletionSession
+	internal abstract class AbstractCheckBoxViewModel : AbstractNotifyPropertyChanged
 	{
-		private const char VerbatimStringPrefix = '@';
+		private readonly string _truePreview;
+		private readonly string _falsePreview;
+		protected bool _isChecked;
 
-		public StringLiteralCompletionSession(DocumentContext ctx)
-			: base(ctx, (int)SyntaxKind.StringLiteralToken, (int)SyntaxKind.StringLiteralToken, '\"')
+		protected AbstractOptionPreviewViewModel Info { get; }
+		public IOption Option { get; }
+		public string Description { get; set; }
+
+		internal virtual string GetPreview () => _isChecked ? _truePreview : _falsePreview;
+
+		public AbstractCheckBoxViewModel (IOption option, string description, string preview, AbstractOptionPreviewViewModel info)
+			: this (option, description, preview, preview, info)
 		{
 		}
 
-		public override bool CheckOpeningPoint(TextEditor editor, DocumentContext ctx, CancellationToken cancellationToken)
+		public AbstractCheckBoxViewModel (IOption option, string description, string truePreview, string falsePreview, AbstractOptionPreviewViewModel info)
 		{
-			var snapshot = CurrentSnapshot;
-			var position = StartOffset;
-			var token = FindToken(snapshot, position, cancellationToken);
+			_truePreview = truePreview;
+			_falsePreview = falsePreview;
 
-			if (!IsValidToken(token) || token.RawKind != OpeningTokenKind)
-			{
-				return false;
-			}
-
-			if (token.SpanStart == position)
-			{
-				return true;
-			}
-
-			return token.SpanStart + 1 == position && Editor.GetCharAt (token.SpanStart) == VerbatimStringPrefix;
+			Info = info;
+			Option = option;
+			Description = description;
 		}
 
-		public override bool AllowOverType(CancellationToken cancellationToken)
-		{
-			return true;
-		}
+		public abstract bool IsChecked { get; set; }
 	}
 }

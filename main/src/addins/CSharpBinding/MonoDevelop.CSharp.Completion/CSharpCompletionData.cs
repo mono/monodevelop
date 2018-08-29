@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		Lazy<CompletionProvider> provider;
 
-		public override CompletionProvider Provider => provider.Value;         
+		public override CompletionProvider Provider => provider.Value;
 		protected override string MimeType => CSharpFormatter.MimeType;
 
 
@@ -70,9 +70,5 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 
-		protected override void Format (TextEditor editor, DocumentContext document, int start, int end)
-		{
-			OnTheFlyFormatter.Format (editor, document, start, end);
-		}
 	}
 }

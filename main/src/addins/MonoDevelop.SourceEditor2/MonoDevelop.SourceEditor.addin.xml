@@ -189,4 +189,9 @@
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.SourceEditor.dll"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.SourceEditor.Braces.BraceCompletionEditorExtension" />
+	</Extension>
+
 </ExtensionModel>
