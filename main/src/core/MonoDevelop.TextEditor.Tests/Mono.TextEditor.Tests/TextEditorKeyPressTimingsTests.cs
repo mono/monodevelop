@@ -48,7 +48,7 @@ namespace Mono.TextEditor.Tests
 			timings.EndTimer ();
 
 			var metadata = timings.GetTypingTimingMetadata (null);
-			Assert.That (metadata.First, Is.GreaterThan (800.0));
+			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
 			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
 		}
 	}
