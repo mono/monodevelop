@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide
 					LoggingService.LogError ("Could not save feedback file", ex);
 				}
 			}
-			SendPendingFeedback ();
+			Task.Run (() => SendPendingFeedback ());
 		}
 		
 		public static void SendPendingFeedback ()
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide
 						sw.Write (body);
 					}
 				}
-			).ContinueWith (HandleResponse, TaskScheduler.FromCurrentSynchronizationContext ());
+			).ContinueWith (HandleResponse);
 		}
 		
 		static void HandleResponse (Task<HttpWebResponse> t)
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide
 	{
 		protected override void Run ()
 		{
-			FeedbackService.SendPendingFeedback ();
+			Task.Run (() => FeedbackService.SendPendingFeedback());
 		}
 	}
 }
