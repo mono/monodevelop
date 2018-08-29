@@ -1,11 +1,10 @@
 ﻿//
-// CurlyBraceCompletionSession.cs
+// TextPasteIndentEngine.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
-// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Microsoft.CodeAnalysis.CSharp;
-using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.CSharp.Features.AutoInsertBracket
+namespace MonoDevelop.CSharp.Formatting
 {
-	internal class CurlyBraceCompletionSession : AbstractTokenBraceCompletionSession
+	partial class CSharpTextPasteHandler
 	{
-		public CurlyBraceCompletionSession(DocumentContext ctx)
-			: base(ctx, (int)SyntaxKind.OpenBraceToken, (int)SyntaxKind.CloseBraceToken, '}')
+		/// <summary>
+		///     Types of text-paste strategies.
+		/// </summary>
+		public enum PasteStrategy : byte
 		{
+			PlainText = 0,
+			StringLiteral = 1,
+			VerbatimString = 2
 		}
+
 	}
 }
