@@ -50,10 +50,10 @@ namespace Mono.TextEditor
 			textEditor.TextViewModel.VisualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 		}
 
-		internal void Add (int logicalLineNumber, DocumentLine line)
+		internal ITextViewLine Add (int logicalLineNumber, DocumentLine line)
 		{
 			if (line == null)
-				return;
+				return null;
 
 			if (Count == 0)
 				this.textSnapshot = textEditor.TextSnapshot;
@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 			for (int i = 0; i < Count; i++) {
 				if (((MdTextViewLine)this [i]).LineNumber == logicalLineNumber) {
 					this [i] = newLine;
-					return;
+					return newLine;
 				}
 			}
 			int index = 0;
@@ -73,6 +73,7 @@ namespace Mono.TextEditor
 					break;
 			}
 			Insert (index, newLine);
+			return newLine;
 		}
 
 		internal void RemoveLinesBefore (int lineNumber)
@@ -153,15 +154,26 @@ namespace Mono.TextEditor
 
 			this.Clear ();
 
+			var newSnapshot = e.After;
 			foreach(MdTextViewLine line in reusedLinesCache) {
-				int lineNumber = line.LineNumber;
-				Add (lineNumber, textEditor.Document.GetLine (lineNumber));
+				var snapshotLine = textSnapshot.GetLineFromLineNumber (line.LineNumber - 1);
+				var lineStart = textSnapshot.CreateTrackingPoint (snapshotLine.Start, PointTrackingMode.Negative);
+				var newLineStart = lineStart.GetPosition (newSnapshot);
+				var newSnapshotLine = newSnapshot.GetLineFromPosition (newLineStart);
+				int lineNumber = newSnapshotLine.LineNumber + 1;
+				var documentLine = textEditor.Document.GetLine (lineNumber);
+
+				var newLine = new MdTextViewLine (this, textEditor, documentLine, lineNumber, textEditor.TextViewMargin.GetLayout (documentLine));
+				Add (newLine);
 			}
 
 			modifiedLinesCache.Clear ();
 			reusedLinesCache.Clear ();
 
-			textSnapshot = e.After;
+			textSnapshot = newSnapshot;
+
+			// we need this to synchronize MultiSelectionBroker to the new snapshot
+			this.textEditor.TextArea.RaiseLayoutChanged ();
 		}
 
 		public bool IsValid => version.CompareAge (textEditor.Document.Version) == 0;
@@ -212,17 +224,29 @@ namespace Mono.TextEditor
 
 		public ITextViewLine GetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition)
 		{
-			if (bufferPosition.Position < this [0].Start.Position)
-				return null;
-
+			if (textSnapshot == null)
 			{
-				//If the position starts on or after the start of the last line, then use the
-				//line's ContainsBufferPosition logic to handle the special case at the end of
-				//the buffer.
-				ITextViewLine lastLine = this [this.Count - 1];
+				textSnapshot = bufferPosition.Snapshot;
+			}
 
-				if (bufferPosition.Position >= lastLine.Start.Position)
-					return lastLine.ContainsBufferPosition (bufferPosition) ? lastLine : null;
+			if (bufferPosition.Snapshot != textSnapshot) {
+				throw new ArgumentOutOfRangeException ($"Requested snapshot version {bufferPosition.Snapshot.Version.VersionNumber} but the TextViewLineCollection currently contains snapshot version {textSnapshot.Version.VersionNumber}");
+			}
+
+			if (this.Count == 0 || bufferPosition.Position < this[0].Start.Position) {
+				return CreateAndAddLineFromPosition (bufferPosition);
+			}
+
+			//If the position starts on or after the start of the last line, then use the
+			//line's ContainsBufferPosition logic to handle the special case at the end of
+			//the buffer.
+			ITextViewLine lastLine = this [this.Count - 1];
+			if (bufferPosition.Position >= lastLine.Start.Position) {
+				if (lastLine.ContainsBufferPosition (bufferPosition)) {
+					return lastLine;
+				}
+
+				return CreateAndAddLineFromPosition (bufferPosition);
 			}
 
 			int low = 0;
@@ -237,7 +261,18 @@ namespace Mono.TextEditor
 					low = middle + 1;
 			}
 
-			return this[low - 1];
+			var result = this[low - 1];
+			if (!result.ContainsBufferPosition (bufferPosition)) {
+				result = CreateAndAddLineFromPosition (bufferPosition);
+			}
+
+			return result;
+		}
+
+		private ITextViewLine CreateAndAddLineFromPosition (SnapshotPoint position)
+		{
+			int lineNumber1Based = textSnapshot.GetLineNumberFromPosition (position) + 1;
+			return Add (lineNumber1Based, textEditor.Document.GetLine (lineNumber1Based));
 		}
 
 		public ITextViewLine GetTextViewLineContainingYCoordinate (double y)
