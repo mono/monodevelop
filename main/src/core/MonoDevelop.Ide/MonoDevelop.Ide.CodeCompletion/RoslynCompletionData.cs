@@ -189,6 +189,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			{ "Keyword", 12 },
 
 			{ "Snippet", 13},
+			{ "Intrinsic", 13},
 
 			{ "NewMethod", 14 },
 
