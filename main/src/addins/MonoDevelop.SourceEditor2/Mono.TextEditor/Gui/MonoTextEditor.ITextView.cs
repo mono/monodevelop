@@ -170,6 +170,9 @@ namespace Mono.TextEditor
 			//_visualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 			//_visualBuffer.ContentTypeChanged += OnVisualBufferContentTypeChanged;
 
+			// instantiate the MultiSelectionBroker
+			var broker = MultiSelectionBroker;
+
 			hasInitializeBeenCalled = true;
 		}
 
@@ -178,6 +181,8 @@ namespace Mono.TextEditor
 				return Caret;
 			}
 		}
+
+		public ITextCaret TextCaret => Caret;
 
 		public bool HasAggregateFocus {
 			get {
@@ -536,9 +541,20 @@ namespace Mono.TextEditor
 			get {
 				if (multiSelectionBroker == null) {
 					multiSelectionBroker = factoryService.MultiSelectionBrokerFactory.CreateBroker (this);
+					multiSelectionBroker.MultiSelectionSessionChanged += OnMultiSelectionSessionChanged;
 				}
 
 				return multiSelectionBroker;
+			}
+		}
+
+		private void OnMultiSelectionSessionChanged (object sender, EventArgs e)
+		{
+			// The MultiSelectionBroker API has been updated, but currently in VSMac we still have a separate Caret concept.
+			// We need to manually synchronize our caret with what MultiSelectionBroker thinks the caret is.
+			// The other direction happens when we move our caret.
+			if (TextCaret.Position.VirtualBufferPosition != MultiSelectionBroker.PrimarySelection.InsertionPoint) {
+				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
 	}
