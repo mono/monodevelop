@@ -79,19 +79,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var kv in reportDiagnostics) {
 					if (kv.Key.StartsWith ("RE", StringComparison.Ordinal))
 						continue;
-					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertReportDiagnosticToAction (kv.Value) + "\"/>");
+					sw.WriteLine ("        <Rule Id=\"{0}\" Action=\"{1}\"/>", kv.Key, ConvertReportDiagnosticToAction (kv.Value));
 				}
 				sw.WriteLine ("    </Rules>");
 				sw.WriteLine ("    <Rules AnalyzerId=\"RefactoringEssentials\" RuleNamespace=\"RefactoringEssentials\">>");
 				foreach (var kv in reportDiagnostics) {
 					if (!kv.Key.StartsWith ("RE", StringComparison.Ordinal))
 						continue;
-					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertReportDiagnosticToAction (kv.Value) + "\"/>");
+					sw.WriteLine ("        <Rule Id=\"{0}\" Action=\"{1}\"/>", kv.Key, ConvertReportDiagnosticToAction (kv.Value));
 				}
 				sw.WriteLine ("    </Rules>");
 				sw.WriteLine ("</RuleSet>");
 			}
 		}
+
 
 		static string ConvertReportDiagnosticToAction (ReportDiagnostic value)
 		{
