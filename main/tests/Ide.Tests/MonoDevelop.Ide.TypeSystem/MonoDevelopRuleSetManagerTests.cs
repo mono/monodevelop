@@ -62,8 +62,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var ruleset2 = rulesetManager.GetGlobalRuleSet ();
 			Assert.AreSame (ruleset, ruleset2);
-
-			File.SetLastWriteTimeUtc (rulesetPath, DateTime.UtcNow);
+			
+			var lastWrite = File.GetLastWriteTimeUtc (rulesetPath);
+			File.SetLastWriteTimeUtc (rulesetPath, lastWrite.AddHours (-1));
 			Assert.AreNotSame (ruleset, rulesetManager.GetGlobalRuleSet ());
 		}
 
