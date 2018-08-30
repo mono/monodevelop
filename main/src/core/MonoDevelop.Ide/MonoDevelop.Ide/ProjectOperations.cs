@@ -1705,18 +1705,23 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		async Task<BuildResult> DoBeforeCompileAction ()
+		Task<BuildResult> DoBeforeCompileAction ()
+		{
+			return ApplySavePolicy ();
+		}
+
+		public async Task<BuildResult> ApplySavePolicy ()
 		{
 			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
 			var result = new BuildResult ();
-			
+
 			switch (action) {
 			case BeforeCompileAction.Nothing: break;
 			case BeforeCompileAction.PromptForSave: await PromptForSave (result); break;
 			case BeforeCompileAction.SaveAllFiles: await SaveAllFiles (result); break;
 			default: System.Diagnostics.Debug.Assert (false); break;
 			}
-			
+
 			return result;
 		}
 
