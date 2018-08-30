@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ReportDiagnostic.Default;
 		}
 
-		public static RuleSet GetGloabalRuleSet ()
+		public static RuleSet GetGlobalRuleSet ()
 		{
 			try {
 				var fileTime = File.GetLastWriteTimeUtc (GlobalRulesetFileName);
