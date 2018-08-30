@@ -170,7 +170,7 @@ namespace MonoDevelop.CSharp.Project
 			foreach (var warning in GetSuppressedWarnings ())
 				result [warning] = ReportDiagnostic.Suppress;
 
-			var globalRuleSet = Ide.TypeSystem.MonoDevelopRuleSetManager.GetGlobalRuleSet ();
+			var globalRuleSet = Ide.TypeSystem.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
 			if (globalRuleSet != null) {
 				foreach (var kv in globalRuleSet.SpecificDiagnosticOptions) {
 					result [kv.Key] = kv.Value;

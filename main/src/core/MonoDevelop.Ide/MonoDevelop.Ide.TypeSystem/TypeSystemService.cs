@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		static string[] filesSkippedInParseThread = new string[0];
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
+		internal static MonoDevelopRuleSetManager RuleSetManager { get; } = new MonoDevelopRuleSetManager ();
+
 		internal static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;

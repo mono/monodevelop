@@ -65,9 +65,9 @@ namespace MonoDevelop.CodeIssues
 				TextEditor.MimeType = "application/xml";
 				TextEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 				try {
-					TextEditor.Text = TextFileUtility.GetText (MonoDevelopRuleSetManager.GlobalRulesetFileName, out encoding);
+					TextEditor.Text = TextFileUtility.GetText (TypeSystemService.RuleSetManager.GlobalRulesetFileName, out encoding);
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while loading global rule set file " + MonoDevelopRuleSetManager.GlobalRulesetFileName, e);
+					LoggingService.LogError ("Error while loading global rule set file " + TypeSystemService.RuleSetManager, e);
 					loadingError = true;
 				}
 			}
@@ -77,10 +77,10 @@ namespace MonoDevelop.CodeIssues
 				if (loadingError)
 					return;
 				try {
-					TextFileUtility.WriteText (MonoDevelopRuleSetManager.GlobalRulesetFileName, TextEditor.Text, encoding);
+					TextFileUtility.WriteText (TypeSystemService.RuleSetManager.GlobalRulesetFileName, TextEditor.Text, encoding);
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while saving global rule set file " + MonoDevelopRuleSetManager.GlobalRulesetFileName, e);
-					MessageService.ShowError (GettextCatalog.GetString ("Error while saving global rule set file '{0}'.", MonoDevelopRuleSetManager.GlobalRulesetFileName));
+					LoggingService.LogError ("Error while saving global rule set file " + TypeSystemService.RuleSetManager.GlobalRulesetFileName, e);
+					MessageService.ShowError (GettextCatalog.GetString ("Error while saving global rule set file '{0}'.", TypeSystemService.RuleSetManager.GlobalRulesetFileName));
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-﻿//
+//
 // MonoDevelopRuleSetManager.cs
 //
 // Author:
@@ -34,19 +34,25 @@ using YamlDotNet.Core.Tokens;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	static class MonoDevelopRuleSetManager
+	class MonoDevelopRuleSetManager
 	{
-		public static string GlobalRulesetFileName { get; } = UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
+		public string GlobalRulesetFileName { get; }
+		DateTime globalRuleSetWriteTimeUtc = DateTime.MinValue;
+		RuleSet globalRuleSet;
+
+		internal MonoDevelopRuleSetManager (string globalRulesetPath = null)
+		{
+			GlobalRulesetFileName = globalRulesetPath ?? UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
+		}
 
 		static readonly Regex severityRegex = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.severity");
 		static readonly Regex enabledRegex  = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.enabled");
-		static DateTime globalRuleSetWriteTimeUtc = DateTime.MinValue;
-		static RuleSet globalRuleSet;
 
-		internal static void EnsureGlobalRulesetExists()
+		internal void EnsureGlobalRulesetExists()
 		{
 			if (File.Exists (GlobalRulesetFileName))
 				return;
+
 			var reportDiagnostics = new Dictionary<string, ReportDiagnostic> ();
 			foreach (var key in PropertyService.GlobalInstance.Keys) {
 				var match = severityRegex.Match (key);
@@ -71,7 +77,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			WriteRulesetToFile (reportDiagnostics);
 		}
 
-		static void WriteRulesetToFile (Dictionary<string, ReportDiagnostic> reportDiagnostics)
+		void WriteRulesetToFile (Dictionary<string, ReportDiagnostic> reportDiagnostics)
 		{
 			using (var sw = new StreamWriter (GlobalRulesetFileName)) {
 				sw.WriteLine ("<RuleSet Name=\"Global Rules\" ToolsVersion=\"12.0\">");
@@ -130,7 +136,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ReportDiagnostic.Default;
 		}
 
-		public static RuleSet GetGlobalRuleSet ()
+		public RuleSet GetGlobalRuleSet ()
 		{
 			return QueryGlobalRuleset (retryOnError: true);
 
