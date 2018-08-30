@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	static class MonoDevelopRuleSetManager
 	{
-		public static string GlobalRulsetFileName { get; } = UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
+		public static string GlobalRulesetFileName { get; } = UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
 
 		static readonly Regex severityRegex = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.severity");
 		static readonly Regex enabledRegex  = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.enabled");
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static void EnsureGlobalRulesetExists()
 		{
-			if (File.Exists (GlobalRulsetFileName))
+			if (File.Exists (GlobalRulesetFileName))
 				return;
 			var reportDiagnostics = new Dictionary<string, ReportDiagnostic> ();
 			foreach (var key in PropertyService.GlobalInstance.Keys) {
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					PropertyService.Set (key, null);
 				}
 			}
-			using (var sw = new StreamWriter (GlobalRulsetFileName)) {
+			using (var sw = new StreamWriter (GlobalRulesetFileName)) {
 				sw.WriteLine ("<RuleSet Name=\"Global Rules\" ToolsVersion=\"12.0\">");
 				sw.WriteLine ("    <Rules AnalyzerId=\"Roslyn\" RuleNamespace=\"Roslyn\">>");
 				foreach (var kv in reportDiagnostics) {
@@ -126,10 +126,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static RuleSet GetGloabalRuleSet ()
 		{
 			try {
-				var fileTime = File.GetLastWriteTimeUtc (GlobalRulsetFileName);
+				var fileTime = File.GetLastWriteTimeUtc (GlobalRulesetFileName);
 				if (globalRuleSet == null || fileTime != globalRuleSetWriteTimeUtc) {
 					globalRuleSetWriteTimeUtc = fileTime;
-					globalRuleSet = RuleSet.LoadEffectiveRuleSetFromFile (GlobalRulsetFileName);
+					globalRuleSet = RuleSet.LoadEffectiveRuleSetFromFile (GlobalRulesetFileName);
 				}
 				return globalRuleSet;
 			} catch (Exception e) {
