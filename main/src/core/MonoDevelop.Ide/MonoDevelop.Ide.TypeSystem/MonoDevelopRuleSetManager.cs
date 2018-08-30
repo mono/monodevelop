@@ -134,7 +134,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return globalRuleSet;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading global rule set.", e);
-				MessageService.ShowError (GettextCatalog.GetString ("Error while loading global rule set."), e);
 				globalRuleSetWriteTimeUtc = DateTime.MinValue;
 				return null;
 			}
