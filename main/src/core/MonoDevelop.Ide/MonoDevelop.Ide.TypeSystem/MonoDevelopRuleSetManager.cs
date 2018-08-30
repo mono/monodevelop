@@ -73,25 +73,39 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var kv in reportDiagnostics) {
 					if (kv.Key.StartsWith ("RE", StringComparison.Ordinal))
 						continue;
-					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertValue (kv.Value) + "\"/>");
+					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertReportDiagnosticToAction (kv.Value) + "\"/>");
 				}
 				sw.WriteLine ("    </Rules>");
 				sw.WriteLine ("    <Rules AnalyzerId=\"RefactoringEssentials\" RuleNamespace=\"RefactoringEssentials\">>");
 				foreach (var kv in reportDiagnostics) {
 					if (!kv.Key.StartsWith ("RE", StringComparison.Ordinal))
 						continue;
-					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertValue (kv.Value) + "\"/>");
+					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertReportDiagnosticToAction (kv.Value) + "\"/>");
 				}
 				sw.WriteLine ("    </Rules>");
 				sw.WriteLine ("</RuleSet>");
 			}
 		}
 
-		static string ConvertValue (ReportDiagnostic value)
+		static string ConvertReportDiagnosticToAction (ReportDiagnostic value)
 		{
-			if (value == ReportDiagnostic.Warn)
-				return "Warning";
-			return value.ToString ();
+		    switch (value)
+		    {
+			case ReportDiagnostic.Default:
+			    return "Default";
+			case ReportDiagnostic.Error:
+			    return "Error";
+			case ReportDiagnostic.Warn:
+			    return "Warning";
+			case ReportDiagnostic.Info:
+			    return "Info";
+			case ReportDiagnostic.Hidden:
+			    return "Hidden";
+			case ReportDiagnostic.Suppress:
+			    return "None";
+			default:
+			    throw ExceptionUtilities.Unreachable;
+		    }
 		}
 
 		static ReportDiagnostic ConvertDiagnostic (DiagnosticSeverity severity)
