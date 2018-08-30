@@ -67,6 +67,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					PropertyService.Set (key, null);
 				}
 			}
+
+			WriteRulesetToFile (reportDiagnostics);
+		}
+
+		static void WriteRulesetToFile (Dictionary<string, ReportDiagnostic> reportDiagnostics)
+		{
 			using (var sw = new StreamWriter (GlobalRulesetFileName)) {
 				sw.WriteLine ("<RuleSet Name=\"Global Rules\" ToolsVersion=\"12.0\">");
 				sw.WriteLine ("    <Rules AnalyzerId=\"Roslyn\" RuleNamespace=\"Roslyn\">>");
