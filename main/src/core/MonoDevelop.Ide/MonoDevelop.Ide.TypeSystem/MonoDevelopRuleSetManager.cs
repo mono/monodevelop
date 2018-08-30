@@ -132,17 +132,29 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static RuleSet GetGlobalRuleSet ()
 		{
-			try {
-				var fileTime = File.GetLastWriteTimeUtc (GlobalRulesetFileName);
-				if (globalRuleSet == null || fileTime != globalRuleSetWriteTimeUtc) {
-					globalRuleSetWriteTimeUtc = fileTime;
-					globalRuleSet = RuleSet.LoadEffectiveRuleSetFromFile (GlobalRulesetFileName);
+			return QueryGlobalRuleset (retryOnError: true);
+
+			RuleSet QueryGlobalRuleset (bool retryOnError)
+			{
+				try {
+					var fileTime = File.GetLastWriteTimeUtc (GlobalRulesetFileName);
+					if (globalRuleSet == null || fileTime != globalRuleSetWriteTimeUtc) {
+						globalRuleSetWriteTimeUtc = fileTime;
+						globalRuleSet = RuleSet.LoadEffectiveRuleSetFromFile (GlobalRulesetFileName);
+					}
+					return globalRuleSet;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while loading global rule set.", e);
+					globalRuleSetWriteTimeUtc = DateTime.MinValue;
+
+					// If the initial query fails, rename the current ruleset to a backup one, create the default value and try again.
+					if (retryOnError) {
+						FileService.RenameFile (GlobalRulesetFileName, Path.ChangeExtension (GlobalRulesetFileName, ".global.backup"));
+						EnsureGlobalRulesetExists ();
+						return QueryGlobalRuleset (retryOnError: false);
+					}
+					return null;
 				}
-				return globalRuleSet;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading global rule set.", e);
-				globalRuleSetWriteTimeUtc = DateTime.MinValue;
-				return null;
 			}
 		}
 	}
