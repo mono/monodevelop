@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			case ReportDiagnostic.Suppress:
 				return "None";
 			default:
-				throw ExceptionUtilities.Unreachable;
+				throw new InvalidOperationException("This program location is thought to be unreachable.");
 			}
 		}
 
