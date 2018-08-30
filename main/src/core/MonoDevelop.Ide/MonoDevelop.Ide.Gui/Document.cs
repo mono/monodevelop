@@ -1,4 +1,4 @@
-﻿//
+//
 // Document.cs
 //
 // Author:
@@ -65,7 +65,7 @@ using Roslyn.Utilities;
 namespace MonoDevelop.Ide.Gui
 {
 
-	public class Document : DocumentContext
+	public partial class Document : DocumentContext
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
@@ -96,53 +96,84 @@ namespace MonoDevelop.Ide.Gui
 				return RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
 			}
 		}
- 		
+
 		public override T GetContent<T> ()
+		{
+			return (T) InternalGetContent (typeof (T));
+		}
+
+		object InternalGetContent (Type type)
 		{
 			if (window == null)
 				return null;
 			//check whether the ViewContent can return the type directly
-			T ret = Window.ActiveViewContent.GetContent (typeof(T)) as T;
+			var ret = Window.ActiveViewContent.GetContent (type);
 			if (ret != null)
 				return ret;
 			
 			//check the primary viewcontent
 			//not sure if this is the right thing to do, but things depend on this behaviour
 			if (Window.ViewContent != Window.ActiveViewContent) {
-				ret = Window.ViewContent.GetContent (typeof(T)) as T;
+				ret = Window.ViewContent.GetContent (type);
 				if (ret != null)
 					return ret;
 			}
 
 			//If we didn't find in ActiveView or ViewContent... Try in SubViews
 			foreach (var subView in window.SubViewContents) {
-				foreach (var cnt in subView.GetContents<T> ()) {
+				foreach (var cnt in subView.GetContents (type)) {
 					return cnt;
 				}
+			}
+
+			// Look in the extensions
+			var ext = documentExtension;
+			while (ext != null) {
+				var res = ext.OnGetContent (type);
+				if (res != null)
+					return res;
+				ext = ext.Next;
 			}
 
 			return null;
 		}
 
-		internal ProjectReloadCapability ProjectReloadCapability {
-			get {
-				return Window.ViewContent.ProjectReloadCapability;
-			}
-		}
-
 		public override IEnumerable<T> GetContents<T> ()
 		{
-			foreach (var cnt in window.ViewContent.GetContents<T> ()) {
+			var res = Enumerable.Empty<T> ();
+			var ext = documentExtension;
+			while (ext != null) {
+				res = res.Concat (ext.OnGetContents (typeof(T)).Cast<T> ());
+				ext = ext.Next;
+			}
+			return res;
+		}
+
+		IEnumerable InternalGetContents (Type type)
+		{
+			foreach (var cnt in window.ViewContent.GetContents (type)) {
 				yield return cnt;
 			}
 
 			foreach (var subView in window.SubViewContents) {
-				foreach (var cnt in subView.GetContents<T> ()) {
+				foreach (var cnt in subView.GetContents (type)) {
 					yield return cnt;
 				}
 			}
+
+			var ext = documentExtension;
+			while (ext != null) {
+				foreach (var c in ext.OnGetContents (type))
+					yield return c;
+				ext = ext.Next;
+			}
 		}
 
+		internal ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return documentExtension.GetProjectReloadCapability ();
+			}
+		}
 
 		static Document ()
 		{
@@ -221,6 +252,19 @@ namespace MonoDevelop.Ide.Gui
 		public bool IsDirty {
 			get { return !Window.ViewContent.IsViewOnly && (Window.ViewContent.ContentName == null || Window.ViewContent.IsDirty); }
 			set { Window.ViewContent.IsDirty = value; }
+		}
+
+		public string MimeType {
+			get {
+				string type = null;
+				if (Editor != null)
+					type = Editor.MimeType;
+				else if (!FileName.IsNullOrEmpty)
+					type = DesktopService.GetMimeTypeForUri (FileName);
+				if (type != null && type.Length == 0)
+					return null;
+				return type;
+			}
 		}
 
 		public object GetDocumentObject ()
@@ -388,12 +432,29 @@ namespace MonoDevelop.Ide.Gui
 			if (mc != null) {
 				memento = mc.Memento;
 			}
-			window.ViewContent.DiscardChanges ();
-			await window.ViewContent.Load (new FileOpenInformation (window.ViewContent.ContentName) { IsReloadOperation = true });
+			DiscardChanges ();
+			var fileOpenInfo = new FileOpenInformation (window.ViewContent.ContentName) { IsReloadOperation = true };
+			await window.ViewContent.Load (fileOpenInfo);
+			await NotifyLoaded (fileOpenInfo);
 			if (memento != null) {
 				mc.Memento = memento;
 			}
 			OnReload (EventArgs.Empty);
+		}
+
+		internal void DiscardChanges ()
+		{
+			documentExtension.DiscardChanges ();
+		}
+
+		internal Task NotifyLoaded (FileOpenInformation fileOpenInformation)
+		{
+			return documentExtension.OnLoaded (fileOpenInformation);
+		}
+
+		internal Task NotifyLoadNew (Stream content, string mimeType)
+		{
+			return documentExtension.OnLoadedNew (content, mimeType);
 		}
 
 		public event EventHandler Reloaded;
@@ -420,7 +481,7 @@ namespace MonoDevelop.Ide.Gui
 				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 					return;
 				if (!Window.ViewContent.IsFile) {
-					await Window.ViewContent.Save ();
+					await SaveViewContent ();
 					return;
 				}
 				if (IsUntitled) {
@@ -437,17 +498,7 @@ namespace MonoDevelop.Ide.Gui
 					if (!File.Exists ((string)Window.ViewContent.ContentName) || (File.GetAttributes ((string)window.ViewContent.ContentName) & attr) != 0) {
                         await SaveAs();
 					} else {
-						string fileName = Window.ViewContent.ContentName;
-						// save backup first						
-						if (IdeApp.Preferences.CreateFileBackupCopies) {
-                            await Window.ViewContent.Save (fileName + "~");
-						}
-						DocumentRegistry.SkipNextChange (fileName);
-						await Window.ViewContent.Save (fileName);
-						// Force a change notification. This is needed for FastCheckNeedsBuild to be updated
-						// when saving before a build, for example.
-						FileService.NotifyFileChanged (fileName);
-                        OnSaved(EventArgs.Empty);
+						await SaveViewContent ();
 					}
 				}
 			} finally {
@@ -525,25 +576,57 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 			}
 			
-			// save backup first
-			if (IdeApp.Preferences.CreateFileBackupCopies) {
-				if (tbuffer != null && encoding != null)
-					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding);
-				else
-					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
-			}
-			TypeSystemService.RemoveSkippedfile (FileName);
+			Window.ViewContent.ContentName = filename;
 
 			// do actual save
-			Window.ViewContent.ContentName = filename;
-			Window.ViewContent.Project = Workbench.GetProjectContainingFile (filename);
-			await Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
+
+			SetOwner (Workbench.GetProjectContainingFile (filename));
+
+			await SaveViewContent (encoding);
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
-			OnSaved (EventArgs.Empty);
+			RefreshExtensions ();
 
 			await UpdateParseDocument ();
 			return true;
+		}
+
+		void SetOwner (Project project)
+		{
+			Window.ViewContent.Project = project;
+			documentExtension.OnOwnerChanged ();
+		}
+
+		internal async Task SaveViewContent (Encoding encoding = null)
+		{
+			try {
+				if (Window.ViewContent.IsFile)
+					await documentExtension.OnSave (new FileSaveInformation (Window.ViewContent.ContentName, encoding));
+				else
+					await documentExtension.OnSave (null);
+				OnSaved (EventArgs.Empty);
+			} catch (Exception ex) {
+				LoggingService.LogError ("File could not be saved", ex);
+			}
+		}
+
+		async Task DoSaveViewContent (FileSaveInformation fileSaveInformation)
+		{
+			if (Window.ViewContent.IsFile) {
+				// save backup first
+				if (IdeApp.Preferences.CreateFileBackupCopies) {
+					var fileSaveCopy = new FileSaveInformation (fileSaveInformation);
+					fileSaveCopy.FileName = fileSaveCopy.FileName + "~";
+					await Window.ViewContent.Save (fileSaveCopy);
+					FileService.NotifyFileChanged (fileSaveCopy.FileName);
+				}
+				DocumentRegistry.SkipNextChange (fileSaveInformation.FileName);
+				await Window.ViewContent.Save (fileSaveInformation);
+				// Force a change notification. This is needed for FastCheckNeedsBuild to be updated
+				// when saving before a build, for example.
+				FileService.NotifyFileChanged (fileSaveInformation.FileName);
+			} else
+				await window.ViewContent.Save ();
 		}
 		
 		public async Task<bool> Close ()
@@ -553,6 +636,7 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnSaved (EventArgs e)
 		{
+			IdeApp.Workbench.SaveFileStatus ();
 			base.OnSaved (e);
 		}
 
@@ -601,6 +685,9 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
+			if (extensionChain != null)
+				extensionChain.Dispose ();
+
 			DocumentRegistry.Remove (this);
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
@@ -719,12 +806,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnDocumentAttached ()
 		{
+			window.Document = this;
+
 			if (Editor != null) {
 				InitializeEditor ();
 				RunWhenRealized (delegate { ListenToProjectLoad (Project); });
 			}
-			
-			window.Document = this;
+			InitializeDocumentExtensionChain ();
 		}
 		
 		/// <summary>
@@ -773,6 +861,7 @@ namespace MonoDevelop.Ide.Gui
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
 			ListenToProjectLoad (project);
+			documentExtension.OnOwnerChanged ();
 		}
 
 		void ListenToProjectLoad (Project project)
@@ -862,10 +951,7 @@ namespace MonoDevelop.Ide.Gui
 			if (analysisDocument != null) {
 				Microsoft.CodeAnalysis.Document doc;
 				try {
-					doc = RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
-					if (doc == null && RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument)) {
-						return Task.CompletedTask;
-					}
+					 doc = RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
 				} catch (Exception) {
 					doc = null;
 				}
@@ -884,7 +970,7 @@ namespace MonoDevelop.Ide.Gui
 						return Task.CompletedTask;
 					SubscribeRoslynWorkspace ();
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
-					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
+					if (analysisDocument != null && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, Editor, this);
 						OnAnalysisDocumentChanged (EventArgs.Empty);
 					}
@@ -1115,7 +1201,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{
 			if (args.SolutionItem == window.ViewContent.Project)
-				window.ViewContent.Project = null;
+				SetOwner (null);
 		}
 		
 		public event EventHandler Closed;

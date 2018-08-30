@@ -800,7 +800,7 @@ namespace MonoDevelop.Ide.Gui
 
 		object ICommandDelegatorRouter.GetNextCommandTarget ()
 		{
-			return Parent;
+			return document ?? (object)Parent;
 		}
 		
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()

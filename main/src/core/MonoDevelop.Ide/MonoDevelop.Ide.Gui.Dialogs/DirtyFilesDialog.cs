@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if ((bool)tsFiles.GetValue (iter, 1)) {
 					saveTasks.Add (window.ViewContent.Save (GetContentFileName(window.ViewContent)));
 				} else {
-					window.ViewContent.DiscardChanges ();
+					window.Document.DiscardChanges ();
 				}
 				return false;
 			});
@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				var window = tsFiles.GetValue (iter, 2) as SdiWorkspaceWindow;
 				if (window == null)
 					return false;
-				window.ViewContent.DiscardChanges ();
+				window.Document.DiscardChanges ();
 				return false;
 			});
 			
