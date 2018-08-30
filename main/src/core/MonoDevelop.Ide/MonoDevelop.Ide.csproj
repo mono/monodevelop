@@ -4198,6 +4198,10 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.Shims.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.MetadataReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectSystemHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\Document_Extensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DocumentExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ExportDocumentExtensionAttribute.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\DocumentExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
