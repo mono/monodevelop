@@ -234,5 +234,7 @@ namespace MonoDevelop.Ide.Editor
 		Task<ScopeStack> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 
 		double GetLineHeight (int line);
+
+		void ResetQuickDiff ();
 	}
 }

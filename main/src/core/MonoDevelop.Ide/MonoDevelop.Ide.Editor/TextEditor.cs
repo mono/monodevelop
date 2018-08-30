@@ -1532,6 +1532,10 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
 
+		internal void ResetQuickDiff ()
+		{
+			textEditorImpl.ResetQuickDiff ();
+		}
 		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
 		internal event EventHandler<LineEventArgs> LineShowing { add { textEditorImpl.LineShowing += value; } remove { textEditorImpl.LineShowing -= value; } }
 

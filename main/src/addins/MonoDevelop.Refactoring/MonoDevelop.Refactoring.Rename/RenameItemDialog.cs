@@ -38,12 +38,14 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using RefactoringEssentials;
 using System.IO;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
 		Func<RenameRefactoring.RenameProperties, Task<IList<Change>>> rename;
+		RenameRefactoring renameRefactoring;
 		ISymbol symbol;
 
 		internal List<string> ChangedDocuments { get; set; }
@@ -58,6 +60,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			this.Build ();
 			this.symbol = symbol;
+			this.renameRefactoring = rename;
 
 			string title;
 			if (symbol is ITypeSymbol) {
@@ -118,7 +121,7 @@ namespace MonoDevelop.Refactoring.Rename
 				title = GettextCatalog.GetString ("Rename Item");
 			}
 
-			Init (title, symbol.Name, async prop => { return await rename.PerformChangesAsync (symbol, prop); });
+			Init (title, symbol.Name, null);
 
 			renameFileFlag.Visible = false;
 
@@ -206,43 +209,57 @@ namespace MonoDevelop.Refactoring.Rename
 			var properties = Properties;
 			((Widget)this).Destroy ();
 			try {
-				var changes = await this.rename (properties);
-				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
+				var workspace = TypeSystemService.Workspace;
+				using (var undoTransaction = workspace.OpenGlobalUndoTransaction (GettextCatalog.GetString ("Rename"))) {
+					IList<Change> changes;
+					if (rename != null) {
+						changes = await this.rename (properties);
+					} else {
+						var newSolution = await renameRefactoring.GetNewSolution (symbol, properties);
+						changes = await renameRefactoring.PerformChangesAsync (symbol, newSolution, properties);
+					}
+					ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
 
+					if (ChangedDocuments != null) {
+						AlertButton result = null;
+						var msg = new QuestionMessage ();
+						msg.Buttons.Add (AlertButton.MakeWriteable);
+						msg.Buttons.Add (AlertButton.Cancel);
+						msg.AllowApplyToAll = true;
 
-				if (ChangedDocuments != null) {
-					AlertButton result = null;
-					var msg = new QuestionMessage ();
-					msg.Buttons.Add (AlertButton.MakeWriteable);
-					msg.Buttons.Add (AlertButton.Cancel);
-					msg.AllowApplyToAll = true;
+						foreach (var path in ChangedDocuments) {
+							try {
+								var attr = File.GetAttributes (path);
+								if (attr.HasFlag (FileAttributes.ReadOnly)) {
+									msg.Text = GettextCatalog.GetString ("File {0} is read-only", path);
+									msg.SecondaryText = GettextCatalog.GetString ("Would you like to make the file writable?");
+									result = MessageService.AskQuestion (msg);
 
-					foreach (var path in ChangedDocuments) {
-						try {
-							var attr = File.GetAttributes (path);
-							if (attr.HasFlag (FileAttributes.ReadOnly)) {
-								msg.Text = GettextCatalog.GetString ("File {0} is read-only", path);
-								msg.SecondaryText = GettextCatalog.GetString ("Would you like to make the file writable?");
-								result = MessageService.AskQuestion (msg);
-
-								if (result == AlertButton.Cancel) {
-									return;
-								} else if (result == AlertButton.MakeWriteable) {
-									try {
-										File.SetAttributes (path, attr & ~FileAttributes.ReadOnly);
-									} catch (Exception ex) {
-										MessageService.ShowError (ex.Message);
+									if (result == AlertButton.Cancel) {
 										return;
+									} else if (result == AlertButton.MakeWriteable) {
+										try {
+											File.SetAttributes (path, attr & ~FileAttributes.ReadOnly);
+										} catch (Exception ex) {
+											MessageService.ShowError (ex.Message);
+											return;
+										}
 									}
 								}
+							} catch (Exception ex) {
+								MessageService.ShowError (ex.Message);
+								return;
 							}
-						} catch (Exception ex) {
-							MessageService.ShowError (ex.Message);
-							return;
 						}
 					}
+					if (undoTransaction is IMonoDevelopUndoTransaction mdTransaction) {
+						foreach (var change in changes) {
+							change.CommitTransaction (mdTransaction);
+						}
+					}
+					RefactoringService.AcceptChanges (monitor, changes);
+					undoTransaction.Commit ();
 				}
-				RefactoringService.AcceptChanges (monitor, changes);
 			} catch (Exception ex) {
 				MessageService.ShowError(GettextCatalog.GetString ("Error while renaming symbol {0}", this.symbol.Name), ex);
 				LoggingService.LogError ("Error while renaming symbol " + this.symbol.Name, ex);
@@ -253,7 +270,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			var changes = await this.rename (properties);
+			var changes = await renameRefactoring.PerformChangesAsync (symbol, properties);
 			using (var dlg = new RefactoringPreviewDialog (changes))
 				MessageService.ShowCustomDialog (dlg);
 		}

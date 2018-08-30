@@ -3378,6 +3378,11 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetLineHeight (line);
 		}
 
+		void ITextEditorImpl.ResetQuickDiff ()
+		{
+			TextEditor.Document.DiffTracker.Reset ();
+		}
+
 		public bool HasFocus {
 			get {
 				return this.TextEditor.HasFocus;

@@ -55,7 +55,8 @@
 	<ItemSet id = "Edit" _label = "_Edit">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
-		
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.GlobalUndo" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.GlobalRedo" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />

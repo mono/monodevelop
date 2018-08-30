@@ -190,8 +190,19 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
+			var newSolution = await GetNewSolution (symbol, properties);
+			return await PerformChangesAsync (symbol, newSolution, properties);
+		}
+
+		internal async Task<Solution> GetNewSolution (ISymbol symbol, RenameProperties properties)
+		{
 			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
-			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
+			return await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
+		}
+
+		internal async Task<List<Change>> PerformChangesAsync (ISymbol symbol, Solution newSolution, RenameProperties properties)
+		{
+			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
 			var documents = new List<Microsoft.CodeAnalysis.Document> ();
 			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {
 				documents.AddRange (projectChange.GetChangedDocuments ().Select(d => newSolution.GetDocument (d)));

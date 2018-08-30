@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide.Commands
 		Rename,
 		Undo,
 		Redo,
+		GlobalUndo,
+		GlobalRedo,
 		SelectAll,
 		ToggleCodeComment,
 		AddCodeComment,
@@ -370,7 +372,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}	
 	
-	internal class DefaultSelectAllHandler: CommandHandler
+	internal class DefaultSelectAllHandler : CommandHandler
 	{
 		#if MAC
 		static readonly ObjCRuntime.Selector selectAllSelector = new ObjCRuntime.Selector ("selectAll:");

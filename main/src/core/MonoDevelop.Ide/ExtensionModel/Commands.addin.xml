@@ -81,6 +81,18 @@
 			shortcut = "Control|Shift|Z"
 			winShortcut = "Control|Y Control|Shift|Z"
 			macShortcut = "Meta|Shift|Z" />
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.GlobalUndo"
+			_label = "Undo Last Global Action"
+			icon = "gtk-undo"
+			defaultHandler = "MonoDevelop.Ide.TypeSystem.GlobalUndoHandler"
+			_description = "Undo last global action"
+			/>
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.GlobalRedo"
+			_label = "Redo Last Global Action"
+			icon = "gtk-redo"
+			defaultHandler = "MonoDevelop.Ide.TypeSystem.GlobalRedoHandler"
+			_description = "Redo last undone global action"
+			/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll"
 			_label = "Select _All"
 			_description = "Select all text"

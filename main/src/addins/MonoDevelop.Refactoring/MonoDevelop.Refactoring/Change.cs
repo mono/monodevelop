@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
@@ -41,14 +42,19 @@ namespace MonoDevelop.Refactoring
 			get;
 			set;
 		}
-		
+
 		public Change ()
 		{
 		}
-		
+
 		public abstract void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx);
+
+		internal virtual void CommitTransaction (IMonoDevelopUndoTransaction transaction)
+		{
+			// nothing
+		}
 	}
-	
+
 	public class TextReplaceChange : Change
 	{
 		public string FileName {
@@ -92,7 +98,7 @@ namespace MonoDevelop.Refactoring
 			undoGroups.ForEach (grp => grp.Dispose ());
 			undoGroups.Clear ();
 		}
-		
+
 		internal static TextEditor GetTextEditorData (string fileName)
 		{
 			if (IdeApp.Workbench == null)
@@ -130,7 +136,12 @@ namespace MonoDevelop.Refactoring
 				textEditorData.ReplaceText (Offset, RemovedChars, InsertedText);
 			}
 		}
-		
+
+		internal override void CommitTransaction (IMonoDevelopUndoTransaction transaction)
+		{
+			transaction.TextReplace (FileName, Offset, RemovedChars, InsertedText);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[TextReplaceChange: FileName={0}, Offset={1}, RemovedChars={2}, InsertedText={3}]", FileName, Offset, RemovedChars, InsertedText);
@@ -170,12 +181,12 @@ namespace MonoDevelop.Refactoring
 			get;
 			set;
 		}
-		
+
 		public string NewName {
 			get;
 			set;
 		}
-		
+
 		public RenameFileChange (string oldName, string newName)
 		{
 			if (oldName == null)
@@ -194,8 +205,13 @@ namespace MonoDevelop.Refactoring
 			FileService.RenameFile (OldName, NewName);
 			IdeApp.ProjectOperations.CurrentSelectedSolution?.SaveAsync (new ProgressMonitor ());
 		}
+
+		internal override void CommitTransaction (IMonoDevelopUndoTransaction transaction)
+		{
+			transaction.RenameFile (OldName, NewName);
+		}
 	}
-	
+
 	public class SaveProjectChange : Change
 	{
 		public Project Project {
