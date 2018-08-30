@@ -823,15 +823,11 @@ namespace MonoDevelop.CSharp.Formatting
 			var doc = DocumentContext.AnalysisDocument;
 
 			var formattingService = doc.GetLanguageService<IEditorFormattingService> ();
-			if (formattingService == null || !formattingService.SupportsFormatOnPaste)
-				return;
-
-			var changes = await formattingService.GetFormattingChangesOnPasteAsync (doc, new Microsoft.CodeAnalysis.Text.TextSpan (line.Offset, line.Length), default (CancellationToken));
-			if (changes == null)
-				return;
-
-			Editor.ApplyTextChanges (changes);
-
+			if (formattingService != null && formattingService.SupportsFormatOnReturn) {
+				var changes = await formattingService.GetFormattingChangesOnReturnAsync (doc, cursor, default);
+				if (changes != null)
+					Editor.ApplyTextChanges (changes);
+			}
 			Editor.FixVirtualIndentation ();
 		}
 
