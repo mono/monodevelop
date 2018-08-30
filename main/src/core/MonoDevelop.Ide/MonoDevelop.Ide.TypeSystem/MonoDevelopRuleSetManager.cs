@@ -89,23 +89,23 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static string ConvertReportDiagnosticToAction (ReportDiagnostic value)
 		{
-		    switch (value)
-		    {
+			switch (value)
+			{
 			case ReportDiagnostic.Default:
-					return "Default";
+				return "Default";
 			case ReportDiagnostic.Error:
-					return "Error";
+				return "Error";
 			case ReportDiagnostic.Warn:
-					return "Warning";
+				return "Warning";
 			case ReportDiagnostic.Info:
-					return "Info";
+				return "Info";
 			case ReportDiagnostic.Hidden:
-					return "Hidden";
+				return "Hidden";
 			case ReportDiagnostic.Suppress:
-					return "None";
+				return "None";
 			default:
-					throw ExceptionUtilities.Unreachable;
-		    }
+				throw ExceptionUtilities.Unreachable;
+			}
 		}
 
 		static ReportDiagnostic ConvertDiagnostic (DiagnosticSeverity severity)
