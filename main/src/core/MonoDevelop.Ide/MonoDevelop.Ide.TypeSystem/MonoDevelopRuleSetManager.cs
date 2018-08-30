@@ -43,12 +43,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal MonoDevelopRuleSetManager (string globalRulesetPath = null)
 		{
 			GlobalRulesetFileName = globalRulesetPath ?? UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
+			EnsureGlobalRulesetExists ();
 		}
 
 		static readonly Regex severityRegex = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.severity");
 		static readonly Regex enabledRegex  = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.enabled");
 
-		internal void EnsureGlobalRulesetExists()
+		void EnsureGlobalRulesetExists()
 		{
 			if (File.Exists (GlobalRulesetFileName))
 				return;
@@ -153,10 +154,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogError ("Error while loading global rule set.", e);
 					globalRuleSetWriteTimeUtc = DateTime.MinValue;
 
-					// If the initial query fails, rename the current ruleset to a backup one, create the default value and try again.
+					// If the initial query fails
 					if (retryOnError) {
-						FileService.RenameFile (GlobalRulesetFileName, Path.ChangeExtension (GlobalRulesetFileName, ".global.backup"));
+						// rename the current ruleset to a backup on
+						if (File.Exists (GlobalRulesetFileName)) {
+							FileService.RenameFile (GlobalRulesetFileName, GlobalRulesetFileName + ".backup");
+						}
+
+						// create one with the default values
 						EnsureGlobalRulesetExists ();
+
+						// try again without retrying on error
 						return QueryGlobalRuleset (retryOnError: false);
 					}
 					return null;
