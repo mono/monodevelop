@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 14:25:20+0300\n"
+"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
 "PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
 "Last-Translator: Bálint Kriván <balint@krivan.info>\n"
 "Language-Team: \n"
@@ -198,6 +198,10 @@ msgstr ""
 msgid "'internal' modifier is redundant"
 msgstr ".mo fájlok törlése"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1133
+msgid "'null' checking:"
+msgstr ""
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:19
 #, fuzzy
 msgid "'private' modifier is redundant"
@@ -212,6 +216,11 @@ msgstr ""
 msgid "'string.CompareTo' is culture-aware"
 msgstr ""
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1130
+#, fuzzy
+msgid "'this.' preferences:"
+msgstr "_Frissítő referenciák:"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ForStatementConditionIsTrueAnalyzer.cs:14
 msgid "'true' is redundant as for statement condition"
 msgstr ""
@@ -220,6 +229,11 @@ msgstr ""
 #, fuzzy
 msgid "'unsafe' modifier is redundant"
 msgstr "Állítás"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1132
+#, fuzzy
+msgid "'var' preferences:"
+msgstr "_Frissítő referenciák:"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:524
 msgid "'{0}' contains an upper case letter after the first. (Rule '{1}')"
@@ -424,7 +438,7 @@ msgid "(installing)"
 msgstr "_Eltávolítás..."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:999
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1499
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1498
 msgid "(keyword)"
 msgstr ""
 
@@ -484,8 +498,6 @@ msgstr "+"
 msgid "+?"
 msgstr "+?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1737
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:173
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:142
 msgid "---------------------- Done ----------------------"
@@ -712,16 +724,16 @@ msgstr ""
 msgid "3D based graphical application"
 msgstr "Háromdimenziós grafikus alkalmazás"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2348
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2363
 msgid "3rd copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2349
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
 #, fuzzy
 msgid "4th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2350
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
 #, fuzzy
 msgid "5th copy"
 msgstr "Nem"
@@ -730,22 +742,22 @@ msgstr "Nem"
 msgid "64-bit"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2351
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
 #, fuzzy
 msgid "6th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2352
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
 #, fuzzy
 msgid "7th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2353
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
 #, fuzzy
 msgid "8th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
 #, fuzzy
 msgid "9th copy"
 msgstr "Nem"
@@ -808,7 +820,7 @@ msgstr ""
 msgid "<b>Auth. Realm:</b>"
 msgstr "<b>Hitelesítési tartomány:</b>"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:75
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:73
 msgid "<b>Automatic behaviors</b>"
 msgstr "<b>Automatikus viselkedések</b>"
 
@@ -912,7 +924,7 @@ msgstr "<b>Általános</b>"
 msgid "<b>Host name</b>:"
 msgstr "<b>Hosztnév</b>:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:201
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:188
 msgid "<b>Indentation</b>"
 msgstr "<b>Behúzás</b>"
 
@@ -957,7 +969,7 @@ msgstr "<b>Egyéb</b>"
 msgid "<b>Move</b> the file to the directory"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:277
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:264
 msgid "<b>Navigation</b>"
 msgstr "<b>Navigáció</b>"
 
@@ -1456,31 +1468,31 @@ msgid ""
 "corresponding NuGet package."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:201
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:213
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:304
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:118
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:197
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:209
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:285
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
 "ASP.NET Core MVC Views and Controllers."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:111
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:161
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:174
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:252
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:265
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:145
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:236
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:249
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:296
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
 "RESTful HTTP services."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:187
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:278
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:222
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1515,7 +1527,7 @@ msgid ""
 "replace it?"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1372
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1371
 msgid "A sealed class cannot be inherited."
 msgstr ""
 
@@ -1643,7 +1655,7 @@ msgid ""
 "method with a specific signature."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1399
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
 msgid ""
 "A {0} type is a value type that can contain constructors, constants, fields, "
 "methods, properties, indexers, operators, events, and nested types."
@@ -1683,37 +1695,37 @@ msgstr "ASP.NET vezérlők"
 msgid "ASP.NET Core"
 msgstr "ASP.NET vezérlők"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:227
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:239
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:81
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:93
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:184
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:273
 #, fuzzy
 msgid "ASP.NET Core Empty"
 msgstr "ASP.NET könyvtár"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:122
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:200
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:212
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:291
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:303
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:105
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:117
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:196
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:208
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:284
 #, fuzzy
 msgid "ASP.NET Core Web API"
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:186
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:277
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:130
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:221
 #, fuzzy
 msgid "ASP.NET Core Web App"
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:160
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:173
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:251
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:264
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:157
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:235
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:248
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
 #, fuzzy
 msgid "ASP.NET Core Web App (MVC)"
 msgstr "Létrehoz egy ASP.NET-es webes űrlapot."
@@ -2556,7 +2568,7 @@ msgstr ""
 msgid "Adding failed"
 msgstr "Fájlok hozzáadása..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1905
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1920
 msgid "Adding files..."
 msgstr "Fájlok hozzáadása..."
 
@@ -2781,7 +2793,7 @@ msgstr "Minden bejegyzett tároló"
 msgid "All solutions"
 msgstr "Egy üres megoldásfájl"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1387
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
 msgid "Allocates a block of memory on the stack."
 msgstr ""
 
@@ -2875,12 +2887,12 @@ msgstr "Már folyamatban van egy keresés. Le akarja állítani?"
 msgid "An audio application"
 msgstr "Alkalmazás hangok kezeléséhez"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:228
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:240
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:82
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:94
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:173
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:185
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:263
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:274
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2903,7 +2915,7 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2043
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2058
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3425,7 +3437,7 @@ msgstr "Argumentumok:"
 msgid "Argument is not used in format string"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:358
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:359
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:100
 #, fuzzy
 msgid "Arguments"
@@ -3535,9 +3547,9 @@ msgstr "Az assembly nem található"
 msgid "Assembly not found for framework {0} (in {1})"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1896
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1902
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1920
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1895
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1901
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1919
 #, fuzzy
 msgid "Assembly:\t{0}"
 msgstr "Assembly fájl"
@@ -3679,6 +3691,31 @@ msgstr "Automatikus"
 msgid "Automatically check for updates:"
 msgstr "A talált fájlok automatikusan kerüljenek bele a projektbe"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:85
+#, fuzzy
+msgid "Automatically format block on }"
+msgstr "XML tagek automatikus bezárása"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:94
+#, fuzzy
+msgid "Automatically format on paste"
+msgstr "A talált fájlok automatikusan kerüljenek bele a projektbe"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:90
+#, fuzzy
+msgid "Automatically format on return"
+msgstr "XML tagek automatikus bezárása"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:80
+#, fuzzy
+msgid "Automatically format statement on ;"
+msgstr "A talált fájlok automatikusan kerüljenek bele a projektbe"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:75
+#, fuzzy
+msgid "Automatically format when typing"
+msgstr "XML tagek automatikus bezárása"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:325
 #, fuzzy
 msgid "Automatically hide the pad when it loses focus"
@@ -3781,7 +3818,7 @@ msgid ""
 "For example, (\\w)\\1 finds doubled word characters."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:259
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:246
 #, fuzzy
 msgid "Backspace removes indentation"
 msgstr "<b>Címkék behúzása</b>"
@@ -3885,9 +3922,9 @@ msgstr ""
 msgid "Blank Solution"
 msgstr "Üres megoldásfájl"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:167
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:191
 #, fuzzy
-msgid "Blue:"
+msgid "Blue"
 msgstr "Érték"
 
 #: ../src/core/Mono.TextEditor.Shared/Mono.TextEditor/BookmarkMarker.cs:61
@@ -4000,7 +4037,7 @@ msgstr "For_dítás"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1496
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1501
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -4052,7 +4089,7 @@ msgstr "Megoldáshoz tartozó projektek fordítása"
 msgid "Build and run the current solution"
 msgstr "Jelenlegi projekt fordítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1749
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
 #, fuzzy
 msgid "Build canceled."
 msgstr "A fordítás le lett állítva"
@@ -4071,8 +4108,8 @@ msgstr "Jelenlegi projekt fordítása"
 msgid "Build failed"
 msgstr "Nem sikerült a programot lefordítani."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1633
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1757
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1638
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1772
 msgid "Build failed."
 msgstr "Nem sikerült a programot lefordítani."
 
@@ -4110,7 +4147,7 @@ msgstr "Megoldás fordítása: {0}"
 msgid "Build succeeded"
 msgstr "A fordítás le lett állítva"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1766
 msgid "Build successful."
 msgstr "A fordítás sikeresen lezajlott."
 
@@ -4131,12 +4168,16 @@ msgstr "Jelenlegi projekt fordítása"
 msgid "Build {0}"
 msgstr "{0} fordítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1753
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1755
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1768
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1770
 msgid "Build: "
 msgstr "Fordítás: "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:615
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1748
+msgid "Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:630
 #, fuzzy
 msgid "Building solution {0} ({1})"
 msgstr "Megoldás fordítása: {0}"
@@ -4145,13 +4186,13 @@ msgstr "Megoldás fordítása: {0}"
 msgid "Building {0}"
 msgstr "{0} fordítása"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:621
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:647
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:622
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:648
 #, fuzzy
 msgid "Building {0} ({1})"
 msgstr "Projekt fordítása: {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1013
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1005
 #, fuzzy
 msgid "Building {0} items in solution {1} ({2})"
 msgstr "Megoldás fordítása: {0}"
@@ -4229,6 +4270,7 @@ msgstr "Alapbeállítások"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:905
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:919
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:355
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:203
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:118
 msgid "C#"
@@ -4374,7 +4416,7 @@ msgstr ""
 msgid "Camera tools, etc."
 msgstr "Kamerakezelő segédprogramok"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1896
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1899
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4416,6 +4458,10 @@ msgstr "Nem sikerült törölni a könyvtárat ({0})"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:139
 msgid "Can't remove file {0}"
 msgstr "Nem sikerült törölni a fájlt ({0})"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:91
+msgid "Can't rename '{0}'. If a retry doesn't work please file a bug."
+msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:762
 #, fuzzy
@@ -4479,7 +4525,7 @@ msgstr "A fordítás le lett állítva"
 msgid "Canceled"
 msgstr "A fordítás le lett állítva"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildResult.cs:81
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildResult.cs:100
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:379
 #, fuzzy
 msgid "Cancelled"
@@ -4499,7 +4545,7 @@ msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Nem sikerült a könyvtár ({0}) létrehozása. Már létezik ilyen nevű könyvtár."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1904
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1907
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 #, fuzzy
 msgid "Cannot execute \"{0}\""
@@ -4806,7 +4852,7 @@ msgstr "Bejegyzések elválasztása üres sorral"
 msgid "Check to add one line per file changed"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
 #, fuzzy
 msgid "Check to add undo step for formatting changes"
 msgstr "Kiegészítő megjegyzések generálás_a a kódban"
@@ -4854,7 +4900,7 @@ msgstr "Ta_bulátor karakterek konvertálása szóközökké"
 msgid "Check to automatically remove trailing whitespace from a line"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
 #, fuzzy
 msgid "Check to automatically set the search pattern case sensitivity"
 msgstr "Ta_bulátor karakterek konvertálása szóközökké"
@@ -4927,7 +4973,7 @@ msgstr "_Túlcsordulási tesztek futtatása"
 msgid "Check to enable parallel building"
 msgstr "Új csomagok létrehozása a projekthez"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
 #, fuzzy
 msgid "Check to enable selection surrounding keys"
 msgstr "Figyelmeztetés elavult függvények/típusok használatakor"
@@ -5035,11 +5081,6 @@ msgstr ""
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:65
 #, fuzzy
 msgid "Check to reformat the document when saving"
-msgstr "XML dokumentáció generálása:"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
-#, fuzzy
-msgid "Check to reformat the document while typing"
 msgstr "XML dokumentáció generálása:"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:117
@@ -5278,7 +5319,7 @@ msgstr "Fordított fájlok törlése"
 msgid "Clean all projects of all solutions"
 msgstr "Megoldáshoz tartozó projektek tisztítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1239
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1244
 #, fuzzy
 msgid "Clean canceled."
 msgstr "Sikertelen fordítás."
@@ -5289,12 +5330,12 @@ msgid "Clean complete"
 msgstr "A keresés befejezve. "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1204
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1252
 #, fuzzy
 msgid "Clean failed."
 msgstr "Sikertelen fordítás."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1246
 #, fuzzy
 msgid "Clean successful."
 msgstr "A fordítás sikeresen lezajlott."
@@ -5311,22 +5352,26 @@ msgstr "A kijelölt projekt vagy megoldás tisztítása"
 msgid "Clean {0}"
 msgstr "{0} tisztítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1243
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1245
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1250
 #, fuzzy
 msgid "Clean: "
 msgstr "Fordított fájlok törlése"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1228
+msgid "Clean: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:336
 msgid "Cleaning project"
 msgstr "Projekt tisztítása"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:598
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:613
 #, fuzzy
 msgid "Cleaning solution {0} ({1})"
 msgstr "Megoldás mentése: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:750
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:751
 #, fuzzy
 msgid "Cleaning {0} ({1})"
 msgstr "Projekt fordítása: {0} ({1})"
@@ -5408,7 +5453,7 @@ msgstr "Legutóbb megnyitott projektek listájának törlése"
 msgid "Clear recent solutions list"
 msgstr "Legutóbb megnyitott megoldások listájának törlése"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:192
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:198
 msgid "Clear results"
 msgstr "Eredmények törlése"
 
@@ -5527,7 +5572,7 @@ msgstr "Összes fájl bezárása"
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2434
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
 #, fuzzy
 msgid "Close Project"
 msgstr "Konzolos projekt"
@@ -5634,7 +5679,7 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:120
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:119
 #, fuzzy
 msgid "Code Actions"
 msgstr "Gyakori műveletek"
@@ -5652,7 +5697,7 @@ msgstr ""
 msgid "Code Formatting"
 msgstr "Formázás"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:121
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:120
 #, fuzzy
 msgid "Code Generation"
 msgstr "Kódgenerálás"
@@ -5664,7 +5709,7 @@ msgstr "Kódgenerálás"
 msgid "Code Navigation"
 msgstr "Navigáció"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:119
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:121
 #, fuzzy
 msgid "Code Rules"
 msgstr "Beállítások visszaállítása"
@@ -5674,7 +5719,17 @@ msgstr "Beállítások visszaállítása"
 msgid "Code Snippets"
 msgstr "Szöveg töredékek"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2495
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:359
+#, fuzzy
+msgid "Code Style"
+msgstr "Szöveg stílus"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1135
+#, fuzzy
+msgid "Code block preferences:"
+msgstr "Kiválasztott referenciák:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2510
 msgid "Code completion database generation"
 msgstr ""
 
@@ -5714,7 +5769,7 @@ msgstr "<b>Színséma</b>"
 msgid "Color themes (Visual Studio, Xamarin Studio, TextMate) "
 msgstr ""
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:141
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:151
 #, fuzzy
 msgid "Color:"
 msgstr "Szín:"
@@ -5973,7 +6028,7 @@ msgstr "Konfiguráció"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1766
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2150
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2200
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1885
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1888
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "{0} létrehozása a következő projekthez: {1}"
@@ -6125,9 +6180,9 @@ msgstr ""
 msgid "Console input not supported"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1505
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1508
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1504
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1507
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1510
 #, fuzzy
 msgid "Constraint"
 msgstr "Megszorítás"
@@ -6383,7 +6438,7 @@ msgstr "Másolás a kimeneti könyvtárba"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2216
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2231
 msgid "Copying files..."
 msgstr "Fájlok másolása..."
 
@@ -6427,7 +6482,7 @@ msgid ""
 "Could not create credential response object because the response was invalid."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2197
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2212
 msgid "Could not create directory '{0}'."
 msgstr "Nem sikerült a könyvtárat létrehozni ({0})."
 
@@ -6459,7 +6514,7 @@ msgid ""
 "project configurations."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2185
 msgid "Could not get any file from '{0}'."
 msgstr "Nincs egyetlen fájl sem a könyvtárban ({0})."
 
@@ -6790,7 +6845,7 @@ msgstr "Új fájl létrehozása"
 msgid "Create new layout"
 msgstr "Új nézet létrehozása"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:382
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:389
 #, fuzzy
 msgid "Create new method"
 msgstr "Ú_j könyvtár létrehozása"
@@ -7197,7 +7252,7 @@ msgstr "Egy üres szöveges fájlt hoz létre."
 msgid "Creates an implementation for:"
 msgstr "Létrehoz egy egyedi GTK komponenst."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:311
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:318
 #, fuzzy
 msgid "Creates new method"
 msgstr "Ú_j könyvtár létrehozása"
@@ -7378,10 +7433,10 @@ msgstr "Modul neve:"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1219
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1232
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:670
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:684
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:757
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:671
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:685
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:758
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:772
 #, fuzzy
 msgid "Custom command execution failed"
 msgstr "Nem sikerült a programot lefuttatni."
@@ -7950,6 +8005,7 @@ msgstr "Szimbólumok definiálása:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:106
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:103
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:69
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:90
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:60
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:76
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:122
@@ -8109,7 +8165,7 @@ msgstr "Könyvtárak"
 msgid "Directory"
 msgstr "Könyvtár"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2208
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2223
 msgid "Directory '{0}' could not be moved."
 msgstr "A(z) „{0}” könyvtárat nem sikerült törölni."
 
@@ -8272,6 +8328,10 @@ msgstr "Tanúsítvány visszautasítása és a kapcsolódás megszakítása"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/FileCopyMode.cs:36
 msgid "Do not copy"
 msgstr "Nem"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1142
+msgid "Do not prefer 'this.'"
+msgstr ""
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:200
 msgid "Do not reference mscorlib.dll"
@@ -8731,6 +8791,10 @@ msgstr "Elektronikai alkalmazás, például áramkörtervező"
 msgid "Elements"
 msgstr "Regex elemek"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1168
+msgid "Elsewhere"
+msgstr ""
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:28
 msgid "Email application"
 msgstr "Elektronikus levelezés"
@@ -8939,7 +9003,7 @@ msgstr "Kódössze_fogás engedélyezése"
 msgid "Enable _optimizations"
 msgstr "Kód_optimalizálás engedélyezése"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:183
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:170
 #, fuzzy
 msgid "Enable _selection surrounding keys"
 msgstr "Figyelmeztetés elavult függvények/típusok használatakor"
@@ -9511,7 +9575,6 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:71
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:770
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:92
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.ErrorDialog.cs:23
 msgid "Error"
 msgstr "Hiba"
@@ -9626,6 +9689,16 @@ msgid ""
 "Error while getting the text of revision {0}:\n"
 "{1}"
 msgstr "Hiba történt a(z) „{0}” projekt betöltése közben. Hibaüzenet: {1}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:247
+#, fuzzy
+msgid "Error while renaming symbol {0}"
+msgstr "Nem sikerült az elem ({0}) átnevezése a következőre: {1}. {2}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeRulePanel.cs:83
+#, fuzzy
+msgid "Error while saving global rule set file '{0}'."
+msgstr "Hiba történt a fájl olvasása közben ({0}): "
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:278
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:280
@@ -10069,6 +10142,11 @@ msgstr "Kifejezés kiértékelő"
 msgid "Expression not supported."
 msgstr "Kifejezés kiértékelő"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1136
+#, fuzzy
+msgid "Expression preferences:"
+msgstr "_Frissítő referenciák:"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:662
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:758
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:817
@@ -10365,6 +10443,11 @@ msgstr "Mező"
 msgid "Field name"
 msgstr "Mező neve:"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1134
+#, fuzzy
+msgid "Field preferences:"
+msgstr "Kiválasztott referenciák:"
+
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:66
 msgid "Fields"
 msgstr "Mezők"
@@ -10372,7 +10455,7 @@ msgstr "Mezők"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:376
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:673
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:125
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:193
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:100
@@ -10384,12 +10467,12 @@ msgstr "Mezők"
 msgid "File"
 msgstr "Fájl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2254
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
 #, fuzzy
 msgid "File '{0}' could not be copied."
 msgstr "A(z) „{0}” fájl nem nyitható meg."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2252
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2267
 #, fuzzy
 msgid "File '{0}' could not be moved."
 msgstr "A(z) „{0}” fájl nem nyitható meg."
@@ -10616,7 +10699,7 @@ msgid "File {0} could not be written."
 msgstr "A fájl ({0}) nem írható."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/IdeFileSystemExtensionExtension.cs:64
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:221
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:224
 #, fuzzy
 msgid "File {0} is read-only"
 msgstr "A fájlnév ({0}) érvénytelen."
@@ -10908,6 +10991,21 @@ msgstr "Hibák megjelenítése"
 msgid "For Errors and Warnings"
 msgstr ""
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1166
+#, fuzzy
+msgid "For built-in types"
+msgstr "Nyomtatási kép"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1162
+#, fuzzy
+msgid "For locals, parameters and members"
+msgstr "Tag implementálása/felülírása..."
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1163
+#, fuzzy
+msgid "For member access expressions"
+msgstr "Feltétel-kifejezés:"
+
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/RestoreAndUninstallNuGetPackageAction.cs:133
 msgid "Forcing a NuGet package to be removed may break the build."
 msgstr ""
@@ -10953,24 +11051,24 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1323
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1327
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1331
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1418
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1468
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1356
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1361
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1375
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1380
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1385
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1397
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1403
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1412
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1417
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1424
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1429
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1438
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1447
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1462
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1467
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1477
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1482
 #, fuzzy
 msgid "Form"
 msgstr "Formázás"
@@ -11070,7 +11168,7 @@ msgstr "Új _fájl..."
 msgid "From project or solution..."
 msgstr "A kijelölt projekt vagy megoldás újratöltése"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1919
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1918
 #, fuzzy
 msgid "From type:\t{0}"
 msgstr "Alak: {0}"
@@ -11196,7 +11294,7 @@ msgstr ""
 msgid "Garbage Collector"
 msgstr "Célkönyvtár"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:753
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:755
 #, fuzzy
 msgid "Gathering class information"
 msgstr "Osztályinformációk összegyűjtése..."
@@ -11235,7 +11333,7 @@ msgstr "Általános"
 msgid "General Options"
 msgstr "Általános beállítások"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
 #, fuzzy
 msgid "General Pad Text"
 msgstr "Általános"
@@ -11780,9 +11878,9 @@ msgstr "Grafikus alkalamzás"
 msgid "Greek"
 msgstr "Görög"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:163
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:185
 #, fuzzy
-msgid "Green:"
+msgid "Green"
 msgstr "Görög"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:162
@@ -11956,7 +12054,6 @@ msgid "Hidden"
 msgstr "Elrejtés"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:575
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:141
 msgid "Hide"
 msgstr "Elrejtés"
 
@@ -12061,8 +12158,8 @@ msgstr "Hosztnév:"
 msgid "Html"
 msgstr ""
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:146
-msgid "Hue:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:160
+msgid "Hue"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:70
@@ -12672,11 +12769,10 @@ msgid "Indonesian"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:84
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:147
 msgid "Info"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:664
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:672
 msgid "Information about the Instrumentation Service"
 msgstr ""
 
@@ -12755,7 +12851,7 @@ msgstr "Új töréspont..."
 msgid "Insert ChangeLog Entry"
 msgstr "ChangeLog bejegyzés beillesztése"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:622
 #, fuzzy
 msgid "Insert Code"
 msgstr "Elhelyezés a kijelölés felett"
@@ -12765,7 +12861,7 @@ msgstr "Elhelyezés a kijelölés felett"
 msgid "Insert Documentation Comments"
 msgstr "Dokumentáció"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:613
 #, fuzzy
 msgid "Insert Field"
 msgstr "Új sor beszúrása"
@@ -12774,12 +12870,12 @@ msgstr "Új sor beszúrása"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1250
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:616
 #, fuzzy
 msgid "Insert Method"
 msgstr "Beviteli mó_dok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:619
 #, fuzzy
 msgid "Insert Property"
 msgstr "Tulajdonság átnevezése"
@@ -13006,7 +13102,7 @@ msgstr "_Bővítmények telepítése..."
 msgid "Installing…"
 msgstr "_Eltávolítás..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:662
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:670
 #, fuzzy
 msgid "Instrumentation"
 msgstr "<b>Behúzás</b>"
@@ -13015,7 +13111,7 @@ msgstr "<b>Behúzás</b>"
 msgid "Instrumentation Monitor"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:671
 msgid "Instrumentation service enabled"
 msgstr ""
 
@@ -13046,7 +13142,7 @@ msgstr "Belső hiba"
 msgid "Internal error"
 msgstr "Belső hiba"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:247
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:234
 msgid "Interpret tab _keystroke as reindent command"
 msgstr "TAB értelmezése újrabehúzásként"
 
@@ -13346,7 +13442,7 @@ msgstr "ASP.NET fájlok"
 msgid "Keep Current Identifiers"
 msgstr "Aktuális fájl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1814
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1829
 #, fuzzy
 msgid "Keep file path"
 msgstr "Makefile útvonala:"
@@ -13632,13 +13728,9 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:202
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:149
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:172
 msgid "Light"
 msgstr ""
-
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:154
-#, fuzzy
-msgid "Light:"
-msgstr "_Copyright:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:661
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:118
@@ -13904,7 +13996,7 @@ msgstr "„{0}” keresése a(z) „{1}” könyvtárban"
 msgid "Looking for '{0}' in project '{1}'"
 msgstr "„{0}” keresése a(z) „{1}” projektben"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:88
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:98
 #, fuzzy
 msgid "Looking for all references"
 msgstr "„{0}” keresése az összes projektben"
@@ -14750,7 +14842,7 @@ msgid "Moving files"
 msgstr "Fájlok másolása..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2214
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2229
 #, fuzzy
 msgid "Moving files..."
 msgstr "Fájlok másolása..."
@@ -14986,8 +15078,8 @@ msgstr ""
 msgid "Namespace:"
 msgstr "Névtér:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1895
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1901
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1894
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1900
 #, fuzzy
 msgid "Namespace:\t{0}"
 msgstr "Névtér:"
@@ -15313,6 +15405,7 @@ msgstr "Dokumentumok"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/MacPlatform/MacPlatform.cs:307
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:104
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 #, fuzzy
 msgid "No"
@@ -15359,7 +15452,7 @@ msgid "No code fixes available"
 msgstr "Nem érhető el dokumentáció."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:385
-#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:289
+#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:293
 #, fuzzy
 msgid "No completions found"
 msgstr "Kiegészítés ablak megjelenítése"
@@ -15465,7 +15558,7 @@ msgid "No solution has been selected."
 msgstr "Nincs kiválasztott megoldás."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:389
-#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:293
+#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:297
 #, fuzzy
 msgid "No suggestions"
 msgstr "Nincs kiválasztott elem"
@@ -15768,8 +15861,9 @@ msgstr "Jelenlegi projekt"
 msgid "Only this solution"
 msgstr "Fájl vagy megoldás megnyitása"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:173
-msgid "Opacity:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:200
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:205
+msgid "Opacity"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:331
@@ -16046,7 +16140,7 @@ msgstr "Többi ablak"
 msgid "Other entries"
 msgstr "Egyéb bejegyzések"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1499
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
 #, fuzzy
 msgid "Outdated Build"
 msgstr "A fordítás után"
@@ -16058,7 +16152,7 @@ msgstr "A fordítás után"
 msgid "Output"
 msgstr "Kimenet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:369
 #, fuzzy
 msgid "Output Pad Contents"
 msgstr "Kimenet útvonala:"
@@ -16499,7 +16593,7 @@ msgstr "Beillesztés a vágólapról"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:681
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:129
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:177
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:110
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:231
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:82
@@ -16589,7 +16683,7 @@ msgstr "Tagok"
 msgid "Pin output pad"
 msgstr "A kimeneti panel rögzítése"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:204
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:210
 msgid "Pin results pad"
 msgstr "Az eredmények panel rögzítése"
 
@@ -16901,6 +16995,120 @@ msgstr "Tulajdonságok"
 msgid "Pre_vious"
 msgstr "Előző mutatása ({0})"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1200
+msgid "Prefer 'is null' for reference equality checks"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1141
+#, fuzzy
+msgid "Prefer 'this.'"
+msgstr "Tabulátor eltávolítása"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1153
+#, fuzzy
+msgid "Prefer 'var'"
+msgstr "Watch"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1172
+#, fuzzy
+msgid "Prefer auto properties"
+msgstr "Töréspont tulajdonságai"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1171
+#, fuzzy
+msgid "Prefer braces"
+msgstr "Tulajdonságok"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1198
+#, fuzzy
+msgid "Prefer coalesce expression"
+msgstr "Feltétel-kifejezés:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1178
+#, fuzzy
+msgid "Prefer collection initializer"
+msgstr "MonoDevelop-ba konvertálás"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1197
+#, fuzzy
+msgid "Prefer conditional delegate call"
+msgstr "Feltétel-kifejezés:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1193
+#, fuzzy
+msgid "Prefer deconstructed variable declaration"
+msgstr "_Deklaráció megkeresése"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1183
+#, fuzzy
+msgid "Prefer explicit tuple name"
+msgstr "Explicit"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1154
+#, fuzzy
+msgid "Prefer explicit type"
+msgstr "Explicit"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1148
+#, fuzzy
+msgid "Prefer framework type"
+msgstr "Cél_név"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1186
+#, fuzzy
+msgid "Prefer inferred anonymous type member names"
+msgstr "Ugrás a következő sorra"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1185
+msgid "Prefer inferred tuple element names"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1192
+#, fuzzy
+msgid "Prefer inlined variable declaration"
+msgstr "_Deklaráció megkeresése"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1187
+msgid "Prefer local function over anonymous function"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1199
+msgid "Prefer null propagation"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1177
+#, fuzzy
+msgid "Prefer object initializer"
+msgstr "MonoDevelop-ba konvertálás"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1180
+msgid "Prefer pattern matching over 'as' with 'null' check"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1179
+msgid "Prefer pattern matching over 'is' with 'cast' check"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1147
+#, fuzzy
+msgid "Prefer predefined type"
+msgstr "Referencia tábla"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1203
+#, fuzzy
+msgid "Prefer readonly"
+msgstr "Csak olvasható"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1184
+#, fuzzy
+msgid "Prefer simple 'default' expression"
+msgstr "Feltétel-kifejezés:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1196
+#, fuzzy
+msgid "Prefer throw-expression"
+msgstr "ASP.NET beállítások"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:763
 msgid "Preferences"
 msgstr "Tulajdonságok"
@@ -17118,7 +17326,7 @@ msgstr "Folyamat"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:192
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:27
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:677
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:133
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
@@ -17133,21 +17341,21 @@ msgstr "Projekt"
 msgid "Project '{0}'"
 msgstr "Projekt: {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
 #, fuzzy
 msgid "Project Author Company"
 msgstr "_Projekt könyvtár"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
 msgid "Project Author Copyright"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
 #, fuzzy
 msgid "Project Author Email"
 msgstr "Fo_rdító e-mail címe:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
 #, fuzzy
 msgid "Project Author Name"
 msgstr "Projekt neve:"
@@ -17177,12 +17385,12 @@ msgstr "A megoldás gyöké_rkönyvtára"
 msgid "Project Description"
 msgstr "Projektbeállítások"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
 #, fuzzy
 msgid "Project Directory"
 msgstr "_Projekt könyvtár"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
 #, fuzzy
 msgid "Project File"
 msgstr "Projekt _fájl"
@@ -17206,7 +17414,7 @@ msgstr "Projekt könyvtárak"
 msgid "Project Icons"
 msgstr "Ikonok a projektben"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1767
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs:90
 #, fuzzy
 msgid "Project Name"
@@ -17241,7 +17449,7 @@ msgstr "Projektreferenciák"
 msgid "Project Templates"
 msgstr "Kódsablonok"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
 #, fuzzy
 msgid "Project Trademark"
 msgstr "Projekt könyvtárak"
@@ -17316,6 +17524,11 @@ msgstr "A megoldáshoz nincs beállítva aktív konfiguráció."
 msgid "Project not found"
 msgstr "A(z) „{0}” könyvtár nem található."
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1065
+#, fuzzy
+msgid "Project not selected to build for this solution configuration"
+msgstr "A megoldáshoz nincs beállítva aktív konfiguráció."
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:246
 msgid ""
 "Project publishing failed. There is a stale .svn folder in the path '{0}'"
@@ -17376,6 +17589,7 @@ msgid "Properties"
 msgstr "Tulajdonságok"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:34
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:116
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:148
 msgid "Property"
 msgstr "Tulajdonság"
@@ -17498,6 +17712,22 @@ msgstr "Python fájlok"
 msgid "Q&A"
 msgstr ""
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1160
+msgid "Qualify event access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1157
+msgid "Qualify field access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1159
+msgid "Qualify method access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1158
+msgid "Qualify property access with 'this'"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
 msgid "Quantifiers"
 msgstr ""
@@ -17509,8 +17739,8 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1246
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1252
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1287
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1457
 #, fuzzy
 msgid "Query Form"
 msgstr "Webes űrlap"
@@ -17717,17 +17947,17 @@ msgid "Rebuild {0}"
 msgstr "{0} újrafordítása"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:69
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1329
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1334
 #, fuzzy
 msgid "Rebuilding..."
 msgstr "Fordítás..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1342
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1347
 #, fuzzy
 msgid "Rebuilding... (Build)"
 msgstr "Fordítás..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1330
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1335
 #, fuzzy
 msgid "Rebuilding... (Clean)"
 msgstr "Fordítás..."
@@ -17769,9 +17999,10 @@ msgstr "Szövegszerkesztő"
 msgid "Recently used templates"
 msgstr "Kódsablonok"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:159
-msgid "Red:"
-msgstr ""
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:179
+#, fuzzy
+msgid "Red"
+msgstr "Ú_jra"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:80
 msgid "Redo last undone action"
@@ -18341,8 +18572,8 @@ msgstr "Fájlok eltávolítása..."
 msgid "Rename"
 msgstr "Átnevezés"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:86
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:100
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:88
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:102
 msgid "Rename Class"
 msgstr "Osztály átnevezése"
 
@@ -18352,21 +18583,21 @@ msgstr "Osztály átnevezése"
 msgid "Rename Configuration"
 msgstr "Konfiguráció átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:80
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:82
 #, fuzzy
 msgid "Rename Delegate"
 msgstr "Létrehoz egy Gnome# programot."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:82
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:84
 #, fuzzy
 msgid "Rename Enum"
 msgstr "Esemény átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:94
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:96
 msgid "Rename Event"
 msgstr "Esemény átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:90
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:92
 msgid "Rename Field"
 msgstr "Mező átnevezése"
 
@@ -18378,48 +18609,48 @@ msgstr "Csoport átnevezése"
 msgid "Rename Group..."
 msgstr "Csoport átnevezése..."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:78
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:80
 msgid "Rename Interface"
 msgstr "Interfész átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:116
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:118
 msgid "Rename Item"
 msgstr "Elem átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:114
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:116
 #, fuzzy
 msgid "Rename Label"
 msgstr "Mező átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:102
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:104
 msgid "Rename Method"
 msgstr "Metódus átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:112
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:114
 #, fuzzy
 msgid "Rename Namespace"
 msgstr "Interfész átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:106
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:108
 msgid "Rename Parameter"
 msgstr "Paraméter átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:92
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:94
 msgid "Rename Property"
 msgstr "Tulajdonság átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:84
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:86
 #, fuzzy
 msgid "Rename Struct"
 msgstr "Csoport átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:65
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:110
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:67
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:112
 #, fuzzy
 msgid "Rename Type Parameter"
 msgstr "Paraméter átnevezése"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:108
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:110
 msgid "Rename Variable"
 msgstr "Változó átnevezése"
 
@@ -18448,6 +18679,11 @@ msgstr "Fájl átnevezése"
 #: ../src/addins/MonoDevelop.Refactoring/Gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:36
 msgid "Rename {0}"
 msgstr "{0} átnevezése"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/SymbolRenamedCodeActionOperationFactoryWorkspaceService.cs:95
+#, fuzzy
+msgid "Rename {0} to {1}"
+msgstr "Nem sikerült a könyvtárat ('{0}') átnevezni a következőre: '{1}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:191
 #, fuzzy
@@ -19415,7 +19651,7 @@ msgstr "Tesztek futtatása a következőhöz: <b>{0}</b>, konfiguráció: <b>{1}
 msgid "Running web server..."
 msgstr "{0} futtatása..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1889
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1892
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:768
 msgid "Running {0} ..."
@@ -19592,9 +19828,9 @@ msgstr "Maximális/normál méret közti váltás"
 msgid "Sample file output"
 msgstr "Makefile kimenet"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:150
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:166
 #, fuzzy
-msgid "Saturation:"
+msgid "Saturation"
 msgstr "Konfiguráció:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:151
@@ -19656,7 +19892,7 @@ msgstr "Mentés másként..."
 msgid "Save build output"
 msgstr "Kimenet mutatása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1674
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1679
 msgid "Save changed documents before building?"
 msgstr "Menti a változtatott dokumentumokat mielőtt fordít?"
 
@@ -19870,7 +20106,7 @@ msgstr "Tag keresése..."
 msgid "Search Packages..."
 msgstr "Csomag létrehozása..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:789
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:651
 #, fuzzy
 msgid "Search Result"
 msgstr "Keresés eredményei"
@@ -20437,7 +20673,7 @@ msgstr ""
 msgid "Select the foreground color for the normal priority tasks"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
 #, fuzzy
 msgid "Select the indentation mode"
 msgstr "Teszt kiválasztása a fában"
@@ -20612,7 +20848,7 @@ msgstr "A készítendő Makefile típusa:"
 msgid "Select the width of tab stops"
 msgstr "A készítendő Makefile típusa:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:77
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
 #, fuzzy
 msgid "Select the word break mode"
 msgstr "Törde_lés módja:"
@@ -20920,6 +21156,11 @@ msgstr "Beállítások"
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:13
 msgid "Settings applications"
 msgstr "Beállításkezelő alkalmazás"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:123
+#, fuzzy
+msgid "Severity"
+msgstr "<b>Biztonság</b>"
 
 #: ../src/addins/CSharpBinding/templates/SharedAssetsProject.xpt.xml:8
 #, fuzzy
@@ -21229,7 +21470,7 @@ msgstr "Egy eredmény megjelenítése naponta"
 msgid "Show options window"
 msgstr "Beállítások megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:204
 msgid "Show output"
 msgstr "Kimenet mutatása"
 
@@ -21440,7 +21681,7 @@ msgstr "Méret"
 msgid "Size:"
 msgstr "Méret"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1895
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1910
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr ""
@@ -21459,6 +21700,11 @@ msgstr ""
 #, fuzzy
 msgid "Skipped '{0}'"
 msgstr "Beágyazás: '{0}'"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1064
+#, fuzzy
+msgid "Skipped Build: Project: {0}, Configuration: {1}"
+msgstr "Új konfiguráció"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1326
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:747
@@ -21524,12 +21770,12 @@ msgstr ""
 msgid "Solution '{0}' is currently open"
 msgstr "'{0}' cserélése a következőben: {1}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1562
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1573
 #, fuzzy
 msgid "Solution Directory"
 msgstr "_Megoldás könyvtár"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1560
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1571
 #, fuzzy
 msgid "Solution File"
 msgstr "Megoldás fá_jl"
@@ -21545,7 +21791,7 @@ msgstr "Megoldás fá_jl"
 msgid "Solution Item"
 msgstr "Megoldás elem"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1561
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1572
 #, fuzzy
 msgid "Solution Name"
 msgstr "Mego_ldás név"
@@ -21649,7 +21895,7 @@ msgstr ""
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1675
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1680
 msgid "Some of the open documents have unsaved changes."
 msgstr "Néhány megnyitott dokumentum nem mentett változtatásokat tartalmaz."
 
@@ -22236,7 +22482,7 @@ msgid "Stock Icons"
 msgstr "Beépített ikonok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:89
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:187
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:193
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:241
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:95
 #: ../external/xwt/Xwt/Xwt/Command.cs:74
@@ -22440,7 +22686,7 @@ msgstr ""
 msgid "SuiteName"
 msgstr "Megoldás elem _név"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:249
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:136
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:146
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:201
@@ -23084,7 +23330,7 @@ msgid "Tests"
 msgstr "Teszt futtatása"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:208
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:601
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Visualizer/TextVisualizer.cs:54
 msgid "Text"
@@ -23092,7 +23338,7 @@ msgstr "Szöveg"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1022
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:366
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:392
 msgid "Text Editor"
 msgstr "Szövegszerkesztő"
@@ -23294,7 +23540,7 @@ msgid "The application could not be started"
 msgstr "A projektet nem sikerült elmenteni"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1928
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1931
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:271
@@ -23445,7 +23691,7 @@ msgstr "A fájl ({0}) nem törölhető"
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2085
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2100
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
 
@@ -23529,7 +23775,7 @@ msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
 msgid "The file {0} could not be deleted"
 msgstr "A fájl ({0}) nem törölhető"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1828
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1843
 #, fuzzy
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "A fájl ({0}) nincs a projekt könyvtárában. Mit kíván tenni?"
@@ -23692,7 +23938,7 @@ msgid ""
 "names include 'MyPackage' and 'MyPackage.Sample'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2071
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2086
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr ""
 
@@ -23894,7 +24140,7 @@ msgid ""
 "targetting ({2})"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2431
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2446
 #, fuzzy
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
@@ -23944,7 +24190,7 @@ msgstr ""
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1500
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1505
 #, fuzzy
 msgid ""
 "The project you are executing has changes done after the last time it was "
@@ -24070,26 +24316,26 @@ msgstr ""
 msgid "The top-most child of the window within the gtk.Builder file."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1421
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1420
 msgid ""
 "The try-catch statement consists of a {0} block followed by one or more {1} "
 "clauses, which specify handlers for different exceptions."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1505
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1504
 msgid ""
 "The type argument must be a reference type; this applies also to any class, "
 "interface, delegate, or array type."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1510
 msgid ""
 "The type argument must be a value type. Any value type except Nullable can "
 "be specified. See Using Nullable Types (C# Programming Guide) for more "
 "information."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1508
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1507
 msgid ""
 "The type argument must have a public parameterless constructor. When used "
 "together with other constraints, the new() constraint must be specified last."
@@ -24157,7 +24403,7 @@ msgid ""
 "range variable for use later in the query."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1464
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
 msgid ""
 "The {0} clause constrains which types can be used as the type parameter in a "
 "generic declaration."
@@ -24175,11 +24421,11 @@ msgid ""
 "element in either ascending or descending order."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1368
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
 msgid "The {0} clause specifies the type of value to return from the query."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1459
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
 msgid ""
 "The {0} clause specifies which elements from the data source to be returned "
 "according to a given condition."
@@ -24198,13 +24444,13 @@ msgid ""
 "type; this applies also to any class, interface, delegate, or array type."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1396
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1395
 msgid ""
 "The {0} constraint specifies that the type argument must be a value type. "
 "Any value type except Nullable can be specified."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1440
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
 msgid ""
 "The {0} directive creates an alias for a namespace or imports types defined "
 "in other namespaces. The {0} statement defines a scope at the end of which "
@@ -24227,7 +24473,7 @@ msgid ""
 "used to hide an inherited member from a base class member."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1435
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1434
 msgid ""
 "The {0} keyword denotes an unsafe context, which is required for any "
 "operation involving pointers."
@@ -24240,7 +24486,7 @@ msgid ""
 "further use in the query with 'into'."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1449
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
 msgid ""
 "The {0} keyword indicates that a field can be modified in the program by "
 "something such as the operating system, the hardware, or a concurrently "
@@ -24268,7 +24514,7 @@ msgid ""
 "of the class or the struct in which they are declared."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1349
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1348
 msgid ""
 "The {0} keyword is a modifier that you can use on fields. When a field "
 "declaration includes a {0} modifier, assignments to the fields introduced by "
@@ -24282,7 +24528,7 @@ msgid ""
 "members are accessible only within files in the same assembly."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1345
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1344
 msgid ""
 "The {0} keyword is an access modifier for types and type members. Public "
 "access is the most permissive access level. There are no restrictions on "
@@ -24295,7 +24541,7 @@ msgid ""
 "derived class."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1431
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
 msgid ""
 "The {0} keyword is used to control the overflow-checking context for "
 "integral-type arithmetic operations and conversions."
@@ -24342,13 +24588,13 @@ msgid ""
 "subscribed to. If supplied, a remove accessor must also be supplied."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1358
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
 msgid ""
 "The {0} keyword is used to define a custom accessor for when an event is "
 "unsubscribed from. If supplied, an add accessor must also be supplied."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1377
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
 msgid ""
 "The {0} keyword is used to define an accessor method to assign to the value "
 "of the property or indexer element."
@@ -24360,7 +24606,7 @@ msgid ""
 "of the property or indexer element."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1474
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
 msgid ""
 "The {0} keyword is used to indicate that a method, get accessor, or operator "
 "is an iterator."
@@ -24373,7 +24619,7 @@ msgid ""
 "cannot be modified."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1444
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1443
 msgid ""
 "The {0} keyword is used to modify a method, property, indexer, or event "
 "declaration and allow for it to be overridden in a derived class."
@@ -24427,7 +24673,7 @@ msgid ""
 "into multiple files."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1409
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1408
 msgid "The {0} keyword refers to the current instance of the class."
 msgstr ""
 
@@ -24444,7 +24690,7 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1302
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1353
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1352
 msgid ""
 "The {0} method parameter keyword on a method parameter causes a method to "
 "refer to the same variable that was passed into the method."
@@ -24474,11 +24720,11 @@ msgid ""
 "compatible with a given type."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1426
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
 msgid "The {0} operator is used to obtain the System.Type object for a type."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1382
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
 msgid "The {0} operator is used to obtain the size in bytes for a value type."
 msgstr ""
 
@@ -24499,19 +24745,19 @@ msgid ""
 "until a specified expression evaluates to false."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1479
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
 msgid ""
 "The {0} statement executes a statement or a block of statements until a "
 "specified expression evaluates to false."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1405
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
 msgid ""
 "The {0} statement is a control statement that handles multiple selections by "
 "passing control to one of the {1} statements within its body."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1414
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
 msgid ""
 "The {0} statement is used to signal the occurrence of an anomalous situation "
 "(exception) during the program execution."
@@ -24535,7 +24781,7 @@ msgid ""
 "Boolean expression."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1363
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
 msgid ""
 "The {0} statement terminates execution of the method in which it appears and "
 "returns control to the calling method."
@@ -24624,7 +24870,7 @@ msgstr ""
 msgid "There is a warning for the print expression"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2076
 #, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
@@ -24647,7 +24893,7 @@ msgstr ""
 msgid "There is already a layout with that name"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1945
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1960
 #, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
@@ -25773,7 +26019,7 @@ msgid "Unknown parser error: {0}"
 msgstr "Ismeretlen célpont: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:432
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:547
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:548
 #, fuzzy
 msgid "Unknown project type"
 msgstr "Ismeretlen csomagtípus"
@@ -26113,6 +26359,36 @@ msgstr "Az alapértelmezett sa_ns-serif betűtípus használata"
 msgid "Use existing Makefiles"
 msgstr "A meglévő Makefile-ok használata"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1281
+#, fuzzy
+msgid "Use expression body for accessors"
+msgstr "Töréspont törlése"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1253
+#, fuzzy
+msgid "Use expression body for constructors"
+msgstr "Kifejezés kiírása a kimenetre"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1274
+#, fuzzy
+msgid "Use expression body for indexers"
+msgstr "Töréspont törlése"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1246
+#, fuzzy
+msgid "Use expression body for methods"
+msgstr "Töréspont törlése"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1260
+#, fuzzy
+msgid "Use expression body for operators"
+msgstr "Töréspont törlése"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1267
+#, fuzzy
+msgid "Use expression body for properties"
+msgstr "Töréspont törlése"
+
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs:245
 #, fuzzy
 msgid "Use git for version control."
@@ -26175,7 +26451,7 @@ msgid ""
 "DllImport attribute."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1391
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1390
 msgid ""
 "Use the {0} modifier to declare a static member, which belongs to the type "
 "itself rather than to a specific object."
@@ -26187,7 +26463,7 @@ msgid ""
 "Sample tool output file."
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1484
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
 msgid ""
 "Used to obtain the simple (unqualified) string name of a variable, type, or "
 "member."
@@ -26335,6 +26611,11 @@ msgstr "Változó"
 #, fuzzy
 msgid "Variable name"
 msgstr "Változó"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1137
+#, fuzzy
+msgid "Variable preferences:"
+msgstr "_Frissítő referenciák:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:60
 #, fuzzy
@@ -26642,7 +26923,6 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:94
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:88
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:145
 #, fuzzy
 msgid "Warning"
 msgstr "{0} figyelmeztetés"
@@ -26885,6 +27165,15 @@ msgid ""
 "list is redundant"
 msgstr ""
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1239
+#, fuzzy
+msgid "When on single line"
+msgstr "A kódblokk az utasítás-zárójellel egy _sorban keződjön"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1238
+msgid "When possible"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:480
 msgid ""
 "When set, System.IO.FileSystemWatcher will use the default managed "
@@ -26912,6 +27201,10 @@ msgstr ""
 msgid ""
 "When using a Mono that has been compiled with LLVM support, it forces Mono "
 "to fallback to its JIT engine and not use the LLVM backend"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1167
+msgid "When variable type is apparent"
 msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:406
@@ -27004,7 +27297,7 @@ msgstr ""
 msgid "Windows Forms Theme"
 msgstr "Webes és Windows Fromsos komponensek"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:299
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:286
 msgid "Word _break mode:"
 msgstr "Törde_lés módja:"
 
@@ -27031,17 +27324,17 @@ msgstr "Munkakönyvtár:"
 msgid "Workspace"
 msgstr "Munkaterület"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:690
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:696
 #, fuzzy
 msgid "Workspace Directory"
 msgstr "Munkakönyvtár:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:688
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:694
 #, fuzzy
 msgid "Workspace File"
 msgstr "Munkaterület"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:689
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:695
 #, fuzzy
 msgid "Workspace Name"
 msgstr "Munkaterület elmentve."
@@ -27055,7 +27348,7 @@ msgstr "Munkaterület elmentve."
 msgid "Workspace saved."
 msgstr "Munkaterület elmentve."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:222
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:225
 msgid "Would you like to make the file writable?"
 msgstr ""
 
@@ -27204,6 +27497,7 @@ msgstr "XML szerkesztő"
 msgid "Xml comment is not placed before a valid language element"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:103
 #: ../external/xwt/Xwt/Xwt/Command.cs:62
 msgid "Yes"
 msgstr ""
@@ -27381,7 +27675,7 @@ msgid ""
 "[;]"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1397
 msgid "[attributes] [modifiers] {0} identifier [:interfaces] body [;]"
 msgstr ""
 
@@ -27409,7 +27703,7 @@ msgid "[firstCharacter-lastCharacter]"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1170
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1375
 msgid "[modifiers] {0} [ {{ accessor-body }} ]"
 msgstr ""
 
@@ -27428,7 +27722,7 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1008
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1356
 msgid "[modifiers] {0} {{ accessor-body }}"
 msgstr ""
 
@@ -27646,7 +27940,7 @@ msgstr "Névterek egyeztetése a könyvtárak neveivel"
 msgid "_Automatically restore packages when opening a solution."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:159
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:146
 msgid "_Automatically set search pattern case sensitivity"
 msgstr ""
 
@@ -27772,11 +28066,6 @@ msgstr "Formázás"
 #, fuzzy
 msgid "_Config"
 msgstr "Ütköző"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:151
-#, fuzzy
-msgid "_Configure Rule ‘{0}’"
-msgstr "Konfiguráció"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:102
 #, fuzzy
@@ -27906,11 +28195,6 @@ msgstr "_Email cím:"
 msgid "_Enable animations"
 msgstr "Kód_optimalizálás engedélyezése"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:135
-#, fuzzy
-msgid "_Enable on the fly code formatting"
-msgstr "Kódössze_fogás engedélyezése"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:71
 #, fuzzy
 msgid "_Errors and Warnings"
@@ -28010,7 +28294,7 @@ msgstr "Dokumentumok"
 msgid "_Format Selection"
 msgstr "Kijelölt szöveg _kisbetűssé tétele"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:147
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:134
 #, fuzzy
 msgid "_Format document on save"
 msgstr "Dokumentumok"
@@ -28033,7 +28317,7 @@ msgstr "Általános"
 msgid "_Generate Makefiles"
 msgstr "Makefile-ok _generálása"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:171
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:158
 #, fuzzy
 msgid "_Generate additional undo steps for formatting"
 msgstr "Kiegészítő megjegyzések generálás_a a kódban"
@@ -28131,7 +28415,7 @@ msgstr "_Tabulátor hossza:"
 msgid "_Indent width:"
 msgstr "_Tabulátor hossza:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:223
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:210
 msgid "_Indentation mode:"
 msgstr "Be_húzási mód:"
 
@@ -28148,7 +28432,7 @@ msgstr "Beviteli mó_dok"
 msgid "_Insert"
 msgstr "Tabulátor beszúrása"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:94
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:92
 msgid "_Insert matching brace"
 msgstr "Összetartozó zárójel beszúrása"
 
@@ -28712,7 +28996,7 @@ msgstr "Minden csomag megjelenítése"
 msgid "_Sign this assembly"
 msgstr "_Assembly kód megjelölése"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:119
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:117
 msgid "_Smart semicolon placement"
 msgstr ""
 
@@ -28979,7 +29263,7 @@ msgstr ""
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2347
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2362
 #, fuzzy
 msgid "another copy"
 msgstr "Nem"
@@ -29001,12 +29285,12 @@ msgstr "oszlop"
 msgid "comment block"
 msgstr "Megjegyzési feladat másolása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2346
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2361
 #, fuzzy
 msgid "copy"
 msgstr "_Másolás"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2355
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
 #, fuzzy
 msgid "copy {0}"
 msgstr "{0} megnyitása"
@@ -29113,11 +29397,11 @@ msgstr "„{0}” keresése a(z) „{1}” projektben"
 msgid "file {0}"
 msgstr "{0} fordítása"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1462
 msgid "generic-class-declaration {0} type-parameter : type-constraint"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1468
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1467
 msgid ""
 "generic-class-declaration {0} type-parameter : type-constraint\n"
 "\n"
@@ -29259,6 +29543,11 @@ msgstr "pkg-config fájl a következőhöz: {0}"
 msgid "pkg-config folder"
 msgstr "pkg-config könyvtár"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1131
+#, fuzzy
+msgid "predefined type preferences:"
+msgstr "_Frissítő referenciák:"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:62
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:106
 #, fuzzy
@@ -29319,9 +29608,14 @@ msgid ""
 "true is redundant as for statement condition, thus can be safely ommited"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1385
 msgid "type * ptr = {0} type [ expr ];"
 msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:100
+#, fuzzy
+msgid "typescript files"
+msgstr "Fájl kijelölése"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1557
@@ -29409,7 +29703,7 @@ msgstr ""
 msgid "{0} ([initializers]; [expression]; [iterators]) statement"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1438
 msgid ""
 "{0} (expression | type identifier = initializer) statement\n"
 "{0} [alias = ]class_or_namespace;"
@@ -29424,7 +29718,7 @@ msgid ""
 "  statement2]"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1403
 msgid ""
 "{0} (expression)\n"
 " {{\n"
@@ -29437,7 +29731,7 @@ msgid ""
 " }}"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1477
 msgid "{0} (expression) statement"
 msgstr ""
 
@@ -29475,17 +29769,11 @@ msgid ""
 "{3} IMyInterface&lt;{1} T&gt; {{}}"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1380
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1424
 #, fuzzy
 msgid "{0} (type)"
 msgstr "{0} perce"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:177
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:157
-#, fuzzy
-msgid "{0} ({1})"
-msgstr "{0}/{1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:620
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
@@ -29590,8 +29878,8 @@ msgid_plural "{0} Warnings"
 msgstr[0] "{0} figyelmeztetés"
 msgstr[1] "{0} figyelmeztetés"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1361
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1412
 #, fuzzy
 msgid "{0} [expression];"
 msgstr "Töréspont törlése"
@@ -29622,7 +29910,7 @@ msgid ""
 "{0} (expression)"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1429
 msgid ""
 "{0} block\n"
 "{0} (expression)"
@@ -29649,7 +29937,7 @@ msgid_plural "{0} changes"
 msgstr[0] "{0} figyelmeztetés"
 msgstr[1] "{0} figyelmeztetés"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1457
 #, fuzzy
 msgid "{0} condition"
 msgstr "Feltétel"
@@ -29682,14 +29970,14 @@ msgid_plural "{0} days ago"
 msgstr[0] "{0} napja"
 msgstr[1] "{0} napja"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1447
 #, fuzzy
 msgid "{0} declaration"
 msgstr "_Deklaráció megkeresése"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1235
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1745
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1240
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1760
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
@@ -29945,7 +30233,7 @@ msgstr ""
 msgid "{0} retargeted with warnings."
 msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
 #, fuzzy
 msgid "{0} return-type"
 msgstr "ChangeLog bejegyzés:"
@@ -29988,7 +30276,7 @@ msgid ""
 "{0} try-block {1} catch-block"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1419
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1418
 msgid ""
 "{0} try-block\n"
 "  {1} (exception-declaration-1) catch-block-1 \n"
@@ -30014,8 +30302,8 @@ msgid "{0} updated with warnings."
 msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1746
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1761
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
@@ -30043,7 +30331,7 @@ msgstr "{0} sikeresen elő lett állítva."
 msgid "{0} with optional parameter is hidden by overload"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
 msgid ""
 "{0} {1}\n"
 "\n"
@@ -30056,7 +30344,7 @@ msgstr ""
 msgid "{0} | {1}     Started at {2}"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1482
 #, fuzzy
 msgid "{0}(identifier)"
 msgstr "Egyedi azonosító.\n"
@@ -30085,6 +30373,7 @@ msgid "{0}. Please see the Package Console for more details."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/SignatureHelpSessionView.cs:420
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:257
 msgid "{0}:"
 msgstr ""
 
@@ -30221,10 +30510,6 @@ msgstr "|"
 #, fuzzy
 #~ msgid "'lock'"
 #~ msgstr "Rögzítés"
-
-#, fuzzy
-#~ msgid "'sizeof' expression"
-#~ msgstr "Feltétel-kifejezés:"
 
 #, fuzzy
 #~ msgid "'typeof' expression"
@@ -30715,10 +31000,6 @@ msgstr "|"
 #~ msgid "After comma"
 #~ msgstr "A kimeneti fájlok törlése után"
 
-#, fuzzy
-#~ msgid "After using declaration:"
-#~ msgstr "_Deklaráció megkeresése"
-
 #~ msgid "Aggregates"
 #~ msgstr "Összesítések"
 
@@ -31098,6 +31379,10 @@ msgstr "|"
 #~ msgstr "Ellenőrzés"
 
 #, fuzzy
+#~ msgid "Check to reformat the document while typing"
+#~ msgstr "XML dokumentáció generálása:"
+
+#, fuzzy
 #~ msgid "Check to use MSBuild to build the solution"
 #~ msgstr "Konfiguráció létrehozása a megoldás minden eleméhez."
 
@@ -31253,10 +31538,6 @@ msgstr "|"
 #, fuzzy
 #~ msgid "Constructor call"
 #~ msgstr "Konstruktorok"
-
-#, fuzzy
-#~ msgid "Constructor declaration"
-#~ msgstr "_Deklaráció megkeresése"
 
 #~ msgid "Constructors"
 #~ msgstr "Konstruktorok"
@@ -31439,10 +31720,6 @@ msgstr "|"
 #, fuzzy
 #~ msgid "Convert to hex"
 #~ msgstr "Ta_bulátor karakterek konvertálása szóközökké"
-
-#, fuzzy
-#~ msgid "Convert to initializer"
-#~ msgstr "MonoDevelop-ba konvertálás"
 
 #, fuzzy
 #~ msgid "Convert to lambda"
@@ -32296,9 +32573,6 @@ msgstr "|"
 #~ msgid "Error while removing {0}:{1}"
 #~ msgstr "Hiba történt {0} törlése közben: {1}"
 
-#~ msgid "Error while renaming {0} to {1}: {2}"
-#~ msgstr "Nem sikerült az elem ({0}) átnevezése a következőre: {1}. {2}"
-
 #~ msgid "Error while replacing {0}: {1}"
 #~ msgstr "Hiba történt {0} cseréje közben: {1}"
 
@@ -32910,10 +33184,6 @@ msgstr "|"
 #~ msgstr "Referencia: "
 
 #, fuzzy
-#~ msgid "Invert conditional operator"
-#~ msgstr "Feltétel-kifejezés:"
-
-#, fuzzy
 #~ msgid "Invert if"
 #~ msgstr "Elhelyezés a kijelölés alatt"
 
@@ -32997,6 +33267,10 @@ msgstr "|"
 
 #~ msgid "Light color scheme using tango colors."
 #~ msgstr "Világos színű színséma tango színek használatával."
+
+#, fuzzy
+#~ msgid "Light:"
+#~ msgstr "_Copyright:"
 
 #, fuzzy
 #~ msgid "Line Endings"
@@ -33592,10 +33866,6 @@ msgstr "|"
 #~ msgstr "Paraméter <b>{0}</b>"
 
 #, fuzzy
-#~ msgid "Parameter hides a member"
-#~ msgstr "Tag implementálása/felülírása..."
-
-#, fuzzy
 #~ msgid "Parameters"
 #~ msgstr "Paraméterek:"
 
@@ -33969,10 +34239,6 @@ msgstr "|"
 #~ msgstr "Tabulátor eltávolítása"
 
 #, fuzzy
-#~ msgid "Remove 'this.'"
-#~ msgstr "Tabulátor eltávolítása"
-
-#, fuzzy
 #~ msgid "Remove 'true'"
 #~ msgstr "Fájl attribútumok"
 
@@ -34032,10 +34298,6 @@ msgstr "|"
 
 #, fuzzy
 #~ msgid "Remove field initializer"
-#~ msgstr "MonoDevelop-ba konvertálás"
-
-#, fuzzy
-#~ msgid "Remove initializer"
 #~ msgstr "MonoDevelop-ba konvertálás"
 
 #, fuzzy
@@ -34221,10 +34483,6 @@ msgstr "|"
 
 #~ msgid "Removing all satellite assemblies"
 #~ msgstr "Nyelvfüggetlen assembly kódok törlése"
-
-#, fuzzy
-#~ msgid "Rename '{0}' to '{1}'"
-#~ msgstr "Nem sikerült a könyvtárat ('{0}') átnevezni a következőre: '{1}'"
 
 #, fuzzy
 #~ msgid "Rename '{0}' to '{1}' with preview"
@@ -34586,10 +34844,6 @@ msgstr "|"
 #~ "Set options for generating files to better integrate the application or "
 #~ "library in a Unix system."
 #~ msgstr "Beállítások megadása az alkalmazás jobb Unixos integrálása végett"
-
-#, fuzzy
-#~ msgid "Severity:"
-#~ msgstr "<b>Biztonság</b>"
 
 #~ msgid "Shared Library"
 #~ msgstr "Megosztott függvénykönyvtár"
@@ -35135,20 +35389,12 @@ msgstr "|"
 #~ msgstr "Időtérkép"
 
 #, fuzzy
-#~ msgid "To 'var'"
-#~ msgstr "Watch"
-
-#, fuzzy
 #~ msgid "To const"
 #~ msgstr "Beépített ikonok"
 
 #, fuzzy
 #~ msgid "To explicit type"
 #~ msgstr "Explicit"
-
-#, fuzzy
-#~ msgid "To readonly"
-#~ msgstr "Csak olvasható"
 
 #, fuzzy
 #~ msgid "Toggle visibility of Category column"
@@ -35394,10 +35640,6 @@ msgstr "|"
 #~ msgstr "Gyorsítótár használata"
 
 #, fuzzy
-#~ msgid "Use explicit type"
-#~ msgstr "Explicit"
-
-#, fuzzy
 #~ msgid "Use method 'Any()'"
 #~ msgstr "Metódus <b>{0}</b>"
 
@@ -35547,9 +35789,6 @@ msgstr "|"
 #~ msgstr ""
 #~ "A munkaterület neve nem tartalmazhatja a következő karaktereket: {0}"
 
-#~ msgid "Write expression to the output"
-#~ msgstr "Kifejezés kiírása a kimenetre"
-
 #~ msgid "Write permission has not been granted for file '{0}'"
 #~ msgstr "Nincs írási jogosultsága a(z) „{0}” fájlhoz."
 
@@ -35657,6 +35896,10 @@ msgstr "|"
 #~ msgstr "_Megoldás bezárása"
 
 #, fuzzy
+#~ msgid "_Configure Rule ‘{0}’"
+#~ msgstr "Konfiguráció"
+
+#, fuzzy
 #~ msgid "_Constant name:"
 #~ msgstr "Hosztnév:"
 
@@ -35710,6 +35953,10 @@ msgstr "|"
 
 #~ msgid "_Enable highlighting"
 #~ msgstr "Kiemelés _engedélyezése"
+
+#, fuzzy
+#~ msgid "_Enable on the fly code formatting"
+#~ msgstr "Kódössze_fogás engedélyezése"
 
 #, fuzzy
 #~ msgid "_Encapsulate Field..."
@@ -35967,9 +36214,6 @@ msgstr "|"
 #~ msgid "_Up"
 #~ msgstr "_Frissítés"
 
-#~ msgid "_Update references:"
-#~ msgstr "_Frissítő referenciák:"
-
 #~ msgid "_Use custom font:"
 #~ msgstr "Más _betűtípus használata:"
 
@@ -36210,6 +36454,10 @@ msgstr "|"
 #, fuzzy
 #~ msgid "within types"
 #~ msgstr "MIME típusok"
+
+#, fuzzy
+#~ msgid "{0} ({1})"
+#~ msgstr "{0}/{1}"
 
 #~ msgid "{0} ({1}) : Invalid config name '{2}'"
 #~ msgstr "{0} ({1}) : Érvénytelen konfigurációs név '{2}'"
