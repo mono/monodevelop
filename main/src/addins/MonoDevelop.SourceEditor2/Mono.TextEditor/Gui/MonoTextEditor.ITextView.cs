@@ -72,7 +72,8 @@ namespace Mono.TextEditor
 		{
 			get {
 				if (editorOperations == null) {
-					// TODO: *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
+					// *Someone* needs to call this to execute UndoHistoryRegistry.RegisterHistory -- VS does this via the ShimCompletionControllerFactory.
+					// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/669018 for details.
 					editorOperations = factoryService.EditorOperationsProvider.GetEditorOperations (this);
 				}
 
@@ -158,6 +159,14 @@ namespace Mono.TextEditor
 
 			//			this.Loaded += OnLoaded;
 
+			// We need to instantiate EditorOperations, because it in turn will register the UndoHistory
+			// for the buffer via:
+			// https://github.com/KirillOsenkov/vs-editor-api/blob/d06adf1581eb8e16242c8b6eabc7ba13ceaf0d54/src/Text/Impl/EditorOperations/EditorOperations.cs#L108
+			// Without Undo History Roslyn Completion bails via:
+			// https://github.com/dotnet/roslyn/blob/a107b43dcad83cf79addd47a9919590c7366d130/src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_Commit.cs#L66
+			// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/669018 for details.
+			var instantiateEditorOperations = EditorOperations;
+
 			connectionManager = new ConnectionManager (this, factoryService.TextViewConnectionListeners, factoryService.GuardedOperations);
 
 			SubscribeToEvents ();
@@ -170,6 +179,9 @@ namespace Mono.TextEditor
 			//_visualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 			//_visualBuffer.ContentTypeChanged += OnVisualBufferContentTypeChanged;
 
+			// instantiate the MultiSelectionBroker
+			var broker = MultiSelectionBroker;
+
 			hasInitializeBeenCalled = true;
 		}
 
@@ -178,6 +190,8 @@ namespace Mono.TextEditor
 				return Caret;
 			}
 		}
+
+		public ITextCaret TextCaret => Caret;
 
 		public bool HasAggregateFocus {
 			get {
@@ -536,9 +550,20 @@ namespace Mono.TextEditor
 			get {
 				if (multiSelectionBroker == null) {
 					multiSelectionBroker = factoryService.MultiSelectionBrokerFactory.CreateBroker (this);
+					multiSelectionBroker.MultiSelectionSessionChanged += OnMultiSelectionSessionChanged;
 				}
 
 				return multiSelectionBroker;
+			}
+		}
+
+		private void OnMultiSelectionSessionChanged (object sender, EventArgs e)
+		{
+			// The MultiSelectionBroker API has been updated, but currently in VSMac we still have a separate Caret concept.
+			// We need to manually synchronize our caret with what MultiSelectionBroker thinks the caret is.
+			// The other direction happens when we move our caret.
+			if (TextCaret.Position.VirtualBufferPosition != MultiSelectionBroker.PrimarySelection.InsertionPoint) {
+				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
 	}

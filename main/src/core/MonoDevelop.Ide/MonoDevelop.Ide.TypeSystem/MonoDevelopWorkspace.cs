@@ -87,7 +87,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		static MonoDevelopWorkspace ()
 		{
 			Tasks.CommentTasksProvider.Initialize ();
-			MonoDevelopRuleSetManager.EnsureGlobalRulesetExists ();
 		}
 
 		/// <summary>

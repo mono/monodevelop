@@ -45,6 +45,8 @@ namespace MonoDevelop.Projects
 		// so the project build will be paused until signaled to conitnue.
 		// The FileSync target can also uses that task.
 
+		const int timeoutMs = 30000;
+
 		[Test]
 		public async Task ConcurrentLongOperations ()
 		{
@@ -70,14 +72,14 @@ namespace MonoDevelop.Projects
 				// The build is now in progess. Start a new build
 
 				var build2 = project2.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
-				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+				if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 					Assert.Fail ("Build did not start");
 
 				// The second build should finish before the first one
 
 				SignalBuildToContinue (project1);
 
-				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+				if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 					Assert.Fail ("Build did not end in time");
 				
 				Assert.AreEqual (0, build1.Result.ErrorCount);
@@ -114,12 +116,12 @@ namespace MonoDevelop.Projects
 				};
 				var build2 = project2.RunTarget (Util.GetMonitor (), "QuickTarget", sol.Configurations [0].Selector, context);
 
-				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+				if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 					Assert.Fail ("Build did not start");
 
 				SignalBuildToContinue (project1);
 
-				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+				if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 					Assert.Fail ("Build did not end in time");
 				
 				Assert.AreEqual (0, build1.Result.ErrorCount);
@@ -174,11 +176,11 @@ namespace MonoDevelop.Projects
 				SignalBuildToContinue (project1);
 
 				// The first build should end now
-				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+				if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 					Assert.Fail ("Build did not end in time");
 				
 				// And now the second build should end
-				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+				if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 					Assert.Fail ("Build did not end in time");
 				
 				Assert.NotNull (build1.Result);
@@ -234,11 +236,11 @@ namespace MonoDevelop.Projects
 				SignalBuildToContinue (project1);
 
 				// The first build should end now
-				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+				if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 					Assert.Fail ("Build did not end in time");
 
 				// And now the second build should end
-				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+				if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 					Assert.Fail ("Build did not end in time");
 
 				Assert.NotNull (build1.Result);
@@ -293,11 +295,11 @@ namespace MonoDevelop.Projects
 				SignalBuildToContinue (project1);
 
 				// The first build should end now
-				if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+				if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 					Assert.Fail ("Build did not end in time");
 
 				// And now the second build should end
-				if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+				if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 					Assert.Fail ("Build did not end in time");
 
 				Assert.NotNull (build1.Result);
@@ -393,7 +395,7 @@ namespace MonoDevelop.Projects
 					// The build is now in progess. Start a new build
 
 					var build2 = project2.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
-					if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+					if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 						Assert.Fail ("Build did not start");
 					
 					Assert.AreEqual (2, RemoteBuildEngineManager.ActiveEnginesCount);
@@ -411,7 +413,7 @@ namespace MonoDevelop.Projects
 
 					SignalBuildToContinue (project1);
 
-					if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+					if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 						Assert.Fail ("Build did not end in time");
 				}
 			} finally {
@@ -454,7 +456,7 @@ namespace MonoDevelop.Projects
 
 					var build2 = project2.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
 
-					if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+					if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 						Assert.Fail ("Build did not start");
 
 					Assert.AreEqual (2, RemoteBuildEngineManager.ActiveEnginesCount);
@@ -464,7 +466,7 @@ namespace MonoDevelop.Projects
 
 					SignalBuildToContinue (project1);
 
-					if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+					if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 						Assert.Fail ("Build did not end in time");
 
 					// Build engine disposal delay is set to 400ms, so unused
@@ -521,7 +523,7 @@ namespace MonoDevelop.Projects
 					// The build is now in progess. Start a new build
 
 					var build2 = project2.Build (Util.GetMonitor (), sol.Configurations [0].Selector);
-					if (await Task.WhenAny (build2, Task.Delay (5000)) != build2)
+					if (await Task.WhenAny (build2, Task.Delay (timeoutMs)) != build2)
 						Assert.Fail ("Build did not start");
 
 					// There should be one builder for each build
@@ -540,7 +542,7 @@ namespace MonoDevelop.Projects
 
 					SignalBuildToContinue (project1);
 
-					if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+					if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 						Assert.Fail ("Build did not end in time");
 					
 					Assert.AreEqual (0, build1.Result.ErrorCount);
@@ -590,14 +592,14 @@ namespace MonoDevelop.Projects
 
 					//NOTE: this has a longer timeout because otherwise it sometimes times out
 					//maybe something to do with the fact it compiles tasks
-					if (await Task.WhenAny (syncAll, Task.Delay (15000)) != syncAll)
+					if (await Task.WhenAny (syncAll, Task.Delay (timeoutMs)) != syncAll)
 						Assert.Fail ("Not all builds were started");
 
 					// Finish the build
 					SignalBuildToContinue (dep1);
 					SignalBuildToContinue (dep2);
 
-					if (await Task.WhenAny (build1, Task.Delay (5000)) != build1)
+					if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
 						Assert.Fail ("Build did not end in time");
 
 					Assert.AreEqual (0, build1.Result.ErrorCount);

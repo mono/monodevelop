@@ -879,6 +879,46 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Checks that the facade assemblies are not returned as references when
+		/// ImplicitlyExpandDesignTimeFacades is false in the project. The project
+		/// references the System.Runtime NuGet package which will cause the project
+		/// model to reference the facade assemblies.
+		/// </summary>
+		[Test]
+		public async Task ImplicitlyExpandDesignTimeFacades ()
+		{
+			if (!Platform.IsMac) {
+				// NUnit platform attribute does not seem to work.
+				// Want to use nuget that is included with Mono to restore.
+				Assert.Ignore ("Only supported on Mac.");
+			}
+
+			FilePath solFile = Util.GetSampleProject ("expand-facades", "ExpandFacadesTest.sln");
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+
+			var process = Process.Start ("nuget", $"restore -DisableParallelProcessing \"{solFile}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var expandFalseProject = (DotNetProject)sol.FindProjectByName ("ExpandFacadesFalse");
+				var expandTrueProject = (DotNetProject)sol.FindProjectByName ("ExpandFacadesTrue");
+
+				var expandFalseRefs = (await expandFalseProject.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+				var expandTrueRefs = (await expandTrueProject.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+
+				// ImplicitlyExpandDesignTimeFacades=true => should reference facades
+				var systemComponentModelAnnotationsFromFacadesRef = expandTrueRefs.FirstOrDefault (r => r.FilePath.FileName == "System.ComponentModel.Annotations.dll" && r.FilePath.ParentDirectory.FileName == "Facades");
+				Assert.IsNotNull (systemComponentModelAnnotationsFromFacadesRef);
+
+				// ImplicitlyExpandDesignTimeFacades=false => should not reference any facades
+				systemComponentModelAnnotationsFromFacadesRef = expandFalseRefs.FirstOrDefault (r => r.FilePath.FileName == "System.ComponentModel.Annotations.dll");
+				Assert.IsNull (systemComponentModelAnnotationsFromFacadesRef);
+				Assert.IsFalse (expandFalseRefs.Any (r => r.FilePath.ParentDirectory.FileName.Equals ("Facades", StringComparison.OrdinalIgnoreCase)));
+			}
+		}
+
+		/// <summary>
 		/// Clear all other package sources and just use the main NuGet package source when
 		/// restoring the packages for the project tests.
 		/// </summary>
