@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				if (change is TextReplaceChange trc) {
 					if (!originalDocuments.ContainsKey (trc.FileName)) {
-						originalDocuments[trc.FileName] = GetTextEditorData (trc.FileName).CreateSnapshot ();
+						originalDocuments [trc.FileName] = GetTextEditorData (trc.FileName).CreateSnapshot ();
 					}
 				}
 				changes.Add (change);
@@ -306,6 +306,35 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!isOpen)
 					documents [filePath] = result;
 				return result;
+			}
+
+			internal bool ShowNagScreenForUndo ()
+			{
+				foreach (var doc in originalDocuments) {
+					var data = GetTextEditorData (doc.Key);
+					int delta = 0;
+					foreach (var change in changes) {
+						if (!(change is TextReplaceChange trc))
+							continue;
+						if (trc.FileName != data.FileName)
+							continue;
+						if (trc.InsertedText != data.GetTextAt (trc.Offset, trc.InsertedText.Length))
+							return true;
+						delta = trc.RemovedChars - trc.InsertedText.Length;
+					}
+					if (data.Length + delta != doc.Value.Length)
+						return true;
+				}
+				return false;
+			}
+
+			internal bool ShowNagScreenForRedo ()
+			{
+				foreach (var doc in originalDocuments) {
+					if (GetTextEditorData (doc.Key).Text != doc.Value.Text)
+						return true;
+				}
+				return false;
 			}
 		}
 	}

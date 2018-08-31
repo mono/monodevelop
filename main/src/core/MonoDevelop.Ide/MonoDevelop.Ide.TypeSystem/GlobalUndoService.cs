@@ -102,8 +102,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (undoStack.Count == 0)
 				return;
-			if (!forceSkipNagScreen && !NagScreen ()) {
-				return;
+			if (!forceSkipNagScreen) {
+				if (undoStack.Peek ().ShowNagScreenForUndo () && !NagScreen ())
+					return;
 			}
 			var undo = undoStack.Pop ();
 			undo.UndoOperation ();
@@ -121,8 +122,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (redoStack.Count == 0)
 				return;
-			if (!forceSkipNagScreen && !NagScreen ()) {
-				return;
+			if (!forceSkipNagScreen) {
+				if (redoStack.Peek ().ShowNagScreenForRedo () && !NagScreen ())
+					return;
 			}
 			var redo = redoStack.Pop ();
 			redo.RedoOperation ();
