@@ -26,12 +26,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Linq;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -46,9 +44,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
 		{
-			if (descriptor.KeyChar == '\'')
-				return false;
-			if (Array.IndexOf (excludedMimeTypes, editor.MimeType) < 0)
+			if (Array.IndexOf (excludedMimeTypes, editor.MimeType) >= 0)
 				return false;
 			int braceIndex = openBrackets.IndexOf (descriptor.KeyChar);
 			if (braceIndex < 0)
