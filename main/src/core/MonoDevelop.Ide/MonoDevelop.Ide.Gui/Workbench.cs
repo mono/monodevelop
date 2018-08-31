@@ -736,7 +736,6 @@ namespace MonoDevelop.Ide.Gui
 			var document = WrapDocument (newContent.WorkbenchWindow);
 			document.Editor.Encoding = Encoding.UTF8;
 			document.NotifyLoadNew (new FileCreationInformation (content, mimeType));
-			document.StartReparseThread ();
 			return document;
 		}
 
@@ -857,10 +856,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnDocumentChanged (object s, EventArgs a)
 		{
+			IdeApp.Workbench.ActiveDocument?.NotifyActivated ();
 			if (ActiveDocumentChanged != null)
 				ActiveDocumentChanged (s, a);
-			if (ActiveDocument != null)
-				ActiveDocument.LastTimeActive = DateTime.Now;
 		}
 		
 		internal Document WrapDocument (IWorkbenchWindow window)

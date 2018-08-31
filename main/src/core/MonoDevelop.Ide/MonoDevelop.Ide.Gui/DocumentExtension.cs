@@ -164,6 +164,14 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		/// <summary>
+		/// Invoked when the document becomes the active document in the shell
+		/// </summary>
+		public virtual void OnActivated ()
+		{
+			next.OnActivated ();
+		}
+
+		/// <summary>
 		/// Gets the project reload capability.
 		/// </summary>
 		/// <returns>The project reload capability.</returns>

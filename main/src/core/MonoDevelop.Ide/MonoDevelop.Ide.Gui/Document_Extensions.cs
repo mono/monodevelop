@@ -213,6 +213,11 @@ namespace MonoDevelop.Ide.Gui
 			{
 			}
 
+			public override void OnActivated ()
+			{
+				// Do nothing
+			}
+
 			public override ProjectReloadCapability GetProjectReloadCapability ()
 			{
 				return Document.Window.ViewContent.ProjectReloadCapability;

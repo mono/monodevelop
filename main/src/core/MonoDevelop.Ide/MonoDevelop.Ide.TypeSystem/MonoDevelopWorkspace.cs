@@ -741,7 +741,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								var changedFiles = new HashSet<string> (tryApplyState_documentTextChangedContents.Keys, FilePath.PathComparer);
 								foreach (var w in IdeApp.Workbench.Documents) {
 									if (w.IsFile && changedFiles.Contains (w.FileName)) {
-										w.StartReparseThread ();
+										w.ReparseDocument ();
 									}
 								}
 							}

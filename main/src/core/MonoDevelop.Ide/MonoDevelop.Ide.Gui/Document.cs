@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal DateTime LastTimeActive {
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -172,19 +172,6 @@ namespace MonoDevelop.Ide.Gui
 		internal ProjectReloadCapability ProjectReloadCapability {
 			get {
 				return documentExtension.GetProjectReloadCapability ();
-			}
-		}
-
-		static Document ()
-		{
-			if (IdeApp.Workbench != null) {
-				IdeApp.Workbench.ActiveDocumentChanged += delegate {
-					// reparse on document switch to update the current file with changes done in other files.
-					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc == null || doc.Editor == null)
-						return;
-					doc.StartReparseThread ();
-				};
 			}
 		}
 
@@ -452,9 +439,10 @@ namespace MonoDevelop.Ide.Gui
 			return documentExtension.OnLoaded (fileOpenInformation);
 		}
 
-		internal Task NotifyLoadNew (FileCreationInformation fileCreationInformation)
+		internal async Task NotifyLoadNew (FileCreationInformation fileCreationInformation)
 		{
-			return documentExtension.OnLoadedNew (fileCreationInformation);
+			await documentExtension.OnLoadedNew (fileCreationInformation);
+			StartReparseThread ();
 		}
 
 		public event EventHandler Reloaded;
@@ -837,6 +825,16 @@ namespace MonoDevelop.Ide.Gui
 			e.RunWhenRealized (action);
 		}
 
+		internal void NotifyActivated ()
+		{
+			LastTimeActive = DateTime.Now;
+			documentExtension.OnActivated ();
+
+			// reparse on document switch to update the current file with changes done in other files.
+			if (Editor != null)
+				StartReparseThread ();
+		}
+
 		public override void AttachToProject (Project project)
 		{
 			SetProject (project);
@@ -1093,7 +1091,7 @@ namespace MonoDevelop.Ide.Gui
 
 		object reparseTimeoutLock = new object ();
 
-		internal void StartReparseThread ()
+		void StartReparseThread ()
 		{
 			RunWhenRealized (() => {
 				string currentParseFile = GetCurrentParseFileName ();

@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						Gtk.Application.Invoke ((o, args) => {
 							if (IdeApp.Workbench != null)
 								foreach (var w in IdeApp.Workbench.Documents)
-									w.StartReparseThread ();
+									w.ReparseDocument ();
 						});
 					} catch (Exception) {}
 				});
