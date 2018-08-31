@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (descriptor.KeyChar == '\'')
 				return false;
-			if (excludedMimeTypes.Contains(editor.MimeType))
+			if (Array.IndexOf (excludedMimeTypes, editor.MimeType) < 0)
 				return false;
 			int braceIndex = openBrackets.IndexOf (descriptor.KeyChar);
 			if (braceIndex < 0)
