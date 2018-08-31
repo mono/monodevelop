@@ -144,11 +144,13 @@
     <Reference Include="System.IO.Compression">
       <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.FileSystem">
-      <HintPath>..\..\..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
+    <Reference Include="System.IO.FileSystem, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>true</Private>
+      <SpecificVersion>true</SpecificVersion>
     </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives">
-      <HintPath>..\..\..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>true</Private>
+      <SpecificVersion>true</SpecificVersion>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific. Use netstandard version instead. -->
@@ -161,8 +163,9 @@
     <Reference Include="System.Security.Cryptography.Encoding">
       <HintPath>..\..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>true</Private>
+      <SpecificVersion>true</SpecificVersion>
     </Reference>
     <Reference Include="System.Security.Cryptography.X509Certificates">
       <HintPath>..\..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
