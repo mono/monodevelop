@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 14:25:20+0300\n"
+"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
 "PO-Revision-Date: 2016-02-18 18:02+0800\n"
 "Last-Translator: MysticBoy <mysticboy@live.com>\n"
 "Language-Team: Chinese (Simplified) <mysticboy@live.com>\n"
@@ -188,6 +188,11 @@ msgstr "\"if\" 语句可以重写为 \"switch\" 语句"
 msgid "'internal' modifier is redundant"
 msgstr "\"internal\" 修饰符是冗余的"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1133
+#, fuzzy
+msgid "'null' checking:"
+msgstr "添加 null 检查"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:19
 msgid "'private' modifier is redundant"
 msgstr "\"private\" 修饰符是冗余的"
@@ -201,6 +206,11 @@ msgstr "\"sealed\" 修饰符在密封类中是冗余的"
 msgid "'string.CompareTo' is culture-aware"
 msgstr "\"string.CompareTo\" 可以识别区域性"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1130
+#, fuzzy
+msgid "'this.' preferences:"
+msgstr "具有路径引用"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ForStatementConditionIsTrueAnalyzer.cs:14
 msgid "'true' is redundant as for statement condition"
 msgstr "\"true\" 对于语句条件是冗余的"
@@ -208,6 +218,11 @@ msgstr "\"true\" 对于语句条件是冗余的"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantUnsafeContextAnalyzer.cs:18
 msgid "'unsafe' modifier is redundant"
 msgstr "\"unsafe\" 修饰符是冗余的"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1132
+#, fuzzy
+msgid "'var' preferences:"
+msgstr "具有路径引用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:524
 msgid "'{0}' contains an upper case letter after the first. (Rule '{1}')"
@@ -399,7 +414,7 @@ msgid "(installing)"
 msgstr "(正在安装)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:999
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1499
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1498
 msgid "(keyword)"
 msgstr "(关键字)"
 
@@ -453,8 +468,6 @@ msgstr "+"
 msgid "+?"
 msgstr "+?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1737
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:173
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:142
 msgid "---------------------- Done ----------------------"
@@ -660,15 +673,15 @@ msgstr "32 位"
 msgid "3D based graphical application"
 msgstr "3D 图形应用程序"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2348
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2363
 msgid "3rd copy"
 msgstr "第三个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2349
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
 msgid "4th copy"
 msgstr "第四个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2350
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
 msgid "5th copy"
 msgstr "第五个副本"
 
@@ -676,19 +689,19 @@ msgstr "第五个副本"
 msgid "64-bit"
 msgstr "64 位"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2351
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
 msgid "6th copy"
 msgstr "第六个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2352
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
 msgid "7th copy"
 msgstr "第七个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2353
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
 msgid "8th copy"
 msgstr "第八个副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
 msgid "9th copy"
 msgstr "第九个副本"
 
@@ -752,7 +765,7 @@ msgstr "<b>程序集:</b>\t{0}，版本={1}"
 msgid "<b>Auth. Realm:</b>"
 msgstr "<b>身份验证领域:</b>"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:75
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:73
 msgid "<b>Automatic behaviors</b>"
 msgstr "<b>自动行为</b>"
 
@@ -848,7 +861,7 @@ msgstr "<b>常规</b>"
 msgid "<b>Host name</b>:"
 msgstr "<b>主机名</b>:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:201
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:188
 msgid "<b>Indentation</b>"
 msgstr "<b>缩进</b>"
 
@@ -892,7 +905,7 @@ msgstr "<b>杂项</b>"
 msgid "<b>Move</b> the file to the directory"
 msgstr "将文件<b>移至</b>目录"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:277
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:264
 msgid "<b>Navigation</b>"
 msgstr "<b>导航</b>"
 
@@ -1380,11 +1393,11 @@ msgid ""
 "corresponding NuGet package."
 msgstr "用于创建多平台库项目及其相应 NuGet 包的项目模板。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:201
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:213
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:304
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:118
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:197
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:209
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:285
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
@@ -1393,12 +1406,12 @@ msgstr ""
 "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 RESTful HTTP 服务的示例控"
 "制器。此模板还可以用于 ASP.NET MVC 视图和控制器。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:111
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:161
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:174
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:252
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:265
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:145
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:236
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:249
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:296
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
@@ -1407,8 +1420,8 @@ msgstr ""
 "用于创建 ASP.NET Core 应用程序的项目模板，其中包含示例 ASP.NET Core MVC 视图"
 "和控制器。此模板还可用于 RESTful HTTP 服务。"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:187
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:278
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:222
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1443,7 +1456,7 @@ msgid ""
 "replace it?"
 msgstr "已存在使用命名空间“{0}”注册的架构。是否要替换它?"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1372
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1371
 msgid "A sealed class cannot be inherited."
 msgstr "无法继承密封类。"
 
@@ -1565,7 +1578,7 @@ msgid ""
 "method with a specific signature."
 msgstr "{0} 声明定义可用于使用特定签名封装方法的引用类型。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1399
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
 msgid ""
 "A {0} type is a value type that can contain constructors, constants, fields, "
 "methods, properties, indexers, operators, events, and nested types."
@@ -1605,34 +1618,34 @@ msgstr "ASP.NET 控件"
 msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:227
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:239
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:81
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:93
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:184
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:273
 msgid "ASP.NET Core Empty"
 msgstr "ASP.NET Core 空"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:122
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:200
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:212
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:291
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:303
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:105
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:117
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:196
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:208
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:284
 msgid "ASP.NET Core Web API"
 msgstr "ASP.NET Core Web API"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:186
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:277
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:130
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:221
 msgid "ASP.NET Core Web App"
 msgstr "ASP.NET Core Web 应用"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:160
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:173
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:251
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:264
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:157
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:235
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:248
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
 msgid "ASP.NET Core Web App (MVC)"
 msgstr "ASP.NET Core Web 应用(MVC)"
 
@@ -2377,7 +2390,7 @@ msgstr "正在添加(bin)“{0}”"
 msgid "Adding failed"
 msgstr "添加失败"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1905
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1920
 msgid "Adding files..."
 msgstr "正在添加文件..."
 
@@ -2582,7 +2595,7 @@ msgstr "所有存储库"
 msgid "All solutions"
 msgstr "所有解决方案"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1387
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
 msgid "Allocates a block of memory on the stack."
 msgstr "在堆栈上分配内存块。"
 
@@ -2669,12 +2682,12 @@ msgstr "某个应用程序已在运行。是否要停止它?"
 msgid "An audio application"
 msgstr "音频应用程序"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:228
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:240
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:82
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:94
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:173
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:185
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:263
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:274
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2699,7 +2712,7 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2043
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2058
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3171,7 +3184,7 @@ msgstr "参数标记"
 msgid "Argument is not used in format string"
 msgstr "未在格式字符串中使用参数"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:358
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:359
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:100
 msgid "Arguments"
 msgstr "参数"
@@ -3278,9 +3291,9 @@ msgstr "找不到框架 {0} 的程序集"
 msgid "Assembly not found for framework {0} (in {1})"
 msgstr "找不到框架 {0} 的程序集(在 {1} 中)"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1896
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1902
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1920
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1895
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1901
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1919
 msgid "Assembly:\t{0}"
 msgstr "程序集:\t{0}"
 
@@ -3410,6 +3423,31 @@ msgstr "自动"
 msgid "Automatically check for updates:"
 msgstr "自动检查更新:"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:85
+#, fuzzy
+msgid "Automatically format block on }"
+msgstr "自动插入结束标记"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:94
+#, fuzzy
+msgid "Automatically format on paste"
+msgstr "自动检查更新:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:90
+#, fuzzy
+msgid "Automatically format on return"
+msgstr "自动插入结束标记"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:80
+#, fuzzy
+msgid "Automatically format statement on ;"
+msgstr "自动检查更新:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:75
+#, fuzzy
+msgid "Automatically format when typing"
+msgstr "自动插入结束标记"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:325
 msgid "Automatically hide the pad when it loses focus"
 msgstr "当板失去焦点时，自动隐藏板"
@@ -3505,7 +3543,7 @@ msgstr ""
 "向后引用。\n"
 "例如，(\\w)\\1 查找双写的单词字符。"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:259
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:246
 msgid "Backspace removes indentation"
 msgstr "Backspace 删除缩进"
 
@@ -3606,8 +3644,9 @@ msgstr "对没有 [Flags] 属性的枚举执行位运算"
 msgid "Blank Solution"
 msgstr "空解决方案"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:167
-msgid "Blue:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:191
+#, fuzzy
+msgid "Blue"
 msgstr "蓝色:"
 
 #: ../src/core/Mono.TextEditor.Shared/Mono.TextEditor/BookmarkMarker.cs:61
@@ -3707,7 +3746,7 @@ msgstr "生成(_D)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1496
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1501
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -3756,7 +3795,7 @@ msgstr "生成所有解决方案的所有项目"
 msgid "Build and run the current solution"
 msgstr "生成并运行当前解决方案"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1749
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
 msgid "Build canceled."
 msgstr "已取消生成。"
 
@@ -3772,8 +3811,8 @@ msgstr "生成当前启动项目"
 msgid "Build failed"
 msgstr "生成失败"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1633
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1757
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1638
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1772
 msgid "Build failed."
 msgstr "生成失败。"
 
@@ -3805,7 +3844,7 @@ msgstr "生成解决方案 {0}"
 msgid "Build succeeded"
 msgstr "生成已成功"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1766
 msgid "Build successful."
 msgstr "生成成功。"
 
@@ -3825,12 +3864,16 @@ msgstr "生成当前解决方案"
 msgid "Build {0}"
 msgstr "生成 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1753
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1755
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1768
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1770
 msgid "Build: "
 msgstr "生成:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:615
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1748
+msgid "Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:630
 msgid "Building solution {0} ({1})"
 msgstr "正在生成解决方案 {0} ({1})"
 
@@ -3838,12 +3881,12 @@ msgstr "正在生成解决方案 {0} ({1})"
 msgid "Building {0}"
 msgstr "正在生成 {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:621
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:647
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:622
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:648
 msgid "Building {0} ({1})"
 msgstr "正在生成 {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1013
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1005
 msgid "Building {0} items in solution {1} ({2})"
 msgstr "正在解决方案 {1} ({2})中生成 {0} 个项"
 
@@ -3920,6 +3963,7 @@ msgstr "C 字符串"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:905
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:919
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:355
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:203
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:118
 msgid "C#"
@@ -4052,7 +4096,7 @@ msgstr "通过派生类对静态成员进行调用"
 msgid "Camera tools, etc."
 msgstr "照相机工具等。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1896
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1899
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4091,6 +4135,10 @@ msgstr "无法删除目录 {0}"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:139
 msgid "Can't remove file {0}"
 msgstr "无法删除文件 {0}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:91
+msgid "Can't rename '{0}'. If a retry doesn't work please file a bug."
+msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:762
 msgid "Can't save file"
@@ -4144,7 +4192,7 @@ msgstr "取消对话框"
 msgid "Canceled"
 msgstr "已取消"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildResult.cs:81
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildResult.cs:100
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:379
 msgid "Cancelled"
 msgstr "已取消"
@@ -4161,7 +4209,7 @@ msgstr "正在取消操作..."
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr "无法创建目录 {0}，因为存在具有该名称的文件。"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1904
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1907
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 msgid "Cannot execute \"{0}\""
 msgstr "无法执行“{0}”"
@@ -4461,7 +4509,7 @@ msgstr "勾选此项以在每两条消息之间添加一个空白行"
 msgid "Check to add one line per file changed"
 msgstr "勾选此项以在每个文件更改时添加一行"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
 msgid "Check to add undo step for formatting changes"
 msgstr "选中以添加格式更改的撤销步骤"
 
@@ -4501,7 +4549,7 @@ msgstr "选中以自动插入大括号"
 msgid "Check to automatically remove trailing whitespace from a line"
 msgstr "勾选此项以自动删除行中的尾随空格"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
 msgid "Check to automatically set the search pattern case sensitivity"
 msgstr "选中以自动设置搜索模式区分大小写"
 
@@ -4562,7 +4610,7 @@ msgstr "选中以启用分行"
 msgid "Check to enable parallel building"
 msgstr "选中以启动并行生成"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
 msgid "Check to enable selection surrounding keys"
 msgstr "选中以启用选定内容环绕键"
 
@@ -4653,10 +4701,6 @@ msgstr "选中以确保在运行命令时提示输入参数"
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:65
 msgid "Check to reformat the document when saving"
 msgstr "选中以在保存时重格式化文档"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
-msgid "Check to reformat the document while typing"
-msgstr "选中以在键入时重格式化文档"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:117
 msgid "Check to require the user to accept the NuGet package's license"
@@ -4866,7 +4910,7 @@ msgstr "清理"
 msgid "Clean all projects of all solutions"
 msgstr "清理所有解决方案的所有项目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1239
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1244
 msgid "Clean canceled."
 msgstr "清理已取消。"
 
@@ -4875,11 +4919,11 @@ msgid "Clean complete"
 msgstr "清理完成"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1204
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1252
 msgid "Clean failed."
 msgstr "清理失败。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1246
 msgid "Clean successful."
 msgstr "清理成功。"
 
@@ -4895,20 +4939,24 @@ msgstr "清理所选项目或解决方案"
 msgid "Clean {0}"
 msgstr "清理 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1243
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1245
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1250
 msgid "Clean: "
 msgstr "清理:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1228
+msgid "Clean: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:336
 msgid "Cleaning project"
 msgstr "正在清理项目"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:598
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:613
 msgid "Cleaning solution {0} ({1})"
 msgstr "正在清理解决方案 {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:750
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:751
 msgid "Cleaning {0} ({1})"
 msgstr "正在清理 {0} ({1})"
 
@@ -4979,7 +5027,7 @@ msgstr "清除最近使用的项目"
 msgid "Clear recent solutions list"
 msgstr "清除最近使用的解决方案列表"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:192
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:198
 msgid "Clear results"
 msgstr "清除结果"
 
@@ -5088,7 +5136,7 @@ msgstr "关闭所有文件"
 msgid "Close MonoDevelop"
 msgstr "关闭 MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2434
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
 msgid "Close Project"
 msgstr "关闭项目"
 
@@ -5184,7 +5232,7 @@ msgstr "关闭“{0}”的标记，并关闭所有中间标记"
 msgid "Code"
 msgstr "代码"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:120
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:119
 msgid "Code Actions"
 msgstr "代码操作"
 
@@ -5200,7 +5248,7 @@ msgstr "代码分析"
 msgid "Code Formatting"
 msgstr "代码格式化"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:121
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:120
 msgid "Code Generation"
 msgstr "代码生成"
 
@@ -5210,7 +5258,7 @@ msgstr "代码生成"
 msgid "Code Navigation"
 msgstr "代码导航"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:119
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:121
 msgid "Code Rules"
 msgstr "代码规则"
 
@@ -5218,7 +5266,17 @@ msgstr "代码规则"
 msgid "Code Snippets"
 msgstr "代码片段"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2495
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:359
+#, fuzzy
+msgid "Code Style"
+msgstr "文本样式"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1135
+#, fuzzy
+msgid "Code block preferences:"
+msgstr "所选引用:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2510
 msgid "Code completion database generation"
 msgstr "代码完成数据库生成"
 
@@ -5255,7 +5313,7 @@ msgstr "颜色主题"
 msgid "Color themes (Visual Studio, Xamarin Studio, TextMate) "
 msgstr "颜色主题(Visual Studio、Xamarin Studio、TextMate)"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:141
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:151
 msgid "Color:"
 msgstr "颜色:"
 
@@ -5498,7 +5556,7 @@ msgstr "配置"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1766
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2150
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2200
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1885
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1888
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "在项目“{1}”中找不到配置“{0}”"
 
@@ -5638,9 +5696,9 @@ msgstr ""
 msgid "Console input not supported"
 msgstr "控制台输入不受支持"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1505
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1508
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1504
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1507
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1510
 msgid "Constraint"
 msgstr "约束"
 
@@ -5861,7 +5919,7 @@ msgstr "复制到输出目录"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2216
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2231
 msgid "Copying files..."
 msgstr "正在复制文件..."
 
@@ -5900,7 +5958,7 @@ msgid ""
 "Could not create credential response object because the response was invalid."
 msgstr "由于响应无效，无法创建凭据响应对象。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2197
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2212
 msgid "Could not create directory '{0}'."
 msgstr "无法创建目录“{0}”。"
 
@@ -5930,7 +5988,7 @@ msgid ""
 "project configurations."
 msgstr "无法获取程序集的有效路径。项目配置中可能有冲突。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2185
 msgid "Could not get any file from '{0}'."
 msgstr "无法从“{0}”中获取任何文件。"
 
@@ -6229,7 +6287,7 @@ msgstr "创建新文件"
 msgid "Create new layout"
 msgstr "创建新布局"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:382
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:389
 msgid "Create new method"
 msgstr "创建新方法"
 
@@ -6604,7 +6662,7 @@ msgstr "创建一个空文本文件。"
 msgid "Creates an implementation for:"
 msgstr "为以下项创建实现:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:311
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:318
 msgid "Creates new method"
 msgstr "创建新方法"
 
@@ -6765,10 +6823,10 @@ msgstr "自定义工具命名空间"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1219
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1232
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:670
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:684
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:757
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:671
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:685
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:758
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:772
 msgid "Custom command execution failed"
 msgstr "自定义命令执行失败"
 
@@ -7295,6 +7353,7 @@ msgstr "派生符号"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:106
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:103
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:69
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:90
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:60
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:76
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:122
@@ -7449,7 +7508,7 @@ msgstr "目录"
 msgid "Directory"
 msgstr "目录"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2208
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2223
 msgid "Directory '{0}' could not be moved."
 msgstr "无法移动目录“{0}”。"
 
@@ -7612,6 +7671,11 @@ msgstr "不接受此证书并且不连接到此存储库"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/FileCopyMode.cs:36
 msgid "Do not copy"
 msgstr "不复制"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1142
+#, fuzzy
+msgid "Do not prefer 'this.'"
+msgstr "不引用 mscorlib.dll"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:200
 msgid "Do not reference mscorlib.dll"
@@ -8021,6 +8085,10 @@ msgstr "电子设备软件，例如，电路设计器"
 msgid "Elements"
 msgstr "元素"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1168
+msgid "Elsewhere"
+msgstr ""
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:28
 msgid "Email application"
 msgstr "电子邮件应用程序"
@@ -8209,7 +8277,7 @@ msgstr "启用折叠(_F)"
 msgid "Enable _optimizations"
 msgstr "启用优化(_O)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:183
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:170
 msgid "Enable _selection surrounding keys"
 msgstr "启用选定内容环绕键(_S)"
 
@@ -8708,7 +8776,6 @@ msgstr "等效于 {n} (lazy {n})。"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:71
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:770
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:92
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.ErrorDialog.cs:23
 msgid "Error"
 msgstr "错误"
@@ -8811,6 +8878,16 @@ msgid ""
 msgstr ""
 "获取修订版 {0} 的文本时出错:\n"
 "{1}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:247
+#, fuzzy
+msgid "Error while renaming symbol {0}"
+msgstr "读取文件“{0}”时出错。"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeRulePanel.cs:83
+#, fuzzy
+msgid "Error while saving global rule set file '{0}'."
+msgstr "删除支持文件“{0}”时出错。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:278
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:280
@@ -9200,6 +9277,11 @@ msgstr "表达式始终为“{0}”"
 msgid "Expression not supported."
 msgstr "不支持表达式。"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1136
+#, fuzzy
+msgid "Expression preferences:"
+msgstr "打开首选项对话框"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:662
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:758
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:817
@@ -9458,6 +9540,11 @@ msgstr "字段"
 msgid "Field name"
 msgstr "字段名称"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1134
+#, fuzzy
+msgid "Field preferences:"
+msgstr "所选引用:"
+
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:66
 msgid "Fields"
 msgstr "字段"
@@ -9465,7 +9552,7 @@ msgstr "字段"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:376
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:673
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:125
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:193
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:100
@@ -9477,11 +9564,11 @@ msgstr "字段"
 msgid "File"
 msgstr "文件"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2254
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
 msgid "File '{0}' could not be copied."
 msgstr "无法复制文件“{0}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2252
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2267
 msgid "File '{0}' could not be moved."
 msgstr "无法移动文件“{0}”。"
 
@@ -9691,7 +9778,7 @@ msgid "File {0} could not be written."
 msgstr "无法写入文件 {0}。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/IdeFileSystemExtensionExtension.cs:64
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:221
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:224
 msgid "File {0} is read-only"
 msgstr "文件 {0} 为只读"
 
@@ -9947,6 +10034,21 @@ msgstr "针对错误"
 msgid "For Errors and Warnings"
 msgstr "针对错误和警告"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1166
+#, fuzzy
+msgid "For built-in types"
+msgstr "显示内置配置文件"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1162
+#, fuzzy
+msgid "For locals, parameters and members"
+msgstr "搜索类型和成员"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1163
+#, fuzzy
+msgid "For member access expressions"
+msgstr "输入跟踪表达式。"
+
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/RestoreAndUninstallNuGetPackageAction.cs:133
 msgid "Forcing a NuGet package to be removed may break the build."
 msgstr "强制删除 NuGet 包可能会中断生成。"
@@ -9992,24 +10094,24 @@ msgstr "强制删除 NuGet 包可能会中断生成。"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1323
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1327
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1331
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1418
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1468
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1356
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1361
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1375
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1380
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1385
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1397
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1403
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1412
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1417
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1424
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1429
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1438
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1447
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1462
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1467
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1477
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1482
 msgid "Form"
 msgstr "Form"
 
@@ -10094,7 +10196,7 @@ msgstr "从文件..."
 msgid "From project or solution..."
 msgstr "从项目或解决方案..."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1919
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1918
 msgid "From type:\t{0}"
 msgstr "来源类型:\t{0}"
 
@@ -10208,7 +10310,7 @@ msgstr "库"
 msgid "Garbage Collector"
 msgstr "垃圾回收器"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:753
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:755
 msgid "Gathering class information"
 msgstr "正在收集类信息"
 
@@ -10246,7 +10348,7 @@ msgstr "常规"
 msgid "General Options"
 msgstr "常规选项"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
 msgid "General Pad Text"
 msgstr "常规板文本"
 
@@ -10728,8 +10830,9 @@ msgstr "图形应用程序"
 msgid "Greek"
 msgstr "希腊语"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:163
-msgid "Green:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:185
+#, fuzzy
+msgid "Green"
 msgstr "绿色:"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:162
@@ -10890,7 +10993,6 @@ msgid "Hidden"
 msgstr "隐藏"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:575
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:141
 msgid "Hide"
 msgstr "隐藏"
 
@@ -10980,8 +11082,9 @@ msgstr "主机名:"
 msgid "Html"
 msgstr "HTML"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:146
-msgid "Hue:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:160
+#, fuzzy
+msgid "Hue"
 msgstr "色调:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:70
@@ -11559,11 +11662,10 @@ msgid "Indonesian"
 msgstr "印度尼西亚语"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:84
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:147
 msgid "Info"
 msgstr "信息"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:664
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:672
 msgid "Information about the Instrumentation Service"
 msgstr "有关检测服务的信息"
 
@@ -11639,7 +11741,7 @@ msgstr "插入断点"
 msgid "Insert ChangeLog Entry"
 msgstr "插入 ChangeLog 条目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:622
 msgid "Insert Code"
 msgstr "插入代码"
 
@@ -11647,7 +11749,7 @@ msgstr "插入代码"
 msgid "Insert Documentation Comments"
 msgstr "插入文档注释"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:613
 msgid "Insert Field"
 msgstr "插入字段"
 
@@ -11655,11 +11757,11 @@ msgstr "插入字段"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "插入 GUID (全局唯一标识符)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1250
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:616
 msgid "Insert Method"
 msgstr "插入方法"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:619
 msgid "Insert Property"
 msgstr "插入属性"
 
@@ -11861,7 +11963,7 @@ msgstr "正在安装扩展包"
 msgid "Installing…"
 msgstr "正在安装..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:662
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:670
 msgid "Instrumentation"
 msgstr "检测"
 
@@ -11869,7 +11971,7 @@ msgstr "检测"
 msgid "Instrumentation Monitor"
 msgstr "设备监视"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:671
 msgid "Instrumentation service enabled"
 msgstr "启用检测服务"
 
@@ -11897,7 +11999,7 @@ msgstr "内部"
 msgid "Internal error"
 msgstr "内部错误"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:247
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:234
 msgid "Interpret tab _keystroke as reindent command"
 msgstr "将制表符击键解释为重新缩进命令(_K)"
 
@@ -12167,7 +12269,7 @@ msgstr "保留 ASP.NET 临时文件"
 msgid "Keep Current Identifiers"
 msgstr "保留当前标识符"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1814
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1829
 msgid "Keep file path"
 msgstr "保留文件路径"
 
@@ -12429,12 +12531,9 @@ msgstr "不接受许可证。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:202
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:149
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:172
 msgid "Light"
 msgstr "浅色"
-
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:154
-msgid "Light:"
-msgstr "浅色:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:661
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:118
@@ -12686,7 +12785,7 @@ msgstr "正在目录“{1}”中查找“{0}”"
 msgid "Looking for '{0}' in project '{1}'"
 msgstr "正在项目“{1}”中查找“{0}” "
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:88
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:98
 msgid "Looking for all references"
 msgstr "正在查找所有引用"
 
@@ -13482,7 +13581,7 @@ msgid "Moving files"
 msgstr "正在移动文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2214
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2229
 msgid "Moving files..."
 msgstr "正在移动文件..."
 
@@ -13711,8 +13810,8 @@ msgstr "缺少命名空间 {0}。"
 msgid "Namespace:"
 msgstr "命名空间:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1895
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1901
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1894
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1900
 msgid "Namespace:\t{0}"
 msgstr "命名空间:\t{0}"
 
@@ -14011,6 +14110,7 @@ msgstr "下一个文档"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/MacPlatform/MacPlatform.cs:307
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:104
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
 msgstr "否"
@@ -14053,7 +14153,7 @@ msgid "No code fixes available"
 msgstr "无可用的代码修补程序"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:385
-#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:289
+#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:293
 msgid "No completions found"
 msgstr "未找到完成项"
 
@@ -14150,7 +14250,7 @@ msgid "No solution has been selected."
 msgstr "尚未选择任何解决方案。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:389
-#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:293
+#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:297
 msgid "No suggestions"
 msgstr "无建议"
 
@@ -14442,8 +14542,10 @@ msgstr "仅限此项目"
 msgid "Only this solution"
 msgstr "仅限此解决方案"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:173
-msgid "Opacity:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:200
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:205
+#, fuzzy
+msgid "Opacity"
 msgstr "不透明度:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:331
@@ -14697,7 +14799,7 @@ msgstr "其他板"
 msgid "Other entries"
 msgstr "其他条目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1499
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
 msgid "Outdated Build"
 msgstr "过时的生成"
 
@@ -14708,7 +14810,7 @@ msgstr "过时的生成"
 msgid "Output"
 msgstr "输出"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:369
 msgid "Output Pad Contents"
 msgstr "输出板内容"
 
@@ -15108,7 +15210,7 @@ msgstr "粘贴剪贴板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:681
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:129
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:177
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:110
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:231
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:82
@@ -15194,7 +15296,7 @@ msgstr "挑选成员"
 msgid "Pin output pad"
 msgstr "固定输出板"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:204
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:210
 msgid "Pin results pad"
 msgstr "固定结果板"
 
@@ -15484,6 +15586,114 @@ msgstr "首选项(_E)..."
 msgid "Pre_vious"
 msgstr "上一个(_V)"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1200
+msgid "Prefer 'is null' for reference equality checks"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1141
+msgid "Prefer 'this.'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1153
+msgid "Prefer 'var'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1172
+#, fuzzy
+msgid "Prefer auto properties"
+msgstr "只读属性"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1171
+#, fuzzy
+msgid "Prefer braces"
+msgstr "首选项"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1198
+#, fuzzy
+msgid "Prefer coalesce expression"
+msgstr "输入跟踪表达式。"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1178
+msgid "Prefer collection initializer"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1197
+msgid "Prefer conditional delegate call"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1193
+#, fuzzy
+msgid "Prefer deconstructed variable declaration"
+msgstr "基声明中的参数名称差异"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1183
+#, fuzzy
+msgid "Prefer explicit tuple name"
+msgstr "冗余的显式属性名称"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1154
+msgid "Prefer explicit type"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1148
+#, fuzzy
+msgid "Prefer framework type"
+msgstr "目标框架(_F):"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1186
+#, fuzzy
+msgid "Prefer inferred anonymous type member names"
+msgstr "将匿名类型中的成员置于新行"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1185
+msgid "Prefer inferred tuple element names"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1192
+#, fuzzy
+msgid "Prefer inlined variable declaration"
+msgstr "基声明中的参数名称差异"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1187
+msgid "Prefer local function over anonymous function"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1199
+msgid "Prefer null propagation"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1177
+#, fuzzy
+msgid "Prefer object initializer"
+msgstr "将对象初始值设定项中的成员置于新行"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1180
+msgid "Prefer pattern matching over 'as' with 'null' check"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1179
+msgid "Prefer pattern matching over 'is' with 'cast' check"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1147
+#, fuzzy
+msgid "Prefer predefined type"
+msgstr "引用类型"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1203
+#, fuzzy
+msgid "Prefer readonly"
+msgstr "转为 \"readonly\""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1184
+msgid "Prefer simple 'default' expression"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1196
+#, fuzzy
+msgid "Prefer throw-expression"
+msgstr "ASP.NET 呈现表达式"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:763
 msgid "Preferences"
 msgstr "首选项"
@@ -15680,7 +15890,7 @@ msgstr "进度"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:192
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:27
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:677
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:133
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
@@ -15694,19 +15904,19 @@ msgstr "项目"
 msgid "Project '{0}'"
 msgstr "项目“{0}”"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
 msgid "Project Author Company"
 msgstr "项目作者公司"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
 msgid "Project Author Copyright"
 msgstr "项目作者版权"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
 msgid "Project Author Email"
 msgstr "项目作者电子邮件"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
 msgid "Project Author Name"
 msgstr "项目作者姓名"
 
@@ -15730,11 +15940,11 @@ msgstr "项目配置平台"
 msgid "Project Description"
 msgstr "项目描述"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
 msgid "Project Directory"
 msgstr "项目目录"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
 msgid "Project File"
 msgstr "项目文件"
 
@@ -15755,7 +15965,7 @@ msgstr "项目文件夹"
 msgid "Project Icons"
 msgstr "项目图标"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1767
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs:90
 msgid "Project Name"
 msgstr "项目名"
@@ -15786,7 +15996,7 @@ msgstr "项目引用"
 msgid "Project Templates"
 msgstr "项目模板"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
 msgid "Project Trademark"
 msgstr "项目商标"
 
@@ -15856,6 +16066,11 @@ msgstr "不是在活动配置中生成的项目"
 msgid "Project not found"
 msgstr "未找到项目"
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1065
+#, fuzzy
+msgid "Project not selected to build for this solution configuration"
+msgstr "不是在活动配置中生成的项目"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:246
 msgid ""
 "Project publishing failed. There is a stale .svn folder in the path '{0}'"
@@ -15915,6 +16130,7 @@ msgid "Properties"
 msgstr "属性"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:34
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:116
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:148
 msgid "Property"
 msgstr "属性"
@@ -16031,6 +16247,22 @@ msgstr "Python"
 msgid "Q&A"
 msgstr "问答"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1160
+msgid "Qualify event access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1157
+msgid "Qualify field access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1159
+msgid "Qualify method access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1158
+msgid "Qualify property access with 'this'"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
 msgid "Quantifiers"
 msgstr "限定符"
@@ -16042,8 +16274,8 @@ msgstr "限定符"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1246
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1252
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1287
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1457
 msgid "Query Form"
 msgstr "Query Form"
 
@@ -16231,15 +16463,15 @@ msgid "Rebuild {0}"
 msgstr "重新生成 {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:69
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1329
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1334
 msgid "Rebuilding..."
 msgstr "正在重新生成..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1342
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1347
 msgid "Rebuilding... (Build)"
 msgstr "正在重新生成...(生成)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1330
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1335
 msgid "Rebuilding... (Clean)"
 msgstr "正在重新生成...(清理)"
 
@@ -16276,8 +16508,9 @@ msgstr "最近使用"
 msgid "Recently used templates"
 msgstr "最近使用的模板"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:159
-msgid "Red:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:179
+#, fuzzy
+msgid "Red"
 msgstr "红色:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:80
@@ -16783,8 +17016,8 @@ msgstr "正在删除..."
 msgid "Rename"
 msgstr "重命名"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:86
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:100
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:88
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:102
 msgid "Rename Class"
 msgstr "重命名类"
 
@@ -16794,19 +17027,19 @@ msgstr "重命名类"
 msgid "Rename Configuration"
 msgstr "重命名配置"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:80
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:82
 msgid "Rename Delegate"
 msgstr "重命名委托"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:82
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:84
 msgid "Rename Enum"
 msgstr "重命名枚举"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:94
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:96
 msgid "Rename Event"
 msgstr "重命名事件"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:90
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:92
 msgid "Rename Field"
 msgstr "重命名字段"
 
@@ -16818,44 +17051,44 @@ msgstr "重命名组"
 msgid "Rename Group..."
 msgstr "重命名组..."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:78
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:80
 msgid "Rename Interface"
 msgstr "重名接口"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:116
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:118
 msgid "Rename Item"
 msgstr "重命名项"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:114
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:116
 msgid "Rename Label"
 msgstr "重命名标签"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:102
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:104
 msgid "Rename Method"
 msgstr "重命名方法"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:112
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:114
 msgid "Rename Namespace"
 msgstr "重命名命名空间"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:106
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:108
 msgid "Rename Parameter"
 msgstr "重命名参数"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:92
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:94
 msgid "Rename Property"
 msgstr "重命名属性"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:84
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:86
 msgid "Rename Struct"
 msgstr "重命名结构"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:65
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:110
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:67
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:112
 msgid "Rename Type Parameter"
 msgstr "重命名类型参数"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:108
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:110
 msgid "Rename Variable"
 msgstr "重命名变量"
 
@@ -16882,6 +17115,11 @@ msgstr "重命名为“{0}”"
 #: ../src/addins/MonoDevelop.Refactoring/Gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:36
 msgid "Rename {0}"
 msgstr "重命名 {0}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/SymbolRenamedCodeActionOperationFactoryWorkspaceService.cs:95
+#, fuzzy
+msgid "Rename {0} to {1}"
+msgstr "将文件“{0}”重命名为“{1}”"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:191
 msgid "Renamed"
@@ -17718,7 +17956,7 @@ msgstr "正在为 <b>{0}</b> 配置 <b>{1}</b> 运行测试"
 msgid "Running web server..."
 msgstr "正在运行 Web 服务器..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1889
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1892
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:768
 msgid "Running {0} ..."
@@ -17871,8 +18109,9 @@ msgstr "切换最大化/普通视图(_W)"
 msgid "Sample file output"
 msgstr "示例文件输出"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:150
-msgid "Saturation:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:166
+#, fuzzy
+msgid "Saturation"
 msgstr "饱和度:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:151
@@ -17994,7 +18233,7 @@ msgstr "另存为..."
 msgid "Save build output"
 msgstr "保存生成输出"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1674
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1679
 msgid "Save changed documents before building?"
 msgstr "是否在生成前保存已更改的文档?"
 
@@ -18193,7 +18432,7 @@ msgstr "搜索成员"
 msgid "Search Packages..."
 msgstr "搜索包..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:789
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:651
 msgid "Search Result"
 msgstr "搜索结果"
 
@@ -18693,7 +18932,7 @@ msgstr "选择高优先级任务的前景色"
 msgid "Select the foreground color for the normal priority tasks"
 msgstr "选择普通优先级任务的前景色"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
 msgid "Select the indentation mode"
 msgstr "选择缩进模式"
 
@@ -18833,7 +19072,7 @@ msgstr "选择缩进的宽度"
 msgid "Select the width of tab stops"
 msgstr "选择制表位的宽度"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:77
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
 msgid "Select the word break mode"
 msgstr "选择字符间距模式"
 
@@ -19107,6 +19346,11 @@ msgstr "设置"
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:13
 msgid "Settings applications"
 msgstr "设置应用程序"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:123
+#, fuzzy
+msgid "Severity"
+msgstr "安全性"
 
 #: ../src/addins/CSharpBinding/templates/SharedAssetsProject.xpt.xml:8
 msgid "Shared Project"
@@ -19383,7 +19627,7 @@ msgstr "每天显示一个结果"
 msgid "Show options window"
 msgstr "显示选项窗口"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:204
 msgid "Show output"
 msgstr "显示输出"
 
@@ -19575,7 +19819,7 @@ msgstr "大小"
 msgid "Size:"
 msgstr "大小:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1895
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1910
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr "跳过"
@@ -19592,6 +19836,11 @@ msgstr "跳过生成未修改的项目"
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:749
 msgid "Skipped '{0}'"
 msgstr "已跳过“{0}”"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1064
+#, fuzzy
+msgid "Skipped Build: Project: {0}, Configuration: {1}"
+msgstr "项目配置"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1326
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:747
@@ -19655,11 +19904,11 @@ msgstr "解决方案“{0}”和其他解决方案当前已打开"
 msgid "Solution '{0}' is currently open"
 msgstr "解决方案“{0}”当前已打开"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1562
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1573
 msgid "Solution Directory"
 msgstr "解决方案目录"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1560
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1571
 msgid "Solution File"
 msgstr "解决方案文件"
 
@@ -19673,7 +19922,7 @@ msgstr "解决方案文件"
 msgid "Solution Item"
 msgstr "解决方案项"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1561
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1572
 msgid "Solution Name"
 msgstr "解决方案名称"
 
@@ -19768,7 +20017,7 @@ msgstr "可能需要重载某些文件，并且这些文件的编辑状态(例�
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr "此提交中的某些文件没有 ChangeLog 消息。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1675
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1680
 msgid "Some of the open documents have unsaved changes."
 msgstr "某些已打开的文档具有未保存的更改。"
 
@@ -20350,7 +20599,7 @@ msgid "Stock Icons"
 msgstr "默认图标"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:89
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:187
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:193
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:241
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:95
 #: ../external/xwt/Xwt/Xwt/Command.cs:74
@@ -20534,7 +20783,7 @@ msgstr "调用静态函数时建议使用类进行声明"
 msgid "SuiteName"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:249
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:136
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:146
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:201
@@ -21116,7 +21365,7 @@ msgid "Tests"
 msgstr "测试"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:208
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:601
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Visualizer/TextVisualizer.cs:54
 msgid "Text"
@@ -21124,7 +21373,7 @@ msgstr "文本"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1022
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:366
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:392
 msgid "Text Editor"
 msgstr "文本编辑器"
@@ -21334,7 +21583,7 @@ msgid "The application could not be started"
 msgstr "无法启动应用程序"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1928
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1931
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:271
@@ -21472,7 +21721,7 @@ msgstr "文件“{0}”已存在。\n"
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "文件“{0}”已存在。是否要覆盖它?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2085
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2100
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "文件“{0}”已存在。是否要替换它?"
 
@@ -21546,7 +21795,7 @@ msgstr "文件 {0} 已存在。是否要替换它?"
 msgid "The file {0} could not be deleted"
 msgstr "无法删除文件 {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1828
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1843
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "文件 {0} 位于文件夹目录之外。想如何处理?"
 
@@ -21703,7 +21952,7 @@ msgstr ""
 "库名称包含无效字符。有效库名称的示例包括 \"MyPackage\" 和 \"MyPackage.Sample"
 "\"。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2071
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2086
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr "该项目中的链接“{0}”已包含文件“{1}”"
 
@@ -21893,7 +22142,7 @@ msgstr ""
 "正在使用文件格式“{1}”保存项目“{0}”，但此版 Visual Studio 不支持该项目所面向的"
 "框架({2})"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2431
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2446
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
 "want to continue closing it?"
@@ -21939,7 +22188,7 @@ msgstr "产生此组件的项目或程序集。"
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr "该项目将发布到存储库“{0}”的模块“{1}”。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1500
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1505
 msgid ""
 "The project you are executing has changes done after the last time it was "
 "compiled. Do you want to continue?"
@@ -22052,7 +22301,7 @@ msgstr "针对此变量向用户显示的工具提示。"
 msgid "The top-most child of the window within the gtk.Builder file."
 msgstr "gtk.Builder 文件中的最顶层子窗口。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1421
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1420
 msgid ""
 "The try-catch statement consists of a {0} block followed by one or more {1} "
 "clauses, which specify handlers for different exceptions."
@@ -22060,13 +22309,13 @@ msgstr ""
 "try-catch 语句由一个 {0} 程序块后接一个或多个 {1} 子句的形式组成，这些子句指"
 "定不同异常的处理程序。 "
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1505
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1504
 msgid ""
 "The type argument must be a reference type; this applies also to any class, "
 "interface, delegate, or array type."
 msgstr "类型参数必须为引用类型；这同样适用于所有类、接口、委托或数组类型。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1510
 msgid ""
 "The type argument must be a value type. Any value type except Nullable can "
 "be specified. See Using Nullable Types (C# Programming Guide) for more "
@@ -22075,7 +22324,7 @@ msgstr ""
 "类型参数必须为值类型。可指定除 Nullable 以外的任何值类型。请参阅“使用可以为 "
 "null 的类型(C# 编程指南)”了解详细信息。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1508
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1507
 msgid ""
 "The type argument must have a public parameterless constructor. When used "
 "together with other constraints, the new() constraint must be specified last."
@@ -22145,7 +22394,7 @@ msgid ""
 "range variable for use later in the query."
 msgstr "{0} 子句允许子表达式将其值存储在新的范围变量中，以供将来在查询中使用。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1464
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
 msgid ""
 "The {0} clause constrains which types can be used as the type parameter in a "
 "generic declaration."
@@ -22163,11 +22412,11 @@ msgid ""
 "element in either ascending or descending order."
 msgstr "{0} 子句指定在给定元素上按升序或降序对返回的序列排序。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1368
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
 msgid "The {0} clause specifies the type of value to return from the query."
 msgstr "{0} 子句指定要从查询返回的值类型。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1459
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
 msgid ""
 "The {0} clause specifies which elements from the data source to be returned "
 "according to a given condition."
@@ -22189,13 +22438,13 @@ msgid ""
 msgstr ""
 "{0} 约束指定类型参数必须是引用类型；这也适用于所有类、接口、委托或数组类型。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1396
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1395
 msgid ""
 "The {0} constraint specifies that the type argument must be a value type. "
 "Any value type except Nullable can be specified."
 msgstr "{0} 约束指定类型参数必须为值类型。可以指定 Nullable 以外的任何值类型。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1440
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
 msgid ""
 "The {0} directive creates an alias for a namespace or imports types defined "
 "in other namespaces. The {0} statement defines a scope at the end of which "
@@ -22221,7 +22470,7 @@ msgstr ""
 "{0} 关键字可用作运算符或修饰符。用作运算符时，用于在堆上创建对象和调用构造函"
 "数。用作修饰符时，用于隐藏基类成员中的继承成员。 "
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1435
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1434
 msgid ""
 "The {0} keyword denotes an unsafe context, which is required for any "
 "operation involving pointers."
@@ -22236,7 +22485,7 @@ msgstr ""
 "{0} 关键字将某个查询中与键值匹配的元素组合在一起，并将结果存储在 {1} 中。它也"
 "可以存储在组中，以供将来在含有 \"into\" 的查询中使用。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1449
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
 msgid ""
 "The {0} keyword indicates that a field can be modified in the program by "
 "something such as the operating system, the hardware, or a concurrently "
@@ -22271,7 +22520,7 @@ msgstr ""
 "{0} 关键字是一个成员访问修饰符。私有访问是允许的最低访问级别。私有成员只有在"
 "声明它们的类或结构的主体中才是可访问的。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1349
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1348
 msgid ""
 "The {0} keyword is a modifier that you can use on fields. When a field "
 "declaration includes a {0} modifier, assignments to the fields introduced by "
@@ -22289,7 +22538,7 @@ msgstr ""
 "{0} 关键字是类型和类型成员的访问修饰符。内部成员只有在同一程序集的文件中才是"
 "可访问的。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1345
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1344
 msgid ""
 "The {0} keyword is an access modifier for types and type members. Public "
 "access is the most permissive access level. There are no restrictions on "
@@ -22304,7 +22553,7 @@ msgid ""
 "derived class."
 msgstr "{0} 关键字用于从派生类中访问基类的成员。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1431
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
 msgid ""
 "The {0} keyword is used to control the overflow-checking context for "
 "integral-type arithmetic operations and conversions."
@@ -22356,7 +22605,7 @@ msgstr ""
 "{0} 关键字用于定义一个自定义访问器，当订阅事件时将调用该访问器。如果提供该访"
 "问器，还必须提供 remove 访问器。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1358
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
 msgid ""
 "The {0} keyword is used to define a custom accessor for when an event is "
 "unsubscribed from. If supplied, an add accessor must also be supplied."
@@ -22364,7 +22613,7 @@ msgstr ""
 "{0} 关键字用于定义一个自定义访问器，当取消订阅事件时将调用该访问器。如果提供"
 "该访问器，还必须提供 add 访问器。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1377
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
 msgid ""
 "The {0} keyword is used to define an accessor method to assign to the value "
 "of the property or indexer element."
@@ -22376,7 +22625,7 @@ msgid ""
 "of the property or indexer element."
 msgstr "{0} 关键字用于定义访问器方法，以检索属性或索引器元素的值。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1474
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
 msgid ""
 "The {0} keyword is used to indicate that a method, get accessor, or operator "
 "is an iterator."
@@ -22390,7 +22639,7 @@ msgid ""
 msgstr ""
 "{0} 关键字用于修改字段或局部变量的声明。它指定不能修改字段或局部变量的值。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1444
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1443
 msgid ""
 "The {0} keyword is used to modify a method, property, indexer, or event "
 "declaration and allow for it to be overridden in a derived class."
@@ -22448,7 +22697,7 @@ msgid ""
 "into multiple files."
 msgstr "类型声明上的 {0} 关键字允许将定义拆分到多个文件中。 "
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1409
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1408
 msgid "The {0} keyword refers to the current instance of the class."
 msgstr "{0} 关键字引用类的当前实例。"
 
@@ -22465,7 +22714,7 @@ msgid ""
 msgstr "{0} 循环反复执行一个语句或语句块，直到指定的表达式计算为 false。"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1302
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1353
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1352
 msgid ""
 "The {0} method parameter keyword on a method parameter causes a method to "
 "refer to the same variable that was passed into the method."
@@ -22496,11 +22745,11 @@ msgid ""
 "compatible with a given type."
 msgstr "{0} 运算符用于检查对象的运行时类型与给定类型是否兼容。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1426
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
 msgid "The {0} operator is used to obtain the System.Type object for a type."
 msgstr "{0} 运算符用于获取类型的 System.Type 对象。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1382
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
 msgid "The {0} operator is used to obtain the size in bytes for a value type."
 msgstr "{0} 运算符用于获取值类型的大小(以字节为单位)。"
 
@@ -22521,14 +22770,14 @@ msgid ""
 "until a specified expression evaluates to false."
 msgstr "{0} 语句重复执行一个语句或语句块，直到指定的表达式计算为 false。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1479
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
 msgid ""
 "The {0} statement executes a statement or a block of statements until a "
 "specified expression evaluates to false."
 msgstr ""
 "在指定表达式的计算结果为 false 之前，{0} 语句会一直执行语句或语句程序块。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1405
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
 msgid ""
 "The {0} statement is a control statement that handles multiple selections by "
 "passing control to one of the {1} statements within its body."
@@ -22536,7 +22785,7 @@ msgstr ""
 "{0} 语句是一个控制语句，可通过将控制传递到其主体内的某个 {1} 语句来处理多重选"
 "择。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1414
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
 msgid ""
 "The {0} statement is used to signal the occurrence of an anomalous situation "
 "(exception) during the program execution."
@@ -22560,7 +22809,7 @@ msgid ""
 "Boolean expression."
 msgstr "{0} 语句基于布尔表达式的值来选择要执行的语句。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1363
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
 msgid ""
 "The {0} statement terminates execution of the method in which it appears and "
 "returns control to the calling method."
@@ -22642,7 +22891,7 @@ msgstr "函数名称存在警告"
 msgid "There is a warning for the print expression"
 msgstr "打印表达式存在警告"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2076
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "项目中已存在名为“{0}”的文件"
 
@@ -22663,7 +22912,7 @@ msgstr "目标目录中已经存在名为“{0}”的文件"
 msgid "There is already a layout with that name"
 msgstr "已存在具有该名称的布局"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1945
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1960
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "项目中已存在名为“{0}”的链接"
 
@@ -23692,7 +23941,7 @@ msgid "Unknown parser error: {0}"
 msgstr "未知分析程序错误: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:432
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:547
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:548
 msgid "Unknown project type"
 msgstr "未知项目类型"
 
@@ -23996,6 +24245,36 @@ msgstr "使用“{0}”中的默认设置"
 msgid "Use existing Makefiles"
 msgstr "使用现有生成文件"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1281
+#, fuzzy
+msgid "Use expression body for accessors"
+msgstr "转为表达式主体"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1253
+#, fuzzy
+msgid "Use expression body for constructors"
+msgstr "构造函数模板"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1274
+#, fuzzy
+msgid "Use expression body for indexers"
+msgstr "转为表达式主体"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1246
+#, fuzzy
+msgid "Use expression body for methods"
+msgstr "转为表达式主体"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1260
+#, fuzzy
+msgid "Use expression body for operators"
+msgstr "设置运算符的间距"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1267
+#, fuzzy
+msgid "Use expression body for properties"
+msgstr "转为表达式主体"
+
 #  nb.AppendPage(aatp, new Label("Authors"));
 #  nb.AppendPage(changelog, new Label("ChangeLog"));
 #  nb.AppendPage(aatp, new Label("Authors"));
@@ -24059,7 +24338,7 @@ msgstr ""
 "在方法声明中使用 {0} 修饰符指示在外部实现该方法。extern 修饰符的常见用法是与 "
 "DllImport 属性一起使用。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1391
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1390
 msgid ""
 "Use the {0} modifier to declare a static member, which belongs to the type "
 "itself rather than to a specific object."
@@ -24072,7 +24351,7 @@ msgid ""
 msgstr ""
 "使用此命令可以将 JITed 方法地址转换为 Sample 工具输出文件的完整方法名称。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1484
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
 msgid ""
 "Used to obtain the simple (unqualified) string name of a variable, type, or "
 "member."
@@ -24215,6 +24494,11 @@ msgstr "变量"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:427
 msgid "Variable name"
 msgstr "变量名称"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1137
+#, fuzzy
+msgid "Variable preferences:"
+msgstr "所选引用:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:60
 msgid "Variables to include"
@@ -24559,7 +24843,6 @@ msgstr "正在等待调试程序连接..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:94
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:88
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:145
 msgid "Warning"
 msgstr "警告"
 
@@ -24787,6 +25070,15 @@ msgid ""
 "list is redundant"
 msgstr "对象创建使用对象或集合初始值设定项时，空参数列表是冗余的"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1239
+#, fuzzy
+msgid "When on single line"
+msgstr "将程序块保留在一行上"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1238
+msgid "When possible"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:480
 msgid ""
 "When set, System.IO.FileSystemWatcher will use the default managed "
@@ -24819,6 +25111,10 @@ msgid ""
 msgstr ""
 "如果所用的 Mono 已使用 LLVM 支持进行编译，它会强制 Mono 回退到其 JIT 引擎并且"
 "不使用 LLVM 后端"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1167
+msgid "When variable type is apparent"
+msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:406
 msgid "Where do you want to save this configuration?"
@@ -24907,7 +25203,7 @@ msgstr "Windows Communication Foundation (WCF)"
 msgid "Windows Forms Theme"
 msgstr "Windows 窗体主题"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:299
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:286
 msgid "Word _break mode:"
 msgstr "字符间距模式(_B):"
 
@@ -24932,15 +25228,15 @@ msgstr "工作路径:"
 msgid "Workspace"
 msgstr "工作区"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:690
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:696
 msgid "Workspace Directory"
 msgstr "工作区目录"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:688
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:694
 msgid "Workspace File"
 msgstr "工作区文件"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:689
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:695
 msgid "Workspace Name"
 msgstr "工作区名称"
 
@@ -24952,7 +25248,7 @@ msgstr "工作区名称:"
 msgid "Workspace saved."
 msgstr "已保存工作区。"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:222
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:225
 msgid "Would you like to make the file writable?"
 msgstr "要使该文件可写吗?"
 
@@ -25097,6 +25393,7 @@ msgstr "XML 编辑器"
 msgid "Xml comment is not placed before a valid language element"
 msgstr "XML 注释未放置在有效的语言元素前"
 
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:103
 #: ../external/xwt/Xwt/Xwt/Command.cs:62
 msgid "Yes"
 msgstr "是"
@@ -25278,7 +25575,7 @@ msgid ""
 "[;]"
 msgstr "[属性] [修饰符] {0} 标识符 [:基类型] {{ 枚举器列表 }} [;]"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1397
 msgid "[attributes] [modifiers] {0} identifier [:interfaces] body [;]"
 msgstr "[属性] [修饰符] {0} 标识符 [:接口] 正文 [;]"
 
@@ -25308,7 +25605,7 @@ msgid "[firstCharacter-lastCharacter]"
 msgstr "[firstCharacter-lastCharacter]"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1170
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1375
 msgid "[modifiers] {0} [ {{ accessor-body }} ]"
 msgstr "[修饰符] {0} [ {{ 访问器正文 }} ]"
 
@@ -25331,7 +25628,7 @@ msgstr ""
 "{0} 方法声明"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1008
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1356
 msgid "[modifiers] {0} {{ accessor-body }}"
 msgstr "[修饰符] {0} {{ 修饰符-正文 }}"
 
@@ -25543,7 +25840,7 @@ msgstr "将命名空间与目录名称关联(_A)"
 msgid "_Automatically restore packages when opening a solution."
 msgstr "打开解决方案时自动还原包(_A)。"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:159
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:146
 msgid "_Automatically set search pattern case sensitivity"
 msgstr "自动将搜索模式设置为区分大小写(_A)"
 
@@ -25659,10 +25956,6 @@ msgstr "比较(_C)"
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:297
 msgid "_Config"
 msgstr "配置(_C)"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:151
-msgid "_Configure Rule ‘{0}’"
-msgstr "配置规则“{0}”(_C)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:102
 msgid "_Continue Debugging"
@@ -25780,10 +26073,6 @@ msgstr "电子邮件(_E):"
 msgid "_Enable animations"
 msgstr "启用动画(_E)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:135
-msgid "_Enable on the fly code formatting"
-msgstr "启用动态代码格式(_E)"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:71
 msgid "_Errors and Warnings"
 msgstr "错误和警告(_E)"
@@ -25869,7 +26158,7 @@ msgstr "设置文档的格式(_F)"
 msgid "_Format Selection"
 msgstr "设置选定内容的格式(_F)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:147
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:134
 msgid "_Format document on save"
 msgstr "保存时格式化文档(_F)"
 
@@ -25889,7 +26178,7 @@ msgstr "生成(_G)"
 msgid "_Generate Makefiles"
 msgstr "生成生成文件(_G)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:171
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:158
 msgid "_Generate additional undo steps for formatting"
 msgstr "生成其他格式化撤销步骤(_G)"
 
@@ -25975,7 +26264,7 @@ msgstr "缩进(_I)"
 msgid "_Indent width:"
 msgstr "缩进宽度(_I):"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:223
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:210
 msgid "_Indentation mode:"
 msgstr "缩进模式(_I):"
 
@@ -25991,7 +26280,7 @@ msgstr "输入方法(_I)"
 msgid "_Insert"
 msgstr "插入(_I)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:94
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:92
 msgid "_Insert matching brace"
 msgstr "插入匹配大括号(_I)"
 
@@ -26510,7 +26799,7 @@ msgstr "显示过程行分隔符(_S)"
 msgid "_Sign this assembly"
 msgstr "对此程序集签名(_S)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:119
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:117
 msgid "_Smart semicolon placement"
 msgstr "智能分号放置(_S)"
 
@@ -26765,7 +27054,7 @@ msgstr "\"_\" 应后接小写字母。(规则“{0}”)"
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr "\"_\" 应后接大写字母。(规则“{0}”)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2347
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2362
 msgid "another copy"
 msgstr "另一个副本"
 
@@ -26785,11 +27074,11 @@ msgstr "列"
 msgid "comment block"
 msgstr "注释块"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2346
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2361
 msgid "copy"
 msgstr "副本"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2355
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
 msgid "copy {0}"
 msgstr "副本 {0}"
 
@@ -26881,11 +27170,11 @@ msgstr "项目“{1}”中的文件“{0}”"
 msgid "file {0}"
 msgstr "文件 {0}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1462
 msgid "generic-class-declaration {0} type-parameter : type-constraint"
 msgstr "泛型类声明 {0} 类型参数 : 类型约束"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1468
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1467
 msgid ""
 "generic-class-declaration {0} type-parameter : type-constraint\n"
 "\n"
@@ -27017,6 +27306,11 @@ msgstr "{0} 的 pkg-config 文件"
 msgid "pkg-config folder"
 msgstr "pkg-config 文件夹"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1131
+#, fuzzy
+msgid "predefined type preferences:"
+msgstr "所选引用:"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:62
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:106
 msgid "property"
@@ -27067,9 +27361,14 @@ msgid ""
 "true is redundant as for statement condition, thus can be safely ommited"
 msgstr "true 对于语句条件是冗余的，因此可以安全地省略"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1385
 msgid "type * ptr = {0} type [ expr ];"
 msgstr "类型 * ptr = {0} 类型 [ 表达式 ];"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:100
+#, fuzzy
+msgid "typescript files"
+msgstr "TypeScript 文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1557
@@ -27165,7 +27464,7 @@ msgstr ""
 msgid "{0} ([initializers]; [expression]; [iterators]) statement"
 msgstr "{0} ([初始化表达式]; [表达式]; [迭代器]) 语句"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1438
 msgid ""
 "{0} (expression | type identifier = initializer) statement\n"
 "{0} [alias = ]class_or_namespace;"
@@ -27186,7 +27485,7 @@ msgstr ""
 "  语句1\n"
 "  [{1}\"n  语句2]"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1403
 msgid ""
 "{0} (expression)\n"
 " {{\n"
@@ -27208,7 +27507,7 @@ msgstr ""
 "  跳转语句]\n"
 " }}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1477
 msgid "{0} (expression) statement"
 msgstr "{0} (表达式) 语句"
 
@@ -27263,15 +27562,10 @@ msgstr ""
 "\n"
 "{3} IMy 接口&lt;{1} T&gt; {{}}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1380
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1424
 msgid "{0} (type)"
 msgstr "{0} (类型)"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:177
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:157
-msgid "{0} ({1})"
-msgstr "{0} ({1})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:620
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
@@ -27357,8 +27651,8 @@ msgid "{0} Warning"
 msgid_plural "{0} Warnings"
 msgstr[0] "{0} 个警告"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1361
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1412
 msgid "{0} [expression];"
 msgstr "{0} [表达式];"
 
@@ -27389,7 +27683,7 @@ msgstr ""
 "or\n"
 "{0} (表达式)"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1429
 msgid ""
 "{0} block\n"
 "{0} (expression)"
@@ -27412,7 +27706,7 @@ msgid "{0} change"
 msgid_plural "{0} changes"
 msgstr[0] "{0} 项更改"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1457
 msgid "{0} condition"
 msgstr "{0} 条件"
 
@@ -27444,14 +27738,14 @@ msgid "{0} day ago"
 msgid_plural "{0} days ago"
 msgstr[0] "{0} 天前"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1447
 msgid "{0} declaration"
 msgstr "{0} 声明"
 
 #  FIXME: make this a resource in the resource file
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1235
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1745
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1240
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1760
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
@@ -27705,7 +27999,7 @@ msgstr ""
 msgid "{0} retargeted with warnings."
 msgstr "已重定 {0} 目标，但出现警告。"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
 msgid "{0} return-type"
 msgstr "{0} 返回类型"
 
@@ -27747,7 +28041,7 @@ msgstr ""
 "  ...\n"
 "{0} try-block {1} catch-block"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1419
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1418
 msgid ""
 "{0} try-block\n"
 "  {1} (exception-declaration-1) catch-block-1 \n"
@@ -27775,8 +28069,8 @@ msgid "{0} updated with warnings."
 msgstr "已更新 {0}，但出现警告。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1746
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1761
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
@@ -27800,7 +28094,7 @@ msgstr "已成功生成 {0}。"
 msgid "{0} with optional parameter is hidden by overload"
 msgstr "具有可选参数的 {0} 被重载隐藏"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
 #, fuzzy
 msgid ""
 "{0} {1}\n"
@@ -27818,7 +28112,7 @@ msgstr ""
 msgid "{0} | {1}     Started at {2}"
 msgstr "{0} | {1}     开始时间 {2}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1482
 msgid "{0}(identifier)"
 msgstr "{0}(标识符)"
 
@@ -27844,6 +28138,7 @@ msgid "{0}. Please see the Package Console for more details."
 msgstr "{0}。请参阅包控制台了解详细信息。"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/SignatureHelpSessionView.cs:420
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:257
 msgid "{0}:"
 msgstr "{0}:"
 
@@ -27889,8 +28184,17 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid "Template for parentheses"
-#~ msgstr "括号模板"
+#~ msgid "Check to reformat the document while typing"
+#~ msgstr "选中以在键入时重格式化文档"
 
-#~ msgid "Template for type cast"
-#~ msgstr "类型强制转换模板"
+#~ msgid "Light:"
+#~ msgstr "浅色:"
+
+#~ msgid "_Configure Rule ‘{0}’"
+#~ msgstr "配置规则“{0}”(_C)"
+
+#~ msgid "_Enable on the fly code formatting"
+#~ msgstr "启用动态代码格式(_E)"
+
+#~ msgid "{0} ({1})"
+#~ msgstr "{0} ({1})"

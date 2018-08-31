@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 14:25:20+0300\n"
+"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
 "PO-Revision-Date: 2010-05-28 16:54:24+0200\n"
 "Last-Translator: David Makovský <yakeen@sannyas-on.net>\n"
 "Language-Team: cs <cs@li.org>\n"
@@ -200,6 +200,11 @@ msgstr "Příkaz if se může přepsat jako příkaz switch"
 msgid "'internal' modifier is redundant"
 msgstr "Modifikátor internal je redundantní."
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1133
+#, fuzzy
+msgid "'null' checking:"
+msgstr "Přidat kontrolu hodnot null"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:19
 msgid "'private' modifier is redundant"
 msgstr "Modifikátor private je redundantní."
@@ -213,6 +218,11 @@ msgstr "Modifikátor sealed je v třídách sealed redundantní."
 msgid "'string.CompareTo' is culture-aware"
 msgstr "string.CompareTo zohledňuje jazykovou verzi."
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1130
+#, fuzzy
+msgid "'this.' preferences:"
+msgstr "Obsahuje odkazy na cesty"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ForStatementConditionIsTrueAnalyzer.cs:14
 msgid "'true' is redundant as for statement condition"
 msgstr "Výraz true je redundantní jako podmínka příkazu for."
@@ -220,6 +230,11 @@ msgstr "Výraz true je redundantní jako podmínka příkazu for."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantUnsafeContextAnalyzer.cs:18
 msgid "'unsafe' modifier is redundant"
 msgstr "Modifikátor unsafe je redundantní"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1132
+#, fuzzy
+msgid "'var' preferences:"
+msgstr "Obsahuje odkazy na cesty"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:524
 msgid "'{0}' contains an upper case letter after the first. (Rule '{1}')"
@@ -411,7 +426,7 @@ msgid "(installing)"
 msgstr "(probíhá instalace)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:999
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1499
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1498
 msgid "(keyword)"
 msgstr "(klíčové slovo)"
 
@@ -466,8 +481,6 @@ msgstr "+"
 msgid "+?"
 msgstr "+?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1227
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1737
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:173
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:142
 msgid "---------------------- Done ----------------------"
@@ -685,15 +698,15 @@ msgstr "32bitová"
 msgid "3D based graphical application"
 msgstr "3D grafická aplikace"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2348
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2363
 msgid "3rd copy"
 msgstr "3. kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2349
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
 msgid "4th copy"
 msgstr "4. kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2350
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
 msgid "5th copy"
 msgstr "5. kopie"
 
@@ -701,19 +714,19 @@ msgstr "5. kopie"
 msgid "64-bit"
 msgstr "64bitová"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2351
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
 msgid "6th copy"
 msgstr "6. kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2352
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
 msgid "7th copy"
 msgstr "7. kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2353
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
 msgid "8th copy"
 msgstr "8. kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2354
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
 msgid "9th copy"
 msgstr "9. kopie"
 
@@ -777,7 +790,7 @@ msgstr "<b>Sestavení:</b>\t{0}, verze={1}"
 msgid "<b>Auth. Realm:</b>"
 msgstr "<b>Sféra ověření:</b>"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:75
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:73
 msgid "<b>Automatic behaviors</b>"
 msgstr "<b>Automatické chování</b>"
 
@@ -874,7 +887,7 @@ msgstr "<b>Obecné</b>"
 msgid "<b>Host name</b>:"
 msgstr "<b>Název hostitele</b>:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:201
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:188
 msgid "<b>Indentation</b>"
 msgstr "<b>Odsazení</b>"
 
@@ -918,7 +931,7 @@ msgstr "<b>Různé</b>"
 msgid "<b>Move</b> the file to the directory"
 msgstr "<b>Přesunout</b> soubor do adresáře"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:277
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:264
 msgid "<b>Navigation</b>"
 msgstr "<b>Navigace</b>"
 
@@ -1420,11 +1433,11 @@ msgstr ""
 "Šablona projektu pro vytvoření projektu multiplatformní knihovny a jeho "
 "odpovídajícího balíčku NuGet"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:123
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:201
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:213
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:292
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:304
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:106
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:118
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:197
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:209
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:285
 msgid ""
 "A project template for creating an ASP.NET Core application with an example "
 "Controller for a RESTful HTTP service. This template can also be used for "
@@ -1434,12 +1447,12 @@ msgstr ""
 "pro službu HTTP RESTful. Tato šablona se dá použít i pro zobrazení a "
 "kontrolery ASP.NET Core MVC."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:99
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:111
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:161
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:174
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:252
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:265
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:145
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:158
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:236
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:249
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:296
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Core MVC Views and Controllers. This template can also be used for "
@@ -1449,8 +1462,8 @@ msgstr ""
 "zobrazeními a kontrolery ASP.NET Core MVC. Tato šablona se dá použít i pro "
 "služby HTTP RESTful."
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:187
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:278
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:131
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:222
 msgid ""
 "A project template for creating an ASP.NET Core application with example ASP."
 "NET Razor Pages content."
@@ -1487,7 +1500,7 @@ msgid ""
 "replace it?"
 msgstr "Už je zaregistrované schéma s oborem názvů {0}. Chcete ho nahradit?"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1372
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1371
 msgid "A sealed class cannot be inherited."
 msgstr "Zapečetěná třída se nemůže dědit."
 
@@ -1615,7 +1628,7 @@ msgstr ""
 "Deklarace {0} definuje typ odkazu, který se dá použít k zapouzdření metody s "
 "konkrétním podpisem."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1399
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
 msgid ""
 "A {0} type is a value type that can contain constructors, constants, fields, "
 "methods, properties, indexers, operators, events, and nested types."
@@ -1655,34 +1668,34 @@ msgstr "Ovládací prvky ASP.NET"
 msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:76
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:87
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:136
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:148
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:227
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:239
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:81
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:93
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:172
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:184
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:262
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:273
 msgid "ASP.NET Core Empty"
 msgstr "ASP.NET Core (prázdné)"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:122
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:200
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:212
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:291
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:303
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:105
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:117
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:196
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:208
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:284
 msgid "ASP.NET Core Web API"
 msgstr "Webové rozhraní API pro ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:186
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:277
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:130
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:221
 msgid "ASP.NET Core Web App"
 msgstr "Webová aplikace ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:98
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:110
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:160
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:173
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:251
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:264
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:144
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:157
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:235
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:248
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:295
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:307
 msgid "ASP.NET Core Web App (MVC)"
 msgstr "Webová aplikace ASP.NET Core (MVC)"
 
@@ -2429,7 +2442,7 @@ msgstr "Přidávání (binární)  {0}"
 msgid "Adding failed"
 msgstr "Přidání selhalo."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1905
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1920
 msgid "Adding files..."
 msgstr "Přidávání souborů..."
 
@@ -2636,7 +2649,7 @@ msgstr "Všechna úložiště"
 msgid "All solutions"
 msgstr "Všechna řešení"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1387
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
 msgid "Allocates a block of memory on the stack."
 msgstr "Přidělí blok paměti v zásobníku."
 
@@ -2723,12 +2736,12 @@ msgstr "Aplikace se už provozuje. Chcete ji zastavit?"
 msgid "An audio application"
 msgstr "Zvuková aplikace"
 
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:77
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:88
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:137
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:149
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:228
-#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:240
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:82
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:94
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:173
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:185
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:263
+#: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:274
 msgid ""
 "An empty project template for creating an ASP.NET Core application. This "
 "template does not have any content in it."
@@ -2756,7 +2769,7 @@ msgstr ""
 "\n"
 "{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2043
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2058
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3245,7 +3258,7 @@ msgstr "Tagy argumentů"
 msgid "Argument is not used in format string"
 msgstr "Argument není použitý v řetězci formátu."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:358
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:359
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:100
 msgid "Arguments"
 msgstr "Argumenty"
@@ -3353,9 +3366,9 @@ msgstr "Nenašlo se sestavení pro architekturu {0}."
 msgid "Assembly not found for framework {0} (in {1})"
 msgstr "Nenašlo se sestavení pro architekturu {0} (v {1})."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1896
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1902
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1920
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1895
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1901
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1919
 msgid "Assembly:\t{0}"
 msgstr "Sestavení:\t{0}"
 
@@ -3485,6 +3498,31 @@ msgstr "Automaticky"
 msgid "Automatically check for updates:"
 msgstr "Automaticky vy_hledat aktualizace:"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:85
+#, fuzzy
+msgid "Automatically format block on }"
+msgstr "Automaticky vkládat uzavírací značky"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:94
+#, fuzzy
+msgid "Automatically format on paste"
+msgstr "Automaticky vy_hledat aktualizace:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:90
+#, fuzzy
+msgid "Automatically format on return"
+msgstr "Automaticky vkládat uzavírací značky"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:80
+#, fuzzy
+msgid "Automatically format statement on ;"
+msgstr "Automaticky vy_hledat aktualizace:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/OnTheFlyFormattingPanel.cs:75
+#, fuzzy
+msgid "Automatically format when typing"
+msgstr "Automaticky vkládat uzavírací značky"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:325
 msgid "Automatically hide the pad when it loses focus"
 msgstr "Automaticky skryje panel, když ztratí fokus."
@@ -3581,7 +3619,7 @@ msgstr ""
 "Zpětná reference.\n"
 "Konstrukce (\\w)\\1 například najde zdvojené znaky ve slovech."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:259
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:246
 msgid "Backspace removes indentation"
 msgstr "Klávesa Backspace odebere odsazení"
 
@@ -3682,8 +3720,9 @@ msgstr "Bitová operace nebo výčet bez atributu [Flags]"
 msgid "Blank Solution"
 msgstr "Prázdné řešení"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:167
-msgid "Blue:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:191
+#, fuzzy
+msgid "Blue"
 msgstr "Modrá:"
 
 #: ../src/core/Mono.TextEditor.Shared/Mono.TextEditor/BookmarkMarker.cs:61
@@ -3783,7 +3822,7 @@ msgstr "Ses_tavit"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1496
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1501
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -3832,7 +3871,7 @@ msgstr "Sestavit všechny projekty všech řešení"
 msgid "Build and run the current solution"
 msgstr "Sestavit a spustit aktuální řešení"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1749
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
 msgid "Build canceled."
 msgstr "Sestavení se zrušilo."
 
@@ -3848,8 +3887,8 @@ msgstr "Sestavit aktuální spouštěcí projekt"
 msgid "Build failed"
 msgstr "Neúspěšné sestavení"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1633
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1757
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1638
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1772
 msgid "Build failed."
 msgstr "Sestavení selhalo."
 
@@ -3881,7 +3920,7 @@ msgstr "Sestavit řešení {0}"
 msgid "Build succeeded"
 msgstr "Úspěšné sestavení"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1766
 msgid "Build successful."
 msgstr "Sestavení bylo úspěšné."
 
@@ -3901,12 +3940,16 @@ msgstr "Sestavit aktuální řešení"
 msgid "Build {0}"
 msgstr "Sestavit {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1753
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1755
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1768
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1770
 msgid "Build: "
 msgstr "Sestavit: "
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:615
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1748
+msgid "Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:630
 msgid "Building solution {0} ({1})"
 msgstr "Sestavuje se řešení {0} ({1})"
 
@@ -3914,12 +3957,12 @@ msgstr "Sestavuje se řešení {0} ({1})"
 msgid "Building {0}"
 msgstr "Sestavování {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:621
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:647
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:622
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:648
 msgid "Building {0} ({1})"
 msgstr "Sestavuje se {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1013
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1005
 msgid "Building {0} items in solution {1} ({2})"
 msgstr "Vytváření {0} položek v řešení {1} ({2})"
 
@@ -3999,6 +4042,7 @@ msgstr "Řetězec C"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:905
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:919
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:126
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:355
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:203
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:118
 msgid "C#"
@@ -4133,7 +4177,7 @@ msgstr "Volání statického členu prostřednictvím odvozené třídy"
 msgid "Camera tools, etc."
 msgstr "Nástroje pro fotoaparáty apod."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1896
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1899
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:162
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for ."
@@ -4174,6 +4218,10 @@ msgstr "Adresář {0} se nedá odebrat."
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/FileService.cs:139
 msgid "Can't remove file {0}"
 msgstr "Soubor {0} se nedá odebrat."
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:91
+msgid "Can't rename '{0}'. If a retry doesn't work please file a bug."
+msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:762
 msgid "Can't save file"
@@ -4227,7 +4275,7 @@ msgstr "Zrušit dialog"
 msgid "Canceled"
 msgstr "Zrušeno"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildResult.cs:81
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildResult.cs:100
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:379
 msgid "Cancelled"
 msgstr "Zrušeno"
@@ -4246,7 +4294,7 @@ msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Adresář {0} se nedá vytvořit, protože soubor s daným názvem už existuje."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1904
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1907
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:179
 msgid "Cannot execute \"{0}\""
 msgstr "Nelze provést \"{0}\"."
@@ -4554,7 +4602,7 @@ msgstr "Zaškrtněte, pokud se má mezi zprávy přidat prázdný řádek."
 msgid "Check to add one line per file changed"
 msgstr "Zaškrtněte, pokud se má přidat jeden řádek na každý změněný soubor."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
 msgid "Check to add undo step for formatting changes"
 msgstr "Zaškrtněte, pokud chcete přidat krok pro vrácení změn formátování."
 
@@ -4598,7 +4646,7 @@ msgid "Check to automatically remove trailing whitespace from a line"
 msgstr ""
 "Zaškrtněte, pokud se mají z řádku automaticky odebrat koncové prázdné znaky."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
 msgid "Check to automatically set the search pattern case sensitivity"
 msgstr ""
 "Zaškrtněte, pokud chcete automaticky nastavovat rozlišování velikosti písmen "
@@ -4666,7 +4714,7 @@ msgstr "Zaškrtněte, pokud chcete povolit sbalování řádků."
 msgid "Check to enable parallel building"
 msgstr "Zaškrtněte, pokud chcete povolit paralelní sestavení."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:71
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:69
 msgid "Check to enable selection surrounding keys"
 msgstr "Zaškrtněte, pokud chcete povolit klávesy pro ohraničení výběru."
 
@@ -4770,10 +4818,6 @@ msgstr ""
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:65
 msgid "Check to reformat the document when saving"
 msgstr "Zaškrtněte, pokud chcete při uložení opakovaně formátovat dokument."
-
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:67
-msgid "Check to reformat the document while typing"
-msgstr "Zaškrtněte, pokud chcete při psaní opakovaně formátovat dokument."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:117
 msgid "Check to require the user to accept the NuGet package's license"
@@ -5004,7 +5048,7 @@ msgstr "Vyčistit"
 msgid "Clean all projects of all solutions"
 msgstr "Vyčistit všechny projekty všech řešení"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1239
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1244
 msgid "Clean canceled."
 msgstr "Čištění bylo zrušeno."
 
@@ -5013,11 +5057,11 @@ msgid "Clean complete"
 msgstr "Vyčištění dokončeno"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1204
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1252
 msgid "Clean failed."
 msgstr "Čištění se nepodařilo."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1246
 msgid "Clean successful."
 msgstr "Čištění bylo úspěšné."
 
@@ -5033,20 +5077,24 @@ msgstr "Vyčistit vybraný projekt nebo řešení"
 msgid "Clean {0}"
 msgstr "Vyčistit {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1243
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1245
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1250
 msgid "Clean: "
 msgstr "Vyčistit: "
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1228
+msgid "Clean: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:336
 msgid "Cleaning project"
 msgstr "Čištění projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:598
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionFolder.cs:613
 msgid "Cleaning solution {0} ({1})"
 msgstr "Čistí se řešení {0} ({1})"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:750
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:751
 msgid "Cleaning {0} ({1})"
 msgstr "Čistí se {0} ({1})"
 
@@ -5117,7 +5165,7 @@ msgstr "Vymazat poslední projekty"
 msgid "Clear recent solutions list"
 msgstr "Vymazat poslední řešení – seznam"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:192
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:198
 msgid "Clear results"
 msgstr "Vymazat výsledky"
 
@@ -5226,7 +5274,7 @@ msgstr "Zavřít všechny soubory"
 msgid "Close MonoDevelop"
 msgstr "Zavřít MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2434
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
 msgid "Close Project"
 msgstr "Zavřít projekt"
 
@@ -5322,7 +5370,7 @@ msgstr "Uzavírací značka pro {0} a všechny značky uvnitř této značky"
 msgid "Code"
 msgstr "Kód"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:120
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:119
 msgid "Code Actions"
 msgstr "Akce kódu"
 
@@ -5338,7 +5386,7 @@ msgstr "Analýza kódu"
 msgid "Code Formatting"
 msgstr "Formátování kódu"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:121
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:120
 msgid "Code Generation"
 msgstr "Generování kódu"
 
@@ -5348,7 +5396,7 @@ msgstr "Generování kódu"
 msgid "Code Navigation"
 msgstr "Navigace v kódu"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:119
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:121
 msgid "Code Rules"
 msgstr "Pravidla kódu"
 
@@ -5356,7 +5404,17 @@ msgstr "Pravidla kódu"
 msgid "Code Snippets"
 msgstr "Fragmenty kódu"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2495
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:359
+#, fuzzy
+msgid "Code Style"
+msgstr "Styl textu"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1135
+#, fuzzy
+msgid "Code block preferences:"
+msgstr "Zvolené odkazy:"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2510
 msgid "Code completion database generation"
 msgstr "Generování databáze pro doplňování kódu"
 
@@ -5393,7 +5451,7 @@ msgstr "Barevný motiv"
 msgid "Color themes (Visual Studio, Xamarin Studio, TextMate) "
 msgstr "Barevné motivy (Visual Studio, Xamarin Studio, TextMate) "
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:141
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:151
 msgid "Color:"
 msgstr "Barva:"
 
@@ -5639,7 +5697,7 @@ msgstr "Konfigurace"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1766
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2150
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2200
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1885
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1888
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Konfigurace {0} se v projektu {1} nenašla."
 
@@ -5783,9 +5841,9 @@ msgstr ""
 msgid "Console input not supported"
 msgstr "Vstup konzoly se nepodporuje."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1505
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1508
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1504
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1507
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1510
 msgid "Constraint"
 msgstr "Omezení"
 
@@ -6006,7 +6064,7 @@ msgstr "Kopírovat do výstupního adresáře"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2216
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2231
 msgid "Copying files..."
 msgstr "Kopírování souborů..."
 
@@ -6047,7 +6105,7 @@ msgstr ""
 "Objekt odpovědi na přihlašovací údaje nebylo možné vytvořit, protože odpověď "
 "byla neplatná."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2197
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2212
 msgid "Could not create directory '{0}'."
 msgstr "Nepodařilo se vytvořit adresář {0}."
 
@@ -6079,7 +6137,7 @@ msgstr ""
 "Nešlo získat platnou cestu k sestavení. Mohlo by to být kvůli konfliktu v "
 "konfiguracích projektů."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2170
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2185
 msgid "Could not get any file from '{0}'."
 msgstr "Z {0} se nepodařilo získat žádný soubor."
 
@@ -6378,7 +6436,7 @@ msgstr "Vytvořit nový soubor"
 msgid "Create new layout"
 msgstr "Vytvořit nové rozložení"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:382
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:389
 msgid "Create new method"
 msgstr "Vytvořit novou metodu"
 
@@ -6757,7 +6815,7 @@ msgstr "Vytvoří prázdný textový soubor."
 msgid "Creates an implementation for:"
 msgstr "Vytvoří implementaci pro:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:311
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:318
 msgid "Creates new method"
 msgstr "Vytvoří novou metodu."
 
@@ -6918,10 +6976,10 @@ msgstr "Obor názvů vlastního nástroje"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1219
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1232
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:670
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:684
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:757
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:671
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:685
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:758
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:772
 msgid "Custom command execution failed"
 msgstr "Spuštění vlastního příkazu selhalo."
 
@@ -7454,6 +7512,7 @@ msgstr "Odvozené členy"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:106
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:103
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:69
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:90
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:60
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:76
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:122
@@ -7612,7 +7671,7 @@ msgstr "Adresáře"
 msgid "Directory"
 msgstr "Adresář"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2208
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2223
 msgid "Directory '{0}' could not be moved."
 msgstr "Adresář {0} se nepodařilo přesunout."
 
@@ -7765,6 +7824,11 @@ msgstr "Nepřijmout tento certifikát a nepřipojit se k tomuto úložišti"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/FileCopyMode.cs:36
 msgid "Do not copy"
 msgstr "Nekopírovat"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1142
+#, fuzzy
+msgid "Do not prefer 'this.'"
+msgstr "Neodkazovat na mscorlib.dll"
 
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:200
 msgid "Do not reference mscorlib.dll"
@@ -8180,6 +8244,10 @@ msgstr "Elektronická aplikace, např. pro návrh obvodů"
 msgid "Elements"
 msgstr "Elementy"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1168
+msgid "Elsewhere"
+msgstr ""
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:28
 msgid "Email application"
 msgstr "E-mailová aplikace"
@@ -8369,7 +8437,7 @@ msgstr "_Povolit skrývání"
 msgid "Enable _optimizations"
 msgstr "Povolit _optimalizace"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:183
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:170
 msgid "Enable _selection surrounding keys"
 msgstr "Po_volit klávesy pro ohraničení výběru"
 
@@ -8879,7 +8947,6 @@ msgstr "Je ekvivalentní k {n} (lazy {n})."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:71
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:770
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:92
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.ErrorDialog.cs:23
 msgid "Error"
 msgstr "Chyba"
@@ -8985,6 +9052,16 @@ msgid ""
 msgstr ""
 "Chyba při načítání textu revize {0}:\n"
 "{1}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:247
+#, fuzzy
+msgid "Error while renaming symbol {0}"
+msgstr "Chyba při čtení souboru {0}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeRulePanel.cs:83
+#, fuzzy
+msgid "Error while saving global rule set file '{0}'."
+msgstr "Při odstraňování pomocného souboru {0} došlo k chybě."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:278
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:280
@@ -9379,6 +9456,11 @@ msgstr "Výraz je vždycky {0}."
 msgid "Expression not supported."
 msgstr "Výraz není podporovaný."
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1136
+#, fuzzy
+msgid "Expression preferences:"
+msgstr "Otevřít dialog předvoleb"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:662
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:758
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:817
@@ -9639,6 +9721,11 @@ msgstr "Pole"
 msgid "Field name"
 msgstr "Název pole"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1134
+#, fuzzy
+msgid "Field preferences:"
+msgstr "Zvolené odkazy:"
+
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:66
 msgid "Fields"
 msgstr "Pole"
@@ -9646,7 +9733,7 @@ msgstr "Pole"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:376
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:673
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:125
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:151
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:157
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:193
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:78
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:100
@@ -9658,11 +9745,11 @@ msgstr "Pole"
 msgid "File"
 msgstr "Soubor"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2254
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
 msgid "File '{0}' could not be copied."
 msgstr "Soubor {0} se nepodařilo zkopírovat."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2252
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2267
 msgid "File '{0}' could not be moved."
 msgstr "Soubor {0} se nepodařilo přesunout."
 
@@ -9871,7 +9958,7 @@ msgid "File {0} could not be written."
 msgstr "Do souboru {0} se nedá zapisovat."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/IdeFileSystemExtensionExtension.cs:64
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:221
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:224
 msgid "File {0} is read-only"
 msgstr "Soubor {0} je jenom pro čtení."
 
@@ -10129,6 +10216,21 @@ msgstr "Chyby"
 msgid "For Errors and Warnings"
 msgstr "Chyby a upozornění"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1166
+#, fuzzy
+msgid "For built-in types"
+msgstr "Zobrazit vestavěný profil"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1162
+#, fuzzy
+msgid "For locals, parameters and members"
+msgstr "Hledat typy a členy"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1163
+#, fuzzy
+msgid "For member access expressions"
+msgstr "Zadejte výraz trasování."
+
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/RestoreAndUninstallNuGetPackageAction.cs:133
 msgid "Forcing a NuGet package to be removed may break the build."
 msgstr "Vynucené odebrání balíčku NuGet může poškodit build."
@@ -10174,24 +10276,24 @@ msgstr "Vynucené odebrání balíčku NuGet může poškodit build."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1323
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1327
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1331
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1418
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1468
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1356
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1361
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1375
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1380
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1385
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1397
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1403
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1412
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1417
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1424
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1429
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1438
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1447
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1462
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1467
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1477
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1482
 msgid "Form"
 msgstr "Formulář"
 
@@ -10279,7 +10381,7 @@ msgstr "Ze souboru..."
 msgid "From project or solution..."
 msgstr "Z projektu nebo řešení..."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1919
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1918
 msgid "From type:\t{0}"
 msgstr "Z typu:\t{0}"
 
@@ -10395,7 +10497,7 @@ msgstr "Galerie"
 msgid "Garbage Collector"
 msgstr "Systém uvolňování paměti"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:753
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:755
 msgid "Gathering class information"
 msgstr "Shromažďují se informace o třídě."
 
@@ -10433,7 +10535,7 @@ msgstr "Obecné"
 msgid "General Options"
 msgstr "Obecné možnosti"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
 msgid "General Pad Text"
 msgstr "Základní text panelu"
 
@@ -10918,8 +11020,9 @@ msgstr "Grafická aplikace"
 msgid "Greek"
 msgstr "řečtina"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:163
-msgid "Green:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:185
+#, fuzzy
+msgid "Green"
 msgstr "Zelená:"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:162
@@ -11080,7 +11183,6 @@ msgid "Hidden"
 msgstr "Skryté"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:575
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:141
 msgid "Hide"
 msgstr "Skrýt"
 
@@ -11174,8 +11276,9 @@ msgstr "Název hostitele:"
 msgid "Html"
 msgstr "HTML"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:146
-msgid "Hue:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:160
+#, fuzzy
+msgid "Hue"
 msgstr "Odstín:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:70
@@ -11771,11 +11874,10 @@ msgid "Indonesian"
 msgstr "Indonézština"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:84
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:147
 msgid "Info"
 msgstr "Informace"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:664
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:672
 msgid "Information about the Instrumentation Service"
 msgstr "Informace o službě instrumentace"
 
@@ -11851,7 +11953,7 @@ msgstr "Vložit zarážku"
 msgid "Insert ChangeLog Entry"
 msgstr "Vložit položku protokolu změn"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:622
 msgid "Insert Code"
 msgstr "Vložit kód"
 
@@ -11859,7 +11961,7 @@ msgstr "Vložit kód"
 msgid "Insert Documentation Comments"
 msgstr "Vložit komentáře dokumentace"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:613
 msgid "Insert Field"
 msgstr "Vložit pole"
 
@@ -11867,11 +11969,11 @@ msgstr "Vložit pole"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "Vložit GUID (globálně jedinečný identifikátor)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1250
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:616
 msgid "Insert Method"
 msgstr "Vložit metodu"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:1253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:619
 msgid "Insert Property"
 msgstr "Vložit vlastnost"
 
@@ -12075,7 +12177,7 @@ msgstr "Probíhá instalace balíčků rozšíření."
 msgid "Installing…"
 msgstr "Probíhá instalace..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:662
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:670
 msgid "Instrumentation"
 msgstr "Instrumentace"
 
@@ -12083,7 +12185,7 @@ msgstr "Instrumentace"
 msgid "Instrumentation Monitor"
 msgstr "Sledování instrumentace"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:671
 msgid "Instrumentation service enabled"
 msgstr "Služba instrumentace je povolená."
 
@@ -12111,7 +12213,7 @@ msgstr "Interní"
 msgid "Internal error"
 msgstr "Interní chyba"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:247
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:234
 msgid "Interpret tab _keystroke as reindent command"
 msgstr "Interpretovat _klávesu Tab jako příkaz pro zvětšení odsazení"
 
@@ -12388,7 +12490,7 @@ msgstr "Zachovat dočasné soubory ASP.NET"
 msgid "Keep Current Identifiers"
 msgstr "Zachovat aktuální identifikátory"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1814
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1829
 msgid "Keep file path"
 msgstr "Zachovat cestu k souboru"
 
@@ -12654,12 +12756,9 @@ msgstr "Licence nebyly přijaté."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:202
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:149
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:172
 msgid "Light"
 msgstr "Světlý"
-
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:154
-msgid "Light:"
-msgstr "Jas:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:661
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:118
@@ -12912,7 +13011,7 @@ msgstr "Hledá se {0} v adresáři {1}"
 msgid "Looking for '{0}' in project '{1}'"
 msgstr "Hledá se {0} v projektu {1}"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:88
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:98
 msgid "Looking for all references"
 msgstr "Hledají se všechny reference."
 
@@ -13723,7 +13822,7 @@ msgid "Moving files"
 msgstr "Přesunování souborů"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2214
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2229
 msgid "Moving files..."
 msgstr "Přesunování souborů..."
 
@@ -13952,8 +14051,8 @@ msgstr "Chybí obor názvů {0}."
 msgid "Namespace:"
 msgstr "Obor názvů:"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1895
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1901
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1894
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1900
 msgid "Namespace:\t{0}"
 msgstr "Obor názvů:\t{0}"
 
@@ -14252,6 +14351,7 @@ msgstr "Následující dokument"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/MacPlatform/MacPlatform.cs:307
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:104
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
 msgstr "Ne"
@@ -14294,7 +14394,7 @@ msgid "No code fixes available"
 msgstr "Nejsou dostupné žádné opravy kódu."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:385
-#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:289
+#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:293
 msgid "No completions found"
 msgstr "Nenašly se žádné položky seznamu dokončení."
 
@@ -14393,7 +14493,7 @@ msgid "No solution has been selected."
 msgstr "Není vybrané žádné řešení."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:389
-#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:293
+#: ../src/addins/CSharpBinding/MonoDevelop.Ide.Completion.Presentation/RoslynCompletionPresenterSession.View.cs:297
 msgid "No suggestions"
 msgstr "Žádné návrhy"
 
@@ -14691,8 +14791,10 @@ msgstr "Jenom tento projekt"
 msgid "Only this solution"
 msgstr "Jenom toto řešení"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:173
-msgid "Opacity:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:200
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:205
+#, fuzzy
+msgid "Opacity"
 msgstr "Krytí:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:331
@@ -14947,7 +15049,7 @@ msgstr "Ostatní panely"
 msgid "Other entries"
 msgstr "Ostatní položky"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1499
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
 msgid "Outdated Build"
 msgstr "Zastaralé sestavení"
 
@@ -14958,7 +15060,7 @@ msgstr "Zastaralé sestavení"
 msgid "Output"
 msgstr "Výstup"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:369
 msgid "Output Pad Contents"
 msgstr "Výstupní obsah panelu"
 
@@ -15363,7 +15465,7 @@ msgstr "Vložit ze schránky"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:681
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:129
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:177
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:110
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:231
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:82
@@ -15449,7 +15551,7 @@ msgstr "Vybrat členy"
 msgid "Pin output pad"
 msgstr "Připnout panel výstupu"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:204
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:210
 msgid "Pin results pad"
 msgstr "Připnout panel výsledků"
 
@@ -15746,6 +15848,114 @@ msgstr "_Předvolby..."
 msgid "Pre_vious"
 msgstr "Pře_dchozí"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1200
+msgid "Prefer 'is null' for reference equality checks"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1141
+msgid "Prefer 'this.'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1153
+msgid "Prefer 'var'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1172
+#, fuzzy
+msgid "Prefer auto properties"
+msgstr "Vlastnosti pouze pro čtení"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1171
+#, fuzzy
+msgid "Prefer braces"
+msgstr "Předvolby"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1198
+#, fuzzy
+msgid "Prefer coalesce expression"
+msgstr "Zadejte výraz trasování."
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1178
+msgid "Prefer collection initializer"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1197
+msgid "Prefer conditional delegate call"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1193
+#, fuzzy
+msgid "Prefer deconstructed variable declaration"
+msgstr "Název parametru se v základní deklaraci liší."
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1183
+#, fuzzy
+msgid "Prefer explicit tuple name"
+msgstr "Redundantní název explicitní vlastnosti"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1154
+msgid "Prefer explicit type"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1148
+#, fuzzy
+msgid "Prefer framework type"
+msgstr "Cílová _architektura:"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1186
+#, fuzzy
+msgid "Prefer inferred anonymous type member names"
+msgstr "Umístit členy anonymních typů na nový řádek"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1185
+msgid "Prefer inferred tuple element names"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1192
+#, fuzzy
+msgid "Prefer inlined variable declaration"
+msgstr "Název parametru se v základní deklaraci liší."
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1187
+msgid "Prefer local function over anonymous function"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1199
+msgid "Prefer null propagation"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1177
+#, fuzzy
+msgid "Prefer object initializer"
+msgstr "Umístit členy v inicializátorech objektů na nový řádek"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1180
+msgid "Prefer pattern matching over 'as' with 'null' check"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1179
+msgid "Prefer pattern matching over 'is' with 'cast' check"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1147
+#, fuzzy
+msgid "Prefer predefined type"
+msgstr "Typ odkazu"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1203
+#, fuzzy
+msgid "Prefer readonly"
+msgstr "Na readonly"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1184
+msgid "Prefer simple 'default' expression"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1196
+#, fuzzy
+msgid "Prefer throw-expression"
+msgstr "Vykreslovací výraz ASP.NET"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:763
 msgid "Preferences"
 msgstr "Předvolby"
@@ -15942,7 +16152,7 @@ msgstr "Průběh"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:192
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:27
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:677
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:133
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
@@ -15956,19 +16166,19 @@ msgstr "Projekt"
 msgid "Project '{0}'"
 msgstr "Projekt {0}"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
 msgid "Project Author Company"
 msgstr "Firma autora projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1772
 msgid "Project Author Copyright"
 msgstr "Autorská práva autora projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1771
 msgid "Project Author Email"
 msgstr "E-mail autora projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1770
 msgid "Project Author Name"
 msgstr "Jméno autora projektu"
 
@@ -15992,11 +16202,11 @@ msgstr "Platforma konfigurace projektu"
 msgid "Project Description"
 msgstr "Popis projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1769
 msgid "Project Directory"
 msgstr "Adresář projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1775
 msgid "Project File"
 msgstr "Soubor projektu"
 
@@ -16017,7 +16227,7 @@ msgstr "Složky projektu"
 msgid "Project Icons"
 msgstr "Ikony projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1767
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1768
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs:90
 msgid "Project Name"
 msgstr "Název projektu"
@@ -16048,7 +16258,7 @@ msgstr "Projektové odkazy"
 msgid "Project Templates"
 msgstr "Šablony projektu"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1773
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:1774
 msgid "Project Trademark"
 msgstr "Ochranná známka projektu"
 
@@ -16121,6 +16331,11 @@ msgstr "Projekt není sestavený v aktivní konfiguraci."
 msgid "Project not found"
 msgstr "Projekt se nepodařilo najít."
 
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1065
+#, fuzzy
+msgid "Project not selected to build for this solution configuration"
+msgstr "Projekt není sestavený v aktivní konfiguraci."
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:246
 msgid ""
 "Project publishing failed. There is a stale .svn folder in the path '{0}'"
@@ -16182,6 +16397,7 @@ msgid "Properties"
 msgstr "Vlastnosti"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:34
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:116
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:148
 msgid "Property"
 msgstr "Vlastnost"
@@ -16304,6 +16520,22 @@ msgstr "Python"
 msgid "Q&A"
 msgstr "Otázky &a odpovědi"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1160
+msgid "Qualify event access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1157
+msgid "Qualify field access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1159
+msgid "Qualify method access with 'this'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1158
+msgid "Qualify property access with 'this'"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:93
 msgid "Quantifiers"
 msgstr "Kvantifikátory"
@@ -16315,8 +16547,8 @@ msgstr "Kvantifikátory"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1246
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1252
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1287
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1457
 msgid "Query Form"
 msgstr "Formulář dotazu"
 
@@ -16504,15 +16736,15 @@ msgid "Rebuild {0}"
 msgstr "Znovu sestavit {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:69
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1329
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1334
 msgid "Rebuilding..."
 msgstr "Probíhá opakované sestavování..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1342
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1347
 msgid "Rebuilding... (Build)"
 msgstr "Nové sestavení... (build)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1330
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1335
 msgid "Rebuilding... (Clean)"
 msgstr "Nové sestavení... (čisté)"
 
@@ -16549,8 +16781,9 @@ msgstr "Naposledy použité"
 msgid "Recently used templates"
 msgstr "Naposledy použité šablony"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:159
-msgid "Red:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:179
+#, fuzzy
+msgid "Red"
 msgstr "Červená:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:80
@@ -17076,8 +17309,8 @@ msgstr "Odebírání..."
 msgid "Rename"
 msgstr "Přejmenovat"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:86
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:100
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:88
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:102
 msgid "Rename Class"
 msgstr "Přejmenovat třídu"
 
@@ -17087,19 +17320,19 @@ msgstr "Přejmenovat třídu"
 msgid "Rename Configuration"
 msgstr "Přejmenovat konfiguraci"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:80
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:82
 msgid "Rename Delegate"
 msgstr "Přejmenovat delegáta"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:82
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:84
 msgid "Rename Enum"
 msgstr "Přejmenovat výčet"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:94
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:96
 msgid "Rename Event"
 msgstr "Přejmenovat událost"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:90
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:92
 msgid "Rename Field"
 msgstr "Přejmenovat pole"
 
@@ -17111,44 +17344,44 @@ msgstr "Přejmenovat skupinu"
 msgid "Rename Group..."
 msgstr "Přejmenovat skupinu..."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:78
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:80
 msgid "Rename Interface"
 msgstr "Přejmenovat rozhraní"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:116
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:118
 msgid "Rename Item"
 msgstr "Přejmenovat položku"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:114
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:116
 msgid "Rename Label"
 msgstr "Přejmenovat jmenovku"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:102
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:104
 msgid "Rename Method"
 msgstr "Přejmenovat metodu"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:112
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:114
 msgid "Rename Namespace"
 msgstr "Přejmenovat obor názvů"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:106
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:108
 msgid "Rename Parameter"
 msgstr "Přejmenovat parametr"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:92
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:94
 msgid "Rename Property"
 msgstr "Přejmenovat vlastnost"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:84
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:86
 msgid "Rename Struct"
 msgstr "Přejmenovat strukturu"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:65
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:110
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:67
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:112
 msgid "Rename Type Parameter"
 msgstr "Přejmenovat parametr typu"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:108
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:110
 msgid "Rename Variable"
 msgstr "Přejmenovat proměnou"
 
@@ -17175,6 +17408,11 @@ msgstr "Přejmenovat na {0}"
 #: ../src/addins/MonoDevelop.Refactoring/Gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:36
 msgid "Rename {0}"
 msgstr "Přejmenovat {0}"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/SymbolRenamedCodeActionOperationFactoryWorkspaceService.cs:95
+#, fuzzy
+msgid "Rename {0} to {1}"
+msgstr "Přejmenovat soubor {0} na {1}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:191
 msgid "Renamed"
@@ -18016,7 +18254,7 @@ msgstr "Spouští se testy pro konfiguraci <b>{0}</b>: <b>{1}</b>"
 msgid "Running web server..."
 msgstr "Spouští se webový server..."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1889
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1892
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:150
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:768
 msgid "Running {0} ..."
@@ -18171,8 +18409,9 @@ msgstr "Přepnout _maximalizované/normální zobrazení"
 msgid "Sample file output"
 msgstr "Ukázkový výstup souboru"
 
-#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:150
-msgid "Saturation:"
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:166
+#, fuzzy
+msgid "Saturation"
 msgstr "Sytost:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:151
@@ -18228,7 +18467,7 @@ msgstr "Uložit jako..."
 msgid "Save build output"
 msgstr "Uložit výstup sestavení"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1674
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1679
 msgid "Save changed documents before building?"
 msgstr "Chcete uložit změny v dokumentech před sestavením?"
 
@@ -18426,7 +18665,7 @@ msgstr "Hledat členy"
 msgid "Search Packages..."
 msgstr "Hledat balíčky..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:789
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:651
 msgid "Search Result"
 msgstr "Výsledek hledání"
 
@@ -18930,7 +19169,7 @@ msgstr "Vyberte barvu popředí pro úlohy s vysokou prioritou."
 msgid "Select the foreground color for the normal priority tasks"
 msgstr "Vyberte barvu popředí pro úlohy s normální prioritou."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:73
 msgid "Select the indentation mode"
 msgstr "Vyberte režim odsazení."
 
@@ -19077,7 +19316,7 @@ msgstr "Vyberte šířku odsazení."
 msgid "Select the width of tab stops"
 msgstr "Vyberte šířku zarážek tabulátoru."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:77
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:75
 msgid "Select the word break mode"
 msgstr "Vyberte režim dělení slov."
 
@@ -19360,6 +19599,11 @@ msgstr "Nastavení"
 msgid "Settings applications"
 msgstr "Nastavovací aplikace"
 
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:123
+#, fuzzy
+msgid "Severity"
+msgstr "Zabezpečení"
+
 #: ../src/addins/CSharpBinding/templates/SharedAssetsProject.xpt.xml:8
 msgid "Shared Project"
 msgstr "Sdílený projekt"
@@ -19636,7 +19880,7 @@ msgstr "Zobrazit jeden výsledek denně"
 msgid "Show options window"
 msgstr "Zobrazit okno možností"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:204
 msgid "Show output"
 msgstr "Zobrazit výstup"
 
@@ -19828,7 +20072,7 @@ msgstr "Velikost"
 msgid "Size:"
 msgstr "Velikost:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1895
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1910
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr "Přeskočit"
@@ -19845,6 +20089,11 @@ msgstr "Přeskočit sestavení nezměněných projektů"
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:749
 msgid "Skipped '{0}'"
 msgstr "Vynecháno {0}"
+
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1064
+#, fuzzy
+msgid "Skipped Build: Project: {0}, Configuration: {1}"
+msgstr "Konfigurace projektu"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1326
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:747
@@ -19908,11 +20157,11 @@ msgstr "Řešení {0} a další jsou momentálně otevřená."
 msgid "Solution '{0}' is currently open"
 msgstr "Řešení {0} je momentálně otevřené."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1562
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1573
 msgid "Solution Directory"
 msgstr "Adresář řešení"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1560
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1571
 msgid "Solution File"
 msgstr "Soubor řešení"
 
@@ -19926,7 +20175,7 @@ msgstr "Soubory řešení"
 msgid "Solution Item"
 msgstr "Položka řešení"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1561
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:1572
 msgid "Solution Name"
 msgstr "Název řešení"
 
@@ -20023,7 +20272,7 @@ msgstr ""
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr "Některé soubory v tomto potvrzení nemají zprávy protokolu změn."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1675
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1680
 msgid "Some of the open documents have unsaved changes."
 msgstr "Některé z otevřených dokumentů obsahují neuložené změny."
 
@@ -20611,7 +20860,7 @@ msgid "Stock Icons"
 msgstr "Výchozí ikony"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:89
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:187
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:193
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestResultsPad.cs:241
 #: ../src/addins/MacPlatform/MainToolbar/RunButton.cs:95
 #: ../external/xwt/Xwt/Xwt/Command.cs:74
@@ -20796,7 +21045,7 @@ msgstr "Navrhne použití třídy deklarující statickou funkci při svém vol�
 msgid "SuiteName"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:249
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:253
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:136
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:146
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:201
@@ -21383,7 +21632,7 @@ msgid "Tests"
 msgstr "Testy"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:208
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:171
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:601
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Visualizer/TextVisualizer.cs:54
 msgid "Text"
@@ -21391,7 +21640,7 @@ msgstr "Text"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1022
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:366
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:392
 msgid "Text Editor"
 msgstr "Textový editor"
@@ -21617,7 +21866,7 @@ msgid "The application could not be started"
 msgstr "Tuto aplikaci nebylo možné spustit."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:429
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1928
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1931
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:173
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:399
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreProjectExtension.cs:271
@@ -21766,7 +22015,7 @@ msgstr "Soubor {0} už existuje.\n"
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "Soubor {0} už existuje. Chcete ho přepsat?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2085
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2100
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "Soubor {0} už existuje. Chcete ho nahradit?"
 
@@ -21840,7 +22089,7 @@ msgstr "Soubor {0} už existuje. Chcete ho nahradit?"
 msgid "The file {0} could not be deleted"
 msgstr "Soubor {0} se nepodařilo odstranit."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1828
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1843
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "Soubor {0} se nachází mimo adresář složky. Co chcete udělat?"
 
@@ -22010,7 +22259,7 @@ msgstr ""
 "Název knihovny obsahuje neplatné znaky. Příklady platných názvů: MyPackage "
 "nebo MyPackage.Sample."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2071
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2086
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr "Odkaz {0} v projektu už obsahuje soubor {1}."
 
@@ -22204,7 +22453,7 @@ msgstr ""
 "Projekt {0} se ukládá ve formátu souboru {1}, ale tato verze sady Visual "
 "Studio nepodporuje architekturu, pro kterou je projekt určený ({2})."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2431
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2446
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
 "want to continue closing it?"
@@ -22253,7 +22502,7 @@ msgstr "Projekt nebo sestavení, ze kterého tato komponenta pochází."
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr "Projekt se publikuje do úložiště {0}, modulu {1}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1500
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1505
 msgid ""
 "The project you are executing has changes done after the last time it was "
 "compiled. Do you want to continue?"
@@ -22377,7 +22626,7 @@ msgstr "Popis, který se zobrazí uživateli u této proměnné"
 msgid "The top-most child of the window within the gtk.Builder file."
 msgstr "Podřízená položka okna nejvyšší úrovně v rámci souboru gtk.Builder"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1421
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1420
 msgid ""
 "The try-catch statement consists of a {0} block followed by one or more {1} "
 "clauses, which specify handlers for different exceptions."
@@ -22385,7 +22634,7 @@ msgstr ""
 "Příkaz try-catch se skládá z bloku {0} následovaného jednou nebo více "
 "klauzulemi {1}, které určují obslužné rutiny pro různé výjimky."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1505
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1504
 msgid ""
 "The type argument must be a reference type; this applies also to any class, "
 "interface, delegate, or array type."
@@ -22393,7 +22642,7 @@ msgstr ""
 "Argument typu musí být odkazový typ. Platí to taky pro libovolný typ třídy, "
 "rozhraní, delegáta nebo pole."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1511
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1510
 msgid ""
 "The type argument must be a value type. Any value type except Nullable can "
 "be specified. See Using Nullable Types (C# Programming Guide) for more "
@@ -22403,7 +22652,7 @@ msgstr ""
 "kromě Nullable. Další informace najdete v článku Použití typů s povolenou "
 "hodnotou Null (Průvodce programováním v C#)."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1508
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1507
 msgid ""
 "The type argument must have a public parameterless constructor. When used "
 "together with other constraints, the new() constraint must be specified last."
@@ -22476,7 +22725,7 @@ msgstr ""
 "Klauzule {0} umožňuje dílčímu výrazu, aby měl svou hodnotu uloženou v nové "
 "proměnné oblasti pro pozdější použití v dotazu."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1464
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
 msgid ""
 "The {0} clause constrains which types can be used as the type parameter in a "
 "generic declaration."
@@ -22500,11 +22749,11 @@ msgstr ""
 "Klauzule {0} určuje, že vrácená sekvence má být seřazená podle daného "
 "elementu ve vzestupném nebo sestupném pořadí."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1368
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
 msgid "The {0} clause specifies the type of value to return from the query."
 msgstr "Klauzule {0} určuje typ hodnoty, která se má vrátit z dotazu."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1459
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
 msgid ""
 "The {0} clause specifies which elements from the data source to be returned "
 "according to a given condition."
@@ -22530,7 +22779,7 @@ msgstr ""
 "Omezení {0} určuje, že argument typu musí být typ odkazu. Týká se jakékoli "
 "třídy, rozhraní, delegáta nebo typu pole."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1396
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1395
 msgid ""
 "The {0} constraint specifies that the type argument must be a value type. "
 "Any value type except Nullable can be specified."
@@ -22538,7 +22787,7 @@ msgstr ""
 "Omezení {0} určuje, že argument typu musí být typ hodnoty. Může se zadat "
 "libovolný typ hodnoty kromě Nullable."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1440
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
 msgid ""
 "The {0} directive creates an alias for a namespace or imports types defined "
 "in other namespaces. The {0} statement defines a scope at the end of which "
@@ -22566,7 +22815,7 @@ msgstr ""
 "Operátor se používá k vytváření objektů v haldě a vyvolávání konstruktorů. "
 "Modifikátor se používá ke skrytí zděděného členu z členu základní třídy."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1435
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1434
 msgid ""
 "The {0} keyword denotes an unsafe context, which is required for any "
 "operation involving pointers."
@@ -22584,7 +22833,7 @@ msgstr ""
 "ukládá výsledek do {1}. Může být uloženo i ve skupině pro další použití v "
 "dotazu s into."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1449
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
 msgid ""
 "The {0} keyword indicates that a field can be modified in the program by "
 "something such as the operating system, the hardware, or a concurrently "
@@ -22623,7 +22872,7 @@ msgstr ""
 "úroveň přístupu s nejmenšími oprávněními. Privátní členy jsou přístupné "
 "jenom v rámci třídy nebo struktury, ve které jsou deklarované."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1349
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1348
 msgid ""
 "The {0} keyword is a modifier that you can use on fields. When a field "
 "declaration includes a {0} modifier, assignments to the fields introduced by "
@@ -22642,7 +22891,7 @@ msgstr ""
 "Klíčové slovo {0} je modifikátor přístupu pro typy a členy typů. Interní "
 "členy jsou přístupné jenom v souborech ve stejném sestavení."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1345
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1344
 msgid ""
 "The {0} keyword is an access modifier for types and type members. Public "
 "access is the most permissive access level. There are no restrictions on "
@@ -22660,7 +22909,7 @@ msgstr ""
 "Klíčové slovo {0} se používá pro přístup ke členům základní třídy z odvozené "
 "třídy."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1431
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
 msgid ""
 "The {0} keyword is used to control the overflow-checking context for "
 "integral-type arithmetic operations and conversions."
@@ -22723,7 +22972,7 @@ msgstr ""
 "když je přihlášený odběr události. Pokud je zadané, musíte zadat i "
 "přístupový objekt remove."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1358
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
 msgid ""
 "The {0} keyword is used to define a custom accessor for when an event is "
 "unsubscribed from. If supplied, an add accessor must also be supplied."
@@ -22732,7 +22981,7 @@ msgstr ""
 "když se ruší odběr události. Pokud je zadané, musí být zadaný taky "
 "přístupový objekt add."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1377
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
 msgid ""
 "The {0} keyword is used to define an accessor method to assign to the value "
 "of the property or indexer element."
@@ -22748,7 +22997,7 @@ msgstr ""
 "Klíčové slovo {0} se používá k definici přístupové metody k získání hodnoty "
 "vlastnosti nebo prvku indexeru."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1474
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
 msgid ""
 "The {0} keyword is used to indicate that a method, get accessor, or operator "
 "is an iterator."
@@ -22765,7 +23014,7 @@ msgstr ""
 "Klíčové slovo {0} se používá k úpravě deklarace pole nebo místní proměnné. "
 "Určuje, že hodnota pole nebo místní proměnné se nesmí upravit."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1444
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1443
 msgid ""
 "The {0} keyword is used to modify a method, property, indexer, or event "
 "declaration and allow for it to be overridden in a derived class."
@@ -22838,7 +23087,7 @@ msgstr ""
 "Klíčové slovo {0} u deklarace typu umožňuje, aby byla definice rozdělená do "
 "více souborů."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1409
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1408
 msgid "The {0} keyword refers to the current instance of the class."
 msgstr "Klíčové slovo {0} odkazuje na aktuální instanci třídy."
 
@@ -22858,7 +23107,7 @@ msgstr ""
 "nevyhodnotí jako false."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1302
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1353
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1352
 msgid ""
 "The {0} method parameter keyword on a method parameter causes a method to "
 "refer to the same variable that was passed into the method."
@@ -22898,11 +23147,11 @@ msgstr ""
 "Operátor {0} se používá ke kontrole toho, jestli je typ prostředí Runtime "
 "kompatibilní s daným typem."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1426
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
 msgid "The {0} operator is used to obtain the System.Type object for a type."
 msgstr "Operátor {0} se používá k získání objektu System.Type pro typ."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1382
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
 msgid "The {0} operator is used to obtain the size in bytes for a value type."
 msgstr ""
 "Operátor {0} se používání k získání velikosti (v bajtech) pro typ hodnoty."
@@ -22928,7 +23177,7 @@ msgstr ""
 "Příkaz {0} opakuje příkaz nebo blok příkazů, dokud se zadaný výraz "
 "nevyhodnotí jako false."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1479
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
 msgid ""
 "The {0} statement executes a statement or a block of statements until a "
 "specified expression evaluates to false."
@@ -22936,7 +23185,7 @@ msgstr ""
 "Příkaz {0} provádí příkaz nebo blok příkazů, dokud se zadaný výraz "
 "nevyhodnotí jako nepravda."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1405
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
 msgid ""
 "The {0} statement is a control statement that handles multiple selections by "
 "passing control to one of the {1} statements within its body."
@@ -22944,7 +23193,7 @@ msgstr ""
 "Příkaz {0} je řídící příkaz, který zpracovává více výběrů tak, že předává "
 "řízení jednomu z příkazů {1} v rámci svého těla."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1414
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
 msgid ""
 "The {0} statement is used to signal the occurrence of an anomalous situation "
 "(exception) during the program execution."
@@ -22975,7 +23224,7 @@ msgid ""
 msgstr ""
 "Příkaz {0} vybere příkaz pro spuštění na základě hodnoty logického výrazu."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1363
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
 msgid ""
 "The {0} statement terminates execution of the method in which it appears and "
 "returns control to the calling method."
@@ -23066,7 +23315,7 @@ msgstr "Pro název funkce existuje upozornění."
 msgid "There is a warning for the print expression"
 msgstr "Pro tištěný výraz existuje upozornění."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2076
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "Soubor s názvem {0} už v projektu existuje."
 
@@ -23087,7 +23336,7 @@ msgstr "V cílovém adresáři už existuje soubor s názvem {0}."
 msgid "There is already a layout with that name"
 msgstr "Rozložení s tímto názvem už existuje."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1945
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1960
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Odkaz s názvem {0} už v projektu existuje."
 
@@ -24135,7 +24384,7 @@ msgid "Unknown parser error: {0}"
 msgstr "Neznámá chyba analyzátoru: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildProjectService.cs:432
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:547
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:548
 msgid "Unknown project type"
 msgstr "Neznámý typ projektu"
 
@@ -24443,6 +24692,36 @@ msgstr "Použít výchozí nastavení z: {0}"
 msgid "Use existing Makefiles"
 msgstr "Použít stávající soubory pravidel"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1281
+#, fuzzy
+msgid "Use expression body for accessors"
+msgstr "Na základní text výrazu"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1253
+#, fuzzy
+msgid "Use expression body for constructors"
+msgstr "Šablona pro konstruktor"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1274
+#, fuzzy
+msgid "Use expression body for indexers"
+msgstr "Na základní text výrazu"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1246
+#, fuzzy
+msgid "Use expression body for methods"
+msgstr "Na základní text výrazu"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1260
+#, fuzzy
+msgid "Use expression body for operators"
+msgstr "Nastavit mezery pro operátory"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1267
+#, fuzzy
+msgid "Use expression body for properties"
+msgstr "Na základní text výrazu"
+
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs:245
 msgid "Use git for version control."
 msgstr "Použít Git pro správu verzí"
@@ -24504,7 +24783,7 @@ msgstr ""
 "implementuje externě. Externí modifikátor se běžně používá s atributem "
 "DllImport."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1391
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1390
 msgid ""
 "Use the {0} modifier to declare a static member, which belongs to the type "
 "itself rather than to a specific object."
@@ -24520,7 +24799,7 @@ msgstr ""
 "Tento příkaz slouží k převodu adres metod zkompilovaných pomocí JIT na úplné "
 "názvy metod výstupního souboru nástroje Sample."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1484
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
 msgid ""
 "Used to obtain the simple (unqualified) string name of a variable, type, or "
 "member."
@@ -24662,6 +24941,11 @@ msgstr "Proměnná"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:427
 msgid "Variable name"
 msgstr "Název proměnné"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1137
+#, fuzzy
+msgid "Variable preferences:"
+msgstr "Zvolené odkazy:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:60
 msgid "Variables to include"
@@ -24947,7 +25231,6 @@ msgstr "Čeká se na připojení ladicího programu..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:94
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:88
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:145
 msgid "Warning"
 msgstr "Upozornění"
 
@@ -25193,6 +25476,15 @@ msgstr ""
 "Když se při vytvoření objektu používá inicializátor objektu nebo kolekce, je "
 "prázdný seznam argumentů redundantní."
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1239
+#, fuzzy
+msgid "When on single line"
+msgstr "Nechat blok na jednom řádku"
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1238
+msgid "When possible"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:480
 msgid ""
 "When set, System.IO.FileSystemWatcher will use the default managed "
@@ -25231,6 +25523,10 @@ msgid ""
 msgstr ""
 "Použití rozhraní Mono zkompilovaného pomocí podpory LLVM vynutí návrat "
 "rozhraní Mono k modulu JIT a backend LLVM se nepoužije."
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1167
+msgid "When variable type is apparent"
+msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:406
 msgid "Where do you want to save this configuration?"
@@ -25323,7 +25619,7 @@ msgstr "Windows Communication Foundation (WCF)"
 msgid "Windows Forms Theme"
 msgstr "Motiv modelu Windows Forms"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:299
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:286
 msgid "Word _break mode:"
 msgstr "Režim dě_lení textu:"
 
@@ -25348,15 +25644,15 @@ msgstr "Pracovní cesta:"
 msgid "Workspace"
 msgstr "Pracovní prostor"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:690
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:696
 msgid "Workspace Directory"
 msgstr "Adresář pracovního prostoru"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:688
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:694
 msgid "Workspace File"
 msgstr "Soubor pracovního prostoru"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:689
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/WorkspaceItem.cs:695
 msgid "Workspace Name"
 msgstr "Název pracovního prostoru"
 
@@ -25368,7 +25664,7 @@ msgstr "Název pracovního prostoru:"
 msgid "Workspace saved."
 msgstr "Pracovní prostor je uložený."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:222
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:225
 msgid "Would you like to make the file writable?"
 msgstr "Chcete soubor nastavit jako zapisovatelný?"
 
@@ -25517,6 +25813,7 @@ msgstr "Editor XML"
 msgid "Xml comment is not placed before a valid language element"
 msgstr "Komentář XML není před platným elementem jazyka."
 
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:103
 #: ../external/xwt/Xwt/Xwt/Command.cs:62
 msgid "Yes"
 msgstr "Ano"
@@ -25711,7 +26008,7 @@ msgstr ""
 "[atributy] [modifikátory] {0} identifikátor [:základní-typ] {{ enumerátor-"
 "seznam }} [;]"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1398
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1397
 msgid "[attributes] [modifiers] {0} identifier [:interfaces] body [;]"
 msgstr "[atributy] [modifikátory] {0} identifikátor [:rozhraní] tělo [;]"
 
@@ -25744,7 +26041,7 @@ msgid "[firstCharacter-lastCharacter]"
 msgstr "[prvníZnak-posledníZnak]"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1170
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1376
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1375
 msgid "[modifiers] {0} [ {{ accessor-body }} ]"
 msgstr "[modifikátory] {0} [ {{ tělo-přistupujícího-objektu }} ]"
 
@@ -25767,7 +26064,7 @@ msgstr ""
 "{0} deklarace-metody"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1008
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1357
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1356
 msgid "[modifiers] {0} {{ accessor-body }}"
 msgstr "[modifikátory] {0} {{ tělo-přistupujícího-objektu }}"
 
@@ -25979,7 +26276,7 @@ msgstr "_Přidružit obory názvů s názvy adresářů"
 msgid "_Automatically restore packages when opening a solution."
 msgstr "_Automaticky obnovovat balíčky při otevírání řešení"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:159
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:146
 msgid "_Automatically set search pattern case sensitivity"
 msgstr "_Automaticky nastavovat rozlišování velikosti písmen pro vzor hledání"
 
@@ -26095,10 +26392,6 @@ msgstr "_Porovnat"
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:297
 msgid "_Config"
 msgstr "_Konfigurovat"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:151
-msgid "_Configure Rule ‘{0}’"
-msgstr "_Konfigurovat pravidlo {0}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:102
 msgid "_Continue Debugging"
@@ -26216,10 +26509,6 @@ msgstr "_E-mail:"
 msgid "_Enable animations"
 msgstr "P_ovolit animace"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:135
-msgid "_Enable on the fly code formatting"
-msgstr "Povolit for_mátování kódu při psaní"
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Editor/MessageBubbles/MessageBubbleCommands.cs:71
 msgid "_Errors and Warnings"
 msgstr "Chy_by a upozornění"
@@ -26305,7 +26594,7 @@ msgstr "_Formátovat dokument"
 msgid "_Format Selection"
 msgstr "_Výběr formátu"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:147
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:134
 msgid "_Format document on save"
 msgstr "_Formátovat dokument při uložení"
 
@@ -26325,7 +26614,7 @@ msgstr "_Generovat"
 msgid "_Generate Makefiles"
 msgstr "_Generovat soubory pravidel"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:171
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:158
 msgid "_Generate additional undo steps for formatting"
 msgstr "_Generovat dodatečné kroky pro vrácení formátování"
 
@@ -26411,7 +26700,7 @@ msgstr "_Odsadit"
 msgid "_Indent width:"
 msgstr "Šíř_ka odsazení:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:223
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:210
 msgid "_Indentation mode:"
 msgstr "Režim _odsazování:"
 
@@ -26427,7 +26716,7 @@ msgstr "Vstupní _metody"
 msgid "_Insert"
 msgstr "_Vložit"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:94
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:92
 msgid "_Insert matching brace"
 msgstr "_Vkládat odpovídající závorku"
 
@@ -26940,7 +27229,7 @@ msgstr "_Zobrazit oddělovače řádků procedur"
 msgid "_Sign this assembly"
 msgstr "Podep_sat toto sestavení"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:119
+#: ../src/addins/MonoDevelop.SourceEditor2/Gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:117
 msgid "_Smart semicolon placement"
 msgstr "_Inteligentní umístění středníku"
 
@@ -27189,7 +27478,7 @@ msgstr "Za znakem _ by mělo následovat malé písmeno. (Pravidlo {0})"
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr "Za znakem _ by mělo následovat velké písmeno. (Pravidlo {0})"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2347
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2362
 msgid "another copy"
 msgstr "jiná kopie"
 
@@ -27209,11 +27498,11 @@ msgstr "sloupců"
 msgid "comment block"
 msgstr "blok komentáře"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2346
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2361
 msgid "copy"
 msgstr "kopie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2355
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
 msgid "copy {0}"
 msgstr "kopie {0}"
 
@@ -27305,11 +27594,11 @@ msgstr "soubor \"{0}\" v projektu \"{1}\""
 msgid "file {0}"
 msgstr "soubor {0}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1463
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1462
 msgid "generic-class-declaration {0} type-parameter : type-constraint"
 msgstr "deklarace-obecné-třídy {0} parametr-typu : omezení-typu"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1468
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1467
 msgid ""
 "generic-class-declaration {0} type-parameter : type-constraint\n"
 "\n"
@@ -27442,6 +27731,11 @@ msgstr "Soubor pkg-config pro {0}"
 msgid "pkg-config folder"
 msgstr "Složka pkg-config"
 
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1131
+#, fuzzy
+msgid "predefined type preferences:"
+msgstr "Zvolené odkazy:"
+
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:62
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MemberHidesStaticFromOuterClassAnalyzer.cs:106
 msgid "property"
@@ -27494,9 +27788,14 @@ msgstr ""
 "Výraz true je redundantní jako podmínka příkazu for a jde ho tedy bezpečně "
 "vypustit."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1386
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1385
 msgid "type * ptr = {0} type [ expr ];"
 msgstr "typ * ukaz = {0} typ [ výraz ];"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:100
+#, fuzzy
+msgid "typescript files"
+msgstr "Soubor TypeScriptu"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:565
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1557
@@ -27592,7 +27891,7 @@ msgstr ""
 msgid "{0} ([initializers]; [expression]; [iterators]) statement"
 msgstr "{0} ([inicializátory]; [výraz]; [iterátory]) příkaz"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1439
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1438
 msgid ""
 "{0} (expression | type identifier = initializer) statement\n"
 "{0} [alias = ]class_or_namespace;"
@@ -27613,7 +27912,7 @@ msgstr ""
 "  příkaz1\n"
 "  [{1}\"n  příkaz2]"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1404
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1403
 msgid ""
 "{0} (expression)\n"
 " {{\n"
@@ -27635,7 +27934,7 @@ msgstr ""
 "  příkaz-skoku]\n"
 " }}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1478
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1477
 msgid "{0} (expression) statement"
 msgstr "{0} (výraz) příkaz"
 
@@ -27690,15 +27989,10 @@ msgstr ""
 "\n"
 "{3} IMyInterface&lt;{1} T&gt; {{}}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1381
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1425
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1380
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1424
 msgid "{0} (type)"
 msgstr "{0} (typ)"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:177
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeFixMenuService.cs:157
-msgid "{0} ({1})"
-msgstr "{0} ({1})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:620
 msgid "{0} ({1}) : Project with guid = '{2}' not found or not loaded. Ignoring"
@@ -27797,8 +28091,8 @@ msgid_plural "{0} Warnings"
 msgstr[0] "Počet upozornění: {0}"
 msgstr[1] "Počet upozornění: {0}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1362
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1413
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1361
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1412
 msgid "{0} [expression];"
 msgstr "{0} [výraz];"
 
@@ -27829,7 +28123,7 @@ msgstr ""
 "nebo\n"
 "{0} (výraz)"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1430
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1429
 msgid ""
 "{0} block\n"
 "{0} (expression)"
@@ -27855,7 +28149,7 @@ msgid_plural "{0} changes"
 msgstr[0] "Počet změn: {0}"
 msgstr[1] "Počet změn: {0}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1458
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1457
 msgid "{0} condition"
 msgstr "Podmínka {0}"
 
@@ -27888,13 +28182,13 @@ msgid_plural "{0} days ago"
 msgstr[0] "Před {0} dny"
 msgstr[1] "Před {0} dny"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1448
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1447
 msgid "{0} declaration"
 msgstr "Deklarace {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1235
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1745
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1240
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1760
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
@@ -28165,7 +28459,7 @@ msgstr ""
 msgid "{0} retargeted with warnings."
 msgstr "Cílení balíčku {0} se změnilo s upozorněními."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1367
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1366
 msgid "{0} return-type"
 msgstr "{0} návratový-typ"
 
@@ -28207,7 +28501,7 @@ msgstr ""
 "  ...\n"
 "{0} zkušební-blok {1} blok-zachycení"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1419
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1418
 msgid ""
 "{0} try-block\n"
 "  {1} (exception-declaration-1) catch-block-1 \n"
@@ -28236,8 +28530,8 @@ msgid "{0} updated with warnings."
 msgstr "{0} se aktualizoval s upozorněními."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1236
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1746
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1761
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
@@ -28263,7 +28557,7 @@ msgstr "{0} byly úspěšně vygenerovány."
 msgid "{0} with optional parameter is hidden by overload"
 msgstr "{0} s volitelným parametrem je skrytý kvůli přetížení."
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1473
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1472
 #, fuzzy
 msgid ""
 "{0} {1}\n"
@@ -28281,7 +28575,7 @@ msgstr ""
 msgid "{0} | {1}     Started at {2}"
 msgstr "{0} | {1}     Spuštěno v {2}"
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1483
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:1482
 msgid "{0}(identifier)"
 msgstr "{0}(identifikátor)"
 
@@ -28309,6 +28603,7 @@ msgid "{0}. Please see the Package Console for more details."
 msgstr "{0}. Další podrobnosti najdete v konzole balíčku."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/SignatureHelpSessionView.cs:420
+#: ../external/xwt/Xwt/Xwt/ColorSelector.cs:257
 msgid "{0}:"
 msgstr "{0}:"
 
@@ -28356,8 +28651,17 @@ msgstr "{n}?"
 msgid "|"
 msgstr "|"
 
-#~ msgid "Template for parentheses"
-#~ msgstr "Šablona pro závorky"
+#~ msgid "Check to reformat the document while typing"
+#~ msgstr "Zaškrtněte, pokud chcete při psaní opakovaně formátovat dokument."
 
-#~ msgid "Template for type cast"
-#~ msgstr "Šablona pro přetypování"
+#~ msgid "Light:"
+#~ msgstr "Jas:"
+
+#~ msgid "_Configure Rule ‘{0}’"
+#~ msgstr "_Konfigurovat pravidlo {0}"
+
+#~ msgid "_Enable on the fly code formatting"
+#~ msgstr "Povolit for_mátování kódu při psaní"
+
+#~ msgid "{0} ({1})"
+#~ msgstr "{0} ({1})"
