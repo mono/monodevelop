@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects
 			return (T)e.Extension;
 		}
 
-		internal void SetDefaultInsertionPosition (ChainedExtension insertBefore)
+		public void SetDefaultInsertionPosition (ChainedExtension insertBefore)
 		{
 			defaultInsertBefore = insertBefore;
 		}
@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects
 
 		internal IDisposable BatchModify () => batchModifier = new BatchModifier (this);
 
-		internal void AddExtension (ChainedExtension ext, ChainedExtension insertAfter = null, ChainedExtension insertBefore = null)
+		public void AddExtension (ChainedExtension ext, ChainedExtension insertAfter = null, ChainedExtension insertBefore = null)
 		{
 			int index = -1;
 			if (insertBefore != null) {
@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects
 			Rechain (index);
 		}
 
-		internal void RemoveExtension (ChainedExtension ext)
+		public void RemoveExtension (ChainedExtension ext)
 		{
 			if (extensions == null)
 				return;

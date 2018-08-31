@@ -383,7 +383,7 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 
 				if (result == AlertButton.CloseWithoutSave) {
-					doc.Window.ViewContent.DiscardChanges ();
+					doc.DiscardChanges ();
 					await doc.Window.CloseWindow (true);
 					continue;
 				}
@@ -735,6 +735,7 @@ namespace MonoDevelop.Ide.Gui
 
 			var document = WrapDocument (newContent.WorkbenchWindow);
 			document.Editor.Encoding = Encoding.UTF8;
+			document.NotifyLoadNew (new FileCreationInformation (content, mimeType));
 			document.StartReparseThread ();
 			return document;
 		}
@@ -929,7 +930,7 @@ namespace MonoDevelop.Ide.Gui
 				} else {
 					args.Cancel |= result != AlertButton.CloseWithoutSave;
 					if (!args.Cancel)
-						viewContent.DiscardChanges ();
+						window.Document.DiscardChanges ();
 				}
 			}
 			OnDocumentClosing (FindDocument (window));
@@ -1116,6 +1117,12 @@ namespace MonoDevelop.Ide.Gui
 				monitor.ReportError ("", ex);
 				return false;
 			}
+
+			if (openFileInfo.NewContent != null) {
+				Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
+				await doc.NotifyLoaded (openFileInfo);
+			}
+
 			return true;
 		}
 
@@ -1428,8 +1435,14 @@ namespace MonoDevelop.Ide.Gui
 			this.FileName = fileName;
 			this.Encoding = encoding;
 		}
+
+		public FileSaveInformation (FileSaveInformation other)
+		{
+			this.fileName = other.fileName;
+			this.Encoding = other.Encoding;
+		}
 	}
-	
+
 	public class FileOpenInformation
 	{
 		FilePath fileName;

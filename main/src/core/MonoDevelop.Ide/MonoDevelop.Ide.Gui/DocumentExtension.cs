@@ -2,9 +2,9 @@
 // DocumentExtension.cs
 //
 // Author:
-//       lluis <>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -39,7 +42,6 @@ namespace MonoDevelop.Ide.Gui
 		DocumentExtension next;
 
 		Document document;
-		IWorkbenchWindow workbenchWindow;
 
 		internal DocumentExtensionNode SourceExtensionNode { get; set; }
 
@@ -52,7 +54,6 @@ namespace MonoDevelop.Ide.Gui
 		internal void Init (Document document)
 		{
 			this.document = document;
-			this.workbenchWindow = workbenchWindow;
 			Initialize ();
 		}
 
@@ -69,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Project to which the document belongs
 		/// </summary>
-		public Project Project => document.Project;
+		public WorkspaceObject Owner => document.Project;
 
 		internal DocumentExtension Next => next;
 
@@ -95,26 +96,46 @@ namespace MonoDevelop.Ide.Gui
 			return SourceExtensionNode == null || SourceExtensionNode.CanHandleDocument (document);
 		}
 
+		/// <summary>
+		/// Invoked when the document is being saved. <paramref name="fileSaveInformation"/> can be <see langword="null"/> if the document is not a file.
+		/// </summary>
+		/// <param name="fileSaveInformation">File information.</param>
 		public virtual Task OnSave (FileSaveInformation fileSaveInformation)
 		{
 			return next.OnSave (fileSaveInformation);
 		}
-		
+
+		/// <summary>
+		/// Invoked when changes in the document have to be discarded
+		/// </summary>
 		public virtual void DiscardChanges ()
 		{
 			next.DiscardChanges ();
 		}
 
+		/// <summary>
+		/// Invoked when a document is being loaded from a file.
+		/// </summary>
+		/// <returns></returns>
 		public virtual Task OnLoaded (FileOpenInformation fileOpenInformation)
 		{
 			return next.OnLoaded (fileOpenInformation);
 		}
 
-		public virtual Task OnLoadedNew (System.IO.Stream content, string mimeType)
+		/// <summary>
+		/// Invoked when a new document is being created from a file template.
+		/// </summary>
+		/// <param name="fileCreationInformation">File creation data</param>
+		public virtual Task OnLoadedNew (FileCreationInformation fileCreationInformation)
 		{
-			return next.OnLoadedNew (content, mimeType);
+			return next.OnLoadedNew (fileCreationInformation);
 		}
 
+		/// <summary>
+		/// Invoked to get a content object of the provided type
+		/// </summary>
+		/// <returns>The object, or null if not found</returns>
+		/// <param name="type">Type of the object</param>
 		internal protected virtual object OnGetContent (Type type)
 		{
 			if (type.IsInstanceOfType (this))
@@ -123,6 +144,11 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 		}
 
+		/// <summary>
+		/// Invoked to get a collection of content objects of the provided type
+		/// </summary>
+		/// <returns>The collection of objects of the provided type</returns>
+		/// <param name="type">Type of the object</param>
 		internal protected virtual IEnumerable OnGetContents (Type type)
 		{
 			var c = OnGetContent (type);
@@ -130,11 +156,18 @@ namespace MonoDevelop.Ide.Gui
 				yield return c;
 		}
 
+		/// <summary>
+		/// Invoked when the project of the document changes
+		/// </summary>
 		public virtual void OnOwnerChanged ()
 		{
 			next.OnOwnerChanged ();
 		}
 
+		/// <summary>
+		/// Gets the project reload capability.
+		/// </summary>
+		/// <returns>The project reload capability.</returns>
 		public virtual ProjectReloadCapability GetProjectReloadCapability ()
 		{
 			return next.GetProjectReloadCapability ();

@@ -452,9 +452,9 @@ namespace MonoDevelop.Ide.Gui
 			return documentExtension.OnLoaded (fileOpenInformation);
 		}
 
-		internal Task NotifyLoadNew (Stream content, string mimeType)
+		internal Task NotifyLoadNew (FileCreationInformation fileCreationInformation)
 		{
-			return documentExtension.OnLoadedNew (content, mimeType);
+			return documentExtension.OnLoadedNew (fileCreationInformation);
 		}
 
 		public event EventHandler Reloaded;
@@ -632,12 +632,6 @@ namespace MonoDevelop.Ide.Gui
 		public async Task<bool> Close ()
 		{
 			return await ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
-		}
-
-		protected override void OnSaved (EventArgs e)
-		{
-			IdeApp.Workbench.SaveFileStatus ();
-			base.OnSaved (e);
 		}
 
 		public void CancelParseTimeout ()

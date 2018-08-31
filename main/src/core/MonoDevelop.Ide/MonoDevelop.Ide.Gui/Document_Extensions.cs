@@ -2,9 +2,9 @@
 // Document_Extensions.cs
 //
 // Author:
-//       lluis <>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -197,7 +198,7 @@ namespace MonoDevelop.Ide.Gui
 				return Task.CompletedTask;
 			}
 
-			public override Task OnLoadedNew (Stream content, string mimeType)
+			public override Task OnLoadedNew (FileCreationInformation fileCreationInformation)
 			{
 				// Do nothing, since the view content has already been initialized at this point
 				return Task.CompletedTask;
