@@ -228,7 +228,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool EnableQuickDiff {
 			get {
-				return DefaultSourceEditorOptions.Instance.EnableQuickDiff;
+				return optionsCore.EnableQuickDiff;
 			}
 			set {
 				throw new NotSupportedException ();

@@ -79,33 +79,33 @@ namespace MonoDevelop.Gettext
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			monitor.IgnoreLogMessages = true;
-			
-			WorkspaceItem centry = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
-			monitor.IgnoreLogMessages = false;
-			
-			Solution solution = centry as Solution;
-			if (solution == null) {
-				Console.WriteLine ("File is not a solution: " + file);
-				return 1;
-			}
-			
-			if (project != null) {
-				SolutionItem item = solution.FindProjectByName (project);
-				
-				if (item == null) {
-					Console.WriteLine ("The project '" + project + "' could not be found in " + file);
+
+			using (WorkspaceItem centry = await Services.ProjectService.ReadWorkspaceItem (monitor, file)) {
+				monitor.IgnoreLogMessages = false;
+
+				Solution solution = centry as Solution;
+				if (solution == null) {
+					Console.WriteLine ("File is not a solution: " + file);
 					return 1;
 				}
-				TranslationProject tp = item as TranslationProject;
-				if (tp == null) {
-					Console.WriteLine ("The project '" + item.FileName + "' is not a translation project");
-					return 1;
+
+				if (project != null) {
+					SolutionItem item = solution.FindProjectByName (project);
+
+					if (item == null) {
+						Console.WriteLine ("The project '" + project + "' could not be found in " + file);
+						return 1;
+					}
+					TranslationProject tp = item as TranslationProject;
+					if (tp == null) {
+						Console.WriteLine ("The project '" + item.FileName + "' is not a translation project");
+						return 1;
+					}
+					tp.UpdateTranslations (monitor, sort);
+				} else {
+					foreach (TranslationProject p in solution.GetAllItems<TranslationProject> ())
+						p.UpdateTranslations (monitor, sort);
 				}
-				tp.UpdateTranslations (monitor, sort);
-			}
-			else {
-				foreach (TranslationProject p in solution.GetAllItems <TranslationProject>())
-					p.UpdateTranslations (monitor, sort);
 			}
 			
 			return 0;

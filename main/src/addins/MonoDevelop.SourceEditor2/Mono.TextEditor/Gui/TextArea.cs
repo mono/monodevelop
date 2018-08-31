@@ -1247,14 +1247,26 @@ namespace Mono.TextEditor
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			if (currentFocus == FocusMargin.TextView) {
-				keyPressTimings.StartTimer (evt);
-				return HandleTextKey (evt);
-			} else if (currentFocus != FocusMargin.None) {
-				return HandleMarginKeyCommand (evt);
-			}
+			try {
+				if (currentFocus == FocusMargin.TextView) {
+					long time;
+#if MAC
+					time = (long)TimeSpan.FromSeconds (AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp).TotalMilliseconds;
+#else
+					// Warning, Gdk returns uint32 as time value, so this might overflow.
+					time = evt.Time;
+#endif
+					keyPressTimings.StartTimer (time);
+					return HandleTextKey (evt);
+				} else if (currentFocus != FocusMargin.None) {
+					return HandleMarginKeyCommand (evt);
+				}
 
-			return base.OnKeyPressEvent (evt);
+				return base.OnKeyPressEvent (evt);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error in OnKeyPressEvent", ex);
+				return false;
+			}
 		}
 
 		bool HandleTextKey (EventKey evt)
@@ -2258,7 +2270,7 @@ namespace Mono.TextEditor
 				foreach (var drawer in margin.MarginDrawer)
 					drawer.Draw (cr, cairoRectangle);
 			}
-			LayoutChanged?.Invoke (this, EventArgs.Empty);
+			RaiseLayoutChanged ();
 			if (setLongestLine) 
 				SetHAdjustment ();
 		}
@@ -3612,6 +3624,11 @@ namespace Mono.TextEditor
 		
 		internal List<MonoTextEditor.EditorContainerChild> containerChildren = new List<MonoTextEditor.EditorContainerChild> ();
 		internal event EventHandler LayoutChanged;
+
+		internal void RaiseLayoutChanged ()
+		{
+			LayoutChanged?.Invoke (this, EventArgs.Empty);
+		}
 
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{

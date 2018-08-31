@@ -162,6 +162,7 @@ namespace MonoDevelop.Projects
 		{
 			itemExtension = ExtensionChain.GetExtension<WorkspaceItemExtension> ();
 			base.OnExtensionChainInitialized ();
+			fileStatusTracker.TrackFileChanges ();
 		}
 
 		WorkspaceItemExtension itemExtension;
@@ -310,9 +311,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[ThreadSafe]
+		[Obsolete ("This should be implemented by subclasses that implement IBuildTarget")]
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			yield break;
+			throw new InvalidOperationException ("Must be reimplemented by subclasses");
 		}
 
 		protected bool Loading { get; private set; }
@@ -569,7 +571,6 @@ namespace MonoDevelop.Projects
 			lastSaveTime = new Dictionary<string,DateTime> ();
 			savingFlag = false;
 			reloadRequired = null;
-			FileService.FileChanged += HandleFileChanged;
 		}
 		
 		public void BeginSave ()
@@ -616,7 +617,13 @@ namespace MonoDevelop.Projects
 				return false;
 			}
 		}
-		
+
+		public void TrackFileChanges ()
+		{
+			FileService.FileChanged -= HandleFileChanged;
+			FileService.FileChanged += HandleFileChanged;
+		}
+
 		void HandleFileChanged (object sender, FileEventArgs e)
 		{
 			if (savingFlag || needsReload)

@@ -41,7 +41,6 @@ type FSharpProject() as self =
                   "Profile259", ("3.259.3.1", true) ]
 
     let mutable initialisedAsPortable = false
-    let mutable referencedAssemblies = None
 
     let isPortable (project:MSBuildProject) =
         project.EvaluatedProperties.Properties
@@ -244,8 +243,10 @@ type FSharpProject() as self =
                                                     currentGuids.SetValue(newProjectTypeGuids))
         with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
 
+    [<Obsolete>]
     override x.OnCompileSources(items, config, configSel, monitor) =
-        CompilerService.Compile(items, config, x.ReferencedAssemblies, configSel, monitor)
+        let asms = (x.GetReferences configSel).Result
+        CompilerService.Compile(items, config, asms, configSel, monitor)
 
     override x.OnCreateCompilationParameters(config, kind) =
         let pars = new FSharpCompilerParameters()
@@ -307,19 +308,12 @@ type FSharpProject() as self =
         base.OnModified(e)
         if not self.Loading && not self.IsReevaluating then MDLanguageService.invalidateProjectFile self.FileName
 
-    member x.ReferencedAssemblies
-        with get() =
-            match referencedAssemblies with
-            | Some assemblies -> assemblies
-            | None ->
-                let assemblies = (x.GetReferencedAssemblies (CompilerArguments.getConfig())).Result
-                referencedAssemblies <- Some assemblies
-                assemblies
-
-    member x.GetOrderedReferences() =
-        let references =
-            let args =
-                CompilerArguments.getReferencesFromProject x x.ReferencedAssemblies
+    member x.GetOrderedReferences(config:ConfigurationSelector) =
+        async {
+            let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
+            let! asms = x.GetReferences config
+            let references =
+                CompilerArguments.getReferencesFromProject (x, config, asms)
                 |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
                                           then None
                                           else
@@ -328,15 +322,7 @@ type FSharpProject() as self =
                                               else None )
                 |> Seq.distinct
                 |> Seq.toArray
-            args
-
-        let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
-        orderAssemblyReferences.Order references
-
-    member x.GetReferences() =
-        async {
-            let! refs = x.GetReferencedAssemblies (CompilerArguments.getConfig()) |> Async.AwaitTask
-            referencedAssemblies <- Some refs
+            return orderAssemblyReferences.Order references
         }
 
     member x.ReevaluateProject(e) =

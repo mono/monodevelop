@@ -47,6 +47,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Cairo.Context cr;
 			Gdk.Rectangle allocation;
 			IndicatorDrawingState state;
+			public bool ForceUpdate { get; set; }
 
 			public IdleUpdater (QuickTaskOverviewMode mode, System.Threading.CancellationToken token)
 			{
@@ -97,7 +98,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				state.ColorCache [IndicatorDrawingState.BackgroundColor] = SyntaxHighlightingService.GetColor (mode.TextEditor.EditorTheme, EditorThemeColors.Background);
 
 				ResetEnumerators ();
-
 				cr = new Cairo.Context (surface.Surface);
 				cr.Scale (displayScale, displayScale);
 				GLib.Idle.Add (RunHandler);
@@ -145,7 +145,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					if (nextStep) {
 						drawingStep++;
 						nextStep = false;
-						if (state.Equals(mode.currentDrawingState)) {
+						if (!ForceUpdate && state.Equals(mode.currentDrawingState)) {
 							cr.Dispose ();
 							// if the surface was newly created dispose it otherwise it'll leak.
 							if (surface != mode.swapIndicatorSurface)
@@ -197,6 +197,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					drawingStep++;
 					return true;
 				default:
+					mode.DrawBreakpoints (cr);
 					cr.Dispose ();
 					var tmp = mode.indicatorSurface;
 					mode.indicatorSurface = surface;

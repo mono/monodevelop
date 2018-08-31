@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			for (int i = 0; i < targetFrameworks.Count; i++) {
 				var fx = targetFrameworks[i];
 
-				model.AppendValues (GetPclShortDisplayName (fx, fx == missingFramework), fx);
+				model.AppendValues (GetPclShortDisplayName (fx, fx == missingFramework));
 				if (fx.Id.Equals (TargetFramework.Id))
 					combo.Active = i;
 			}

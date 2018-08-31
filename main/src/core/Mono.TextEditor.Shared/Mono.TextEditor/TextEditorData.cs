@@ -654,7 +654,7 @@ namespace Mono.TextEditor
 
 		public void FixVirtualIndentation (int lineNumber)
 		{
-			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual || LockFixIndentation)
+			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual || LockFixIndentation || (IndentationTracker.SupportedFeatures & IndentationTrackerFeatures.SkipFixVirtualIndentation) != 0)
 				return;
 			var line = Document.GetLine (lineNumber);
 			if (line == null || line.Length == 0)

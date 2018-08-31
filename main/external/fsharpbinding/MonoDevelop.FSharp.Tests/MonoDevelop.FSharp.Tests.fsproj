@@ -5,49 +5,22 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A1A45375-7FB8-4F2A-850F-FBCC67739927}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.FSharp.Tests</RootNamespace>
-    <AssemblyName>MonoDevelop.FSharp.Tests</AssemblyName>
     <UsePartialTypes>False</UsePartialTypes>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
-    <TestRunnerCommand>..\..\..\..\main\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerCommand>..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\msbuild\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>
-    <OtherFlags>--publicsign</OtherFlags>
+    <OutputPath>..\..\..\build\tests</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
     <ConsolePause>true</ConsolePause>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\mdtool</StartProgram>
     <StartArguments>run-md-tests $(MSBuildProjectDirectory)\bin\Debug\MonoDevelop.FSharp.Tests.dll</StartArguments>
-    <OtherFlags>--publicsign</OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
-    <ConsolePause>false</ConsolePause>
-    <Tailcalls>true</Tailcalls>
-    <DefineConstants>$(DefineConstants)</DefineConstants>
-    <OtherFlags>--publicsign</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -104,6 +77,7 @@
       <HintPath>..\MonoDevelop.FSharpi.Service\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
   <ItemGroup>
     <Compile Include="TestBase.fs" />
@@ -131,13 +105,6 @@
     <Compile Include="SelectionTests.fs" />
     <Compile Include="UnusedOpens.fs" />
     <None Include="paket.references" />
-    <Content Include="Samples\Xamarin.iOS.fsproj" />
-    <Content Include="Samples\bug43307\bug43307\bug43307.fsproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Samples\bug43307\bug43307.sln">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="BraceMatcher.fs" />
     <Compile Include="TagComments.fs" />
     <Compile Include="TypeSignatureHelp.fs" />
@@ -186,6 +153,11 @@
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\tests\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
     <Compile Include="SolutionPadOrdering.fs" />

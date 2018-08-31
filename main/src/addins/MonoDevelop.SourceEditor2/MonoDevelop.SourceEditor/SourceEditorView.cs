@@ -84,6 +84,8 @@ namespace MonoDevelop.SourceEditor
 		bool writeAllowed;
 		bool writeAccessChecked;
 
+		internal BreakpointStore Breakpoints => breakpoints;
+
 		public ViewContent ViewContent {
 			get {
 				return this;
@@ -199,6 +201,7 @@ namespace MonoDevelop.SourceEditor
 		private SourceEditorView(DocumentAndLoaded doc)
 		{
 			Counters.LoadedEditors++;
+			breakpoints = DebuggingService.Breakpoints;
 
 			widget = new SourceEditorWidget (this, doc.Document);
 			loadedInCtor = doc.Loaded;
@@ -226,7 +229,6 @@ namespace MonoDevelop.SourceEditor
 			TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
 
-			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
 			DebuggingService.StoppedEvent += HandleTargetExited;
 			DebuggingService.ExecutionLocationChanged += OnExecutionLocationChanged;

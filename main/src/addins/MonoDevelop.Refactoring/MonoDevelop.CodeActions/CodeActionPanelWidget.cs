@@ -139,7 +139,7 @@ namespace MonoDevelop.CodeActions
 				.OrderBy (n => n.Name, StringComparer.Ordinal);
 			foreach (var node in sortedAndFiltered) {
 				var title = node.Name;
-				MonoDevelop.CodeIssues.CodeIssuePanelWidget.MarkupSearchResult (filter, ref title);
+				MonoDevelop.Refactoring.Options.Util.MarkupSearchResult (filter, ref title);
 				treeStore.AppendValues (title, providerStates [node], node);
 			}
 		}

@@ -936,6 +936,9 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			// HACK: all the logic below is replicating things MSBuild does in ResolveReferences but not
+			// in the subtargets we currently call, ResolveAssemblyReferences
+
 			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			bool noStdLib = false;
 			if (config != null)
@@ -955,38 +958,57 @@ namespace MonoDevelop.Projects
 						result.Add (ar);
 				}
 			}
-			var addFacadeAssemblies = false;
-			foreach (var r in GetReferencedAssemblyProjects (configuration)) {
-				// Facade assemblies need to be referenced if this project is referencing a PCL or .NET Standard project.
-				if (r.IsPortableLibrary || r.TargetFramework.Id.Identifier == ".NETStandard") {
-					addFacadeAssemblies = true;
-					break;
-				}
-			}
-			if (!addFacadeAssemblies) {
-				foreach (var refFilename in result) {
-					string fullPath = null;
-					if (!Path.IsPathRooted (refFilename.FilePath)) {
-						fullPath = Path.Combine (Path.GetDirectoryName (FileName), refFilename.FilePath);
-					} else {
-						fullPath = Path.GetFullPath (refFilename.FilePath);
-					}
-					if (await SystemAssemblyService.RequiresFacadeAssembliesAsync (fullPath)) {
+			var expandDesignTimeFacades = MSBuildProject.EvaluatedProperties.GetValue ("ImplicitlyExpandDesignTimeFacades", true);
+			if (expandDesignTimeFacades) {
+				var addFacadeAssemblies = false;
+				foreach (var r in GetReferencedAssemblyProjects (configuration)) {
+					// Facade assemblies need to be referenced if this project is referencing a PCL or .NET Standard project.
+					if (r.IsPortableLibrary || r.TargetFramework.Id.Identifier == ".NETStandard") {
 						addFacadeAssemblies = true;
 						break;
 					}
 				}
-			}
+				if (!addFacadeAssemblies) {
+					foreach (var refFilename in result) {
+						string fullPath = null;
+						if (!Path.IsPathRooted (refFilename.FilePath)) {
+							fullPath = Path.Combine (Path.GetDirectoryName (FileName), refFilename.FilePath);
+						} else {
+							fullPath = Path.GetFullPath (refFilename.FilePath);
+						}
+						if (await SystemAssemblyService.RequiresFacadeAssembliesAsync (fullPath)) {
+							addFacadeAssemblies = true;
+							break;
+						}
+					}
+				}
 
-			if (addFacadeAssemblies) {
-				var facades = await ProjectExtension.OnGetFacadeAssemblies ();
-				if (facades != null) {
-					foreach (var facade in facades) {
-						if (!result.Contains (facade))
-							result.Add (facade);
+				if (addFacadeAssemblies) {
+					var facades = await ProjectExtension.OnGetFacadeAssemblies ();
+					if (facades != null) {
+						foreach (var facade in facades) {
+							if (!result.Contains (facade))
+								result.Add (facade);
+						}
 					}
 				}
 			}
+
+			// we do this here rather than PortableDotNetProjectFlavor because F# doesn't use the flavor for PCLs
+			if (TargetFramework.Id.Identifier == ".NETPortable" && TargetFramework.Id.Version != "5.0") {
+				var props = new MSBuildPropertyGroupEvaluated (null);
+				const string resolvedFrom = "ImplicitlyExpandTargetFramework";
+				var property = new MSBuildPropertyEvaluated (null, "ResolvedFrom", resolvedFrom, resolvedFrom);
+				props.SetProperty (property.Name, property);
+
+				foreach (var asm in TargetRuntime.AssemblyContext.GetAssemblies (TargetFramework)) {
+					if (asm.Package.IsFrameworkPackage) {
+						var ar = new AssemblyReference (asm.Location, props);
+						result.Add (ar);
+					}
+				}
+			}
+
 			return result;
 		}
 

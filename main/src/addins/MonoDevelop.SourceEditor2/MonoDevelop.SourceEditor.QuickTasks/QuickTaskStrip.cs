@@ -122,8 +122,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		public QuickTaskStrip ()
+		internal SourceEditorView SourceEditorView { get; private set; }
+
+		public QuickTaskStrip (SourceEditorView parentView)
 		{
+			SourceEditorView = parentView ?? throw new ArgumentNullException (nameof (parentView));
 			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Overview);
 			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			EnableFancyFeatures.Changed += HandleChanged;

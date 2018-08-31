@@ -487,8 +487,8 @@
 	<StockIcon stockid="build-task-success" resource="build-task-success-16.png" size="Menu" />
 	<StockIcon stockid="build-warning" resource="build-warning-16.png" size="Menu" />
 	<StockIcon stockid="build-warning-small" resource="build-warning-small-16.png" size="Menu" />
-	<StockIcon stockid="build-expand" resource="preview-hover-16.png" size="Menu" />
-	<StockIcon stockid="build-collapse" resource="preview-active-16.png" size="Menu" />
+	<StockIcon stockid="build-expand" resource="tree-chevron-closed.png" size="Menu" />
+	<StockIcon stockid="build-collapse" resource="tree-chevron-open.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>

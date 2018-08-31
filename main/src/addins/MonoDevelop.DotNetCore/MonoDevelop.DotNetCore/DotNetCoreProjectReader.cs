@@ -55,19 +55,40 @@ namespace MonoDevelop.DotNetCore
 			return GetDotNetCoreSdk (file) != null;
 		}
 
+		/// <summary>
+		/// Returns the first Sdk property defined by the project, if any exists
+		/// </summary>
 		public static string GetDotNetCoreSdk (FilePath file)
 		{
 			try {
-				using (var tr = new XmlTextReader (new StreamReader (file))) {
-					if (tr.MoveToContent () == XmlNodeType.Element) {
-						if (tr.LocalName != "Project")
-							return null;
+				// A .NET Core project can define an sdk in any of the following ways
+				// 1) An Sdk attribute on the Project node
+				// 2) An Sdk node as a child of the Project node
+				// 3) An Sdk attribute on any Import node
+				var document = new XmlDocument ();
+				document.Load (new StreamReader (file));
+				XmlNode projectNode = document.SelectSingleNode ("/Project");
+				if (projectNode != null) {
+					XmlAttribute sdkAttr = projectNode.Attributes ["Sdk"];
+					if (sdkAttr != null) {
+						// Found an Sdk definition on the root Project node
+						return sdkAttr.Value;
+					}
 
-						string sdk = tr.GetAttribute ("Sdk");
-						if (string.IsNullOrEmpty (sdk))
-							return null;
+					var childSdkNode = projectNode.SelectSingleNode ("Sdk");
+					if (childSdkNode != null) {
+						var name = childSdkNode.Attributes ["Name"];
+						if (name != null) {
+							// Found an Sdk definition on an Sdk node
+							return name.Value;
+						}
+					}
 
-						return sdk;
+					foreach (XmlNode importNode in projectNode.SelectNodes ("//Import")) {
+						sdkAttr = importNode.Attributes ["Sdk"];
+						if (sdkAttr != null) {
+							return sdkAttr.Value;
+						}
 					}
 				}
 			} catch {

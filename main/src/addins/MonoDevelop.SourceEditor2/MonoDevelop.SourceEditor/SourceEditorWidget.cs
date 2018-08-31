@@ -232,7 +232,7 @@ namespace MonoDevelop.SourceEditor
 			public DecoratedScrolledWindow (SourceEditorWidget parent)
 			{
 				this.parent = parent;
-				this.strip = new QuickTaskStrip ();
+				this.strip = new QuickTaskStrip (parent.view);
 
 				scrolledBackground = new EventBox ();
 				scrolledBackground.Accessible.SetShouldIgnore (true);
@@ -393,7 +393,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public SourceEditorWidget (SourceEditorView view, TextDocument doc)
+		public SourceEditorWidget (SourceEditorView view, Mono.TextEditor.TextDocument doc)
 		{
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);

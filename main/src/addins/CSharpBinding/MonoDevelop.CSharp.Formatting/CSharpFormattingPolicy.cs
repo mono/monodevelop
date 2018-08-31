@@ -602,7 +602,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public CSharpFormattingPolicy ()
 		{
-			this.options = TypeSystemService.Workspace.Options;
+			this.options = TypeSystemService.Workspace?.Options;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

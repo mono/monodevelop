@@ -40,6 +40,10 @@ using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Formatting;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Editor;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using System.Threading;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -160,9 +164,10 @@ namespace MonoDevelop.CodeGeneration
 				data.EnsureCaretIsNotVirtual ();
 				int offset = data.CaretOffset;
 				var text = StringBuilderCache.ReturnAndFree (output).TrimStart ();
-				using (var undo = data.OpenUndoGroup ()) {
-					data.InsertAtCaret (text);
-					OnTheFlyFormatter.Format (data, options.DocumentContext, offset, offset + text.Length);
+				var formattingService = options.DocumentContext?.AnalysisDocument?.GetLanguageService<IEditorFormattingService> ();
+				if (formattingService != null) {
+					var changes = formattingService.GetFormattingChangesAsync (options.DocumentContext.AnalysisDocument, new TextSpan (offset, text.Length), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+					data.ApplyTextChanges (changes);
 				}
 			}
 		}
