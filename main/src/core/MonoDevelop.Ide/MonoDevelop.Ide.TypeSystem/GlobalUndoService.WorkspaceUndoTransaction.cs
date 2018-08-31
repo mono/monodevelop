@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	partial class GlobalUndoService
 	{
-		abstract class Change
+		internal abstract class Change
 		{
 			public abstract void UndoChange ();
 			public virtual bool CheckUndoChange ()
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		class RenameChange : Change
+		internal class RenameChange : Change
 		{
 			string oldName, newName;
 
@@ -94,17 +94,44 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		class TextReplaceChange : Change
+		internal class TextReplaceChange : Change
 		{
 			readonly WorkspaceUndoTransaction transaction;
 			readonly string fileName;
+
+			public string FileName {
+				get {
+					return fileName;
+				}
+			}
+
 			readonly int offset;
+
+			public int Offset {
+				get {
+					return offset;
+				}
+			}
+
 			readonly string insertedText;
+
+			public string InsertedText {
+				get {
+					return insertedText;
+				}
+			}
+
 			readonly int removedChars;
 
-			public TextReplaceChange (WorkspaceUndoTransaction transaction, string fileName, int offset, int removedChars, string insertedText)
+			public int RemovedChars {
+				get {
+					return removedChars;
+				}
+			}
+
+			public TextReplaceChange (IMonoDevelopUndoTransaction transaction, string fileName, int offset, int removedChars, string insertedText)
 			{
-				this.transaction = transaction;
+				this.transaction = (WorkspaceUndoTransaction)transaction;
 				this.fileName = fileName;
 				this.offset = offset;
 				this.insertedText = insertedText;
@@ -123,7 +150,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-
 		class WorkspaceUndoTransaction : IMonoDevelopUndoTransaction
 		{
 			readonly Workspace workspace;
@@ -141,23 +167,32 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public WorkspaceUndoTransaction (Workspace workspace, GlobalUndoService globalUndoService, string description)
 			{
+				Runtime.AssertMainThread ();
 				this.workspace = workspace;
 				this.service = globalUndoService;
 				this.undoSolution = workspace.CurrentSolution;
 				this.description = description;
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					doc?.Editor.StartGlobalUndoTransaction ();
+				}
 			}
 
 			public void AddDocument (DocumentId id)
 			{
 				// nothing
+
+				Runtime.AssertMainThread ();
 			}
 
 			public void Commit ()
 			{
+				Runtime.AssertMainThread ();
 				redoSolution = workspace.CurrentSolution;
 				undoStack.Push (this);
+				CloseTransaction ();
 
-				Dispose ();
+				foreach (var doc in IdeApp.Workbench.Documents)
+					doc?.Editor.EndGlobalUndoTransaction (true);
 			}
 
 			public void UndoOperation ()
@@ -175,7 +210,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var doc in originalDocuments) {
 					var data = GetTextEditorData (doc.Key);
 					if (doc.Value?.Version != null && data.Version.BelongsToSameDocumentAs (doc.Value.Version)) {
-						foreach (var change in doc.Value.Version.GetChangesTo (data.Version).ToList()) {
+						foreach (var change in doc.Value.Version.GetChangesTo (data.Version)) {
 							foreach (var c in change.TextChanges) {
 								data.ReplaceText (c.Offset, c.InsertionLength, c.RemovedText);
 							}
@@ -223,21 +258,27 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			public void TextReplace (string fileName, int offset, int removedChars, string insertedText)
+			public void CommitChange (Change change)
 			{
-				if (!originalDocuments.ContainsKey(fileName)) {
-					originalDocuments [fileName] = GetTextEditorData (fileName).CreateSnapshot ();
+				if (change is TextReplaceChange trc) {
+					if (!originalDocuments.ContainsKey (trc.FileName)) {
+						originalDocuments[trc.FileName] = GetTextEditorData (trc.FileName).CreateSnapshot ();
+					}
 				}
-				changes.Add (new TextReplaceChange (this, fileName, offset, removedChars, insertedText));
-			}
-
-			public void RenameFile (string oldName, string newName)
-			{
-				changes.Add (new RenameChange (oldName, newName));
+				changes.Add (change);
 			}
 
 			public void Dispose ()
 			{
+				CloseTransaction ();
+				foreach (var doc in IdeApp.Workbench.Documents)
+					doc?.Editor.EndGlobalUndoTransaction (false);
+			}
+
+			private void CloseTransaction ()
+			{
+				Runtime.AssertMainThread ();
+
 				// once either commit or disposed is called, don't do finalizer check
 				GC.SuppressFinalize (this);
 
@@ -246,6 +287,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					transactionAlive = false;
 				}
 			}
+
 			Dictionary<string, ITextDocument> documents = new Dictionary<string, ITextDocument> ();
 
 			void CloseOpenDocuments ()

@@ -139,7 +139,7 @@ namespace MonoDevelop.Refactoring
 
 		internal override void CommitTransaction (IMonoDevelopUndoTransaction transaction)
 		{
-			transaction.TextReplace (FileName, Offset, RemovedChars, InsertedText);
+			transaction.CommitChange (new GlobalUndoService.TextReplaceChange (transaction, FileName, Offset, RemovedChars, InsertedText));
 		}
 
 		public override string ToString ()
@@ -208,7 +208,7 @@ namespace MonoDevelop.Refactoring
 
 		internal override void CommitTransaction (IMonoDevelopUndoTransaction transaction)
 		{
-			transaction.RenameFile (OldName, NewName);
+			transaction.CommitChange (new GlobalUndoService.RenameChange (OldName, NewName));
 		}
 	}
 

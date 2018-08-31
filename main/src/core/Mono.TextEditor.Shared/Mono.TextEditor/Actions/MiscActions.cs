@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using Microsoft.VisualStudio.Text.Implementation;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -318,16 +319,21 @@ namespace Mono.TextEditor
 		
 		public static void Undo (TextEditorData data)
 		{
-			if (data.Document.IsReadOnly)
-				return;
-			if (CancelPreEditMode (data))
-				return;
-			var offset = data.Document.UndoBeginOffset;
-			data.Document.Undo ();
-			if (offset >= 0)
-				data.ScrollTo (offset);
+			try {
+				if (data.Document.IsReadOnly)
+					return;
+				if (CancelPreEditMode (data))
+					return;
+				var offset = data.Document.UndoBeginOffset;
+				data.Document.Undo ();
+				if (offset >= 0)
+					data.ScrollTo (offset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while performing undo.", e);
+			}
 		}
-		
+
+
 		public static bool CancelPreEditMode (TextEditorData data)
 		{
 			var editor = data.Parent;
@@ -340,16 +346,20 @@ namespace Mono.TextEditor
 		
 		public static void Redo (TextEditorData data)
 		{
-			if (data.Document.IsReadOnly)
-				return;
-			if (CancelPreEditMode (data))
-				return;
-			var offset = data.Document.RedoBeginOffset;
-			data.Document.Redo ();
-			if (offset >= 0)
-				data.ScrollTo (offset);
+			try {
+				if (data.Document.IsReadOnly)
+					return;
+				if (CancelPreEditMode (data))
+					return;
+				var offset = data.Document.RedoBeginOffset;
+				data.Document.Redo ();
+				if (offset >= 0)
+					data.ScrollTo (offset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while performing redo.", e);
+			}
 		}
-		
+
 		public static void MoveBlockUp (TextEditorData data)
 		{
 			int lineStart = data.Caret.Line;

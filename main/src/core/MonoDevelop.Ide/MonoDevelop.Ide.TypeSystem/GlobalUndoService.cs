@@ -50,6 +50,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void Run ()
 		{
+			RunUndo ();
+		}
+
+		internal static void RunUndo ()
+		{
 			if (NagScreen ())
 				GlobalUndoService.Undo ();
 		}
@@ -80,15 +85,19 @@ Are you sure you want to continue?"), AlertButton.Yes);
 
 		protected override void Run ()
 		{
-			if (GlobalUndoHandler.NagScreen())
+			RunRedo ();
+		}
+
+		internal static void RunRedo ()
+		{
+			if (GlobalUndoHandler.NagScreen ())
 				GlobalUndoService.Redo ();
 		}
 	}
 
 	interface IMonoDevelopUndoTransaction : IWorkspaceGlobalUndoTransaction
 	{
-		void TextReplace (string fileName, int offset, int removedChars, string insertedText);
-		void RenameFile (string oldName, string newName);
+		void CommitChange (GlobalUndoService.Change change);
 	}
 
 	/// <summary>

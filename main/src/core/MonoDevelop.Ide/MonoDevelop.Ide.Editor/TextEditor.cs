@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.HAdjustmentChanged -= value; }
 		}
 
-		public char this[int offset] {
+		public char this [int offset] {
 			get {
 				return ReadOnlyTextDocument [offset];
 			}
@@ -133,20 +133,30 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-//		public event EventHandler<LineEventArgs> LineChanged {
-//			add { textEditorImpl.LineChanged += value; }
-//			remove { textEditorImpl.LineChanged -= value; }
-//		}
-//
-//		public event EventHandler<LineEventArgs> LineInserted {
-//			add { textEditorImpl.LineInserted += value; }
-//			remove { textEditorImpl.LineInserted -= value; }
-//		}
-//
-//		public event EventHandler<LineEventArgs> LineRemoved {
-//			add { textEditorImpl.LineRemoved += value; }
-//			remove { textEditorImpl.LineRemoved -= value; }
-//		}
+		internal void StartGlobalUndoTransaction ()
+		{
+			textEditorImpl.StartGlobalUndoTransaction ();
+		}
+
+		internal void EndGlobalUndoTransaction (bool committed)
+		{
+			textEditorImpl.EndGlobalUndoTransaction (committed);
+		}
+
+		//		public event EventHandler<LineEventArgs> LineChanged {
+		//			add { textEditorImpl.LineChanged += value; }
+		//			remove { textEditorImpl.LineChanged -= value; }
+		//		}
+		//
+		//		public event EventHandler<LineEventArgs> LineInserted {
+		//			add { textEditorImpl.LineInserted += value; }
+		//			remove { textEditorImpl.LineInserted -= value; }
+		//		}
+		//
+		//		public event EventHandler<LineEventArgs> LineRemoved {
+		//			add { textEditorImpl.LineRemoved += value; }
+		//			remove { textEditorImpl.LineRemoved -= value; }
+		//		}
 
 		public ITextEditorOptions Options {
 			get {
@@ -282,7 +292,7 @@ namespace MonoDevelop.Ide.Editor
 				textEditorImpl.SelectionRegion = value;
 			}
 		}
-		
+
 		public int SelectionAnchorOffset {
 			get {
 				return textEditorImpl.SelectionAnchorOffset;
@@ -737,9 +747,9 @@ namespace MonoDevelop.Ide.Editor
 			if (offset < 0 || offset >= Length)
 				throw new ArgumentOutOfRangeException (nameof (offset), "needs to be 0 <= offset < Length=" + this.Length);
 
-			if (offset + length < 0 || offset  + length > Length)
+			if (offset + length < 0 || offset + length > Length)
 				throw new ArgumentOutOfRangeException (nameof (length), "needs to be 0 <= offset + length (" + length + ") < Length=" + this.Length);
-			
+
 			return textEditorImpl.GetTextSegmentMarkersAt (new TextSegment (offset, length));
 		}
 
@@ -893,7 +903,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <inheritdoc/>
 		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 		{
-			ReadOnlyTextDocument.CopyTo (sourceIndex, destination, destinationIndex, count); 
+			ReadOnlyTextDocument.CopyTo (sourceIndex, destination, destinationIndex, count);
 		}
 
 		public void ScrollTo (int offset)
@@ -920,14 +930,14 @@ namespace MonoDevelop.Ide.Editor
 			CenterTo (LocationToOffset (loc));
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		[EditorBrowsable (EditorBrowsableState.Advanced)]
 		public void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
 			Runtime.AssertMainThread ();
 			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		[EditorBrowsable (EditorBrowsableState.Advanced)]
 		public void SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
 			Runtime.AssertMainThread ();
@@ -1012,7 +1022,7 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				return textEditorImpl.EditorExtension;
 			}
-		} 
+		}
 
 		internal ITextMarkerFactory TextMarkerFactory {
 			get {
@@ -1052,7 +1062,7 @@ namespace MonoDevelop.Ide.Editor
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
 			TextEditor_MimeTypeChanged (null, null);
 
-			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this);
+			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView (this);
 		}
 
 		async void TextEditor_FileNameChanged (object sender, EventArgs e)
@@ -1161,7 +1171,7 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException (nameof (documentContext));
 			Runtime.AssertMainThread ();
 			DetachExtensionChain ();
-			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
+			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof (TextEditorExtensionNode));
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			var newExtensions = new List<TextEditorExtension> ();
 
@@ -1188,7 +1198,7 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException (nameof (documentContext));
 			if (extensions == null)
 				throw new ArgumentNullException (nameof (extensions));
-			
+
 			TextEditorExtension last = null;
 			foreach (var ext in extensions) {
 				try {
@@ -1224,12 +1234,12 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.EditorExtension = null;
 		}
 
-		public T GetContent<T>() where T : class
+		public T GetContent<T> () where T : class
 		{
 			return GetContents<T> ().FirstOrDefault ();
 		}
 
-		public IEnumerable<T> GetContents<T>() where T : class
+		public IEnumerable<T> GetContents<T> () where T : class
 		{
 			T result = textEditorImpl as T;
 			if (result != null)
@@ -1248,7 +1258,7 @@ namespace MonoDevelop.Ide.Editor
 			var res = Enumerable.Empty<object> ();
 			if (type.IsInstanceOfType (textEditorImpl))
 				res = res.Concat (textEditorImpl);
-			
+
 			var ext = textEditorImpl.EditorExtension;
 			while (ext != null) {
 				res = res.Concat (ext.OnGetContents (type));
@@ -1351,7 +1361,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public void RemoveAnnotations<T>() where T : class
+		public void RemoveAnnotations<T> () where T : class
 		{
 		retry: // Retry until successful
 			object oldAnnotations = annotations;
@@ -1367,7 +1377,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public T Annotation<T>() where T : class
+		public T Annotation<T> () where T : class
 		{
 			object annotations = this.annotations;
 			var list = annotations as AnnotationList;
@@ -1387,10 +1397,8 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Gets all annotations stored on this AstNode.
 		/// </summary>
-		public IEnumerable<object> Annotations
-		{
-			get
-			{
+		public IEnumerable<object> Annotations {
+			get {
 				object annotations = this.annotations;
 				AnnotationList list = annotations as AnnotationList;
 				if (list != null) {
@@ -1405,7 +1413,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		internal bool SuppressTooltips {
-			get { return textEditorImpl.SuppressTooltips; } 
+			get { return textEditorImpl.SuppressTooltips; }
 			set { textEditorImpl.SuppressTooltips = value; }
 		}
 		#endregion
@@ -1541,17 +1549,14 @@ namespace MonoDevelop.Ide.Editor
 
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
 
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public IndentationTracker IndentationTracker
-		{
-			get
-			{
-				Runtime.AssertMainThread();
+		[EditorBrowsable (EditorBrowsableState.Advanced)]
+		public IndentationTracker IndentationTracker {
+			get {
+				Runtime.AssertMainThread ();
 				return textEditorImpl.IndentationTracker;
 			}
-			set
-			{
-				Runtime.AssertMainThread();
+			set {
+				Runtime.AssertMainThread ();
 				textEditorImpl.IndentationTracker = value;
 			}
 		}

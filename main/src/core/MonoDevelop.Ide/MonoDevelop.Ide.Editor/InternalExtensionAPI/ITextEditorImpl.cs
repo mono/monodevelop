@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Editor
 		SemanticHighlighting SemanticHighlighting { get; set; }
 
 		ISyntaxHighlighting SyntaxHighlighting { get; set; }
-	
+
 		int CaretOffset { get; set; }
 
 		bool IsSomethingSelected { get; }
@@ -169,17 +169,15 @@ namespace MonoDevelop.Ide.Editor
 		IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false);
 
 		void SetFoldings (IEnumerable<IFoldSegment> foldings);
-
 		IEnumerable<IFoldSegment> GetFoldingsContaining (int offset);
-
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
 		string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false);
 
 		string GetMarkup (int offset, int length, MarkupOptions options);
 
-        IndentationTracker IndentationTracker { get; set; }
-        void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
+		IndentationTracker IndentationTracker { get; set; }
+		void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
 		void SetTextPasteHandler (TextPasteHandler textPasteHandler);
 
 		#region Internal use only API (do not mirror in TextEditor)
@@ -236,5 +234,7 @@ namespace MonoDevelop.Ide.Editor
 		double GetLineHeight (int line);
 
 		void ResetQuickDiff ();
+		void StartGlobalUndoTransaction ();
+		void EndGlobalUndoTransaction (bool committed);
 	}
 }
