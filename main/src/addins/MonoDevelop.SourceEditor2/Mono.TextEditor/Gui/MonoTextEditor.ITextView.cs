@@ -563,8 +563,7 @@ namespace Mono.TextEditor
 			// We need to manually synchronize our caret with what MultiSelectionBroker thinks the caret is.
 			// The other direction happens when we move our caret.
 			if (TextCaret.Position.VirtualBufferPosition != MultiSelectionBroker.PrimarySelection.InsertionPoint) {
-				// This sync breaks on type formatting/desired column calculation and some other things.
-				//	TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
+				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
 	}

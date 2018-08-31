@@ -113,6 +113,18 @@ namespace Mono.TextEditor
 			int position = TextEditor.Caret.Offset;
 			VirtualSnapshotPoint vsp = new VirtualSnapshotPoint (TextEditor.TextSnapshot, position);
 
+			insertionPoint = vsp;
+			if (args.CaretChangeReason == CaretChangeReason.Movement) {
+				oldCaretLocation = args.Location;
+				var oldOffset = TextEditor.LocationToOffset (args.Location);
+				var snapshotPoint = new SnapshotPoint (TextEditor.TextSnapshot, oldOffset);
+				var mappingPoint = TextEditor.BufferGraph.CreateMappingPoint (snapshotPoint, PointTrackingMode.Positive);
+				var oldCaretPosition = new CaretPosition (vsp, mappingPoint, _caretAffinity);
+				var eventArgs = new CaretPositionChangedEventArgs (TextEditor, oldCaretPosition, ((ITextCaret)this).Position);
+
+				ITextCaret_PositionChanged?.Invoke (this, eventArgs);
+			}
+
 			// Synchronize the MultiSelectionBroker with Caret.
 			// In VS Editor 15.8 the MultiSelectionBroker is the single source of truth about carets and selections 
 			// (no selection / single caret, no selection / multiple carets, simple selection, block selection, multiple selections).
@@ -126,18 +138,6 @@ namespace Mono.TextEditor
 			TextEditorData.Parent.MultiSelectionBroker.PerformActionOnAllSelections (transformer => {
 				transformer.MoveTo (vsp, select: false, PositionAffinity.Successor);
 			});
-
-			insertionPoint = vsp;
-			if (args.CaretChangeReason == CaretChangeReason.Movement) {
-				oldCaretLocation = args.Location;
-				var oldOffset = TextEditor.LocationToOffset (args.Location);
-				var snapshotPoint = new SnapshotPoint (TextEditor.TextSnapshot, oldOffset);
-				var mappingPoint = TextEditor.BufferGraph.CreateMappingPoint (snapshotPoint, PointTrackingMode.Positive);
-				var oldCaretPosition = new CaretPosition (vsp, mappingPoint, _caretAffinity);
-				var eventArgs = new CaretPositionChangedEventArgs (TextEditor, oldCaretPosition, ((ITextCaret)this).Position);
-
-				ITextCaret_PositionChanged?.Invoke (this, eventArgs);
-			}
 		}
 
 		event EventHandler<CaretPositionChangedEventArgs> ITextCaret_PositionChanged;
