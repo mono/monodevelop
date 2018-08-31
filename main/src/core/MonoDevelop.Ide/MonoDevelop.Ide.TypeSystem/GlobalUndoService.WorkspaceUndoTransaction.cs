@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				Runtime.AssertMainThread ();
 				this.workspace = workspace;
 				this.service = globalUndoService;
-				this.undoSolution = workspace.CurrentSolution;
+				this.undoSolution = workspace?.CurrentSolution;
 				this.description = description;
 				foreach (var doc in IdeApp.Workbench.Documents) {
 					doc?.Editor.StartGlobalUndoTransaction ();
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void Commit ()
 			{
 				Runtime.AssertMainThread ();
-				redoSolution = workspace.CurrentSolution;
+				redoSolution = workspace?.CurrentSolution;
 				undoStack.Push (this);
 				CloseTransaction ();
 

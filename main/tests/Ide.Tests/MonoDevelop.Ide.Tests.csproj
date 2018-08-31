@@ -144,6 +144,7 @@
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidgetTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\AbstractCodeFormatterTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemServiceTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\GlobalUndoTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

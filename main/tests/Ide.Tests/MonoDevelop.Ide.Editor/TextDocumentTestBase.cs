@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor
 		protected abstract ITextDocument CreateTextDocument (string text, Encoding enc = null);
 
 		[Test]
-		public void InsertTextTest()
+		public void InsertTextTest ()
 		{
 			var textDoc = CreateTextDocument ("12345");
 			textDoc.InsertText (3, "Hello");

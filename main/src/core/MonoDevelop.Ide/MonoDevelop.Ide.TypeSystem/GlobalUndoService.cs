@@ -98,11 +98,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			return undoStack.Peek ().CheckUndoOperation ();
 		}
 
-		public static void Undo ()
+		public static void Undo (bool forceSkipNagScreen = false)
 		{
 			if (undoStack.Count == 0)
 				return;
-			if (!NagScreen ()) {
+			if (!forceSkipNagScreen && !NagScreen ()) {
 				return;
 			}
 			var undo = undoStack.Pop ();
@@ -117,16 +117,28 @@ namespace MonoDevelop.Ide.TypeSystem
 			return redoStack.Peek ().CheckRedoOperation ();
 		}
 
-		public static void Redo ()
+		public static void Redo (bool forceSkipNagScreen = false)
 		{
 			if (redoStack.Count == 0)
 				return;
+			if (!forceSkipNagScreen && !NagScreen ()) {
+				return;
+			}
 			var redo = redoStack.Pop ();
 			redo.RedoOperation ();
 			undoStack.Push (redo);
 		}
 
-		internal static bool NagScreen ()
+		/// <summary>
+		/// Reset the undo/redo stack for unit tests.
+		/// </summary>
+		internal static void Reset ()
+		{
+			undoStack.Clear ();
+			redoStack.Clear ();
+		}
+
+		static bool NagScreen ()
 		{
 			return MessageService.Confirm (GettextCatalog.GetString (@"This operation resets the project state. 
 All changes done after the operation get lost.
@@ -148,7 +160,7 @@ Are you sure you want to continue?"), AlertButton.Yes);
 			return ActiveTransactions > 0;
 		}
 
-		IWorkspaceGlobalUndoTransaction IGlobalUndoService.OpenGlobalUndoTransaction (Workspace workspace, string description)
+		public IWorkspaceGlobalUndoTransaction OpenGlobalUndoTransaction (Workspace workspace, string description)
 		{
 			var transaction = new WorkspaceUndoTransaction (workspace, this, description);
 			ActiveTransactions++;
