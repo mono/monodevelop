@@ -61,7 +61,9 @@ namespace MonoDevelop.Ide.Tasks
 			doc = null;
 			project = null;
 
-			var ws = (MonoDevelopWorkspace)args.Workspace;
+			if (!(args.Workspace is MonoDevelopWorkspace ws))
+				return false;
+
 			doc = ws.GetDocument (args.DocumentId);
 			if (doc == null)
 				return false;

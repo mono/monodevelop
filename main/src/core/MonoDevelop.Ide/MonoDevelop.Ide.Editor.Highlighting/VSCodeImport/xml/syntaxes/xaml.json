@@ -368,7 +368,7 @@
 			"name": "comment.block.xml"
 		},
 		"markupExtension": {
-			"begin": "(^{)\\s*((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))\\s",
+			"begin": "({)\\s*((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))\\s",
 			"beginCaptures": {
 				"1": {
 					"name": "punctuation.definition.string.begin.xml"
@@ -408,7 +408,7 @@
 		"property-name": {
 			"patterns": [
 				{
-					"match": "([_$[:alpha:]][_$[:alnum:.]]*)\\s*(=)",
+					"match": "([_$[:alpha:]]*[_$[:alnum:.]]*)\\s*(=)",
 					"captures": {
 						"1": {
 							"name": "entity.other.attribute-name.xml"

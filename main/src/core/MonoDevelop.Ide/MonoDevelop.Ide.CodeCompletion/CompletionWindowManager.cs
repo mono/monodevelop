@@ -100,6 +100,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			StartPrepareShowWindowSession ();
 			if (wnd == null) {
 				wnd = new CompletionListWindow ();
+				wnd.WordCompleted += HandleWndWordCompleted;
 				wnd.VisibleChanged += HandleWndVisibleChanged;
 			}
 			if (ext != null) {
@@ -152,7 +153,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.EnableCompletionCategoryMode.Set (!IdeApp.Preferences.EnableCompletionCategoryMode.Value);
 		}
 
-		[Obsolete("Roslyn now does the post formatting after word completion.")]
+		static void HandleWndWordCompleted (object sender, CodeCompletionContextEventArgs e)
+		{
+			WordCompleted?.Invoke (sender, e);
+		}
+
 		public static event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
 
 		static void DestroyWindow ()
@@ -160,6 +165,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (wnd != null) {
 				if (wnd.Visible)
 					wnd.HideWindow ();
+				wnd.WordCompleted -= HandleWndWordCompleted;
 				wnd.VisibleChanged -= HandleWndVisibleChanged;
 				wnd.Destroy ();
 				wnd = null;

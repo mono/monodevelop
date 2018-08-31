@@ -1,4 +1,4 @@
-﻿//
+//
 // MonoDevelopRuleSetManager.cs
 //
 // Author:
@@ -34,19 +34,26 @@ using YamlDotNet.Core.Tokens;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	static class MonoDevelopRuleSetManager
+	class MonoDevelopRuleSetManager
 	{
-		public static string GlobalRulsetFileName { get; } = UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
+		public string GlobalRulesetFileName { get; }
+		DateTime globalRuleSetWriteTimeUtc = DateTime.MinValue;
+		RuleSet globalRuleSet;
+
+		internal MonoDevelopRuleSetManager (string globalRulesetPath = null)
+		{
+			GlobalRulesetFileName = globalRulesetPath ?? UserProfile.Current.ConfigDir.Combine ("RuleSet.global");
+			EnsureGlobalRulesetExists (overwrite: false);
+		}
 
 		static readonly Regex severityRegex = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.severity");
 		static readonly Regex enabledRegex  = new Regex ("CodeIssues\\.System\\.String\\[\\]\\.(.*)\\.(.*)\\.enabled");
-		static DateTime globalRuleSetWriteTimeUtc = DateTime.MinValue;
-		static RuleSet globalRuleSet;
 
-		internal static void EnsureGlobalRulesetExists()
+		void EnsureGlobalRulesetExists(bool overwrite)
 		{
-			if (File.Exists (GlobalRulsetFileName))
+			if (!overwrite && File.Exists (GlobalRulesetFileName))
 				return;
+
 			var reportDiagnostics = new Dictionary<string, ReportDiagnostic> ();
 			foreach (var key in PropertyService.GlobalInstance.Keys) {
 				var match = severityRegex.Match (key);
@@ -67,31 +74,52 @@ namespace MonoDevelop.Ide.TypeSystem
 					PropertyService.Set (key, null);
 				}
 			}
-			using (var sw = new StreamWriter (GlobalRulsetFileName)) {
+
+			WriteRulesetToFile (reportDiagnostics);
+		}
+
+		void WriteRulesetToFile (Dictionary<string, ReportDiagnostic> reportDiagnostics)
+		{
+			using (var sw = new StreamWriter (GlobalRulesetFileName)) {
 				sw.WriteLine ("<RuleSet Name=\"Global Rules\" ToolsVersion=\"12.0\">");
 				sw.WriteLine ("    <Rules AnalyzerId=\"Roslyn\" RuleNamespace=\"Roslyn\">>");
 				foreach (var kv in reportDiagnostics) {
 					if (kv.Key.StartsWith ("RE", StringComparison.Ordinal))
 						continue;
-					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertValue (kv.Value) + "\"/>");
+					sw.WriteLine ("        <Rule Id=\"{0}\" Action=\"{1}\"/>", kv.Key, ConvertReportDiagnosticToAction (kv.Value));
 				}
 				sw.WriteLine ("    </Rules>");
 				sw.WriteLine ("    <Rules AnalyzerId=\"RefactoringEssentials\" RuleNamespace=\"RefactoringEssentials\">>");
 				foreach (var kv in reportDiagnostics) {
 					if (!kv.Key.StartsWith ("RE", StringComparison.Ordinal))
 						continue;
-					sw.WriteLine ("        <Rule Id=\"" + kv.Key + "\" Action=\"" + ConvertValue (kv.Value) + "\"/>");
+					sw.WriteLine ("        <Rule Id=\"{0}\" Action=\"{1}\"/>", kv.Key, ConvertReportDiagnosticToAction (kv.Value));
 				}
 				sw.WriteLine ("    </Rules>");
 				sw.WriteLine ("</RuleSet>");
 			}
 		}
 
-		static string ConvertValue (ReportDiagnostic value)
+
+		static string ConvertReportDiagnosticToAction (ReportDiagnostic value)
 		{
-			if (value == ReportDiagnostic.Warn)
+			switch (value)
+			{
+			case ReportDiagnostic.Default:
+				return "Default";
+			case ReportDiagnostic.Error:
+				return "Error";
+			case ReportDiagnostic.Warn:
 				return "Warning";
-			return value.ToString ();
+			case ReportDiagnostic.Info:
+				return "Info";
+			case ReportDiagnostic.Hidden:
+				return "Hidden";
+			case ReportDiagnostic.Suppress:
+				return "None";
+			default:
+				throw new InvalidOperationException("This program location is thought to be unreachable.");
+			}
 		}
 
 		static ReportDiagnostic ConvertDiagnostic (DiagnosticSeverity severity)
@@ -109,20 +137,38 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ReportDiagnostic.Default;
 		}
 
-		public static RuleSet GetGloabalRuleSet ()
+		public RuleSet GetGlobalRuleSet ()
 		{
-			try {
-				var fileTime = File.GetLastWriteTimeUtc (GlobalRulsetFileName);
-				if (globalRuleSet == null || fileTime != globalRuleSetWriteTimeUtc) {
-					globalRuleSetWriteTimeUtc = fileTime;
-					globalRuleSet = RuleSet.LoadEffectiveRuleSetFromFile (GlobalRulsetFileName);
+			return QueryGlobalRuleset (retryOnError: true);
+
+			RuleSet QueryGlobalRuleset (bool retryOnError)
+			{
+				try {
+					var fileTime = File.GetLastWriteTimeUtc (GlobalRulesetFileName);
+					if (globalRuleSet == null || fileTime != globalRuleSetWriteTimeUtc) {
+						globalRuleSetWriteTimeUtc = fileTime;
+						globalRuleSet = RuleSet.LoadEffectiveRuleSetFromFile (GlobalRulesetFileName);
+					}
+					return globalRuleSet;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while loading global rule set.", e);
+					globalRuleSetWriteTimeUtc = DateTime.MinValue;
+
+					// If the initial query fails
+					if (retryOnError) {
+						// rename the current ruleset to a backup on
+						if (File.Exists (GlobalRulesetFileName)) {
+							File.Copy (GlobalRulesetFileName, GlobalRulesetFileName + ".backup", true);
+						}
+
+						// create one with the default values
+						EnsureGlobalRulesetExists (overwrite: true);
+
+						// try again without retrying on error
+						return QueryGlobalRuleset (retryOnError: false);
+					}
+					return null;
 				}
-				return globalRuleSet;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading global rule set.", e);
-				MessageService.ShowError (GettextCatalog.GetString ("Error while loading global rule set."), e);
-				globalRuleSetWriteTimeUtc = DateTime.MinValue;
-				return null;
 			}
 		}
 	}

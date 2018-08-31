@@ -124,6 +124,20 @@ namespace Mono.TextEditor
 
 				ITextCaret_PositionChanged?.Invoke (this, eventArgs);
 			}
+
+			// Synchronize the MultiSelectionBroker with Caret.
+			// In VS Editor 15.8 the MultiSelectionBroker is the single source of truth about carets and selections 
+			// (no selection / single caret, no selection / multiple carets, simple selection, block selection, multiple selections).
+			// In our world, we still have our own Caret and Selection, so when our Caret moves, we need to synchronize 
+			// the MultiSelectionBroker to our values, and when the MultiSelectionBroker changes 
+			// (e.g. as a result of EditorOperations such as InsertNewLine), we need to synchronize our caret and selection 
+			// to the MultiSelectionBroker values.
+			// Note that EditorOperations only updates the MultiSelectionBroker, it no longer moves caret or selection 
+			// (since in Editor 15.8 the Caret and Selection are shims implemented in terms of MultiSelectionBroker)
+			// TODO: synchronize all our selections as well.
+			TextEditorData.Parent.MultiSelectionBroker.PerformActionOnAllSelections (transformer => {
+				transformer.MoveTo (vsp, select: false, PositionAffinity.Successor);
+			});
 		}
 
 		event EventHandler<CaretPositionChangedEventArgs> ITextCaret_PositionChanged;
