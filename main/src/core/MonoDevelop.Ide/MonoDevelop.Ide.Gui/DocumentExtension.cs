@@ -114,16 +114,15 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		/// <summary>
-		/// Invoked when a document is being loaded from a file.
+		/// Invoked after a document has been loaded.
 		/// </summary>
-		/// <returns></returns>
 		public virtual Task OnLoaded (FileOpenInformation fileOpenInformation)
 		{
 			return next.OnLoaded (fileOpenInformation);
 		}
 
 		/// <summary>
-		/// Invoked when a new document is being created from a file template.
+		/// Invoked after a new document is created from a file template.
 		/// </summary>
 		/// <param name="fileCreationInformation">File creation data</param>
 		public virtual Task OnLoadedNew (FileCreationInformation fileCreationInformation)

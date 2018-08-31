@@ -679,8 +679,10 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			if (extensionChain != null)
+			if (extensionChain != null) {
 				extensionChain.Dispose ();
+				extensionChain = null;
+			}
 
 			DocumentRegistry.Remove (this);
 			UnsubscribeAnalysisDocument ();
@@ -945,7 +947,10 @@ namespace MonoDevelop.Ide.Gui
 			if (analysisDocument != null) {
 				Microsoft.CodeAnalysis.Document doc;
 				try {
-					 doc = RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
+					doc = RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
+					if (doc == null && RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument)) {
+						return Task.CompletedTask;
+					}
 				} catch (Exception) {
 					doc = null;
 				}
@@ -964,7 +969,7 @@ namespace MonoDevelop.Ide.Gui
 						return Task.CompletedTask;
 					SubscribeRoslynWorkspace ();
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
-					if (analysisDocument != null && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
+					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen (analysisDocument)) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, Editor, this);
 						OnAnalysisDocumentChanged (EventArgs.Empty);
 					}

@@ -346,9 +346,6 @@
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll" />
