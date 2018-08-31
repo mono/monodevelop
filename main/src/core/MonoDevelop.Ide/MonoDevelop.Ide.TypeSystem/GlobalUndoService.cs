@@ -50,22 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void Run ()
 		{
-			RunUndo ();
-		}
-
-		internal static void RunUndo ()
-		{
-			if (NagScreen ())
-				GlobalUndoService.Undo ();
-		}
-
-		internal static bool NagScreen ()
-		{
-			return MessageService.Confirm (GettextCatalog.GetString (@"This operation resets the project state. 
-All changes done after the operation get lost.
-It is recommended to use version control to prevent data loss.
-
-Are you sure you want to continue?"), AlertButton.Yes);
+			GlobalUndoService.Undo ();
 		}
 	}
 
@@ -85,13 +70,7 @@ Are you sure you want to continue?"), AlertButton.Yes);
 
 		protected override void Run ()
 		{
-			RunRedo ();
-		}
-
-		internal static void RunRedo ()
-		{
-			if (GlobalUndoHandler.NagScreen ())
-				GlobalUndoService.Redo ();
+			GlobalUndoService.Redo ();
 		}
 	}
 
@@ -123,6 +102,9 @@ Are you sure you want to continue?"), AlertButton.Yes);
 		{
 			if (undoStack.Count == 0)
 				return;
+			if (!NagScreen ()) {
+				return;
+			}
 			var undo = undoStack.Pop ();
 			undo.UndoOperation ();
 			redoStack.Push (undo);
@@ -143,6 +125,16 @@ Are you sure you want to continue?"), AlertButton.Yes);
 			redo.RedoOperation ();
 			undoStack.Push (redo);
 		}
+
+		internal static bool NagScreen ()
+		{
+			return MessageService.Confirm (GettextCatalog.GetString (@"This operation resets the project state. 
+All changes done after the operation get lost.
+It is recommended to use version control to prevent data loss.
+
+Are you sure you want to continue?"), AlertButton.Yes);
+		}
+
 
 		internal int ActiveTransactions;
 

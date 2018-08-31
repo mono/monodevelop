@@ -914,12 +914,12 @@ namespace Mono.TextEditor
 		{
 			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				GlobalUndoHandler.RunUndo ();
+				GlobalUndoService.Undo ();
 			}
 
 			public override void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				GlobalRedoHandler.RunRedo ();
+				GlobalUndoService.Redo ();
 			}
 		}
 
