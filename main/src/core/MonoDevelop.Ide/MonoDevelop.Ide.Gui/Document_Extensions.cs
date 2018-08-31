@@ -187,38 +187,43 @@ namespace MonoDevelop.Ide.Gui
 
 		class DefaultDocumentExtension : DocumentExtension, ICommandRouter
 		{
-			public override Task OnSave (FileSaveInformation fileSaveInformation)
+			internal protected override Task OnSave (FileSaveInformation fileSaveInformation)
 			{
 				return Document.DoSaveViewContent (fileSaveInformation);
 			}
 
-			public override Task OnLoaded (FileOpenInformation fileOpenInformation)
+			internal protected override void OnSaved (FileSaveInformation fileSaveInformation)
+			{
+				Document.OnSaved (EventArgs.Empty);
+			}
+
+			internal protected override Task OnLoaded (FileOpenInformation fileOpenInformation)
 			{
 				// Do nothing, since the view content has already been loaded at this point
 				return Task.CompletedTask;
 			}
 
-			public override Task OnLoadedNew (FileCreationInformation fileCreationInformation)
+			internal protected override Task OnLoadedNew (FileCreationInformation fileCreationInformation)
 			{
 				// Do nothing, since the view content has already been initialized at this point
 				return Task.CompletedTask;
 			}
 
-			public override void DiscardChanges ()
+			internal protected override void OnDiscardChanges ()
 			{
 				Document.window.ViewContent.DiscardChanges ();
 			}
 
-			public override void OnOwnerChanged ()
+			internal protected override void OnOwnerChanged ()
 			{
 			}
 
-			public override void OnActivated ()
+			internal protected override void OnActivated ()
 			{
 				// Do nothing
 			}
 
-			public override ProjectReloadCapability GetProjectReloadCapability ()
+			internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()
 			{
 				return Document.Window.ViewContent.ProjectReloadCapability;
 			}

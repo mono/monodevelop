@@ -37,6 +37,9 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
+	/// <summary>
+	/// An extension that is attached to a document
+	/// </summary>
 	public class DocumentExtension: ChainedExtension, ICommandRouter
 	{
 		DocumentExtension next;
@@ -65,7 +68,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Window that shows the view of the document
 		/// </summary>
-		public IWorkbenchWindow WorkbenchWindow => document.Window;
+		public IWorkbenchWindow Window => document.Window;
 
 		/// <summary>
 		/// Project to which the document belongs
@@ -100,23 +103,32 @@ namespace MonoDevelop.Ide.Gui
 		/// Invoked when the document is being saved. <paramref name="fileSaveInformation"/> can be <see langword="null"/> if the document is not a file.
 		/// </summary>
 		/// <param name="fileSaveInformation">File information.</param>
-		public virtual Task OnSave (FileSaveInformation fileSaveInformation)
+		internal protected virtual Task OnSave (FileSaveInformation fileSaveInformation)
 		{
 			return next.OnSave (fileSaveInformation);
 		}
 
 		/// <summary>
+		/// Invoked after the document has been saved. <paramref name="fileSaveInformation"/> can be <see langword="null"/> if the document is not a file.
+		/// </summary>
+		/// <param name="fileSaveInformation">File information.</param>
+		internal protected virtual void OnSaved (FileSaveInformation fileSaveInformation)
+		{
+			next.OnSaved (fileSaveInformation);
+		}
+
+		/// <summary>
 		/// Invoked when changes in the document have to be discarded
 		/// </summary>
-		public virtual void DiscardChanges ()
+		internal protected virtual void OnDiscardChanges ()
 		{
-			next.DiscardChanges ();
+			next.OnDiscardChanges ();
 		}
 
 		/// <summary>
 		/// Invoked after a document has been loaded.
 		/// </summary>
-		public virtual Task OnLoaded (FileOpenInformation fileOpenInformation)
+		internal protected virtual Task OnLoaded (FileOpenInformation fileOpenInformation)
 		{
 			return next.OnLoaded (fileOpenInformation);
 		}
@@ -125,7 +137,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Invoked after a new document is created from a file template.
 		/// </summary>
 		/// <param name="fileCreationInformation">File creation data</param>
-		public virtual Task OnLoadedNew (FileCreationInformation fileCreationInformation)
+		internal protected virtual Task OnLoadedNew (FileCreationInformation fileCreationInformation)
 		{
 			return next.OnLoadedNew (fileCreationInformation);
 		}
@@ -158,7 +170,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Invoked when the project of the document changes
 		/// </summary>
-		public virtual void OnOwnerChanged ()
+		internal protected virtual void OnOwnerChanged ()
 		{
 			next.OnOwnerChanged ();
 		}
@@ -166,7 +178,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Invoked when the document becomes the active document in the shell
 		/// </summary>
-		public virtual void OnActivated ()
+		internal protected virtual void OnActivated ()
 		{
 			next.OnActivated ();
 		}
@@ -175,9 +187,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Gets the project reload capability.
 		/// </summary>
 		/// <returns>The project reload capability.</returns>
-		public virtual ProjectReloadCapability GetProjectReloadCapability ()
+		internal protected virtual ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
-			return next.GetProjectReloadCapability ();
+			return next.OnGetProjectReloadCapability ();
 		}
 
 		object ICommandRouter.GetNextCommandTarget ()

@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal ProjectReloadCapability ProjectReloadCapability {
 			get {
-				return documentExtension.GetProjectReloadCapability ();
+				return documentExtension.OnGetProjectReloadCapability ();
 			}
 		}
 
@@ -431,7 +431,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DiscardChanges ()
 		{
-			documentExtension.DiscardChanges ();
+			documentExtension.OnDiscardChanges ();
 		}
 
 		internal Task NotifyLoaded (FileOpenInformation fileOpenInformation)
@@ -588,11 +588,9 @@ namespace MonoDevelop.Ide.Gui
 		internal async Task SaveViewContent (Encoding encoding = null)
 		{
 			try {
-				if (Window.ViewContent.IsFile)
-					await documentExtension.OnSave (new FileSaveInformation (Window.ViewContent.ContentName, encoding));
-				else
-					await documentExtension.OnSave (null);
-				OnSaved (EventArgs.Empty);
+				var fileInfo = Window.ViewContent.IsFile ? new FileSaveInformation (Window.ViewContent.ContentName, encoding) : null;
+				await documentExtension.OnSave (fileInfo);
+				documentExtension.OnSaved (fileInfo);
 			} catch (Exception ex) {
 				LoggingService.LogError ("File could not be saved", ex);
 			}

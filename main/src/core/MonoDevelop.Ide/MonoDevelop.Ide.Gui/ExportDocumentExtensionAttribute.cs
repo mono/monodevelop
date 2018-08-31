@@ -32,12 +32,23 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class ExportDocumentExtensionAttribute: CustomExtensionAttribute
 	{
+		/// <summary>
+		/// File extensions to which apply this extension. Comma separated list. Specify '*' to match all files.
+		/// </summary>
 		[NodeAttribute ("fileExtensions")]
 		public string FileExtensions { get; set; }
 
+		/// <summary>
+		/// Mime types to which apply this extension. Comma separated list. Specify '*' to match all files.
+		/// </summary>
+		/// <value>The MIME types.</value>
 		[NodeAttribute ("mimeTypes")]
 		public string MimeTypes { get; set; }
 
+		/// <summary>
+		/// File name(s) to which apply this extension. Comma separated list. Specify '*' to match all files
+		/// </summary>
+		/// <value>The name.</value>
 		[NodeAttribute ("name")]
 		public string Name { get; set; }
 	}
