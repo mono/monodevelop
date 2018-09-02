@@ -802,8 +802,14 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			if (!added) {
 				if (insertAtEnd) {
-					var last = ChildNodes.FindLastIndex (g => g is MSBuildPropertyGroup);
-					if (last != -1) {
+
+                    var last = ChildNodes.FindLastIndex(g => g is MSBuildPropertyGroup &&
+                                         (g as MSBuildPropertyGroup).GetChildren()
+                                                                    .OfType<MSBuildProperty>()
+                                                                    .All(prop => prop.Name != "PreBuildEvent" &&
+                                                                                 prop.Name != "PostBuildEvent"));
+
+                    if (last != -1) {
 						ChildNodes = ChildNodes.Insert (last + 1, group);
 						added = true;
 					}
