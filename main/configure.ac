@@ -331,9 +331,6 @@ src/addins/CSharpBinding/AspNet/Makefile
 src/addins/ILAsmBinding/Makefile
 src/addins/VBNetBinding/Makefile
 src/addins/ChangeLogAddIn/Makefile
-src/addins/MonoDevelop.GtkCore/Makefile
-src/addins/MonoDevelop.GtkCore/libstetic/Makefile
-src/addins/MonoDevelop.GtkCore/libsteticui/Makefile
 src/addins/TextTemplating/Makefile
 src/addins/TextTemplating/MonoDevelop.TextTemplating/Makefile
 src/addins/AspNet/Makefile
