@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						VersionStamp.Create (),
 						p.Name,
 						fileName.FileNameWithoutExtension,
-						LanguageNames.CSharp,
+						(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
 						p.FileName,
 						fileName,
 						cp?.CreateCompilationOptions (),
@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 						continue;
 
-					if (TypeSystemParserNode.IsCompileableFile (f, out SourceCodeKind sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
+					if (TypeSystemParserNode.IsCompileableFile (p, f, out SourceCodeKind sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
 						var id = projectData.DocumentData.GetOrCreate (f.Name, oldProjectData?.DocumentData);
 						if (!duplicates.Add (id))
 							continue;
