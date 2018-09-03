@@ -52,7 +52,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			foreach (var file in e) {
 				if (file.FileName == FilePath) {
-					UpdatedOnDisk?.Invoke (this, EventArgs.Empty);
+					try {
+						UpdatedOnDisk?.Invoke (this, EventArgs.Empty);
+					} catch (Exception ex) {
+						LoggingService.LogError ($"Error on MonoDevelopMetadataReference.OnUpdatedOnDisk with updating {FilePath}.", ex);
+					}
 					return;
 				}
 			}
