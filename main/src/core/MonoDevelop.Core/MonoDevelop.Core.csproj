@@ -744,6 +744,14 @@
     <Compile Include="MonoDevelop.Core.Web\HttpMessageHandlerProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpClientProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\DefaultHttpMessageHandlerProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ProxyAuthenticationHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IProxyCredentialCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ICredentialService.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialService.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IAsyncCredentialProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialResponse.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialStatus.cs" />
+    <Compile Include="MonoDevelop.Core.Web\AsyncCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
