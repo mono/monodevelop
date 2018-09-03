@@ -33,12 +33,4 @@ namespace MonoDevelop.Core.Web
 	{
 		public abstract HttpMessageHandler CreateHttpMessageHandler (Uri uri);
 	}
-
-	class NullHttpMessageHandlerProvider : HttpMessageHandlerProvider
-	{
-		public override HttpMessageHandler CreateHttpMessageHandler (Uri uri)
-		{
-			return new HttpClientHandler ();
-		}
-	}
 }
