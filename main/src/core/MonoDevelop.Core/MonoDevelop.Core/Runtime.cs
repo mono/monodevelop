@@ -44,6 +44,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Setup;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.Core
 {
@@ -126,6 +127,7 @@ namespace MonoDevelop.Core
 				PropertyService.Initialize ();
 
 				WebRequestHelper.Initialize ();
+				HttpClientProvider.Initialize ();
 				Mono.Addins.Setup.WebRequestHelper.SetRequestHandler (WebRequestHelper.GetResponse);
 				
 				//have to do this after the addin service and property service have initialized

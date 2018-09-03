@@ -38,6 +38,11 @@
 		<Description>Platform-specific services used for obtaining proxy credentials.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.Web.ICredentialProvider" />
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Core/HttpMessageHandlerProviders" name = "HttpMessageHandler providers">
+		<Description>Platform-specific services used to create HttpMessageHandlers used by the HttpClient.</Description>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Core.Web.HttpMessageHandlerProvider" />
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
 		<Description>File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.</Description>
