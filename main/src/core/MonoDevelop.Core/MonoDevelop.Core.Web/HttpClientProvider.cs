@@ -42,7 +42,7 @@ namespace MonoDevelop.Core.Web
 			httpMessageHandlerProvider = AddinManager.GetExtensionObjects<HttpMessageHandlerProvider> (ProvidersPath).FirstOrDefault ();
 
 			if (httpMessageHandlerProvider == null) {
-				httpMessageHandlerProvider = new NullHttpMessageHandlerProvider ();
+				httpMessageHandlerProvider = new DefaultHttpMessageHandlerProvider ();
 				LoggingService.LogWarning ("No HttpMessageHandlerProvider was found");
 			}
 		}

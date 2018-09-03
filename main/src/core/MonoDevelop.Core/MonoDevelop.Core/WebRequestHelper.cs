@@ -61,6 +61,8 @@ namespace MonoDevelop.Core
 		[Obsolete]
 		public static IProxyAuthenticationHandler ProxyAuthenticationHandler { get; internal set; }
 
+		static internal ProxyCache ProxyCache => proxyCache;
+
 		/// <summary>
 		/// Gets the web response, using the <see cref="ProxyAuthenticationHandler"/> to handle proxy authentication
 		/// if necessary.

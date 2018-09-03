@@ -745,6 +745,7 @@
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpMessageHandlerProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpClientProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\DefaultHttpMessageHandlerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
