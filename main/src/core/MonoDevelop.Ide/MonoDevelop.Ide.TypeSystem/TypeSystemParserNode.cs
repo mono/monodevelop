@@ -30,6 +30,7 @@ using System.Linq;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -84,16 +85,34 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
-		public static bool IsCompileableFile(ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
+		[Obsolete ("Use IsCompileableFile (Project p, ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)")]
+		public static bool IsCompileableFile (ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
+			=> IsCompileableFile (null, file, out sck);
+
+		public static bool IsCompileableFile (MonoDevelop.Projects.Project p, ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
 		{
 			var ext = file.FilePath.Extension;
-			if (FilePath.PathComparer.Equals (ext, ".cs")) {
-				sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
-			} else if (FilePath.PathComparer.Equals (ext, ".sketchcs"))
-				sck = Microsoft.CodeAnalysis.SourceCodeKind.Script;
-			else {
-				sck = default (Microsoft.CodeAnalysis.SourceCodeKind);
-				return false;
+			sck = default;
+
+			if (p is DotNetProject dotNetProject) {
+				if (dotNetProject.RoslynLanguageName == LanguageNames.CSharp) {
+					if (FilePath.PathComparer.Equals (ext, ".cs")) {
+						sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
+					} else if (FilePath.PathComparer.Equals (ext, ".sketchcs")) {
+						sck = Microsoft.CodeAnalysis.SourceCodeKind.Script;
+					} else {
+						return false;
+					}
+				}
+				if (dotNetProject.RoslynLanguageName == LanguageNames.VisualBasic) {
+					if (FilePath.PathComparer.Equals (ext, ".vb")) {
+						sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
+					} else if (FilePath.PathComparer.Equals (ext, ".sketchvb")) {
+						sck = Microsoft.CodeAnalysis.SourceCodeKind.Script;
+					} else {
+						return false;
+					}
+				}
 			}
 			return
 				file.BuildAction == MonoDevelop.Projects.BuildAction.Compile ||
