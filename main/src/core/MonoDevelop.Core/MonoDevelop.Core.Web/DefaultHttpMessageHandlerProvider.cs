@@ -16,10 +16,18 @@ namespace MonoDevelop.Core.Web
 		{
 			var proxy = WebRequestHelper.ProxyCache.GetProxy (uri);
 
-			return new HttpClientHandler {
+			var handler = new HttpClientHandler {
 				AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
 				Proxy = proxy
 			};
+
+			HttpMessageHandler messageHandler = handler;
+
+			if (proxy != null) {
+				messageHandler = new ProxyAuthenticationHandler (handler, HttpClientProvider.CredentialService, WebRequestHelper.ProxyCache);
+			}
+
+			return messageHandler;
 		}
 	}
 }

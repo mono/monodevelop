@@ -1,5 +1,5 @@
 //
-// HttpClientProvider.cs
+// AsyncCredentialProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -25,42 +25,31 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.Net.Http;
-using Mono.Addins;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Web
 {
-	public static class HttpClientProvider
+	class AsyncCredentialProvider : IAsyncCredentialProvider
 	{
-		const string ProvidersPath = "/MonoDevelop/Core/HttpMessageHandlerProviders";
-
-		static HttpMessageHandlerProvider httpMessageHandlerProvider;
-		static CredentialService credentialService;
-
-		internal static void Initialize ()
-		{
-			httpMessageHandlerProvider = AddinManager.GetExtensionObjects<HttpMessageHandlerProvider> (ProvidersPath).FirstOrDefault ();
-
-			if (httpMessageHandlerProvider == null) {
-				httpMessageHandlerProvider = new DefaultHttpMessageHandlerProvider ();
-				LoggingService.LogWarning ("No HttpMessageHandlerProvider was found");
-			}
-
-			credentialService = new CredentialService (new AsyncCredentialProvider ());
+		public string Id {
+			get { return "MonoDevelop.Core.Web.AsyncCredentialProvider"; }
 		}
 
-		public static HttpClient CreateHttpClient (string uri)
+		public Task<CredentialResponse> GetAsync (Uri uri, IWebProxy proxy, CredentialType credentialType, bool isRetry, CancellationToken cancellationToken)
 		{
-			return CreateHttpClient (new Uri (uri));
-		}
+			var cp = WebRequestHelper.CredentialProvider;
+			if (cp == null)
+				return null;
 
-		public static HttpClient CreateHttpClient (Uri uri)
-		{
-			var handler = httpMessageHandlerProvider.CreateHttpMessageHandler (uri);
-			return new HttpClient (handler);
+			return Task.Run (() => {
+				ICredentials credentials = cp.GetCredentials (uri, proxy, credentialType, isRetry);
+				if (credentials != null) {
+					return new CredentialResponse (credentials);
+				}
+				return new CredentialResponse (CredentialStatus.UserCanceled);
+			});
 		}
-
-		static internal ICredentialService CredentialService => credentialService;
 	}
 }

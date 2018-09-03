@@ -21,7 +21,7 @@ using System.Net;
 
 namespace MonoDevelop.Core.Web
 {
-	class ProxyCache : IProxyCache
+	class ProxyCache : IProxyCache, IProxyCredentialCache
 	{
 		/// <summary>
 		/// Capture the default System Proxy so that it can be re-used by the IProxyFinder
@@ -30,25 +30,56 @@ namespace MonoDevelop.Core.Web
 		/// </summary>
 		static readonly IWebProxy originalSystemProxy = WebRequest.GetSystemWebProxy ();
 
-		readonly ConcurrentDictionary<Uri, WebProxy> cache = new ConcurrentDictionary<Uri, WebProxy> ();
+		readonly ConcurrentDictionary<Uri, ICredentials> cache = new ConcurrentDictionary<Uri, ICredentials> ();
+
+		public Guid Version { get; private set; } = Guid.NewGuid ();
 
 		public IWebProxy GetProxy (Uri uri)
 		{
 			if (!IsSystemProxySet (uri))
 				return null;
 
-			WebProxy systemProxy = GetSystemProxy (uri), effectiveProxy;
-
-			// See if we have a proxy instance cached for this proxy address
-			return cache.TryGetValue (systemProxy.Address, out effectiveProxy) ? effectiveProxy : systemProxy;
-
+			var systemProxy = GetSystemProxy (uri);
+			TryAddProxyCredentialsToCache (systemProxy);
+			systemProxy.Credentials = this;
+			return systemProxy;
 		}
 
+		// Adds new proxy credentials to cache if there's not any in there yet
+		bool TryAddProxyCredentialsToCache (WebProxy configuredProxy)
+		{
+			// If a proxy was cached, it means the stored credentials are incorrect. Use the cached one in this case.
+			var proxyCredentials = configuredProxy.Credentials ?? CredentialCache.DefaultCredentials;
+			return cache.TryAdd (configuredProxy.Address, proxyCredentials);
+		}
+
+		public void UpdateCredential (Uri proxyAddress, NetworkCredential credentials)
+		{
+			if (credentials == null)
+				throw new ArgumentNullException (nameof (credentials));
+
+			cache.AddOrUpdate (
+				proxyAddress,
+				addValueFactory: _ => { Version = Guid.NewGuid (); return credentials; },
+				updateValueFactory: (_, __) => { Version = Guid.NewGuid (); return credentials; });
+		}
+
+		public NetworkCredential GetCredential (Uri proxyAddress, string authType)
+		{
+			ICredentials cachedCredentials;
+			if (cache.TryGetValue (proxyAddress, out cachedCredentials)) {
+				return cachedCredentials.GetCredential (proxyAddress, authType);
+			}
+
+			return null;
+		}
+
+		[Obsolete ("Retained for backcompat only. Use UpdateCredential instead")]
 		public void Add (IWebProxy proxy)
 		{
 			var webProxy = proxy as WebProxy;
 			if (webProxy != null)
-				cache.TryAdd (webProxy.Address, webProxy);
+				cache.TryAdd (webProxy.Address, webProxy.Credentials);
 		}
 
 		static WebProxy GetSystemProxy (Uri uri)
@@ -81,7 +112,6 @@ namespace MonoDevelop.Core.Web
 					return false;
 				if (proxy.IsBypassed (uri))
 					return false;
-				proxy = new WebProxy (proxyAddress);
 			}
 
 			return proxy != null;
