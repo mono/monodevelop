@@ -100,20 +100,25 @@ namespace MonoDevelop.Ide.FindInFiles
 			location = DocumentLocation.Empty;
 			copyData = "";
 			markup = selectedMarkup = "";
+
 			var doc = GetDocument ();
-			if (doc == null)
+			if (doc == null) {
 				return;
+			}
 			try {
 				int lineNr = doc.OffsetToLineNumber (Offset);
 				var line = doc.GetLine (lineNr);
 				if (line != null) {
 					location = new DocumentLocation (lineNr, Offset - line.Offset + 1);
-					copyData = $"{FileName} ({location.Value.Line}, {location.Value.Column}):{doc.GetTextAt (Offset, line.Length)}";
+					copyData = $"{FileName} ({location.Value.Line}, {location.Value.Column}):{doc.GetTextAt (line.Offset, line.Length)}";
 					CreateMarkup (widget, doc, line);
 				}
-			} catch (ArgumentOutOfRangeException) {
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting search result", e);
 			}
 		}
+
+		const int maximumMarkupLength = 78;
 
 		void CreateMarkup (SearchResultWidget widget, TextEditor doc, Editor.IDocumentLine line)
 		{
@@ -122,15 +127,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			int indent = line.GetIndentation (doc).Length;
 			string lineText;
 			int col = Offset - line.Offset;
-
+			int markupStartOffset = 0;
+			bool trimStart = false, trimEnd = false;
 			if (col < indent) {
+				trimEnd = line.Length > maximumMarkupLength;
 				// search result contained part of the indent.
-				lineText = doc.GetTextAt (line.Offset, line.Length);
-				markup = doc.GetMarkup (line.Offset, line.Length, new MarkupOptions (MarkupFormat.Pango));
+				lineText = doc.GetTextAt (line.Offset, Math.Min (maximumMarkupLength, line.Length));
+				markup = doc.GetMarkup (line.Offset, Math.Min (maximumMarkupLength, line.Length), new MarkupOptions (MarkupFormat.Pango));
 			} else {
 				// if not crop the indent
-				lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
-				markup = doc.GetMarkup (line.Offset + indent, line.Length - indent, new MarkupOptions (MarkupFormat.Pango));
+				var length = line.Length - indent;
+				if (length > maximumMarkupLength) {
+					markupStartOffset = Math.Min (Math.Max (0, col - indent - maximumMarkupLength / 2), line.Length - maximumMarkupLength);
+					trimEnd = markupStartOffset + maximumMarkupLength < line.Length;
+					trimStart = markupStartOffset > 0;
+					length = maximumMarkupLength;
+				}
+				lineText = doc.GetTextAt (line.Offset + markupStartOffset + indent, length);
+				markup = doc.GetMarkup (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
 				col -= indent;
 			}
 
@@ -141,8 +155,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				uint start;
 				uint end;
 				try {
-					start = (uint)TranslateIndexToUTF8 (lineText, col);
-					end = (uint)TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + Length));
+					start = (uint)TranslateIndexToUTF8 (lineText, col - markupStartOffset);
+					end = (uint)TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col - markupStartOffset + Length));
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception while translating index to utf8 (column was:" + col + " search result length:" + Length + " line text:" + lineText + ")", e);
 					return;
@@ -180,6 +194,14 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			markup = markup.Replace ("\t", new string (' ', doc.Options.TabSize));
 			selectedMarkup = selectedMarkup.Replace ("\t", new string (' ', doc.Options.TabSize));
+			if (trimStart) {
+				markup = "…" + markup;
+				selectedMarkup = "…" + selectedMarkup;
+			}
+			if (trimEnd) {
+				markup += "…";
+				selectedMarkup += "…";
+			}
 		}
 
 		static int TranslateIndexToUTF8 (string text, int index)
