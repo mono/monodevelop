@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
+"POT-Creation-Date: 2018-09-04 17:25:09+0300\n"
 "PO-Revision-Date: 2016-04-17 10:43+0300\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
@@ -840,7 +840,7 @@ msgstr ""
 "<b>Вимкнути підтримку журналу змін</b>\n"
 "Проект не буде створювати записи в журналі змін."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:432
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:384
 msgid "<b>Error</b>: {0}"
 msgstr "<b>Помилка</b>: {0}"
 
@@ -1073,7 +1073,7 @@ msgstr ""
 "<b>Для доступу до сховища Subversion необхідно вказати реєстраційні дані "
 "користувача.</b>"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:429
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:381
 msgid "<b>Warning</b>: {0}"
 msgstr "<b>Попередження</b>: {0}"
 
@@ -11998,7 +11998,7 @@ msgstr ""
 "Важливий застосунок, одна з основних частин стільничного середовища, такий "
 "як файловий менеджер або оглядач довідки"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1080
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1091
 msgid ""
 "Importing the file \"{0}\" into the file \"{1}\" results in a circular "
 "dependency."
@@ -27185,7 +27185,7 @@ msgstr "_Режим відступів:"
 msgid "_Initialize from profile:"
 msgstr "_Ініціалізувати з профілю:"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:550
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:502
 msgid "_Input Methods"
 msgstr "_Методи введення"
 

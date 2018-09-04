@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
+"POT-Creation-Date: 2018-09-04 17:25:09+0300\n"
 "PO-Revision-Date: 2010-10-13 23:48:17+0200\n"
 "Last-Translator: André Offringa <offringa@gmail.com>\n"
 "Language-Team: Dutch\n"
@@ -879,7 +879,7 @@ msgstr ""
 "Er zal geen invoer voor het wijzigingsloboek worden gegenereerd voor dit "
 "project."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:432
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:384
 #, fuzzy
 msgid "<b>Error</b>: {0}"
 msgstr "Parseerfout:"
@@ -1126,7 +1126,7 @@ msgstr ""
 "<b>Bevoegdheidsgegevens zijn vereist van de gebruiker om toegang te krijgen "
 "tot de Subversion repository.</b>"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:429
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:381
 #, fuzzy
 msgid "<b>Warning</b>: {0}"
 msgstr "<b>Waarschuwingen</b>"
@@ -12743,7 +12743,7 @@ msgstr ""
 "Belangrijke toepassing, kern van het bureaublad zoals een bestandsbeheerder "
 "of een helpbrowser."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1080
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1091
 msgid ""
 "Importing the file \"{0}\" into the file \"{1}\" results in a circular "
 "dependency."
@@ -28937,7 +28937,7 @@ msgstr "I_nspringen"
 msgid "_Initialize from profile:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:550
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:502
 msgid "_Input Methods"
 msgstr ""
 
