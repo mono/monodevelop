@@ -178,16 +178,16 @@ namespace MonoDevelop.Components.Mac
 
 				var item = new MDExpandedArrayItem {
 					Info = ci,
-					Target = this,
-					Action = ActionSel,
+					Target = this
 				};
-
 				if (ci is CommandInfoSet) {
 					item.Submenu = new NSMenu ();
 					int i = 0;
 					PopulateArrayItems (((CommandInfoSet)ci).CommandInfos, item.Submenu, ref i);
 				}
 				SetItemValues (item, ci, true);
+				if (item.Enabled)
+					item.Action = ActionSel;
 
 				if (parent.Count > index)
 					parent.InsertItem (item, index);

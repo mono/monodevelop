@@ -557,9 +557,9 @@ namespace MonoDevelop.Projects.MSBuild
 				Line = currentLine;
 			int k = line.IndexOf ('=');
 			if (k != -1) {
-				var name = line.Substring (0, k).Trim ();
-				var val = line.Substring (k + 1).Trim ();
-				values [name] = val;
+				var name = line.AsSpan (0, k).Trim ();
+				var val = line.AsSpan (k + 1).Trim ();
+				values [name.ToString ()] = val.ToString ();
 			} else {
 				line = line.Trim ();
 				if (!string.IsNullOrWhiteSpace (line))

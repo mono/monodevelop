@@ -288,13 +288,17 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public static string NormalizeAsmName (string name)
 		{
-			int i = name.IndexOf (", publickeytoken=null", StringComparison.OrdinalIgnoreCase);
+			var span = name.AsSpan ();
+			int i = span.IndexOf (", publickeytoken=null".AsSpan (), StringComparison.OrdinalIgnoreCase);
 			if (i != -1)
-				name = name.Substring (0, i).Trim ();
-			i = name.IndexOf (", processorarchitecture=", StringComparison.OrdinalIgnoreCase);
+				span = span.Slice (0, i).Trim ();
+
+			i = span.IndexOf (", processorarchitecture=".AsSpan (), StringComparison.OrdinalIgnoreCase);
 			if (i != -1)
-				name = name.Substring (0, i).Trim ();
-			return name;
+				span = span.Slice (0, i).Trim ();
+
+			// PERF: Check done to not allocate a new string when unchanged.
+			return span.Length == name.Length ? name : span.ToString ();
 		}
 	
 		// Returns the installed version of the given assembly name
@@ -422,23 +426,34 @@ namespace MonoDevelop.Core.Assemblies
 			string[] parts = assemblyName.Split (',');
 			if (parts.Length < 1)
 				return;
+
 			name = parts[0].Trim ();
-			
 			if (parts.Length < 2)
 				return;
-			int i = parts[1].IndexOf ('=');
-			version = i != -1 ? parts[1].Substring (i+1).Trim () : parts[1].Trim ();
-			
+
+			version = GetPart (parts [1]);
 			if (parts.Length < 3)
 				return;
-			i = parts[2].IndexOf ('=');
-			culture = i != -1 ? parts[2].Substring (i+1).Trim () : parts[2].Trim ();
-			if (culture == "neutral") culture = "";
-			
+
+			culture = GetPart (parts [2]);
+			if (culture == "neutral")
+				culture = "";
 			if (parts.Length < 4)
 				return;
-			i = parts[3].IndexOf ('=');
-			token = i != -1 ? parts[3].Substring (i+1).Trim () : parts[3].Trim ();
+
+			token = GetPart (parts [3]);
+
+			string GetPart (string part)
+			{
+				var span = part.AsSpan ();
+				int i = span.IndexOf ('=');
+				if (i != -1)
+					span = span.Slice (i + 1);
+				span = span.Trim ();
+
+				// PERF: Check done to not allocate a new string when unchanged.
+				return span.Length == part.Length ? part: span.ToString ();
+			}
 		}
 		
 		// Given the full name of an assembly, returns the corresponding full assembly name
