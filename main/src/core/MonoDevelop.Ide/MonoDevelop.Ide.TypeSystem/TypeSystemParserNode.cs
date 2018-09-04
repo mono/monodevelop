@@ -91,10 +91,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static bool IsCompileableFile (MonoDevelop.Projects.Project p, ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
 		{
-			var ext = file.FilePath.Extension;
 			sck = default;
-
 			if (p is DotNetProject dotNetProject) {
+				var ext = file.FilePath.Extension;
 				if (dotNetProject.RoslynLanguageName == LanguageNames.CSharp) {
 					if (FilePath.PathComparer.Equals (ext, ".cs")) {
 						sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
