@@ -30,6 +30,7 @@ namespace MonoDevelop.SourceEditor
 			var line = LineSegment;
 			if (line == null)
 				return;
+			UpdateStatusIcon ();
 			textEditor.RedrawMarginLine (textEditor.ActionMargin, line.LineNumber); 
 		}
 
@@ -96,14 +97,26 @@ namespace MonoDevelop.SourceEditor
 
 		bool isFailed;
 		string failMessage;
-
+		Xwt.Drawing.Image statusIcon;
 		public override void DrawForeground (Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			if (statusIcon == null)
+				UpdateStatusIcon ();
+
+			if (statusIcon != null) {
+				if (statusIcon.Width > metrics.Width || statusIcon.Height > metrics.Height)
+					statusIcon = statusIcon.WithBoxSize (metrics.Width, metrics.Height);
+				cr.DrawImage (editor, statusIcon, Math.Truncate (metrics.X + metrics.Width / 2 - statusIcon.Width / 2), Math.Truncate (metrics.Y + metrics.Height / 2 - statusIcon.Height / 2));
+			}
+		}
+
+		void UpdateStatusIcon ()
 		{
 			isFailed = false;
 			bool searchCases = false;
 
-			Xwt.Drawing.Image icon = host.GetStatusIcon (unitTest.UnitTestIdentifier);
-			if (icon != null) {
+			statusIcon = host.GetStatusIcon (unitTest.UnitTestIdentifier);
+			if (statusIcon != null) {
 				if (host.HasResult (unitTest.UnitTestIdentifier)) {
 					searchCases = true;
 				} else if (host.IsFailure (unitTest.UnitTestIdentifier)) {
@@ -116,19 +129,13 @@ namespace MonoDevelop.SourceEditor
 
 			if (searchCases) {
 				foreach (var caseId in unitTest.TestCases) {
-					icon = host.GetStatusIcon (unitTest.UnitTestIdentifier, caseId);
+					statusIcon = host.GetStatusIcon (unitTest.UnitTestIdentifier, caseId);
 					if (host.IsFailure (unitTest.UnitTestIdentifier, caseId)) {
 						failMessage = host.GetMessage (unitTest.UnitTestIdentifier, caseId);
 						isFailed = true;
 						break;
-					} 
+					}
 				}
-			}
-
-			if (icon != null) {
-				if (icon.Width > metrics.Width || icon.Height > metrics.Height)
-					icon = icon.WithBoxSize (metrics.Width, metrics.Height);
-				cr.DrawImage (editor, icon, Math.Truncate (metrics.X + metrics.Width / 2 - icon.Width / 2), Math.Truncate (metrics.Y + metrics.Height / 2 - icon.Height / 2));
 			}
 		}
 	}
