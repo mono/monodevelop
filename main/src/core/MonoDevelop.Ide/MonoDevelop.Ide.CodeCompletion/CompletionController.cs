@@ -999,7 +999,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (selectedItem < 0 || (dataList != null && selectedItem >= dataList.Count)) {
 						return KeyActions.CloseWindow;
 					}
-					if (dataList [selectedItem].DisplayText.EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
+					var displayText = dataList[selectedItem].DisplayText;
+					// Workaround for Json bug https://devdiv.visualstudio.com/DevDiv/_workitems/edit/634581
+					// If the completion item is " " or { } or [ ] and the char is " or { or [ then don't commit
+					if ((displayText == "\" \"" || displayText == "{ }" || displayText == "[ ]") && (descriptor.KeyChar == '"' || descriptor.KeyChar == '{' || descriptor.KeyChar == '[')) {
+						return KeyActions.CloseWindow | KeyActions.Process;
+					} else if (displayText.EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
 				}
