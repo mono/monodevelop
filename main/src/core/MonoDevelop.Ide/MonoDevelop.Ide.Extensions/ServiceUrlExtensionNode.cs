@@ -29,6 +29,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Extensions
 {
+	[Obsolete]
 	public class ServiceUrlExtensionNode : ExtensionNode
 	{
 		[NodeAttribute (Required=true)]
