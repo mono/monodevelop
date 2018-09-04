@@ -26,6 +26,8 @@
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Platform;
 
 namespace MonoDevelop.VBNet
 {
@@ -33,12 +35,7 @@ namespace MonoDevelop.VBNet
 	{
 		protected override void Initialize ()
 		{
-			DocumentContext.AnalysisDocumentChanged += delegate {
-				Editor.SyntaxHighlighting = new RoslynClassificationHighlighting (
-					(MonoDevelopWorkspace)DocumentContext.RoslynWorkspace,
-					DocumentContext.AnalysisDocument.Id,
-					"source.vb");
-			};
+			Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
 		}
 	}
 }
