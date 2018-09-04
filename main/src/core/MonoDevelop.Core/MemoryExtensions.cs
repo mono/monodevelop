@@ -26,19 +26,19 @@
 using System;
 namespace System
 {
-	public static class MemoryExtensions
+	static class MemoryExtensions
 	{
 		public static int IndexOf (this ReadOnlySpan<char> span, char value, int startIndex)
 		{
 			var indexInSlice = span.Slice(startIndex).IndexOf(value);
 			return indexInSlice == -1 ? -1 : startIndex + indexInSlice;
-        }
+		}
 
 		public static int IndexOfAny (this ReadOnlySpan<char> span, Span<char> values, int startIndex)
 		{
 			var indexInSlice = span.Slice (startIndex).IndexOfAny (values);
 			return indexInSlice == -1 ? -1 : startIndex + indexInSlice;
-        }
+		}
 
 		/// <summary>
 		/// Optimized overload of ToString() with takes the original value to not allocate in that case.
