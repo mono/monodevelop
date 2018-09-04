@@ -28,7 +28,9 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Web;
 using System.Net;
+using System.Net.Http;
 
 namespace MonoDevelop.Components
 {
@@ -62,43 +64,29 @@ namespace MonoDevelop.Components
 
 			var finfo = new FileInfo (cachePath);
 
-			WebRequestHelper.GetResponseAsync (
-				() => (HttpWebRequest)WebRequest.Create (url),
-				r => {
-					if (finfo.Exists)
-						r.IfModifiedSince = finfo.LastWriteTime;
-				}
-			).ContinueWith (t => {
+			var client = HttpClientProvider.CreateHttpClient (url);
+			if (finfo.Exists)
+				client.DefaultRequestHeaders.IfModifiedSince = finfo.LastWriteTime;
+			client.GetAsync (url).ContinueWith (async t => {
 				try {
-					if (t.IsFaulted) {
-						var wex = t.Exception.Flatten ().InnerException as WebException;
-						if (wex != null) {
-							var resp = wex.Response as HttpWebResponse;
-							if (resp != null) {
-								// If the errorcode is NotModified the file we cached on disk is still the latest one.
-								if (resp.StatusCode == HttpStatusCode.NotModified) {
-									Cleanup ();
-									return;
-								}
-								//if 404, there is no gravatar for the user
-								if (resp.StatusCode == HttpStatusCode.NotFound) {
-									image = null;
-									Cleanup ();
-									return;
-								}
-							}
-						}
+					// If the errorcode is NotModified the file we cached on disk is still the latest one.
+					if (t.Result.StatusCode == HttpStatusCode.NotModified) {
+						Cleanup ();
+						return;
 					}
-
+					//if 404, there is no gravatar for the user
+					if (t.Result.StatusCode == HttpStatusCode.NotFound) {
+						image = null;
+						Cleanup ();
+						return;
+					}
 					using (var response = t.Result) {
 						finfo.Directory.Create ();
 
 						// Copy out the new file and reload it
 						if (response.StatusCode == HttpStatusCode.OK) {
 							using (var tempFile = File.Create (tempPath)) {
-								using (var stream = response.GetResponseStream ()) {
-									stream.CopyTo (tempFile);
-								}
+								await response.Content.CopyToAsync (tempFile);
 							}
 							FileService.SystemRename (tempPath, cachePath);
 						}
@@ -108,7 +96,7 @@ namespace MonoDevelop.Components
 					var aex = ex as AggregateException;
 					if (aex != null)
 						ex = aex.Flatten ().InnerException;
-					var wex = ex as WebException;
+					var wex = ex?.InnerException as WebException;
 					if (wex != null && wex.Status.IsCannotReachInternetError ())
 						LoggingService.LogWarning ("Gravatar service could not be reached.");
 					else
@@ -116,6 +104,7 @@ namespace MonoDevelop.Components
 					Cleanup ();
 				} finally {
 					try {
+						client.Dispose ();
 						if (File.Exists (tempPath))
 							File.Delete (tempPath);
 					} catch (Exception ex) {
