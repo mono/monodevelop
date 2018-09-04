@@ -90,12 +90,6 @@ namespace MonoDevelop.Core.Web
 		// Returns true if the cause of the exception is proxy authentication failure
 		static bool ProxyAuthenticationRequired (Exception ex)
 		{
-			// HACK!!! : This is a hack to workaround Xamarin Bug 19594
-			var webException = ex as WebException;
-			if (!Platform.IsWindows && webException != null) {
-				return IsMonoProxyAuthenticationRequiredError (webException);
-			}
-
 			var response = ExtractResponse (ex);
 			return response?.StatusCode == HttpStatusCode.ProxyAuthenticationRequired;
 		}
@@ -105,13 +99,6 @@ namespace MonoDevelop.Core.Web
 			var webException = ex.InnerException as WebException;
 			var response = webException?.Response as HttpWebResponse;
 			return response;
-		}
-
-		static bool IsMonoProxyAuthenticationRequiredError (WebException ex)
-		{
-			return ex.Status == WebExceptionStatus.SecureChannelFailure &&
-				ex.Message != null &&
-				ex.Message.Contains ("The remote server returned a 407 status code.");
 		}
 
 		async Task<bool> AcquireCredentialsAsync (Uri requestUri, Guid cacheVersion, CancellationToken cancellationToken)
