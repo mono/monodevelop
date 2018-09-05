@@ -183,6 +183,40 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_SingleStartupItem_NoRunConfigurationPassed ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				var runConfig = new SingleItemSolutionRunConfiguration (project, null);
+				sln.StartupConfiguration = runConfig;
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.AreEqual (project, sln.StartupItem);
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_MultiStartupItems_NoRunConfigurationPassed ()
+		{
+			using (var executionDep = new ProjectWithExecutionDeps ("Dependency"))
+			using (var executing = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (executionDep, executing)) {
+				var runConfig = new MultiItemSolutionRunConfiguration ();
+				runConfig.Items.Add (new StartupItem (executing, null));
+				runConfig.Items.Add (new StartupItem (executionDep, null));
+				sln.StartupConfiguration = runConfig;
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.AreEqual (2, targets.Length);
+				Assert.AreEqual (executing, targets [0]);
+				Assert.AreEqual (executionDep, targets [1]);
+			}
+		}
+
 		[DebuggerDisplay ("Project {Name}")]
 		class ProjectWithExecutionDeps : Project
 		{
