@@ -84,6 +84,7 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectType
+			id="MonoDevelop.CSharp.Project.CSharpProject"
 			language="C#"
 			extension="csproj"
 			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
