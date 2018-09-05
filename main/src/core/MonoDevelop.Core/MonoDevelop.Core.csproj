@@ -88,7 +88,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation"/>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
@@ -744,6 +744,7 @@
     <Compile Include="MonoDevelop.Core\ConfigurationProperty.cs" />
     <Compile Include="MonoDevelop.FSW\PathTree.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeNode.cs" />
+    <Compile Include="MemoryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

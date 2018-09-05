@@ -596,16 +596,15 @@ namespace MonoDevelop.Projects.MSBuild
 			return false;
 		}
 
+		static readonly char[] MemberDelimiter = new[] { '.', ')', '(' };
 		internal bool EvaluateMember (Type type, object instance, ReadOnlySpan<char> str, int i, out object val)
 		{
 			val = null;
 
 			// Find the delimiter of the member
-			int j = str.Slice(i).IndexOfAny (new [] { '.', ')', '(' });
+			int j = str.IndexOfAny (MemberDelimiter, i);
 			if (j == -1)
 				j = str.Length;
-			else
-				j += i;
 
 			var memberName = str.Slice (i, j - i).Trim ();
 			if (memberName.Length == 0)
@@ -994,10 +993,9 @@ namespace MonoDevelop.Projects.MSBuild
 					pc--;
 				else if (IsQuote (c)) {
 					int start = i + 1;
-					i = str.Slice (start).IndexOf (c);
+					i = str.IndexOf (c, start);
 					if (i == -1)
 						return -1;
-					i += start;
 				}
 				i++;
 			}
@@ -1022,10 +1020,9 @@ namespace MonoDevelop.Projects.MSBuild
 					pc--;
 				else if (IsQuote (c)) {
 					int start = i + 1;
-					i = str.Slice (i + 1).IndexOf (c);
+					i = str.IndexOf (c, i + 1);
 					if (i == -1)
 						return -1;
-					i += start;
 				}
 				i++;
 			}
