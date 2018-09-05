@@ -334,6 +334,8 @@ namespace MonoDevelop.DotNetCore.Tests
 			// the restore to fail on Mono.
 			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
 			RunMSBuild ($"/t:Build \"{solution.FileName}\"");
+
+			CheckProjectTypeGuids (solution, GetProjectTypeGuid (template));
 		}
 
 		void RunMSBuild (string arguments)
@@ -341,6 +343,23 @@ namespace MonoDevelop.DotNetCore.Tests
 			var process = Process.Start ("msbuild", arguments);
 			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
 			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
+		}
+
+		static void CheckProjectTypeGuids (Solution solution, string expectedProjectTypeGuid)
+		{
+			foreach (Project project in solution.GetAllProjects ()) {
+				Assert.AreEqual (expectedProjectTypeGuid, project.TypeGuid);
+			}
+		}
+
+		static string GetProjectTypeGuid (SolutionTemplate template)
+		{
+			string language = GetLanguage (template.Id);
+			if (language == "F#")
+				return "{f2a71f9b-5d33-465a-a702-920d77279786}";
+
+			// C#
+			return "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
 		}
 	}
 }
