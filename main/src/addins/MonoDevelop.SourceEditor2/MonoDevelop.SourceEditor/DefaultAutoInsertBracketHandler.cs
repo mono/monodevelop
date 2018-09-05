@@ -24,8 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Threading;
-using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
@@ -37,25 +38,26 @@ namespace MonoDevelop.SourceEditor
 		const string openBrackets = "{[('\"";
 		const string closingBrackets = "}])'\"";
 
+		static readonly string[] excludedMimeTypes = {
+			"text/fsharp", "text/x-csharp", "text/x-json"
+		};
+
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
 		{
-			if (descriptor.KeyChar == '\'' && editor.MimeType == "text/fsharp")
-				return false;
-			if (editor.MimeType == "text/x-csharp")
+			if (Array.IndexOf (excludedMimeTypes, editor.MimeType) >= 0)
 				return false;
 			int braceIndex = openBrackets.IndexOf (descriptor.KeyChar);
 			if (braceIndex < 0)
 				return false;
-			
-			var extEditor = ((SourceEditorView)editor.Implementation).SourceEditorWidget.TextEditor;
 
-			var line = extEditor.Document.GetLine (extEditor.Caret.Line);
+
+			var line = editor.GetLine (editor.CaretLine);
 			if (line == null)
 				return false;
 
 			bool inStringOrComment = false;
 
-			var stack = extEditor.SyntaxHighlighting.GetScopeStackAsync (Math.Max (0, extEditor.Caret.Offset - 2), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+			var stack = editor.SyntaxHighlighting.GetScopeStackAsync (Math.Max (0, editor.CaretOffset - 2), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			foreach (var span in stack) {
 				if (string.IsNullOrEmpty (span))
 					continue;
@@ -72,7 +74,7 @@ namespace MonoDevelop.SourceEditor
 				char openingBrace = openBrackets [braceIndex];
 
 				int count = 0;
-				foreach (char curCh in ExtensibleTextEditor.GetTextWithoutCommentsAndStrings(extEditor.Document, 0, extEditor.Document.Length)) {
+				foreach (char curCh in GetTextWithoutCommentsAndStrings(editor, 0, editor.Length)) {
 					if (curCh == openingBrace) {
 						count++;
 					} else if (curCh == closingBrace) {
@@ -97,6 +99,54 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			return false;
+		}
+
+		internal static IEnumerable<char> GetTextWithoutCommentsAndStrings (ITextSource doc, int start, int end)
+		{
+			bool isInString = false, isInChar = false;
+			bool isInLineComment = false, isInBlockComment = false;
+			int escaping = 0;
+
+			for (int pos = start; pos < end; pos++) {
+				char ch = doc.GetCharAt (pos);
+				switch (ch) {
+				case '\r':
+				case '\n':
+					isInLineComment = false;
+					break;
+				case '/':
+					if (isInBlockComment) {
+						if (pos > 0 && doc.GetCharAt (pos - 1) == '*')
+							isInBlockComment = false;
+					} else if (!isInString && !isInChar && pos + 1 < doc.Length) {
+						char nextChar = doc.GetCharAt (pos + 1);
+						if (nextChar == '/')
+							isInLineComment = true;
+						if (!isInLineComment && nextChar == '*')
+							isInBlockComment = true;
+					}
+					break;
+				case '"':
+					if (!(isInChar || isInLineComment || isInBlockComment))
+						if (!isInString || escaping != 1)
+							isInString = !isInString;
+					break;
+				case '\'':
+					if (!(isInString || isInLineComment || isInBlockComment))
+						if (!isInChar || escaping != 1)
+							isInChar = !isInChar;
+					break;
+				case '\\':
+					if (escaping != 1)
+						escaping = 2;
+					break;
+				default:
+					if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+						yield return ch;
+					break;
+				}
+				escaping--;
+			}
 		}
 	}
 }

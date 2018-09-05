@@ -213,18 +213,22 @@ namespace MonoDevelop.Core.Assemblies
 				return aname;
 			}
 
-			aname.Name = fullname.Substring (0, i).Trim ();
+			var fullNameSpan = fullname.AsSpan ();
+
+			aname.Name = fullNameSpan.Slice (0, i).Trim ().ToString ();
 			i = fullname.IndexOf ("Version", i + 1, StringComparison.Ordinal);
 			if (i == -1)
 				return aname;
 			i = fullname.IndexOf ('=', i);
 			if (i == -1)
 				return aname;
+
 			int j = fullname.IndexOf (',', i);
 			if (j == -1)
-				aname.Version = new Version (fullname.Substring (i+1).Trim ());
+				fullNameSpan = fullNameSpan.Slice (i + 1);
 			else
-				aname.Version = new Version (fullname.Substring (i+1, j - i - 1).Trim ());
+				fullNameSpan = fullNameSpan.Slice (i + 1, j - i - 1);
+			aname.Version = new Version (fullNameSpan.Trim ().ToString ());
 			return aname;
 		}
 

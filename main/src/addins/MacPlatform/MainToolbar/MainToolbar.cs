@@ -153,7 +153,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				case AwesomeBarId:
 					return new NSToolbarItem (AwesomeBarId) {
 						View = awesomeBar,
-						MinSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight),
+						MinSize = new CGSize (MacSystemInformation.OsVersion < MacSystemInformation.Mojave ? 1024: 600, AwesomeBar.ToolbarWidgetHeight),
 						MaxSize = new CGSize (float.PositiveInfinity, AwesomeBar.ToolbarWidgetHeight)
 					};
 
@@ -162,28 +162,36 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			};
 
-			Action<NSNotification> resizeAction = notif => Runtime.RunInMainThread (() => {
-				var win = awesomeBar.Window;
-				if (win == null) {
-					return;
-				}
-
-				var item = widget.Items[0];
-
-				var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;
-				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, awesomebarHeight);
-
-				if (item.MinSize != size) {
-					item.MinSize = size;
-				}
-			});
-
 			// We can't use the events that Xamarin.Mac adds for delegate methods as they will overwrite
 			// the delegate that Gtk has added
 			NSWindow nswin = GtkMacInterop.GetNSWindow (window);
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction, nswin);
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction, nswin);
+
+			// The way how sizing of the NSToolbar is implemented seems to have changen in Mojave.
+			// Previously we had to track the window size and update our MinSize to prevent NSToolbar
+			// from removing the item automatically. Now the same logic has the opposite effect on Mojave.
+			// Additionally AwesomeBar has no active window, after being removed from the NSToolbar, making
+			// the required size calculation much more complex. However letting NSToolbar do the magic
+			// internally works on Mojave correctly.
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Mojave) {
+				Action<NSNotification> resizeAction = notif => Runtime.RunInMainThread (() => {
+					var win = awesomeBar.Window;
+					if (win == null) {
+						return;
+					}
+
+					var item = widget.Items [0];
+
+					var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
+					var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;
+					var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, awesomebarHeight);
+
+					if (item.MinSize != size) {
+						item.MinSize = size;
+					}
+				});
+				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction, nswin);
+				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction, nswin);
+			}
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillEnterFullScreenNotification, (note) => IsFullscreen = true, nswin);
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillExitFullScreenNotification, (note) => IsFullscreen = false, nswin);

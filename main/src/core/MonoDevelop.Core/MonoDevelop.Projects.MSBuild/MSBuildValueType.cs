@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 	class PathValueType: MSBuildValueType
 	{
-		static readonly char [] pathSep = { '\\' };
+		const char pathSep = '\\';
 		static string currentDirectoryPrefix = @".\";
 
 		public override bool Equals (string ob1, string ob2)
@@ -53,11 +53,16 @@ namespace MonoDevelop.Projects.MSBuild
 				return true;
 			if (ob1 == null || ob2 == null)
 				return string.IsNullOrEmpty (ob1) && string.IsNullOrEmpty (ob2);//Empty or null path is same thing
-			if (ob1.StartsWith (currentDirectoryPrefix, StringComparison.OrdinalIgnoreCase))
-				ob1 = ob1.Substring (currentDirectoryPrefix.Length);
-			if (ob2.StartsWith (currentDirectoryPrefix, StringComparison.OrdinalIgnoreCase))
-				ob2 = ob2.Substring (currentDirectoryPrefix.Length);
-			return ob1.TrimEnd (pathSep) == ob2.TrimEnd (pathSep);
+
+			var prefix = currentDirectoryPrefix.AsSpan ();
+			var span1 = ob1.AsSpan ();
+			if (span1.StartsWith (prefix, StringComparison.OrdinalIgnoreCase))
+				span1 = span1.Slice (prefix.Length);
+
+			var span2 = ob2.AsSpan ();
+			if (span2.StartsWith (prefix, StringComparison.OrdinalIgnoreCase))
+				span2 = span2.Slice (prefix.Length);
+			return span1.TrimEnd (pathSep).SequenceEqual (span2.TrimEnd (pathSep));
 		}
 	}
 
@@ -75,9 +80,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public override bool Equals (string ob1, string ob2)
 		{
-			ob1 = ob1.Trim (guidEnclosing);
-			ob2 = ob2.Trim (guidEnclosing);
-			return ob1.Equals (ob2, StringComparison.OrdinalIgnoreCase);
+			var span1 = ob1.AsSpan ().Trim (guidEnclosing);
+			var span2 = ob2.AsSpan ().Trim (guidEnclosing);
+
+			return span1.Equals (span2, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

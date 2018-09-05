@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			location = DocumentLocation.Empty;
 			copyData = "";
 			markup = selectedMarkup = "";
-			var doc = GetDocument (this);
+			var doc = GetDocument ();
 			if (doc == null)
 				return;
 			try {
@@ -214,19 +214,15 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		static TextEditor cachedEditor;
 
-		TextEditor GetDocument (SearchResult result)
+		TextEditor GetDocument ()
 		{
-			if (cachedEditor == null) {
-				var content = result.FileProvider.ReadString ();
-				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
-			} else {
-				if (cachedEditor.FileName != result.FileName) {
-					var content = result.FileProvider.ReadString ();
-					cachedEditor.Text = content.ReadToEnd ();
-					cachedEditor.FileName = result.FileName;
-				}
+			if (cachedEditor == null || cachedEditor.FileName != FileName) {
+				var content = FileProvider.ReadString ();
+				cachedEditor?.Dispose ();
+				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, DesktopService.GetMimeTypeForUri (FileName)));
 			}
 			return cachedEditor;
 		}
+
 	}
 }
