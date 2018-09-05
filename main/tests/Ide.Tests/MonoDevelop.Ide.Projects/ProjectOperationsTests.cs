@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -126,6 +127,93 @@ namespace MonoDevelop.Ide.Projects
 				Assert.IsTrue (success);
 				Assert.IsFalse (executionDep.WasBuilt);
 				Assert.IsFalse (executing.WasBuilt);
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_ProjectIsExecutionTarget ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing")) {
+				var targets = ProjectOperations.GetBuildTargetsForExecution (project, null);
+
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_SingleItemRunConfiguration ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				var runConfig = new SingleItemSolutionRunConfiguration (project, null);
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, runConfig);
+
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_MultiItemRunConfiguration ()
+		{
+			using (var executionDep = new ProjectWithExecutionDeps ("Dependency"))
+			using (var executing = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (executionDep, executing)) {
+				var runConfig = new MultiItemSolutionRunConfiguration ();
+				runConfig.Items.Add (new StartupItem (executing, null));
+				runConfig.Items.Add (new StartupItem (executionDep, null));
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, runConfig);
+
+				Assert.AreEqual (2, targets.Length);
+				Assert.AreEqual (executing, targets [0]);
+				Assert.AreEqual (executionDep, targets [1]);
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_NoStartupItem_NoRunConfigurationPassed ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				sln.StartupConfiguration = null;
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.IsNull (sln.StartupItem);
+				Assert.AreEqual (sln, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_SingleStartupItem_NoRunConfigurationPassed ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				var runConfig = new SingleItemSolutionRunConfiguration (project, null);
+				sln.StartupConfiguration = runConfig;
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.AreEqual (project, sln.StartupItem);
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_MultiStartupItems_NoRunConfigurationPassed ()
+		{
+			using (var executionDep = new ProjectWithExecutionDeps ("Dependency"))
+			using (var executing = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (executionDep, executing)) {
+				var runConfig = new MultiItemSolutionRunConfiguration ();
+				runConfig.Items.Add (new StartupItem (executing, null));
+				runConfig.Items.Add (new StartupItem (executionDep, null));
+				sln.StartupConfiguration = runConfig;
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.AreEqual (2, targets.Length);
+				Assert.AreEqual (executing, targets [0]);
+				Assert.AreEqual (executionDep, targets [1]);
 			}
 		}
 
