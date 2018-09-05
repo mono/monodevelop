@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				}
 
 				Runtime.RunInMainThread (delegate {
-					if (token.IsCancellationRequested)
+					if (token.IsCancellationRequested || Editor == null)
 						return;
 					line = startLine;
 					while (line != null && line.Offset <= endOffset) {

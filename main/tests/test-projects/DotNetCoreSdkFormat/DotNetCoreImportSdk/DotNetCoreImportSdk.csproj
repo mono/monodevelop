@@ -1,0 +1,10 @@
+<Project>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>DotNetCoreImportSdk</AssemblyName>
+    <RootNamespace>DotNetCoreImportSdk</RootNamespace>
+  </PropertyGroup>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+</Project>

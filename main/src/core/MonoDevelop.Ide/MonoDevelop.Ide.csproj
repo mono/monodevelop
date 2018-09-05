@@ -118,7 +118,7 @@
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
@@ -3060,6 +3060,7 @@
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CommonEditorAssetServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\EditorExperimentationServiceInternal.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
@@ -3571,8 +3572,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\PropertyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\SolutionNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ReferenceNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
-    <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\IUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\AddinsUpdateHandler.cs" />
@@ -3595,7 +3594,6 @@
     <Compile Include="MonoDevelop.Ide\LogReportingStartup.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ExportSolutionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
-    <Compile Include="MonoDevelop.Ide.Extensions\ServiceUrlExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectCreatedEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Ambience.cs" />
@@ -4187,6 +4185,16 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.RecoverableMetadataValueSource.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataReferenceCache.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.ShimNavigateToSearchService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\EditorFormattingServiceTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopRuleSetManager.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.DocumentMap.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectData.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectDataMap.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.OpenDocumentsData.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectionData.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.Shims.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.MetadataReferenceHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectSystemHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

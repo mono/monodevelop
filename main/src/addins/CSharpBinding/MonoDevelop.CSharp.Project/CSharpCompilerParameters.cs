@@ -161,8 +161,22 @@ namespace MonoDevelop.CSharp.Project
 			return options.WithPlatform (GetPlatform ())
 				.WithGeneralDiagnosticOption (TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default)
 				.WithOptimizationLevel (Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug)
-				.WithSpecificDiagnosticOptions (GetSuppressedWarnings ().ToDictionary (
-					suppress => suppress, _ => ReportDiagnostic.Suppress));
+				.WithSpecificDiagnosticOptions (GetSpecificDiagnosticOptions());
+		}
+
+		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
+		{
+			var result = new Dictionary<string, ReportDiagnostic> ();
+			foreach (var warning in GetSuppressedWarnings ())
+				result [warning] = ReportDiagnostic.Suppress;
+
+			var globalRuleSet = Ide.TypeSystem.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
+			if (globalRuleSet != null) {
+				foreach (var kv in globalRuleSet.SpecificDiagnosticOptions) {
+					result [kv.Key] = kv.Value;
+				}
+			}
+			return result;
 		}
 
 		Microsoft.CodeAnalysis.Platform GetPlatform ()

@@ -6,14 +6,13 @@
 
 	<PropertyGroup>
 		<!-- target framework for the core and addins -->
-		<MDFrameworkVersion>v4.6.1</MDFrameworkVersion>
+		<MDFrameworkVersion>v4.7.1</MDFrameworkVersion>
 	</PropertyGroup>
 
 	<!--
 	Sign assemblies so they get IVT access to Roslyn.
-	Disable for F# as its targets do not support public signing.
 	-->
-	<PropertyGroup Condition="'$(MSBuildProjectExtension)'!='.fsproj'">
+	<PropertyGroup>
 		<SignAssembly>true</SignAssembly>
 		<PublicSign>True</PublicSign>
 		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\MonoDevelop-Public.snk</AssemblyOriginatorKeyFile>

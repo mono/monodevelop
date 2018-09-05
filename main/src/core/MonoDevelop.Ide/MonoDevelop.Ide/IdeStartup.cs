@@ -241,8 +241,7 @@ namespace MonoDevelop.Ide
 				// which is then replaced with a second empty Apple menu.
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
-				bool showWelcomePage = !startupInfo.HasFiles;
-				IdeApp.Initialize (monitor, showWelcomePage);
+				IdeApp.Initialize (monitor);
 
 				if (errorsList.Count > 0) {
 					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errorsList.ToArray (), false)) {

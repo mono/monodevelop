@@ -60,7 +60,7 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -90,18 +90,17 @@
     <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpFindReferencesProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\PolicyTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CSharpAutoInsertBracketHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\ExpandSelectionHandlerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Parser\CSharpParsedDocumentTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpLanguageVersionHelperTests.cs" />
     <Compile Include="Features\Completion\PreProcessorCompletionProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpCodeActionEditorExtensionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\CSharpResultsEditorExtensionTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\AutoFormatIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">

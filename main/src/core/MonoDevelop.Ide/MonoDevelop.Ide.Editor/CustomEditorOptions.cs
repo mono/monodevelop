@@ -149,6 +149,11 @@ namespace MonoDevelop.Ide.Editor
 			get;
 			set;
 		}
+
+		public bool EnableQuickDiff {
+			get;
+			set;
+		}
 		#endregion
 
 		public CustomEditorOptions ()
@@ -186,6 +191,7 @@ namespace MonoDevelop.Ide.Editor
 			ShowWhitespaces = initializeFrom.ShowWhitespaces;
 			IncludeWhitespaces = initializeFrom.IncludeWhitespaces;
 			SmartBackspace = initializeFrom.SmartBackspace;
+			EnableQuickDiff = initializeFrom.EnableQuickDiff;
 		}
 
 		#region IDisposable implementation

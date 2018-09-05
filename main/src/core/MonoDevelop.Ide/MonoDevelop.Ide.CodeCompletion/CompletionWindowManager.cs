@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			WordCompleted?.Invoke (sender, e);
 		}
-		
+
 		public static event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
 
 		static void DestroyWindow ()

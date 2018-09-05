@@ -150,11 +150,6 @@
 		<Description>Addins can register own fonts to be configured.</Description>
 		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
 	</ExtensionPoint>
-		
-	<ExtensionPoint path = "/MonoDevelop/Ide/FeedbackService" name = "Feedback reporting service">
-		<Description>Provides the webservice url to which MonoDevelop will send user feedback.</Description>
-		<ExtensionNode name="Service" type="MonoDevelop.Ide.Extensions.ServiceUrlExtensionNode" />
-	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">
 		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
@@ -322,6 +317,7 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 		<Class id="MidStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class class = "MonoDevelop.Ide.Editor.Extension.EditorFormattingServiceTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.BraceMatcherTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.DefaultCommandTextEditorExtension" />
 		<Class class = "MonoDevelop.Ide.Editor.Extension.FoldingTextEditorExtension" />
@@ -385,7 +381,6 @@
 		<Migration sourceVersion="2.6+" kind="Config" path="MonoDevelop-tools.xml" />
 		<Migration sourceVersion="2.6+" kind="Config" path="EditingLayout.xml" />
 		<Migration sourceVersion="2.6+" kind="LocalConfig" path="RecentlyUsed.xml" />
-		<Migration sourceVersion="2.6+" kind="LocalConfig" path="Feedback.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/WebCertificateProvider">

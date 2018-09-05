@@ -93,6 +93,7 @@ namespace MonoDevelop.Projects
 		{
 			itemExtension = ExtensionChain.GetExtension<SolutionItemExtension> ();
 			base.OnExtensionChainInitialized ();
+			fileStatusTracker.TrackFileChanges ();
 		}
 
 		SolutionItemExtension ItemExtension {
@@ -371,7 +372,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
 		{
-			yield break;
+			yield return this;
 		}
 
 		/// <summary>

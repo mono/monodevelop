@@ -404,9 +404,22 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (false);
 		}
 
+		// note: although executing folders isn't supported, this may still get called when
+		// executing unit tests
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			yield break;
+			if (IsRoot) {
+				yield return ParentSolution;
+				yield break;
+			}
+
+			foreach (var item in GetAllItems ()) {
+				if (item is IBuildTarget bt) {
+					foreach (var dep in bt.GetExecutionDependencies ()) {
+						yield return dep;
+					}
+				}
+			}
 		}
 
 		/// <remarks>
@@ -482,6 +495,7 @@ namespace MonoDevelop.Projects
 			return GetAllBuildableEntries (configuration, false, false);
 		}
 
+		[Obsolete]
 		void CollectBuildableEntries (HashSet<SolutionItem> collected, ConfigurationSelector configuration, SolutionConfiguration slnConf, bool includeDependencies)
 		{
 			foreach (SolutionFolderItem item in Items) {
@@ -489,9 +503,23 @@ namespace MonoDevelop.Projects
 					sf.CollectBuildableEntries (collected, configuration, slnConf, includeDependencies);
 				else if (item is SolutionItem si && slnConf.BuildEnabledForItem (si) && si.SupportsBuild () && collected.Add (si)) {
 					if (includeDependencies) {
-						Solution.CollectBuildableDependencies (collected, si, configuration, slnConf);
+						CollectBuildableDependencies (collected, si, configuration, slnConf);
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Recursively collects buildable dependencies.
+		/// </summary>
+		[Obsolete]
+		static void CollectBuildableDependencies (HashSet<SolutionItem> collected, SolutionItem item, ConfigurationSelector configuration, SolutionConfiguration conf)
+		{
+			foreach (var it in item.GetReferencedItems (configuration)) {
+				if (collected.Contains (it) || !conf.BuildEnabledForItem (it))
+					continue;
+				collected.Add (it);
+				CollectBuildableDependencies (collected, it, configuration, conf);
 			}
 		}
 

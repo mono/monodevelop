@@ -50,7 +50,7 @@
       <HintPath>..\..\packages\Mono.Cecil.0.10.0-beta7\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
   </ItemGroup>
@@ -113,6 +113,7 @@
     <Compile Include="MonoDevelop.FSW\PathTreeNodeTests.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeTests.cs" />
     <Compile Include="MonoDevelop.Projects\ExtensionChainTests.cs" />
+    <Compile Include="MonoDevelop.Core\PropertyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

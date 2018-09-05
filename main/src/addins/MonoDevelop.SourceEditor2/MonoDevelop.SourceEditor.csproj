@@ -97,11 +97,19 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -238,12 +246,6 @@
     <Compile Include="VSEditor\Language\Impl\Intellisense\SignatureHelp\SignatureHelpParameterBoldingClassfier.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\SignatureHelp\SignatureHelpSession.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\SignatureHelp\SignatureHelpSessionView.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\AsyncQuickInfoBroker.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\AsyncQuickInfoSession.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\QuickInfoController.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\QuickInfoTextViewCreationListener.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\SquiggleQuickInfoSource.cs" />
-    <Compile Include="VSEditor\Language\Impl\QuickInfo\SquiggleQuickInfoSourceProvider.cs" />
     <Compile Include="VSEditor\Language\Util\LanguageUtil\IntellisenseSourceCache.cs" />
     <Compile Include="VSEditor\Language\Util\LanguageUtil\IntellisenseUtilities.cs" />
     <Compile Include="VSEditor\Text\Def\TextUIWpf\Adornments\ToolTipPresenterStyle.cs" />
@@ -288,6 +290,21 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfObjectViewElementFactory.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorKeyPressTimings.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentService.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentServiceFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAggregator.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAggregatorFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionDefaultSession.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionEditorExtension.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionManager.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionManagerFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionStack.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAdornmentService.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAdornmentServiceFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAggregator.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionAggregatorFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionMetadata.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml" />

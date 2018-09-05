@@ -1224,7 +1224,12 @@ namespace MonoDevelop.Ide
 			try {
 				if (result != null) {
 					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+
+					var msg = GettextCatalog.GetString (
+							"Clean: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped",
+							result.SuccessfulBuildCount, result.FailedBuildCount, result.UpToDateBuildCount, result.SkippedBuildCount
+						);
+					monitor.Log.WriteLine ( "========== " + msg + " ==========");
 
 					tt.Trace ("Updating task service");
 				
@@ -1346,21 +1351,57 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		internal static IBuildTarget[] GetBuildTargetsForExecution (IBuildTarget executionTarget, RunConfiguration runConfiguration)
+		{
+			if (executionTarget is Solution sol) {
+				if (runConfiguration == null) {
+					runConfiguration = sol.StartupConfiguration;
+				}
+				if (runConfiguration is SingleItemSolutionRunConfiguration src) {
+					return new [] { src.Item };
+				}
+				if (runConfiguration is MultiItemSolutionRunConfiguration mrc) {
+					var buildTargets = new IBuildTarget [mrc.Items.Count];
+					int i = 0;
+					foreach (var item in mrc.Items) {
+						buildTargets [i++] = item.SolutionItem;
+					}
+					return buildTargets;
+				}
+			}
+			return new [] { executionTarget };
+		}
+
+		// given a solution RunConfiguration, determine the matching project RunConfigurations
+		static RunConfiguration GetProjectRunConfiguration (IRunTarget target, RunConfiguration config)
+		{
+			if (config is SingleItemSolutionRunConfiguration src) {
+				if (src.Item == target) {
+					return src.RunConfiguration;
+				}
+			}
+			else if (config is MultiItemSolutionRunConfiguration mrc) {
+				foreach (var item in mrc.Items) {
+					if (item.SolutionItem == target)
+						return item.RunConfiguration;
+				}
+			}
+			return config;
+		}
+
 		Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
-			var buildTarget = executionTarget;
-
-			// When executing a solution we are actually going to execute the startup project. So we only need to build that project.
-			// TODO: handle multi-startup solutions.
-			if (buildTarget is Solution sol && sol.StartupItem != null)
-				buildTarget = sol.StartupItem;
+			// When executing a solution we are actually going to execute the startup project(s), so we only need to build it/them
+			IBuildTarget [] buildTargets = GetBuildTargetsForExecution (executionTarget, runConfiguration);
 
 			return CheckAndBuildForExecute (
-				new [] { buildTarget }, configuration,
-				IdeApp.Preferences.BuildBeforeExecuting, IdeApp.Preferences.RunWithWarnings,
+				buildTargets, configuration,
+				IdeApp.Preferences.BuildBeforeExecuting, !IdeApp.Preferences.RunWithWarnings,
 				(target, monitor) => {
-					if (target is IRunTarget)
-						return ((IRunTarget)target).PrepareExecution (monitor, context, configuration, runConfiguration);
+					if (target is IRunTarget runTarget) {
+						var projectRunConfig = GetProjectRunConfiguration (runTarget, runConfiguration);
+						return runTarget.PrepareExecution (monitor, context, configuration, projectRunConfig);
+					}
 					return target.PrepareExecution (monitor, context, configuration);
 				}
 			);
@@ -1400,7 +1441,8 @@ namespace MonoDevelop.Ide
 			if (r.Failed)
 				return false;
 
-			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionTargets);
+			var executionDeps = executionTargets.SelectMany (et => et.GetExecutionDependencies ());
+			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionDeps);
 
 			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
 				return true;
@@ -1666,18 +1708,23 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		async Task<BuildResult> DoBeforeCompileAction ()
+		Task<BuildResult> DoBeforeCompileAction ()
+		{
+			return ApplySavePolicy ();
+		}
+
+		public async Task<BuildResult> ApplySavePolicy ()
 		{
 			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
 			var result = new BuildResult ();
-			
+
 			switch (action) {
 			case BeforeCompileAction.Nothing: break;
 			case BeforeCompileAction.PromptForSave: await PromptForSave (result); break;
 			case BeforeCompileAction.SaveAllFiles: await SaveAllFiles (result); break;
 			default: System.Diagnostics.Debug.Assert (false); break;
 			}
-			
+
 			return result;
 		}
 
@@ -1700,7 +1747,12 @@ namespace MonoDevelop.Ide
 				if (result != null) {
 					lastResult = result;
 					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+
+					var msg = GettextCatalog.GetString (
+							"Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped",
+							result.SuccessfulBuildCount, result.FailedBuildCount, result.UpToDateBuildCount, result.SkippedBuildCount
+						);
+					monitor.Log.WriteLine ( "========== " + msg + " ==========");
 					
 					tt.Trace ("Updating task service");
 

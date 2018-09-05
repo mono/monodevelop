@@ -109,7 +109,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ctx = Widget?.CurrentCodeCompletionContext;
 			if (ctx == null)
 				return;
-			var lineHeight = (int)Ext.Editor.LineHeight;
+			var editor = Ext?.Editor;
+			if (editor == null) {
+				return;
+			}
+			var lineHeight = (int)editor.LineHeight;
 			var geometry = Xwt.MessageDialog.RootWindow.Screen.VisibleBounds;
 			var cmg = ParameterInformationWindowManager.CurrentMethodGroup;
 

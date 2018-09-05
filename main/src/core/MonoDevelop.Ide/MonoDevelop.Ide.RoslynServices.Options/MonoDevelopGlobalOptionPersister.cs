@@ -128,6 +128,26 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 				} catch (Exception ex) {
 					LoggingService.LogError ($"Failed to serialize key: {storageKey} type: {optionKey.Option.Type}", ex);
 				}
+			} else {
+				// Non property case
+				var propertyName = optionKey.GetPropertyName ();
+				if (propertyName == null) // empty storage location
+					return false;
+				MonitorChanges (storageKey, optionKey);
+				try {
+					if (optionKey.Option.DefaultValue != null) {
+						if (optionKey.Option.DefaultValue.Equals (value)) {
+							PropertyService.Set (propertyName, null); // don't store default value
+							return true;
+						}
+					}
+
+					var serializedValue = Serialize (value, optionKey.Option.Type);
+					PropertyService.Set (propertyName, serializedValue);
+					return true;
+				} catch (Exception ex) {
+					LoggingService.LogError ($"Failed to serialize key: {storageKey} type: {optionKey.Option.Type}", ex);
+				}
 			}
 
 			return false;

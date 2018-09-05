@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Editor
 
 			bool ITextEditorOptions.HighlightCaretLine {
 				get {
-					return DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+					return false;
 				}
 			}
 
@@ -242,6 +242,12 @@ namespace MonoDevelop.Ide.Editor
 			bool ITextEditorOptions.SmartBackspace {
 				get {
 					return DefaultSourceEditorOptions.Instance.SmartBackspace;
+				}
+			}
+
+			bool ITextEditorOptions.EnableQuickDiff {
+				get {
+					return false;
 				}
 			}
 			#endregion
@@ -467,14 +473,13 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		ConfigurationProperty<bool> onTheFlyFormatting = ConfigurationProperty.Create ("OnTheFlyFormatting", true);
+		[Obsolete ("Deprecated - use the roslyn FeatureOnOffOptions.FormatXXX per document options.")]
 		public bool OnTheFlyFormatting {
 			get {
-				return onTheFlyFormatting;
+				return true;
 			}
 			set {
-				if (onTheFlyFormatting.Set (value))
-					OnChanged (EventArgs.Empty);
+				// unused
 			}
 		}
 

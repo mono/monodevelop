@@ -16,6 +16,7 @@ type TestPlatform =
 
 [<TestFixture>]
 type CompilerArgumentsTests() =
+    inherit UnitTests.TestBase ()
     let toTask computation : Task = Async.StartAsTask computation :> _
 
     let makeTestableReference (path: string) =
@@ -23,29 +24,29 @@ type CompilerArgumentsTests() =
         let path = path.Substring(0,path.Length - 1)
         path
 
-    let createFSharpProject() =
+    let createFSharpProject(name) =
         async {
-            let monitor = new MonoDevelop.Core.ProgressMonitor()
+            let monitor = UnitTests.Util.GetMonitor ()
+            let dir = UnitTests.Util.CreateTmpDir(name)
             let testProject = Services.ProjectService.CreateDotNetProject ("F#") :?> FSharpProject
-            testProject.FileName <- Path.GetTempFileName() |> FilePath
+            testProject.FileName <- Path.Combine(dir, name + ".fsproj") |> FilePath
 
             let! _ = testProject.SaveAsync monitor |> Async.AwaitTask
-            do! testProject.ReevaluateProject(monitor) |> ignore
-                testProject.GetReferences()
+            do! testProject.ReevaluateProject(monitor)
             return testProject
         }
 
     member private x.``Run Only mscorlib referenced`` (assemblyName) =
         async {
-            use! testProject = createFSharpProject()
+            use! testProject = createFSharpProject("OnlyMscorlib")
             let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
             let _ = testProject.AddReference assemblyName
+            let! asms = testProject.GetReferences (CompilerArguments.getConfig())
             let references =
                 CompilerArguments.generateReferences(testProject, 
-                                                     testProject.ReferencedAssemblies,
+                                                     asms,
                                                      Some (FSharpCompilerVersion.FSharp_3_1),
                                                      FSharpTargetFramework.NET_4_5,
-                                                     ConfigurationSelector.Default,
                                                      true) 
 
             //The two paths for mscorlib and FSharp.Core should match
@@ -77,17 +78,17 @@ type CompilerArgumentsTests() =
     member x.``Explicit FSharp.Core and mscorlib referenced``() =
         async {
             if Platform.IsMac then
-                use! testProject = createFSharpProject()
+                use! testProject = createFSharpProject("MscorlibAndFSharpCore")
                 let _ = testProject.AddReference "mscorlib"
                 // we need to use a path to FSharp.Core.dll that exists on disk
                 let fscorePath = typeof<FSharp.Core.PrintfFormat<_,_,_,_>>.Assembly.Location
                 let reference = testProject.AddReference fscorePath
+                let! asms = testProject.GetReferences (CompilerArguments.getConfig())
                 let references =
                     CompilerArguments.generateReferences(testProject,
-                                                         testProject.ReferencedAssemblies,
+                                                         asms,
                                                          Some (FSharpCompilerVersion.FSharp_3_1),
                                                          FSharpTargetFramework.NET_4_5,
-                                                         ConfigurationSelector.Default,
                                                          true)
                 let testPaths = references |> List.map makeTestableReference
                 testPaths |> should contain (reference.HintPath.FullPath |> string)

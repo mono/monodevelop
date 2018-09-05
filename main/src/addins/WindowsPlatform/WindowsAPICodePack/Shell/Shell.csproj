@@ -8,6 +8,8 @@
     <AssemblyName>Microsoft.WindowsAPICodePack.Shell</AssemblyName>
     <OutputPath>..\..\..\..\..\build\AddIns\WindowsPlatform</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <!-- see https://github.com/mono/monodevelop/issues/5501 -->
+    <ShortEmbeddedResourceIDs>False</ShortEmbeddedResourceIDs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -87,8 +89,7 @@
     <Compile Include="Interop\Common\WindowUtilities.cs" />
     <Compile Include="KnownFolders\IKnownFolder.cs" />
     <Compile Include="Interop\Common\ShellCOMClasses.cs" />
-    <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserCOMGuids.cs">
-    </Compile>
+    <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserCOMGuids.cs" />
     <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserCOMInterfaces.cs" />
     <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserNativeMethods.cs" />
     <Compile Include="KnownFolders\DefinitionOptions.cs" />
@@ -97,9 +98,7 @@
     <Compile Include="KnownFolders\FoldersIdentifiers.cs" />
     <Compile Include="KnownFolders\FolderTypes.cs" />
     <Compile Include="KnownFolders\KnownFolderHelper.cs" />
-    <Compile Include="KnownFolders\KnownFolders.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="KnownFolders\KnownFolders.cs" />
     <Compile Include="KnownFolders\KnownFolderSettings.cs" />
     <Compile Include="KnownFolders\RedirectionCapabilities.cs" />
     <Compile Include="KnownFolders\RetrievalOptions.cs" />
@@ -197,8 +196,7 @@
     <Compile Include="Taskbar\JumpList.cs" />
     <Compile Include="Taskbar\JumpListItem.cs" />
     <Compile Include="Taskbar\TaskbarList.cs" />
-    <Compile Include="Taskbar\TaskbarManager.cs">
-    </Compile>
+    <Compile Include="Taskbar\TaskbarManager.cs" />
     <Compile Include="Taskbar\TaskbarInterfaces.cs" />
     <Compile Include="Taskbar\TaskbarWindow.cs" />
     <Compile Include="Taskbar\TaskbarWindowManager.cs" />

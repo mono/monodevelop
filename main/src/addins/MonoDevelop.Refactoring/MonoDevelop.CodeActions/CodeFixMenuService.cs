@@ -83,7 +83,7 @@ namespace MonoDevelop.CodeActions
 
 				foreach (var fix in cfa.Fixes) {
 					var diag = fix.PrimaryDiagnostic;
-					if (options.TryGetDiagnosticDescriptor (diag.Id, out var descriptor) && !descriptor.GetIsEnabled (diag.Descriptor))
+					if (options.TryGetDiagnosticDescriptor (diag.Id, out var descriptor) && !diag.Descriptor.IsEnabledByDefault)
 						continue;
 					
 					bool isSuppress = fix.Action is TopLevelSuppressionCodeAction;
@@ -96,7 +96,6 @@ namespace MonoDevelop.CodeActions
 					} else {
 						fixMenu = menu;
 						fixState = state;
-						AddConfigurationMenuEntry (diag, descriptor, fix, configureMenu);
 					}
 
 					AddFixMenuItem (editor, fixMenu, fixAllMenu, ref mnemonic, fix.Action, fixState, cancellationToken);
@@ -142,24 +141,6 @@ namespace MonoDevelop.CodeActions
 		static bool DescriptorHasTag (DiagnosticDescriptor desc, string tag)
 		{
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
-		}
-
-		static void AddConfigurationMenuEntry (Diagnostic diag, CodeDiagnosticDescriptor descriptor, Microsoft.CodeAnalysis.CodeFixes.CodeFix fix, CodeFixMenu configureMenu)
-		{
-			var configurable = !DescriptorHasTag (diag.Descriptor, WellKnownDiagnosticTags.NotConfigurable);
-			if (descriptor != null && configurable) {
-				var optionsMenuItem = new CodeFixMenuEntry (GettextCatalog.GetString ("_Configure Rule \u2018{0}\u2019", diag.Descriptor.Title),
-					delegate {
-						IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-							if (panel == null)
-								return;
-							var title = GettextCatalog.GetString ("{0} ({1})", fix.PrimaryDiagnostic.Descriptor.Title, fix.PrimaryDiagnostic.Descriptor.Id);
-							panel.Widget.SelectCodeIssue (title);
-						});
-					});
-				configureMenu.Add (optionsMenuItem);
-			}
 		}
 
 		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix, ref int mnemonic)
@@ -221,8 +202,10 @@ namespace MonoDevelop.CodeActions
 			// TODO: Add support for more than doc when we have global undo.
 			fixState = fixState?.WithScopeAndEquivalenceKey (FixAllScope.Document, fix.EquivalenceKey);
 			var fixAllMenuEntry = CreateFixAllMenuEntry (editor, fixState, ref mnemonic, token);
-			if (fixAllMenuEntry != null)
+			if (fixAllMenuEntry != null) {
+				fixAllMenu.Add (new CodeFixMenuEntry (fix.Message, null));
 				fixAllMenu.Add (fixAllMenuEntry);
+			}
 		}
 
 		static void AddNestedFixMenu (TextEditor editor, CodeFixMenu menu, CodeFixMenu fixAllMenu, CodeAction.CodeActionWithNestedActions fixes, FixAllState fixState, CancellationToken token)

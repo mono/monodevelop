@@ -262,115 +262,138 @@ namespace MonoDevelop.CSharp.Completion
 
 		internal void AddImportCompletionData (CSharpSyntaxContext ctx, CompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			if (result.Count == 0)
-				return;
-			var root = semanticModel.SyntaxTree.GetRoot ();
-			var node = root.FindNode (TextSpan.FromBounds (position, position));
-			var syntaxTree = root.SyntaxTree;
+			if (ctx == null) 
+				throw new ArgumentNullException (nameof (ctx));
+			if (result == null)
+				throw new ArgumentNullException (nameof (result));
+			if (semanticModel == null)
+				throw new ArgumentNullException (nameof (semanticModel));
+			try {
+				if (result.Count == 0 || position < 0)
+					return;
+				var syntaxTree = semanticModel.SyntaxTree;
+				var root = syntaxTree.GetRoot ();
 
-			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
-				syntaxTree.GetContainingTypeOrEnumDeclaration (position, cancellationToken) is EnumDeclarationSyntax ||
-				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
-				return;
-			
-			var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
-			ITypeSymbol extensionType = null;
+				if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
+					syntaxTree.GetContainingTypeOrEnumDeclaration (position, cancellationToken) is EnumDeclarationSyntax ||
+					syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
+					return;
 
-			if (extensionMethodImport) {
-				var memberAccess = ctx.TargetToken.Parent as MemberAccessExpressionSyntax;
-				if (memberAccess != null) {
-					var symbolInfo = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression);
-					if (symbolInfo.Symbol.Kind == SymbolKind.NamedType)
-						return;
-					extensionType = ctx.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
-					if (extensionType == null) {
+				var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
+				ITypeSymbol extensionMethodReceiverType = null;
+
+				if (extensionMethodImport) {
+					if (ctx.TargetToken.Parent is MemberAccessExpressionSyntax memberAccess) {
+						var symbolInfo = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression);
+						if (symbolInfo.Symbol.Kind == SymbolKind.NamedType)
+							return;
+						extensionMethodReceiverType = ctx.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
+						if (extensionMethodReceiverType == null) 
+							return;
+					} else {
 						return;
 					}
-				} else {
-					return;
 				}
-			}
 
-			var tokenLeftOfPosition = syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken);
+				var tokenLeftOfPosition = syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken);
 
-			if (extensionMethodImport ||
-				syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
-				syntaxTree.IsExpressionContext (position, tokenLeftOfPosition, true, cancellationToken) ||
-				syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsTypeContext (position, cancellationToken) ||
-				syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
-				syntaxTree.IsLabelContext (position, cancellationToken)) {
-				var usedNamespaces = new HashSet<string> ();
-				foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
-					usedNamespaces.Add (un.GetFullName ());
-				}
-				var enclosingNamespaceName = semanticModel.GetEnclosingNamespace (position, cancellationToken).GetFullName ();
-
-				var stack = new Stack<INamespaceOrTypeSymbol> ();
-				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
-					stack.Push (member);
-				var extMethodDict = extensionMethodImport ? new Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> () : null;
-				var typeDict = new Dictionary<INamespaceSymbol, HashSet<string>> ();
-				while (stack.Count > 0) {
-					if (cancellationToken.IsCancellationRequested)
-						break;
-					var current = stack.Pop ();
-					var currentNs = current as INamespaceSymbol;
-					if (currentNs != null) {
-						var currentNsName = currentNs.GetFullName ();
-						if (usedNamespaces.Contains (currentNsName) ||
-							enclosingNamespaceName == currentNsName ||
-							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
-							enclosingNamespaceName [currentNsName.Length] == '.')) {
-							foreach (var member in currentNs.GetNamespaceMembers ())
-								stack.Push (member);
-						} else {
-							foreach (var member in currentNs.GetMembers ())
-								stack.Push (member);
+				if (extensionMethodImport ||
+					syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
+					syntaxTree.IsExpressionContext (position, tokenLeftOfPosition, true, cancellationToken) ||
+					syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
+					syntaxTree.IsTypeContext (position, cancellationToken) ||
+					syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+					syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+					syntaxTree.IsLabelContext (position, cancellationToken)) {
+					var usedNamespaces = new HashSet<string> ();
+					var node = root.FindNode (TextSpan.FromBounds (position, position));
+					if (node != null) {
+						foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
+							usedNamespaces.Add (un.GetFullName ());
 						}
-					} else {
-						var type = (INamedTypeSymbol)current;
-						if (type.IsImplicitClass || type.IsScriptClass)
+					}
+					var enclosingNamespaceName = semanticModel.GetEnclosingNamespace (position, cancellationToken)?.GetFullName () ?? "";
+
+					var stack = new Stack<INamespaceOrTypeSymbol> ();
+					foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
+						stack.Push (member);
+					var extMethodDict = extensionMethodImport ? new Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> () : null;
+					var typeDict = new Dictionary<INamespaceSymbol, HashSet<string>> ();
+					while (stack.Count > 0) {
+						if (cancellationToken.IsCancellationRequested)
+							break;
+						var current = stack.Pop ();
+						if (current is INamespaceSymbol currentNs) {
+							var currentNsName = currentNs.GetFullName ();
+							if (usedNamespaces.Contains (currentNsName) ||
+								enclosingNamespaceName == currentNsName ||
+								(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
+								enclosingNamespaceName [currentNsName.Length] == '.')) {
+								foreach (var member in currentNs.GetNamespaceMembers ())
+									stack.Push (member);
+							} else {
+								foreach (var member in currentNs.GetMembers ())
+									stack.Push (member);
+							}
 							continue;
-						if (type.DeclaredAccessibility != Accessibility.Public) {
-							if (type.DeclaredAccessibility != Accessibility.Internal)
+						} 
+						if (current is INamedTypeSymbol type) {
+							if (type.IsImplicitClass || type.IsScriptClass)
 								continue;
-							if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
-								continue;
-						}
-						if (extensionMethodImport) {
-							if (!type.MightContainExtensionMethods)
-								continue;
-							foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
-								var reducedMethod = extMethod.ReduceExtensionMethod (extensionType);
-								if (reducedMethod != null) {
-									List<ImportSymbolCompletionData> importSymbolList;
-									if (!extMethodDict.TryGetValue (type.ContainingNamespace, out importSymbolList)) {
-										extMethodDict.Add (type.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
-									}
-									var newData = new ImportSymbolCompletionData (this, reducedMethod, false);
-									var existingItem = importSymbolList.FirstOrDefault (data => data.Symbol.Name == extMethod.Name);
-									if (existingItem != null) {
-										existingItem.AddOverload (newData);
-									} else {
-										result.Add (newData);
-										importSymbolList.Add (newData);
-									}
+							if (type.DeclaredAccessibility != Accessibility.Public) {
+								if (type.DeclaredAccessibility != Accessibility.Internal)
+									continue;
+								if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
+									continue;
+							}
+							if (extensionMethodImport) {
+								if (type.MightContainExtensionMethods)
+									AddImportExtensionMethodCompletionData (result, type, extensionMethodReceiverType, extMethodDict);
+							} else {
+								if (!typeDict.TryGetValue (type.ContainingNamespace, out var existingTypeHashSet)) {
+									typeDict.Add (type.ContainingNamespace, existingTypeHashSet = new HashSet<string> ());
+								}
+								if (!existingTypeHashSet.Contains (type.Name)) {
+									result.Add (new ImportSymbolCompletionData (this, type, false));
+									existingTypeHashSet.Add (type.Name);
 								}
 							}
-						} else {
-							HashSet<string> existingTypeHashSet;
-							if (!typeDict.TryGetValue (type.ContainingNamespace, out existingTypeHashSet)) {
-								typeDict.Add (type.ContainingNamespace, existingTypeHashSet = new HashSet<string> ());
-							}
-							if (!existingTypeHashSet.Contains (type.Name)) {
-								result.Add (new ImportSymbolCompletionData (this, type, false));
-								existingTypeHashSet.Add (type.Name);
-							}
 						}
 					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while AddImportCompletionData", e);
+			}
+		}
+
+		void AddImportExtensionMethodCompletionData (CompletionDataList result, INamedTypeSymbol fromType, ITypeSymbol receiverType, Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> extMethodDict)
+		{
+			try {
+				foreach (var extMethod in fromType.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+					var reducedMethod = extMethod.ReduceExtensionMethod (receiverType);
+					if (reducedMethod != null) {
+						if (!extMethodDict.TryGetValue (fromType.ContainingNamespace, out var importSymbolList))
+							extMethodDict.Add (fromType.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
+
+						var newData = new ImportSymbolCompletionData (this, reducedMethod, false);
+						ImportSymbolCompletionData existingItem = null;
+						foreach (var data in importSymbolList) {
+							if (data.Symbol.Name == extMethod.Name) {
+								existingItem = data;
+								break;
+							}
+						}
+
+						if (existingItem != null) {
+							existingItem.AddOverload (newData);
+						} else {
+							result.Add (newData);
+							importSymbolList.Add (newData);
+						}
+					}
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while AddImportExtensionMethodCompletionData", e);
 			}
 		}
 

@@ -183,7 +183,7 @@ namespace Mono.TextEditor
 
 			public TextBounds GetCharacterBounds(VirtualSnapshotPoint bufferPosition)
 			{
-				throw new System.NotImplementedException();
+				return GetCharacterBounds (bufferPosition.Position);
 			}
 
 			public TextBounds GetExtendedCharacterBounds(SnapshotPoint bufferPosition)
@@ -193,7 +193,13 @@ namespace Mono.TextEditor
 
 			public TextBounds GetExtendedCharacterBounds(VirtualSnapshotPoint bufferPosition)
 			{
-				throw new System.NotImplementedException();
+				// if the point is in virtual space, then it can't be next to any space negotiating adornments, 
+				// so just return its character bounds. If the point is not in virtual space, then use the regular
+				// GetExtendedCharacterBounds method for a non-virtual SnapshotPoint
+				if (bufferPosition.IsInVirtualSpace)
+					return this.GetCharacterBounds (bufferPosition);
+				else
+					return this.GetExtendedCharacterBounds (bufferPosition.Position);
 			}
 
 			public VirtualSnapshotPoint GetInsertionBufferPositionFromXCoordinate(double xCoordinate)

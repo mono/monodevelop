@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		None = 0,
 		SmartBackspace = 1,
         CustomIndentationEngine = 2,
+		SkipFixVirtualIndentation = 4,
 		All = SmartBackspace
 	}
 
