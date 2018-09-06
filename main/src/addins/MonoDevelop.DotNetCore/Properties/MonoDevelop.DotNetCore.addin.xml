@@ -629,6 +629,7 @@
 			id="MonoDevelop.DotNetCore.CSharpProject"
 			insertbefore="MonoDevelop.CSharp.Project.CSharpProject"
 			language="C#"
+			alias="VisualStudioDotNetCoreCSharpProject"
 			isDefaultGuid="false"
 			guid="{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"
 			type="MonoDevelop.CSharp.Project.CSharpProject" />
