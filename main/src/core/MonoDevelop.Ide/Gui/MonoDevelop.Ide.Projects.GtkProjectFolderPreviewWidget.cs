@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child mainVBox.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+			this.GtkScrolledWindow.CanFocus = false;
 			this.GtkScrolledWindow.HscrollbarPolicy = ((global::Gtk.PolicyType)(2));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 			this.folderTreeView = new global::Gtk.TreeView ();
