@@ -38,8 +38,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var pid = ProjectId.CreateNewId ();
 
-			using (var workspace = new MonoDevelopWorkspace (null))
-			using (var data = new MonoDevelopWorkspace.ProjectData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, workspace)) {
+			using (var workspace = new MonoDevelopWorkspace (null)) {
+				var data = new MonoDevelopWorkspace.ProjectData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, workspace);
+				data.Disconnect ();
 				// Do nothing, we just want to see it construct and dispose properly.
 			}
 		}

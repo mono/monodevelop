@@ -124,31 +124,31 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				lock (workspace.updatingProjectDataLock) {
 					//when reloading e.g. after a save, preserve document IDs
-					using (var oldProjectData = projectMap.RemoveData (projectId)) {
-						var projectData = projectMap.CreateData (projectId, references);
+					var oldProjectData = projectMap.RemoveData (projectId);
+					var projectData = projectMap.CreateData (projectId, references);
 
-						var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
-						if (documents == null)
-							return null;
+					var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
+					if (documents == null)
+						return null;
 
-						// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
-						var info = ProjectInfo.Create (
-							projectId,
-							VersionStamp.Create (),
-							p.Name,
-							fileName.FileNameWithoutExtension,
-							LanguageNames.CSharp,
-							p.FileName,
-							fileName,
-							cp?.CreateCompilationOptions (),
-							cp?.CreateParseOptions (config),
-							documents.Item1,
-							projectReferences,
-							references.Select (x => x.CurrentSnapshot),
-							additionalDocuments: documents.Item2
-						);
-						return info;
-					}
+					// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
+					var info = ProjectInfo.Create (
+						projectId,
+						VersionStamp.Create (),
+						p.Name,
+						fileName.FileNameWithoutExtension,
+						LanguageNames.CSharp,
+						p.FileName,
+						fileName,
+						cp?.CreateCompilationOptions (),
+						cp?.CreateParseOptions (config),
+						documents.Item1,
+						projectReferences,
+						references.Select (x => x.CurrentSnapshot),
+						additionalDocuments: documents.Item2
+					);
+					return info;
+
 				}
 			}
 
