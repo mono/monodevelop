@@ -44,7 +44,17 @@ namespace MonoDevelop.Projects.Extensions
 		public string Language {
 			get { return language; }
 		}
-		
+
+		[NodeAttribute]
+		bool isDefaultGuid = true;
+
+		/// <summary>
+		/// Indicates if the Guid specified is the default for the language.
+		/// </summary>
+		public bool IsDefaultGuid {
+			get { return isDefaultGuid; }
+		}
+
 		public DotNetProjectTypeNode ()
 		{
 		}
