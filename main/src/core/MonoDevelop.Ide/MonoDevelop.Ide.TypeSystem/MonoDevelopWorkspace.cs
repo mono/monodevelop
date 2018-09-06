@@ -387,6 +387,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					InternalInformDocumentOpen (linkedDoc, editor, context);
 				}
 			}
+			OnDocumentContextUpdated (documentId);
 		}
 
 		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
