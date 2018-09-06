@@ -97,9 +97,6 @@
 		<File pattern="*.targets" />
 	</MimeType>
 
-	<MimeType id="text/x-typescript" _description="typescript files" isText="true">
-		<File pattern="*.ts" />
-	</MimeType>
 </Extension>
 
 </ExtensionModel>
