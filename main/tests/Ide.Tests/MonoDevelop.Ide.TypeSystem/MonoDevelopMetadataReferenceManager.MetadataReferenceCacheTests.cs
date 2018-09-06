@@ -78,13 +78,22 @@ namespace MonoDevelop.Ide.TypeSystem
 					var newAsm = typeof (MonoDevelopMetadataReference).Assembly.Location;
 					File.Copy (newAsm, tempPath, true);
 
-					Assert.AreEqual (true, await taskForNewAsm);
+					var argsForNewAsm = await taskForNewAsm;
+
+					Assert.AreSame (item.CurrentSnapshot, argsForNewAsm.OldSnapshot);
+
+					Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
+					// item.CurrentSnapshot is now updated
 					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 
 					var taskForOldAsm = WaitForSnapshotChange (item);
 					File.Copy (newAsm, tempPath, true);
 
-					Assert.AreEqual (true, await taskForOldAsm);
+					var argsForOldAsm = await taskForOldAsm;
+
+					Assert.AreSame (item.CurrentSnapshot, argsForOldAsm.OldSnapshot);
+
+					Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
 					// Even though the old assembly was put back, it has a new id this time.
 					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 				}
@@ -111,15 +120,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		Task<bool> WaitForSnapshotChange (MonoDevelopMetadataReference item)
+		Task<MetadataReferenceUpdatedEventArgs> WaitForSnapshotChange (MonoDevelopMetadataReference item)
 		{
-			var tcs = new TaskCompletionSource<bool> ();
+			var tcs = new TaskCompletionSource<MetadataReferenceUpdatedEventArgs> ();
 			var cts = new CancellationTokenSource ();
-			cts.Token.Register (() => tcs.TrySetResult (false));
-			item.UpdatedOnDisk += (sender, args) => {
+			cts.Token.Register (() => tcs.TrySetResult (null));
+			item.SnapshotUpdated += (sender, args) => {
 				// This routes through file service
-				item.UpdateSnapshot ();
-				tcs.TrySetResult (true);
+				tcs.TrySetResult (args);
 			};
 
 			// 1 minute should be enough.
