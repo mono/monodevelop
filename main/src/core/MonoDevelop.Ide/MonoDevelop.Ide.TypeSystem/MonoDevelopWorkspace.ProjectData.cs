@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public partial class MonoDevelopWorkspace
 	{
-		internal class ProjectData : IDisposable
+		internal class ProjectData
 		{
 			readonly WeakReference<MonoDevelopWorkspace> workspaceRef;
 			readonly ProjectId projectId;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return metadataReferences.Remove (metadataReference);
 			}
 
-			public void Dispose ()
+			public void Disconnect ()
 			{
 				if (!workspaceRef.TryGetTarget (out var ws))
 					return;
