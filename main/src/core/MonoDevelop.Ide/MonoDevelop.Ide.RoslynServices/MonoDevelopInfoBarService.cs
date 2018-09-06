@@ -69,7 +69,10 @@ namespace MonoDevelop.Ide.RoslynServices
 			// We can be called from any thread since errors can occur anywhere, however we can only construct and InfoBar from the UI thread.
 			_foregroundNotificationService.RegisterNotification (() => {
 				if (TryGetInfoBarHost (activeView, out var infoBarHost)) {
-					infoBarHost.AddInfoBar (message, ToUIItems (items));
+					var options = new InfoBarOptions (message) {
+						Items = ToUIItems (items)
+					};
+					infoBarHost.AddInfoBar (options);
 				}
 			}, _listener.BeginAsyncOperation (nameof (ShowInfoBar)));
 		}
@@ -79,18 +82,18 @@ namespace MonoDevelop.Ide.RoslynServices
 			return items.Select (x => new InfoBarItem (x.Title, ToUIKind (x.Kind), x.Action, x.CloseAfterAction)).ToArray ();
 		}
 
-		static InfoBarItem.InfoBarItemKind ToUIKind (InfoBarUI.UIKind kind)
+		static InfoBarItemKind ToUIKind (InfoBarUI.UIKind kind)
 		{
 			switch (kind) {
 			case InfoBarUI.UIKind.Button:
-				return InfoBarItem.InfoBarItemKind.Button;
+				return InfoBarItemKind.Button;
 			case InfoBarUI.UIKind.Close:
-				return InfoBarItem.InfoBarItemKind.Close;
+				return InfoBarItemKind.Close;
 			case InfoBarUI.UIKind.HyperLink:
-				return InfoBarItem.InfoBarItemKind.Hyperlink;
+				return InfoBarItemKind.Hyperlink;
 			default:
 				LoggingService.LogError ("Unknown InfoBarUI.UIKind value {0}", kind.ToString ());
-				return InfoBarItem.InfoBarItemKind.Button;
+				return InfoBarItemKind.Button;
 			}
 
 		}
