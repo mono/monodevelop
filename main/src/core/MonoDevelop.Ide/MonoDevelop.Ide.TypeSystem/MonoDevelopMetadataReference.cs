@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		Snapshot _currentSnapshot;
 		public FilePath FilePath { get; }
 
-		public event EventHandler UpdatedOnDisk;
+		public event EventHandler<MetadataReferenceUpdatedEventArgs> SnapshotUpdated;
 
 		public MonoDevelopMetadataReference (
 			MonoDevelopMetadataReferenceManager provider,
@@ -50,9 +50,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnUpdatedOnDisk (object sender, FileEventArgs e)
 		{
+			var args = new MetadataReferenceUpdatedEventArgs (this);
 			foreach (var file in e) {
 				if (file.FileName == FilePath) {
-					UpdatedOnDisk?.Invoke (this, EventArgs.Empty);
+					SnapshotUpdated?.Invoke (this, args);
 					return;
 				}
 			}
@@ -64,8 +65,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			FileWatcherService.WatchDirectories (this, null);
 		}
 
-		public void UpdateSnapshot () => _currentSnapshot = new Snapshot (_provider, Properties, FilePath);
+		internal void UpdateSnapshot () => _currentSnapshot = new Snapshot (_provider, Properties, FilePath);
 
 		string GetDebuggerDisplay () => Path.GetFileName (FilePath);
+	}
+
+	class MetadataReferenceUpdatedEventArgs : EventArgs
+	{
+		public PortableExecutableReference OldSnapshot { get; }
+		public Lazy<PortableExecutableReference> NewSnapshot { get; }
+
+		public MetadataReferenceUpdatedEventArgs (MonoDevelopMetadataReference reference)
+		{
+			OldSnapshot = reference.CurrentSnapshot;
+			NewSnapshot = new Lazy<PortableExecutableReference> (() => {
+				reference.UpdateSnapshot ();
+				return reference.CurrentSnapshot;
+			});
+		}
 	}
 }
