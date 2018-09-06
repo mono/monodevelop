@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Toolbar.HideCommandBar (barId);
 		}
 
-		internal void ShowInfoBar (bool inActiveView, string description, params InfoBarItem[] items)
+		public void ShowInfoBar (bool inActiveView, string description, params InfoBarItem[] items)
 		{
 			IInfoBarHost infoBarHost = null;
 			if (inActiveView) {

@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.Gui
 			topMenu = null;
 		}
 
-		public void AddInfoBar (string description, params InfoBarItem [] items)
+		public Control AddInfoBar (string description, params InfoBarItem [] items)
 		{
 #if NATIVE_INFO_BAR
 			// disabled for now, needs a patch in gtk.
@@ -342,9 +342,14 @@ namespace MonoDevelop.Ide.Gui
 			var widget = Xwt.Toolkit.CurrentEngine.WrapWidget (infoBar);
 			var gtkWidget = widget.ToGtkWidget ();
 			infoBarFrame.Add (gtkWidget);
+
+			return gtkWidget;
 #else
 			var infoBar = new XwtInfoBar (description, items);
-			infoBarFrame.Add (infoBar.ToGtkWidget ());
+			var gtkWidget = infoBar.ToGtkWidget ();
+			infoBarFrame.Add (gtkWidget);
+
+			return gtkWidget;
 #endif
 		}
 		

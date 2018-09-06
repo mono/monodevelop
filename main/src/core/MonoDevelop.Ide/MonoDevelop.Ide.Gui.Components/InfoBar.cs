@@ -32,9 +32,9 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	interface IInfoBarHost
+	public interface IInfoBarHost
 	{
-		void AddInfoBar (string description, params InfoBarItem [] items);
+		MonoDevelop.Components.Control AddInfoBar (string description, params InfoBarItem [] items);
 	}
 
 	class XwtInfoBar : Widget
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 	}
 
-	struct InfoBarItem
+	public struct InfoBarItem
 	{
 		public readonly string Title;
 		public readonly InfoBarItemKind Kind;
@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			CloseAfter = closeAfter;
 		}
 
-		internal enum InfoBarItemKind
+		public enum InfoBarItemKind
 		{
 			Button,
 			Hyperlink,
