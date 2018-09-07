@@ -545,18 +545,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				if (theEvent.Characters == "\t") {
 					focusedCellIndex++;
-					if(focusedCellIndex > VisibleCellIds.Length){
+					if(focusedCellIndex >= VisibleCellIds.Length){
 						if (NextKeyView != null) {
-							Window.MakeFirstResponder (NextKeyView);
 							SetSelection ();
 							focusedCellIndex = 0;
 							focusedItem = null;
-							return;
 						}
+					} else {
+						SetSelection ();
+						return;
 					}
 				}
 
-				SetSelection ();
 				base.KeyDown (theEvent);
 			}
 

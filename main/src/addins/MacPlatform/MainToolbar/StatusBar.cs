@@ -40,23 +40,24 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Mac;
 using System.Threading;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
-	class StatusIcon : NSView, StatusBarIcon, INSAccessibilityButton
+	class StatusIcon : NSButton, StatusBarIcon
 	{
 		StatusBar bar;
-		NSImageView imageView;
+		readonly ObjCRuntime.Selector OnButtonClickedSelector = new ObjCRuntime.Selector ("OnButtonActivated:");
 
 		public StatusIcon (StatusBar bar) : base (CGRect.Empty)
 		{
-			imageView = new NSImageView (CGRect.Empty);
-			// Hide this image from the accessibility tree
-			imageView.AccessibilityElement = false;
-			AddSubview (imageView);
-
+			Bordered = false;
 			var trackingArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect | NSTrackingAreaOptions.MouseEnteredAndExited, this, null);
 			AddTrackingArea (trackingArea);
+
+			Target = this;
+			Action = OnButtonClickedSelector;
 
 			this.bar = bar;
 		}
@@ -67,7 +68,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 			set {
 				base.Frame = value;
-				imageView.Frame = new CGRect (0, 0, value.Width, value.Height);
 			}
 		}
 
@@ -108,55 +108,49 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		public string Title { get; set; }
-		string INSAccessibilityButton.AccessibilityLabel {
+		public new string Title { get; set; }
+		public override string AccessibilityLabel {
 			get {
 				return Title;
 			}
 		}
 
 		Xwt.Drawing.Image image;
-		public Xwt.Drawing.Image Image {
+		public new Xwt.Drawing.Image Image {
 			get { return image; }
 			set {
 				image = value;
-				imageView.Image = value.ToNSImage ();
+				base.Image = value.ToNSImage ();
 				SetFrameSize (new CGSize (image.Width, image.Height));
 			}
 		}
 
 		public override void MouseEntered (NSEvent theEvent)
 		{
-			if (Entered != null) {
-				Entered (this, EventArgs.Empty);
-			}
+			Entered?.Invoke (this, EventArgs.Empty);
 		}
 
 		public override void MouseExited (NSEvent theEvent)
 		{
-			if (Exited != null) {
-				Exited (this, EventArgs.Empty);
-			}
+			Exited?.Invoke (this, EventArgs.Empty);
 		}
 
-		public override void MouseUp (NSEvent theEvent)
+		[Export ("OnButtonActivated:")]
+		void ButtonClicked (NSObject sender)
 		{
-			NotifyClicked (StatusBar.NSEventButtonToXwt (theEvent));
+			NotifyClicked (Xwt.PointerButton.Left);
 		}
 
 		internal void NotifyClicked (Xwt.PointerButton button)
 		{
-			if (Clicked != null)
-				Clicked (this, new StatusBarIconClickedEventArgs {
-					Button = button,
-				});
+			Clicked?.Invoke (this, new StatusBarIconClickedEventArgs {
+				Button = button,
+			});
 		}
 
 		public override bool AccessibilityPerformPress ()
 		{
-			Clicked?.Invoke (this, new StatusBarIconClickedEventArgs {
-				Button = Xwt.PointerButton.Left
-			});
+			NotifyClicked (Xwt.PointerButton.Left);
 
 			return true;
 		}
@@ -164,6 +158,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 		public event EventHandler<EventArgs> Entered;
 		public event EventHandler<EventArgs> Exited;
+
+		public override bool AcceptsFirstResponder ()
+		{
+			return true;
+		}
+
+		public override bool BecomeFirstResponder ()
+		{
+			Entered?.Invoke (this, EventArgs.Empty);
+			return true;
+		}
+
+		public override bool ResignFirstResponder ()
+		{
+			Exited?.Invoke (this, EventArgs.Empty);
+			return true;
+		}
 	}
 
 	class BuildResultsView : NSView, INSAccessibilityStaticText
@@ -453,6 +464,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return GettextCatalog.GetString ("Cancel");
 			}
 		}
+
+		public override bool AcceptsFirstResponder ()
+		{
+			return true;
+		}
 	}
 
 	[Register]
@@ -478,6 +494,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		IDisposable xwtAnimation;
 		readonly BuildResultsView buildResults;
 		readonly CancelButton cancelButton;
+
+		SearchBar searchBar;
+		internal SearchBar SearchBar {
+			get => searchBar;
+			set {
+				searchBar = value;
+				cancelButton.NextKeyView = value;
+			}
+		}
 
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
@@ -562,6 +587,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			cancelButton.Activated += (o, e) => {
 				cts?.Cancel ();
 			};
+
+			NextKeyView = cancelButton;
 
 			ctxHandler = new StatusBarContextHandler (this);
 
@@ -703,11 +730,40 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
 
+		// Xamarin.Mac has a bug where NSView.NextKeyView cannot be set to null
+		// Work around it here by rebinding it ourselves
+		// https://github.com/xamarin/xamarin-macios/issues/4558
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern void void_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr nextKeyViewHandle);
+		static readonly IntPtr setNextKeyViewSelector = ObjCRuntime.Selector.GetHandle ("setNextKeyView:");
+		static void NullableSetNextKeyView (NSView parent, NSView nextKeyView)
+		{
+			if (parent == null) {
+				throw new ArgumentNullException (nameof (parent));
+			}
+
+			void_objc_msgSend_IntPtr (parent.Handle, setNextKeyViewSelector, nextKeyView != null ? nextKeyView.Handle : IntPtr.Zero);
+		}
+
 		// Used by AutoTest.
 		internal string[] StatusIcons => statusIcons.Select(x => x.ToolTip).ToArray ();
 
 		internal void RemoveStatusIcon (StatusIcon icon)
 		{
+			// For keyboard focus the icons are the reverse of the order they're stored in the list
+			// because they're displayed in order right to left
+			var index = statusIcons.IndexOf (icon);
+			if (index != -1) {
+				if (index == statusIcons.Count - 1) {
+					cancelButton.NextKeyView = statusIcons.Count > 1 ? (NSView)statusIcons[index - 1] : (NSView)SearchBar;
+				} else {
+					var previous = statusIcons[index + 1];
+					var next = index > 0 ? (NSView)statusIcons[index - 1] : (NSView)cancelButton;
+
+					previous.NextKeyView = next;
+				}
+			}
+
 			statusIcons.Remove (icon);
 
 			icon.Entered -= ShowPopoverForIcon;
@@ -806,6 +862,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Image = pixbuf,
 			};
 			statusIcons.Add (statusIcon);
+
+			if (statusIcons.Count == 1) {
+				statusIcon.NextKeyView = SearchBar;
+			} else {
+				var previousIcon = statusIcons[statusIcons.Count - 2];
+				statusIcon.NextKeyView = previousIcon;
+			}
+			cancelButton.NextKeyView = statusIcon;
 
 			statusIcon.Entered += ShowPopoverForIcon;
 			statusIcon.Exited += DestroyPopover;
@@ -1111,6 +1175,35 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (textField.IsMouseInRect (location, textField.Frame) && sourcePad != null) {
 				sourcePad.BringToFront (true);
 			}
+		}
+
+		bool isFirstResponder;
+		public override void KeyDown (NSEvent theEvent)
+		{
+			// 36 is <Enter>
+			// 49 is <Space>
+			if (isFirstResponder && (theEvent.KeyCode == 36 || theEvent.KeyCode == 49)) {
+				sourcePad?.BringToFront (true);
+				return;
+			}
+			base.KeyDown (theEvent);
+		}
+
+		public override bool AcceptsFirstResponder ()
+		{
+			return true;
+		}
+
+		public override bool BecomeFirstResponder ()
+		{
+			isFirstResponder = true;
+			return true;
+		}
+
+		public override bool ResignFirstResponder ()
+		{
+			isFirstResponder = false;
+			return base.ResignFirstResponder ();
 		}
 
 		public override CGRect Frame {
