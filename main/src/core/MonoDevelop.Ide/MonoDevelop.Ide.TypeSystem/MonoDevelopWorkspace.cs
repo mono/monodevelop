@@ -487,7 +487,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		ProjectData RemoveProjectData (ProjectId id)
 		{
 			lock (projectDataMap) {
-				projectDataMap.TryRemove (id, out ProjectData result);
+				if (projectDataMap.TryRemove (id, out ProjectData result))
+					result.Disconnect ();
 				return result;
 			}
 		}
@@ -501,7 +502,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		class ProjectData : IDisposable
+		class ProjectData
 		{
 			readonly WeakReference<MonoDevelopWorkspace> workspaceRef;
 			readonly ProjectId projectId;
@@ -526,7 +527,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
-			void OnMetadataReferenceUpdated (object sender, EventArgs args)
+			void OnMetadataReferenceUpdated (object sender, MetadataReferenceUpdatedEventArgs args)
 			{
 				var reference = (MonoDevelopMetadataReference)sender;
 				// If we didn't contain the reference, bail
@@ -537,11 +538,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!RemoveMetadataReference_NoLock (reference, workspace))
 						return;
 
-					workspace.OnMetadataReferenceRemoved (projectId, reference.CurrentSnapshot);
+					workspace.OnMetadataReferenceRemoved (projectId, args.OldSnapshot);
 
 					reference.UpdateSnapshot ();
 					AddMetadataReference_NoLock (reference, workspace);
-					workspace.OnMetadataReferenceAdded (projectId, reference.CurrentSnapshot);
+					workspace.OnMetadataReferenceAdded (projectId, args.NewSnapshot.Value);
 				}
 			}
 
@@ -550,14 +551,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
 				metadataReferences.Add (metadataReference);
-				metadataReference.UpdatedOnDisk += OnMetadataReferenceUpdated;
+				metadataReference.SnapshotUpdated += OnMetadataReferenceUpdated;
 			}
 
 			internal bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
-				metadataReference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
+				metadataReference.SnapshotUpdated -= OnMetadataReferenceUpdated;
 				return metadataReferences.Remove (metadataReference);
 			}
 
@@ -606,14 +607,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				documentIdMap.Remove (name);
 			}
 
-			public void Dispose ()
+			public void Disconnect ()
 			{
 				if (!workspaceRef.TryGetTarget (out var workspace))
 					return;
 
 				lock (workspace.updatingProjectDataLock) {
 					foreach (var reference in metadataReferences)
-						reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
+						reference.SnapshotUpdated -= OnMetadataReferenceUpdated;
 				}
 			}
 		}
@@ -671,32 +672,31 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			lock (updatingProjectDataLock) {
 				//when reloading e.g. after a save, preserve document IDs
-				using (var oldProjectData = RemoveProjectData (projectId)) {
-					var projectData = CreateProjectData (projectId, references);
+				var oldProjectData = RemoveProjectData (projectId);
+				var projectData = CreateProjectData (projectId, references);
 
-					var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
-					if (documents == null)
-						return null;
+				var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
+				if (documents == null)
+					return null;
 
-					// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
-					var info = ProjectInfo.Create (
-						projectId,
-						VersionStamp.Create (),
-						p.Name,
-						fileName.FileNameWithoutExtension,
-						LanguageNames.CSharp,
-						p.FileName,
-						fileName,
-						cp != null ? cp.CreateCompilationOptions () : null,
-						cp != null ? cp.CreateParseOptions (config) : null,
-						documents.Item1,
-						projectReferences,
-						references.Select (x => x.CurrentSnapshot),
-						additionalDocuments: documents.Item2
-					);
-					projectData.Info = info;
-					return info;
-				}
+				// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
+				var info = ProjectInfo.Create (
+					projectId,
+					VersionStamp.Create (),
+					p.Name,
+					fileName.FileNameWithoutExtension,
+					LanguageNames.CSharp,
+					p.FileName,
+					fileName,
+					cp != null ? cp.CreateCompilationOptions () : null,
+					cp != null ? cp.CreateParseOptions (config) : null,
+					documents.Item1,
+					projectReferences,
+					references.Select (x => x.CurrentSnapshot),
+					additionalDocuments: documents.Item2
+				);
+				projectData.Info = info;
+				return info;
 			}
 		}
 

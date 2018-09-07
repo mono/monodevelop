@@ -31,10 +31,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				Assert.AreSame (item, item2, "Item that is in cache should be returned");
 
 				// Create one with custom properties
-				var item3 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
+				var item3 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new[] { "a" }));
 				Assert.IsNotNull (item3);
 
-				var item4 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
+				var item4 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new[] { "a" }));
 				Assert.AreSame (item3, item4, "Item that is in cache should be returned");
 
 				// Clear the cache, new items should be returned from now on.
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				Assert.AreNotSame (item, item5, "Cache was cleared, so new item should be returned");
 
-				var item6 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
+				var item6 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new[] { "a" }));
 				Assert.AreNotSame (item3, item6, "Cache was cleared, so new item should be returned");
 
 				cache.ClearCache ();
@@ -78,13 +78,22 @@ namespace MonoDevelop.Ide.TypeSystem
 					var newAsm = typeof (MonoDevelopMetadataReference).Assembly.Location;
 					File.Copy (newAsm, tempPath, true);
 
-					Assert.AreEqual (true, await taskForNewAsm);
+					var argsForNewAsm = await taskForNewAsm;
+
+					Assert.AreSame (item.CurrentSnapshot, argsForNewAsm.OldSnapshot);
+
+					Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
+					// item.CurrentSnapshot is now updated
 					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 
 					var taskForOldAsm = WaitForSnapshotChange (item);
 					File.Copy (newAsm, tempPath, true);
 
-					Assert.AreEqual (true, await taskForOldAsm);
+					var argsForOldAsm = await taskForOldAsm;
+
+					Assert.AreSame (item.CurrentSnapshot, argsForOldAsm.OldSnapshot);
+
+					Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
 					// Even though the old assembly was put back, it has a new id this time.
 					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 				}
@@ -111,15 +120,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		Task<bool> WaitForSnapshotChange (MonoDevelopMetadataReference item)
+		Task<MetadataReferenceUpdatedEventArgs> WaitForSnapshotChange (MonoDevelopMetadataReference item)
 		{
-			var tcs = new TaskCompletionSource<bool> ();
+			var tcs = new TaskCompletionSource<MetadataReferenceUpdatedEventArgs> ();
 			var cts = new CancellationTokenSource ();
-			cts.Token.Register (() => tcs.TrySetResult (false));
-			item.UpdatedOnDisk += (sender, args) => {
+			cts.Token.Register (() => tcs.TrySetResult (null));
+			item.SnapshotUpdated += (sender, args) => {
 				// This routes through file service
-				item.UpdateSnapshot ();
-				tcs.TrySetResult (true);
+				tcs.TrySetResult (args);
 			};
 
 			// 1 minute should be enough.
