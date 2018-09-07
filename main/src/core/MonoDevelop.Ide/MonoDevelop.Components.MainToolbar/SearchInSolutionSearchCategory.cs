@@ -86,6 +86,8 @@ namespace MonoDevelop.Components.MainToolbar
 				this.pattern = pattern;
 			}
 
+			public override string AccessibilityMessage => GettextCatalog.GetString ("Search for {0} in solution", pattern.Pattern);
+
 			public override void Activate ()
 			{
 				var options = new FilterOptions ();

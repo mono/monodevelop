@@ -61,6 +61,8 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 
+			public override string AccessibilityMessage => GettextCatalog.GetString ("Search for {0} in packages", pattern.Pattern);
+
 			public SearchPackageSearchResult (SearchPopupSearchPattern pattern) : base ("", "", 0)
 			{
 				this.pattern = pattern;
