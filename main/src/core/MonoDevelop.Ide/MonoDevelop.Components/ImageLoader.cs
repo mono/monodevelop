@@ -67,20 +67,21 @@ namespace MonoDevelop.Components
 			var client = HttpClientProvider.CreateHttpClient (url);
 			if (finfo.Exists)
 				client.DefaultRequestHeaders.IfModifiedSince = finfo.LastWriteTime;
-			client.GetAsync (url).ContinueWith (async t => {
+			client.GetAsync (url, HttpCompletionOption.ResponseHeadersRead).ContinueWith (async t => {
 				try {
-					// If the errorcode is NotModified the file we cached on disk is still the latest one.
-					if (t.Result.StatusCode == HttpStatusCode.NotModified) {
-						Cleanup ();
-						return;
-					}
-					//if 404, there is no gravatar for the user
-					if (t.Result.StatusCode == HttpStatusCode.NotFound) {
-						image = null;
-						Cleanup ();
-						return;
-					}
 					using (var response = t.Result) {
+						// If the errorcode is NotModified the file we cached on disk is still the latest one.
+						if (t.Result.StatusCode == HttpStatusCode.NotModified) {
+							Cleanup ();
+							return;
+						}
+						//if 404, there is no gravatar for the user
+						if (t.Result.StatusCode == HttpStatusCode.NotFound) {
+							image = null;
+							Cleanup ();
+							return;
+						}
+
 						finfo.Directory.Create ();
 
 						// Copy out the new file and reload it
