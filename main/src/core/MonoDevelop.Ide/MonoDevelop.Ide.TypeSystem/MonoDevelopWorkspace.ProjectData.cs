@@ -29,6 +29,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -64,8 +65,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (workspace.updatingProjectDataLock) {
 					if (!RemoveMetadataReference_NoLock (reference, workspace))
 						return;
+					if (!workspace.CurrentSolution.ContainsProject (projectId))
+						return;
 					workspace.OnMetadataReferenceRemoved (projectId, reference.CurrentSnapshot);
-
 					reference.UpdateSnapshot ();
 					AddMetadataReference_NoLock (reference, workspace);
 					workspace.OnMetadataReferenceAdded (projectId, reference.CurrentSnapshot);
