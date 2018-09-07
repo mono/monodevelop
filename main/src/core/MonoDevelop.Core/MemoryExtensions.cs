@@ -1,5 +1,5 @@
 //
-// MonoDevelopWorkspaceProjectDataTests.cs
+// MemoryExtensions.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,25 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using NUnit.Framework;
-
-namespace MonoDevelop.Ide.TypeSystem
+namespace System
 {
-	[TestFixture]
-	public class MonoDevelopWorkspaceProjectDataTests : IdeTestBase
+	static class MemoryExtensions
 	{
-		[Test]
-		public void TestEmptyMetadataCreation ()
+		public static int IndexOf (this ReadOnlySpan<char> span, char value, int startIndex)
 		{
-			var pid = ProjectId.CreateNewId ();
+			var indexInSlice = span.Slice(startIndex).IndexOf(value);
+			return indexInSlice == -1 ? -1 : startIndex + indexInSlice;
+		}
 
-			using (var workspace = new MonoDevelopWorkspace (null)) {
-				var data = new MonoDevelopWorkspace.ProjectData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, workspace);
-				data.Disconnect ();
-				// Do nothing, we just want to see it construct and dispose properly.
-			}
+		public static int IndexOfAny (this ReadOnlySpan<char> span, Span<char> values, int startIndex)
+		{
+			var indexInSlice = span.Slice (startIndex).IndexOfAny (values);
+			return indexInSlice == -1 ? -1 : startIndex + indexInSlice;
+		}
+
+		/// <summary>
+		/// Optimized overload of ToString() with takes the original value to not allocate in that case.
+		/// In case two different strings with the same length are passed, the method will not work as you think.
+		/// </summary>
+		/// <returns>The originalValue if the lengths are the same. Otherwise a new string is allocated from span</returns>
+		/// <param name="span">The span string.</param>
+		/// <param name="originalValue">The original string the span is created from.</param>
+		public static string ToStringWithOriginal (this ReadOnlySpan<char> span, string originalValue)
+		{
+			return span.Length == originalValue.Length ? originalValue : span.ToString ();
 		}
 	}
 }

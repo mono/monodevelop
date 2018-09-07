@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
+"POT-Creation-Date: 2018-09-06 14:03:38+0300\n"
 "PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
 "Last-Translator: Bálint Kriván <balint@krivan.info>\n"
 "Language-Team: \n"
@@ -640,7 +640,7 @@ msgstr ""
 msgid ".NET Portable:"
 msgstr ".NET program"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:306
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:301
 #, fuzzy
 msgid ".NET Resource Files"
 msgstr "Forrásfájlok"
@@ -724,16 +724,16 @@ msgstr ""
 msgid "3D based graphical application"
 msgstr "Háromdimenziós grafikus alkalmazás"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
 msgid "3rd copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
 #, fuzzy
 msgid "4th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
 #, fuzzy
 msgid "5th copy"
 msgstr "Nem"
@@ -742,22 +742,22 @@ msgstr "Nem"
 msgid "64-bit"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
 #, fuzzy
 msgid "6th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
 #, fuzzy
 msgid "7th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2371
 #, fuzzy
 msgid "8th copy"
 msgstr "Nem"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2372
 #, fuzzy
 msgid "9th copy"
 msgstr "Nem"
@@ -874,7 +874,7 @@ msgstr ""
 "<b>ChangeLogok használatának kikapcsolása</b>\n"
 "Nem lesznek ChangeLog bejegyzések generálva ehhez a projekthez."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:432
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:384
 #, fuzzy
 msgid "<b>Error</b>: {0}"
 msgstr "<b>Parser hiba</b>: {0}"
@@ -1120,7 +1120,7 @@ msgid ""
 "<b>User credentials are required to access the Subversion repository.</b>"
 msgstr "<b>Hitelesítés szükséges a Subversion tároló eléréséhez.</b>"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:429
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:381
 #, fuzzy
 msgid "<b>Warning</b>: {0}"
 msgstr "<b>Parser figyelmeztetés</b>: {0}"
@@ -2568,7 +2568,7 @@ msgstr ""
 msgid "Adding failed"
 msgstr "Fájlok hozzáadása..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1920
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1923
 msgid "Adding files..."
 msgstr "Fájlok hozzáadása..."
 
@@ -2915,7 +2915,7 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2058
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -2999,7 +2999,7 @@ msgstr "Megáll, ha a kifejezés változik"
 msgid "Android"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
 msgid "Animates the text editor caret to help find it"
 msgstr ""
 
@@ -3437,7 +3437,7 @@ msgstr "Argumentumok:"
 msgid "Argument is not used in format string"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:359
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:354
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:100
 #, fuzzy
 msgid "Arguments"
@@ -3462,7 +3462,7 @@ msgstr "Mesterséges intelligenciát megvalósító szoftver"
 msgid "Ask"
 msgstr "Kérdezzen rá"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:300
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:295
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:154
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/AssemblyDependenciesNode.cs:53
 msgid "Assemblies"
@@ -4037,7 +4037,7 @@ msgstr "For_dítás"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1501
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -4089,7 +4089,7 @@ msgstr "Megoldáshoz tartozó projektek fordítása"
 msgid "Build and run the current solution"
 msgstr "Jelenlegi projekt fordítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1767
 #, fuzzy
 msgid "Build canceled."
 msgstr "A fordítás le lett állítva"
@@ -4108,8 +4108,8 @@ msgstr "Jelenlegi projekt fordítása"
 msgid "Build failed"
 msgstr "Nem sikerült a programot lefordítani."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1638
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1641
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1775
 msgid "Build failed."
 msgstr "Nem sikerült a programot lefordítani."
 
@@ -4147,7 +4147,7 @@ msgstr "Megoldás fordítása: {0}"
 msgid "Build succeeded"
 msgstr "A fordítás le lett állítva"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1766
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1769
 msgid "Build successful."
 msgstr "A fordítás sikeresen lezajlott."
 
@@ -4168,12 +4168,12 @@ msgstr "Jelenlegi projekt fordítása"
 msgid "Build {0}"
 msgstr "{0} fordítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1768
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1770
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1771
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1773
 msgid "Build: "
 msgstr "Fordítás: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1748
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
 msgid "Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
 msgstr ""
 
@@ -5427,7 +5427,7 @@ msgstr "Megnyitott _fájlok listájának törlése"
 msgid "Clear Recent Solutions"
 msgstr "Legutóbb megnyitott megoldások listájának törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1002
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
 msgid "Clear bookmarks"
 msgstr "Könyvjelzők törlése"
 
@@ -5538,10 +5538,6 @@ msgstr "A jelenleg kiválasztott projekt összes tesztjének lefuttatása."
 msgid "Click to remove this custom command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:95
-msgid "Click to send feedback to the development team"
-msgstr ""
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:111
 msgid "Click to set the currently selected runtime as default"
 msgstr ""
@@ -5572,7 +5568,7 @@ msgstr "Összes fájl bezárása"
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2452
 #, fuzzy
 msgid "Close Project"
 msgstr "Konzolos projekt"
@@ -5729,7 +5725,7 @@ msgstr "Szöveg stílus"
 msgid "Code block preferences:"
 msgstr "Kiválasztott referenciák:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2510
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2513
 msgid "Code completion database generation"
 msgstr ""
 
@@ -5862,7 +5858,7 @@ msgstr "Kijelölt sorokat megjegyzésbe teszi, vagy onnan kiveszi"
 msgid "Comment:"
 msgstr "Megjegyzés:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:290
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:285
 msgid "Comments"
 msgstr "Megjegyzések"
 
@@ -5956,12 +5952,12 @@ msgstr "Fordítói beállítások"
 msgid "Compiling resource {0} with {1}"
 msgstr "Az erőforrás ({0}) fordítása a következővel: {1}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 #, fuzzy
 msgid "Complete Word"
 msgstr "Beágyazott névterek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 #, fuzzy
 msgid "Complete current statement"
 msgstr "A_rgumentumok bekérése"
@@ -5975,7 +5971,7 @@ msgstr "Beágyazott névterek"
 msgid "Complete with Space or Punctuation"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
 msgid "Completes the current statement"
 msgstr ""
 
@@ -6438,7 +6434,7 @@ msgstr "Másolás a kimeneti könyvtárba"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2231
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2234
 msgid "Copying files..."
 msgstr "Fájlok másolása..."
 
@@ -6482,7 +6478,7 @@ msgid ""
 "Could not create credential response object because the response was invalid."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2212
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2215
 msgid "Could not create directory '{0}'."
 msgstr "Nem sikerült a könyvtárat létrehozni ({0})."
 
@@ -6514,7 +6510,7 @@ msgid ""
 "project configurations."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2185
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2188
 msgid "Could not get any file from '{0}'."
 msgstr "Nincs egyetlen fájl sem a könyvtárban ({0})."
 
@@ -7501,7 +7497,7 @@ msgstr "_Kivágás"
 msgid "Cut the selection"
 msgstr "A kijelölés kivágása a vágólapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
@@ -7856,7 +7852,7 @@ msgstr "A megoldás elemeihez tartozó konfigurációk is törlődjenek"
 msgid "Delete current layout"
 msgstr "Aktív nézet törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
 msgid "Delete entire line"
 msgstr "Egész sor törlése"
 
@@ -7865,30 +7861,30 @@ msgstr "Egész sor törlése"
 msgid "Delete from Disk"
 msgstr "Fájlok törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1045
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1040
 msgid "Delete left character"
 msgstr "Bal oldali karakter törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 #, fuzzy
 msgid "Delete next subword"
 msgstr "Kijelölés törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1166
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 #, fuzzy
 msgid "Delete next word"
 msgstr "Kijelölés törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
 #, fuzzy
 msgid "Delete previous subword"
 msgstr "Előző szó kijelölése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Delete previous word"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1042
 msgid "Delete right character"
 msgstr "Jobb oldali karakter törlése"
 
@@ -7906,11 +7902,11 @@ msgstr "A fájl relatív elérési útvonala a telepítési könyvtárban."
 msgid "Delete the selection"
 msgstr "Kijelölés törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
 msgid "Delete to end of line"
 msgstr "Törlés a sor végéig"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
 #, fuzzy
 msgid "Delete to start of line"
 msgstr "Törlés a sor végéig"
@@ -7938,7 +7934,7 @@ msgid ""
 "defined name2 group and the current group."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
 
@@ -8165,7 +8161,7 @@ msgstr "Könyvtárak"
 msgid "Directory"
 msgstr "Könyvtár"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2223
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2226
 msgid "Directory '{0}' could not be moved."
 msgstr "A(z) „{0}” könyvtárat nem sikerült törölni."
 
@@ -8576,17 +8572,17 @@ msgstr ""
 msgid "Downloads"
 msgstr "<b>Betűtípus</b>"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:879
 #, fuzzy
 msgid "Dump Accessibility Tree"
 msgstr "Hozzáférhetőségi segédprogram"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
 #, fuzzy
 msgid "Dump Accessibility Tree (10s)"
 msgstr "Hozzáférhetőségi segédprogram"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "Dump UI Tree"
 msgstr ""
 
@@ -8606,7 +8602,7 @@ msgstr "Többsoros"
 msgid "Duplicate Configuration"
 msgstr "Konfiguráció törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 #, fuzzy
 msgid "Duplicate line"
 msgstr "Többsoros"
@@ -8620,7 +8616,7 @@ msgstr "Többsoros"
 msgid "Dutch"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
 msgid "Dynamic abbrev"
 msgstr ""
 
@@ -9979,74 +9975,74 @@ msgstr "Összes elem kibontása"
 msgid "Expand matches"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
 msgid "Expand selection to document end"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
 msgid "Expand selection to document start"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
 #, fuzzy
 msgid "Expand selection to line"
 msgstr "Kijelölés átmásolása a vágólapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
 #, fuzzy
 msgid "Expand selection to line end"
 msgstr "Kijelölés átmásolása a vágólapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
 #, fuzzy
 msgid "Expand selection to line start"
 msgstr "Kijelölés átmásolása a vágólapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1124
 #, fuzzy
 msgid "Expand selection to next line"
 msgstr "Ugrás a következő sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
 #, fuzzy
 msgid "Expand selection to next subword"
 msgstr "Ugrás a következő sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1117
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1112
 #, fuzzy
 msgid "Expand selection to next word"
 msgstr "Ugrás a következő sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 #, fuzzy
 msgid "Expand selection to page down"
 msgstr "Kijelölés átmásolása a vágólapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
 #, fuzzy
 msgid "Expand selection to page up"
 msgstr "Kijelölés átmásolása a vágólapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1127
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 #, fuzzy
 msgid "Expand selection to previous line"
 msgstr "Ugrás az előző sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 #, fuzzy
 msgid "Expand selection to previous subword"
 msgstr "Ugrás az előző sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 #, fuzzy
 msgid "Expand selection to previous word"
 msgstr "Ugrás az előző sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
 msgid "Expand selection to the left"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1109
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1104
 msgid "Expand selection to the right"
 msgstr ""
 
@@ -10312,7 +10308,7 @@ msgstr "Projekt _fájl"
 msgid "F# script files"
 msgstr "Fájl kijelölése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 msgid "F_ind in Files..."
 msgstr "_Keresés fájlokban..."
 
@@ -10400,13 +10396,7 @@ msgid "Falling blocks game"
 msgstr "'Hulló téglák' játék"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:46
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:85
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:94
 msgid "Feedback"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:186
-msgid "Feedbacks sent: {0}"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:307
@@ -10467,12 +10457,12 @@ msgstr "Mezők"
 msgid "File"
 msgstr "Fájl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2272
 #, fuzzy
 msgid "File '{0}' could not be copied."
 msgstr "A(z) „{0}” fájl nem nyitható meg."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2267
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2270
 #, fuzzy
 msgid "File '{0}' could not be moved."
 msgstr "A(z) „{0}” fájl nem nyitható meg."
@@ -10779,7 +10769,7 @@ msgstr "_Implementor osztályok megkeresése"
 msgid "Find Indexer Overloads"
 msgstr "_Referenciák keresése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 #, fuzzy
 msgid "Find Like Selection"
 msgstr "Kijelölés következő találata"
@@ -10795,12 +10785,12 @@ msgstr "_Referenciák keresése"
 msgid "Find Method Overloads"
 msgstr "_Referenciák keresése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:932
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
 #, fuzzy
 msgid "Find Next Like Selection"
 msgstr "Kijelölés következő találata"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:932
 #, fuzzy
 msgid "Find Previous Like Selection"
 msgstr "Előző ki_jelölés keresése"
@@ -10815,28 +10805,28 @@ msgstr "Kiterjesztés"
 msgid "Find _Derived Symbols"
 msgstr "Szimbólumok definiálása:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:910
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 msgid "Find _Next"
 msgstr "Kö_vetkező találat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "Find _Next (Emacs behavior)"
 msgstr "Kö_vetkező találat (Emacs szerinti)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:916
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 msgid "Find _Previous"
 msgstr "Elő_ző találat"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:922
 msgid "Find _Previous (Emacs behavior)"
 msgstr "Elő_ző találat (Emacs szerinti)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:960
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
 #, fuzzy
 msgid "Find and run a specific command."
 msgstr "A_rgumentumok bekérése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 #, fuzzy
 msgid "Find caret"
 msgstr "Következő találat"
@@ -11173,11 +11163,6 @@ msgstr "A kijelölt projekt vagy megoldás újratöltése"
 msgid "From type:\t{0}"
 msgstr "Alak: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:137
-#, fuzzy
-msgid "From: {0}"
-msgstr "Alak: {0}"
-
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:171
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:185
 #, fuzzy
@@ -11224,7 +11209,7 @@ msgstr "Szimbólumok definiálása:"
 msgid "GNOME Desktop"
 msgstr "GNOME Munkaasztal"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:278
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:273
 msgid "GNU/Emacs"
 msgstr "GNU/Emacs"
 
@@ -11333,7 +11318,7 @@ msgstr "Általános"
 msgid "General Options"
 msgstr "Általános beállítások"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:363
 #, fuzzy
 msgid "General Pad Text"
 msgstr "Általános"
@@ -11683,7 +11668,7 @@ msgstr "Előző oldal"
 msgid "Go back to the home page"
 msgstr "Vissza a kezdőlapra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
 msgid "Go down one page"
 msgstr "Lapozás egy oldallal lejjebb"
 
@@ -11691,11 +11676,11 @@ msgstr "Lapozás egy oldallal lejjebb"
 msgid "Go forward one page"
 msgstr "Következő oldal"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 msgid "Go left one character"
 msgstr "Ugrás balra egy karakterrel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1051
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1046
 msgid "Go right one character"
 msgstr "Ugrás jobbra egy karakterrel"
 
@@ -11713,32 +11698,32 @@ msgstr "Ugrás fájlhoz..."
 msgid "Go to Download Page"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:972
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:967
 msgid "Go to File..."
 msgstr "Ugrás fájlhoz..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1006
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1001
 #, fuzzy
 msgid "Go to Line..."
 msgstr "Sor me_gkeresése..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
 #, fuzzy
 msgid "Go to Matching Brace"
 msgstr "Ugrás az egyezést mutató zárójelre"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:994
 #, fuzzy
 msgid "Go to Next Bookmark"
 msgstr "Ugrás a következő könyvjelzőhöz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:988
 #, fuzzy
 msgid "Go to Previous Bookmark"
 msgstr "Ugrás az előző könyvjelzőhöz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:960
 msgid "Go to Type..."
 msgstr "Ugrás egy típusra..."
 
@@ -11806,23 +11791,23 @@ msgstr "Sor me_gkeresése"
 msgid "Go to _Reference"
 msgstr "Hibareferenciák megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1003
 msgid "Go to a specific line"
 msgstr "Ugrás egy adott sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
 msgid "Go to beginning of document"
 msgstr "Ugrás a dokumentum elejére"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1043
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Go to beginning of line"
 msgstr "Ugrás a sor elejére"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
 msgid "Go to end of document"
 msgstr "Ugrás a dokumentum végére"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1036
 msgid "Go to end of line"
 msgstr "Ugrás a sor végére"
 
@@ -11831,41 +11816,41 @@ msgstr "Ugrás a sor végére"
 msgid "Go to failure"
 msgstr "Ugrás egy adott fájlhoz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 msgid "Go to next bookmark"
 msgstr "Ugrás a következő könyvjelzőhöz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
 msgid "Go to next line"
 msgstr "Ugrás a következő sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1121
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1116
 #, fuzzy
 msgid "Go to next subword"
 msgstr "Ugrás a következő szóra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1113
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1108
 msgid "Go to next word"
 msgstr "Ugrás a következő szóra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:991
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 msgid "Go to previous bookmark"
 msgstr "Ugrás az előző könyvjelzőhöz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1048
 msgid "Go to previous line"
 msgstr "Ugrás az előző sorra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 #, fuzzy
 msgid "Go to previous subword"
 msgstr "Ugrás az előző szóra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 msgid "Go to previous word"
 msgstr "Ugrás az előző szóra"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 msgid "Go up one page"
 msgstr "Ugrás egy oldallal feljebb"
 
@@ -12067,7 +12052,7 @@ msgstr "Webes alkalmazás"
 msgid "Hide Categories"
 msgstr "NUnit kategóriák"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1202
 #, fuzzy
 msgid "Hide Current Message"
 msgstr "Oldal frissítése"
@@ -12552,7 +12537,7 @@ msgid ""
 "browser"
 msgstr "Fontos alkalmazás, például fájlkezelő vagy súgóböngésző"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1080
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1088
 msgid ""
 "Importing the file \"{0}\" into the file \"{1}\" results in a circular "
 "dependency."
@@ -12890,7 +12875,7 @@ msgstr "Elválasztó a kijelölés alatt"
 msgid "Insert Separator Before"
 msgstr "Elválasztó a kijelölés felett"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
 #, fuzzy
 msgid "Insert Snippet..."
 msgstr "_Sablon"
@@ -12918,11 +12903,11 @@ msgstr ""
 msgid "Insert format argument"
 msgstr "A_rgumentumok bekérése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 msgid "Insert line break after the caret"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 msgid "Insert new line"
 msgstr "Új sor beszúrása"
 
@@ -13018,7 +13003,7 @@ msgstr ""
 msgid "Insert space within square brackets"
 msgstr "Összetartozó zárójel beszúrása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 msgid "Insert tab"
 msgstr "Tabulátor beszúrása"
 
@@ -13027,7 +13012,7 @@ msgstr "Tabulátor beszúrása"
 msgid "Inserts a Guid at caret position"
 msgstr "Érvényes fordítások megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1028
 #, fuzzy
 msgid "Inserts a snippet"
 msgstr "_Sablon"
@@ -13392,11 +13377,11 @@ msgstr "_Sorok egybefűzése"
 msgid "Join the current line with the next line"
 msgstr "A jelenlegi sort egybefűzi az azt követővel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:970
 msgid "Jump to a file in the current workspace"
 msgstr "Ugrás egy fájlhoz a jelenlegi munkaterületen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:979
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 #, fuzzy
 msgid "Jump to a item in the current workspace"
 msgstr "Ugrás egy fájlhoz a jelenlegi munkaterületen"
@@ -13416,7 +13401,7 @@ msgstr ""
 msgid "Jump to line {0}"
 msgstr "A(z) „{0}” megoldás megnyitása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:966
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:961
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "Ugrás a típus deklarációjához a jelenlegi munkaterületen"
 
@@ -13442,7 +13427,7 @@ msgstr "ASP.NET fájlok"
 msgid "Keep Current Identifiers"
 msgstr "Aktuális fájl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1829
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1832
 #, fuzzy
 msgid "Keep file path"
 msgstr "Makefile útvonala:"
@@ -14032,7 +14017,7 @@ msgstr ""
 msgid "Lowercase Selection"
 msgstr "Kijelölt szöveg _kisbetűssé tétele"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:318
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:313
 #, fuzzy
 msgid "MD Workbench"
 msgstr "Munkakörnyezet betöltése"
@@ -14221,7 +14206,7 @@ msgstr ""
 msgid "Manifest File"
 msgstr "Célnév"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 #, fuzzy
 msgid "Mark Log"
 msgstr "Üzenetek naplója"
@@ -14375,7 +14360,7 @@ msgid ""
 "is interpreted as an expression test."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 #, fuzzy
 msgid "Matching _Brace"
 msgstr "Ugrás az egyezést mutató zárójelre"
@@ -14664,7 +14649,7 @@ msgstr "Mono dokumentáció"
 msgid "Mono Path"
 msgstr "Mono Projekt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:288
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
 msgid "Mono Project"
 msgstr "Mono Projekt"
 
@@ -14684,12 +14669,12 @@ msgid "Mono runtime settings:"
 msgstr "A fájl nem található"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:229
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:286
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:282
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:277
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop 1.0"
 
@@ -14697,7 +14682,7 @@ msgstr "MonoDevelop 1.0"
 msgid "MonoDevelop 1.0 Solution"
 msgstr "MonoDevelop 1.0 Megoldás"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:283
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:278
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
@@ -14782,7 +14767,7 @@ msgstr ""
 msgid "More..."
 msgstr "Összes ikon megjelenítése..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
 msgid "Move caret to EOL and insert new line"
 msgstr ""
 
@@ -14794,11 +14779,11 @@ msgstr ""
 msgid "Move cursor to previous error or search match"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Move the line or highlighted selection down"
 msgstr "A sor vagy a kijelölése mozgatása lefelé"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1088
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Move the line or highlighted selection up"
 msgstr "A sor vagy a kijelölése mozgatása felfelé"
 
@@ -14842,7 +14827,7 @@ msgid "Moving files"
 msgstr "Fájlok másolása..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2232
 #, fuzzy
 msgid "Moving files..."
 msgstr "Fájlok másolása..."
@@ -15101,7 +15086,7 @@ msgstr "Natív"
 msgid "Navigate"
 msgstr "Navigációs előzmények"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:973
 #, fuzzy
 msgid "Navigate To..."
 msgstr "Navigáció"
@@ -15122,7 +15107,7 @@ msgstr "Navigációs előzmények"
 msgid "Navigation _History"
 msgstr "Navigációs előzmények"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 msgid "Ne_xt"
 msgstr ""
 
@@ -16140,7 +16125,7 @@ msgstr "Többi ablak"
 msgid "Other entries"
 msgstr "Egyéb bejegyzések"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1507
 #, fuzzy
 msgid "Outdated Build"
 msgstr "A fordítás után"
@@ -16152,7 +16137,7 @@ msgstr "A fordítás után"
 msgid "Output"
 msgstr "Kimenet"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:369
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:364
 #, fuzzy
 msgid "Output Pad Contents"
 msgstr "Kimenet útvonala:"
@@ -16793,18 +16778,9 @@ msgstr "Platform:"
 msgid "Please enter a valid configuration name."
 msgstr "Adjon meg egy érvényes nevet a konfigurációs fájlnak."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:83
-#, fuzzy
-msgid "Please enter a valid e-mail address"
-msgstr "Kérem, adjon meg egy érvényes projektnevet."
-
 #: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:63
 msgid "Please enter a valid project name"
 msgstr "Kérem, adjon meg egy érvényes projektnevet."
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:103
-msgid "Please enter some feedback"
-msgstr ""
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:187
 msgid "Please enter the password for your private key for the XSP Web Server"
@@ -16990,7 +16966,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "Tulajdonságok"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 #, fuzzy
 msgid "Pre_vious"
 msgstr "Előző mutatása ({0})"
@@ -17395,7 +17371,7 @@ msgstr "_Projekt könyvtár"
 msgid "Project File"
 msgstr "Projekt _fájl"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:315
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:310
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:823
 #, fuzzy
 msgid "Project Files"
@@ -17800,7 +17776,7 @@ msgstr "Menté_s és kilépés"
 msgid "R_eplace"
 msgstr "Csere"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
 msgid "R_eplace in Files..."
 msgstr "Cs_ere a fájlokban..."
 
@@ -17881,7 +17857,7 @@ msgstr "Tabulátor eltávolítása"
 msgid "Razor templates are only supported in C# projects"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:286
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:281
 msgid "ReSharper / Rider"
 msgstr ""
 
@@ -18487,7 +18463,7 @@ msgstr "ASP.NET beállítások"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr "Almenü törlése (Ctrl+Balra mutató nyíl)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 msgid "Remove tab"
 msgstr "Tabulátor eltávolítása"
 
@@ -18722,7 +18698,7 @@ msgstr "'{0}' cserélése a következőben: {1}"
 msgid "Replace '{0}--' with '{0} -= 1'"
 msgstr "'{0}' cserélése a következőben: {1}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
 #, fuzzy
 msgid "Replace Like Selection"
 msgstr "Átnevezés"
@@ -19005,7 +18981,7 @@ msgstr "{0} cseréje: a létrező fájl régebbi."
 msgid "Replay Session..."
 msgstr "Cse_re..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:292
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:291
 #, fuzzy
 msgid "Report Problem..."
 msgstr "Exportálás..."
@@ -19892,7 +19868,7 @@ msgstr "Mentés másként..."
 msgid "Save build output"
 msgstr "Kimenet mutatása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1679
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1682
 msgid "Save changed documents before building?"
 msgstr "Menti a változtatott dokumentumokat mielőtt fordít?"
 
@@ -20035,34 +20011,34 @@ msgstr "Nem adta meg a szkript nevét."
 msgid "Script name:"
 msgstr "Szkript neve:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Scroll line down"
 msgstr "Görgetés lefelé"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "Scroll line up"
 msgstr "Görgetés felfelé"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
 #, fuzzy
 msgid "Scroll page down"
 msgstr "Görgetés lefelé"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
 #, fuzzy
 msgid "Scroll page up"
 msgstr "Görgetés felfelé"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
 msgid "Scroll to bottom"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Görgetés felfelé"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:889
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:239
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
@@ -20125,15 +20101,15 @@ msgstr "Keresés a következőben:"
 msgid "Search Types"
 msgstr "_Típusok keresése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:913
 msgid "Search backwards for the same text"
 msgstr "Ugrás az előző találathoz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:929
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "Visszafelé keresi emacs-szerűen ugyanazt a szöveget."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:938
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search backwards for the selected text"
 msgstr ""
 
@@ -20156,11 +20132,11 @@ msgstr "A keresés befejezve. "
 msgid "Search filter menu"
 msgstr "Tag keresése..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:900
 msgid "Search for and replace text"
 msgstr "Szöveg megkeresése és lecserélése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 msgid "Search for and replace text in all files of a directory"
 msgstr ""
 
@@ -20169,11 +20145,11 @@ msgstr ""
 msgid "Search for members"
 msgstr "Tag keresése..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 msgid "Search for text"
 msgstr "Szöveg keresése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:942
 #, fuzzy
 msgid "Search for text in all files of a directory"
 msgstr "Új _fájlok keresése"
@@ -20188,15 +20164,15 @@ msgstr "Szöveg keresése"
 msgid "Search for types and members"
 msgstr "Szöveg keresése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:907
 msgid "Search forwards for the same text"
 msgstr "Ugrás a következő találathoz"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:925
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "Tovább keresi emacs-szerűen ugyanazt a szöveget."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
 msgid "Search forwards for the selected text"
 msgstr "Ugrás a kijelölt szöveg következő találatához"
 
@@ -20977,17 +20953,8 @@ msgid ""
 "a 32-bit build)."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:114
-msgid "Send Feedback"
-msgstr ""
-
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:261
 msgid "Send current file to F# Interactive"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
-msgid "Send feedback to the MonoDevelop development team"
 msgstr ""
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:275
@@ -21305,7 +21272,7 @@ msgstr "Távoli állapot megjelenítése"
 msgid "Show Output"
 msgstr "Kimenet megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1091
 msgid "Show Parameter List"
 msgstr "Paraméterlista megjelenítése"
 
@@ -21342,7 +21309,7 @@ msgstr "Előző mutatása ({0})"
 msgid "Show Remote Status"
 msgstr "Távoli állapot megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 #, fuzzy
 msgid "Show Scopes"
 msgstr "Hibák megjelenítése"
@@ -21511,7 +21478,7 @@ msgstr "Csak a publikus tagok mutatása"
 msgid "Show public members only"
 msgstr "Csak a publikus tagok mutatása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1200
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
 msgid "Show quick info"
 msgstr ""
 
@@ -21587,12 +21554,12 @@ msgstr "Üdvözlőlap megjelenítése indításkor"
 msgid "Show {0}"
 msgstr "{0} megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1208
 #, fuzzy
 msgid "Show/Hide Inline Messages"
 msgstr "Üzenetek megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1208
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1203
 msgid "Show/Hide current Inline Message"
 msgstr ""
 
@@ -21628,7 +21595,7 @@ msgstr ""
 msgid "Shows the source control log for the current file"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1201
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Shows the tooltip at editor positon"
 msgstr ""
 
@@ -21681,7 +21648,7 @@ msgstr "Méret"
 msgid "Size:"
 msgstr "Méret"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1910
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1913
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr ""
@@ -21754,7 +21721,7 @@ msgstr "Művészettel foglalkozó alkalmazás"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:31
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:49
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:295
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:290
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SolutionPad.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.cs:54
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/ProjectSearchCategory.fs:182
@@ -21780,7 +21747,7 @@ msgstr "_Megoldás könyvtár"
 msgid "Solution File"
 msgstr "Megoldás fá_jl"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:312
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:307
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:749
 #, fuzzy
 msgid "Solution Files"
@@ -21895,7 +21862,7 @@ msgstr ""
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1680
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1683
 msgid "Some of the open documents have unsaved changes."
 msgstr "Néhány megnyitott dokumentum nem mentett változtatásokat tartalmaz."
 
@@ -22705,7 +22672,7 @@ msgstr "Összegzés"
 msgid "Support"
 msgstr "GTK# támogatás"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1039
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Surround Selection With..."
 msgstr ""
 
@@ -22713,7 +22680,7 @@ msgstr ""
 msgid "Surround With..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1032
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr ""
 
@@ -22722,7 +22689,7 @@ msgstr ""
 msgid "Swap parameter"
 msgstr "Paraméterlista megjelenítése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1177
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 msgid "Swaps the characters on either side of the caret"
 msgstr ""
 
@@ -22730,8 +22697,8 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 msgid "Switch Completion/Suggestion Mode"
 msgstr ""
 
@@ -22739,7 +22706,7 @@ msgstr ""
 msgid "Switch active layout"
 msgstr "Aktív nézet kiválasztása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 msgid "Switch between insert and overwrite caret modes"
 msgstr ""
 
@@ -22752,7 +22719,7 @@ msgstr "Váltás az _osztások között"
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
 msgid "Switch caret mode"
 msgstr ""
 
@@ -23005,10 +22972,6 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:59
 msgid "Telephony via PC"
 msgstr "Számítógépes telefonálás"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:90
-msgid "Tell us how we can make {0} better."
-msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:214
 #, fuzzy
@@ -23336,9 +23299,9 @@ msgstr "Teszt futtatása"
 msgid "Text"
 msgstr "Szöveg"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1022
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:362
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:392
 msgid "Text Editor"
 msgstr "Szövegszerkesztő"
@@ -23372,10 +23335,6 @@ msgstr "Sablon"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:216
 msgid "Thai"
 msgstr "Thai"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:181
-msgid "Thank you for your feedback!"
-msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:401
 msgid ""
@@ -23691,7 +23650,7 @@ msgstr "A fájl ({0}) nem törölhető"
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2103
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
 
@@ -23775,7 +23734,7 @@ msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
 msgid "The file {0} could not be deleted"
 msgstr "A fájl ({0}) nem törölhető"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1843
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1846
 #, fuzzy
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "A fájl ({0}) nincs a projekt könyvtárában. Mit kíván tenni?"
@@ -23938,7 +23897,7 @@ msgid ""
 "names include 'MyPackage' and 'MyPackage.Sample'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2086
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2089
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr ""
 
@@ -24140,7 +24099,7 @@ msgid ""
 "targetting ({2})"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2446
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
 #, fuzzy
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
@@ -24190,7 +24149,7 @@ msgstr ""
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1505
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1508
 #, fuzzy
 msgid ""
 "The project you are executing has changes done after the last time it was "
@@ -24870,7 +24829,7 @@ msgstr ""
 msgid "There is a warning for the print expression"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2076
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2079
 #, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
@@ -24893,7 +24852,7 @@ msgstr ""
 msgid "There is already a layout with that name"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1960
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1963
 #, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "A fájl ({0}) már létezik. Ki szeretné cserélni?"
@@ -25326,7 +25285,7 @@ msgstr ""
 msgid "Toggle Action"
 msgstr "Jelölőnégyzetes menüpont"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
 #, fuzzy
 msgid "Toggle Block Selection Mode"
 msgstr "Jelölőnégyzetes menüpont"
@@ -25335,7 +25294,7 @@ msgstr "Jelölőnégyzetes menüpont"
 msgid "Toggle Breakpoint"
 msgstr "Töréspont hozzáadása/törlése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 #, fuzzy
 msgid "Toggle Issues"
 msgstr "Blokk kinyitás/bezárása"
@@ -25353,7 +25312,7 @@ msgstr "Definíció"
 msgid "Toggle between search and replace mode"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 msgid "Toggle bookmark"
 msgstr "Könyvjelző be-, illetve kikapcsolása"
 
@@ -25403,12 +25362,12 @@ msgstr ""
 msgid "Toggles the folding at caret position."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 #, fuzzy
 msgid "Toggles the visibility of Inline Messages"
 msgstr "\"Sor\" oszlop láthatóságának állítása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
 #, fuzzy
 msgid "Toggles the visibility of the current Inline Message"
 msgstr "\"Útvonal\" oszlop láthatóságának állítása"
@@ -25569,7 +25528,7 @@ msgstr "Sztringfordító kimenete"
 msgid "Transmitting file data"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
 #, fuzzy
 msgid "Transpose characters"
 msgstr "Ugrás jobbra egy karakterrel"
@@ -26505,7 +26464,7 @@ msgstr "Felhasználói felület"
 msgid "User Task"
 msgstr "Felhasználói feladatok"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:291
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:286
 msgid "User Tasks"
 msgstr "Felhasználói feladatok"
 
@@ -26544,12 +26503,12 @@ msgstr "Felhasználónév:"
 msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 #, fuzzy
 msgid "Uses the current selection as find string"
 msgstr "Egyedi kapcsolódási karakterlánc használata"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
 msgid "Uses the current selection as replace string"
 msgstr ""
 
@@ -26856,21 +26815,21 @@ msgstr "Visual Basic forráskód"
 msgid "Visual Design"
 msgstr "Tervező tiltása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:279
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:274
 msgid "Visual Studio"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:280
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:275
 #, fuzzy
 msgid "Visual Studio (Mixed)"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:281
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:276
 #, fuzzy
 msgid "Visual Studio (Windows)"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:285
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:280
 #, fuzzy
 msgid "Visual Studio Code"
 msgstr "Visual Studio"
@@ -27420,7 +27379,7 @@ msgstr "XML"
 msgid "XML Filename"
 msgstr "XAML fájlok"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:303
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:298
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:232
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:254
 #, fuzzy
@@ -27479,7 +27438,7 @@ msgid ""
 "to use Visual Studio, or Xamarin Studio on Mac."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:284
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:279
 #, fuzzy
 msgid "Xcode"
 msgstr "Unicode"
@@ -27580,10 +27539,6 @@ msgstr ""
 "A monodoc újabb verziója szükséges ahhoz, hogy a MonoDevelopon kívül "
 "lehessen használni, ezért a beépített súgóböngésző lesz használva a "
 "dokumentáció megtekintésére."
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:141
-msgid "Your feedbacks: {0}"
-msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:149
 msgid ""
@@ -28043,7 +27998,7 @@ msgstr "_Fájl bezárása"
 msgid "_Collapse All"
 msgstr "Összes elem bezárása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:957
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:952
 #, fuzzy
 msgid "_Command..."
 msgstr "Paran_cs:"
@@ -28159,7 +28114,7 @@ msgstr "Aktív _nézet törlése"
 msgid "_Description:"
 msgstr "_Leírás:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:297
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:296
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:25
 msgid "_Diagnostics"
 msgstr ""
@@ -28210,8 +28165,8 @@ msgstr "Összes elem kibontása"
 msgid "_Expand All"
 msgstr "Összes elem kibontása"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
 #, fuzzy
 msgid "_Expand selection"
 msgstr "Kijelölés átmásolása a vágólapra"
@@ -28230,7 +28185,7 @@ msgstr "_Fájl"
 msgid "_File Mask:"
 msgstr "Fájlmaszk:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:966
 msgid "_File..."
 msgstr "Új _fájl..."
 
@@ -28258,7 +28213,7 @@ msgstr "_Referenciák keresése"
 msgid "_Find References of All Overloads"
 msgstr "_Referenciák keresése"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:892
 msgid "_Find..."
 msgstr "_Keresés..."
 
@@ -28423,7 +28378,7 @@ msgstr "Be_húzási mód:"
 msgid "_Initialize from profile:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:550
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:502
 msgid "_Input Methods"
 msgstr "Beviteli mó_dok"
 
@@ -28475,7 +28430,7 @@ msgstr "Sorvég:"
 msgid "_Line endings:"
 msgstr "Sorvég:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 #, fuzzy
 msgid "_Line..."
 msgstr "Új _fájl..."
@@ -28561,7 +28516,7 @@ msgstr "Dokumentumok"
 msgid "_Next Tip"
 msgstr "_Következő tipp"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 #, fuzzy
 msgid "_None"
 msgstr "Nincs"
@@ -28780,7 +28735,7 @@ msgstr "_Törlés a lemezről"
 msgid "_Remove"
 msgstr "_Eltávolítás"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1003
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
 #, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "Könyvjelzők törlése"
@@ -28827,7 +28782,7 @@ msgstr "So_rvégi whitespace karakterek eltávolítása"
 msgid "_Replace"
 msgstr "Cse_re"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:903
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:898
 msgid "_Replace..."
 msgstr "Cse_re..."
 
@@ -29000,7 +28955,7 @@ msgstr "_Assembly kód megjelölése"
 msgid "_Smart semicolon placement"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 #, fuzzy
 msgid "_Snippet..."
 msgstr "Beágyazás: '{0}'"
@@ -29038,7 +28993,7 @@ msgstr ""
 msgid "_Suppress"
 msgstr "_Megnyitás a fájlböngészővel"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 msgid "_Surround With..."
 msgstr ""
 
@@ -29068,7 +29023,7 @@ msgstr "A nap _tippje"
 msgid "_Title:"
 msgstr "Cí_m:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
 msgid "_Toggle Bookmark"
 msgstr "Könyvjelző be- vagy kikapcsolása"
 
@@ -29110,7 +29065,7 @@ msgstr "_Lefordított (msgstr):"
 msgid "_Translator name:"
 msgstr "Fordí_tó neve:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:964
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 #, fuzzy
 msgid "_Type..."
 msgstr "Ugrás egy típusra..."
@@ -29263,7 +29218,7 @@ msgstr ""
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
 #, fuzzy
 msgid "another copy"
 msgstr "Nem"
@@ -29285,12 +29240,12 @@ msgstr "oszlop"
 msgid "comment block"
 msgstr "Megjegyzési feladat másolása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
 #, fuzzy
 msgid "copy"
 msgstr "_Másolás"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2373
 #, fuzzy
 msgid "copy {0}"
 msgstr "{0} megnyitása"
@@ -29339,11 +29294,6 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:84
 msgid "e.g. colorName == \"Red\""
 msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:68
-#, fuzzy
-msgid "email address"
-msgstr "E-mail cím"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:180
 #, fuzzy
@@ -29977,7 +29927,7 @@ msgstr "_Deklaráció megkeresése"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1240
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1760
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1763
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
@@ -30303,7 +30253,7 @@ msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1761
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
@@ -32814,6 +32764,10 @@ msgstr "|"
 #~ msgid "From MonoDevelop"
 #~ msgstr "A MonoDeveloptól"
 
+#, fuzzy
+#~ msgid "From: {0}"
+#~ msgstr "Alak: {0}"
+
 #~ msgid "Full Name:"
 #~ msgstr "Teljes név:"
 
@@ -33925,6 +33879,10 @@ msgstr "|"
 
 #~ msgid "Please Wait"
 #~ msgstr "Kérem, várjon..."
+
+#, fuzzy
+#~ msgid "Please enter a valid e-mail address"
+#~ msgstr "Kérem, adjon meg egy érvényes projektnevet."
 
 #~ msgid "Please enter the password for connection '{0}'"
 #~ msgstr "Kérem, adja meg a jelszót az adatbázis-kapcsolathoz ({0})"
@@ -36303,6 +36261,10 @@ msgstr "|"
 #, fuzzy
 #~ msgid "constructor ({0})"
 #~ msgstr "Konstruktor <b>{0}</b>"
+
+#, fuzzy
+#~ msgid "email address"
+#~ msgstr "E-mail cím"
 
 #, fuzzy
 #~ msgid "file in project \"{0}\""

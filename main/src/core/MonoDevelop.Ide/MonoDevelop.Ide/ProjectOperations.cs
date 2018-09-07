@@ -1351,9 +1351,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		static IBuildTarget[] GetBuildTargetsForExecution (IBuildTarget executionTarget, RunConfiguration runConfiguration)
+		internal static IBuildTarget[] GetBuildTargetsForExecution (IBuildTarget executionTarget, RunConfiguration runConfiguration)
 		{
 			if (executionTarget is Solution sol) {
+				if (runConfiguration == null) {
+					runConfiguration = sol.StartupConfiguration;
+				}
 				if (runConfiguration is SingleItemSolutionRunConfiguration src) {
 					return new [] { src.Item };
 				}

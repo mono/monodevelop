@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public partial class MonoDevelopWorkspace
 	{
-		internal class ProjectData : IDisposable
+		internal class ProjectData
 		{
 			readonly WeakReference<MonoDevelopWorkspace> workspaceRef;
 			readonly ProjectId projectId;
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			void OnMetadataReferenceUpdated (object sender, EventArgs args)
+			void OnMetadataReferenceUpdated (object sender, MetadataReferenceUpdatedEventArgs args)
 			{
 				var reference = (MonoDevelopMetadataReference)sender;
 				// If we didn't contain the reference, bail
@@ -64,11 +64,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (workspace.updatingProjectDataLock) {
 					if (!RemoveMetadataReference_NoLock (reference, workspace))
 						return;
-					workspace.OnMetadataReferenceRemoved (projectId, reference.CurrentSnapshot);
+					workspace.OnMetadataReferenceRemoved (projectId, args.OldSnapshot);
 
-					reference.UpdateSnapshot ();
 					AddMetadataReference_NoLock (reference, workspace);
-					workspace.OnMetadataReferenceAdded (projectId, reference.CurrentSnapshot);
+					workspace.OnMetadataReferenceAdded (projectId, args.NewSnapshot.Value);
 				}
 			}
 
@@ -77,25 +76,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
 				metadataReferences.Add (metadataReference);
-				metadataReference.UpdatedOnDisk += OnMetadataReferenceUpdated;
+				metadataReference.SnapshotUpdated += OnMetadataReferenceUpdated;
 			}
 
 			bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 
-				metadataReference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
+				metadataReference.SnapshotUpdated -= OnMetadataReferenceUpdated;
 				return metadataReferences.Remove (metadataReference);
 			}
 
-			public void Dispose ()
+			public void Disconnect ()
 			{
 				if (!workspaceRef.TryGetTarget (out var ws))
 					return;
 
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
 				foreach (var reference in metadataReferences)
-					reference.UpdatedOnDisk -= OnMetadataReferenceUpdated;
+					reference.SnapshotUpdated -= OnMetadataReferenceUpdated;
 			}
 		}
 	}

@@ -88,7 +88,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation"/>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
@@ -144,14 +144,8 @@
     <Reference Include="System.IO.Compression">
       <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.FileSystem, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>true</Private>
-      <SpecificVersion>true</SpecificVersion>
-    </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>true</Private>
-      <SpecificVersion>true</SpecificVersion>
-    </Reference>
+    <Reference Include="System.IO.FileSystem" />
+    <Reference Include="System.IO.FileSystem.Primitives" />
     <Reference Include="System.Runtime.Remoting" />
     <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific. Use netstandard version instead. -->
     <Reference Include="System.Reflection.Metadata">
@@ -163,10 +157,7 @@
     <Reference Include="System.Security.Cryptography.Encoding">
       <HintPath>..\..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>true</Private>
-      <SpecificVersion>true</SpecificVersion>
-    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives" />
     <Reference Include="System.Security.Cryptography.X509Certificates">
       <HintPath>..\..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
@@ -744,6 +735,7 @@
     <Compile Include="MonoDevelop.Core\ConfigurationProperty.cs" />
     <Compile Include="MonoDevelop.FSW\PathTree.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeNode.cs" />
+    <Compile Include="MemoryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

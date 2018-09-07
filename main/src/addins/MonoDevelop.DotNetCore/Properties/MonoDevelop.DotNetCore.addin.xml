@@ -612,4 +612,26 @@
 				class="MonoDevelop.DotNetCore.Gui.DotNetCoreSdkLocationPanel" />
 		</Section>
 	</Extension>
+
+	<!--
+	Workaround Visual Studio 2017 problem where it sometimes changes the project type guid
+	for .NET Core projects. Setting the project's TypeGuid to match this alternative guid
+	prevents it from being changed when saving the solution file.
+
+	https://github.com/dotnet/project-system/issues/1821
+
+	Note that the extension is deliberately not set below to avoid new .NET Core projects
+	being created with this alternative guid instead of the correct C# project type guid
+	{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}.
+	-->
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectType
+			id="MonoDevelop.DotNetCore.CSharpProject"
+			insertbefore="MonoDevelop.CSharp.Project.CSharpProject"
+			language="C#"
+			alias="VisualStudioDotNetCoreCSharpProject"
+			isDefaultGuid="false"
+			guid="{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"
+			type="MonoDevelop.CSharp.Project.CSharpProject" />
+	</Extension>
 </ExtensionModel>

@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			}
 			if (Editor.CaretOffset <= StartOffset + 1) {
-				if (HasNoForwardTyping ())
+				if (HasNoForwardTyping () && StartOffset + 1 < Editor.Length)
 					Editor.RemoveText (StartOffset + 1, EndOffset - StartOffset);
 				Editor.EndSession ();
 			}

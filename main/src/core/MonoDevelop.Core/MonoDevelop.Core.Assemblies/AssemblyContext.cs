@@ -297,8 +297,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (i != -1)
 				span = span.Slice (0, i).Trim ();
 
-			// PERF: Check done to not allocate a new string when unchanged.
-			return span.Length == name.Length ? name : span.ToString ();
+			return span.ToStringWithOriginal (name);
 		}
 	
 		// Returns the installed version of the given assembly name
@@ -451,8 +450,7 @@ namespace MonoDevelop.Core.Assemblies
 					span = span.Slice (i + 1);
 				span = span.Trim ();
 
-				// PERF: Check done to not allocate a new string when unchanged.
-				return span.Length == part.Length ? part: span.ToString ();
+				return span.ToStringWithOriginal (part);
 			}
 		}
 		

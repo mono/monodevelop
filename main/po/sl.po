@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
+"POT-Creation-Date: 2018-09-06 14:03:38+0300\n"
 "PO-Revision-Date: 2006-11-18 01:38+0100\n"
 "Last-Translator: Matej Urbas <matej.urbas@gmail.com>\n"
 "Language-Team: Slovene\n"
@@ -631,7 +631,7 @@ msgstr ""
 msgid ".NET Portable:"
 msgstr "Dodaj sredstva"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:306
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:301
 #, fuzzy
 msgid ".NET Resource Files"
 msgstr "Datoteke s sredstvi"
@@ -716,15 +716,15 @@ msgstr ""
 msgid "3D based graphical application"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
 msgid "3rd copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
 msgid "4th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
 msgid "5th copy"
 msgstr ""
 
@@ -732,19 +732,19 @@ msgstr ""
 msgid "64-bit"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
 msgid "6th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
 msgid "7th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2371
 msgid "8th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2372
 msgid "9th copy"
 msgstr ""
 
@@ -861,7 +861,7 @@ msgid ""
 "No ChangeLog entries will be generated for this project."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:432
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:384
 #, fuzzy
 msgid "<b>Error</b>: {0}"
 msgstr "<b>Spodletel</b>: "
@@ -1101,7 +1101,7 @@ msgid ""
 "<b>User credentials are required to access the Subversion repository.</b>"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:429
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:381
 #, fuzzy
 msgid "<b>Warning</b>: {0}"
 msgstr "<b>Opozorila</b>"
@@ -2582,7 +2582,7 @@ msgstr ""
 msgid "Adding failed"
 msgstr "Dodajanje datotek..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1920
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1923
 msgid "Adding files..."
 msgstr "Dodajanje datotek..."
 
@@ -2940,7 +2940,7 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2058
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3024,7 +3024,7 @@ msgstr "Vključi naslednje kategorije:"
 msgid "Android"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
 msgid "Animates the text editor caret to help find it"
 msgstr ""
 
@@ -3467,7 +3467,7 @@ msgstr "_Argumenti:"
 msgid "Argument is not used in format string"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:359
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:354
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:100
 #, fuzzy
 msgid "Arguments"
@@ -3493,7 +3493,7 @@ msgstr ""
 msgid "Ask"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:300
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:295
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:154
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/AssemblyDependenciesNode.cs:53
 msgid "Assemblies"
@@ -4086,7 +4086,7 @@ msgstr "Iz_gradi"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1501
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -4141,7 +4141,7 @@ msgstr "Izgradi rešitev"
 msgid "Build and run the current solution"
 msgstr "Nastavitve izgradnje in zaganjanja"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1767
 #, fuzzy
 msgid "Build canceled."
 msgstr "Izgradnja ni uspela-"
@@ -4160,8 +4160,8 @@ msgstr "Počisti pretekle projekte"
 msgid "Build failed"
 msgstr "Izgradnja ni uspela-"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1638
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1641
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1775
 msgid "Build failed."
 msgstr "Izgradnja ni uspela-"
 
@@ -4198,7 +4198,7 @@ msgstr "Izgradi rešitev {0}"
 msgid "Build succeeded"
 msgstr "Izgradnja ni uspela-"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1766
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1769
 msgid "Build successful."
 msgstr "Izgradnja je uspela."
 
@@ -4221,12 +4221,12 @@ msgstr "Počisti pretekle projekte"
 msgid "Build {0}"
 msgstr "Izgradi {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1768
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1770
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1771
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1773
 msgid "Build: "
 msgstr "Izgradnja:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1748
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
 msgid "Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
 msgstr ""
 
@@ -5483,7 +5483,7 @@ msgstr "_Počisti pretekle datoteke"
 msgid "Clear Recent Solutions"
 msgstr "_Počisti pretekle rešitve"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1002
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
 msgid "Clear bookmarks"
 msgstr "Odstrani zaznamke"
 
@@ -5589,10 +5589,6 @@ msgstr ""
 msgid "Click to remove this custom command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:95
-msgid "Click to send feedback to the development team"
-msgstr ""
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:111
 msgid "Click to set the currently selected runtime as default"
 msgstr ""
@@ -5624,7 +5620,7 @@ msgstr "_Zapri datoteko"
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2452
 #, fuzzy
 msgid "Close Project"
 msgstr "Konzolni projekt"
@@ -5784,7 +5780,7 @@ msgstr "Ponastavi nastavitve"
 msgid "Code block preferences:"
 msgstr "Izbrane reference"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2510
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2513
 msgid "Code completion database generation"
 msgstr ""
 
@@ -5922,7 +5918,7 @@ msgstr ""
 msgid "Comment:"
 msgstr "Komentarji"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:290
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:285
 msgid "Comments"
 msgstr "Komentarji"
 
@@ -6023,12 +6019,12 @@ msgstr "Ukaz prevajalniku:"
 msgid "Compiling resource {0} with {1}"
 msgstr "Iščem '{0}' v '{1}'."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 #, fuzzy
 msgid "Complete Word"
 msgstr "Vgnezdena imenska okolja"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 #, fuzzy
 msgid "Complete current statement"
 msgstr "_Zahtevaj argumente"
@@ -6042,7 +6038,7 @@ msgstr "Vgnezdena imenska okolja"
 msgid "Complete with Space or Punctuation"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
 msgid "Completes the current statement"
 msgstr ""
 
@@ -6512,7 +6508,7 @@ msgstr "<b>Izhodni imenik</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2231
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2234
 msgid "Copying files..."
 msgstr "Kopiram datoteke..."
 
@@ -6557,7 +6553,7 @@ msgid ""
 "Could not create credential response object because the response was invalid."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2212
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2215
 msgid "Could not create directory '{0}'."
 msgstr "Imenika '{0}' ni bilo možno ustvariti."
 
@@ -6591,7 +6587,7 @@ msgid ""
 "project configurations."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2185
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2188
 msgid "Could not get any file from '{0}'."
 msgstr "Datotek iz '{0}' ni bilo mogoče naložiti."
 
@@ -7618,7 +7614,7 @@ msgstr "_Izreži"
 msgid "Cut the selection"
 msgstr "Izreži označeno vsebino"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
@@ -7982,7 +7978,7 @@ msgstr "Izbriši tudi nastavitve v elementih rešitve"
 msgid "Delete current layout"
 msgstr "_Izbriši trenutno postavitev"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
 #, fuzzy
 msgid "Delete entire line"
 msgstr "Izbriši datoteko"
@@ -7992,31 +7988,31 @@ msgstr "Izbriši datoteko"
 msgid "Delete from Disk"
 msgstr "Izbriši datoteke"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1045
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1040
 #, fuzzy
 msgid "Delete left character"
 msgstr "? Samo en znak"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 #, fuzzy
 msgid "Delete next subword"
 msgstr "Izbriši imenik"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1166
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 #, fuzzy
 msgid "Delete next word"
 msgstr "Izbriši imenik"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
 #, fuzzy
 msgid "Delete previous subword"
 msgstr "Repozitorij"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Delete previous word"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1042
 msgid "Delete right character"
 msgstr ""
 
@@ -8033,12 +8029,12 @@ msgstr ""
 msgid "Delete the selection"
 msgstr "Izbriši označeno vsebino"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
 #, fuzzy
 msgid "Delete to end of line"
 msgstr "Izbriši označeno vsebino"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
 #, fuzzy
 msgid "Delete to start of line"
 msgstr "Izbriši označeno vsebino"
@@ -8066,7 +8062,7 @@ msgid ""
 "defined name2 group and the current group."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
 
@@ -8304,7 +8300,7 @@ msgstr "Imeniki"
 msgid "Directory"
 msgstr "Direktorij"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2223
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2226
 #, fuzzy
 msgid "Directory '{0}' could not be moved."
 msgstr "Imenika '{0}' ni bilo mogoče izbrisati."
@@ -8740,16 +8736,16 @@ msgstr "Nalagam "
 msgid "Downloads"
 msgstr "Nalagam "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:879
 #, fuzzy
 msgid "Dump Accessibility Tree"
 msgstr "Dostop zavrnjen"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
 msgid "Dump Accessibility Tree (10s)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "Dump UI Tree"
 msgstr ""
 
@@ -8769,7 +8765,7 @@ msgstr "Izgradnja:"
 msgid "Duplicate Configuration"
 msgstr "Izbriši nastavitve"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 #, fuzzy
 msgid "Duplicate line"
 msgstr "Izgradnja:"
@@ -8783,7 +8779,7 @@ msgstr "Izgradnja:"
 msgid "Dutch"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
 msgid "Dynamic abbrev"
 msgstr ""
 
@@ -10136,70 +10132,70 @@ msgstr ""
 msgid "Expand matches"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
 msgid "Expand selection to document end"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
 msgid "Expand selection to document start"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
 #, fuzzy
 msgid "Expand selection to line"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
 msgid "Expand selection to line end"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
 msgid "Expand selection to line start"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1124
 #, fuzzy
 msgid "Expand selection to next line"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
 #, fuzzy
 msgid "Expand selection to next subword"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1117
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1112
 #, fuzzy
 msgid "Expand selection to next word"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 msgid "Expand selection to page down"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
 msgid "Expand selection to page up"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1127
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 #, fuzzy
 msgid "Expand selection to previous line"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 #, fuzzy
 msgid "Expand selection to previous subword"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 #, fuzzy
 msgid "Expand selection to previous word"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
 msgid "Expand selection to the left"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1109
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1104
 msgid "Expand selection to the right"
 msgstr ""
 
@@ -10461,7 +10457,7 @@ msgstr "_Projektne datoteke"
 msgid "F# script files"
 msgstr "Izberi imenik"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 #, fuzzy
 msgid "F_ind in Files..."
 msgstr "Išči v _datotekah..."
@@ -10553,13 +10549,7 @@ msgid "Falling blocks game"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:46
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:85
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:94
 msgid "Feedback"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:186
-msgid "Feedbacks sent: {0}"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:307
@@ -10622,12 +10612,12 @@ msgstr "Najdi"
 msgid "File"
 msgstr "Datoteka"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2272
 #, fuzzy
 msgid "File '{0}' could not be copied."
 msgstr "Datoteke '{0}' ni bilo možno odpreti."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2267
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2270
 #, fuzzy
 msgid "File '{0}' could not be moved."
 msgstr "Datoteke '{0}' ni bilo možno odpreti."
@@ -10937,7 +10927,7 @@ msgstr "Najdi izpeljane razrede"
 msgid "Find Indexer Overloads"
 msgstr "Najdi reference"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 #, fuzzy
 msgid "Find Like Selection"
 msgstr "Poišči naslednjo označeno vsebino"
@@ -10953,12 +10943,12 @@ msgstr "Najdi reference"
 msgid "Find Method Overloads"
 msgstr "Najdi reference"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:932
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
 #, fuzzy
 msgid "Find Next Like Selection"
 msgstr "Poišči naslednjo označeno vsebino"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:932
 #, fuzzy
 msgid "Find Previous Like Selection"
 msgstr "Poišči p_rejšnjo označeno vsebino"
@@ -10973,29 +10963,29 @@ msgstr "Končnica"
 msgid "Find _Derived Symbols"
 msgstr "Definiraj _simbole:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:910
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 msgid "Find _Next"
 msgstr "Poišči _naslednjega"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "Find _Next (Emacs behavior)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:916
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 msgid "Find _Previous"
 msgstr "Poišči _prejšnjega"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:922
 #, fuzzy
 msgid "Find _Previous (Emacs behavior)"
 msgstr "Poišči p_rejšnjo označeno vsebino"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:960
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
 #, fuzzy
 msgid "Find and run a specific command."
 msgstr "_Zahtevaj argumente"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 #, fuzzy
 msgid "Find caret"
 msgstr "Poišči _naslednjega"
@@ -11337,11 +11327,6 @@ msgstr "Izberite ciljno lokacijo"
 msgid "From type:\t{0}"
 msgstr "Napaka: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:137
-#, fuzzy
-msgid "From: {0}"
-msgstr "Napaka: {0}"
-
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:171
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:185
 #, fuzzy
@@ -11387,7 +11372,7 @@ msgstr "Definiraj _simbole:"
 msgid "GNOME Desktop"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:278
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:273
 msgid "GNU/Emacs"
 msgstr ""
 
@@ -11499,7 +11484,7 @@ msgstr "Splošno"
 msgid "General Options"
 msgstr "<b>Osnovne nastavitve</b>"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:363
 #, fuzzy
 msgid "General Pad Text"
 msgstr "Splošno"
@@ -11858,7 +11843,7 @@ msgstr "Nazaj"
 msgid "Go back to the home page"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
 msgid "Go down one page"
 msgstr ""
 
@@ -11867,12 +11852,12 @@ msgstr ""
 msgid "Go forward one page"
 msgstr "Naprej"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 #, fuzzy
 msgid "Go left one character"
 msgstr "? Samo en znak"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1051
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1046
 #, fuzzy
 msgid "Go right one character"
 msgstr "? Samo en znak"
@@ -11892,33 +11877,33 @@ msgstr "_Pojdi do vrstice..."
 msgid "Go to Download Page"
 msgstr "Nalagam "
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:972
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:967
 #, fuzzy
 msgid "Go to File..."
 msgstr "_Pojdi do vrstice..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1006
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1001
 #, fuzzy
 msgid "Go to Line..."
 msgstr "_Pojdi do vrstice..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
 #, fuzzy
 msgid "Go to Matching Brace"
 msgstr "Pojdi do pripadajočega _oklepaja"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:994
 #, fuzzy
 msgid "Go to Next Bookmark"
 msgstr "Naslednji zaznamek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:988
 #, fuzzy
 msgid "Go to Previous Bookmark"
 msgstr "Prejšnji zaznamek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:960
 #, fuzzy
 msgid "Go to Type..."
 msgstr "_Pojdi do vrstice..."
@@ -11987,25 +11972,25 @@ msgstr "_Pojdi v vrstico"
 msgid "Go to _Reference"
 msgstr "Lokalna kopija reference"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1003
 #, fuzzy
 msgid "Go to a specific line"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
 msgid "Go to beginning of document"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1043
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Go to beginning of line"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
 #, fuzzy
 msgid "Go to end of document"
 msgstr "Natisni trenutni dokument"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1036
 #, fuzzy
 msgid "Go to end of line"
 msgstr "Pojdi v vrstico"
@@ -12015,47 +12000,47 @@ msgstr "Pojdi v vrstico"
 msgid "Go to failure"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 #, fuzzy
 msgid "Go to next bookmark"
 msgstr "Naslednji zaznamek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
 #, fuzzy
 msgid "Go to next line"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1121
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1116
 #, fuzzy
 msgid "Go to next subword"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1113
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1108
 #, fuzzy
 msgid "Go to next word"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:991
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 #, fuzzy
 msgid "Go to previous bookmark"
 msgstr "Prejšnji zaznamek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1048
 #, fuzzy
 msgid "Go to previous line"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 #, fuzzy
 msgid "Go to previous subword"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 #, fuzzy
 msgid "Go to previous word"
 msgstr "Pojdi v vrstico"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 #, fuzzy
 msgid "Go up one page"
 msgstr "Pojdi višje"
@@ -12264,7 +12249,7 @@ msgstr "AWT program"
 msgid "Hide Categories"
 msgstr "NUnit kategorije"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1202
 msgid "Hide Current Message"
 msgstr ""
 
@@ -12744,7 +12729,7 @@ msgid ""
 "browser"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1080
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1088
 msgid ""
 "Importing the file \"{0}\" into the file \"{1}\" results in a circular "
 "dependency."
@@ -13092,7 +13077,7 @@ msgstr "Vstavi glavo"
 msgid "Insert Separator Before"
 msgstr "Vstavi glavo"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
 #, fuzzy
 msgid "Insert Snippet..."
 msgstr "Ša_blona"
@@ -13120,11 +13105,11 @@ msgstr ""
 msgid "Insert format argument"
 msgstr "_Zahtevaj argumente"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 msgid "Insert line break after the caret"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 #, fuzzy
 msgid "Insert new line"
 msgstr "Vstavi glavo"
@@ -13221,7 +13206,7 @@ msgstr ""
 msgid "Insert space within square brackets"
 msgstr "_Poudari pripadajoč oklepaj/zaklepaj"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 #, fuzzy
 msgid "Insert tab"
 msgstr "Vstavi nov vnos"
@@ -13231,7 +13216,7 @@ msgstr "Vstavi nov vnos"
 msgid "Inserts a Guid at caret position"
 msgstr "Prikaži spodletele teste"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1028
 #, fuzzy
 msgid "Inserts a snippet"
 msgstr "Ša_blona"
@@ -13599,12 +13584,12 @@ msgstr "_Komentiraj vrstice"
 msgid "Join the current line with the next line"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:970
 #, fuzzy
 msgid "Jump to a file in the current workspace"
 msgstr "Odpri datoteko ali rešitev"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:979
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 #, fuzzy
 msgid "Jump to a item in the current workspace"
 msgstr "Odpri datoteko ali rešitev"
@@ -13624,7 +13609,7 @@ msgstr ""
 msgid "Jump to line {0}"
 msgstr "Počisti rešitev"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:966
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:961
 msgid "Jump to the declaration of type in the current workspace"
 msgstr ""
 
@@ -13650,7 +13635,7 @@ msgstr "Vse datoteke"
 msgid "Keep Current Identifiers"
 msgstr "Trenutna datoteka"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1829
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1832
 #, fuzzy
 msgid "Keep file path"
 msgstr "Ime datoteke projekta"
@@ -14270,7 +14255,7 @@ msgstr ""
 msgid "Lowercase Selection"
 msgstr "Označeno v _majhne črke"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:318
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:313
 #, fuzzy
 msgid "MD Workbench"
 msgstr "Nalagam delovno okolje"
@@ -14455,7 +14440,7 @@ msgstr ""
 msgid "Manifest File"
 msgstr "Ciljno ime"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 #, fuzzy
 msgid "Mark Log"
 msgstr "{0} Obvestilo"
@@ -14611,7 +14596,7 @@ msgid ""
 "is interpreted as an expression test."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 #, fuzzy
 msgid "Matching _Brace"
 msgstr "Pojdi do pripadajočega _oklepaja"
@@ -14916,7 +14901,7 @@ msgstr "Mono Dokumentacija"
 msgid "Mono Path"
 msgstr "Mono projekt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:288
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
 msgid "Mono Project"
 msgstr "Mono projekt"
 
@@ -14936,12 +14921,12 @@ msgid "Mono runtime settings:"
 msgstr "Nisem našel datoteke '{0}'"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:229
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:286
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:282
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:277
 #, fuzzy
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop"
@@ -14951,7 +14936,7 @@ msgstr "MonoDevelop"
 msgid "MonoDevelop 1.0 Solution"
 msgstr "Datoteke rešitve"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:283
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:278
 #, fuzzy
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop"
@@ -15034,7 +15019,7 @@ msgstr ""
 msgid "More..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
 msgid "Move caret to EOL and insert new line"
 msgstr ""
 
@@ -15046,11 +15031,11 @@ msgstr ""
 msgid "Move cursor to previous error or search match"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Move the line or highlighted selection down"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1088
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Move the line or highlighted selection up"
 msgstr ""
 
@@ -15093,7 +15078,7 @@ msgid "Moving files"
 msgstr "Kopiram datoteke..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2232
 #, fuzzy
 msgid "Moving files..."
 msgstr "Kopiram datoteke..."
@@ -15358,7 +15343,7 @@ msgstr "Ime"
 msgid "Navigate"
 msgstr "Nastavitve"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:973
 #, fuzzy
 msgid "Navigate To..."
 msgstr "Nastavitve"
@@ -15381,7 +15366,7 @@ msgstr "Nastavitve"
 msgid "Navigation _History"
 msgstr "Nastavitve"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 msgid "Ne_xt"
 msgstr ""
 
@@ -16414,7 +16399,7 @@ msgstr "_Okno"
 msgid "Other entries"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1507
 #, fuzzy
 msgid "Outdated Build"
 msgstr "_Po izgradnji:"
@@ -16426,7 +16411,7 @@ msgstr "_Po izgradnji:"
 msgid "Output"
 msgstr "Izhod"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:369
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:364
 #, fuzzy
 msgid "Output Pad Contents"
 msgstr "Izhodna _pot:"
@@ -17074,19 +17059,10 @@ msgstr "Ciljna pot"
 msgid "Please enter a valid configuration name."
 msgstr "Prosimo, vnesite veljavno ime nastavitve."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:83
-#, fuzzy
-msgid "Please enter a valid e-mail address"
-msgstr "Prosimo, vnesite veljavno ime nastavitve."
-
 #: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:63
 #, fuzzy
 msgid "Please enter a valid project name"
 msgstr "Prosimo, vnesite veljavno ime nastavitve."
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:103
-msgid "Please enter some feedback"
-msgstr ""
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:187
 msgid "Please enter the password for your private key for the XSP Web Server"
@@ -17270,7 +17246,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "Reference"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 #, fuzzy
 msgid "Pre_vious"
 msgstr "Poišči _prejšnjega"
@@ -17676,7 +17652,7 @@ msgstr "_Projektni direktorij"
 msgid "Project File"
 msgstr "_Projektne datoteke"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:315
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:310
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:823
 #, fuzzy
 msgid "Project Files"
@@ -18098,7 +18074,7 @@ msgstr "_Shrani in zapri"
 msgid "R_eplace"
 msgstr "Nadomesti"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
 #, fuzzy
 msgid "R_eplace in Files..."
 msgstr "Nadomesti v _datotekah"
@@ -18182,7 +18158,7 @@ msgstr "Odstrani"
 msgid "Razor templates are only supported in C# projects"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:286
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:281
 msgid "ReSharper / Rider"
 msgstr ""
 
@@ -18794,7 +18770,7 @@ msgstr "NUnit nastavitve"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 #, fuzzy
 msgid "Remove tab"
 msgstr "Odstrani"
@@ -19045,7 +19021,7 @@ msgstr "Nadomeščam '{0}' z '{1}'."
 msgid "Replace '{0}--' with '{0} -= 1'"
 msgstr "Nadomeščam '{0}' z '{1}'."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
 #, fuzzy
 msgid "Replace Like Selection"
 msgstr "Izbriši označeno vsebino"
@@ -19321,7 +19297,7 @@ msgstr ""
 msgid "Replay Session..."
 msgstr "_Nadomesti..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:292
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:291
 #, fuzzy
 msgid "Report Problem..."
 msgstr "_Tiskaj..."
@@ -20219,7 +20195,7 @@ msgstr "Shrani kot..."
 msgid "Save build output"
 msgstr "Prikaži izhod"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1679
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1682
 #, fuzzy
 msgid "Save changed documents before building?"
 msgstr "_Shrani spremembe v odprih dokumentih"
@@ -20373,31 +20349,31 @@ msgstr ""
 msgid "Script name:"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Scroll line down"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "Scroll line up"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
 msgid "Scroll page down"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
 msgid "Scroll page up"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
 msgid "Scroll to bottom"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
 msgid "Scroll to top"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:889
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:239
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
@@ -20460,17 +20436,17 @@ msgstr "Išči v:"
 msgid "Search Types"
 msgstr "Rezultati iskanja"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:913
 #, fuzzy
 msgid "Search backwards for the same text"
 msgstr "_Prični s kodo programa v isti vrstici"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:929
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 #, fuzzy
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "_Prični s kodo programa v isti vrstici"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:938
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search backwards for the selected text"
 msgstr ""
 
@@ -20494,12 +20470,12 @@ msgstr "Iskanje zaključeno."
 msgid "Search filter menu"
 msgstr "Shranjujem..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:900
 #, fuzzy
 msgid "Search for and replace text"
 msgstr "Iskanje zaključeno."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 msgid "Search for and replace text in all files of a directory"
 msgstr ""
 
@@ -20508,12 +20484,12 @@ msgstr ""
 msgid "Search for members"
 msgstr "Shranjujem..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 #, fuzzy
 msgid "Search for text"
 msgstr "Iskanje zaključeno."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:942
 #, fuzzy
 msgid "Search for text in all files of a directory"
 msgstr "Poišči _nove datoteke ob nalaganju"
@@ -20528,15 +20504,15 @@ msgstr "Iskanje zaključeno."
 msgid "Search for types and members"
 msgstr "Iskanje zaključeno."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:907
 msgid "Search forwards for the same text"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:925
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 msgid "Search forwards for the same text with emacs behavior"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
 msgid "Search forwards for the selected text"
 msgstr ""
 
@@ -21290,17 +21266,8 @@ msgid ""
 "a 32-bit build)."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:114
-msgid "Send Feedback"
-msgstr ""
-
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:261
 msgid "Send current file to F# Interactive"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
-msgid "Send feedback to the MonoDevelop development team"
 msgstr ""
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:275
@@ -21615,7 +21582,7 @@ msgstr "_Prikaži ob zagonu"
 msgid "Show Output"
 msgstr "Prikaži izhod"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1091
 #, fuzzy
 msgid "Show Parameter List"
 msgstr "Parametri"
@@ -21654,7 +21621,7 @@ msgstr ""
 msgid "Show Remote Status"
 msgstr "_Prikaži ob zagonu"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 #, fuzzy
 msgid "Show Scopes"
 msgstr "Prikaži napake"
@@ -21827,7 +21794,7 @@ msgstr "Prikaži samo javne elemente"
 msgid "Show public members only"
 msgstr "Prikaži samo javne elemente"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1200
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
 msgid "Show quick info"
 msgstr ""
 
@@ -21906,12 +21873,12 @@ msgstr "Prikaži pozdravno stran ob zagonu"
 msgid "Show {0}"
 msgstr "Napaka: {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1208
 #, fuzzy
 msgid "Show/Hide Inline Messages"
 msgstr "Prikaži sporočila"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1208
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1203
 msgid "Show/Hide current Inline Message"
 msgstr ""
 
@@ -21946,7 +21913,7 @@ msgstr ""
 msgid "Shows the source control log for the current file"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1201
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Shows the tooltip at editor positon"
 msgstr ""
 
@@ -22003,7 +21970,7 @@ msgstr "Velikost"
 msgid "Size:"
 msgstr "Velikost"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1910
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1913
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr ""
@@ -22075,7 +22042,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:31
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:49
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:295
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:290
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SolutionPad.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.cs:54
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/ProjectSearchCategory.fs:182
@@ -22101,7 +22068,7 @@ msgstr "Direktorij _rešitve"
 msgid "Solution File"
 msgstr "Ime datoteke rešitve"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:312
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:307
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:749
 #, fuzzy
 msgid "Solution Files"
@@ -22214,7 +22181,7 @@ msgstr ""
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1680
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1683
 msgid "Some of the open documents have unsaved changes."
 msgstr ""
 
@@ -23027,7 +22994,7 @@ msgstr "Povzetek"
 msgid "Support"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1039
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Surround Selection With..."
 msgstr ""
 
@@ -23035,7 +23002,7 @@ msgstr ""
 msgid "Surround With..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1032
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr ""
 
@@ -23044,7 +23011,7 @@ msgstr ""
 msgid "Swap parameter"
 msgstr "Parametri"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1177
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 msgid "Swaps the characters on either side of the caret"
 msgstr ""
 
@@ -23052,8 +23019,8 @@ msgstr ""
 msgid "Swedish"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 msgid "Switch Completion/Suggestion Mode"
 msgstr ""
 
@@ -23062,7 +23029,7 @@ msgstr ""
 msgid "Switch active layout"
 msgstr "Shrani datoteke"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 msgid "Switch between insert and overwrite caret modes"
 msgstr ""
 
@@ -23074,7 +23041,7 @@ msgstr ""
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
 msgid "Switch caret mode"
 msgstr ""
 
@@ -23334,10 +23301,6 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:59
 msgid "Telephony via PC"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:90
-msgid "Tell us how we can make {0} better."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:214
@@ -23671,9 +23634,9 @@ msgstr "Izvedi teste"
 msgid "Text"
 msgstr "Tekst"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1022
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:362
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:392
 msgid "Text Editor"
 msgstr "Urejevalnik besedila"
@@ -23706,10 +23669,6 @@ msgstr "Šablona"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:216
 msgid "Thai"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:181
-msgid "Thank you for your feedback!"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:401
@@ -24025,7 +23984,7 @@ msgstr "Datoteke '{0}' ni bilo mogoče izbrisati."
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "Datoteka '{0}' že obstaja. Ali jo želite prepisati?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2103
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "Datoteka '{0}' že obstaja. Ali jo želite prepisati?"
 
@@ -24110,7 +24069,7 @@ msgstr "Datoteka '{0}' že obstaja. Ali jo želite prepisati?"
 msgid "The file {0} could not be deleted"
 msgstr "Datoteke '{0}' ni bilo mogoče izbrisati."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1843
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1846
 #, fuzzy
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "{0} je zunaj projektnega direktorija, kaj želite storiti?"
@@ -24313,7 +24272,7 @@ msgid ""
 "names include 'MyPackage' and 'MyPackage.Sample'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2086
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2089
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr ""
 
@@ -24512,7 +24471,7 @@ msgid ""
 "targetting ({2})"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2446
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
 #, fuzzy
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
@@ -24561,7 +24520,7 @@ msgstr ""
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1505
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1508
 #, fuzzy
 msgid ""
 "The project you are executing has changes done after the last time it was "
@@ -25234,7 +25193,7 @@ msgstr ""
 msgid "There is a warning for the print expression"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2076
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2079
 #, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "Datoteka '{0}' že obstaja. Ali jo želite prepisati?"
@@ -25254,7 +25213,7 @@ msgstr ""
 msgid "There is already a layout with that name"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1960
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1963
 #, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Datoteka '{0}' že obstaja. Ali jo želite prepisati?"
@@ -25683,7 +25642,7 @@ msgstr ""
 msgid "Toggle Action"
 msgstr "Akcija"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
 #, fuzzy
 msgid "Toggle Block Selection Mode"
 msgstr "Akcija"
@@ -25692,7 +25651,7 @@ msgstr "Akcija"
 msgid "Toggle Breakpoint"
 msgstr "Preklopi prelomno točko"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 #, fuzzy
 msgid "Toggle Issues"
 msgstr "Akcija"
@@ -25711,7 +25670,7 @@ msgstr "Akcija"
 msgid "Toggle between search and replace mode"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 msgid "Toggle bookmark"
 msgstr "Preklopi zaznamek"
 
@@ -25761,11 +25720,11 @@ msgstr ""
 msgid "Toggles the folding at caret position."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 msgid "Toggles the visibility of Inline Messages"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
 msgid "Toggles the visibility of the current Inline Message"
 msgstr ""
 
@@ -25929,7 +25888,7 @@ msgstr "Izhod programa"
 msgid "Transmitting file data"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
 #, fuzzy
 msgid "Transpose characters"
 msgstr "? Samo en znak"
@@ -26868,7 +26827,7 @@ msgstr "Uporabniški vmesnik"
 msgid "User Task"
 msgstr "Uporabnikova opravila"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:291
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:286
 msgid "User Tasks"
 msgstr "Uporabnikova opravila"
 
@@ -26911,11 +26870,11 @@ msgstr "Preimenuj"
 msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 msgid "Uses the current selection as find string"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
 msgid "Uses the current selection as replace string"
 msgstr ""
 
@@ -27232,22 +27191,22 @@ msgstr "Prikaži izvorno kodo testov"
 msgid "Visual Design"
 msgstr "Oblikovalec oken"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:279
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:274
 #, fuzzy
 msgid "Visual Studio"
 msgstr "Vizualni stil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:280
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:275
 #, fuzzy
 msgid "Visual Studio (Mixed)"
 msgstr "Vizualni stil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:281
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:276
 #, fuzzy
 msgid "Visual Studio (Windows)"
 msgstr "Vizualni stil"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:285
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:280
 #, fuzzy
 msgid "Visual Studio Code"
 msgstr "Vizualni stil"
@@ -27805,7 +27764,7 @@ msgstr ""
 msgid "XML Filename"
 msgstr "Vse datoteke"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:303
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:298
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:232
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:254
 #, fuzzy
@@ -27865,7 +27824,7 @@ msgid ""
 "to use Visual Studio, or Xamarin Studio on Mac."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:284
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:279
 msgid "Xcode"
 msgstr ""
 
@@ -27952,10 +27911,6 @@ msgstr ""
 msgid ""
 "You need a newer monodoc to use it externally from MonoDevelop. Using the "
 "integrated help viewer now."
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:141
-msgid "Your feedbacks: {0}"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:149
@@ -28433,7 +28388,7 @@ msgstr "_Zapri datoteko"
 msgid "_Collapse All"
 msgstr "Zapri vsa vozlišča"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:957
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:952
 #, fuzzy
 msgid "_Command..."
 msgstr "_Ukaz:"
@@ -28554,7 +28509,7 @@ msgstr "_Izbriši trenutno postavitev"
 msgid "_Description:"
 msgstr "_Opis:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:297
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:296
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:25
 msgid "_Diagnostics"
 msgstr ""
@@ -28606,8 +28561,8 @@ msgstr ""
 msgid "_Expand All"
 msgstr "Nov imenik"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
 #, fuzzy
 msgid "_Expand selection"
 msgstr "_Pomakni označeno vsebino"
@@ -28626,7 +28581,7 @@ msgstr "_Datoteka"
 msgid "_File Mask:"
 msgstr "Datotečna maska:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:966
 #, fuzzy
 msgid "_File..."
 msgstr "Nova _datoteka..."
@@ -28656,7 +28611,7 @@ msgstr "Najdi reference"
 msgid "_Find References of All Overloads"
 msgstr "Najdi reference"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:892
 msgid "_Find..."
 msgstr "_Najdi..."
 
@@ -28828,7 +28783,7 @@ msgstr "_Zamik"
 msgid "_Initialize from profile:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:550
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:502
 msgid "_Input Methods"
 msgstr ""
 
@@ -28886,7 +28841,7 @@ msgstr "Podprti formati:"
 msgid "_Line endings:"
 msgstr "Podprti formati:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 #, fuzzy
 msgid "_Line..."
 msgstr "Nova _datoteka..."
@@ -28974,7 +28929,7 @@ msgstr "Dokumentacija"
 msgid "_Next Tip"
 msgstr "_Naslednji predlog"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 #, fuzzy
 msgid "_None"
 msgstr "Brez"
@@ -29211,7 +29166,7 @@ msgstr "Izbriši datoteke"
 msgid "_Remove"
 msgstr "Odstrani"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1003
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
 #, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "Odstrani zaznamke"
@@ -29259,7 +29214,7 @@ msgstr ""
 msgid "_Replace"
 msgstr "_Nadomesti"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:903
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:898
 msgid "_Replace..."
 msgstr "_Nadomesti..."
 
@@ -29442,7 +29397,7 @@ msgstr ""
 msgid "_Smart semicolon placement"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 #, fuzzy
 msgid "_Snippet..."
 msgstr "Projekt: {0}"
@@ -29481,7 +29436,7 @@ msgstr ""
 msgid "_Suppress"
 msgstr "Odpri z pregledovalcem datotek"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 msgid "_Surround With..."
 msgstr ""
 
@@ -29513,7 +29468,7 @@ msgstr "_Predlog dneva..."
 msgid "_Title:"
 msgstr "_Naslov:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
 #, fuzzy
 msgid "_Toggle Bookmark"
 msgstr "Preklopi zaznamek"
@@ -29560,7 +29515,7 @@ msgstr ""
 msgid "_Translator name:"
 msgstr "prevajalci"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:964
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 #, fuzzy
 msgid "_Type..."
 msgstr "_Pojdi do vrstice..."
@@ -29716,7 +29671,7 @@ msgstr ""
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
 msgid "another copy"
 msgstr ""
 
@@ -29738,12 +29693,12 @@ msgstr "Stolpci"
 msgid "comment block"
 msgstr "Komentarji"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
 #, fuzzy
 msgid "copy"
 msgstr "_Kopiraj"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2373
 #, fuzzy
 msgid "copy {0}"
 msgstr "Odpiram '{0}'"
@@ -29792,11 +29747,6 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:84
 msgid "e.g. colorName == \"Red\""
 msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:68
-#, fuzzy
-msgid "email address"
-msgstr "E-poštni naslov:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:180
 #, fuzzy
@@ -30443,7 +30393,7 @@ msgstr "Pojdi do deklaracije"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1240
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1760
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1763
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
@@ -30784,7 +30734,7 @@ msgstr "Operacija se je izvedla z opozorili."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1761
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
@@ -32945,6 +32895,10 @@ msgstr ""
 #~ msgid "From MonoDevelop"
 #~ msgstr "MonoDevelop"
 
+#, fuzzy
+#~ msgid "From: {0}"
+#~ msgstr "Napaka: {0}"
+
 #~ msgid "Full Name:"
 #~ msgstr "Polno ime:"
 
@@ -33782,6 +33736,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "Platform Target"
 #~ msgstr "Ciljna pot"
+
+#, fuzzy
+#~ msgid "Please enter a valid e-mail address"
+#~ msgstr "Prosimo, vnesite veljavno ime nastavitve."
 
 #, fuzzy
 #~ msgid "PowerExecutionStateFailed"
@@ -35636,6 +35594,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "constructor ({0})"
 #~ msgstr "Omejitev"
+
+#, fuzzy
+#~ msgid "email address"
+#~ msgstr "E-poštni naslov:"
 
 #, fuzzy
 #~ msgid "file in project \"{0}\""
