@@ -372,6 +372,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get { return statusBar; }
 		}
+
+		public void ShowAccessibilityAnnouncement (string message)
+		{
+			var dictionary =
+				new NSDictionary (
+					NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, new NSString (message),
+					NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
+			NSAccessibility.PostNotification (
+				searchEntry.GetAccessibilityFocusedUIElement (),
+				NSAccessibilityNotifications.AnnouncementRequestedNotification, 
+				dictionary);
+		}
+
 		#endregion
 	}
 }

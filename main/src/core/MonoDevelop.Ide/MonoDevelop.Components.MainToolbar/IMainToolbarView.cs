@@ -219,6 +219,12 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value>The placeholder message.</value>
 		string SearchPlaceholderMessage { set; }
+
+		/// <summary>
+		/// Shows an accessibility announcement.
+		/// </summary>
+		/// <param name="message">The accessibility message.</param>
+		void ShowAccessibilityAnnouncement (string message);
 	}
 
 	/// <summary>
