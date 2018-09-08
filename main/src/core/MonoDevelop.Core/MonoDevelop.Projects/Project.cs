@@ -81,8 +81,7 @@ namespace MonoDevelop.Projects
 
 		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
 
-		CachingCoreCompileEvaluator<ProjectFile> compileEvaluator;
-		CachingCoreCompileEvaluator<FilePath> analyzerEvaluator;
+		CachingCoreCompileEvaluator compileEvaluator;
 
 		protected Project ()
 		{
@@ -93,8 +92,7 @@ namespace MonoDevelop.Projects
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
 
-			compileEvaluator = new CachingCoreCompileEvaluator<ProjectFile> (this, "Compile", CreateProjectFile);
-			analyzerEvaluator = new CachingCoreCompileEvaluator<FilePath> (this, "Analyzer", GetItemInclude);
+			compileEvaluator = new CachingCoreCompileEvaluator ();
 		}
 
 		public ProjectItemCollection Items {
@@ -524,8 +522,8 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual async Task<FilePath[]> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			var evaluatedAnalyzerItems = await analyzerEvaluator.GetItemsFromCoreCompileDependenciesAsync (monitor, configuration);
-			return evaluatedAnalyzerItems.ToArray ();
+			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
+			return coreCompileResult.AnalyzerFiles.ToArray ();
 		}
 
 		/// <summary>
@@ -540,7 +538,8 @@ namespace MonoDevelop.Projects
 			results.AddRange (evaluatedItems);
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
-			var evaluatedCompileItems = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (monitor, configuration);
+			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
+			var evaluatedCompileItems = coreCompileResult.SourceFiles;
 			var addedItems = evaluatedCompileItems.Where (i => results.All (pi => pi.FilePath != i.FilePath)).ToList ();
 			results.AddRange (addedItems);
 
@@ -603,7 +602,6 @@ namespace MonoDevelop.Projects
 			ShutdownProjectBuilder ();
 
 			compileEvaluator.MarkDirty ();
-			analyzerEvaluator.MarkDirty ();
 
 			Runtime.RunInMainThread (() => {
 				NotifyModified ("Files");
@@ -615,28 +613,26 @@ namespace MonoDevelop.Projects
 			return new ProjectFile (MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include), item.Name) { Project = this };
 		}
 
-		FilePath GetItemInclude (IMSBuildItemEvaluated item)
+		readonly struct CoreCompileEvaluationResult
 		{
-			return MSBuildProjectService.FromMSBuildPath (sourceProject.BaseDirectory, item.Include);
+			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (Array.Empty<ProjectFile> (), Array.Empty<FilePath> ());
+
+			public CoreCompileEvaluationResult (ProjectFile[] sourceFiles, FilePath[] analyzerFiles)
+			{
+				SourceFiles = sourceFiles;
+				AnalyzerFiles = analyzerFiles;
+			}
+
+			public readonly ProjectFile[] SourceFiles;
+			public readonly FilePath[] AnalyzerFiles;
 		}
 
-		class CachingCoreCompileEvaluator<TResult>
+		class CachingCoreCompileEvaluator
 		{
-			Project project;
-			string itemGroup;
-			Func<IMSBuildItemEvaluated, TResult> transform;
-
 			readonly object evaluatedCompileItemsLock = new object ();
 			string evaluatedCompileItemsConfiguration;
 			bool reevaluateCoreCompileDependsOn;
-			TaskCompletionSource<TResult []> evaluatedCompileItemsTask;
-
-			public CachingCoreCompileEvaluator (Project project, string itemGroup, Func<IMSBuildItemEvaluated, TResult> transform)
-			{
-				this.project = project;
-				this.itemGroup = itemGroup;
-				this.transform = transform;
-			}
+			TaskCompletionSource<CoreCompileEvaluationResult> evaluatedCompileItemsTask;
 
 			public void MarkDirty ()
 			{
@@ -650,15 +646,15 @@ namespace MonoDevelop.Projects
 			/// <summary>
 			/// Gets the list of files that are included as Compile items from the evaluation of the CoreCompile dependecy targets
 			/// </summary>
-			public async Task<TResult []> GetItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+			public async Task<CoreCompileEvaluationResult> GetItemsFromCoreCompileDependenciesAsync (Project project, ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				var config = configuration != null ? project.GetConfiguration (configuration) : project.DefaultConfiguration;
 				if (config == null)
-					return Array.Empty<TResult> ();
+					return CoreCompileEvaluationResult.Empty;
 
 				// Check if there is already a task for getting the items for the provided configuration
 
-				TaskCompletionSource<TResult []> currentTask = null;
+				TaskCompletionSource<CoreCompileEvaluationResult> currentTask = null;
 				bool startTask = false;
 				bool reevaluate = false;
 
@@ -667,7 +663,7 @@ namespace MonoDevelop.Projects
 					if (evaluatedCompileItemsConfiguration != config.Id || reevaluateCoreCompileDependsOn) {
 						// The configuration changed or query not yet done
 						evaluatedCompileItemsConfiguration = config.Id;
-						evaluatedCompileItemsTask = new TaskCompletionSource<TResult []> ();
+						evaluatedCompileItemsTask = new TaskCompletionSource<CoreCompileEvaluationResult> ();
 						startTask = true;
 						reevaluate = reevaluateCoreCompileDependsOn;
 						reevaluateCoreCompileDependsOn = false;
@@ -684,31 +680,29 @@ namespace MonoDevelop.Projects
 					var coreCompileDependsOn = project.sourceProject.EvaluatedProperties.GetValue<string> ("CoreCompileDependsOn");
 
 					if (string.IsNullOrEmpty (coreCompileDependsOn)) {
-						currentTask.SetResult (new TResult [0]);
+						currentTask.SetResult (CoreCompileEvaluationResult.Empty);
 						return currentTask.Task.Result;
 					}
 
-					TResult [] result = null;
+					var result = CoreCompileEvaluationResult.Empty;
 					var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
 					try {
 						// evaluate the Compile targets
 						var ctx = new TargetEvaluationContext ();
-						ctx.ItemsToEvaluate.Add (itemGroup);
+						ctx.ItemsToEvaluate.Add ("Compile");
+						ctx.ItemsToEvaluate.Add ("Analyzer");
 						ctx.LoadReferencedProjects = false;
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
 
 						var evalResult = await project.RunTarget (monitor, dependsList, config.Selector, ctx);
 						if (evalResult != null && evalResult.Items != null) {
-							result = evalResult
-								.Items
-								.Select (x => transform (x))
-								.ToArray ();
+							result = ProcessMSBuildItems (evalResult.Items, project);
 						}
 					} catch (Exception ex) {
 						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
 					}
-					currentTask.SetResult (result ?? new TResult [0]);
+					currentTask.SetResult (result);
 				}
 
 				return await currentTask.Task;
@@ -720,6 +714,23 @@ namespace MonoDevelop.Projects
 					evaluatedCompileItemsConfiguration = null;
 					reevaluateCoreCompileDependsOn = false;
 				}
+			}
+
+			CoreCompileEvaluationResult ProcessMSBuildItems (IEnumerable<IMSBuildItemEvaluated> items, Project project)
+			{
+				var analyzerList = new List<FilePath> ();
+				var sourceFilesList = new List<ProjectFile> ();
+
+				foreach (var item in items) {
+					var msbuildPath = MSBuildProjectService.FromMSBuildPath (project.sourceProject.BaseDirectory, item.Include);
+
+					if (item.Name == "Compile")
+						sourceFilesList.Add (new ProjectFile (msbuildPath, item.Name) { Project = project });
+					else if (item.Name == "Analyzer")
+						analyzerList.Add (msbuildPath);
+				}
+
+				return new CoreCompileEvaluationResult (sourceFilesList.ToArray (), analyzerList.ToArray ());
 			}
 		}
 
