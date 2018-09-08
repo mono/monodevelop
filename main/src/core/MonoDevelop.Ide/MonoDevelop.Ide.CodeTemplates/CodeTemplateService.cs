@@ -312,8 +312,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 						switch (reader.LocalName) {
 						case Node:
 							string fileVersion = reader.GetAttribute (VersionAttribute);
-							if (fileVersion != Version) 
-								return null;
+							if (fileVersion != Version) {
+								LoggingService.LogError ($"CodeTemplateService: unsupported fileVersion ({fileVersion}), supported is: {Version}");
+								return result;
+							}
 							break;
 						case CodeTemplate.Node:
 							result.Add (CodeTemplate.Read (reader));
