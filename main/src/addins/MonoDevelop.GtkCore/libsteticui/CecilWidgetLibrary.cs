@@ -185,10 +185,17 @@ namespace Stetic
 		{
 			if (cls.BaseType == null)
 				return null;
-			Stetic.ClassDescriptor klass = Stetic.Registry.LookupClassByName (cls.BaseType.FullName);
+
+			string baseTypeFullName = cls.BaseType.FullName;
+			if(cls.BaseType.IsGenericInstance) 
+				baseTypeFullName = baseTypeFullName.Substring (0, baseTypeFullName.IndexOf ('<'));
+
+			Stetic.ClassDescriptor klass = Stetic.Registry.LookupClassByName (baseTypeFullName);
+
 			if (klass != null) return klass;
 			
-			TypeDefinition bcls = FindTypeDefinition (cls.BaseType.FullName);
+			TypeDefinition bcls = FindTypeDefinition (baseTypeFullName);
+
 			if (bcls == null)
 				return null;
 
