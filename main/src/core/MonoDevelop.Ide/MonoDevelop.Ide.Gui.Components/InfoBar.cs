@@ -37,19 +37,17 @@ namespace MonoDevelop.Ide.Gui.Components
 		static Image closeImage = Image.FromResource ("pad-close-9.png");
 		static Image closeImageInactive = Image.FromResource ("pad-close-9.png").WithAlpha (0.5);
 
-		public XwtInfoBar (string description, params InfoBarItem[] items)
-		{
-			Build (description, items);
-		}
+		readonly Label descriptionLabel;
+		Size minTextSize = Size.Zero;
 
-		void Build (string description, params InfoBarItem[] items)
+		public XwtInfoBar (string description, params InfoBarItem[] items)
 		{
 			var mainBox = new HBox {
 				BackgroundColor = Styles.NotificationBar.BarBackgroundColor,
 			};
 
 			mainBox.PackStart (new ImageView (ImageService.GetIcon (Stock.Information, Gtk.IconSize.Menu)), marginLeft: 11);
-			mainBox.PackStart (new Label (description));
+			mainBox.PackStart (descriptionLabel = new Label (description));
 
 			if (items.Length > 0) {
 				mainBox.PackStart (new Label ("–"));
@@ -110,6 +108,27 @@ namespace MonoDevelop.Ide.Gui.Components
 			} else {
 				Content = mainBox;
 			}
+		}
+
+		protected override void OnBoundsChanged ()
+		{
+			if (minTextSize.IsZero && !string.IsNullOrEmpty (descriptionLabel.Text)) {
+				var measureLayout = new TextLayout {
+					Text = descriptionLabel.Text,
+					Font = descriptionLabel.Font
+				};
+				minTextSize = measureLayout.GetSize ();
+			}
+			if (descriptionLabel.Size.Width < minTextSize.Width) {
+				TooltipText = descriptionLabel.Text;
+				descriptionLabel.Ellipsize = EllipsizeMode.End;
+				descriptionLabel.ExpandHorizontal = true;
+			} else {
+				TooltipText = string.Empty;
+				descriptionLabel.Ellipsize = EllipsizeMode.None;
+				descriptionLabel.ExpandHorizontal = false;
+			}
+			base.OnBoundsChanged ();
 		}
 
 		sealed class InfoBarCloseButton : InfoBarButton
