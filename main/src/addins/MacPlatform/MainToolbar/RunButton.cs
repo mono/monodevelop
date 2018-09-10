@@ -97,11 +97,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				break;
 			case OperationIcon.Run:
 				title = GettextCatalog.GetString ("Run");
-				help = GettextCatalog.GetString ("Build and run the current solution");
+				help = GettextCatalog.GetString ("Run the project or projects in the active run configuration. Builds the projects in the active solution build configuration if necessary.");
 				break;
 			case OperationIcon.Build:
 				title = GettextCatalog.GetString ("Build");
-				help = GettextCatalog.GetString ("Build the current solution");
+				help = GettextCatalog.GetString ("Build the projects in the active solution build configuration.");
 				break;
 			}
 		}
@@ -139,7 +139,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			string help, title;
 			GetTitleAndHelpForIcon (out title, out help);
 
-			AccessibilityHelp = help;
+			ToolTip = AccessibilityHelp = help;
 			AccessibilityTitle = title;
 			AccessibilityEnabled = Enabled;
 			AccessibilitySubrole = NSAccessibilitySubroles.ToolbarButtonSubrole;
