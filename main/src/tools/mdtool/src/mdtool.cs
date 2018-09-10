@@ -48,6 +48,7 @@ class MonoDevelopProcessHost
 		try {
 			var sc = new ConsoleSynchronizationContext ();
 			SynchronizationContext.SetSynchronizationContext (sc);
+			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
 
 			string exeName = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
 			if (!Platform.IsMac && !Platform.IsWindows)

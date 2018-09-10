@@ -313,7 +313,7 @@ namespace MonoDevelop.Core
 			}
 			set {
 				if (mainSynchronizationContext != null && value != null)
-					throw new InvalidOperationException ("The main synchronization context has already been set");
+					LoggingService.LogWarning ($"The main synchronization context is being changed from {mainSynchronizationContext} to {value}");
 
 				mainThread = Thread.CurrentThread;
 				mainSynchronizationContext = value;
