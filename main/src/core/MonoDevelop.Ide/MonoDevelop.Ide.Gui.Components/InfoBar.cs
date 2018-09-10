@@ -32,11 +32,6 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	interface IInfoBarHost
-	{
-		void AddInfoBar (string description, params InfoBarItem [] items);
-	}
-
 	class XwtInfoBar : Widget
 	{
 		static Image closeImage = Image.FromResource ("pad-close-9.png");
@@ -71,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				Widget toAdd = null;
 				switch (item.Kind)
 				{
-				case InfoBarItem.InfoBarItemKind.Button:
+				case InfoBarItemKind.Button:
 					var btn = new InfoBarButton {
 						Label = item.Title,
 						LabelColor = Styles.NotificationBar.ButtonLabelColor,
@@ -86,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					toAdd = btn;
 					break;
 				// Creates a clickable hyperlink
-				case InfoBarItem.InfoBarItemKind.Hyperlink:
+				case InfoBarItemKind.Hyperlink:
 					var link = new InfoBarLink {
 						Text = item.Title,
 					};
@@ -96,7 +91,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					toAdd = link;
 					break;
 				// We only have 1 close button, we attach all close actions to it
-				case InfoBarItem.InfoBarItemKind.Close:
+				case InfoBarItemKind.Close:
 					closeButton.AddAction (item.Action);
 					break;
 				}
@@ -168,31 +163,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				actions = null;
 				base.Dispose (disposing);
 			}
-		}
-	}
-
-	struct InfoBarItem
-	{
-		public readonly string Title;
-		public readonly InfoBarItemKind Kind;
-		public readonly Action Action;
-		public readonly bool CloseAfter;
-
-		public bool IsDefault => Title == null;
-
-		public InfoBarItem (string title, InfoBarItemKind kind, Action action, bool closeAfter)
-		{
-			Title = title ?? throw new ArgumentNullException (nameof (title));
-			Kind = kind;
-			Action = action;
-			CloseAfter = closeAfter;
-		}
-
-		internal enum InfoBarItemKind
-		{
-			Button,
-			Hyperlink,
-			Close
 		}
 	}
 }
