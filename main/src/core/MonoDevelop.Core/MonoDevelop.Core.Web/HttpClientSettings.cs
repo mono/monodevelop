@@ -1,5 +1,5 @@
 //
-// HttpMessageHandlerProvider.cs
+// HttpClientSettings.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,13 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Net.Http;
+using System.Net;
 
 namespace MonoDevelop.Core.Web
 {
-	public abstract class HttpMessageHandlerProvider
+	public class HttpClientSettings
 	{
-		public abstract HttpMessageHandler CreateHttpMessageHandler (Uri uri, HttpClientSettings settings);
+		public bool AllowAutoRedirect { get; set; } = true;
+		public DecompressionMethods AutomaticDecompression { get; set; } = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+		public bool PreAuthenticate { get; set; }
 	}
 }
