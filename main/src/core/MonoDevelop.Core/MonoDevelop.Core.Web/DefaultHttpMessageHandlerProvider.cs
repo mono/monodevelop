@@ -5,19 +5,20 @@
 // From: https://github.com/NuGet/NuGet.Client
 
 using System;
-using System.Net;
 using System.Net.Http;
 
 namespace MonoDevelop.Core.Web
 {
 	class DefaultHttpMessageHandlerProvider : HttpMessageHandlerProvider
 	{
-		public override HttpMessageHandler CreateHttpMessageHandler (Uri uri)
+		public override HttpMessageHandler CreateHttpMessageHandler (Uri uri, HttpClientSettings settings)
 		{
 			var proxy = WebRequestHelper.ProxyCache.GetProxy (uri);
 
 			var clientHandler = new HttpClientHandler {
-				AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
+				AllowAutoRedirect = settings.AllowAutoRedirect,
+				AutomaticDecompression = settings.AutomaticDecompression,
+				PreAuthenticate = settings.PreAuthenticate,
 				Proxy = proxy
 			};
 

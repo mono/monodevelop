@@ -37,6 +37,7 @@ namespace MonoDevelop.Core.Web
 
 		static HttpMessageHandlerProvider httpMessageHandlerProvider;
 		static CredentialService credentialService;
+		static readonly HttpClientSettings defaultHttpClientSettings = new HttpClientSettings ();
 
 		internal static void Initialize ()
 		{
@@ -57,7 +58,17 @@ namespace MonoDevelop.Core.Web
 
 		public static HttpClient CreateHttpClient (Uri uri)
 		{
-			var handler = httpMessageHandlerProvider.CreateHttpMessageHandler (uri);
+			return CreateHttpClient (uri, defaultHttpClientSettings);
+		}
+
+		public static HttpClient CreateHttpClient (string uri, HttpClientSettings settings)
+		{
+			return CreateHttpClient (new Uri (uri), settings);
+		}
+
+		public static HttpClient CreateHttpClient (Uri uri, HttpClientSettings settings)
+		{
+			var handler = httpMessageHandlerProvider.CreateHttpMessageHandler (uri, settings ?? defaultHttpClientSettings);
 			return new HttpClient (handler);
 		}
 
