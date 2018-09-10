@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
-	public class UnhandledExceptionMetadata : CounterMetadata
+	class UnhandledExceptionMetadata : CounterMetadata
 	{
 		public System.Exception Exception {
 			get => GetProperty<System.Exception> ();
