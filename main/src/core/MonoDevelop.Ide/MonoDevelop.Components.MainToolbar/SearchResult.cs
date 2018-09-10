@@ -159,7 +159,7 @@ namespace MonoDevelop.Components.MainToolbar
 				return file.FilePath;
 			}
 		}
-		public override string AccessibilityMessage { get => GettextCatalog.GetString ("File {0}", PlainText); }
+		public override string AccessibilityMessage { get => GettextCatalog.GetString ("File {0}", PlainText ?? ""); }
 
 		public override Xwt.Drawing.Image Icon {
 			get {
