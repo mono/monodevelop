@@ -61,10 +61,13 @@ namespace MonoDevelop.Components.MainToolbar
 						return GettextCatalog.GetString ("Enumeration {0}", result.Name);
 
 					case NavigateToItemKind.Constant:
-						return GettextCatalog.GetString ("Consant {0}", result.Name);
+						return GettextCatalog.GetString ("Constant {0}", result.Name);
+
 					case NavigateToItemKind.Field:
-					case NavigateToItemKind.EnumItem:
 						return GettextCatalog.GetString ("Field {0}", result.Name);
+
+					case NavigateToItemKind.EnumItem:
+						return GettextCatalog.GetString ("Enumeration member {0}", result.Name);
 
 					case NavigateToItemKind.Interface:
 						return GettextCatalog.GetString ("Interface {0}", result.Name);

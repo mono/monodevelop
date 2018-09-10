@@ -696,7 +696,6 @@ namespace MonoDevelop.Components.MainToolbar
 					ToolbarView.SearchText = "";
 				};
 				popup.SelectedItemChanged += delegate {
-					if (Accessib)
 					var si = popup.Content.SelectedItem;
 					if (si == null || si.Item < 0 || si.Item >= si.DataSource.Count)
 						return;
