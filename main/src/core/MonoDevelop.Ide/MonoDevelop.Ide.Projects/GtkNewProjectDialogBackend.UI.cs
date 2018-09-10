@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Projects
 			cancelButton.Name = "cancelButton";
 			cancelButton.Accessible.Name = "cancelButton";
 			cancelButton.Accessible.Description = GettextCatalog.GetString ("Cancel the dialog");
-			cancelButton.Label = "gtk-cancel";
+			cancelButton.Label = GettextCatalog.GetString ("Cancel");
 			cancelButton.UseStock = true;
 			cancelButtonBox.PackStart (cancelButton, false, false, 0);
 			bottomHBox.PackStart (cancelButtonBox, false, false, 0);
