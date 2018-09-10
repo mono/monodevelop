@@ -1663,7 +1663,7 @@ namespace Mono.TextEditor
 					dragContents.CopyData (textEditorData);
 					DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList, DragAction.Move | DragAction.Copy, 1, e);
 					if (!Platform.IsMac) {
-						CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (textEditorData.Parent, true, textEditorData.SelectionRange, 300, 300);
+						var window = new CodeSegmentPreviewWindow (textEditorData.Parent, true, textEditorData.SelectionRange);
 						Gtk.Drag.SetIconWidget (context, window, 0, 0);
 					}
 					selection = MainSelection;

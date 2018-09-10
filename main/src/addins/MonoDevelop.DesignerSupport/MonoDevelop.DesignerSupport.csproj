@@ -131,6 +131,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ImplicitFrameworkAssemblyReferenceDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
