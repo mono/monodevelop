@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static Dictionary<string, string> ConvertChunkStyle (ChunkStyle style)
 		{
-			if (style.Foreground.Alpha == 0)
+			if (style == null || style.Foreground.Alpha == 0)
 				return new Dictionary<string, string> ();
 			var result = new Dictionary<string, string> {
 				{ "foreground", style.Foreground.ToPangoString () }
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Comment Tags", new List<string> { "markup.other" }, ConvertChunkStyle (colorScheme.CommentTags)));
 			settings.Add (new ThemeSetting ("Comment Block", new List<string> { "comment.block" }, ConvertChunkStyle (colorScheme.CommentsBlock)));
 			settings.Add (new ThemeSetting ("Comment XML Doc Comment", new List<string> { "comment.line.documentation" }, ConvertChunkStyle (colorScheme.CommentsForDocumentation)));
-			settings.Add (new ThemeSetting ("Comment XML Doc Tag", new List<string> { "punctuation.definition.tag" }, ConvertChunkStyle (colorScheme.CommentsForDocumentationTags)));
+			settings.Add (new ThemeSetting ("Comment XML Doc Tag", new List<string> { "comment.line.documentation.tag" }, ConvertChunkStyle (colorScheme.CommentsForDocumentationTags)));
 
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("punctuation.definition.string", new List<string> { "punctuation.definition.string" }, ConvertChunkStyle (colorScheme.String)));
@@ -286,6 +286,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("HTML Element Name", new List<string> { "entity.name.tag.html" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("HTML Entity", new List<string> { "constant.character.entity.html" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
 			settings.Add (new ThemeSetting ("HTML Server-Side Script", new List<string> { "source.server.html" }, ConvertChunkStyle (colorScheme.HtmlServerSideScript)));
+
+			settings.Add (new ThemeSetting ("Xml Name", new List<string> { "entity.name.tag.localname.xml" }, ConvertChunkStyle (colorScheme.XmlName)));
+			settings.Add (new ThemeSetting ("Xml Text", new List<string> { "text.xml" }, ConvertChunkStyle (colorScheme.XmlText)));
+			settings.Add (new ThemeSetting ("Xml Comment", new List<string> { "comment.block.xml" }, ConvertChunkStyle (colorScheme.XmlComment)));
+			settings.Add (new ThemeSetting ("Xml Attribute", new List<string> { "entity.other.attribute-name.localname.xml" }, ConvertChunkStyle (colorScheme.XmlAttribute)));
+			settings.Add (new ThemeSetting ("Xml Delimiter", new List<string> { "meta.tag.xml", "punctuation.definition.tag.xml" }, ConvertChunkStyle (colorScheme.XmlDelimiter)));
+			settings.Add (new ThemeSetting ("Xml CData Section", new List<string> { "string.unquoted.cdata.xml" }, ConvertChunkStyle (colorScheme.XmlCDataSection)));
+			settings.Add (new ThemeSetting ("Xml Attribute Value", new List<string> { "string.quoted.double.xml", "string.quoted.single.xml" }, ConvertChunkStyle (colorScheme.XmlAttributeValue)));
+			settings.Add (new ThemeSetting ("Xml Attribute Quotes", new List<string> { "punctuation.definition.string.begin.xml", "punctuation.definition.string.end.xml" }, ConvertChunkStyle (colorScheme.XmlAttributeQuotes)));
+
+			settings.Add (new ThemeSetting ("Xaml Name", new List<string> { "entity.name.tag.localname.xaml" }, ConvertChunkStyle (colorScheme.XAMLName)));
+			settings.Add (new ThemeSetting ("Xaml Text", new List<string> { "text.xaml" }, ConvertChunkStyle (colorScheme.XmlText)));
+			settings.Add (new ThemeSetting ("Xaml Comment", new List<string> { "comment.block.xaml" }, ConvertChunkStyle (colorScheme.XAMLComment)));
+			settings.Add (new ThemeSetting ("Xaml Attribute", new List<string> { "entity.other.attribute-name.localname.xaml" }, ConvertChunkStyle (colorScheme.XAMLAttribute)));
+			settings.Add (new ThemeSetting ("Xaml Delimiter", new List<string> { "meta.tag.xml", "punctuation.definition.tag.xaml" }, ConvertChunkStyle (colorScheme.XAMLDelimiter)));
+			settings.Add (new ThemeSetting ("Xaml CData Section", new List<string> { "string.unquoted.cdata.xaml" }, ConvertChunkStyle (colorScheme.XAMLCDataSection)));
+			settings.Add (new ThemeSetting ("Xaml Attribute Value", new List<string> { "string.quoted.double.xaml", "string.quoted.single.xaml" }, ConvertChunkStyle (colorScheme.XAMLAttributeValue)));
+			settings.Add (new ThemeSetting ("Xaml Attribute Quotes", new List<string> { "punctuation.definition.string.begin.xml", "punctuation.definition.string.end.xaml" }, ConvertChunkStyle (colorScheme.XmlAttributeQuotes)));
 
 			var style = ConvertChunkStyle (colorScheme.PlainText);
 			style ["fontStyle"] = "bold";
@@ -1074,6 +1092,42 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public const string RegexAltEscapeCharacterKey = "String(Regex Alt Escape Character)";
 			[ColorDescription (RegexAltEscapeCharacterKey)]
 			public ChunkStyle RegexAltEscapeCharacter { get; private set; }
+
+			public const string XAMLAttributeKey = "XAML Attribute";
+			[ColorDescription (XAMLAttributeKey, IsOptional = true)]
+			public ChunkStyle XAMLAttribute { get; private set; }
+
+			public const string XAMLAttributeValueKey = "XAML Attribute Value";
+			[ColorDescription (XAMLAttributeValueKey, IsOptional = true)]
+			public ChunkStyle XAMLAttributeValue { get; private set; }
+
+			public const string XAMLCDataSectionKey = "XAML CData Section";
+			[ColorDescription (XAMLCDataSectionKey, IsOptional = true)]
+			public ChunkStyle XAMLCDataSection { get; private set; }
+
+			public const string XAMLCommentKey = "XAML Comment";
+			[ColorDescription (XAMLCommentKey, IsOptional = true)]
+			public ChunkStyle XAMLComment { get; private set; }
+
+			public const string XAMLDelimiterKey = "XAML Delimiter";
+			[ColorDescription (XAMLDelimiterKey, IsOptional = true)]
+			public ChunkStyle XAMLDelimiter { get; private set; }
+
+			public const string XAMLMarkupExtensionClassKey = "XAML Markup Extension Class";
+			[ColorDescription (XAMLMarkupExtensionClassKey, IsOptional = true)]
+			public ChunkStyle XAMLMarkupExtensionClass { get; private set; }
+
+			public const string XAMLMarkupExtensionParameterNameKey = "XAML Markup Extension Parameter Name";
+			[ColorDescription (XAMLMarkupExtensionParameterNameKey, IsOptional = true)]
+			public ChunkStyle XAMLMarkupExtensionParameterName { get; private set; }
+
+			public const string XAMLMarkupExtensionParameterValueKey = "XAML Markup Extension Parameter Value";
+			[ColorDescription (XAMLMarkupExtensionParameterValueKey, IsOptional = true)]
+			public ChunkStyle XAMLMarkupExtensionParameterValue { get; private set; }
+
+			public const string XAMLNameKey = "XAML Name";
+			[ColorDescription (XAMLNameKey, IsOptional = true)]
+			public ChunkStyle XAMLName { get; private set; }
 			#endregion
 
 			public sealed class PropertyDescription
@@ -1282,17 +1336,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				// Check scheme
 				bool valid = true;
 				foreach (var color in textColors.Values) {
-					if (color.Info.GetValue (result, null) == null) {
+					if (!color.Attribute.IsOptional && color.Info.GetValue (result, null) == null) {
 						Console.WriteLine (color.Attribute.Name + " == null");
 						valid = false;
 					}
 				}
 				foreach (var color in ambientColors.Values) {
-					if (color.Info.GetValue (result, null) == null) {
+					if (!color.Attribute.IsOptional && color.Info.GetValue (result, null) == null) {
 						Console.WriteLine (color.Attribute.Name + " == null");
 						valid = false;
 					}
 				}
+
 				if (!valid)
 					throw new InvalidDataException ("Scheme " + result.Name + " is not valid.");
 				return result;
@@ -1401,8 +1456,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							}
 						}
 					}
-					if (!found && !importedAmbientColors.Contains (vsc.Name))
-						Console.WriteLine (vsc.Name + " not imported!");
+
+					if (!found && !importedAmbientColors.Contains (vsc.Name)) {
+						var isOptional = textColors.TryGetValue (vsc.Name, out var pd) && pd.Attribute.IsOptional;
+						if (!isOptional)
+							Console.WriteLine (vsc.Name + " not imported!");
+					}
 				}
 
 				if (result.PlainText == null)
@@ -1433,6 +1492,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				if (result.PlainText.TransparentForeground)
 					result.PlainText.Foreground = new Cairo.Color (0, 0, 0);
+
+				result.IndicatorMargin.Color = result.PlainText.Background;
+				result.IndicatorMarginSeparator.Color = result.PlainText.Background;
+
 				return result;
 			}
 
