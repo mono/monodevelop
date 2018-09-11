@@ -468,12 +468,12 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		public Task<FilePath []> GetAnalyzerFilesAsync (ConfigurationSelector configuration)
+		public Task<ImmutableArray<FilePath>> GetAnalyzerFilesAsync (ConfigurationSelector configuration)
 		{
 			if (sourceProject == null)
-				return Task.FromResult (Array.Empty<FilePath> ());
+				return Task.FromResult (ImmutableArray<FilePath>.Empty);
 
-			return BindTask<FilePath []> (cancelToken => {
+			return BindTask<ImmutableArray<FilePath>> (cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
@@ -486,7 +486,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		public Task<FilePath []> GetAnalyzerFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<ImmutableArray<FilePath>> GetAnalyzerFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return ProjectExtension.OnGetAnalyzerFiles (monitor, configuration);
 		}
@@ -520,10 +520,10 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		protected virtual async Task<FilePath[]> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual async Task<ImmutableArray<FilePath>> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
-			return coreCompileResult.AnalyzerFiles.ToArray ();
+			return coreCompileResult.AnalyzerFiles;
 		}
 
 		/// <summary>
@@ -615,16 +615,16 @@ namespace MonoDevelop.Projects
 
 		readonly struct CoreCompileEvaluationResult
 		{
-			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (Array.Empty<ProjectFile> (), Array.Empty<FilePath> ());
+			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (Array.Empty<ProjectFile> (), ImmutableArray<FilePath>.Empty);
 
-			public CoreCompileEvaluationResult (ProjectFile[] sourceFiles, FilePath[] analyzerFiles)
+			public CoreCompileEvaluationResult (ProjectFile[] sourceFiles, ImmutableArray<FilePath> analyzerFiles)
 			{
 				SourceFiles = sourceFiles;
 				AnalyzerFiles = analyzerFiles;
 			}
 
 			public readonly ProjectFile[] SourceFiles;
-			public readonly FilePath[] AnalyzerFiles;
+			public readonly ImmutableArray<FilePath> AnalyzerFiles;
 		}
 
 		class CachingCoreCompileEvaluator
@@ -730,7 +730,7 @@ namespace MonoDevelop.Projects
 						analyzerList.Add (msbuildPath);
 				}
 
-				return new CoreCompileEvaluationResult (sourceFilesList.ToArray (), analyzerList.ToArray ());
+				return new CoreCompileEvaluationResult (sourceFilesList.ToArray (), analyzerList.ToImmutableArray ());
 			}
 		}
 
@@ -4763,7 +4763,7 @@ namespace MonoDevelop.Projects
 			}
 
 
-			internal protected override Task<FilePath []> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			internal protected override Task<ImmutableArray<FilePath>> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				return Project.OnGetAnalyzerFiles (monitor, configuration);
 			}

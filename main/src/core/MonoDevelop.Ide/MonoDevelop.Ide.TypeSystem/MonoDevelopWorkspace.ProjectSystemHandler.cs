@@ -130,7 +130,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 
 				var loader = workspace.Services.GetService<IAnalyzerService> ().GetLoader ();
-				var analyzerReferences = analyzerFiles.Select (x => new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp));
 
 				lock (workspace.updatingProjectDataLock) {
 					//when reloading e.g. after a save, preserve document IDs
@@ -155,7 +154,10 @@ namespace MonoDevelop.Ide.TypeSystem
 						documents.Item1,
 						projectReferences,
 						references.Select (x => x.CurrentSnapshot),
-						analyzerReferences: analyzerReferences.Select (x => x.GetReference()).ToImmutableArray (),
+						analyzerReferences: analyzerFiles.SelectAsArray (x => {
+							var analyzer = new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp);
+							return analyzer.GetReference ();
+						}),
 						additionalDocuments: documents.Item2
 					);
 					return info;
