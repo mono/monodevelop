@@ -871,11 +871,6 @@
 			_label = "_Check for Updates..."
 			icon = "md-updates"
 			_description = "Check for updates to MonoDevelop and packages it requires" />
-	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback"
-			defaultHandler = "MonoDevelop.Ide.Commands.SendFeedbackHandler"
-			_label = "Send Feedback"
-			icon = "md-feedback"
-			_description = "Send feedback to the MonoDevelop development team" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.DumpUITree"
 			 defaultHandler = "MonoDevelop.Ide.Commands.DumpUITreeHandler"
 			 _label = "Dump UI Tree" />
