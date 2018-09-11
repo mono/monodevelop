@@ -69,18 +69,11 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
-			var ciset = new CommandInfoSet ();
-			ciset.Text = GettextCatalog.GetString ("Refactor");
-
 			bool canRename = RenameHandler.CanRename (info.Symbol ?? info.DeclaredSymbol);
 			if (canRename) {
-				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (async delegate {
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (async delegate {
 					await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
 				}));
-			}
-
-			if (ciset.CommandInfos.Count > 0) {
-				ainfo.Add (ciset, null);
 			}
 
 			var gotoDeclarationSymbol = info.Symbol;
