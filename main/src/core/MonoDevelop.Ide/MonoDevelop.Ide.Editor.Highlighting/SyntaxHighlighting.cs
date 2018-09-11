@@ -239,7 +239,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					goto end;
 
 				if (Environment.TickCount >= timeoutOccursAt) {
-					curMatch.GotTimeout = true;
+					if (curMatch != null)
+						curMatch.GotTimeout = true;
 					goto end;
 				}
 
