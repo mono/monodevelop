@@ -37,8 +37,15 @@ namespace MonoDevelop.SourceEditor
 		const string openBrackets = "{[('\"";
 		const string closingBrackets = "}])'\"";
 
+		static readonly string[] excludedMimeTypes = {
+			"text/x-javascript",
+			"text/x-typescript",
+		};
+
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
 		{
+			if (Array.IndexOf (excludedMimeTypes, editor.MimeType) >= 0)
+				return false;
 			if (descriptor.KeyChar == '\'' && editor.MimeType == "text/fsharp")
 				return false;
 			int braceIndex = openBrackets.IndexOf (descriptor.KeyChar);
