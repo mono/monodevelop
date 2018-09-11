@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public string Name { get; private set; }
 		public string Description { get; set; }
 		public string VSSetting { get; set; }
+		public bool IsOptional { get; set; }
 
 		public ColorDescriptionAttribute (string name)
 		{
