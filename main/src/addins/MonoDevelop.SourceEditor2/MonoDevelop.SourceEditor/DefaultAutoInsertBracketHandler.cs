@@ -39,7 +39,11 @@ namespace MonoDevelop.SourceEditor
 		const string closingBrackets = "}])'\"";
 
 		static readonly string[] excludedMimeTypes = {
-			"text/fsharp", "text/x-csharp", "text/x-json"
+			"text/fsharp",
+			"text/x-csharp",
+			"text/x-json",
+			"text/x-javascript",
+			"text/x-typescript",
 		};
 
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
