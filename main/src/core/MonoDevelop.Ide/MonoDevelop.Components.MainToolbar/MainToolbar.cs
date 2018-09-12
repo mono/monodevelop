@@ -42,6 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -620,6 +621,10 @@ namespace MonoDevelop.Components.MainToolbar
 		public event EventHandler RunConfigurationChanged;
 		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
+		public void ShowAccessibilityAnnouncement (string message)
+		{
+			this.Accessible.MakeAccessibilityAnnouncement (message);
+		}
 		#endregion
 	}
 }

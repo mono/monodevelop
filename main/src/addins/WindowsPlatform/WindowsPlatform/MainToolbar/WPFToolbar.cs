@@ -306,6 +306,12 @@ namespace WindowsPlatform.MainToolbar
 			exitAction ();
 		}
 
+
+		public void ShowAccessibilityAnnouncement (string message)
+		{
+			// TODO
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler RunConfigurationChanged;
 	}

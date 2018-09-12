@@ -48,6 +48,11 @@ namespace MonoDevelop.Components.MainToolbar
 			private set { base.Content = value; }
 		}
 
+		internal event EventHandler SelectedItemChanged {
+			add => Content.SelectedItemChanged += value;
+			remove => Content.SelectedItemChanged -= value;
+		}
+
 		public SearchPopupWindow () : base (PopupType.Tooltip)
 		{
 			var native = BackendHost.Backend.Window as Gtk.Window;
@@ -212,18 +217,18 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			layout = null;
 			headerLayout = null;
-			selectedItem = topItem = null;
+			SelectedItem = topItem = null;
 			currentTooltip = null;
 			base.Dispose (disposing);
 		}
 
 		internal async void OpenFile ()
 		{
-			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
+			if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
 				return;
 
-			if (selectedItem.DataSource[selectedItem.Item].CanActivate) {
-				selectedItem.DataSource[selectedItem.Item].Activate ();
+			if (SelectedItem.DataSource[SelectedItem.Item].CanActivate) {
+				SelectedItem.DataSource[SelectedItem.Item].Activate ();
 				ParentWindow.Dispose ();
 			}
 			else {
@@ -386,7 +391,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void ShowResults (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> newResults, ItemIdentifier topResult)
 		{
 			results = newResults;
-			selectedItem = topItem = topResult;
+			SelectedItem = topItem = topResult;
 			ShowTooltip ();
 		}
 
@@ -489,9 +494,9 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnMouseMoved (MouseMovedEventArgs args)
 		{
 			var item = GetItemAt (args.X, args.Y);
-			if (item == null && selectedItem != null || 
-			    item != null && selectedItem == null || item != null && !item.Equals (selectedItem)) {
-				selectedItem = item;
+			if (item == null && SelectedItem != null || 
+			    item != null && SelectedItem == null || item != null && !item.Equals (SelectedItem)) {
+				SelectedItem = item;
 				ShowTooltip ();
 				QueueDraw ();
 			}
@@ -501,7 +506,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnButtonPressed (ButtonEventArgs args)
 		{
 			if (args.Button == PointerButton.Left) {
-				if (selectedItem != null)
+				if (SelectedItem != null)
 					OnItemActivated (EventArgs.Empty);
 			}
 			base.OnButtonPressed (args);
@@ -510,7 +515,7 @@ namespace MonoDevelop.Components.MainToolbar
 		int SelectedCategoryIndex {
 			get {
 				for (int i = 0; i < results.Count; i++) {
-					if (results [i].Item1 == selectedItem.Category) {
+					if (results [i].Item1 == SelectedItem.Category) {
 						return i;
 					}
 				}
@@ -520,39 +525,39 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectItemUp ()
 		{
-			if (selectedItem == null || selectedItem == topItem)
+			if (SelectedItem == null || SelectedItem == topItem)
 				return;
 			int i = SelectedCategoryIndex;
-			if (selectedItem.Item > 0) {
-				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item - 1);
-				if (i > 0 && selectedItem.Equals (topItem)) {
+			if (SelectedItem.Item > 0) {
+				SelectedItem = new ItemIdentifier (SelectedItem.Category, SelectedItem.DataSource, SelectedItem.Item - 1);
+				if (i > 0 && SelectedItem.Equals (topItem)) {
 					SelectItemUp ();
 					return;
 				}
 			} else {
 				if (i == 0) {
-					selectedItem = topItem;
+					SelectedItem = topItem;
 				} else {
 					do {
 						i--;
-						selectedItem = new ItemIdentifier (
+						SelectedItem = new ItemIdentifier (
 							results [i].Item1,
 							results [i].Item2,
 							Math.Min (maxItems, results [i].Item2.Count) - 1
 						);
-						if (selectedItem.Category == topItem.Category && selectedItem.Item == topItem.Item && i > 0) {
+						if (SelectedItem.Category == topItem.Category && SelectedItem.Item == topItem.Item && i > 0) {
 							i--;
-							selectedItem = new ItemIdentifier (
+							SelectedItem = new ItemIdentifier (
 								results [i].Item1,
 								results [i].Item2,
 								Math.Min (maxItems, results [i].Item2.Count) - 1
 							);
 						}
 							
-					} while (i > 0 && selectedItem.DataSource.Count <= 0);
+					} while (i > 0 && SelectedItem.DataSource.Count <= 0);
 
-					if (selectedItem.DataSource.Count <= 0) {
-						selectedItem = topItem;
+					if (SelectedItem.DataSource.Count <= 0) {
+						SelectedItem = topItem;
 					}
 				}
 			}
@@ -562,19 +567,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectItemDown ()
 		{
-			if (selectedItem == null)
+			if (SelectedItem == null)
 				return;
 
-			if (selectedItem.Equals (topItem)) {
+			if (SelectedItem.Equals (topItem)) {
 				for (int j = 0; j < results.Count; j++) {
 					if (results[j].Item2.Count == 0 || results[j].Item2.Count == 1 && topItem.DataSource == results[j].Item2)
 						continue;
-					selectedItem = new ItemIdentifier (
+					SelectedItem = new ItemIdentifier (
 						results [j].Item1,
 						results [j].Item2,
 						0
 						);
-					if (selectedItem.Equals (topItem))
+					if (SelectedItem.Equals (topItem))
 						goto normalDown;
 					break;
 				}
@@ -586,32 +591,32 @@ namespace MonoDevelop.Components.MainToolbar
 			var i = SelectedCategoryIndex;
 
 			// check real upper bound
-			if (selectedItem != null) {
-				var curAbsoluteIndex = selectedItem == topItem ? 1 : 0;
+			if (SelectedItem != null) {
+				var curAbsoluteIndex = SelectedItem == topItem ? 1 : 0;
 				for (int j = 0; j < i; j++) {
 					curAbsoluteIndex += Math.Min (maxItems, results [j].Item2.Count);
 				}
-				curAbsoluteIndex += selectedItem.Item + 1;
+				curAbsoluteIndex += SelectedItem.Item + 1;
 				if (curAbsoluteIndex + 1 > calculatedItems)
 					return;
 			}
 
-			var upperBound = Math.Min (maxItems, selectedItem.DataSource.Count);
-			if (selectedItem.Item + 1 < upperBound) {
-				if (topItem.DataSource == selectedItem.DataSource && selectedItem.Item == upperBound - 1)
+			var upperBound = Math.Min (maxItems, SelectedItem.DataSource.Count);
+			if (SelectedItem.Item + 1 < upperBound) {
+				if (topItem.DataSource == SelectedItem.DataSource && SelectedItem.Item == upperBound - 1)
 					return;
-				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
+				SelectedItem = new ItemIdentifier (SelectedItem.Category, SelectedItem.DataSource, SelectedItem.Item + 1);
 			} else {
 				for (int j = i + 1; j < results.Count; j++) {
 					if (results[j].Item2.Count == 0 || results[j].Item2.Count == 1 && topItem.DataSource == results[j].Item2)
 						continue;
-					selectedItem = new ItemIdentifier (
+					SelectedItem = new ItemIdentifier (
 						results [j].Item1,
 						results [j].Item2,
 						0
 						);
-					if (selectedItem.Equals (topItem)) {
-						selectedItem = new ItemIdentifier (
+					if (SelectedItem.Equals (topItem)) {
+						SelectedItem = new ItemIdentifier (
 							results [j].Item1,
 							results [j].Item2,
 							1
@@ -640,7 +645,7 @@ namespace MonoDevelop.Components.MainToolbar
 		CancellationTokenSource tooltipSrc = null;
 		async void ShowTooltip ()
 		{
-			var currentSelectedItem = selectedItem;
+			var currentSelectedItem = SelectedItem;
 			if (currentSelectedItem == null || currentSelectedItem.DataSource == null) {
 				HideTooltip ();
 				return;
@@ -680,12 +685,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectNextCategory ()
 		{
-			if (selectedItem == null)
+			if (SelectedItem == null)
 				return;
 			var i = SelectedCategoryIndex;
-			if (selectedItem.Equals (topItem)) {
+			if (SelectedItem.Equals (topItem)) {
 				if (i > 0) {
-					selectedItem = new ItemIdentifier (
+					SelectedItem = new ItemIdentifier (
 						results [0].Item1,
 						results [0].Item2,
 						0
@@ -693,13 +698,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 				} else {
 					if (topItem.DataSource.Count > 1) {
-						selectedItem = new ItemIdentifier (
+						SelectedItem = new ItemIdentifier (
 							results [0].Item1,
 							results [0].Item2,
 							1
 						);
 					} else if (i < results.Count - 1) {
-						selectedItem = new ItemIdentifier (
+						SelectedItem = new ItemIdentifier (
 							results [i + 1].Item1,
 							results [i + 1].Item2,
 							0
@@ -710,7 +715,7 @@ namespace MonoDevelop.Components.MainToolbar
 				while (i < results.Count - 1 && results [i + 1].Item2.Count == 0)
 					i++;
 				if (i < results.Count - 1) {
-					selectedItem = new ItemIdentifier (
+					SelectedItem = new ItemIdentifier (
 						results [i + 1].Item1,
 						results [i + 1].Item2,
 						0
@@ -723,24 +728,24 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectPrevCategory ()
 		{
-			if (selectedItem == null)
+			if (SelectedItem == null)
 				return;
 			var i = SelectedCategoryIndex;
 			if (i > 0) {
-				selectedItem = new ItemIdentifier (
+				SelectedItem = new ItemIdentifier (
 					results [i - 1].Item1,
 					results [i - 1].Item2,
 					0
 				);
-				if (selectedItem.Equals (topItem)) {
+				if (SelectedItem.Equals (topItem)) {
 					if (topItem.DataSource.Count> 1) {
-						selectedItem = new ItemIdentifier (
+						SelectedItem = new ItemIdentifier (
 							results [i - 1].Item1,
 							results [i - 1].Item2,
 							1
 						);
 					} else if (i > 1) {
-						selectedItem = new ItemIdentifier (
+						SelectedItem = new ItemIdentifier (
 							results [i - 2].Item1,
 							results [i - 2].Item2,
 							0
@@ -748,7 +753,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			} else {
-				selectedItem = topItem;
+				SelectedItem = topItem;
 			}
 			ShowTooltip ();
 			QueueDraw ();
@@ -756,7 +761,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectFirstCategory ()
 		{
-			selectedItem = topItem;
+			SelectedItem = topItem;
 			ShowTooltip ();
 			QueueDraw ();
 		}
@@ -766,7 +771,7 @@ namespace MonoDevelop.Components.MainToolbar
 			var r = results.LastOrDefault (r2 => r2.Item2.Count > 0 && !(r2.Item2.Count == 1 && topItem.Category == r2.Item1));
 			if (r == null)
 				return;
-			selectedItem = new ItemIdentifier (
+			SelectedItem = new ItemIdentifier (
 				r.Item1,
 				r.Item2,
 				r.Item2.Count - 1
@@ -820,21 +825,21 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public ISegment SelectedItemRegion {
 			get {
-				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
+				if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
 					return TextSegment.Invalid;
-				return selectedItem.DataSource[selectedItem.Item].Segment;
+				return SelectedItem.DataSource[SelectedItem.Item].Segment;
 			}
 		}
 
 		public string SelectedItemFileName {
 			get {
-				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.Count)
+				if (SelectedItem == null || SelectedItem.Item < 0 || SelectedItem.Item >= SelectedItem.DataSource.Count)
 					return null;
-				return selectedItem.DataSource[selectedItem.Item].File;
+				return SelectedItem.DataSource[SelectedItem.Item].File;
 			}
 		}
 
-		class ItemIdentifier {
+		internal class ItemIdentifier {
 			public SearchCategory Category { get; private set; }
 			public IReadOnlyList<SearchResult> DataSource { get; private set; }
 			public int Item { get; private set; }
@@ -870,19 +875,29 @@ namespace MonoDevelop.Components.MainToolbar
 				return string.Format ("[ItemIdentifier: Category={0}, DataSource=#{1}, Item={2}]", Category.Name, DataSource.Count, Item);
 			}
 		}
+		ItemIdentifier topItem;
+		ItemIdentifier selectedItem;
 
-		ItemIdentifier selectedItem = null, topItem = null;
+		internal ItemIdentifier SelectedItem {
+			get => selectedItem; 
+			set {
+				selectedItem = value;
+				SelectedItemChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
+		internal event EventHandler SelectedItemChanged;
 
 		Rectangle SelectedItemRectangle {
 			get {
-				if (selectedItem == null)
+				if (SelectedItem == null)
 					return new Rectangle (0, 0, Bounds.Width, 16);
 
 				double y = Bounds.Y + yMargin;
 				if (topItem != null){
 					layout.Markup = GetRowMarkup (topItem.DataSource[topItem.Item]);
 					var ls = layout.GetSize ();
-					if (topItem.Category == selectedItem.Category && topItem.Item == selectedItem.Item)
+					if (topItem.Category == SelectedItem.Category && topItem.Item == SelectedItem.Item)
 						return new Rectangle (0, y, Bounds.Width, ls.Height + itemSeparatorHeight + itemPadding * 2);
 					y += ls.Height + itemSeparatorHeight + itemPadding * 2;
 				}
@@ -897,7 +912,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 						var ls = layout.GetSize ();
 
-						if (selectedItem.Category == category && selectedItem.DataSource == dataSrc && selectedItem.Item == i)
+						if (SelectedItem.Category == category && SelectedItem.DataSource == dataSrc && SelectedItem.Item == i)
 							return new Rectangle (0, y, Bounds.Width, ls.Height + itemSeparatorHeight + itemPadding * 2);
 						y += ls.Height + itemSeparatorHeight + itemPadding * 2;
 
@@ -945,7 +960,7 @@ namespace MonoDevelop.Components.MainToolbar
 				var category = topItem.Category;
 				var dataSrc = topItem.DataSource;
 				var i = topItem.Item;
-				var isSelected = selectedItem != null && selectedItem.Category == category && selectedItem.Item == i;
+				var isSelected = SelectedItem != null && SelectedItem.Category == category && SelectedItem.Item == i;
 
 				double x = alloc.X + xMargin + headerMarginSize;
 				context.SetColor (Xwt.Drawing.Colors.Black);
@@ -995,7 +1010,7 @@ namespace MonoDevelop.Components.MainToolbar
 				for (int i = 0; i < maxItems && i < dataSrc.Count; i++) {
 					if (topItem != null && topItem.Category == category && topItem.Item == i)
 						continue;
-					var isSelected = selectedItem != null && selectedItem.Category == category && selectedItem.Item == i;
+					var isSelected = SelectedItem != null && SelectedItem.Category == category && SelectedItem.Item == i;
 					double x = alloc.X + xMargin + headerMarginSize;
 					context.SetColor (Xwt.Drawing.Colors.Black);
 					layout.Markup = GetRowMarkup (dataSrc[i], isSelected);
@@ -1065,6 +1080,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public new SearchPopupWindow ParentWindow {
 			get { return base.ParentWindow as SearchPopupWindow; }
 		}
+
 	}
 }
 
