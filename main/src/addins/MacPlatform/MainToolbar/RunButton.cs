@@ -68,7 +68,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void UpdateCell ()
 		{
-			Appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark ? NSAppearance.NameVibrantDark : NSAppearance.NameAqua);
+			Appearance = IdeApp.Preferences.UserInterfaceTheme == Theme.Light
+				? NSAppearance.GetAppearance (NSAppearance.NameAqua)
+				: MacSystemInformation.OsVersion < MacSystemInformation.Mojave
+					? NSAppearance.GetAppearance (NSAppearance.NameVibrantDark)
+					: NSAppearance.GetAppearance (new NSString ("NSAppearanceNameDarkAqua"));
 			NeedsDisplay = true;
 		}
 
