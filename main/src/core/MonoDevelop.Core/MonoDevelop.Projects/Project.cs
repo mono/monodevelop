@@ -3097,7 +3097,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		struct MergedPropertyValue
+		readonly struct MergedPropertyValue
 		{
 			public readonly string XmlValue;
 			public readonly MSBuildValueType ValueType;

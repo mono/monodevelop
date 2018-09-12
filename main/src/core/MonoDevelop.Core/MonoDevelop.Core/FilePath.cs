@@ -35,7 +35,7 @@ using System.Linq;
 namespace MonoDevelop.Core
 {
 	[Serializable]
-	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
+	public readonly struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
 	{
 		public static readonly StringComparer PathComparer = (Platform.IsWindows || Platform.IsMac) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 		public static readonly StringComparison PathComparison = (Platform.IsWindows || Platform.IsMac) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;

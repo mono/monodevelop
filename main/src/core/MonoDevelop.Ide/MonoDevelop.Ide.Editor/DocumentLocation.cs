@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor
 	/// </summary>
 	[Serializable]
 	[TypeConverter(typeof(DocumentLocationConverter))]
-	public struct DocumentLocation : IComparable<DocumentLocation>, IEquatable<DocumentLocation>
+	public readonly struct DocumentLocation : IComparable<DocumentLocation>, IEquatable<DocumentLocation>
 	{
 		/// <summary>
 		/// Represents no text location (0, 0).
@@ -57,32 +57,26 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public DocumentLocation(int line, int column)
 		{
-			this.line = line;
-			this.column = column;
+			this.Line = line;
+			this.Column = column;
 		}
-
-		int column, line;
 
 		/// <summary>
 		/// Gets the line number.
 		/// </summary>
-		public int Line {
-			get { return line; }
-		}
+		public int Line { get; }
 
 		/// <summary>
 		/// Gets the column number.
 		/// </summary>
-		public int Column {
-			get { return column; }
-		}
+		public int Column { get; }
 
 		/// <summary>
 		/// Gets whether the TextLocation instance is empty.
 		/// </summary>
 		public bool IsEmpty {
 			get {
-				return column < MinLine && line < MinColumn;
+				return Column < MinLine && Line < MinColumn;
 			}
 		}
 
@@ -91,7 +85,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "(Line {1}, Col {0})", this.column, this.line);
+			return string.Format(CultureInfo.InvariantCulture, "(Line {1}, Col {0})", this.Column, this.Line);
 		}
 
 		/// <summary>
@@ -99,7 +93,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public override int GetHashCode()
 		{
-			return unchecked (column << 20 ^ line);
+			return unchecked (Column << 20 ^ Line);
 		}
 
 		/// <summary>
@@ -124,7 +118,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public static bool operator ==(DocumentLocation left, DocumentLocation right)
 		{
-			return left.column == right.column && left.line == right.line;
+			return left.Column == right.Column && left.Line == right.Line;
 		}
 
 		/// <summary>
@@ -132,7 +126,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public static bool operator !=(DocumentLocation left, DocumentLocation right)
 		{
-			return left.column != right.column || left.line != right.line;
+			return left.Column != right.Column || left.Line != right.Line;
 		}
 
 		/// <summary>
@@ -140,10 +134,10 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public static bool operator <(DocumentLocation left, DocumentLocation right)
 		{
-			if (left.line < right.line)
+			if (left.Line < right.Line)
 				return true;
-			else if (left.line == right.line)
-				return left.column < right.column;
+			else if (left.Line == right.Line)
+				return left.Column < right.Column;
 			else
 				return false;
 		}
@@ -153,10 +147,10 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public static bool operator >(DocumentLocation left, DocumentLocation right)
 		{
-			if (left.line > right.line)
+			if (left.Line > right.Line)
 				return true;
-			else if (left.line == right.line)
-				return left.column > right.column;
+			else if (left.Line == right.Line)
+				return left.Column > right.Column;
 			else
 				return false;
 		}
