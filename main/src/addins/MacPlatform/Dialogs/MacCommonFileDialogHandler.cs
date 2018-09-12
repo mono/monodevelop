@@ -78,6 +78,8 @@ namespace MonoDevelop.MacIntegration
 
 		static void SetCommonPanelProperties (TData data, NSSavePanel panel)
 		{
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Mojave)
+				IdeTheme.ApplyTheme (panel);
 			panel.TreatsFilePackagesAsDirectories = true;
 
 			if (!string.IsNullOrEmpty (data.Title))
