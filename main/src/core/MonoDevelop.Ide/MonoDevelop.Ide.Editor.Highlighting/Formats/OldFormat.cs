@@ -1276,7 +1276,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 				var version = Version.Parse (root.XPathSelectElement ("version").Value);
 				if (version.Major != 1) {
-					Console.WriteLine ("Can't load scheme : " + result.Name + " unsupported version:" + version);
+					LoggingService.LogError ("Can't load scheme : " + result.Name + " unsupported version:" + version);
 					return null;
 				}
 				var el = root.XPathSelectElement ("description");
@@ -1305,7 +1305,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var color = AmbientColor.Create (colorElement, palette);
 					PropertyDescription info;
 					if (!ambientColors.TryGetValue (color.Name, out info)) {
-						Console.WriteLine ("Ambient color:" + color.Name + " not found.");
+						LoggingService.LogError ("Ambient color:" + color.Name + " not found.");
 						continue;
 					}
 					info.Info.SetValue (result, color, null);
@@ -1315,7 +1315,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var color = CreateChunkStyle (textColorElement, palette);
 					PropertyDescription info;
 					if (!textColors.TryGetValue (color.ScopeStack.Peek (), out info)) {
-						Console.WriteLine ("Text color:" + color.ScopeStack + " not found.");
+						LoggingService.LogError ("Text color:" + color.ScopeStack + " not found.");
 						continue;
 					}
 					info.Info.SetValue (result, color, null);
@@ -1337,13 +1337,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				bool valid = true;
 				foreach (var color in textColors.Values) {
 					if (!color.Attribute.IsOptional && color.Info.GetValue (result, null) == null) {
-						Console.WriteLine (color.Attribute.Name + " == null");
+						LoggingService.LogError (color.Attribute.Name + " == null");
 						valid = false;
 					}
 				}
 				foreach (var color in ambientColors.Values) {
 					if (!color.Attribute.IsOptional && color.Info.GetValue (result, null) == null) {
-						Console.WriteLine (color.Attribute.Name + " == null");
+						LoggingService.LogError (color.Attribute.Name + " == null");
 						valid = false;
 					}
 				}
@@ -1412,7 +1412,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						if (reader.LocalName == "Item") {
 							var color = VSSettingColor.Create (reader);
 							if (colors.ContainsKey (color.Name)) {
-								Console.WriteLine ("Warning: {0} is defined twice in vssettings.", color.Name);
+								LoggingService.LogWarning ("{0} is defined twice in vssettings.", color.Name);
 								continue;
 							}
 							colors [color.Name] = color;
@@ -1460,7 +1460,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (!found && !importedAmbientColors.Contains (vsc.Name)) {
 						var isOptional = textColors.TryGetValue (vsc.Name, out var pd) && pd.Attribute.IsOptional;
 						if (!isOptional)
-							Console.WriteLine (vsc.Name + " not imported!");
+							LoggingService.LogWarning (vsc.Name + " not imported!");
 					}
 				}
 
