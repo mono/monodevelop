@@ -44,9 +44,9 @@ namespace MonoDevelop.VersionControl
 			VersionControlSystem = vcs;
 			var metadata = new RepositoryMetadata {
 				Type = vcs.Name,
-				TypeAndVersion = $"{vcs.Name} {vcs.Version}"
+				Version = vcs.Version,
 			};
-			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), metadata);
+			Repositories.Inc (metadata);
 		}
 
 		public override bool Equals (object obj)
@@ -1013,7 +1013,7 @@ namespace MonoDevelop.VersionControl
 			set => SetProperty (value);
 		}
 
-		public string TypeAndVersion {
+		public string Version {
 			get => GetProperty<string> ();
 			set => SetProperty (value);
 		}
