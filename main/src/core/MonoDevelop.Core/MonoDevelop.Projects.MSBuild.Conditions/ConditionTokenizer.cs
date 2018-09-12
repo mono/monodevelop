@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 		
 		// FIXME test this
-		public void Putback (Token token)
+		public void Putback (in Token token)
 		{
 			hasPutback = true;
 			putback = token;
