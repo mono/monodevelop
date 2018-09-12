@@ -28,29 +28,17 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public struct Selection : IEquatable<Selection>
+	public readonly struct Selection : IEquatable<Selection>
 	{
 		public static readonly Selection Empty = new Selection (true);
 
 		public bool IsEmpty {
 			get {
-				return anchor.IsEmpty;
+				return Anchor.IsEmpty;
 			}
 		}
-
-		readonly DocumentLocation anchor;
-		public DocumentLocation Anchor {
-			get {
-				return anchor;
-			}
-		}
-
-		readonly DocumentLocation lead;
-		public DocumentLocation Lead {
-			get {
-				return lead;
-			}
-		}
+		public DocumentLocation Anchor { get; }
+		public DocumentLocation Lead { get; }
 
 
 		public int MinLine {
@@ -67,13 +55,13 @@ namespace MonoDevelop.Ide.Editor
 
 		public DocumentLocation Start {
 			get {
-				return anchor < lead ? anchor : lead;
+				return Anchor < Lead ? Anchor : Lead;
 			}
 		}
 
 		public DocumentLocation End {
 			get {
-				return anchor < lead ? lead : anchor;
+				return Anchor < Lead ? Lead : Anchor;
 			}
 		}
 
@@ -86,7 +74,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool Contains (DocumentLocation loc)
 		{
-			return anchor <= loc && loc <= lead || lead < loc && loc < anchor;
+			return Anchor <= loc && loc <= Lead || Lead < loc && loc < Anchor;
 		}
 
 		public bool Contains (int line, int column)
@@ -96,7 +84,7 @@ namespace MonoDevelop.Ide.Editor
 
 		Selection (bool empty)
 		{
-			anchor = lead = DocumentLocation.Empty;
+			Anchor = Lead = DocumentLocation.Empty;
 			selectionMode = SelectionMode.Normal;
 		}
 
@@ -110,8 +98,8 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentOutOfRangeException ("anchor", anchor + " is out of range.");
 			if (lead.Line < DocumentLocation.MinLine || lead.Column < DocumentLocation.MinColumn)
 				throw new ArgumentOutOfRangeException ("lead", lead + " is out of range.");
-			this.anchor = anchor;
-			this.lead = lead;
+			this.Anchor = anchor;
+			this.Lead = lead;
 			this.selectionMode = selectionMode;
 		}
 
@@ -149,7 +137,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool IsSelected (DocumentLocation loc)
 		{
-			return anchor <= loc && loc <= lead || lead <= loc && loc <= anchor;
+			return Anchor <= loc && loc <= Lead || Lead <= loc && loc <= Anchor;
 		}
 
 		public bool IsSelected (int line, int column)
@@ -181,7 +169,7 @@ namespace MonoDevelop.Ide.Editor
 
 		internal bool ContainsLine (int lineNr)
 		{
-			return anchor.Line <= lineNr && lineNr <= lead.Line || lead.Line <= lineNr && lineNr <= anchor.Line;
+			return Anchor.Line <= lineNr && lineNr <= Lead.Line || Lead.Line <= lineNr && lineNr <= Anchor.Line;
 		}
 	}
 }

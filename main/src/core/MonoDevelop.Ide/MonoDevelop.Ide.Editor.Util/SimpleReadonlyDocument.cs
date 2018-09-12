@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Editor.Util
 			}
 		}
 
-		struct Delimiter
+		readonly struct Delimiter
 		{
 			public static readonly Delimiter Invalid = new Delimiter (-1, 0);
 

@@ -1531,26 +1531,19 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>
+	public readonly struct KeyboardShortcut : IEquatable<KeyboardShortcut>
 	{
 		public static readonly KeyboardShortcut Empty = new KeyboardShortcut ((Gdk.Key) 0, (Gdk.ModifierType) 0);
 
-		Gdk.ModifierType modifier;
-		Gdk.Key key;
-
 		public KeyboardShortcut (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			this.modifier = modifier;
-			this.key = key;
+			this.Modifier = modifier;
+			this.Key = key;
 		}
 
-		public Gdk.Key Key {
-			get { return key; }
-		}
+		public Gdk.Key Key { get; }
 
-		public Gdk.ModifierType Modifier {
-			get { return modifier; }
-		}
+		public Gdk.ModifierType Modifier { get; }
 
 		public bool IsEmpty {
 			get { return Key == (Gdk.Key) 0; }

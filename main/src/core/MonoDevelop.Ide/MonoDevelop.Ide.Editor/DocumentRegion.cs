@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// An (Begin, End) pair representing a document span. It's a TextSegment working with lines &amp; columns instead of offsets.
 	/// </summary>
-	public struct DocumentRegion : IEquatable<DocumentRegion>
+	public readonly struct DocumentRegion : IEquatable<DocumentRegion>
 	{
 		public static readonly DocumentRegion Empty = new DocumentRegion (0, 0, 0, 0);
 
@@ -41,37 +41,13 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		public bool IsEmpty {
 			get {
-				return beginLine < 1;
+				return BeginLine < 1;
 			}
 		}
-
-		readonly int beginLine;
-		public int BeginLine {
-			get {
-				return beginLine;
-			}
-		}
-
-		readonly int beginColumn;
-		public int BeginColumn {
-			get {
-				return beginColumn;
-			}
-		}
-
-		readonly int endLine;
-		public int EndLine {
-			get {
-				return endLine;
-			}
-		}
-
-		readonly int endColumn;
-		public int EndColumn {
-			get {
-				return endColumn;
-			}
-		}
+		public int BeginLine { get; }
+		public int BeginColumn { get; }
+		public int EndLine { get; }
+		public int EndColumn { get; }
 
 		public DocumentLocation Begin {
 			get {
@@ -87,18 +63,18 @@ namespace MonoDevelop.Ide.Editor
 
 		public DocumentRegion (int beginLine, int beginColumn, int endLine, int endColumn)
 		{
-			this.beginLine = beginLine;
-			this.beginColumn = beginColumn;
-			this.endLine = endLine;
-			this.endColumn = endColumn;
+			this.BeginLine = beginLine;
+			this.BeginColumn = beginColumn;
+			this.EndLine = endLine;
+			this.EndColumn = endColumn;
 		}
 		
 		public DocumentRegion (DocumentLocation begin, DocumentLocation end)
 		{
-			beginLine = begin.Line;
-			beginColumn = begin.Column;
-			endLine = end.Line;
-			endColumn = end.Column;
+			BeginLine = begin.Line;
+			BeginColumn = begin.Column;
+			EndLine = end.Line;
+			EndColumn = end.Column;
 		}
 
 		public bool Contains (DocumentLocation location)

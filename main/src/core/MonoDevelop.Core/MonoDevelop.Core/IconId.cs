@@ -29,26 +29,20 @@ using System;
 namespace MonoDevelop.Core
 {
 	[System.Diagnostics.DebuggerDisplay ("{id}")]
-	public struct IconId: IEquatable<IconId>
+	public readonly struct IconId: IEquatable<IconId>
 	{
-		readonly string id;
-		
 		public static readonly IconId Null = new IconId (null);
 
 		public IconId (string id)
 		{
-			this.id = id;
+			this.Name = id;
 		}
 
 		public bool IsNull {
-			get { return id == null; }
+			get { return Name == null; }
 		}
-		
-		public string Name {
-			get {
-				return id; 
-			}
-		}
+
+		public string Name { get; }
 
 		public static implicit operator IconId (string name)
 		{
@@ -62,22 +56,22 @@ namespace MonoDevelop.Core
 
 		public static bool operator == (IconId name1, IconId name2)
 		{
-			return name1.id == name2.id;
+			return name1.Name == name2.Name;
 		}
 
 		public static bool operator != (IconId name1, IconId name2)
 		{
-			return name1.id != name2.id;
+			return name1.Name != name2.Name;
 		}
 
 		public static bool operator == (IconId name1, string name2)
 		{
-			return name1.id == name2;
+			return name1.Name == name2;
 		}
 
 		public static bool operator != (IconId name1, string name2)
 		{
-			return name1.id != name2;
+			return name1.Name != name2;
 		}
 
 		public override bool Equals (object obj)
@@ -86,14 +80,14 @@ namespace MonoDevelop.Core
 				return false;
 
 			IconId fn = (IconId) obj;
-			return id == fn.id;
+			return Name == fn.Name;
 		}
 
 		public override int GetHashCode ( )
 		{
-			if (id == null)
+			if (Name == null)
 				return 0;
-			return id.GetHashCode ();
+			return Name.GetHashCode ();
 		}
 
 		public override string ToString ()
@@ -103,7 +97,7 @@ namespace MonoDevelop.Core
 
 		bool IEquatable<IconId>.Equals (IconId other)
 		{
-			return this.id == other.id;
+			return this.Name == other.Name;
 		}
 	}
 }
