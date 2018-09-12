@@ -85,39 +85,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
-		[Obsolete ("Use IsCompileableFile (Project p, ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)")]
+		[Obsolete ("Use p.IsCompileable")]
 		public static bool IsCompileableFile (ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
 			=> IsCompileableFile (null, file, out sck);
 
+		[Obsolete ("Use p.IsCompileable")]
 		public static bool IsCompileableFile (MonoDevelop.Projects.Project p, ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
 		{
-			sck = default;
-			if (p is DotNetProject dotNetProject) {
-				var ext = file.FilePath.Extension;
-				if (dotNetProject.RoslynLanguageName == LanguageNames.CSharp) {
-					if (FilePath.PathComparer.Equals (ext, ".cs")) {
-						sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
-					} else if (FilePath.PathComparer.Equals (ext, ".sketchcs")) {
-						sck = Microsoft.CodeAnalysis.SourceCodeKind.Script;
-					} else {
-						return false;
-					}
-				}
-				if (dotNetProject.RoslynLanguageName == LanguageNames.VisualBasic) {
-					if (FilePath.PathComparer.Equals (ext, ".vb")) {
-						sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
-					} else if (FilePath.PathComparer.Equals (ext, ".sketchvb")) {
-						sck = Microsoft.CodeAnalysis.SourceCodeKind.Script;
-					} else {
-						return false;
-					}
-				}
-			}
-			return
-				file.BuildAction == MonoDevelop.Projects.BuildAction.Compile ||
-				file.BuildAction == ApiDefinitionBuildAction ||
-				file.BuildAction == "BundleResource" ||
-				file.BuildAction == "BMacInputs";
+			sck = file.SourceCodeKind;
+			return p.IsCompileable (file.FilePath);
 		}
 	}
 }
