@@ -26,6 +26,7 @@
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -117,6 +118,7 @@
       <DependentUpon>HttpClientOptionsWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="MacPlatformSettings.cs" />
+    <Compile Include="MacHttpMessageHandlerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
