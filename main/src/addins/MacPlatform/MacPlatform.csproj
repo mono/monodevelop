@@ -111,6 +111,12 @@
     <Compile Include="Interop.cs" />
     <Compile Include="KernelInterop.cs" />
     <Compile Include="MacInterop\KeyCodes.cs" />
+    <Compile Include="Dialogs\HttpClientOptionsPanel.cs" />
+    <Compile Include="Dialogs\HttpClientOptionsWidget.cs" />
+    <Compile Include="Dialogs\HttpClientOptionsWidget.UI.cs">
+      <DependentUpon>HttpClientOptionsWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MacPlatformSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

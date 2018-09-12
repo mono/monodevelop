@@ -89,4 +89,10 @@
 		<StockIcon stockid = "project" resource = "project.png" size="Menu" />
 		<StockIcon stockid = "status-stop" resource = "status-stop-16.png" size="Menu" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section id = "HttpClientImplementation"
+		         _label = "Network"
+		         class = "MonoDevelop.MacIntegration.HttpClientOptionsPanel" />
+	</Extension>
 </ExtensionModel>
