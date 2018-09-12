@@ -23,20 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using MonoDevelop.Ide.Editor.Extension;
-using Microsoft.CodeAnalysis.VisualBasic;
-using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
-using Microsoft.CodeAnalysis.Classification;
-using Microsoft.CodeAnalysis;
-using System.Linq;
-using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor;
-using System.Collections.Immutable;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using MonoDevelop.Ide.Composition;
 using Microsoft.VisualStudio.Platform;
 
@@ -44,82 +33,9 @@ namespace MonoDevelop.VBNet
 {
 	class VBNetTextEditorExtension : TextEditorExtension
 	{
-		MonoDevelopWorkspace workspace = new MonoDevelopWorkspace (null);
-		Microsoft.CodeAnalysis.SyntaxTree parseTree;
-		internal static MetadataReference [] DefaultMetadataReferences;
-
-		DocumentId documentId;
-
-
-		static VBNetTextEditorExtension ()
-		{
-			try {
-				var mscorlib = MetadataReference.CreateFromFile (typeof (Console).Assembly.Location);
-				var systemAssembly = MetadataReference.CreateFromFile (typeof (System.Text.RegularExpressions.Regex).Assembly.Location);
-				//systemXmlLinq = MetadataReference.CreateFromFile (typeof(System.Xml.Linq.XElement).Assembly.Location);
-				var systemCore = MetadataReference.CreateFromFile (typeof (Enumerable).Assembly.Location);
-				DefaultMetadataReferences = new [] {
-					mscorlib,
-					systemAssembly,
-					systemCore,
-					//systemXmlLinq
-				};
-			} catch (Exception e) {
-				Console.WriteLine (e);
-			}
-
-		}
-
 		protected override void Initialize ()
 		{
-			base.Initialize ();
-
-			parseTree = VisualBasicSyntaxTree.ParseText (Editor.Text);
-			var sourceText = SourceText.From (Editor.Text);
-
-			var projectId = ProjectId.CreateNewId ();
-			documentId = DocumentId.CreateNewId (projectId);
-			var projectInfo = ProjectInfo.Create (
-				projectId,
-				VersionStamp.Create (),
-				"TestProject",
-				"TestProject",
-				LanguageNames.VisualBasic,
-				null,
-				null,
-				new VisualBasicCompilationOptions (
-					OutputKind.DynamicallyLinkedLibrary
-				),
-				new VisualBasicParseOptions (),
-				new [] {
-					DocumentInfo.Create(
-						documentId,
-						Editor.FileName,
-						null,
-						SourceCodeKind.Regular,
-						TextLoader.From(TextAndVersion.Create(sourceText, VersionStamp.Create())),
-						filePath: Editor.FileName
-					)
-				},
-				null,
-				DefaultMetadataReferences
-			);
-			var sInfo = SolutionInfo.Create (
-				SolutionId.CreateNewId (),
-				VersionStamp.Create (),
-				null,
-				new [] { projectInfo }
-			);
-			workspace.OpenSolutionInfo (sInfo);
-
 			Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.vb");
-			workspace.InformDocumentOpen (documentId, Editor, DocumentContext);
-		}
-
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			workspace.CloseDocument (documentId);
 		}
 	}
 }

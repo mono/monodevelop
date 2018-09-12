@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						VersionStamp.Create (),
 						p.Name,
 						fileName.FileNameWithoutExtension,
-						LanguageNames.CSharp,
+						(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
 						p.FileName,
 						fileName,
 						cp?.CreateCompilationOptions (),
@@ -300,11 +300,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 						continue;
 
-					if (TypeSystemParserNode.IsCompileableFile (f, out SourceCodeKind sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
+					if (p.IsCompileable (f.FilePath) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
 						var id = projectData.DocumentData.GetOrCreate (f.Name, oldProjectData?.DocumentData);
 						if (!duplicates.Add (id))
 							continue;
-						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
+						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f));
 					} else {
 						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, null)) {
 							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData?.DocumentData);
@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				projections.AddProjectionEntry (entry);
 			}
 
-			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
+			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 			{
 				var filePath = f.FilePath;
 				var folders = GetFolders (projectName, f);
@@ -370,7 +370,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					id.DocumentData.GetOrCreate (filePath),
 					filePath,
 					folders,
-					sourceCodeKind,
+					f.SourceCodeKind,
 					CreateTextLoader (f.Name),
 					f.Name,
 					isGenerated: false
