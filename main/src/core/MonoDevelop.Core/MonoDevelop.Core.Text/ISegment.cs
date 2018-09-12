@@ -54,11 +54,9 @@ namespace MonoDevelop.Core.Text
 	/// <summary>
 	/// An (Offset, Length) pair representing a text span.
 	/// </summary>
-	public struct TextSegment : IEquatable<TextSegment>, ISegment
+	public readonly struct TextSegment : IEquatable<TextSegment>, ISegment
 	{
 		public static readonly TextSegment Invalid = new TextSegment (-1, 0);
-
-		readonly int offset;
 
 		/// <summary>
 		///  Gets the start offset of the segment. 
@@ -66,13 +64,7 @@ namespace MonoDevelop.Core.Text
 		/// <value>
 		/// The offset.
 		/// </value>
-		public int Offset {
-			get {
-				return offset;
-			}
-		}
-
-		readonly int length;
+		public int Offset { get; }
 
 		/// <summary>
 		/// Gets the length of the segment. 
@@ -80,11 +72,7 @@ namespace MonoDevelop.Core.Text
 		/// <value>
 		/// The length.
 		/// </value>
-		public int Length {
-			get {
-				return length;
-			}
-		}
+		public int Length { get; }
 
 		/// <summary>
 		/// Gets the end offset of the segment. 
@@ -136,8 +124,8 @@ namespace MonoDevelop.Core.Text
 		/// </param>
 		public TextSegment (int offset, int length)
 		{
-			this.offset = offset;
-			this.length = length;
+			this.Offset = offset;
+			this.Length = length;
 		}
 
 		/// <summary>
@@ -206,7 +194,7 @@ namespace MonoDevelop.Core.Text
 			var otherSegment = obj as ISegment;
 			if (otherSegment == null)
 				return false;
-			return Offset == otherSegment.Offset && length == otherSegment.Length;
+			return Offset == otherSegment.Offset && Length == otherSegment.Length;
 		}
 
 		/// <summary>
