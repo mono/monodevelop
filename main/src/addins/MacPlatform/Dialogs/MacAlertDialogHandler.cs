@@ -183,7 +183,7 @@ namespace MonoDevelop.MacIntegration
 				}
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
 					// sheeting is broken on High Sierra with dark NSAppearance
-					var sheet = IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion < MacSystemInformation.HighSierra;
+					var sheet = IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion != MacSystemInformation.HighSierra;
 					if (!sheet || nativeParent == null) {
 						response = (int)alert.RunModal ();
 					} else {
