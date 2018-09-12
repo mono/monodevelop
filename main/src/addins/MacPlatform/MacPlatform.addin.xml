@@ -95,4 +95,8 @@
 		         _label = "Network"
 		         class = "MonoDevelop.MacIntegration.HttpClientOptionsPanel" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/HttpMessageHandlerProviders">
+		<Class id = "NSUrlSessionHandlerProvider" class = "MonoDevelop.MacIntegration.MacHttpMessageHandlerProvider" />
+	</Extension>
 </ExtensionModel>

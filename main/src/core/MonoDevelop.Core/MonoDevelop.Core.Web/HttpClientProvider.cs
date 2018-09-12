@@ -45,7 +45,6 @@ namespace MonoDevelop.Core.Web
 
 			if (httpMessageHandlerProvider == null) {
 				httpMessageHandlerProvider = new DefaultHttpMessageHandlerProvider ();
-				LoggingService.LogWarning ("No HttpMessageHandlerProvider was found");
 			}
 
 			credentialService = new CredentialService (new AsyncCredentialProvider ());

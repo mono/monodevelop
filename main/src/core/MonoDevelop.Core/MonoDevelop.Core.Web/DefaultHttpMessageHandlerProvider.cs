@@ -9,7 +9,7 @@ using System.Net.Http;
 
 namespace MonoDevelop.Core.Web
 {
-	class DefaultHttpMessageHandlerProvider : HttpMessageHandlerProvider
+	public class DefaultHttpMessageHandlerProvider : HttpMessageHandlerProvider
 	{
 		public override HttpMessageHandler CreateHttpMessageHandler (Uri uri, HttpClientSettings settings)
 		{

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Web
 {
-	class HttpSourceAuthenticationHandler : DelegatingHandler
+	public class HttpSourceAuthenticationHandler : DelegatingHandler
 	{
 		public static readonly int MaxAuthRetries = AmbientAuthenticationState.MaxAuthRetries;
 
@@ -25,7 +25,7 @@ namespace MonoDevelop.Core.Web
 		readonly SemaphoreSlim httpClientLock = new SemaphoreSlim (1, 1);
 		HttpSourceCredentials credentials;
 
-		public HttpSourceAuthenticationHandler (
+		internal HttpSourceAuthenticationHandler (
 			Uri source,
 			HttpClientHandler clientHandler,
 			ICredentialService credentialService)
@@ -46,6 +46,16 @@ namespace MonoDevelop.Core.Web
 			// Always take the credentials from the helper.
 			clientHandler.UseDefaultCredentials = false;
 		}
+
+		public HttpSourceAuthenticationHandler (Uri source, HttpMessageHandler innerHandler)
+			: base (innerHandler)
+		{
+			this.source = source ?? throw new ArgumentNullException (nameof (source));
+			credentialService = HttpClientProvider.CredentialService;
+			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+		}
+
+		public ICredentials Credentials => credentials;
 
 		protected override async Task<HttpResponseMessage> SendAsync (HttpRequestMessage request, CancellationToken cancellationToken)
 		{
