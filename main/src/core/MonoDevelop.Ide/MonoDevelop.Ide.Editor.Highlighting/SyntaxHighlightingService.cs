@@ -301,16 +301,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						var entry = stream.GetNextEntry ();
 						var newBundle = new LanguageBundle (Path.GetFileNameWithoutExtension (file), file);
 						while (entry != null) {
-							if (entry.IsFile && !entry.IsCrypted) {
-								if (stream.CanDecompressEntry) {
-									byte [] data = new byte [entry.Size];
-									stream.Read (data, 0, (int)entry.Size);
-									LoadFile (newBundle, entry.Name, () => new MemoryStream (data), () => new MemoryStreamProvider (data, entry.Name));
+							try {
+								if (entry.IsFile && !entry.IsCrypted) {
+									if (stream.CanDecompressEntry) {
+										byte[] data = new byte[entry.Size];
+										stream.Read (data, 0, (int)entry.Size);
+										LoadFile (newBundle, entry.Name, () => new MemoryStream (data), () => new MemoryStreamProvider (data, entry.Name));
+									}
 								}
-							} 
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while reading compressed entry " + entry.Name, e);
+							}
 							entry = stream.GetNextEntry ();
 						}
-						languageBundles.Add (newBundle); 
+						languageBundles.Add (newBundle);
 						return newBundle;
 					}
 				} catch (Exception e) {
@@ -373,8 +377,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				// e.g. xaml.json, where scopeName is on 2nd line.
 				var queueOfPrereadLines = new Queue<string> ();
 				var nameLine = file.ReadLine ();
+				if (nameLine == null)
+					return false;
 				queueOfPrereadLines.Enqueue (nameLine);
 				var versionLine = file.ReadLine ();
+				if (versionLine == null)
+					return false;
+
 				queueOfPrereadLines.Enqueue (versionLine);
 				var match = jsonNameRegex.Match (nameLine);
 				if (match.Success) {
