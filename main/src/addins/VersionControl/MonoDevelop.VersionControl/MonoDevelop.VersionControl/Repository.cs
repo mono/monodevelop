@@ -994,21 +994,4 @@ namespace MonoDevelop.VersionControl
 		IgnoreCache = 1,
 		IncludeRemoteStatus = 2
 	}
-
-	public class RepositoryMetadata : CounterMetadata
-	{
-		public RepositoryMetadata ()
-		{
-		}
-
-		public string Type {
-			get => GetProperty<string> ();
-			set => SetProperty (value);
-		}
-
-		public string Version {
-			get => GetProperty<string> ();
-			set => SetProperty (value);
-		}
-	}
 }
