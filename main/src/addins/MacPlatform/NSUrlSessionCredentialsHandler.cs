@@ -1,6 +1,5 @@
-
 //
-// MacHttpMessageHandlerProvider.cs
+// NSUrlSessionCredentialsHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -25,42 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Net.Http;
-using MonoDevelop.Core.Web;
 using Foundation;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.MacIntegration
 {
-	class MacHttpMessageHandlerProvider : HttpMessageHandlerProvider
+	class NSUrlSessionCredentialsHandler : NSUrlSessionHandler, IHttpCredentialsHandler
 	{
-		readonly DefaultHttpMessageHandlerProvider defaultProvider = new DefaultHttpMessageHandlerProvider ();
-
-		public override HttpMessageHandler CreateHttpMessageHandler (Uri uri, HttpClientSettings settings)
+		public NSUrlSessionCredentialsHandler (NSUrlSessionConfiguration configuration)
+			: base (configuration)
 		{
-			if (MacPlatformSettings.UseNSUrlSessionHandler) {
-				return CreateNSUrlSessionHandler (uri, settings);
-			}
-
-			return defaultProvider.CreateHttpMessageHandler (uri, settings);
-		}
-
-		HttpMessageHandler CreateNSUrlSessionHandler (Uri uri, HttpClientSettings settings)
-		{
-			var config = NSUrlSessionConfiguration.DefaultSessionConfiguration;
-			config.RequestCachePolicy = NSUrlRequestCachePolicy.ReloadIgnoringLocalCacheData;
-			config.URLCache = null;
-
-			var sessionHandler = new NSUrlSessionCredentialsHandler (config) {
-				DisableCaching = true,
-				AllowAutoRedirect = settings.AllowAutoRedirect,
-			};
-
-			if (!settings.SourceAuthenticationRequired) {
-				return sessionHandler;
-			}
-
-			return new HttpSourceAuthenticationHandler (uri, sessionHandler, sessionHandler);
 		}
 	}
 }

@@ -756,6 +756,8 @@
     <Compile Include="MonoDevelop.Core.Web\AmbientAuthenticationState.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpSourceCredentials.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpClientSettings.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IHttpCredentialsHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\DefaultHttpClientHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

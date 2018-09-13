@@ -119,6 +119,7 @@
     </Compile>
     <Compile Include="MacPlatformSettings.cs" />
     <Compile Include="MacHttpMessageHandlerProvider.cs" />
+    <Compile Include="NSUrlSessionCredentialsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

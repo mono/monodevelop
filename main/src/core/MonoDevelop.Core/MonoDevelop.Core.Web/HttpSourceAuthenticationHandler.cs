@@ -19,7 +19,7 @@ namespace MonoDevelop.Core.Web
 		readonly static SemaphoreSlim credentialPromptLock = new SemaphoreSlim (1, 1);
 
 		readonly Uri source;
-		readonly HttpClientHandler clientHandler;
+		readonly IHttpCredentialsHandler credentialsHandler;
 		readonly Func<Uri, IWebProxy, CredentialType, CancellationToken, Task<ICredentials>> getCredentialsAsync;
 
 		readonly SemaphoreSlim httpClientLock = new SemaphoreSlim (1, 1);
@@ -27,12 +27,12 @@ namespace MonoDevelop.Core.Web
 
 		internal HttpSourceAuthenticationHandler (
 			Uri source,
-			HttpClientHandler clientHandler,
+			DefaultHttpClientHandler clientHandler,
 			ICredentialService credentialService)
 			: base (clientHandler)
 		{
 			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			this.clientHandler = clientHandler ?? throw new ArgumentNullException (nameof (clientHandler));
+			credentialsHandler = clientHandler ?? throw new ArgumentNullException (nameof (clientHandler));
 
 			// credential service is optional
 			if (credentialService != null)
@@ -48,27 +48,31 @@ namespace MonoDevelop.Core.Web
 			clientHandler.UseDefaultCredentials = false;
 		}
 
-		public HttpSourceAuthenticationHandler (Uri source, HttpMessageHandler innerHandler)
+		public HttpSourceAuthenticationHandler (Uri source, IHttpCredentialsHandler credentialsHandler, HttpMessageHandler innerHandler)
 			: base (innerHandler)
 		{
 			this.source = source ?? throw new ArgumentNullException (nameof (source));
+			this.credentialsHandler = credentialsHandler ?? throw new ArgumentNullException (nameof (credentialsHandler));
+
 			getCredentialsAsync = HttpClientProvider.CredentialService.GetCredentialsAsync;
-			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+			credentialsHandler.Credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
 		}
 
 		public HttpSourceAuthenticationHandler (
 			Uri source,
+			IHttpCredentialsHandler credentialsHandler,
 			HttpMessageHandler innerHandler,
 			ICredentials credentials,
 			Func<Uri, IWebProxy, CredentialType, CancellationToken, Task<ICredentials>> getCredentialsAsync)
 			: base (innerHandler)
 		{
 			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			this.credentials = new HttpSourceCredentials (credentials);
+			this.credentialsHandler = credentialsHandler ?? throw new ArgumentNullException (nameof (credentialsHandler));
 			this.getCredentialsAsync = getCredentialsAsync;
-		}
 
-		public ICredentials Credentials => credentials;
+			this.credentials = new HttpSourceCredentials (credentials);
+			credentialsHandler.Credentials = this.credentials;
+		}
 
 		protected override async Task<HttpResponseMessage> SendAsync (HttpRequestMessage request, CancellationToken cancellationToken)
 		{

@@ -58,7 +58,8 @@ namespace MonoDevelop.PackageManagement
 			};
 
 			innerHandler = messageHandler;
-			messageHandler = CreateHttpSourceAuthenticationHandler (packageSource, innerHandler);
+			var credentialsHandler = GetHttpCredentialsHandler (rootHandler);
+			messageHandler = CreateHttpSourceAuthenticationHandler (packageSource, credentialsHandler, innerHandler);
 
 			// Have to pass a dummy HttpClientProvider since it may not be used by a native implementation, such as on the Mac.
 			// It looks like the only place this is used in NuGet is with the DownloadResourcePluginProvider in order to pass the
@@ -77,14 +78,31 @@ namespace MonoDevelop.PackageManagement
 			return resource;
 		}
 
-		static HttpMessageHandler CreateHttpSourceAuthenticationHandler (PackageSource packageSource, HttpMessageHandler innerHandler)
+		static IHttpCredentialsHandler GetHttpCredentialsHandler (HttpMessageHandler handler)
+		{
+			do {
+				if (handler is IHttpCredentialsHandler credentialsHandler) {
+					return credentialsHandler;
+				}
+
+				var delegatingHandler = handler as DelegatingHandler;
+				handler = delegatingHandler?.InnerHandler;
+			} while (handler != null);
+
+			return null;
+		}
+
+		static HttpMessageHandler CreateHttpSourceAuthenticationHandler (
+			PackageSource packageSource,
+			IHttpCredentialsHandler credentialsHandler,
+			HttpMessageHandler innerHandler)
 		{
 			ICredentials credentials = CredentialCache.DefaultNetworkCredentials;
 			if (packageSource.Credentials != null && packageSource.Credentials.IsValid ()) {
 				credentials = new NetworkCredential (packageSource.Credentials.Username, packageSource.Credentials.Password);
 			}
 
-			return new MonoDevelop.Core.Web.HttpSourceAuthenticationHandler (packageSource.SourceUri, innerHandler, credentials, GetCredentialsAsync);
+			return new Core.Web.HttpSourceAuthenticationHandler (packageSource.SourceUri, credentialsHandler, innerHandler, credentials, GetCredentialsAsync);
 		}
 
 		static HttpClientHandler GetOrCreateHttpClientHandler (HttpMessageHandler handler)
