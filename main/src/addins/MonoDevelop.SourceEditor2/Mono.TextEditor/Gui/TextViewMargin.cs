@@ -3358,8 +3358,11 @@ namespace Mono.TextEditor
 						layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
 						index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
 
-						if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
+						if (snapCharacters && !IsNearX1 (xp, xp1, xp2)) {
 							index++;
+							if (index < layoutWrapper.Text.Length  && (layoutWrapper.Text[index] & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker)
+								index++;
+						}
 						return true;
 					}
 				}
