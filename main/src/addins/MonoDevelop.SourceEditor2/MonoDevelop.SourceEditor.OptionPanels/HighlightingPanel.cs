@@ -74,6 +74,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void HandleThemeChanged (object sender, EventArgs e)
 		{
 			ShowStyles ();
+			schemeName = DefaultSourceEditorOptions.Instance.EditorTheme;
 		}
 		
 		protected override void OnDestroyed ()
