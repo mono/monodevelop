@@ -565,6 +565,8 @@ namespace MonoDevelop.CSharp.Formatting
 							if (Editor.GetLine (Editor.CaretLine).Length == 0)
 								Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
 						} else {
+							if (Editor.GetLine (Editor.CaretLine).Length == 0)
+								Editor.InsertAtCaret (Editor.GetVirtualIndentationString (Editor.CaretLine));
 							DoReSmartIndent ();
 						}
 					}
