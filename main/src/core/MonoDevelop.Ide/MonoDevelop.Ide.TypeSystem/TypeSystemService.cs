@@ -229,6 +229,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
 				var result = await parser.GenerateParsedDocumentProjection (options, cancellationToken);
+				if (cancellationToken.IsCancellationRequested)
+					return null;
+
 				if (options.Project != null) {
 					var ws = workspaces.First () ;
 					var projectId = ws.GetProjectId (options.Project);

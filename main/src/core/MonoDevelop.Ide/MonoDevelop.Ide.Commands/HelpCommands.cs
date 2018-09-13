@@ -102,19 +102,6 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
-	class SendFeedbackHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			FeedbackService.ShowFeedbackWindow ();
-		}
-
-		protected override void Update (CommandInfo info)
-		{
-			info.Visible = FeedbackService.Enabled;
-		}
-	}
-
 	class DumpUITreeHandler : CommandHandler
 	{
 		void DumpGtkWidget (Gtk.Widget widget, int indent = 0)

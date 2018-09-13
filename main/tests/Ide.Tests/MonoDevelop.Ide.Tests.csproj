@@ -152,6 +152,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\FullSolutionAnalysisTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataReferenceCacheTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidgetTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

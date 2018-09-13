@@ -368,8 +368,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			try {
 				file = TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
+				// We queue lines that were read for old format, so when we read new format
+				// we don't ignore 1st and 2nd line, which can cause some information missing
+				// e.g. xaml.json, where scopeName is on 2nd line.
+				var queueOfPrereadLines = new Queue<string> ();
 				var nameLine = file.ReadLine ();
+				queueOfPrereadLines.Enqueue (nameLine);
 				var versionLine = file.ReadLine ();
+				queueOfPrereadLines.Enqueue (versionLine);
 				var match = jsonNameRegex.Match (nameLine);
 				if (match.Success) {
 					if (jsonVersionRegex.Match (versionLine).Success) {
@@ -380,8 +386,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				string line;
 				bool readFileTypes = false;
-
-				while ((line = file.ReadLine ()) != null) {
+				while ((line = queueOfPrereadLines.Count > 0 ? queueOfPrereadLines.Dequeue () : null) != null || (line = file.ReadLine ()) != null) {
 					if (fileTypesRegex.Match (line).Success) {
 						readFileTypes = true;
 						fileTypes = new List<string> ();
