@@ -856,5 +856,8 @@ namespace MonoDevelop.VersionControl
 			get => GetProperty<string> ();
 			set => SetProperty (value);
 		}
+
+		[Obsolete ("Use Version and Type properties")]
+		public string TypeAndVersion { get; set; }
 	}
 }
