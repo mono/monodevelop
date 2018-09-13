@@ -33,5 +33,6 @@ namespace MonoDevelop.Core.Web
 		public bool AllowAutoRedirect { get; set; } = true;
 		public DecompressionMethods AutomaticDecompression { get; set; } = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 		public bool PreAuthenticate { get; set; }
+		public bool SourceAuthenticationRequired { get; set; } = true;
 	}
 }

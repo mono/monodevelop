@@ -28,11 +28,13 @@ namespace MonoDevelop.Core.Web
 				messageHandler = new ProxyAuthenticationHandler (clientHandler, HttpClientProvider.CredentialService, WebRequestHelper.ProxyCache);
 			}
 
-			var innerHandler = messageHandler;
+			if (settings.SourceAuthenticationRequired) {
+				var innerHandler = messageHandler;
 
-			messageHandler = new HttpSourceAuthenticationHandler (uri, clientHandler, HttpClientProvider.CredentialService) {
-				InnerHandler = innerHandler
-			};
+				messageHandler = new HttpSourceAuthenticationHandler (uri, clientHandler, HttpClientProvider.CredentialService) {
+					InnerHandler = innerHandler
+				};
+			}
 
 			return messageHandler;
 		}
