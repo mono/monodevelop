@@ -14,13 +14,7 @@ namespace MonoDevelop.Core.Web
 		public override HttpMessageHandler CreateHttpMessageHandler (Uri uri, HttpClientSettings settings)
 		{
 			var proxy = WebRequestHelper.ProxyCache.GetProxy (uri);
-
-			var clientHandler = new HttpClientHandler {
-				AllowAutoRedirect = settings.AllowAutoRedirect,
-				AutomaticDecompression = settings.AutomaticDecompression,
-				PreAuthenticate = settings.PreAuthenticate,
-				Proxy = proxy
-			};
+			var clientHandler = new DefaultHttpClientHandler (proxy, settings);
 
 			HttpMessageHandler messageHandler = clientHandler;
 
