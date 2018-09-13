@@ -104,7 +104,8 @@ namespace MonoDevelop.CSharp.OptionProvider
 						var allRawConventions = codingConventionsSnapshot.AllRawConventions;
 						try {
 							var underlyingOption = underlyingOptions.GetOption (option);
-							return editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value);
+							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
+								return true;
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error while getting editor config preferences.", ex);
 						}
