@@ -56,6 +56,10 @@ namespace MonoDevelop.MacIntegration
 				AllowAutoRedirect = settings.AllowAutoRedirect,
 			};
 
+			if (!settings.SourceAuthenticationRequired) {
+				return sessionHandler;
+			}
+
 			var handler = new HttpSourceAuthenticationHandler (uri, sessionHandler);
 
 			// Use credentials from the HttpSourceAuthenticationHandler. This will be the

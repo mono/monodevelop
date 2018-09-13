@@ -20,7 +20,7 @@ namespace MonoDevelop.Core.Web
 
 		readonly Uri source;
 		readonly HttpClientHandler clientHandler;
-		readonly ICredentialService credentialService;
+		readonly Func<Uri, IWebProxy, CredentialType, CancellationToken, Task<ICredentials>> getCredentialsAsync;
 
 		readonly SemaphoreSlim httpClientLock = new SemaphoreSlim (1, 1);
 		HttpSourceCredentials credentials;
@@ -35,7 +35,8 @@ namespace MonoDevelop.Core.Web
 			this.clientHandler = clientHandler ?? throw new ArgumentNullException (nameof (clientHandler));
 
 			// credential service is optional
-			this.credentialService = credentialService;
+			if (credentialService != null)
+				getCredentialsAsync = credentialService.GetCredentialsAsync;
 
 			// Create a new wrapper for ICredentials that can be modified
 
@@ -51,8 +52,20 @@ namespace MonoDevelop.Core.Web
 			: base (innerHandler)
 		{
 			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			credentialService = HttpClientProvider.CredentialService;
+			getCredentialsAsync = HttpClientProvider.CredentialService.GetCredentialsAsync;
 			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+		}
+
+		public HttpSourceAuthenticationHandler (
+			Uri source,
+			HttpMessageHandler innerHandler,
+			ICredentials credentials,
+			Func<Uri, IWebProxy, CredentialType, CancellationToken, Task<ICredentials>> getCredentialsAsync)
+			: base (innerHandler)
+		{
+			this.source = source ?? throw new ArgumentNullException (nameof (source));
+			this.credentials = new HttpSourceCredentials (credentials);
+			this.getCredentialsAsync = getCredentialsAsync;
 		}
 
 		public ICredentials Credentials => credentials;
@@ -75,7 +88,7 @@ namespace MonoDevelop.Core.Web
 
 				response = await base.SendAsync (request, cancellationToken);
 
-				if (credentialService == null) {
+				if (getCredentialsAsync == null) {
 					return response;
 				}
 
@@ -148,8 +161,7 @@ namespace MonoDevelop.Core.Web
 				var proxyCache = WebRequestHelper.ProxyCache;
 				var proxy = proxyCache?.GetProxy (source);
 
-				promptCredentials = await credentialService
-					.GetCredentialsAsync (source, proxy, type, token);
+				promptCredentials = await getCredentialsAsync (source, proxy, type, token);
 
 				if (promptCredentials == null) {
 					// If this is the case, this means none of the credential providers were able to
