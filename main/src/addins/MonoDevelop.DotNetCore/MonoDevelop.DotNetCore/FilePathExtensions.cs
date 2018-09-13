@@ -32,7 +32,7 @@ namespace MonoDevelop.DotNetCore
 	{
 		public static bool HasSupportedDotNetCoreProjectFileExtension (this FilePath file)
 		{
-			return file.HasExtension (".csproj") || file.HasExtension (".fsproj");
+			return file.HasExtension (".csproj") || file.HasExtension (".fsproj") || file.HasExtension (".vbproj");
 		}
 
 		/// <summary>
