@@ -17,6 +17,7 @@ namespace MonoDevelop.Debugger
 			this.Name = "MonoDevelop.Debugger.BusyEvaluatorDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString("The Debugger is Busy");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+			this.Resizable = false;
 			// Internal child MonoDevelop.Debugger.BusyEvaluatorDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Name = "dialog1_VBox";
