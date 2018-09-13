@@ -19,6 +19,7 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Tests\DocumentTests.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Mono.TextEditor.Tests\TextViewTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextLinkModeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextEditorKeyPressTimingsTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\PointToLocationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
