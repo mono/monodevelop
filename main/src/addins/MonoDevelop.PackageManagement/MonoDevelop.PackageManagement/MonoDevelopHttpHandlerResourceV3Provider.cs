@@ -41,6 +41,11 @@ namespace MonoDevelop.PackageManagement
 
 		static HttpHandlerResourceV3 CreateResource (PackageSource packageSource)
 		{
+			return CreateResource (packageSource, HttpHandlerResourceV3.CredentialService);
+		}
+
+		internal static HttpHandlerResourceV3 CreateResource (PackageSource packageSource, ICredentialService credentialService)
+		{
 			var sourceUri = packageSource.SourceUri;
 			var settings = new HttpClientSettings {
 				AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
@@ -60,7 +65,7 @@ namespace MonoDevelop.PackageManagement
 			innerHandler = messageHandler;
 			var credentialsHandler = GetHttpCredentialsHandler (rootHandler);
 
-			messageHandler = new NuGetHttpSourceAuthenticationHandler (packageSource, credentialsHandler, HttpHandlerResourceV3.CredentialService) {
+			messageHandler = new NuGetHttpSourceAuthenticationHandler (packageSource, credentialsHandler, credentialService) {
 				InnerHandler = innerHandler
 			};
 
