@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 
 			var tabSize = doc.Options.TabSize;
-			this.markup = this.selectedMarkup = markup = FormatMarkup (Ambience.EscapeText (lineText), trimStart, trimEnd, tabSize);
+			this.markup = this.selectedMarkup = markup = Ambience.EscapeText (lineText);
 
 			var searchColor = GetBackgroundMarkerColor (widget.HighlightStyle);
 
@@ -172,8 +172,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			double b1 = HslColor.Brightness (searchColor);
 			double b2 = HslColor.Brightness (SearchResultWidget.AdjustColor (widget.Style.Base (Gtk.StateType.Normal), SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.Foreground)));
 			// selected
-			markup = PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, searchColor);
-			selectedMarkup = PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor);
+			markup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, searchColor), trimStart, trimEnd, tabSize);
+			selectedMarkup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor), trimStart, trimEnd, tabSize);
 
 			Task.Run (delegate {
 				var newMarkup = doc.GetMarkup (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
@@ -212,6 +212,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (trimeStart)
 				result.Append ("…");
 			foreach (var ch in str) {
+				if (ch == '\n' || ch == '\r')
+					continue;
 				if (ch == '\t') {
 					result.Append (tab);
 					continue;
