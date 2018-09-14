@@ -47,7 +47,7 @@ namespace MonoDevelop.Core.Web
 				httpMessageHandlerProvider = new DefaultHttpMessageHandlerProvider ();
 			}
 
-			credentialService = new CredentialService (new AsyncCredentialProvider ());
+			credentialService = new CredentialService ();
 		}
 
 		public static HttpClient CreateHttpClient (string uri)

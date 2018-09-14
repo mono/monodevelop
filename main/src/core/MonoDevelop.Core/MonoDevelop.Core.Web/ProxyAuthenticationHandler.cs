@@ -28,7 +28,7 @@ namespace MonoDevelop.Core.Web
 		readonly ICredentialService credentialService;
 		readonly IProxyCredentialCache credentialCache;
 
-		int _authRetries;
+		int authRetries;
 
 		public ProxyAuthenticationHandler (
 			HttpClientHandler clientHandler,
@@ -115,8 +115,8 @@ namespace MonoDevelop.Core.Web
 				}
 
 				// Limit the number of retries
-				_authRetries++;
-				if (_authRetries >= MaxAuthRetries) {
+				authRetries++;
+				if (authRetries >= MaxAuthRetries) {
 					// user prompting no more
 					return false;
 				}
@@ -151,6 +151,7 @@ namespace MonoDevelop.Core.Web
 					proxyAddress,
 					proxy,
 					type: CredentialType.ProxyCredentials,
+					authRetries > 1,
 					cancellationToken: cancellationToken);
 			} catch (OperationCanceledException) {
 				throw; // pass-thru
