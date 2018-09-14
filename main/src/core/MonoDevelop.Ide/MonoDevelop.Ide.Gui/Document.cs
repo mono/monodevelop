@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public bool IsFile {
-			get { return Window.ViewContent.IsFile; }
+			get { return Window?.ViewContent.IsFile == true; }
 		}
 		
 		public bool IsDirty {

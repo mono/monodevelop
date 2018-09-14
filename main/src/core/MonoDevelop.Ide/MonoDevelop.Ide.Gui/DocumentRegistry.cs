@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static bool SkipView (Document view)
 		{
-			return !view.IsFile || view.IsUntitled ;
+			return !view.IsFile || view.IsUntitled;
 		}
 
 
@@ -109,7 +109,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			var changedViews = new List<DocumentInfo> ();
-			foreach (var view in openFiles) {
+			for (var i = 0; i < openFiles.Count; i++) {
+				var view = openFiles[i];
+
+				// Remove files that have already been closed/moved.
+				if (view.Document.Window?.ViewContent == null) {
+					openFiles.RemoveAt (i);
+					view.Dispose ();
+					i--;
+					continue;
+				}
+
 				if (SkipView (view.Document))
 					continue;
 				if (string.Equals (view.Document.FileName, fileName, FilePath.PathComparison)) {
