@@ -753,7 +753,6 @@
     <Compile Include="MonoDevelop.Core.Web\IAsyncCredentialProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialResponse.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialStatus.cs" />
-    <Compile Include="MonoDevelop.Core.Web\AsyncCredentialProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpSourceAuthenticationHandler.cs" />
     <Compile Include="MonoDevelop.Core.Web\AmbientAuthenticationState.cs" />
     <Compile Include="MonoDevelop.Core.Web\HttpSourceCredentials.cs" />

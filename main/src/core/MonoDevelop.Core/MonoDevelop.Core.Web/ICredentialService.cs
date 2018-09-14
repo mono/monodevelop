@@ -18,6 +18,7 @@ namespace MonoDevelop.Core.Web
 		/// <param name="uri">The URI for which credentials should be retrieved.</param>
 		/// <param name="proxy">A web proxy.</param>
 		/// <param name="type">The credential request type.</param>
+		/// <param name="isRetry">The request is being retried.</param>
 		/// <param name="cancellationToken">A cancellation token.</param>
 		/// <returns>A task that represents the asynchronous operation.
 		/// The task result (<see cref="Task{TResult}.Result" />) returns a <see cref="ICredentials" />.</returns>
@@ -28,6 +29,7 @@ namespace MonoDevelop.Core.Web
 			Uri uri,
 			IWebProxy proxy,
 			CredentialType type,
+			bool isRetry,
 			CancellationToken cancellationToken);
 	}
 }

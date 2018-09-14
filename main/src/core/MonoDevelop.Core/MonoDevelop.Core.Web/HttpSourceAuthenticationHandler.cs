@@ -148,7 +148,8 @@ namespace MonoDevelop.Core.Web
 				var proxyCache = WebRequestHelper.ProxyCache;
 				var proxy = proxyCache?.GetProxy (source);
 
-				promptCredentials = await credentialService.GetCredentialsAsync (source, proxy, type, token);
+				bool isRetry = authState.AuthenticationRetriesCount > 0;
+				promptCredentials = await credentialService.GetCredentialsAsync (source, proxy, type, isRetry, token);
 
 				if (promptCredentials == null) {
 					// If this is the case, this means none of the credential providers were able to
