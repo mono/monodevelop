@@ -34,5 +34,6 @@ namespace MonoDevelop.Core.Web
 		public DecompressionMethods AutomaticDecompression { get; set; } = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 		public bool PreAuthenticate { get; set; }
 		public bool SourceAuthenticationRequired { get; set; } = true;
+		public bool NonInteractive { get; set; }
 	}
 }

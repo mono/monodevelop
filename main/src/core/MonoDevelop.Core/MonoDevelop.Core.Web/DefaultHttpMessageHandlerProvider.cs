@@ -19,7 +19,9 @@ namespace MonoDevelop.Core.Web
 			HttpMessageHandler messageHandler = clientHandler;
 
 			if (proxy != null) {
-				messageHandler = new ProxyAuthenticationHandler (clientHandler, HttpClientProvider.CredentialService, WebRequestHelper.ProxyCache);
+				messageHandler = new ProxyAuthenticationHandler (clientHandler, HttpClientProvider.CredentialService, WebRequestHelper.ProxyCache) {
+					NonInteractive = settings.NonInteractive
+				};
 			}
 
 			if (settings.SourceAuthenticationRequired) {

@@ -52,6 +52,8 @@ namespace MonoDevelop.Core.Web
 			this.credentialCache = credentialCache;
 		}
 
+		public bool NonInteractive { get; set; }
+
 		protected override async Task<HttpResponseMessage> SendAsync (
 			HttpRequestMessage request,
 			CancellationToken cancellationToken)
@@ -103,6 +105,9 @@ namespace MonoDevelop.Core.Web
 
 		async Task<bool> AcquireCredentialsAsync (Uri requestUri, Guid cacheVersion, CancellationToken cancellationToken)
 		{
+			if (NonInteractive)
+				return false;
+
 			try {
 				await credentialPromptLock.WaitAsync ();
 
