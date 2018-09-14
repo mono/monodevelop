@@ -44,12 +44,13 @@ namespace MonoDevelop.PackageManagement
 			return CreateResource (packageSource, HttpHandlerResourceV3.CredentialService);
 		}
 
-		internal static HttpHandlerResourceV3 CreateResource (PackageSource packageSource, ICredentialService credentialService)
+		internal static HttpHandlerResourceV3 CreateResource (PackageSource packageSource, ICredentialService credentialService, bool nonInteractive = false)
 		{
 			var sourceUri = packageSource.SourceUri;
 			var settings = new HttpClientSettings {
 				AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-				SourceAuthenticationRequired = false
+				SourceAuthenticationRequired = false,
+				NonInteractive = nonInteractive
 			};
 			var rootHandler = HttpClientProvider.CreateHttpMessageHandler (sourceUri, settings);
 

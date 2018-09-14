@@ -60,7 +60,7 @@ namespace MonoDevelop.PackageManagement
 
 		static HttpMessageHandler CreateHttpMessageHandler (PackageSource packageSource, ICredentialService credentialService)
 		{
-			HttpHandlerResourceV3 resource = MonoDevelopHttpHandlerResourceV3Provider.CreateResource (packageSource, credentialService);
+			HttpHandlerResourceV3 resource = MonoDevelopHttpHandlerResourceV3Provider.CreateResource (packageSource, credentialService, nonInteractive: true);
 			return resource.MessageHandler;
 		}
 
