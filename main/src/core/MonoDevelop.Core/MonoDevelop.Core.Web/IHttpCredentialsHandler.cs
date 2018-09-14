@@ -34,5 +34,6 @@ namespace MonoDevelop.Core.Web
 	public interface IHttpCredentialsHandler
 	{
 		ICredentials Credentials { get; set; }
+		bool UseDefaultCredentials { get; set; }
 	}
 }

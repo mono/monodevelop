@@ -35,5 +35,10 @@ namespace MonoDevelop.MacIntegration
 			: base (configuration)
 		{
 		}
+
+		/// <summary>
+		/// Not supported.
+		/// </summary>
+		public bool UseDefaultCredentials { get; set; }
 	}
 }

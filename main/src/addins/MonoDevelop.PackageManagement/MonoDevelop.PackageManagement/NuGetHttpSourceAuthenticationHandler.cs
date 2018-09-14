@@ -1,67 +1,82 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 //
-// From: https://github.com/NuGet/NuGet.Client
+// Based on HttpSourceAuthenticationHandler
+// From: https://github.com/NuGet/NuGet.Client/
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Web;
+using NuGet.Common;
+using NuGet.Configuration;
 
-namespace MonoDevelop.Core.Web
+namespace NuGet.Protocol
 {
-	public class HttpSourceAuthenticationHandler : DelegatingHandler
+	class NuGetHttpSourceAuthenticationHandler : DelegatingHandler
 	{
-		public static readonly int MaxAuthRetries = AmbientAuthenticationState.MaxAuthRetries;
+		public static readonly int MaxAuthRetries = 4;
 
 		// Only one source may prompt at a time
 		readonly static SemaphoreSlim credentialPromptLock = new SemaphoreSlim (1, 1);
 
-		readonly Uri source;
+		readonly PackageSource packageSource;
 		readonly IHttpCredentialsHandler credentialsHandler;
 		readonly ICredentialService credentialService;
 
 		readonly SemaphoreSlim httpClientLock = new SemaphoreSlim (1, 1);
+		Dictionary<string, AmbientAuthenticationState> authStates = new Dictionary<string, AmbientAuthenticationState> ();
 		HttpSourceCredentials credentials;
 
-		internal HttpSourceAuthenticationHandler (
-			Uri source,
-			DefaultHttpClientHandler clientHandler,
+		public NuGetHttpSourceAuthenticationHandler (
+			PackageSource packageSource,
+			IHttpCredentialsHandler credentialsHandler,
 			ICredentialService credentialService)
-			: base (clientHandler)
 		{
-			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			credentialsHandler = clientHandler ?? throw new ArgumentNullException (nameof (clientHandler));
+			if (packageSource == null) {
+				throw new ArgumentNullException (nameof (packageSource));
+			}
 
-			// credential service is optional
+			this.packageSource = packageSource;
+
+			if (credentialsHandler == null) {
+				throw new ArgumentNullException (nameof (credentialsHandler));
+			}
+
+			this.credentialsHandler = credentialsHandler;
+
+			// credential service is optional as credentials may be attached to a package source
 			this.credentialService = credentialService;
 
 			// Create a new wrapper for ICredentials that can be modified
 
-			// This is used to match the value of HttpClientHandler.UseDefaultCredentials = true
-			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+			if (credentialService == null || !credentialService.HandlesDefaultCredentials) {
+				// This is used to match the value of HttpClientHandler.UseDefaultCredentials = true
+				credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+			} else {
+				credentials = new HttpSourceCredentials ();
+			}
 
-			clientHandler.Credentials = credentials;
+			if (packageSource.Credentials != null &&
+				packageSource.Credentials.IsValid ()) {
+				var sourceCredentials = new NetworkCredential (packageSource.Credentials.Username, packageSource.Credentials.Password);
+				credentials.Credentials = sourceCredentials;
+			}
+
+			this.credentialsHandler.Credentials = credentials;
 			// Always take the credentials from the helper.
-			clientHandler.UseDefaultCredentials = false;
-		}
-
-		public HttpSourceAuthenticationHandler (Uri source, IHttpCredentialsHandler credentialsHandler, HttpMessageHandler innerHandler)
-			: base (innerHandler)
-		{
-			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			this.credentialsHandler = credentialsHandler ?? throw new ArgumentNullException (nameof (credentialsHandler));
-
-			credentialService = HttpClientProvider.CredentialService;
-			credentialsHandler.Credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+			this.credentialsHandler.UseDefaultCredentials = false;
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync (HttpRequestMessage request, CancellationToken cancellationToken)
 		{
 			HttpResponseMessage response = null;
 			ICredentials promptCredentials = null;
-			var authState = new AmbientAuthenticationState ();
+
+			var configuration = request.GetOrCreateConfiguration ();
 
 			// Authorizing may take multiple attempts
 			while (true) {
@@ -80,10 +95,11 @@ namespace MonoDevelop.Core.Web
 				}
 
 				if (response.StatusCode == HttpStatusCode.Unauthorized ||
-					response.StatusCode == HttpStatusCode.Forbidden) {
+					(configuration.PromptOn403 && response.StatusCode == HttpStatusCode.Forbidden)) {
 					promptCredentials = await AcquireCredentialsAsync (
-						authState,
+						response.StatusCode,
 						beforeLockVersion,
+						configuration.Logger,
 						cancellationToken);
 
 					if (promptCredentials == null) {
@@ -93,11 +109,15 @@ namespace MonoDevelop.Core.Web
 					continue;
 				}
 
+				if (promptCredentials != null) {
+					CredentialsSuccessfullyUsed (packageSource.SourceUri, promptCredentials);
+				}
+
 				return response;
 			}
 		}
 
-		async Task<ICredentials> AcquireCredentialsAsync (AmbientAuthenticationState authState, Guid credentialsVersion, CancellationToken cancellationToken)
+		private async Task<ICredentials> AcquireCredentialsAsync (HttpStatusCode statusCode, Guid credentialsVersion, ILogger log, CancellationToken cancellationToken)
 		{
 			try {
 				// Only one request may prompt and attempt to auth at a time
@@ -110,14 +130,26 @@ namespace MonoDevelop.Core.Web
 					return credentials.Credentials;
 				}
 
+				var authState = GetAuthenticationState ();
+
 				if (authState.IsBlocked) {
 					cancellationToken.ThrowIfCancellationRequested ();
+
 					return null;
 				}
 
+				// Construct a reasonable message for the prompt to use.
+				CredentialRequestType type;
+				if (statusCode == HttpStatusCode.Unauthorized) {
+					type = CredentialRequestType.Unauthorized;
+				} else {
+					type = CredentialRequestType.Forbidden;
+				}
+
 				var promptCredentials = await PromptForCredentialsAsync (
-					CredentialType.RequestCredentials,
+					type,
 					authState,
+					log,
 					cancellationToken);
 
 				if (promptCredentials == null) {
@@ -132,9 +164,23 @@ namespace MonoDevelop.Core.Web
 			}
 		}
 
+		AmbientAuthenticationState GetAuthenticationState ()
+		{
+			var correlationId = ActivityCorrelationId.Current;
+
+			AmbientAuthenticationState authState;
+			if (!authStates.TryGetValue (correlationId, out authState)) {
+				authState = new AmbientAuthenticationState ();
+				authStates [correlationId] = authState;
+			}
+
+			return authState;
+		}
+
 		async Task<ICredentials> PromptForCredentialsAsync (
-			CredentialType type,
+			CredentialRequestType type,
 			AmbientAuthenticationState authState,
+			ILogger log,
 			CancellationToken token)
 		{
 			ICredentials promptCredentials;
@@ -145,10 +191,11 @@ namespace MonoDevelop.Core.Web
 
 				// Get the proxy for this URI so we can pass it to the credentialService methods
 				// this lets them use the proxy if they have to hit the network.
-				var proxyCache = WebRequestHelper.ProxyCache;
-				var proxy = proxyCache?.GetProxy (source);
+				var proxyCache = ProxyCache.Instance;
+				var proxy = proxyCache?.GetProxy (packageSource.SourceUri);
 
-				promptCredentials = await credentialService.GetCredentialsAsync (source, proxy, type, token);
+				promptCredentials = await credentialService
+					.GetCredentialsAsync (packageSource.SourceUri, proxy, type, string.Empty, token);
 
 				if (promptCredentials == null) {
 					// If this is the case, this means none of the credential providers were able to
@@ -161,10 +208,11 @@ namespace MonoDevelop.Core.Web
 			} catch (OperationCanceledException) {
 				// This indicates a non-human cancellation.
 				throw;
-			} catch (Exception) {
+			} catch (Exception e) {
 				// If this is the case, this means there was a fatal exception when interacting
 				// with the credential service (or its underlying credential providers). Either way,
 				// block asking for credentials for the live of this operation.
+				log.LogError (ExceptionUtilities.DisplayMessage (e));
 				promptCredentials = null;
 				authState.Block ();
 			} finally {
@@ -172,6 +220,11 @@ namespace MonoDevelop.Core.Web
 			}
 
 			return promptCredentials;
+		}
+
+		void CredentialsSuccessfullyUsed (Uri uri, ICredentials usedCredentials)
+		{
+			HttpHandlerResourceV3.CredentialsSuccessfullyUsed?.Invoke (uri, usedCredentials);
 		}
 	}
 }

@@ -59,7 +59,10 @@ namespace MonoDevelop.PackageManagement
 
 			innerHandler = messageHandler;
 			var credentialsHandler = GetHttpCredentialsHandler (rootHandler);
-			messageHandler = CreateHttpSourceAuthenticationHandler (packageSource, credentialsHandler, innerHandler);
+
+			messageHandler = new NuGetHttpSourceAuthenticationHandler (packageSource, credentialsHandler, HttpHandlerResourceV3.CredentialService) {
+				InnerHandler = innerHandler
+			};
 
 			// Have to pass a dummy HttpClientProvider since it may not be used by a native implementation, such as on the Mac.
 			// It looks like the only place this is used in NuGet is with the DownloadResourcePluginProvider in order to pass the
@@ -92,19 +95,6 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		static HttpMessageHandler CreateHttpSourceAuthenticationHandler (
-			PackageSource packageSource,
-			IHttpCredentialsHandler credentialsHandler,
-			HttpMessageHandler innerHandler)
-		{
-			ICredentials credentials = CredentialCache.DefaultNetworkCredentials;
-			if (packageSource.Credentials != null && packageSource.Credentials.IsValid ()) {
-				credentials = new NetworkCredential (packageSource.Credentials.Username, packageSource.Credentials.Password);
-			}
-
-			return new Core.Web.HttpSourceAuthenticationHandler (packageSource.SourceUri, credentialsHandler, innerHandler, credentials, GetCredentialsAsync);
-		}
-
 		static HttpClientHandler GetOrCreateHttpClientHandler (HttpMessageHandler handler)
 		{
 			do {
@@ -117,25 +107,6 @@ namespace MonoDevelop.PackageManagement
 			} while (handler != null);
 
 			return new HttpClientHandler ();
-		}
-
-		static Task<ICredentials> GetCredentialsAsync (
-			Uri uri,
-			IWebProxy proxy,
-			CredentialType type,
-			CancellationToken cancellationToken)
-		{
-			return HttpHandlerResourceV3.CredentialService.GetCredentialsAsync (uri, proxy, GetCredentialType (type), null, cancellationToken);
-		}
-
-		static CredentialRequestType GetCredentialType (CredentialType type)
-		{
-			switch (type) {
-				case CredentialType.ProxyCredentials:
-					return CredentialRequestType.Proxy;
-				default:
-					return CredentialRequestType.Unauthorized;
-			}
 		}
 	}
 }

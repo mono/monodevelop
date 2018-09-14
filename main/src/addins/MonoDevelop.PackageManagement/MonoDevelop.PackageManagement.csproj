@@ -374,6 +374,7 @@
     <Compile Include="MonoDevelop.PackageManagement\RepositoryProviderFactoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpHandlerResourceV3Provider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopServerWarningLogHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetHttpSourceAuthenticationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
