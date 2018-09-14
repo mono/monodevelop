@@ -112,8 +112,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 				throw new ArgumentNullException (nameof (policyParent));
 			if (editor == null)
 				throw new ArgumentNullException (nameof (editor));
-			if (line < 0 || line >= editor.LineCount)
-				throw new ArgumentOutOfRangeException (nameof (line), "should be >= 0 && < " + editor.LineCount + " was:" + line);
+			if (line < 1 || line > editor.LineCount)
+				throw new ArgumentOutOfRangeException (nameof (line), "should be >= 1 && <= " + editor.LineCount + " was:" + line);
 			CorrectIndentingImplementation (policyParent, editor, line);
 		}
 	}
