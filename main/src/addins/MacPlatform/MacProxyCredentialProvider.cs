@@ -39,6 +39,7 @@ namespace MonoDevelop.MacIntegration
 {
 	class MacProxyCredentialProvider : ICredentialProvider
 	{
+		static nint NSAlertFirstButtonReturn = 1000;
 		object guiLock = new object();
 
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
@@ -113,13 +114,13 @@ namespace MonoDevelop.MacIntegration
 							uri.Host
 						);
 
-					var alert = NSAlert.WithMessage (
-						GettextCatalog.GetString ("Credentials Required"),
-						GettextCatalog.GetString ("OK"),
-						GettextCatalog.GetString ("Cancel"),
-						null,
-						message
-					);
+					var alert = new NSAlert {
+						MessageText = GettextCatalog.GetString ("Credentials Required"),
+						InformativeText = message
+					};
+
+					var okButton = alert.AddButton (GettextCatalog.GetString ("OK"));
+					var cancelButton = alert.AddButton (GettextCatalog.GetString ("Cancel"));
 
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
@@ -155,9 +156,24 @@ namespace MonoDevelop.MacIntegration
 					view.AddSubview (passwordInput);
 
 					alert.AccessoryView = view;
+					alert.Window.InitialFirstResponder = usernameInput;
 
-					if (alert.RunModal () != 1)
-						return;
+					EventHandler handler = (o, e) => {
+						// The NSAlert defines the keyviewloop after it is displayed so the tab order is defined
+						// here otherwise once the focus is on the OK and Cancel buttons it is not possible to tab
+						// to the username and password NSTextFields.
+						usernameInput.NextKeyView = passwordInput;
+						passwordInput.NextKeyView = cancelButton;
+						okButton.NextKeyView = usernameInput;
+					};
+
+					try {
+						alert.Window.DidBecomeKey += handler;
+						if (alert.RunModal () != NSAlertFirstButtonReturn)
+							return;
+					} finally {
+						alert.Window.DidBecomeKey -= handler;
+					}
 
 					var username = usernameInput.StringValue;
 					var password = passwordInput.StringValue;
