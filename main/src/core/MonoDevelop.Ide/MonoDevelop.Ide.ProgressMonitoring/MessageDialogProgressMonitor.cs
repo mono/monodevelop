@@ -71,6 +71,16 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			}
 		}
 
+		internal bool AllowCancel {
+			get => dialog.AllowCancel;
+			set => dialog.AllowCancel = value;
+		}
+
+		internal string Message {
+			get => dialog.Message;
+			set => dialog.Message = value;
+		}
+
 		protected override void OnWriteLog (string text)
 		{
 			if (dialog != null) {

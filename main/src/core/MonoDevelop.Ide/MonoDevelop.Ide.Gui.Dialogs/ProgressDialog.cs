@@ -75,6 +75,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			buffer.TagTable.Add (tag);
 			tags.Add (tag);
 		}
+
+		internal bool AllowCancel {
+			get => btnCancel.Visible;
+			set => btnCancel.Visible = value;
+		}
 		
 		public CancellationTokenSource CancellationTokenSource {
 			get { return cancellationTokenSource; }
