@@ -656,11 +656,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void LoadStyles (object sender = null, EventArgs args = null)
 		{
-			Appearance = IdeApp.Preferences.UserInterfaceTheme == Theme.Light
-				? NSAppearance.GetAppearance (NSAppearance.NameAqua)
-				: MacSystemInformation.OsVersion < MacSystemInformation.Mojave
-					 ? NSAppearance.GetAppearance (NSAppearance.NameVibrantDark)
-					 : NSAppearance.GetAppearance (new NSString ("NSAppearanceNameDarkAqua"));
+			Appearance = IdeTheme.GetAppearance ();
 
 			UpdateApplicationNamePlaceholderText ();
 			textColor = ColorForType (messageType);

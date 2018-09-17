@@ -31,6 +31,7 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt.Mac;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -68,11 +69,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void UpdateCell ()
 		{
-			Appearance = IdeApp.Preferences.UserInterfaceTheme == Theme.Light
-				? NSAppearance.GetAppearance (NSAppearance.NameAqua)
-				: MacSystemInformation.OsVersion < MacSystemInformation.Mojave
-					? NSAppearance.GetAppearance (NSAppearance.NameVibrantDark)
-					: NSAppearance.GetAppearance (new NSString ("NSAppearanceNameDarkAqua"));
+			Appearance = IdeTheme.GetAppearance ();
 			NeedsDisplay = true;
 		}
 

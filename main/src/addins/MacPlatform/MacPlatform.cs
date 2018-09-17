@@ -475,7 +475,7 @@ namespace MonoDevelop.MacIntegration
 					IdeTheme.ApplyTheme (colorPanel.ContentView.Superview.Window);
 					var appearance = colorPanel.ContentView.Superview.Window.Appearance;
 					if (appearance == null)
-						appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceTheme == Theme.Light ? NSAppearance.NameAqua : NSAppearance.NameVibrantDark);
+						appearance = IdeTheme.GetAppearance ();
 					// The subviews of the shared NSColorPanel do not inherit the appearance of the main panel window
 					// and need to be updated recursively.
 					UpdateColorPanelSubviewsAppearance (colorPanel.ContentView.Superview, appearance);
