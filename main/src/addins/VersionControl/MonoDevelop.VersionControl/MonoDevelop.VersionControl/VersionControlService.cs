@@ -16,6 +16,7 @@ using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.VersionControl
 {
@@ -225,6 +226,8 @@ namespace MonoDevelop.VersionControl
 			return repo;
 		}
 
+		readonly static Counter<RepositoryMetadata> Repositories = InstrumentationService.CreateCounter<RepositoryMetadata> ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
+		internal static readonly Dictionary<FilePath,Repository> repositoryCache = new Dictionary<FilePath,Repository> ();
 		public static Repository GetRepositoryReference (string path, string id)
 		{
 			VersionControlSystem detectedVCS = null;
@@ -245,8 +248,21 @@ namespace MonoDevelop.VersionControl
 					}
 				}
 			}
+
+			bestMatch = bestMatch.CanonicalPath;
+			if (repositoryCache.TryGetValue (bestMatch, out var repository))
+				return repository;
+
 			try {
-				return detectedVCS?.GetRepositoryReference (bestMatch, id);
+				var repo = detectedVCS?.GetRepositoryReference (bestMatch, id);
+				if (repo != null) {
+					repositoryCache.Add (bestMatch, repo);
+					Repositories.Inc (new RepositoryMetadata {
+						Type = detectedVCS.Name,
+						Version = detectedVCS.Version,
+					});
+				}
+				return repo;
 			} catch (Exception e) {
 				LoggingService.LogError ($"Could not query {detectedVCS.Name} repository reference", e);
 				return null;
@@ -813,6 +829,7 @@ namespace MonoDevelop.VersionControl
 		public void Dispose ()
 		{
 			VersionControlService.referenceCache.Remove (repo);
+			VersionControlService.repositoryCache.Remove (repo.RootPath.CanonicalPath);
 			repo.Unref ();
 		}
 	}
@@ -822,5 +839,25 @@ namespace MonoDevelop.VersionControl
 		Pull,
 		Push,
 		Other
+	}
+
+	public class RepositoryMetadata : CounterMetadata
+	{
+		public RepositoryMetadata ()
+		{
+		}
+
+		public string Type {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string Version {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		[Obsolete ("Use Version and Type properties")]
+		public string TypeAndVersion { get; set; }
 	}
 }
