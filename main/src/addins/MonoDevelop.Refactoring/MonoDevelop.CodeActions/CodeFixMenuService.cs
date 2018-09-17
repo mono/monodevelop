@@ -163,14 +163,16 @@ namespace MonoDevelop.CodeActions
 			if (provider == null)
 				return null;
 			
-			var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
 
 			var title = fixState.GetDefaultFixAllTitle ();
 			var label = mnemonic < 0 ? title : CreateLabel (title, ref mnemonic);
 
 			var item = new CodeFixMenuEntry (label, async delegate {
 				// Task.Run here so we don't end up binding the whole document on popping the menu, also there is no cancellation token support
-				var fix = Task.Run (() => provider.GetFixAsync (context));
+				var fix = Task.Run (() => {
+					var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
+					return provider.GetFixAsync (context);
+				});
 
 				await new ContextActionRunner (editor, await fix).Run ();
 			});
