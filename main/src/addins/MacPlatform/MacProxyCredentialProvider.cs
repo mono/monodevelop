@@ -156,24 +156,10 @@ namespace MonoDevelop.MacIntegration
 					view.AddSubview (passwordInput);
 
 					alert.AccessoryView = view;
+					alert.Window.WeakDelegate = new PasswordAlertWindowDelegate (usernameInput, passwordInput, cancelButton, okButton);
 					alert.Window.InitialFirstResponder = usernameInput;
-
-					EventHandler handler = (o, e) => {
-						// The NSAlert defines the keyviewloop after it is displayed so the tab order is defined
-						// here otherwise once the focus is on the OK and Cancel buttons it is not possible to tab
-						// to the username and password NSTextFields.
-						usernameInput.NextKeyView = passwordInput;
-						passwordInput.NextKeyView = cancelButton;
-						okButton.NextKeyView = usernameInput;
-					};
-
-					try {
-						alert.Window.DidBecomeKey += handler;
-						if (alert.RunModal () != NSAlertFirstButtonReturn)
-							return;
-					} finally {
-						alert.Window.DidBecomeKey -= handler;
-					}
+					if (alert.RunModal () != NSAlertFirstButtonReturn)
+						return;
 
 					var username = usernameInput.StringValue;
 					var password = passwordInput.StringValue;
@@ -187,6 +173,37 @@ namespace MonoDevelop.MacIntegration
 				Keychain.AddInternetPassword (uri, result.UserName, result.Password);
 
 			return result;
+		}
+
+		class PasswordAlertWindowDelegate : NSWindowDelegate
+		{
+			readonly WeakReference<NSTextField> weakUsernameInput;
+			readonly WeakReference<NSTextField> weakPasswordInput;
+			readonly WeakReference<NSButton> weakCancelButton;
+			readonly WeakReference<NSButton> weakOkButton;
+
+			public PasswordAlertWindowDelegate (NSTextField usernameInput, NSTextField passwordInput, NSButton cancelButton, NSButton okButton)
+			{
+				weakUsernameInput = new WeakReference<NSTextField> (usernameInput);
+				weakPasswordInput = new WeakReference<NSTextField> (passwordInput);
+				weakCancelButton = new WeakReference<NSButton> (cancelButton);
+				weakOkButton = new WeakReference<NSButton> (okButton);
+			}
+
+			public override void DidBecomeKey (NSNotification notification)
+			{
+				if (!weakUsernameInput.TryGetTarget (out var usernameInput) ||
+					!weakPasswordInput.TryGetTarget (out var passwordInput) ||
+					!weakCancelButton.TryGetTarget (out var cancelButton) ||
+					!weakOkButton.TryGetTarget (out var okButton))
+					return;
+				// The NSAlert defines the keyviewloop after it is displayed so the tab order is defined
+				// here otherwise once the focus is on the OK and Cancel buttons it is not possible to tab
+				// to the username and password NSTextFields.
+				usernameInput.NextKeyView = passwordInput;
+				passwordInput.NextKeyView = cancelButton;
+				okButton.NextKeyView = usernameInput;
+			}
 		}
 	}
 }
