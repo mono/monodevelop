@@ -685,7 +685,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					VersionStamp.Create (),
 					p.Name,
 					fileName.FileNameWithoutExtension,
-					LanguageNames.CSharp,
+					(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
 					p.FileName,
 					fileName,
 					cp != null ? cp.CreateCompilationOptions () : null,
@@ -727,14 +727,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Func<SolutionData, string, TextLoader> CreateTextLoader = (data, fileName) => data.Files.GetOrAdd (fileName, a => new MonoDevelopTextLoader (a));
 
-		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
+		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
 			var filePath = f.FilePath;
 			return DocumentInfo.Create (
 				id.GetOrCreateDocumentId (filePath),
 				filePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
-				sourceCodeKind,
+				f.SourceCodeKind,
 				CreateTextLoader (data, f.Name),
 				f.Name,
 				false
@@ -786,12 +786,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
 
-				SourceCodeKind sck;
-				if (TypeSystemParserNode.IsCompileableFile (f, out sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
+				if (p.IsCompileable (f.FilePath) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
 					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
 					if (!duplicates.Add (id))
 						continue;
-					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
+					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f));
 				} else {
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p, oldProjectData)) {
 						var projectedId = projectData.GetOrCreateDocumentId (projectedDocument.FilePath, oldProjectData);
