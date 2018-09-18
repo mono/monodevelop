@@ -1,6 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\build\Microsoft.Build.MSBuildLocator.props" Condition="Exists('..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\build\Microsoft.Build.MSBuildLocator.props')" />
   <Import Project="..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
     <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
@@ -71,7 +72,6 @@
     <Reference Include="SQLitePCLRaw.provider.e_sqlite3">
       <HintPath>..\..\..\packages\SQLitePCLRaw.provider.e_sqlite3.net45.1.1.11\lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix" />
     <Reference Include="System.Composition.AttributedModel, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
     </Reference>

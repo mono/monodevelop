@@ -1,0 +1,34 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesGtkCopyToOutput Condition="$(ReferencesGtkCopyToOutput) == ''">false</ReferencesGtkCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Mono.Cairo, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>$(ReferencesGtkCopyToOutput)</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
