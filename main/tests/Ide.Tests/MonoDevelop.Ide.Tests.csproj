@@ -154,6 +154,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataReferenceCacheTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidgetTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\AbstractCodeFormatterTests.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemServiceTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
