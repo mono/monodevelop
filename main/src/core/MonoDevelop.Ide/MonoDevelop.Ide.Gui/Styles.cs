@@ -561,9 +561,9 @@ namespace MonoDevelop.Ide.Gui
 
 			// New Project Dialog
 
-			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#77828c");
-			NewProjectDialog.BannerLineColor = Color.FromName ("#707a83");
-			NewProjectDialog.BannerForegroundColor = BaseBackgroundColor;
+			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#f5f5f5");
+			NewProjectDialog.BannerLineColor = Color.FromName ("#e0e0e0");
+			NewProjectDialog.BannerForegroundColor = Color.FromName ("#6b6b6b");
 			NewProjectDialog.TemplateListBackgroundColor = Color.FromName ("#f9f9fa");
 			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#e2e2e2");
 			NewProjectDialog.TemplateLanguageButtonBackground = BaseBackgroundColor;
@@ -571,9 +571,9 @@ namespace MonoDevelop.Ide.Gui
 
 			// Wizards
 
-			Wizard.BannerBackgroundColor = Color.FromName ("#77828c");
-			Wizard.BannerShadowColor = Color.FromName ("#707a83");
-			Wizard.BannerForegroundColor = BaseBackgroundColor;
+			Wizard.BannerBackgroundColor = NewProjectDialog.BannerBackgroundColor;
+			Wizard.BannerShadowColor = NewProjectDialog.BannerLineColor;
+			Wizard.BannerForegroundColor = NewProjectDialog.BannerForegroundColor;
 			Wizard.BannerSecondaryForegroundColor = SecondaryTextColor;
 			Wizard.PageSeparatorColor = ThinSplitterColor;
 			Wizard.ContentSeparatorColor = Color.FromName ("#d2d5d9");
@@ -682,9 +682,9 @@ namespace MonoDevelop.Ide.Gui
 
 			// New Project Dialog
 
-			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#6a737e");
-			NewProjectDialog.BannerLineColor = NewProjectDialog.BannerBackgroundColor;
-			NewProjectDialog.BannerForegroundColor = Color.FromName ("#ffffff");
+			NewProjectDialog.BannerBackgroundColor = Color.FromName ("#333333");
+			NewProjectDialog.BannerLineColor = Color.FromName ("#2e2e2e");
+			NewProjectDialog.BannerForegroundColor = Color.FromName ("#c2c2c2");
 			NewProjectDialog.TemplateListBackgroundColor = DockBarBackground;
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
 			NewProjectDialog.TemplateLanguageButtonBackground = SecondaryBackgroundDarkerColor;
@@ -692,9 +692,9 @@ namespace MonoDevelop.Ide.Gui
 
 			// Wizards
 
-			Wizard.BannerBackgroundColor = Color.FromName ("#6a737e");
-			Wizard.BannerShadowColor = Wizard.BannerBackgroundColor;
-			Wizard.BannerForegroundColor = Color.FromName ("#ffffff");
+			Wizard.BannerBackgroundColor = NewProjectDialog.BannerBackgroundColor;
+			Wizard.BannerShadowColor = NewProjectDialog.BannerLineColor;
+			Wizard.BannerForegroundColor = NewProjectDialog.BannerForegroundColor;
 			Wizard.BannerSecondaryForegroundColor = SecondaryTextColor;
 			Wizard.PageSeparatorColor = ThinSplitterColor;
 			Wizard.ContentSeparatorColor = Color.FromName ("#6e6e6e");
