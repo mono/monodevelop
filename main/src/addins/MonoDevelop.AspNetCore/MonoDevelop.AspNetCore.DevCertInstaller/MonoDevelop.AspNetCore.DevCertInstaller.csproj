@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -12,7 +13,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Mono.Posix" />
     <Reference Include="Xamarin.Mac">
       <HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
