@@ -132,7 +132,8 @@ namespace MonoDevelop.Ide.Projects
 			topBannerLabel.Name = "topBannerLabel";
 			topBannerLabel.Accessible.Name = "topBannerLabel";
 			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy (); // UNDONE: VV: Use FontService?
-			font.Size = (int)(font.Size * 1.8);
+			font.Size = (int)(font.Size * 2.0);
+			font.Weight = Pango.Weight.Bold;
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);
 			var topLabelHBox = new HBox ();
