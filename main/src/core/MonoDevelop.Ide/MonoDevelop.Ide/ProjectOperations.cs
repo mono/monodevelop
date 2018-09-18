@@ -1444,7 +1444,10 @@ namespace MonoDevelop.Ide
 			var executionDeps = executionTargets.SelectMany (et => et.GetExecutionDependencies ());
 			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionDeps);
 
-			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
+			var context = new TargetEvaluationContext ();
+			context.GlobalProperties.SetValue ("IsBuildingForExecution", true);
+
+			if (!FastCheckNeedsBuild (buildTarget, configuration, context)) {
 				return true;
 			}
 
@@ -1469,7 +1472,7 @@ namespace MonoDevelop.Ide
 				prepareExecutionTask = RunPrepareExecutionTasks ();
 			}
 
-			BuildResult result = await Build (buildTarget, token).Task;
+			BuildResult result = await Build (buildTarget, token, context).Task;
 
 			if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
 				prepareOpTokenSource?.Cancel ();
@@ -1531,7 +1534,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		/// <param name="target">The build target to check.</param>
 		/// <param name="configuration">The build configuration selector.</param>
-		static bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		static bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (FastBuildCheckDisabled ()) {
 				return true;
@@ -1563,7 +1566,7 @@ namespace MonoDevelop.Ide
 			}
 
 			foreach (var item in items) {
-				if (!(item is Project p) || p.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ()))) {
+				if (!(item is Project p) || p.FastCheckNeedsBuild (configuration, InitOperationContext (target, context))) {
 					return true;
 				}
 			}

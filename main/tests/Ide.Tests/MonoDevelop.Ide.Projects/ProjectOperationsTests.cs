@@ -247,5 +247,53 @@ namespace MonoDevelop.Ide.Projects
 				return !IsBuildUpToDate;
 			}
 		}
+
+		[Test]
+		public async Task BuildingForExecutionProperty ()
+		{
+			using (var proj = new CheckBuildingForExecutionPropertyProject ())
+			using (var sln = CreateSimpleSolutionWithItems (proj)) {
+
+				Assert.AreEqual (null, proj.BuildPropertyValue);
+				Assert.AreEqual (null, proj.CheckPropertyValue);
+
+				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { proj }, ConfigurationSelector.Default);
+				Assert.IsTrue (success);
+				Assert.AreEqual (true, proj.BuildPropertyValue);
+				Assert.AreEqual (true, proj.CheckPropertyValue);
+
+				proj.CheckPropertyValue = null;
+				proj.BuildPropertyValue = null;
+
+				var result = await IdeApp.ProjectOperations.Build (proj).Task;
+				Assert.IsFalse (result.Failed);
+				Assert.AreEqual (false, proj.BuildPropertyValue);
+				Assert.AreEqual (false, proj.CheckPropertyValue);
+			}
+		}
+
+		class CheckBuildingForExecutionPropertyProject : Project
+		{
+			public CheckBuildingForExecutionPropertyProject ()
+			{
+				EnsureInitialized ();
+			}
+
+			public bool? BuildPropertyValue { get; set; }
+			public bool? CheckPropertyValue { get; set; }
+
+			protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+			{
+				var ctx = operationContext as TargetEvaluationContext;
+				BuildPropertyValue = ctx?.GlobalProperties?.GetValue<bool> ("IsBuildingForExecution") ?? false;
+				return Task.FromResult (new BuildResult { BuildCount = 1 });
+			}
+
+			protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+			{
+				CheckPropertyValue = context.GlobalProperties.GetValue<bool> ("IsBuildingForExecution");
+				return true;
+			}
+		}
 	}
 }
