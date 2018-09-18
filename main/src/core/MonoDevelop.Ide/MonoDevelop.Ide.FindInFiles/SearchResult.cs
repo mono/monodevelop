@@ -36,6 +36,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Text;
 using MonoDevelop.Core;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -129,14 +130,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			int col = Offset - line.Offset;
 			int markupStartOffset = 0;
 			bool trimStart = false, trimEnd = false;
+			int length;
 			if (col < indent) {
 				trimEnd = line.Length > maximumMarkupLength;
+				length = Math.Min (maximumMarkupLength, line.Length);
 				// search result contained part of the indent.
-				lineText = doc.GetTextAt (line.Offset, Math.Min (maximumMarkupLength, line.Length));
-				markup = doc.GetMarkup (line.Offset, Math.Min (maximumMarkupLength, line.Length), new MarkupOptions (MarkupFormat.Pango));
+				lineText = doc.GetTextAt (line.Offset, length);
 			} else {
 				// if not crop the indent
-				var length = line.Length - indent;
+				length = line.Length - indent;
 				if (length > maximumMarkupLength) {
 					markupStartOffset = Math.Min (Math.Max (0, col - indent - maximumMarkupLength / 2), line.Length - maximumMarkupLength);
 					trimEnd = markupStartOffset + maximumMarkupLength < line.Length;
@@ -144,13 +146,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					length = maximumMarkupLength;
 				}
 				lineText = doc.GetTextAt (line.Offset + markupStartOffset + indent, length);
-				markup = doc.GetMarkup (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
 				col -= indent;
 			}
-
-			selectedMarkup = Ambience.EscapeText (lineText);
-			markup = widget.AdjustColors (markup);
-
 			if (col >= 0) {
 				uint start;
 				uint end;
@@ -165,43 +162,67 @@ namespace MonoDevelop.Ide.FindInFiles
 				endIndex = (int)end;
 			}
 
-			try {
-				var searchColor = GetBackgroundMarkerColor (widget.HighlightStyle);
-				double b1 = HslColor.Brightness (searchColor);
+			var tabSize = doc.Options.TabSize;
+			this.markup = this.selectedMarkup = markup = Ambience.EscapeText (lineText);
 
-				double b2 = HslColor.Brightness (SearchResultWidget.AdjustColor (widget.Style.Base (Gtk.StateType.Normal), SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.Foreground)));
-				double delta = Math.Abs (b1 - b2);
-				if (delta < 0.1) {
-					var color1 = SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.FindHighlight);
-					if (color1.L + 0.5 > 1.0) {
-						color1.L -= 0.5;
-					} else {
-						color1.L += 0.5;
+			var searchColor = GetBackgroundMarkerColor (widget.HighlightStyle);
+
+			var selectedSearchColor = widget.Style.Base (Gtk.StateType.Selected);
+			selectedSearchColor = searchColor.AddLight (-0.2);
+			double b1 = HslColor.Brightness (searchColor);
+			double b2 = HslColor.Brightness (SearchResultWidget.AdjustColor (widget.Style.Base (Gtk.StateType.Normal), SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.Foreground)));
+			// selected
+			markup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, searchColor), trimStart, trimEnd, tabSize);
+			selectedMarkup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor), trimStart, trimEnd, tabSize);
+
+			Task.Run (delegate {
+				var newMarkup = doc.GetMarkup (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
+				newMarkup = widget.AdjustColors (newMarkup);
+
+				try {
+					double delta = Math.Abs (b1 - b2);
+					if (delta < 0.1) {
+						var color1 = SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.FindHighlight);
+						if (color1.L + 0.5 > 1.0) {
+							color1.L -= 0.5;
+						} else {
+							color1.L += 0.5;
+						}
+						searchColor = color1;
 					}
-					searchColor = color1;
-				}
-				if (startIndex != endIndex) {
-					markup = PangoHelper.ColorMarkupBackground (markup, (int)startIndex, (int)endIndex, searchColor);
+					if (startIndex != endIndex) {
+						newMarkup = PangoHelper.ColorMarkupBackground (newMarkup, (int)startIndex, (int)endIndex, searchColor);
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while setting the text renderer markup to: " + newMarkup, e);
 				}
 
-				// selected
-				var selectedSearchColor = widget.Style.Base (Gtk.StateType.Selected);
-				selectedSearchColor = searchColor.AddLight (-0.2);
-				selectedMarkup = PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while setting the text renderer markup to: " + markup, e);
-			}
+				newMarkup = FormatMarkup (newMarkup, trimStart, trimEnd, tabSize);
+				Runtime.RunInMainThread (delegate {
+					this.markup = newMarkup;
+					widget.QueueDraw ();
+				});
+			});
+		}
 
-			markup = markup.Replace ("\t", new string (' ', doc.Options.TabSize));
-			selectedMarkup = selectedMarkup.Replace ("\t", new string (' ', doc.Options.TabSize));
-			if (trimStart) {
-				markup = "…" + markup;
-				selectedMarkup = "…" + selectedMarkup;
+		static string FormatMarkup (string str, bool trimeStart, bool trimEnd, int tabSize)
+		{
+			var result = StringBuilderCache.Allocate ();
+			var tab = new string (' ', tabSize);
+			if (trimeStart)
+				result.Append ("…");
+			foreach (var ch in str) {
+				if (ch == '\n' || ch == '\r')
+					continue;
+				if (ch == '\t') {
+					result.Append (tab);
+					continue;
+				}
+				result.Append (ch);
 			}
-			if (trimEnd) {
-				markup += "…";
-				selectedMarkup += "…";
-			}
+			if (trimEnd)
+				result.Append ("…");
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static int TranslateIndexToUTF8 (string text, int index)

@@ -413,11 +413,12 @@ namespace Mono.TextEditor
 
 		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
-			var mode = Document.SyntaxMode;
-			var style = fitIdeStyle ? SyntaxHighlightingService.GetEditorTheme(Parent.GetIdeColorStyleName()) : ColorStyle;
+			var doc = Document;
+			var mode = doc.SyntaxMode;
+			var style = fitIdeStyle ? SyntaxHighlightingService.GetEditorTheme (Parent.GetIdeColorStyleName ()) : ColorStyle;
 
 			if (style == null) {
-				var str = Document.GetTextAt (offset, length);
+				var str = doc.GetTextAt (offset, length);
 				if (removeIndent)
 					str = str.TrimStart (' ', '\t');
 				return ConvertToPangoMarkup (str, replaceTabs);
@@ -426,12 +427,12 @@ namespace Mono.TextEditor
 			int curOffset = offset;
 
 			StringBuilder result = StringBuilderCache.Allocate ();
-			while (curOffset < offset + length && curOffset < Document.Length) {
-				DocumentLine line = Document.GetLineByOffset (curOffset);
+			while (curOffset < offset + length && curOffset < doc.Length) {
+				DocumentLine line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
 				if (removeIndent) {
-					var indentString = line.GetIndentation (Document);
+					var indentString = line.GetIndentation (doc);
 					var curIndent = CalcIndentLength (indentString);
 					if (indentLength < 0) {
 						indentLength = curIndent;
@@ -471,7 +472,7 @@ namespace Mono.TextEditor
 						result.Append (">");
 						styleStack.Push (chunkStyle);
 					}
-					result.Append (ConvertToPangoMarkup (Document.GetTextBetween (chunk.Offset, System.Math.Min (chunk.EndOffset, Document.Length)), replaceTabs));
+					result.Append (ConvertToPangoMarkup (doc.GetTextBetween (chunk.Offset, System.Math.Min (chunk.EndOffset, doc.Length)), replaceTabs));
 				}
 				while (styleStack.Count > 0) {
 					result.Append ("</span>");
