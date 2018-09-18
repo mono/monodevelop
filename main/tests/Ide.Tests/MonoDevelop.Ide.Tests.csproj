@@ -142,6 +142,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceOpenDocumentDataTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopRuleSetManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidgetTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\AbstractCodeFormatterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
