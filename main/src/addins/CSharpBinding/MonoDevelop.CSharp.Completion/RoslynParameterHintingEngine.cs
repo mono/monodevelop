@@ -45,6 +45,8 @@ namespace MonoDevelop.CSharp.Completion
 						bestSignatureHelpItems = signatureHelpItems;
 					else if (signatureHelpItems.ApplicableSpan.Start > bestSignatureHelpItems.ApplicableSpan.Start)
 						bestSignatureHelpItems = signatureHelpItems;
+				} catch (OperationCanceledException) {
+					return ParameterHintingResult.Empty;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting items from parameter provider " + provider, e);
 				}
