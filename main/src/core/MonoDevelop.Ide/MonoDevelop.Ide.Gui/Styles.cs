@@ -492,7 +492,7 @@ namespace MonoDevelop.Ide.Gui
 			StatusWarningTextColor = BaseBackgroundColor;
 			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
 			WarningBoxForegroundColor = Color.FromName ("#000000");
-			WarningForegroundColor = Color.FromName ("#a08000");
+			WarningForegroundColor = Color.FromName ("#986923");
 
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
 			StatusErrorTextColor = BaseBackgroundColor;

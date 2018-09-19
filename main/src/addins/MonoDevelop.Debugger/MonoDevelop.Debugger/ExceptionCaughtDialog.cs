@@ -49,6 +49,7 @@ namespace MonoDevelop.Debugger
 		VBox VBox;
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
+		static readonly Gdk.Color ExceptionHeaderBackgroundColor = new Gdk.Color (160, 103, 5);
 
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 
@@ -112,7 +113,7 @@ namespace MonoDevelop.Debugger
 }
 widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 ");
-			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, new Gdk.Color (119, 130, 140));
+			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, ExceptionHeaderBackgroundColor);
 
 			ExceptionHelpLinkLabel.SetLinkHandler ((str) => DesktopService.ShowUrl (str));
 			ExceptionTypeLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
@@ -151,7 +152,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 			eventBox.Add (frame);
 			eventBox.ShowAll ();
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (119, 130, 140));
+			eventBox.ModifyBg (StateType.Normal, ExceptionHeaderBackgroundColor);
 
 			return eventBox;
 		}
