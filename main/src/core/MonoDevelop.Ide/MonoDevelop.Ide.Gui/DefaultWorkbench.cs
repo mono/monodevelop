@@ -804,6 +804,7 @@ namespace MonoDevelop.Ide.Gui
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			
 			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
+
 			IdeApp.OnExited ();
 			OnClosed (null);
 			

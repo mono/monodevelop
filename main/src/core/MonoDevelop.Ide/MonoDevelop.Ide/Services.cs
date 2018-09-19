@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
@@ -118,6 +119,10 @@ namespace MonoDevelop.Ide
 
 	class StartupMetadata: AssetMetadata
 	{	
+		public StartupMetadata ()
+		{
+		}
+
 		public long CorrectedStartupTime {
 			get => GetProperty<long> ();
 			set => SetProperty (value);
@@ -140,6 +145,10 @@ namespace MonoDevelop.Ide
 		}
 		public long TimeSinceLogin {
 			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+		public Dictionary<string, long> Timings {
+			get => GetProperty<Dictionary<string, long>> ();
 			set => SetProperty (value);
 		}
 	}
