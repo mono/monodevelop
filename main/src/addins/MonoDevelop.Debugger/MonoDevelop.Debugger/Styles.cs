@@ -45,6 +45,8 @@ namespace MonoDevelop.Debugger
 
 		public class ExceptionCaughtDialogStyle
 		{
+			public Color HeaderBackgroundColor { get; internal set; }
+			public Color HeaderTextColor { get; internal set; }
 			public Color TreeBackgroundColor { get; internal set; }
 			public Color TreeTextColor { get; internal set; }
 			public Color LineNumberTextColor { get; internal set; }
@@ -67,6 +69,8 @@ namespace MonoDevelop.Debugger
 			ExceptionCaughtDialog.TreeTextColor = Ide.Gui.Styles.BaseForegroundColor;
 			ExceptionCaughtDialog.TreeSelectedBackgroundColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			ExceptionCaughtDialog.TreeSelectedTextColor = Ide.Gui.Styles.BaseSelectionTextColor;
+			ExceptionCaughtDialog.HeaderBackgroundColor = Color.FromName ("#a06705");
+			ExceptionCaughtDialog.HeaderTextColor = Color.FromName ("#ffffff");
 
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");

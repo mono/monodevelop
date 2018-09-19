@@ -49,7 +49,6 @@ namespace MonoDevelop.Debugger
 		VBox VBox;
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
-		static readonly Gdk.Color ExceptionHeaderBackgroundColor = new Gdk.Color (160, 103, 5);
 
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 
@@ -113,12 +112,14 @@ namespace MonoDevelop.Debugger
 }
 widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 ");
-			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, ExceptionHeaderBackgroundColor);
 
+			var textColor = Styles.ExceptionCaughtDialog.HeaderTextColor.ToGdkColor ();
+
+			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ());
 			ExceptionHelpLinkLabel.SetLinkHandler ((str) => DesktopService.ShowUrl (str));
-			ExceptionTypeLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
-			ExceptionMessageLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
-			ExceptionHelpLinkLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
+			ExceptionTypeLabel.ModifyFg (StateType.Normal, textColor);
+			ExceptionMessageLabel.ModifyFg (StateType.Normal, textColor);
+			ExceptionHelpLinkLabel.ModifyFg (StateType.Normal, textColor);
 
 			if (Platform.IsWindows) {
 				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("bold 19"));
@@ -152,7 +153,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 			eventBox.Add (frame);
 			eventBox.ShowAll ();
-			eventBox.ModifyBg (StateType.Normal, ExceptionHeaderBackgroundColor);
+			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ());
 
 			return eventBox;
 		}
