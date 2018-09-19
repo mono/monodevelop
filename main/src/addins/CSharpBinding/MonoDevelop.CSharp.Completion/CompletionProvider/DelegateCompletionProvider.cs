@@ -413,10 +413,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		{
 			string thisLineIndent = null;
 			string oneIndent = null;
-			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
-			var indentationTracker = editor?.IndentationTracker;
-			if (indentationTracker != null) {
-				await Runtime.RunInMainThread (delegate {
+			string eol = null;
+			await Runtime.RunInMainThread (delegate {
+				var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
+				var indentationTracker = editor?.IndentationTracker;
+				if (indentationTracker != null) {
 					if (!properties.TryGetValue (PositionKey, out var positionString)) {
 						LoggingService.LogError ("DelegateCompletionProvider: 'Position' not found in property string.");
 						thisLineIndent = oneIndent = "\t";
@@ -426,12 +427,11 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					var lineNumber = editor.OffsetToLineNumber (offset);
 					thisLineIndent = indentationTracker.GetIndentationString (lineNumber);
 					oneIndent = editor.Options.TabsToSpaces ? new string (' ', editor.Options.TabSize) : "\t";
-				});
-			} else {
-				thisLineIndent = oneIndent = "\t";
-			}
-
-			var eol = editor?.EolMarker ?? "\n";
+				} else {
+					thisLineIndent = oneIndent = "\t";
+				}
+				eol = editor?.EolMarker ?? "\n";
+			});
 
 			properties.TryGetValue (InsertBeforeKey, out string beforeText);
 			properties.TryGetValue (InsertAfterKey, out string afterText);
