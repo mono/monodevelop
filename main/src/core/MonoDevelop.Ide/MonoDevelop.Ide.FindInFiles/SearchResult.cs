@@ -256,13 +256,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		static TextEditor cachedEditor;
+		static FileProvider cachedEditorFileProvider;
 
 		TextEditor GetDocument ()
 		{
-			if (cachedEditor == null || cachedEditor.FileName != FileName) {
+			if (cachedEditor == null || cachedEditor.FileName != FileName || cachedEditorFileProvider != FileProvider) {
 				var content = FileProvider.ReadString ();
 				cachedEditor?.Dispose ();
 				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, DesktopService.GetMimeTypeForUri (FileName)));
+				cachedEditorFileProvider = FileProvider;
 			}
 			return cachedEditor;
 		}

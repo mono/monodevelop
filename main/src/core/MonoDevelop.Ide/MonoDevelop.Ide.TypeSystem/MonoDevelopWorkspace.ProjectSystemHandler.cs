@@ -313,7 +313,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 
 					if (TypeSystemParserNode.IsCompileableFile (f, out SourceCodeKind sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-						var id = projectData.DocumentData.GetOrCreate (f.Name, oldProjectData?.DocumentData);
+						var filePath = (FilePath)f.Name;
+						var id = projectData.DocumentData.GetOrCreate (filePath.ResolveLinks (), oldProjectData?.DocumentData);
 						if (!duplicates.Add (id))
 							continue;
 						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
@@ -375,7 +376,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
 			{
-				var filePath = f.FilePath;
+				var filePath = f.FilePath.ResolveLinks ();
 				var folders = GetFolders (projectName, f);
 
 				return DocumentInfo.Create (
@@ -383,8 +384,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					filePath,
 					folders,
 					sourceCodeKind,
-					CreateTextLoader (f.Name),
-					f.Name,
+					CreateTextLoader (filePath),
+					filePath,
 					isGenerated: false
 				);
 
