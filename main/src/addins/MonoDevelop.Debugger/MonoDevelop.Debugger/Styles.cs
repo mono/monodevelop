@@ -76,8 +76,8 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
 
-				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#BBBBBB");
-				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#BBBBBB");
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#707070");
+				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#707070");
 			} else {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
@@ -85,8 +85,8 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
 
-				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#888888");
-				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#888888");
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#b4b4b4");
+				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#b4b4b4");
 			}
 
 			// Shared
