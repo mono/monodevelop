@@ -115,6 +115,28 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
+		/// <summary>
+		/// Search result text height differences #5949
+		/// </summary>
+		[Test]
+		public void TestIssue5949 ()
+		{
+			var widget = new SearchResultWidget ();
+			var fileName = Path.GetTempFileName ();
+			var sb = new StringBuilder ();
+			sb.AppendLine ("test");
+			sb.AppendLine ("test");
+			sb.AppendLine ("test");
+			File.WriteAllText (fileName, sb.ToString ());
+			try {
+				var provider = new FileProvider (fileName);
+				var sr = new SearchResult (provider, 0, "test".Length +1);
+				var markup = sr.GetMarkup (widget, true);
+				Assert.AreEqual ("<span background=\"#E6EA00\">test</span>", markup);
+			} finally {
+				File.Delete (fileName);
+			}
+		}
 
 
 		/// <summary>
@@ -174,6 +196,5 @@ namespace MyLibrary
 				File.Delete (fileName);
 			}
 		}
-
 	}
 }
