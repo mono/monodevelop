@@ -67,26 +67,27 @@ namespace MonoDevelop.Debugger
 			ExceptionCaughtDialog.TreeTextColor = Ide.Gui.Styles.BaseForegroundColor;
 			ExceptionCaughtDialog.TreeSelectedBackgroundColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			ExceptionCaughtDialog.TreeSelectedTextColor = Ide.Gui.Styles.BaseSelectionTextColor;
-			ExceptionCaughtDialog.ValueTreeBackgroundColor = Ide.Gui.Styles.PadBackground;
 
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
-				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
-				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
+				ObjectValueTreeValuesButtonText = Color.FromName ("#175fde");
+				ObjectValueTreeValuesButtonBorder = Color.FromName ("#175fde");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#707070");
 				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#707070");
+				ExceptionCaughtDialog.ValueTreeBackgroundColor = Color.FromName ("#ffffff");
 			} else {
-				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
-				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
-				ObjectValueTreeValuesButtonBorder = Color.FromName ("#a4bbd5");
+				ObjectValueTreeValuesButtonBackground = Color.FromName ("#555b65");
+				ObjectValueTreeValuesButtonText = Color.FromName ("#ace2ff");
+				ObjectValueTreeValuesButtonBorder = Color.FromName ("#ace2ff");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#b4b4b4");
 				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#b4b4b4");
+				ExceptionCaughtDialog.ValueTreeBackgroundColor = Color.FromName ("#525252");
 			}
 
 			// Shared
