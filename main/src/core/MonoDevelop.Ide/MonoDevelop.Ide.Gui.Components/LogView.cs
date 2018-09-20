@@ -866,12 +866,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal LogViewProgressMonitor (LogView pad, bool clearConsole): base (Runtime.MainSynchronizationContext)
 		{
 			outputPad = pad;
-			padCookie = pad.Cookie;
 
 			Indent = new IndentTracker ();
 
 			if (clearConsole)
 				outputPad.Clear ();
+
+			padCookie = pad.Cookie;
 			internalLogger.TextWritten += WriteConsoleLogText;
 			console = new LogViewProgressConsole (this);
 		}
@@ -935,6 +936,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			foreach (ProgressError msg in Errors)
 				outputPad.WriteError (this, msg.DisplayMessage + "\n");
+
+			base.OnCompleted ();
 
 			outputPad = null;
 
