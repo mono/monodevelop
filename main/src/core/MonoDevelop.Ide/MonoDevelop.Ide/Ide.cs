@@ -485,6 +485,9 @@ namespace MonoDevelop.Ide
 		public static async Task<bool> Restart (bool reopenWorkspace = false)
 		{
 			if (await Exit ()) {
+				// Log that we restarted ourselves
+				PropertyService.Set ("MonoDevelop.Core.RestartRequested", true);
+
 				try {
 					DesktopService.RestartIde (reopenWorkspace);
 				} catch (Exception ex) {
