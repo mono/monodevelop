@@ -206,6 +206,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 
 				return results;
+			} catch (OperationCanceledException) {
+				return Enumerable.Empty<SearchResult> ();
 			} finally {
 				monitor.EndTask ();
 				IsRunning = false;
