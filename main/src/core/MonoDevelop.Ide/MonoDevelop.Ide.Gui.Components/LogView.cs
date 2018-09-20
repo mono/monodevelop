@@ -937,6 +937,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (ProgressError msg in Errors)
 				outputPad.WriteError (this, msg.DisplayMessage + "\n");
 
+			base.OnCompleted ();
+
 			outputPad = null;
 
 			Completed?.Invoke (this, EventArgs.Empty);
