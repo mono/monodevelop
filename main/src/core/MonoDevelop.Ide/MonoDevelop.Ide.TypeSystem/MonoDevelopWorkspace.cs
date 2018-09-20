@@ -729,14 +729,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
 		{
-			var filePath = f.FilePath;
+			var filePath = f.FilePath.ResolveLinks ();
 			return DocumentInfo.Create (
 				id.GetOrCreateDocumentId (filePath),
 				filePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				sourceCodeKind,
-				CreateTextLoader (data, f.Name),
-				f.Name,
+				CreateTextLoader (data, filePath),
+				filePath,
 				false
 			);
 		}
@@ -788,7 +788,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				SourceCodeKind sck;
 				if (TypeSystemParserNode.IsCompileableFile (f, out sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
+					var filePath = (FilePath)f.Name;
+					var id = projectData.GetOrCreateDocumentId (filePath.ResolveLinks (), oldProjectData);
 					if (!duplicates.Add (id))
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
