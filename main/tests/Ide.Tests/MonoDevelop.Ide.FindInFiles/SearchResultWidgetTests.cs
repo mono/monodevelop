@@ -115,5 +115,86 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
+		/// <summary>
+		/// Search result text height differences #5949
+		/// </summary>
+		[Test]
+		public void TestIssue5949 ()
+		{
+			var widget = new SearchResultWidget ();
+			var fileName = Path.GetTempFileName ();
+			var sb = new StringBuilder ();
+			sb.AppendLine ("test");
+			sb.AppendLine ("test");
+			sb.AppendLine ("test");
+			File.WriteAllText (fileName, sb.ToString ());
+			try {
+				var provider = new FileProvider (fileName);
+				var sr = new SearchResult (provider, 0, "test".Length +1);
+				var markup = sr.GetMarkup (widget, true);
+				Assert.AreEqual ("<span background=\"#E6EA00\">test</span>", markup);
+			} finally {
+				File.Delete (fileName);
+			}
+		}
+
+		/// <summary>
+		/// Find references shows invalid search results #6015
+		/// </summary>
+		[Test]
+		public void TestIssue6015 ()
+		{
+			var widget = new SearchResultWidget ();
+			var fileName = Path.GetTempFileName ();
+
+			string file = @"test test test";
+			File.WriteAllText (fileName, file);
+			var provider = new FileProvider (fileName);
+
+			var idx1 = file.IndexOf ("test", StringComparison.Ordinal);
+			var sr1 = new SearchResult (provider, idx1, "test".Length);
+			Assert.AreEqual ("<span background=\"#E6EA00\">test</span> test test", sr1.GetMarkup (widget, true));
+
+			file = @"using System;
+using System.Collections.Generic;
+
+namespace MyLibrary
+{
+	class FooBar
+	{int test;
+
+		public int Test {
+			get {
+				return test;
+			}
+		}
+
+		public FooBar ()
+		{
+			Console.WriteLine (test);
+		}
+	}
+}";
+			File.WriteAllText (fileName, file);
+			try {
+				provider = new FileProvider (fileName);
+
+				idx1 = file.IndexOf ("test", StringComparison.Ordinal);
+				sr1 = new SearchResult (provider, idx1, "test".Length);
+
+				var idx2 = file.IndexOf ("test", idx1 + 1, StringComparison.Ordinal);
+				var sr2 = new SearchResult (provider, idx2, "test".Length);
+
+				var idx3 = file.IndexOf ("test", idx2 + 1, StringComparison.Ordinal);
+				var sr3 = new SearchResult (provider, idx3, "test".Length);
+
+				Assert.AreEqual ("{int <span background=\"#E6EA00\">test</span>;", sr1.GetMarkup (widget, true));
+				Assert.AreEqual ("return <span background=\"#E6EA00\">test</span>;", sr2.GetMarkup (widget, true));
+				Assert.AreEqual ("Console.WriteLine (<span background=\"#E6EA00\">test</span>);", sr3.GetMarkup (widget, true));
+			} finally {
+				File.Delete (fileName);
+			}
+		}
+
 	}
 }

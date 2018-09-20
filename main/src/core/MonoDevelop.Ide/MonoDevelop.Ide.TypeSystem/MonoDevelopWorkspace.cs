@@ -729,14 +729,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
-			var filePath = f.FilePath;
+			var filePath = f.FilePath.ResolveLinks ();
 			return DocumentInfo.Create (
 				id.GetOrCreateDocumentId (filePath),
 				filePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				f.SourceCodeKind,
-				CreateTextLoader (data, f.Name),
-				f.Name,
+				CreateTextLoader (data, filePath),
+				filePath,
 				false
 			);
 		}
@@ -787,7 +787,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 
 				if (p.IsCompileable (f.FilePath) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-					var id = projectData.GetOrCreateDocumentId (f.Name, oldProjectData);
+					var filePath = (FilePath)f.Name;
+					var id = projectData.GetOrCreateDocumentId (filePath.ResolveLinks (), oldProjectData);
 					if (!duplicates.Add (id))
 						continue;
 					documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f));
@@ -989,6 +990,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					InternalInformDocumentOpen (linkedDoc, editor, context);
 				}
 			}
+			OnDocumentContextUpdated (documentId);
 		}
 
 		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
