@@ -10,7 +10,6 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ReferencesGtkCopyToOutput>true</ReferencesGtkCopyToOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>LINUX</DefineConstants>
