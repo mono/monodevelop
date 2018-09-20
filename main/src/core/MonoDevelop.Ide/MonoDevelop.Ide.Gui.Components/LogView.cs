@@ -25,19 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using Gtk;
-using MonoDevelop.Components;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Fonts;
 using Pango;
+using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Execution;
+using System.IO;
+using System.Text.RegularExpressions;
+using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -58,13 +58,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		QueuedTextWrite lastTextWrite;
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
-
+		
 		const int MAX_BUFFER_LENGTH = 4000 * 1024;
-
-		/// <summary>
-		/// Incremented any time the pad is cleared, so callers can know when they should stop using it
-		/// </summary>
-		internal int Cookie = int.MinValue;
 
 		/// <summary>
 		/// The log text view allows the user to jump to the source of an error/warning
@@ -497,10 +492,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public void Clear ()
 		{
-			unchecked {
-				Cookie++;
-			}
-
 			lock (updates) {
 				updates.Clear ();
 				lastTextWrite = null;
@@ -807,7 +798,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 	public class LogViewProgressMonitor : OutputProgressMonitor
 	{
-		int padCookie;
 		LogView outputPad;
 
 		LogTextWriter internalLogger = new LogTextWriter ();
@@ -861,12 +851,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal IndentTracker Indent { get; set; }
 		internal TextMark Marker { get; set; }
 
-		//FIXME: this sync context is somewhat redundant, as the pad does its own GUI synchronization
-		//that said, it's also used for the console and writers, so it's not simple to fix
 		internal LogViewProgressMonitor (LogView pad, bool clearConsole): base (Runtime.MainSynchronizationContext)
 		{
 			outputPad = pad;
-			padCookie = pad.Cookie;
 
 			Indent = new IndentTracker ();
 
@@ -887,44 +874,43 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected override void OnWriteLog (string message)
 		{
-			if (CheckPadValid ()) {
-				outputPad.WriteText (this, message);
-			}
+			outputPad.WriteText (this, message);
+			base.OnWriteLog (message);
 		}
 
 		protected override void OnWriteErrorLog (string message)
 		{
-			if (CheckPadValid ()) {
-				outputPad.WriteText (this, message);
-			}
+			outputPad.WriteText (this, message);
+			base.OnWriteErrorLog (message);
 		}
 
 		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
-			if (CheckPadValid ()) {
-				outputPad.BeginTask (this, name, totalWork);
-			}
+			if (outputPad == null) throw GetDisposedException ();
+			outputPad.BeginTask (this, name, totalWork);
+			base.OnBeginTask (name, totalWork, stepWork);
 		}
 
 		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
-			if (CheckPadValid ()) {
-				outputPad.EndTask (this);
-			}
+			if (outputPad == null) throw GetDisposedException ();
+			outputPad.EndTask (this);
+			base.OnEndTask (name, totalWork, stepWork);
 		}
 
 		void WriteConsoleLogText (string text)
 		{
-			if (CheckPadValid ()) {
-				outputPad.WriteConsoleLogText (this, text);
-			}
+			outputPad.WriteConsoleLogText (this, text);
+		}
+
+		Exception GetDisposedException ()
+		{
+			return new InvalidOperationException ("Output progress monitor already disposed.");
 		}
 		
 		protected override void OnCompleted ()
 		{
-			if (!CheckPadValid ())
-				return;
-
+			if (outputPad == null) throw GetDisposedException ();
 			outputPad.WriteText (this, "\n");
 
 			foreach (string msg in SuccessMessages)
@@ -935,23 +921,13 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			foreach (ProgressError msg in Errors)
 				outputPad.WriteError (this, msg.DisplayMessage + "\n");
+			
+			base.OnCompleted ();
 
 			outputPad = null;
 
-			Completed?.Invoke (this, EventArgs.Empty);
-		}
-
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		bool CheckPadValid ()
-		{
-			if (outputPad == null)
-				throw GetDisposedException ();
-			return padCookie == outputPad.Cookie;
-		}
-
-		static Exception GetDisposedException ()
-		{
-			return new InvalidOperationException ("Output progress monitor already disposed.");
+			if (Completed != null)
+				Completed (this, EventArgs.Empty);
 		}
 
 		public override void Dispose ()
@@ -995,9 +971,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override void Debug (int level, string category, string message)
 			{
-				if (monitor.CheckPadValid ()) {
-					monitor.outputPad.WriteDebug (monitor, level, category, message);
-				}
+				monitor.outputPad.WriteDebug (monitor, level, category, message);
 			}
 
 			public override void Dispose ()
