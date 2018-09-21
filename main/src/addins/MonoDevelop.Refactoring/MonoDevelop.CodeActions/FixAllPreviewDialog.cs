@@ -123,7 +123,7 @@ namespace MonoDevelop.CodeActions
 
 			mainBox.PackStart (new FrameBox (changedEditor) {
 				BorderWidth = 2,
-				BorderColor = Ide.Gui.Styles.StatusBarBorderColor,
+				BorderColor = Ide.Gui.Styles.FrameBoxBorderColor,
 			}, true);
 
 			Content = mainBox;
