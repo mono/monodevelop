@@ -181,12 +181,15 @@ namespace MonoDevelop.CodeActions
 				});
 				Microsoft.CodeAnalysis.Text.TextChange[] result = await Task.Run (async () => {
 					var previewOperations = await fix.GetPreviewOperationsAsync (token);
-					return await Runtime.RunInMainThread (async () => {
-						using (var dialog = new FixAllPreviewDialog (string.Join (", ", fixState.DiagnosticIds), doc.Name, fixState.Scope, previewOperations, editor)) {
-							await dialog.InitializeEditor ();
-							var changes = dialog.Run () == Xwt.Command.Apply ? dialog.GetApplicableChanges ().ToArray () : Array.Empty<Microsoft.CodeAnalysis.Text.TextChange> ();
-							return changes;
-						}
+					return await Runtime.RunInMainThread (() => {
+						var engine = Xwt.Toolkit.CurrentEngine; // NativeEngine
+						return engine.Invoke (async () => {
+							using (var dialog = new FixAllPreviewDialog (string.Join (", ", fixState.DiagnosticIds), doc.Name, fixState.Scope, previewOperations, editor)) {
+								await dialog.InitializeEditor ();
+								var changes = dialog.Run () == Xwt.Command.Apply ? dialog.GetApplicableChanges ().ToArray () : Array.Empty<Microsoft.CodeAnalysis.Text.TextChange> ();
+								return changes;
+							}
+						});
 					});
 				});
 
