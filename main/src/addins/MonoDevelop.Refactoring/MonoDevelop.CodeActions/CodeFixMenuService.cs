@@ -179,20 +179,21 @@ namespace MonoDevelop.CodeActions
 					var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
 					return provider.GetFixAsync (context);
 				});
-				bool result = await Task.Run (async () => {
+				Microsoft.CodeAnalysis.Text.TextChange[] result = await Task.Run (async () => {
 					var previewOperations = await fix.GetPreviewOperationsAsync (token);
 					return await Runtime.RunInMainThread (async () => {
 						using (var dialog = new FixAllPreviewDialog (string.Join (", ", fixState.DiagnosticIds), doc.Name, fixState.Scope, previewOperations, editor)) {
 							await dialog.InitializeEditor ();
-							return dialog.Run () == Xwt.Command.Apply;
+							var changes = dialog.Run () == Xwt.Command.Apply ? dialog.GetApplicableChanges ().ToArray () : Array.Empty<Microsoft.CodeAnalysis.Text.TextChange> ();
+							return changes;
 						}
 					});
 				});
 
-				if (!result)
+				if (result.Length == 0)
 					return;
 
-				await new ContextActionRunner (editor, fix).Run ();
+				editor.ApplyTextChanges (result);
 			});
 
 			return item;
