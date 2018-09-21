@@ -214,6 +214,26 @@ var foo = @""hello$"";
 		}
 
 
+		/// <summary>
+		/// Cut and paste is broken in the editor #6029
+		/// </summary>
+		[Test]
+		public async Task TestIssue6029 ()
+		{
+			var opt = FormattingOptionsFactory.CreateMono ();
+			using (var testCase = await CreateEngine (@"
+	string[] test = new [] {
+$		""foo"",
+		""foo"",
+	};
+")) {
+				var handler = CreateTextPasteIndentEngine (testCase, opt);
+				var text = handler.FormatPlainText (testCase.Content.CursorPosition, "\t\t\"foo\"", null);
+				Assert.AreEqual ("\t\t\"foo\"", text);
+			}
+		}
+
+
 		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
 		{
 			yield return new CSharpTextEditorIndentation ();
