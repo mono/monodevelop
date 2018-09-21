@@ -48,7 +48,7 @@ namespace MonoDevelop.CodeActions
 {
 	class FixAllPreviewDialog : Dialog
 	{
-		readonly DataField<bool> nodeCheck = new DataField<bool> ();
+		readonly DataField<CheckBoxState> nodeCheck = new DataField<CheckBoxState> ();
 		readonly DataField<string> nodeLabel = new DataField<string> ();
 		readonly DataField<Image> nodeIcon = new DataField<Image> ();
 		readonly DataField<bool> nodeIconVisible = new DataField<bool> ();
@@ -131,13 +131,70 @@ namespace MonoDevelop.CodeActions
 
 			var rootNode = store.AddNode ();
 			var fixAllOccurencesText = GettextCatalog.GetString ("Fix all occurences");
-			rootNode.SetValues (nodeCheck, true, nodeLabel, fixAllOccurencesText, nodeIcon, ImageService.GetIcon ("md-csharp-file"), nodeIconVisible, true);
+			rootNode.SetValues (nodeCheck, CheckBoxState.On, nodeLabel, fixAllOccurencesText, nodeIcon, ImageService.GetIcon ("md-csharp-file"), nodeIconVisible, true);
 		}
 
 		void OnCheckboxToggled (object sender, WidgetEventArgs args)
 		{
-			// FIXME: this can race with selection change.
-			OnSelectionChanged (sender, args);
+			var updatedRow = treeView.CurrentEventRow;
+			Runtime.MainSynchronizationContext.Post (s => {
+				UpdateCheckboxDependencies (updatedRow);
+				UpdateTextForEvent (updatedRow);
+			}, null);
+		}
+
+		void UpdateCheckboxDependencies (TreePosition updatedRow)
+		{
+			var node = store.GetNavigatorAt (updatedRow);
+
+			bool isRoot = node.GetValue (nodeIconVisible);
+			CheckBoxState newCheck = node.GetValue (nodeCheck);
+			if (isRoot) {
+				UpdateChildrenForRootCheck (node, newCheck);
+				return;
+			}
+
+			UpdateRootFromChild (node, newCheck);
+		}
+
+		void UpdateRootFromChild (TreeNavigator childNode, CheckBoxState newCheck)
+		{
+			var rootNode = childNode.Clone ();
+			rootNode.MoveToParent ();
+
+			var iter = rootNode.Clone ();
+			iter.MoveToChild ();
+
+			bool hasFalse = false;
+			bool hasTrue = false;
+
+			do {
+				var value = iter.GetValue (nodeCheck) == CheckBoxState.On;
+
+				hasTrue |= value;
+				hasFalse |= !value;
+
+			} while (iter.MoveNext ());
+
+			bool isMixed = hasFalse && hasTrue;
+			if (isMixed) {
+				rootNode.SetValue (nodeCheck, CheckBoxState.Mixed);
+			} else {
+				if (hasTrue)
+					rootNode.SetValue (nodeCheck, CheckBoxState.On);
+				else // hasFalse
+					rootNode.SetValue (nodeCheck, CheckBoxState.Off);
+			}
+		}
+
+		void UpdateChildrenForRootCheck (TreeNavigator rootnode, CheckBoxState newCheck)
+		{
+			if (!rootnode.MoveToChild ())
+				return;
+
+			do {
+				rootnode.SetValue (nodeCheck, newCheck);
+			} while (rootnode.MoveNext ());
 		}
 
 		protected override void Dispose (bool disposing)
@@ -168,13 +225,11 @@ namespace MonoDevelop.CodeActions
 				foreach (var change in diff) {
 					var node = rootNode.Clone ();
 
-					var line = newText.Lines.GetLineFromPosition (change.Span.Start);
-					var length = Math.Max (line.Span.Length, change.NewText.Length);
-					var span = new TextSpan (line.Start, length);
+					var span = GetChangeSpan (newText, change);
 					var newSubText = newText.GetSubText (span).ToString ().Replace(Environment.NewLine, "…").Trim ();
 
 					var operationNode = node.AddChild ();
-					operationNode.SetValues (nodeCheck, true, nodeLabel, newSubText, nodeEditor, change);
+					operationNode.SetValues (nodeCheck, CheckBoxState.On, nodeLabel, newSubText, nodeEditor, change);
 				}
 			}
 
@@ -188,7 +243,7 @@ namespace MonoDevelop.CodeActions
 				yield break;
 
 			do {
-				var check = rootNode.GetValue (nodeCheck);
+				var check = rootNode.GetValue (nodeCheck) == CheckBoxState.On;
 				if (!check)
 					continue;
 
@@ -196,37 +251,38 @@ namespace MonoDevelop.CodeActions
 			} while (rootNode.MoveNext ()); 
 		}
 
-		async void OnSelectionChanged (object sender, EventArgs args)
+		void OnSelectionChanged (object sender, EventArgs args)
 		{
-			var node = store.GetNavigatorAt (treeView.SelectedRow);
-			if (node == null)
-				return;
-
-			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
-			var isOn = node.GetValue (nodeCheck);
-			if (!isOn) {
-				SetChangedEditorText (baseText, Enumerable.Empty<TextChange> ());
-				return;
-			}
-
-			var textChange = node.GetValue (nodeEditor);
-			if (textChange == default) {
-				SetChangedEditorText (baseText, GetApplicableChanges ());
-				return;
-			}
-			SetChangedEditorText (baseText, Enumerable.Repeat (textChange, 1));
+			UpdateTextForEvent (treeView.CurrentEventRow);
 		}
 
-		void SetChangedEditorText (SourceText baseText, IEnumerable<TextChange> textChanges)
+		async void UpdateTextForEvent (TreePosition eventRow)
 		{
-			changedEditor.Text = baseText.WithChanges (textChanges).ToString ();
+			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
+			var currentChange = store.GetNavigatorAt (eventRow).GetValue (nodeEditor);
+			SetChangedEditorText (baseText, GetApplicableChanges (), currentChange);
+		}
 
-			var first = textChanges.FirstOrDefault ();
-			if (first == default)
+		void SetChangedEditorText (SourceText baseText, IEnumerable<TextChange> textChanges, TextChange currentChange)
+		{
+			var changedText = baseText.WithChanges (textChanges);
+			changedEditor.Text = changedText.ToString ();
+			if (currentChange == default)
 				return;
 
-			changedEditor.CenterTo (first.Span.Start);
-			changedEditor.SelectionRange = new TextSegment (first.Span.Start, first.NewText.Length);
+			var changeSpan = GetChangeSpan (changedText, currentChange);
+			changedEditor.CenterTo (currentChange.Span.Start);
+			changedEditor.SelectionRange = new TextSegment (changeSpan.Start, changeSpan.Length);
+		}
+
+		static TextSpan GetChangeSpan (SourceText inText, TextChange change)
+		{
+			var startLine = inText.Lines.GetLineFromPosition (change.Span.Start);
+			var endLine = inText.Lines.GetLineFromPosition (change.Span.End);
+
+			var changedLength = endLine.End - startLine.Start;
+			var length = Math.Max (changedLength, change.NewText.Length);
+			return new TextSpan (startLine.Start, length);
 		}
 	}
 }
