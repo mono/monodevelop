@@ -32,10 +32,12 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Refactoring;
 using Xwt;
@@ -49,11 +51,13 @@ namespace MonoDevelop.CodeActions
 		readonly DataField<bool> nodeCheck = new DataField<bool> ();
 		readonly DataField<string> nodeLabel = new DataField<string> ();
 		readonly DataField<Image> nodeIcon = new DataField<Image> ();
+		readonly DataField<bool> nodeIconVisible = new DataField<bool> ();
 		readonly DataField<TextChange> nodeEditor = new DataField<TextChange> ();
 		readonly TreeView treeView;
 		readonly TreeStore store;
 		readonly TextEditor baseEditor, changedEditor;
 		readonly ImmutableArray<CodeActionOperation> operations;
+		CheckBoxCellView checkBox;
 
 		public FixAllPreviewDialog (string diagnosticId, string scopeLabel, FixAllScope scope, ImmutableArray<CodeActionOperation> operations, TextEditor baseEditor)
 		{
@@ -64,9 +68,10 @@ namespace MonoDevelop.CodeActions
 			this.operations = operations;
 
 			// TODO: checkbox dependencies
-			store = new TreeStore (nodeCheck, nodeLabel, nodeIcon, nodeEditor);
+			store = new TreeStore (nodeCheck, nodeLabel, nodeIcon, nodeIconVisible, nodeEditor);
 			treeView = new TreeView {
 				DataSource = store,
+				HeadersVisible = false,
 			};
 			changedEditor = TextEditorFactory.CreateNewEditor (baseEditor.FileName, baseEditor.MimeType);
 			changedEditor.IsReadOnly = true;
@@ -77,7 +82,12 @@ namespace MonoDevelop.CodeActions
 				throw new NotImplementedException ();
 			}
 
-			var mainBox = new VBox ();
+			var mainBox = new VBox {
+				MarginTop = 6,
+				MarginLeft = 8,
+				MarginRight = 8,
+				MarginBottom = 8,
+			};
 
 			// scopeLabel can be document filename, project/solution name.
 			var treeViewHeaderText = GettextCatalog.GetString (
@@ -91,14 +101,14 @@ namespace MonoDevelop.CodeActions
 			});
 
 			var col = new ListViewColumn ();
-			var checkBox = new CheckBoxCellView (nodeCheck) {
+			checkBox = new CheckBoxCellView (nodeCheck) {
 				Editable = true,
 			};
-			checkBox.Toggled += (sender, args) => {
-				// check if mouse over checkbox.
-			};
+			checkBox.Toggled += OnCheckboxToggled;
 			col.Views.Add (checkBox);
-			col.Views.Add (new ImageCellView (nodeIcon));
+			col.Views.Add (new ImageCellView (nodeIcon) {
+				VisibleField = nodeIconVisible,
+			});
 			col.Views.Add (new TextCellView (nodeLabel));
 			treeView.Columns.Add (col);
 
@@ -107,20 +117,35 @@ namespace MonoDevelop.CodeActions
 			mainBox.PackStart (new ScrollView (treeView), true);
 
 			var previewHeaderText = GettextCatalog.GetString ("Preview Code Changes:");
-			mainBox.PackStart (new Label (previewHeaderText));
+			mainBox.PackStart (new Label (previewHeaderText) {
+				MarginTop = 12,
+			});
 
-			mainBox.PackStart (changedEditor, true);
+			mainBox.PackStart (new FrameBox (changedEditor) {
+				BorderWidth = 2,
+				BorderColor = Ide.Gui.Styles.StatusBarBorderColor,
+			}, true);
 
 			Content = mainBox;
 			Buttons.Add (Command.Cancel, Command.Apply);
 
 			var rootNode = store.AddNode ();
 			var fixAllOccurencesText = GettextCatalog.GetString ("Fix all occurences");
-			rootNode.SetValues (nodeCheck, true, nodeLabel, fixAllOccurencesText, nodeIcon, ImageService.GetIcon ("md-csharp-file"));
+			rootNode.SetValues (nodeCheck, true, nodeLabel, fixAllOccurencesText, nodeIcon, ImageService.GetIcon ("md-csharp-file"), nodeIconVisible, true);
+		}
+
+		void OnCheckboxToggled (object sender, WidgetEventArgs args)
+		{
+			// FIXME: this can race with selection change.
+			OnSelectionChanged (sender, args);
 		}
 
 		protected override void Dispose (bool disposing)
 		{
+			if (checkBox != null) {
+				checkBox.Toggled -= OnCheckboxToggled;
+				checkBox = null;
+			}
 			base.Dispose (disposing);
 		}
 
@@ -130,6 +155,7 @@ namespace MonoDevelop.CodeActions
 			if (rootNode == null)
 				return;
 
+			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
 			foreach (var operation in operations) {
 				if (!(operation is ApplyChangesOperation ac)) {
 					continue;
@@ -138,14 +164,17 @@ namespace MonoDevelop.CodeActions
 				var changedDocument = ac.ChangedSolution.GetDocument (baseEditor.DocumentContext.AnalysisDocument.Id);
 				var newText = await changedDocument.GetTextAsync ();
 
-				var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
 				var diff = newText.GetTextChanges (baseText);
 				foreach (var change in diff) {
 					var node = rootNode.Clone ();
+
 					var line = newText.Lines.GetLineFromPosition (change.Span.Start);
+					var length = Math.Max (line.Span.Length, change.NewText.Length);
+					var span = new TextSpan (line.Start, length);
+					var newSubText = newText.GetSubText (span).ToString ().Replace(Environment.NewLine, "…").Trim ();
 
 					var operationNode = node.AddChild ();
-					operationNode.SetValues (nodeCheck, true, nodeLabel, newText.GetSubText (line.Span).ToString (), nodeEditor, change);
+					operationNode.SetValues (nodeCheck, true, nodeLabel, newSubText, nodeEditor, change);
 				}
 			}
 
@@ -173,8 +202,12 @@ namespace MonoDevelop.CodeActions
 			if (node == null)
 				return;
 
-			// TODO: Make preview depend on checkbox states
 			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
+			var isOn = node.GetValue (nodeCheck);
+			if (!isOn) {
+				SetChangedEditorText (baseText, Enumerable.Empty<TextChange> ());
+				return;
+			}
 
 			var textChange = node.GetValue (nodeEditor);
 			if (textChange == default) {
