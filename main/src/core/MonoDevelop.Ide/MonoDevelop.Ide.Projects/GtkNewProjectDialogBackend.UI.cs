@@ -121,13 +121,6 @@ namespace MonoDevelop.Ide.Projects
 			topLabelEventBox.ModifyFg (StateType.Normal, whiteColor);
 			topLabelEventBox.BorderWidth = 0;
 
-			var topBannerTopEdgeLineEventBox = new EventBox ();
-			topBannerTopEdgeLineEventBox.Accessible.SetShouldIgnore (true);
-			topBannerTopEdgeLineEventBox.Name = "topBannerTopEdgeLineEventBox";
-			topBannerTopEdgeLineEventBox.HeightRequest = 1;
-			topBannerTopEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
-			topBannerTopEdgeLineEventBox.BorderWidth = 0;
-
 			var topBannerBottomEdgeLineEventBox = new EventBox ();
 			topBannerBottomEdgeLineEventBox.Accessible.SetShouldIgnore (true);
 			topBannerBottomEdgeLineEventBox.Name = "topBannerBottomEdgeLineEventBox";
@@ -139,7 +132,8 @@ namespace MonoDevelop.Ide.Projects
 			topBannerLabel.Name = "topBannerLabel";
 			topBannerLabel.Accessible.Name = "topBannerLabel";
 			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy (); // UNDONE: VV: Use FontService?
-			font.Size = (int)(font.Size * 1.8);
+			font.Size = (int)(font.Size * 2.0);
+			font.Weight = Pango.Weight.Bold;
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);
 			var topLabelHBox = new HBox ();
@@ -148,7 +142,6 @@ namespace MonoDevelop.Ide.Projects
 			topLabelHBox.PackStart (topBannerLabel, false, false, 20);
 			topLabelEventBox.Add (topLabelHBox);
 
-			VBox.PackStart (topBannerTopEdgeLineEventBox, false, false, 0);
 			VBox.PackStart (topLabelEventBox, false, false, 0);
 			VBox.PackStart (topBannerBottomEdgeLineEventBox, false, false, 0);
 
