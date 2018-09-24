@@ -1165,7 +1165,13 @@ namespace MonoDevelop.MacIntegration
 				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
 				DispatchSource.SetEventHandler (() => {
 					var platformMemoryStatus = GetPlatformMemoryStatus (DispatchSource.PressureFlags);
-					var args = new PlatformMemoryStatusEventArgs (platformMemoryStatus);
+
+					var metadata = new MacPlatformMemoryMetadata {
+						MemoryStatus = platformMemoryStatus,
+
+					};
+
+					var args = new PlatformMemoryStatusEventArgs (metadata);
 					OnStatusChanged (args);
 				});
 				DispatchSource.Resume ();
@@ -1193,6 +1199,10 @@ namespace MonoDevelop.MacIntegration
 					DispatchSource.Dispose ();
 					DispatchSource = null;
 				}
+			}
+
+			class MacPlatformMemoryMetadata : PlatformMemoryMetadata
+			{
 			}
 		}
 	}
