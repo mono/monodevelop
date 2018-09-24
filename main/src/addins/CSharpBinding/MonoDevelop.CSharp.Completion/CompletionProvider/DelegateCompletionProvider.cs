@@ -373,10 +373,14 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			if (newMethod != null) {
 				change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), item.Properties [MethodNameKey] + ";");
 				var semanticModel = await doc.GetSemanticModelAsync (cancellationToken);
+				if (!doc.IsOpen () || await doc.IsForkedDocumentWithSyntaxChangesAsync (cancellationToken))
+					return CompletionChange.Create (change);
 
 				await Runtime.RunInMainThread (delegate {
 					var document = IdeApp.Workbench.ActiveDocument;
 					var editor = document.Editor;
+					if (editor.EditMode != EditMode.Edit)
+						return;
 					var parsedDocument = document.ParsedDocument;
 					var declaringType = semanticModel.GetEnclosingSymbolMD<INamedTypeSymbol> (item.Span.Start, default (CancellationToken));
 					var insertionPoints = InsertionPointService.GetInsertionPoints (
