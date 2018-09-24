@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	struct WorkspaceId : IEquatable<WorkspaceId>
+	readonly struct WorkspaceId : IEquatable<WorkspaceId>
 	{
 		static uint n = 0;
 

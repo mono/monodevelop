@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 
 		readonly Token token;
-		public ConditionFactorExpression (Token token)
+		public ConditionFactorExpression (in Token token)
 		{
 			this.token = token;
 		}

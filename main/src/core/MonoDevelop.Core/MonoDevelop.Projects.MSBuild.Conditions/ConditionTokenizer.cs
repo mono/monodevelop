@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 		
 		// FIXME test this
-		public void Putback (Token token)
+		public void Putback (in Token token)
 		{
 			hasPutback = true;
 			putback = token;
@@ -297,9 +297,9 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		}
 */
 		
-		struct CharToTokenType {
-			public char ch;
-			public TokenType tokenType;
+		readonly struct CharToTokenType {
+			public readonly char ch;
+			public readonly TokenType tokenType;
 			
 			public CharToTokenType (char ch, TokenType tokenType)
 			{
@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			}
 		}
 		
-		static CharToTokenType[] charToTokenType = {
+		readonly static CharToTokenType[] charToTokenType = {
 			new CharToTokenType ('<', TokenType.Less),
 			new CharToTokenType ('>', TokenType.Greater),
 			new CharToTokenType ('=', TokenType.Equal),

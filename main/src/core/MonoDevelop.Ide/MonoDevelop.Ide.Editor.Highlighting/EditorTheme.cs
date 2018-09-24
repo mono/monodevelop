@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 
-		struct FontColorStyle {
+		readonly struct FontColorStyle {
 			public readonly HslColor Foreground;
 			public readonly HslColor Background;
 			public readonly string FontStyle;

@@ -32,31 +32,18 @@ using System.Diagnostics.Contracts;
 
 namespace MonoDevelop.Projects.MSBuild.Conditions {
 
-	internal struct Token : IEquatable<Token> {
-	
-		readonly string		tokenValue;
-		readonly TokenType	tokenType;
-		readonly int		position;
-	
+	internal readonly struct Token : IEquatable<Token> {
 		public Token (string tokenValue, TokenType tokenType, int position)
 		{
-			this.tokenValue = tokenValue;
-			this.tokenType = tokenType;
-			this.position = position + 1;
-		}
-		
-		public string Value {
-			get { return tokenValue; }
-		}
-		
-		public TokenType Type {
-			get { return tokenType; }
+			this.Value = tokenValue;
+			this.Type = tokenType;
+			this.Position = position + 1;
 		}
 
+		public string Value { get; }
+		public TokenType Type { get; }
 		// this is 1-based
-		public int Position {
-			get { return position; }
-		}
+		public int Position { get; }
 
 		[Pure]
 		public static string TypeAsString (TokenType tokenType)
@@ -86,15 +73,15 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 		public override string ToString ()
 		{
-			if (tokenType == TokenType.EOF || tokenType == TokenType.BOF)
-				return String.Format ("{0} at character position {1}", tokenType.ToString (), Position);
+			if (Type == TokenType.EOF || Type == TokenType.BOF)
+				return String.Format ("{0} at character position {1}", Type.ToString (), Position);
 
-			return String.Format ("\"{0}\" at character position {1}", tokenValue, Position);
+			return String.Format ("\"{0}\" at character position {1}", Value, Position);
 		}
 
 		public override int GetHashCode()
 		{
-			return (tokenValue?.GetHashCode () ?? 0) ^ tokenType.GetHashCode () ^ position.GetHashCode ();
+			return (Value?.GetHashCode () ?? 0) ^ Type.GetHashCode () ^ Position.GetHashCode ();
 		}
 
 		public override bool Equals (object obj)
@@ -108,7 +95,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 
 		public bool Equals (Token other)
 		{
-			return tokenValue == other.tokenValue && tokenType == other.tokenType && position == other.position;
+			return Value == other.Value && Type == other.Type && Position == other.Position;
 		}
 	}
 	
