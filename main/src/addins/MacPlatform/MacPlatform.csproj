@@ -143,6 +143,7 @@
     <Compile Include="Dialogs\MDAccessoryViewBox.cs" />
     <Compile Include="Dialogs\MacCommonFileDialogHandler.cs" />
     <Compile Include="MacTelemetryDetails.cs" />
+    <Compile Include="Interop.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
