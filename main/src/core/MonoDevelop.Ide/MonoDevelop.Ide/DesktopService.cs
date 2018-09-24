@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide
 	{
 		static PlatformService platformService;
 		static Xwt.Toolkit nativeToolkit;
-		static Lazy<MemoryMonitor> memoryMonitor = new Lazy<MemoryMonitor> (() => platformService.CreateMemoryMonitor ());
+		static MemoryMonitor memoryMonitor;
 
 		static PlatformService PlatformService {
 			get {
@@ -69,11 +69,19 @@ namespace MonoDevelop.Ide
 			FileService.FileRemoved += NotifyFileRemoved;
 			FileService.FileRenamed += NotifyFileRenamed;
 
+			memoryMonitor = platformService.CreateMemoryMonitor ();
+			memoryMonitor.StatusChanged += OnMemoryStatusChanged;
+
 			// Ensure we initialize the native toolkit on the UI thread immediately
 			// so that we can safely access this property later in other threads
 			GC.KeepAlive (NativeToolkit);
 
 			FontService.Initialize ();
+		}
+
+		static void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
+		{
+			Counters.MemoryPressure.Inc (args.CounterMetadata);
 		}
 
 		/// <summary>
