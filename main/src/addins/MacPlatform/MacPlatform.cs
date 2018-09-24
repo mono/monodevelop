@@ -1164,17 +1164,32 @@ namespace MonoDevelop.MacIntegration
 			{
 				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
 				DispatchSource.SetEventHandler (() => {
-					var platformMemoryStatus = GetPlatformMemoryStatus (DispatchSource.PressureFlags);
-
-					var metadata = new MacPlatformMemoryMetadata {
-						MemoryStatus = platformMemoryStatus,
-
-					};
+					var metadata = CreateMemoryMetadata (DispatchSource.PressureFlags);
 
 					var args = new PlatformMemoryStatusEventArgs (metadata);
 					OnStatusChanged (args);
 				});
 				DispatchSource.Resume ();
+			}
+
+			static MacPlatformMemoryMetadata CreateMemoryMetadata (MemoryPressureFlags flags)
+			{
+				var platformMemoryStatus = GetPlatformMemoryStatus (flags);
+				Interop.SysCtl ("vm.compressor_bytes_used", out long osCompressedMemory);
+				Interop.SysCtl ("vm.vm_page_free_target", out long osFreePagesTarget);
+				Interop.SysCtl ("vm.page_free_count", out long osFreePages);
+				Interop.SysCtl ("vm.pagesize", out long pagesize);
+
+				KernelInterop.GetCompressedMemoryInfo (out ulong appCompressedMemory, out ulong appVirtualMemory);
+
+				return new MacPlatformMemoryMetadata {
+					MemoryStatus = platformMemoryStatus,
+					OSVirtualMemoryFreeTarget = osFreePagesTarget * pagesize,
+					OSTotalFreeVirtualMemory = osFreePages * pagesize,
+					OSTotalCompressedMemory = osCompressedMemory,
+					ApplicationVirtualMemory = appVirtualMemory,
+					ApplicationCompressedMemory = appCompressedMemory,
+				};
 			}
 
 			static PlatformMemoryStatus GetPlatformMemoryStatus (MemoryPressureFlags flags)
@@ -1203,6 +1218,35 @@ namespace MonoDevelop.MacIntegration
 
 			class MacPlatformMemoryMetadata : PlatformMemoryMetadata
 			{
+				// sysctl - vm.vm_page_free_target
+				public long OSVirtualMemoryFreeTarget {
+					get => GetProperty<long> ();
+					set => SetProperty (value);
+				}
+
+				// sysctl - vm.compressor_bytes_used
+				public long OSTotalCompressedMemory {
+					get => GetProperty<long> ();
+					set => SetProperty (value);
+				}
+
+				// sysctl - vm.page_free_count
+				public long OSTotalFreeVirtualMemory {
+					get => GetProperty<long> ();
+					set => SetProperty (value);
+				}
+
+				// task_vm_info_t.compressed
+				public ulong ApplicationCompressedMemory {
+					get => GetProperty<ulong> ();
+					set => SetProperty (value);
+				}
+
+				// task_vm_info_t.virtual_size
+				public ulong ApplicationVirtualMemory {
+					get => GetProperty<ulong> ();
+					set => SetProperty (value);
+				}
 			}
 		}
 	}
