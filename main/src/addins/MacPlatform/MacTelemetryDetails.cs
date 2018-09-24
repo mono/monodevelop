@@ -54,9 +54,9 @@ namespace MacPlatform
 		{
 			var result = new MacTelemetryDetails ();
 
-			SysCtl ("hw.machine", out result.arch);
-			SysCtl ("hw.cpufamily", out result.family);
-			SysCtl ("hw.cpufrequency", out result.freq);
+			Interop.SysCtl ("hw.machine", out result.arch);
+			Interop.SysCtl ("hw.cpufamily", out result.family);
+			Interop.SysCtl ("hw.cpufrequency", out result.freq);
 
 			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
 			result.size = attrs.Size;
@@ -106,61 +106,7 @@ namespace MacPlatform
 
 		public PlatformHardDriveMediaType HardDriveOsMediaType => osType;
 
-		static int SysCtl (string name, out string result)
-		{
-			nint resultLen = 128;
-			var resultHandle = Marshal.AllocHGlobal ((int)resultLen);
-			var retval = sysctlbyname (name, resultHandle, ref resultLen, IntPtr.Zero, 0);
 
-			// resultLen includes the null terminal, so we want to cut it off
-			// but if resultLen < 2 then there's no characters
-			if (retval != 0 || resultLen < 2) {
-				result = "Unknown";
-				return retval;
-			}
-
-			result = Marshal.PtrToStringAuto (resultHandle, (int)resultLen - 1);
-
-			Marshal.FreeHGlobal (resultHandle);
-
-			return retval;
-		}
-
-		static int SysCtl (string name, out int result)
-		{
-			nint resultLen = 128;
-			var resultHandle = Marshal.AllocHGlobal ((int)resultLen);
-			var retval = sysctlbyname (name, resultHandle, ref resultLen, IntPtr.Zero, 0);
-
-			if (retval != 0) {
-				result = -1;
-				return retval;
-			}
-
-			result = Marshal.ReadInt32 (resultHandle);
-
-			Marshal.FreeHGlobal (resultHandle);
-
-			return retval;
-		}
-
-		static int SysCtl (string name, out long result)
-		{
-			nint resultLen = 128;
-			var resultHandle = Marshal.AllocHGlobal ((int)resultLen);
-			var retval = sysctlbyname (name, resultHandle, ref resultLen, IntPtr.Zero, 0);
-
-			if (retval != 0) {
-				result = -1;
-				return retval;
-			}
-
-			result = Marshal.ReadInt64 (resultHandle);
-
-			Marshal.FreeHGlobal (resultHandle);
-
-			return retval;
-		}
 
 		static PlatformHardDriveMediaType GetMediaType (string path)
 		{
@@ -250,9 +196,6 @@ namespace MacPlatform
 
 		[DllImport ("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
 		extern static IntPtr CFDictionaryGetValue (IntPtr handle, IntPtr keyHandle);
-
-		[DllImport ("libc")]
-		extern static int sysctlbyname (string name, IntPtr oldP, ref nint oldLen, IntPtr newP, nint newlen);
 
 		[StructLayout(LayoutKind.Explicit, Size = 304)]
 		struct LastLogX {
