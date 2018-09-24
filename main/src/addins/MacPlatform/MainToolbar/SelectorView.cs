@@ -575,24 +575,37 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override void KeyDown (NSEvent theEvent)
 			{
-				if(theEvent.Characters == " ")
-				{
+				if(theEvent.KeyCode == 0x20) {
 					var item = Cells [focusedCellIndex].Cell;
 					PopupMenuForCell (item);
 					return;
 				}
 
-				if (theEvent.Characters == "\t") {
-					focusedCellIndex++;
-					if(focusedCellIndex >= VisibleCellIds.Length){
-						if (NextKeyView != null) {
+				if (theEvent.KeyCode == 0x30) {
+					if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
+						focusedCellIndex--;
+						if (focusedCellIndex < 0) {
+							if (PreviousKeyView != null) {
+								SetSelection ();
+								focusedCellIndex = 0;
+								focusedItem = null;
+							}
+						} else {
 							SetSelection ();
-							focusedCellIndex = 0;
-							focusedItem = null;
+							return;
 						}
 					} else {
-						SetSelection ();
-						return;
+						focusedCellIndex++;
+						if (focusedCellIndex >= VisibleCellIds.Length) {
+							if (NextKeyView != null) {
+								SetSelection ();
+								focusedCellIndex = 0;
+								focusedItem = null;
+							}
+						} else {
+							SetSelection ();
+							return;
+						}
 					}
 				}
 
@@ -604,7 +617,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (focusedItem != null) {
 					focusedItem.HasFocus = false;
 				}
-				if (focusedCellIndex < Cells.Length) {
+				if (focusedCellIndex >= 0 && focusedCellIndex < Cells.Length) {
 					var item = Cells [focusedCellIndex].Cell as NSPathComponentCellFocusable;
 					focusedItem = item;
 					if (item != null)
@@ -615,6 +628,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override bool BecomeFirstResponder ()
 			{
+				var currentEvent = NSApplication.SharedApplication.CurrentEvent;
+				// Check if the currentEvent that caused us to become first responder is a Tab or a Reverse Tab
+				if (currentEvent.Type == NSEventType.KeyDown) {
+					if (currentEvent.KeyCode == 0x30) {
+						if ((currentEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
+							focusedCellIndex = Cells.Length - 1;
+						} else {
+							focusedCellIndex = 0;
+						}
+					}
+				}
 				SetSelection ();
 				return base.BecomeFirstResponder ();
 			}
