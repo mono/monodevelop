@@ -656,11 +656,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void LoadStyles (object sender = null, EventArgs args = null)
 		{
-			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
-				Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
-			} else {
-				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
-			}
+			Appearance = IdeTheme.GetAppearance ();
 
 			UpdateApplicationNamePlaceholderText ();
 			textColor = ColorForType (messageType);

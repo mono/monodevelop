@@ -2583,8 +2583,10 @@ namespace MonoDevelop.Projects
 		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor)
 		{
 			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
-				WriteProject (monitor);
-				return sourceProject.SaveToString ();
+				return await Task.Run (() => {
+					WriteProject (monitor);
+					return sourceProject.SaveToString ();
+				}).ConfigureAwait (false);
 			}
 		}
 
