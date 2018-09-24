@@ -741,10 +741,16 @@ namespace MonoDevelop.Ide
 				return;
 			}
 
-			if (willShutdown)
+			if (willShutdown) {
+				var metadata = new UnhandledExceptionMetadata {
+					Exception = ex
+				};
+				Counters.UnhandledExceptions.Inc (metadata);
+
 				LoggingService.LogFatalError (msg, ex);
-			else
+			} else {
 				LoggingService.LogInternalError (msg, ex);
+			}
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>

@@ -69,10 +69,10 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter ProcessCodeCompletion = InstrumentationService.CreateTimerCounter ("Process Code Completion", "IDE", id: "Ide.ProcessCodeCompletion", logMessages:false);
 		internal static Counter<CompletionStatisticsMetadata> CodeCompletionStats = InstrumentationService.CreateCounter<CompletionStatisticsMetadata> ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
 		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
-
 		internal static bool TrackingBuildAndDeploy;
 		internal static TimerCounter<CounterMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<CounterMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 
+		internal static Counter<UnhandledExceptionMetadata> UnhandledExceptions = InstrumentationService.CreateCounter<UnhandledExceptionMetadata> ("Unhandled Exceptions", "IDE", id: "Ide.UnhandledExceptions");
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
 			public static TimerCounter ObjectSerialized = InstrumentationService.CreateTimerCounter ("Object serialized", "Parser Service");
@@ -167,6 +167,14 @@ namespace MonoDevelop.Ide
 
 		public long SolutionLoadTime {
 			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+	}
+
+	class UnhandledExceptionMetadata : CounterMetadata
+	{
+		public System.Exception Exception {
+			get => GetProperty<System.Exception> ();
 			set => SetProperty (value);
 		}
 	}
