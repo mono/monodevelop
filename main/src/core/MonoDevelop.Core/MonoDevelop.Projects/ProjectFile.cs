@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.CodeAnalysis;
 using MonoDevelop;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
@@ -523,6 +524,14 @@ namespace MonoDevelop.Projects
 		{
 			if (Project != null)
 				Project.NotifyFilePropertyChangedInProject (this, property);
+		}
+
+		public virtual SourceCodeKind SourceCodeKind {  
+			get {
+				if (filename.Extension == ".sketchcs" || filename.Extension == ".sketchvb")
+					return SourceCodeKind.Script;
+				return SourceCodeKind.Regular;
+			}
 		}
 	}
 

@@ -60,6 +60,8 @@ namespace MonoDevelop.CSharp.Project
 		{
 			base.OnInitialize ();
 			SupportsRoslyn = true;
+			RoslynLanguageName = Microsoft.CodeAnalysis.LanguageNames.CSharp;
+
 			StockIcon = "md-csharp-project";
 		}
 
