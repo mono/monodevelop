@@ -144,6 +144,7 @@
     <Compile Include="Dialogs\MacCommonFileDialogHandler.cs" />
     <Compile Include="MacTelemetryDetails.cs" />
     <Compile Include="Interop.cs" />
+    <Compile Include="KernelInterop.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
