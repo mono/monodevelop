@@ -415,6 +415,8 @@ namespace MonoDevelop.CSharp.Completion
 			switch (triggerInfo.CompletionTriggerReason) {
 			case CompletionTriggerReason.CharTyped:
 				kind = CompletionTriggerKind.Insertion;
+				if (triggerInfo.TriggerCharacter == '{')
+					return EmptyCompletionDataList;
 				break;
 			case CompletionTriggerReason.CompletionCommand:
 				kind = CompletionTriggerKind.InvokeAndCommitIfUnique;
@@ -441,7 +443,6 @@ namespace MonoDevelop.CSharp.Completion
 			var customOptions = DocumentContext.RoslynWorkspace.Options
 				.WithChangedOption (CompletionOptions.TriggerOnDeletion, LanguageNames.CSharp, true)
 				.WithChangedOption (CompletionOptions.HideAdvancedMembers, LanguageNames.CSharp, IdeApp.Preferences.CompletionOptionsHideAdvancedMembers);
-
 			var completionList = await Task.Run (() => cs.GetCompletionsAsync (analysisDocument, Editor.CaretOffset, trigger, options: customOptions, cancellationToken: token)).ConfigureAwait (false);
 			Counters.ProcessCodeCompletion.Trace ("C#: Got completions");
 
