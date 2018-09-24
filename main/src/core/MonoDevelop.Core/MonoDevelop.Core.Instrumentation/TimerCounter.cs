@@ -243,6 +243,13 @@ namespace MonoDevelop.Core.Instrumentation
 			this.properties = new Dictionary<string, object> (original.properties);
 		}
 
+		public void AddProperties (CounterMetadata original)
+		{
+			foreach (var kvp in original.Properties) {
+				properties [kvp.Key] = kvp.Value;
+			}
+		}
+
 		public CounterResult Result {
 			get {
 				var rs = GetProperty<string> ();
