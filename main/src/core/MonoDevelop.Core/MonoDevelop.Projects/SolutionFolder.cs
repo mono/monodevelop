@@ -1029,7 +1029,7 @@ namespace MonoDevelop.Projects
 		
 		void OnItemReloadRequired (SolutionItemEventArgs e)
 		{
-			if (ParentFolder == null && ParentSolution != null)
+			if (ParentSolution != null)
 				ParentSolution.OnItemReloadRequired (e);
 			if (ItemReloadRequired != null)
 				ItemReloadRequired (this, e);
