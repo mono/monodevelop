@@ -295,17 +295,11 @@ namespace WindowsPlatform.MainToolbar
 				PropertyChanged (this, new System.ComponentModel.PropertyChangedEventArgs (propName));
 		}
 
-		public void Focus ()
+		public void Focus (Gtk.DirectionType direction, Action<Gtk.DirectionType> exitAction)
 		{
 			FocusSearchBar ();
+			exitAction (direction);
 		}
-
-		public void Focus (System.Action exitAction)
-		{
-			FocusSearchBar ();
-			exitAction ();
-		}
-
 
 		public void ShowAccessibilityAnnouncement (string message)
 		{
