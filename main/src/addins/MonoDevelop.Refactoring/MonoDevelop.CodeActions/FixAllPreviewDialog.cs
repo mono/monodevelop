@@ -133,7 +133,7 @@ namespace MonoDevelop.CodeActions
 			Buttons.Add (Command.Cancel, Command.Apply);
 
 			var rootNode = store.AddNode ();
-			var fixAllOccurencesText = GettextCatalog.GetString ("Fix all occurences");
+			var fixAllOccurencesText = GettextCatalog.GetString ("Fix all occurrences");
 			rootNode.SetValues (nodeCheck, CheckBoxState.On, nodeLabel, fixAllOccurencesText, nodeIcon, ImageService.GetIcon ("md-csharp-file"), nodeIconVisible, true);
 		}
 
