@@ -27,6 +27,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using Xwt;
 
 namespace Mono.TextEditor
 {
@@ -94,6 +95,12 @@ namespace Mono.TextEditor
 			tipWindow.Location = new Xwt.Point (x, y);
 
 			tipWindow.Show ();
+		}
+
+		public virtual bool TryCloseTooltipWindow (WindowFrame tipWindow, MonoDevelop.Ide.Editor.TooltipCloseReason reason)
+		{
+			tipWindow.Dispose ();
+			return true;
 		}
 	}
 }

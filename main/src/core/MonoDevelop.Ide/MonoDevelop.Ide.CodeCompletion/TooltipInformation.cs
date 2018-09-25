@@ -107,4 +107,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			categories.Add (Tuple.Create (categoryLabel, categoryMarkup));
 		}
 	}
+
+	public class TaggedTooltipInformation<T> : TooltipInformation
+	{
+		/// <summary>
+		/// Gets or sets the tag which contains custom data.
+		/// </summary>
+		public T Tag { get; set; }
+	}
 }
