@@ -53,6 +53,8 @@ namespace MonoDevelop.CodeActions
 		readonly DataField<Image> nodeIcon = new DataField<Image> ();
 		readonly DataField<bool> nodeIconVisible = new DataField<bool> ();
 		readonly DataField<TextChange> nodeEditor = new DataField<TextChange> ();
+		// Aggregate of all offsets caused by previous text changes.
+		readonly DataField<int> nodeOffset = new DataField<int> ();
 		readonly TreeView treeView;
 		readonly TreeStore store;
 		readonly TextEditor baseEditor, changedEditor;
@@ -68,7 +70,7 @@ namespace MonoDevelop.CodeActions
 			this.operations = operations;
 
 			// TODO: checkbox dependencies
-			store = new TreeStore (nodeCheck, nodeLabel, nodeIcon, nodeIconVisible, nodeEditor);
+			store = new TreeStore (nodeCheck, nodeLabel, nodeIcon, nodeIconVisible, nodeEditor, nodeOffset);
 			treeView = new TreeView {
 				DataSource = store,
 				HeadersVisible = false,
@@ -157,7 +159,22 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 
+			UpdateNextChildrenOffset (node, newCheck);
 			UpdateRootFromChild (node, newCheck);
+		}
+
+		void UpdateNextChildrenOffset (TreeNavigator node, CheckBoxState newCheck)
+		{
+			var iter = node.Clone ();
+			var change = node.GetValue (nodeEditor);
+			var diff = change.NewText.Length - change.Span.Length;
+			if (newCheck == CheckBoxState.Off)
+				diff = -diff;
+
+			while (iter.MoveNext ()) {
+				var currentOffset = iter.GetValue (nodeOffset);
+				iter.SetValue (nodeOffset, currentOffset + diff);
+			}
 		}
 
 		void UpdateRootFromChild (TreeNavigator childNode, CheckBoxState newCheck)
@@ -216,6 +233,7 @@ namespace MonoDevelop.CodeActions
 				return;
 
 			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
+			int offset = 0;
 			foreach (var operation in operations) {
 				if (!(operation is ApplyChangesOperation ac)) {
 					continue;
@@ -228,11 +246,14 @@ namespace MonoDevelop.CodeActions
 				foreach (var change in diff) {
 					var node = rootNode.Clone ();
 
-					var span = GetChangeSpan (newText, change);
+					var span = GetChangeSpan (newText, change, offset);
+
 					var newSubText = newText.GetSubText (span).ToString ().Replace(Environment.NewLine, "…").Trim ();
 
 					var operationNode = node.AddChild ();
-					operationNode.SetValues (nodeCheck, CheckBoxState.On, nodeLabel, newSubText, nodeEditor, change);
+					operationNode.SetValues (nodeCheck, CheckBoxState.On, nodeLabel, newSubText, nodeEditor, change, nodeOffset, offset);
+
+					offset += change.NewText.Length - change.Span.Length;
 				}
 			}
 
@@ -263,29 +284,29 @@ namespace MonoDevelop.CodeActions
 		{
 			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
 			var currentChange = store.GetNavigatorAt (eventRow).GetValue (nodeEditor);
-			SetChangedEditorText (baseText, GetApplicableChanges (), currentChange);
+			var offset = store.GetNavigatorAt (eventRow).GetValue (nodeOffset);
+			SetChangedEditorText (baseText, GetApplicableChanges (), currentChange, offset);
 		}
 
-		void SetChangedEditorText (SourceText baseText, IEnumerable<TextChange> textChanges, TextChange currentChange)
+		void SetChangedEditorText (SourceText baseText, IEnumerable<TextChange> textChanges, TextChange currentChange, int offset)
 		{
 			var changedText = baseText.WithChanges (textChanges);
 			changedEditor.Text = changedText.ToString ();
 			if (currentChange == default)
 				return;
 
-			var changeSpan = GetChangeSpan (changedText, currentChange);
+			var changeSpan = GetChangeSpan (changedText, currentChange, offset);
 			changedEditor.CenterTo (currentChange.Span.Start);
 			changedEditor.SelectionRange = new TextSegment (changeSpan.Start, changeSpan.Length);
 		}
 
-		static TextSpan GetChangeSpan (SourceText inText, TextChange change)
+		static TextSpan GetChangeSpan (SourceText inText, TextChange change, int offset)
 		{
-			var startLine = inText.Lines.GetLineFromPosition (change.Span.Start);
-			var endLine = inText.Lines.GetLineFromPosition (change.Span.End);
+			var startLine = inText.Lines.GetLineFromPosition (change.Span.Start + offset);
+			var endLine = inText.Lines.GetLineFromPosition (change.Span.End + offset);
 
 			var changedLength = endLine.End - startLine.Start;
-			var length = Math.Max (changedLength, change.NewText.Length);
-			return new TextSpan (startLine.Start, length);
+			return new TextSpan (startLine.Start, changedLength);
 		}
 	}
 }
