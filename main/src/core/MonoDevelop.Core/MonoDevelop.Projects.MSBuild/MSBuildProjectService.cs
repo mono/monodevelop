@@ -306,8 +306,11 @@ namespace MonoDevelop.Projects.MSBuild
 							var pathOs = (string)searchPaths.Attribute ("os")?.Value;
 							if (!string.IsNullOrEmpty (pathOs) && pathOs != os)
 								continue;
-							foreach (var property in searchPaths.Elements ("property"))
-								list.Add (new ImportSearchPathExtensionNode { Property = property.Attribute ("name").Value, Path = property.Attribute ("value").Value });
+							foreach (var property in searchPaths.Elements ("property")) {
+								string propertyValue = property.Attribute ("value").Value ?? string.Empty;
+								foreach (var path in propertyValue.Split (';'))
+									list.Add (new ImportSearchPathExtensionNode { Property = property.Attribute ("name").Value, Path = path });
+							}
 						}
 					}
 				}

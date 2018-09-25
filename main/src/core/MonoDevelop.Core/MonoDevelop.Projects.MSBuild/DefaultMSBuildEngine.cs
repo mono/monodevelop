@@ -1120,7 +1120,10 @@ namespace MonoDevelop.Projects.MSBuild
 					if (import.Project.IndexOf (prop.MSBuildProperty, propertyStart, StringComparison.OrdinalIgnoreCase) == -1)
 						continue;
 
-					files = GetImportFiles (project, context, import, prop.Property, prop.Path, out resolvedSdksPath, out keepSearching);
+					string evaluatedPath = context.Evaluate (prop.Path);
+					if (string.IsNullOrEmpty (evaluatedPath))
+						continue; // Skip undefined property path.
+					files = GetImportFiles (project, context, import, prop.Property, evaluatedPath, out resolvedSdksPath, out keepSearching);
 					if (files != null) {
 						foreach (var f in files)
 							ImportFile (project, context, import, f, resolvedSdksPath);
