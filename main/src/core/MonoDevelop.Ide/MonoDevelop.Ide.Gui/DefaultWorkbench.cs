@@ -1171,10 +1171,10 @@ namespace MonoDevelop.Ide.Gui
 			case DirectionType.TabForward:
 				if (!haveFocusedToolbar) {
 					haveFocusedToolbar = true;
-					toolbar.ToolbarView.Focus(() => {
-						if (!dock.ChildFocus(direction)) {
-							haveFocusedToolbar = false;
-							OnFocused(direction);
+					toolbar.ToolbarView.Focus(direction, (d) => {
+						haveFocusedToolbar = false;
+						if (!dock.ChildFocus(d)) {
+							OnFocused(d);
 						}
 					});
 				} else {
@@ -1187,8 +1187,13 @@ namespace MonoDevelop.Ide.Gui
 
 			case DirectionType.TabBackward:
 				if (!dock.ChildFocus(direction)) {
-					haveFocusedToolbar = false;
-					OnFocused(DirectionType.TabForward);
+					haveFocusedToolbar = true;
+					toolbar.ToolbarView.Focus (direction, (d) => {
+						haveFocusedToolbar = false;
+						if (!dock.ChildFocus (d)) {
+							OnFocused (d);
+						}
+					});
 				}
 				break;
 
