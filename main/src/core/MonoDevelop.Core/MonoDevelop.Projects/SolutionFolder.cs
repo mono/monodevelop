@@ -906,7 +906,7 @@ namespace MonoDevelop.Projects
 		
 		void OnItemReloadRequired (SolutionItemEventArgs e)
 		{
-			if (ParentFolder == null && ParentSolution != null)
+			if (ParentSolution != null)
 				ParentSolution.OnItemReloadRequired (e);
 			ItemReloadRequired?.Invoke (this, e);
 		}
