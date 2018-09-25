@@ -248,8 +248,11 @@ namespace MonoDevelop.CodeActions
 
 				var menuItem = new ContextMenuItem (item.Label);
 				menuItem.Context = item.Action;
-				if (item.Action == null)
-					menuItem.Sensitive = false;
+				if (item.Action == null) {
+					if (!(item is CodeFixMenu itemAsMenu) || itemAsMenu.Items.Count <= 0) {
+						menuItem.Sensitive = false;
+					}
+				}
 				var subMenu = item as CodeFixMenu;
 				if (subMenu != null) {
 					menuItem.SubMenu = CreateContextMenu (subMenu);
