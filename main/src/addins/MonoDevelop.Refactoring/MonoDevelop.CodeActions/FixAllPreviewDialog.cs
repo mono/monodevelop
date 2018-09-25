@@ -74,6 +74,9 @@ namespace MonoDevelop.CodeActions
 				HeadersVisible = false,
 			};
 			changedEditor = TextEditorFactory.CreateNewEditor (baseEditor.FileName, baseEditor.MimeType);
+			changedEditor.Options = new CustomEditorOptions (DefaultSourceEditorOptions.PlainEditor) {
+				ShowLineNumberMargin = true,
+			};
 			changedEditor.IsReadOnly = true;
 
 			if (scope != FixAllScope.Document) {
