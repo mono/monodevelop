@@ -226,5 +226,26 @@ namespace MonoDevelop.Projects
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath);
 			}
 		}
+
+		[Test]
+		public async Task ProjectUsingSdkImportThatNeedsEvaluation ()
+		{
+			const string msbuildPropertyName = "MSBuildSearchPathProjectUsingSdkImportThatNeedsEvaluation";
+			const string searchPathPropertyName = "TestEvaluationSearchPath";
+			string importPath = Util.GetSampleProjectPath ("msbuild-search-paths", "sdk-path-eval");
+			string searchPathValue = "$(" + msbuildPropertyName + ")";
+			try {
+				Environment.SetEnvironmentVariable (msbuildPropertyName, importPath);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.RegisterProjectImportSearchPath (searchPathPropertyName, searchPathValue);
+
+				string projectFile = Util.GetSampleProject ("msbuild-search-paths", "EvalImportPath.csproj");
+				using (DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject) {
+					Assert.AreEqual ("Works!", p.MSBuildProject.EvaluatedProperties.GetValue ("BarProp"));
+				}
+			} finally {
+				Environment.SetEnvironmentVariable (msbuildPropertyName, null);
+				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath (searchPathPropertyName, searchPathValue);
+			}
+		}
 	}
 }

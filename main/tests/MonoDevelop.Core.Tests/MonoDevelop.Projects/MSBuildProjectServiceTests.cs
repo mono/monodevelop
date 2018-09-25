@@ -24,6 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 using UnitTests;
@@ -51,6 +56,71 @@ namespace MonoDevelop.Projects
 		public void UnescapeString (string input, string expected)
 		{
 			Assert.AreEqual (expected, MSBuildProjectService.UnscapeString (input));
+		}
+
+		[Test]
+		public void SearchImportPath_MultiplePathValues ()
+		{
+			if (!Platform.IsMac)
+				Assert.Ignore ("Only Mac supported.");
+
+			FilePath msbuildConfigDir = Util.GetSampleProjectPath ("msbuild-search-paths");
+			var msbuildConfigFile = msbuildConfigDir.Combine ("MSBuild.dll.config");
+			var runtime = new TestMSBuildBinPathTargetRuntime ();
+			runtime.MSBuildBinPath = msbuildConfigDir;
+			var imports = MSBuildProjectService.GetProjectImportSearchPaths (runtime, includeImplicitImports: true).ToList ();
+
+			var firstImport = imports [0];
+			var secondImport = imports [1];
+
+			Assert.AreEqual ("$(MSBuildExtensionsPath)", firstImport.MSBuildProperty);
+			Assert.AreEqual ("$(MSBuildExtensionsPathFallbackPathsOverride)", firstImport.Path);
+			Assert.AreEqual ("$(MSBuildExtensionsPath)", secondImport.MSBuildProperty);
+			Assert.AreEqual ("/Library/Frameworks/Mono.framework/External/xbuild/", secondImport.Path);
+		}
+	}
+
+	class TestMSBuildBinPathTargetRuntime : TargetRuntime
+	{
+		public override string RuntimeId => throw new NotImplementedException ();
+		public override string Version => throw new NotImplementedException ();
+		public override bool IsRunning => throw new NotImplementedException ();
+
+		[Obsolete]
+		public override string GetAssemblyDebugInfoFile (string assemblyPath)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override IExecutionHandler GetExecutionHandler ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public string MSBuildBinPath { get; set; }
+
+		public override string GetMSBuildBinPath (string toolsVersion)
+		{
+			return MSBuildBinPath;
+		}
+
+		public override string GetMSBuildExtensionsPath ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override string GetMSBuildToolsPath (string toolsVersion)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected override void OnInitialize ()
+		{
+		}
+
+		protected internal override IEnumerable<string> GetGacDirectories ()
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }
