@@ -463,7 +463,7 @@ namespace MonoDevelop.SourceEditor
 
 		void IdeApp_FocusOut (object sender, EventArgs e)
 		{
-			textEditor.TextArea.HideTooltip (false);
+			textEditor.TextArea.HideTooltip ();
 		}
 
 		void OnLostFocus ()

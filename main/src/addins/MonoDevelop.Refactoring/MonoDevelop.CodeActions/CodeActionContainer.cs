@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CodeActions
 {
@@ -62,6 +63,24 @@ namespace MonoDevelop.CodeActions
 			private set {
 				codeRefactoringActions = value;
 			}
+		}
+
+		public TextSpan Span { get; internal set; }
+
+		public bool FloatingWidgetShown { get; internal set; }
+
+		internal SourceEditor.SmartTagSeverity GetSmartTagSeverity ()
+		{
+			var result = SourceEditor.SmartTagSeverity.OnlyActions;
+			foreach (var fix in CodeFixActions) {
+				if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Error) {
+					return SourceEditor.SmartTagSeverity.ErrorFixes;
+				}
+				if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Warning)
+					result = SourceEditor.SmartTagSeverity.Fixes;
+			}
+
+			return result;
 		}
 
 		internal CodeActionContainer (ImmutableArray<CodeFixCollection> codeDiagnosticActions, ImmutableArray<CodeRefactoring> codeRefactoringActions)

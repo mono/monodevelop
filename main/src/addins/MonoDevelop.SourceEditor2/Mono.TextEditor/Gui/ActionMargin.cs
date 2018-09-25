@@ -49,12 +49,12 @@ namespace Mono.TextEditor
 			this.editor = editor;
 			marginWidth = 20;
 			IsVisible = false;
-			this.editor.Caret.PositionChanged += HandlePositionChanged;;
+			this.editor.Caret.PositionChanged += HandlePositionChanged; ;
 		}
 
 		public override void Dispose ()
 		{
-			editor.Caret.PositionChanged -= HandlePositionChanged;;
+			editor.Caret.PositionChanged -= HandlePositionChanged; ;
 			base.Dispose ();
 		}
 
