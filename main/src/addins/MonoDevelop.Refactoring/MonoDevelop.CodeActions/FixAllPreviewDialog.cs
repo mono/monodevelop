@@ -285,8 +285,10 @@ namespace MonoDevelop.CodeActions
 		async void UpdateTextForEvent (TreePosition eventRow)
 		{
 			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
-			var currentChange = store.GetNavigatorAt (eventRow).GetValue (nodeEditor);
-			var offset = store.GetNavigatorAt (eventRow).GetValue (nodeOffset);
+
+			var navigator = eventRow != null ? store.GetNavigatorAt (eventRow) : store.GetFirstNode ();
+			var currentChange = navigator.GetValue (nodeEditor);
+			var offset = navigator.GetValue (nodeOffset);
 			SetChangedEditorText (baseText, GetApplicableChanges (), currentChange, offset);
 		}
 
