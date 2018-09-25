@@ -2578,11 +2578,9 @@ namespace MonoDevelop.Projects
 			NeedsReload = false;
 		}
 
-		AsyncCriticalSection writeProjectLock = new AsyncCriticalSection ();
-
 		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor)
 		{
-			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
+			using (await WriteLock ().ConfigureAwait (false)) {
 				return await Task.Run (() => {
 					WriteProject (monitor);
 					return sourceProject.SaveToString ();
@@ -4170,7 +4168,7 @@ namespace MonoDevelop.Projects
 		Task ReevaluateProject (ProgressMonitor monitor, bool resetCachedCompileItems)
 		{
 			return BindTask (ct => Runtime.RunInMainThread (async () => {
-				using (await writeProjectLock.EnterAsync ()) {
+				using (await WriteLock ()) {
 
 					if (modifiedInMemory) {
 						await Task.Run (() => WriteProject (monitor));
