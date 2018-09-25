@@ -924,7 +924,7 @@ namespace Mono.TextEditor
 
 		public void HideTooltip (bool checkMouseOver = true)
 		{
-			textArea.HideTooltip (checkMouseOver);
+			textArea.HideTooltip (TooltipCloseReason.Force);
 		}
 		public Action<Gdk.EventButton> DoPopupMenu {
 			get {
