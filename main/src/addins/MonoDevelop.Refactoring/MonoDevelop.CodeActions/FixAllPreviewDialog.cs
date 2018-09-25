@@ -232,17 +232,19 @@ namespace MonoDevelop.CodeActions
 			if (rootNode == null)
 				return;
 
-			var baseText = await baseEditor.DocumentContext.AnalysisDocument.GetTextAsync ();
+			var baseDocument = baseEditor.DocumentContext.AnalysisDocument;
+			var baseText = await baseDocument.GetTextAsync ();
 			int offset = 0;
+
+			var diffService = baseEditor.DocumentContext.RoslynWorkspace.Services.GetService<IDocumentTextDifferencingService> ();
 			foreach (var operation in operations) {
 				if (!(operation is ApplyChangesOperation ac)) {
 					continue;
 				}
 
-				var changedDocument = ac.ChangedSolution.GetDocument (baseEditor.DocumentContext.AnalysisDocument.Id);
+				var changedDocument = ac.ChangedSolution.GetDocument (baseDocument.Id);
 				var newText = await changedDocument.GetTextAsync ();
-
-				var diff = newText.GetTextChanges (baseText);
+				var diff = await diffService.GetTextChangesAsync (baseDocument, changedDocument, CancellationToken.None);
 				foreach (var change in diff) {
 					var node = rootNode.Clone ();
 
@@ -303,7 +305,9 @@ namespace MonoDevelop.CodeActions
 		static TextSpan GetChangeSpan (SourceText inText, TextChange change, int offset)
 		{
 			var startLine = inText.Lines.GetLineFromPosition (change.Span.Start + offset);
-			var endLine = inText.Lines.GetLineFromPosition (change.Span.End + offset);
+
+			var maxEndOffset = Math.Min (inText.Length, change.Span.End + offset);
+			var endLine = inText.Lines.GetLineFromPosition (maxEndOffset);
 
 			var changedLength = endLine.End - startLine.Start;
 			return new TextSpan (startLine.Start, changedLength);
