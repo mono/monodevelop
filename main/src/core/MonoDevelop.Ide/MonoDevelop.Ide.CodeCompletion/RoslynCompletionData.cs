@@ -314,6 +314,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var markup = StringBuilderCache.Allocate ();
 			var theme = SyntaxHighlightingService.GetIdeFittingTheme (DefaultSourceEditorOptions.Instance.GetEditorTheme ());
 			var taggedParts = description.TaggedParts;
+			if (taggedParts.Length == 0) {
+				return null;
+			}
 			int i = 0;
 			while (i < taggedParts.Length) {
 				if (taggedParts [i].Tag == "LineBreak")
