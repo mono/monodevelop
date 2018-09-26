@@ -5,4 +5,13 @@
       <Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
     </CreateProperty>
   </Target>
+
+  <PropertyGroup>
+    <RARResolveFromGAC Condition="$(RARResolveFromGAC) == ''">true</RARResolveFromGAC>
+    <RARCandidateAssemblyFiles Condition="$(RARResolveFromCandidateAssemblyFiles) == 'true'">{CandidateAssemblyFiles};</RARCandidateAssemblyFiles>
+    <RAROutputDirectory Condition="$(RARResolveFromOutputDirectory) == 'true'">$(OutDir)</RAROutputDirectory>
+    <RARGAC Condition="$(RARResolveFromGAC) == 'true'">{GAC}</RARGAC>
+    <AssemblySearchPaths>{RawFileName};{HintPathFromItem};{TargetFrameworkDirectory};$(RARGAC);$(RAROutputDirectory);$(RARCandidateAssemblyFiles)</AssemblySearchPaths>
+  </PropertyGroup>
+
 </Project>

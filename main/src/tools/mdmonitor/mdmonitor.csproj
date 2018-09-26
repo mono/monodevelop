@@ -11,6 +11,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
+    <RARResolveFromOutputDirectory>true</RARResolveFromOutputDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
