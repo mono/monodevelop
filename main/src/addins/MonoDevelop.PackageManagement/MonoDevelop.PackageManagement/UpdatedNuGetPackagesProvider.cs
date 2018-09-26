@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
 using NuGet.Common;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
@@ -46,15 +45,18 @@ namespace MonoDevelop.PackageManagement
 		CancellationToken cancellationToken;
 		UpdatedNuGetPackagesInProject updatedPackagesInProject;
 		List<PackageIdentity> updatedPackages = new List<PackageIdentity> ();
+		Action<string, Exception> logError;
 
 		public UpdatedNuGetPackagesProvider (
 			IDotNetProject dotNetProject,
 			ISourceRepositoryProvider sourceRepositoryProvider,
 			NuGetProject project,
+			Action<string, Exception> logError,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.dotNetProject = dotNetProject;
 			this.project = project;
+			this.logError = logError;
 
 			this.sourceRepositories = sourceRepositoryProvider.GetRepositories ().ToList ();
 
@@ -111,6 +113,9 @@ namespace MonoDevelop.PackageManagement
 
 		async Task<PackageIdentity> GetUpdates (SourceRepository sourceRepository, PackageReference packageReference)
 		{
+			if (!packageReference.PackageIdentity.HasVersion)
+				return null;
+
 			var metadataResource = await sourceRepository.GetResourceAsync<PackageMetadataResource> (cancellationToken);
 
 			if (metadataResource == null)
@@ -138,7 +143,7 @@ namespace MonoDevelop.PackageManagement
 
 		void LogError (Task<PackageIdentity> task)
 		{
-			LoggingService.LogError ("Check for updates error.", task.Exception.GetBaseException ());
+			logError ("Check for updates error.", task.Exception.GetBaseException ());
 		}
 
 		bool IsPackageVersionAllowed (IPackageSearchMetadata package, PackageReference packageReference)
