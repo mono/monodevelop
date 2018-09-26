@@ -67,6 +67,12 @@ namespace MonoDevelop.DotNetCore
 			return framework.Id.IsNetCoreApp ();
 		}
 
+		public static bool IsNetCoreApp22 (this TargetFramework framework)
+		{
+			return framework.IsNetCoreApp () &&
+				framework.Id.Version == "2.2";
+		}
+
 		public static bool IsNetCoreApp21 (this TargetFramework framework)
 		{
 			return framework.IsNetCoreApp () &&
