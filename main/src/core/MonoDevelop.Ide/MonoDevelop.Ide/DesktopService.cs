@@ -68,12 +68,12 @@ namespace MonoDevelop.Ide
 			FileService.FileRemoved += NotifyFileRemoved;
 			FileService.FileRenamed += NotifyFileRenamed;
 
-			MemoryMonitor = platformService.CreateMemoryMonitor ();
-			MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
-
 			// Ensure we initialize the native toolkit on the UI thread immediately
 			// so that we can safely access this property later in other threads
 			GC.KeepAlive (NativeToolkit);
+
+			MemoryMonitor = platformService.CreateMemoryMonitor ();
+			MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
 
 			FontService.Initialize ();
 		}
