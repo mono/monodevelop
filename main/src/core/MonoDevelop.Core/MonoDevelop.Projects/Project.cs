@@ -752,7 +752,7 @@ namespace MonoDevelop.Projects
 			SetFastBuildCheckDirty ();
 			modifiedInMemory = false;
 
-			string content = await WriteProjectAsync (monitor);
+			string content = await WriteProjectAsync_NoLock (monitor);
 
 			// Doesn't save the file to disk if the content did not change
 			if (await sourceProject.SaveAsync (FileName, content)) {
@@ -2581,11 +2581,16 @@ namespace MonoDevelop.Projects
 		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor)
 		{
 			using (await WriteLock ().ConfigureAwait (false)) {
-				return await Task.Run (() => {
-					WriteProject (monitor);
-					return sourceProject.SaveToString ();
-				}).ConfigureAwait (false);
+				return await WriteProjectAsync_NoLock (monitor).ConfigureAwait (false);
 			}
+		}
+
+		Task<string> WriteProjectAsync_NoLock (ProgressMonitor monitor)
+		{
+			return Task.Run (() => {
+				WriteProject (monitor);
+				return sourceProject.SaveToString ();
+			});
 		}
 
 		ITimeTracker writeTimer;
