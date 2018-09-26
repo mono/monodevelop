@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				return DocumentContext.AnalysisDocument.GetSemanticModelAsync (default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
+				return DocumentContext?.AnalysisDocument?.GetSemanticModelAsync (default).WaitAndGetResult (default);
 			}
 		}
 
@@ -253,7 +253,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var metadataName = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
 			var type = compilation.Compilation.GetTypeByMetadataName (metadataName);
 			if (type != null) {
-				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.InsertOffset);
+				var offset = Math.Min (CurrentContext.InsertOffset, compilation.SyntaxTree.Length);
+				var minimalName = type.ToMinimalDisplayString (compilation, offset);
 				return string.IsNullOrEmpty (member) ? minimalName :  minimalName + "." + member;
 			}
 			return fullTypeName.Replace ("#", ".");
