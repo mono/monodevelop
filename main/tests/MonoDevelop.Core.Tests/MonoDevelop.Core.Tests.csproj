@@ -112,6 +112,7 @@
     <Compile Include="MonoDevelop.FSW\PathTreeNodeTests.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeTests.cs" />
     <Compile Include="MonoDevelop.Core\PropertyTests.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimingsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core\" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.FSW\" />
+    <Folder Include="MonoDevelop.Core.Instrumentation\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
