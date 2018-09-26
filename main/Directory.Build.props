@@ -5,7 +5,7 @@
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
     <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
     <ReferencesVSEditor>$(RootDirectory)\msbuild\ReferencesVSEditor.props</ReferencesVSEditor>
-    <NuGetVersionRoslyn>2.9.0-beta8-63130-02</NuGetVersionRoslyn>
+    <NuGetVersionRoslyn>2.10.0-beta2-63315-04</NuGetVersionRoslyn>
     <NuGetVersionVSEditor>15.8.519</NuGetVersionVSEditor>
   </PropertyGroup>
 
