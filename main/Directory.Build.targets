@@ -7,6 +7,10 @@
     <RAROutputDirectory Condition="$(RARResolveFromOutputDirectory) == 'true'">$(OutDir)</RAROutputDirectory>
     <RARGAC Condition="$(RARResolveFromGAC) == 'true'">{GAC}</RARGAC>
     <AssemblySearchPaths>{RawFileName};{HintPathFromItem};{TargetFrameworkDirectory};$(RARGAC);$(RAROutputDirectory);$(RARCandidateAssemblyFiles);$(RARCoverity)</AssemblySearchPaths>
+    <AllowedReferenceAssemblyFileExtensions>.dll</AllowedReferenceAssemblyFileExtensions>
+    <!-- we do have .dll.mdb for Gtk# assemblies, but they're all in the GAC anyway, so effectively we only need .pdb. We don't have .exe.mdb. -->
+    <AllowedReferenceRelatedDebugFileExtensions>.pdb</AllowedReferenceRelatedDebugFileExtensions>
+    <AllowedReferenceRelatedFileExtensions>.pdb;.xml;.dll.config;.exe.config</AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
 </Project>
