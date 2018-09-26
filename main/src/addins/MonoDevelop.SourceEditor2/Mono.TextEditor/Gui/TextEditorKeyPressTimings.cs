@@ -25,11 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.Text.Implementation;
-using System.Linq;
-using MonoDevelop.SourceEditor;
 using MonoDevelop.Ide;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
@@ -41,8 +36,8 @@ namespace Mono.TextEditor
 		static readonly ImmutableArray<int> bucketUpperLimit = ImmutableArray.Create<int> (
 			8, 16, 32, 64, 128, 256, 512, 1024
 		);
+		readonly BucketTimings bucketTimings = new BucketTimings (bucketUpperLimit);
 
-		BucketTimings bucketTimings = new BucketTimings (bucketUpperLimit);
 		TimeSpan maxTime;
 		TimeSpan totalTime;
 		TimeSpan? firstTime;
