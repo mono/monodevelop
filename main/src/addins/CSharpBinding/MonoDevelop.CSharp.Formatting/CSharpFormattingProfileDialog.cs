@@ -127,7 +127,6 @@ namespace MonoDevelop.CSharp.Formatting
 			comboboxCategories.AppendText (GettextCatalog.GetString ("New Lines"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Spacing"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Wrapping"));
-			comboboxCategories.AppendText (GettextCatalog.GetString ("Style"));
 			comboboxCategories.Changed += delegate {
 				texteditor.Text = "";
 				notebookCategories.Page = comboboxCategories.Active;
