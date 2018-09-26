@@ -275,7 +275,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new PackageManagementPackageReference (
 				package.Id,
-				package.Version.ToString (),
+				package.Version?.ToString (),
 				pathResolver.GetPackageInstallPath (nugetProject, package));
 		}
 
