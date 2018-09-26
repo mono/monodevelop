@@ -60,9 +60,9 @@ namespace MonoDevelop.Projects
 			base.TearDown ();
 		}
 
-		async Task<DotNetProject> OpenProject ()
+		async Task<DotNetProject> OpenProject (string solutionName = "DotNetCoreFileWatcherTests.sln")
 		{
-			string solutionFileName = Util.GetSampleProject ("DotNetCoreFileWatcherTests", "DotNetCoreFileWatcherTests.sln");
+			string solutionFileName = Util.GetSampleProject ("DotNetCoreFileWatcherTests", solutionName);
 			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			project = solution.GetAllProjects ().Single () as DotNetProject;
 
@@ -468,6 +468,24 @@ namespace MonoDevelop.Projects
 
 			Assert.AreNotEqual (fileAdded, finishedTask);
 			Assert.AreNotEqual (fileRemoved, finishedTask);
+		}
+
+		/// <summary>
+		/// Tests that a file is added to the project when the file glob has extra MSBuild metadata. For example,
+		/// adding a .css file to an ASP.NET Core project in a wwwroot subdirectory which has the associated glob:
+		/// Content Include="wwwroot\**" CopyToPublishDirectory="PreserveNewest"
+		/// </summary>
+		[Test]
+		public async Task AddFileExternally_FileGlobHasMSBuildMetadata_FileAddedToProject ()
+		{
+			await OpenProject ("DotNetCoreMetadataTests.sln");
+			var wwwrootDirectory = project.BaseDirectory.Combine ("wwwroot");
+			Directory.CreateDirectory (wwwrootDirectory);
+
+			var fileAdded = WaitForSingleFileAdded (project);
+			var cssFilePath = WriteFile (wwwrootDirectory, "site.css");
+
+			await AssertFileAddedToProject (fileAdded, cssFilePath, "Content");
 		}
 	}
 }
