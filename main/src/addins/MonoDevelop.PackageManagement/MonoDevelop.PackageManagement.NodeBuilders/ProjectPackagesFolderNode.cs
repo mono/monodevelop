@@ -180,6 +180,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public virtual bool IsPackageInstalled (PackageReference reference)
 		{
 			if (IsNuGetIntegratedProject ()) {
+				if (!reference.PackageIdentity.HasVersion)
+					return true;
+
 				string path = packagePathResolver.GetHashPath (reference.PackageIdentity.Id, reference.PackageIdentity.Version);
 				return File.Exists (path);
 			}
