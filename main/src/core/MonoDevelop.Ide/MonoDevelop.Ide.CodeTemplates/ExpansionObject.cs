@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				return DocumentContext.AnalysisDocument.GetSemanticModelAsync (default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
+				return DocumentContext?.AnalysisDocument?.GetSemanticModelAsync (default).WaitAndGetResult (default);
 			}
 		}
 
