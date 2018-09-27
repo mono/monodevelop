@@ -55,9 +55,11 @@ namespace MonoDevelop.Ide
 		{
 			var absolutePath = UpdateInfoFile;
 			if (absolutePath != null && !absolutePath.IsAbsolute) {
+#if MAC
 				// relative paths are relative the bundle root
 				FilePath bundlePath = Foundation.NSBundle.MainBundle.BundlePath;
 				absolutePath = bundlePath.Combine (UpdateInfoFile);
+#endif
 			}
 
 			if (File.Exists (absolutePath))
