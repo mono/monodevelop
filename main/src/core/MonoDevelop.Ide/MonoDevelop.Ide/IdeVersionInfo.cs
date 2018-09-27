@@ -26,10 +26,37 @@
 using System;
 using MonoDevelop.Core;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide
 {
-	class IdeVersionInfo : ISystemInformationProvider
+	class MonoVersionInfo : ProductInformationProvider
+	{
+		public override string Title => "Mono Framework MDK";
+
+		static string GetMonoVersionNumber ()
+		{
+			var t = Type.GetType ("Mono.Runtime");
+			if (t == null)
+				return "unknown";
+			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
+			if (mi == null) {
+				LoggingService.LogError ("No Mono.Runtime.GetDisplayName method found.");
+				return "error";
+			}
+			var displayName = (string)mi.Invoke (null, null);
+			//Convert from "5.14.0.177 (2018 - 04 / f3a2216b65a Fri Aug  3 09:28:16 EDT 2018)"
+			return Regex.Match (displayName, @"^[\d\.]+", RegexOptions.Compiled).Value;
+		}
+
+		public override string Version => GetMonoVersionNumber ();
+
+		public override string ApplicationId => "964ebddd-1ffe-47e7-8128-5ce17ffffb05";
+
+		protected override string UpdateInfoFile => "/Library/Frameworks/Mono.framework/Versions/Current/updateinfo";
+	}
+
+	class IdeVersionInfo : ProductInformationProvider
 	{
 		static bool IsMono ()
 		{
@@ -106,12 +133,10 @@ namespace MonoDevelop.Ide
 
 			return val;
 		}
-		
-		string ISystemInformationProvider.Title {
-			get { return BrandingService.ApplicationLongName; }
-		}
 
-		string ISystemInformationProvider.Description {
+		public override string Title => BrandingService.ApplicationLongName;
+
+		public override string Description {
 			get {
 				var sb = new System.Text.StringBuilder ();
 				sb.Append ("Version ");
@@ -140,8 +165,7 @@ namespace MonoDevelop.Ide
 
 				if (Platform.IsWindows && !IsMono ()) {
 					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
-						Version ver;
-						if (key != null && Version.TryParse (key.GetValue (null) as string, out ver))
+						if (key != null && System.Version.TryParse (key.GetValue (null) as string, out var ver))
 							sb.Append ("\tGTK# ").Append (ver);
 					}
 				}
@@ -176,6 +200,12 @@ namespace MonoDevelop.Ide
 					return BuildInfo.VersionLabel + " (" + v + ")";
 			}
 		}
+
+		public override string Version => BuildInfo.FullVersion;
+
+		public override string ApplicationId => "34937104-97FC-42A0-9159-D951135F72CA";
+
+		protected override string UpdateInfoFile => "../../../../../MacOS/updateinfo";
 	}
 }
 
