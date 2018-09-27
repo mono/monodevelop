@@ -34,6 +34,8 @@ using System.Text;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
+using Microsoft.VisualStudio.Text.Projection;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
@@ -46,22 +48,44 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			return true;
 		}
 
+		bool IsVsEditorCompletionEnabled (DocumentContext context)
+		{
+			var textEditorImpl = context.GetContent<ITextEditorImpl> ();
+			var textView = textEditorImpl?.TextView;
+			bool isEnabled;
+
+			if (textView == null) {
+				isEnabled = false;
+			} else if (textView.TextBuffer is IProjectionBuffer) {
+				isEnabled = true;
+			} else {
+				isEnabled = CompositionManager.GetExportedValue<Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.IAsyncCompletionBroker> ().IsCompletionSupported (textView.TextBuffer.ContentType);
+			}
+
+			return isEnabled;
+		}
+
 		protected override void Initialize ()
 		{
 			inactive = false;
 
-			// check if there is any other active completion extension 
-			// -> if so that one is disabled automatically
-			var ext = Editor.TextEditorExtensionChain;
-			while (ext != null) {
-				var completionTextEditorExtension = ext as CompletionTextEditorExtension;
-				if (completionTextEditorExtension != null && ext != this) {
-					if (completionTextEditorExtension.IsValidInContext (DocumentContext))
-						inactive = true;
+			if (IsVsEditorCompletionEnabled (DocumentContext)) {
+				inactive = true;
+			} else {
+				// check if there is any other active completion extension 
+				// -> if so that one is disabled automatically
+				var ext = Editor.TextEditorExtensionChain;
+				while (ext != null) {
+					var completionTextEditorExtension = ext as CompletionTextEditorExtension;
+					if (completionTextEditorExtension != null && ext != this) {
+						if (completionTextEditorExtension.IsValidInContext (DocumentContext))
+							inactive = true;
+					}
+					ext = ext.Next;
 				}
-				ext = ext.Next;
 			}
-			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
+			if (!inactive)//Don't register if all we do in handler is check `if (!inactive && ...)`
+				DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
 			base.Initialize ();
 		}
 

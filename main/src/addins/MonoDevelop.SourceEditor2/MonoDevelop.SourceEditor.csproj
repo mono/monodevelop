@@ -282,6 +282,9 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.FoldMarkerMarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSNetFoldMarkerMarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.VsCompletion\CompletionUI.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.VsCompletion\CompletionUIProvider.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.VsCompletion\DefaultCompletionService.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfObjectViewElementFactory.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorKeyPressTimings.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentService.cs" />
