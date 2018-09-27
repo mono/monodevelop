@@ -542,24 +542,30 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
-		
+
 		public bool DoInsertTemplate ()
 		{
-			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
+			var doc = view.WorkbenchWindow?.Document ?? IdeApp.Workbench.ActiveDocument;
+			if (doc == null) {
+				LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
+				return false;
+			}
+
+			return DoInsertTemplate (EditorExtension.Editor, doc);
+		}
+
+		public bool DoInsertTemplate (TextEditor editor, DocumentContext ctx)
+		{
+			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (editor);
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
-					var doc = view.WorkbenchWindow?.Document ?? IdeApp.Workbench.ActiveDocument;
-					if (doc != null) {
-						InsertTemplate (template, doc.Editor, doc);
-					} else {
-						LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
-					}
+					InsertTemplate (template, editor, ctx);
 					return true;
 				}
 			}
 			return false;
 		}
-		
+
 
 		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext context)
 		{

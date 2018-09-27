@@ -785,5 +785,31 @@ namespace MonoDevelop.Projects
 
 			AssertFileRemoved (file.FilePath);
 		}
+
+		[Test]
+		public async Task SaveProjectFileExternally_ProjectInSolutionFolder ()
+		{
+			string solFile = Util.GetSampleProject ("ProjectInSolutionFolder", "ProjectInSolutionFolder.sln");
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			p.DefaultNamespace = "Test";
+			ClearFileEventsCaptured ();
+			// Ensure FileService.FileChanged event is handled after the project handles it.
+			ResetFileServiceChangedEventHandler ();
+			await FileWatcherService.Add (sol);
+			SolutionFolderItem reloadRequiredEventFiredProject = null;
+			sol.ItemReloadRequired += (sender, e) => {
+				reloadRequiredEventFiredProject = e.SolutionItem;
+			};
+
+			string xml = p.MSBuildProject.SaveToString ();
+			File.WriteAllText (p.FileName, xml);
+
+			await WaitForFileChanged (p.FileName);
+
+			AssertFileChanged (p.FileName);
+			Assert.IsTrue (p.NeedsReload);
+			Assert.AreEqual (p, reloadRequiredEventFiredProject);
+		}
 	}
 }

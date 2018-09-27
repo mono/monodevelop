@@ -94,6 +94,7 @@ namespace MonoDevelop.PackageManagement
 				project,
 				sourceRepositoryProvider,
 				nugetProject,
+				LogError,
 				cancellationTokenSource.Token);
 		}
 

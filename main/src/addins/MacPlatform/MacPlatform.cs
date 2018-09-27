@@ -467,18 +467,20 @@ namespace MonoDevelop.MacIntegration
 				}));
 
 
-			Styles.Changed += (s, a) => {
-				var colorPanel = NSColorPanel.SharedColorPanel;
-				if (colorPanel.ContentView?.Superview?.Window == null)
-					LoggingService.LogWarning ("Updating shared color panel appearance failed, no valid window.");
-				IdeTheme.ApplyTheme (colorPanel.ContentView.Superview.Window);
-				var appearance = colorPanel.ContentView.Superview.Window.Appearance;
-				if (appearance == null)
-					appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceTheme == Theme.Light ? NSAppearance.NameAqua : NSAppearance.NameVibrantDark);
-				// The subviews of the shared NSColorPanel do not inherit the appearance of the main panel window
-				// and need to be updated recursively.
-				UpdateColorPanelSubviewsAppearance (colorPanel.ContentView.Superview, appearance);
-			};
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Mojave) { // the shared color panel has full automatic theme support on Mojave
+				Styles.Changed += (s, a) => {
+					var colorPanel = NSColorPanel.SharedColorPanel;
+					if (colorPanel.ContentView?.Superview?.Window == null)
+						LoggingService.LogWarning ("Updating shared color panel appearance failed, no valid window.");
+					IdeTheme.ApplyTheme (colorPanel.ContentView.Superview.Window);
+					var appearance = colorPanel.ContentView.Superview.Window.Appearance;
+					if (appearance == null)
+						appearance = IdeTheme.GetAppearance ();
+					// The subviews of the shared NSColorPanel do not inherit the appearance of the main panel window
+					// and need to be updated recursively.
+					UpdateColorPanelSubviewsAppearance (colorPanel.ContentView.Superview, appearance);
+				};
+			}
 
 			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
@@ -1162,11 +1164,32 @@ namespace MonoDevelop.MacIntegration
 			{
 				DispatchSource = new DispatchSource.MemoryPressure (notificationFlags, DispatchQueue.DefaultGlobalQueue);
 				DispatchSource.SetEventHandler (() => {
-					var platformMemoryStatus = GetPlatformMemoryStatus (DispatchSource.PressureFlags);
-					var args = new PlatformMemoryStatusEventArgs (platformMemoryStatus);
+					var metadata = CreateMemoryMetadata (DispatchSource.PressureFlags);
+
+					var args = new PlatformMemoryStatusEventArgs (metadata);
 					OnStatusChanged (args);
 				});
 				DispatchSource.Resume ();
+			}
+
+			static MacPlatformMemoryMetadata CreateMemoryMetadata (MemoryPressureFlags flags)
+			{
+				var platformMemoryStatus = GetPlatformMemoryStatus (flags);
+				Interop.SysCtl ("vm.compressor_bytes_used", out long osCompressedMemory);
+				Interop.SysCtl ("vm.vm_page_free_target", out long osFreePagesTarget);
+				Interop.SysCtl ("vm.page_free_count", out long osFreePages);
+				Interop.SysCtl ("vm.pagesize", out long pagesize);
+
+				KernelInterop.GetCompressedMemoryInfo (out ulong appCompressedMemory, out ulong appVirtualMemory);
+
+				return new MacPlatformMemoryMetadata {
+					MemoryStatus = platformMemoryStatus,
+					OSVirtualMemoryFreeTarget = osFreePagesTarget * pagesize,
+					OSTotalFreeVirtualMemory = osFreePages * pagesize,
+					OSTotalCompressedMemory = osCompressedMemory,
+					ApplicationVirtualMemory = appVirtualMemory,
+					ApplicationCompressedMemory = appCompressedMemory,
+				};
 			}
 
 			static PlatformMemoryStatus GetPlatformMemoryStatus (MemoryPressureFlags flags)
@@ -1190,6 +1213,39 @@ namespace MonoDevelop.MacIntegration
 					DispatchSource.Cancel ();
 					DispatchSource.Dispose ();
 					DispatchSource = null;
+				}
+			}
+
+			class MacPlatformMemoryMetadata : PlatformMemoryMetadata
+			{
+				// sysctl - vm.vm_page_free_target
+				public long OSVirtualMemoryFreeTarget {
+					get => GetProperty<long> ();
+					set => SetProperty (value);
+				}
+
+				// sysctl - vm.compressor_bytes_used
+				public long OSTotalCompressedMemory {
+					get => GetProperty<long> ();
+					set => SetProperty (value);
+				}
+
+				// sysctl - vm.page_free_count
+				public long OSTotalFreeVirtualMemory {
+					get => GetProperty<long> ();
+					set => SetProperty (value);
+				}
+
+				// task_vm_info_t.compressed
+				public ulong ApplicationCompressedMemory {
+					get => GetProperty<ulong> ();
+					set => SetProperty (value);
+				}
+
+				// task_vm_info_t.virtual_size
+				public ulong ApplicationVirtualMemory {
+					get => GetProperty<ulong> ();
+					set => SetProperty (value);
 				}
 			}
 		}

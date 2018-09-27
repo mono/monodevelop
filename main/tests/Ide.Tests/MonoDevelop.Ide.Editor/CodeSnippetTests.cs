@@ -39,6 +39,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.Ide.Editor.TextMate;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -46,6 +48,12 @@ namespace MonoDevelop.Ide.Editor
 	public class CodeSnippetTests : TextEditorExtensionTestBase
 	{
 		protected override EditorExtensionTestData GetContentData () => EditorExtensionTestData.CSharp;
+
+		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
+		{ // need to instantiate a random text editor extension for the editor chain.
+			yield return new TextMateCompletionTextEditorExtension ();
+		}
+
 
 		//Bug 620177: [Feedback] VS for Mac: code snippet problem
 		[Test]
@@ -74,6 +82,18 @@ namespace MonoDevelop.Ide.Editor
 				return doc.Editor;
 			}
 		}
+
+		[Test]
+		public async Task TestVSTS685153 ()
+		{
+			using (var testCase = await SetupTestCase ("namespace Foo { Exception")) {
+				var doc = testCase.Document;
+				doc.Editor.CaretOffset = doc.Editor.Length;
+				var extensibleEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
+				Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document));
+			}
+		}
+
 
 		class TestIndentTracker : IndentationTracker
 		{
