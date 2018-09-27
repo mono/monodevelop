@@ -26,36 +26,9 @@
 using System;
 using MonoDevelop.Core;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide
 {
-	class MonoVersionInfo : ProductInformationProvider
-	{
-		public override string Title => "Mono Framework MDK";
-
-		static string GetMonoVersionNumber ()
-		{
-			var t = Type.GetType ("Mono.Runtime");
-			if (t == null)
-				return "unknown";
-			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
-			if (mi == null) {
-				LoggingService.LogError ("No Mono.Runtime.GetDisplayName method found.");
-				return "error";
-			}
-			var displayName = (string)mi.Invoke (null, null);
-			//Convert from "5.14.0.177 (2018 - 04 / f3a2216b65a Fri Aug  3 09:28:16 EDT 2018)"
-			return Regex.Match (displayName, @"^[\d\.]+", RegexOptions.Compiled).Value;
-		}
-
-		public override string Version => GetMonoVersionNumber ();
-
-		public override string ApplicationId => "964ebddd-1ffe-47e7-8128-5ce17ffffb05";
-
-		protected override string UpdateInfoFile => "/Library/Frameworks/Mono.framework/Versions/Current/updateinfo";
-	}
-
 	class IdeVersionInfo : ProductInformationProvider
 	{
 		static bool IsMono ()
@@ -119,21 +92,6 @@ namespace MonoDevelop.Ide
 
 		}
 
-		public static string GetRuntimeInfo ()
-		{
-			string val;
-			if (IsMono ()) {
-				val = "Mono " + GetMonoVersionNumber ();
-			} else {
-				val = "Microsoft .NET " + Environment.Version;
-			}
-
-			if (IntPtr.Size == 8)
-				val += (" (64-bit)");
-
-			return val;
-		}
-
 		public override string Title => BrandingService.ApplicationLongName;
 
 		public override string Description {
@@ -145,10 +103,6 @@ namespace MonoDevelop.Ide
 				sb.Append ("Installation UUID: ");
 				sb.AppendLine (SystemInformation.InstallationUuid);
 							
-				sb.AppendLine ("Runtime:");
-				sb.Append ("\t");
-				sb.Append (GetRuntimeInfo ());
-				sb.AppendLine ();
 				sb.Append ("\tGTK+ ");
 				sb.Append (GetGtkVersion ());
 				var gtkTheme = GetGtkTheme ();

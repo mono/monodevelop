@@ -4194,6 +4194,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\HostDiagnosticUpdateSource.cs" />
     <Compile Include="MonoDevelop.Ide\ProductInformationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\UpdateInfo.cs" />
+    <Compile Include="MonoDevelop.Ide\RuntimeVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

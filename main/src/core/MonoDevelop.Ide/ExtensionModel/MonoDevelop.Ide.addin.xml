@@ -257,7 +257,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/SystemInformation">
-		<Class class = "MonoDevelop.Ide.MonoVersionInfo" />
+		<Class class = "MonoDevelop.Ide.RuntimeVersionInfo" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
