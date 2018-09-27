@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.Updater
 {
 	public class UpdateInfo
 	{
