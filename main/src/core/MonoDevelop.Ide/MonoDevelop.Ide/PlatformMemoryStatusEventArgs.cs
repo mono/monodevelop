@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Desktop;
+
 namespace MonoDevelop.Ide
 {
 	public enum PlatformMemoryStatus
@@ -35,11 +38,25 @@ namespace MonoDevelop.Ide
 
 	public class PlatformMemoryStatusEventArgs : EventArgs
 	{
-		public PlatformMemoryStatus MemoryStatus { get; }
+		public PlatformMemoryMetadata CounterMetadata { get; }
+		public PlatformMemoryStatus MemoryStatus => CounterMetadata.MemoryStatus;
 
-		public PlatformMemoryStatusEventArgs (PlatformMemoryStatus status)
+		public PlatformMemoryStatusEventArgs (PlatformMemoryMetadata counterMetadata)
 		{
-			MemoryStatus = status;
+			CounterMetadata = counterMetadata;
+		}
+
+		[Obsolete ("Use the PlatformMemoryMetadata overload")]
+		public PlatformMemoryStatusEventArgs (PlatformMemoryStatus status) : this (new PlatformMemoryMetadata { MemoryStatus = status })
+		{
+		}
+	}
+
+	public class PlatformMemoryMetadata : CounterMetadata
+	{
+		public PlatformMemoryStatus MemoryStatus {
+			get => GetProperty<PlatformMemoryStatus> ();
+			set => SetProperty (value);
 		}
 	}
 }

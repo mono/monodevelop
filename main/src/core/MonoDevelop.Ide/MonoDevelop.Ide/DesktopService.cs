@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide
 	{
 		static PlatformService platformService;
 		static Xwt.Toolkit nativeToolkit;
-		static Lazy<MemoryMonitor> memoryMonitor = new Lazy<MemoryMonitor> (() => platformService.CreateMemoryMonitor ());
 
 		static PlatformService PlatformService {
 			get {
@@ -73,7 +72,15 @@ namespace MonoDevelop.Ide
 			// so that we can safely access this property later in other threads
 			GC.KeepAlive (NativeToolkit);
 
+			MemoryMonitor = platformService.CreateMemoryMonitor ();
+			MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+
 			FontService.Initialize ();
+		}
+
+		static void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
+		{
+			Counters.MemoryPressure.Inc (args.CounterMetadata);
 		}
 
 		/// <summary>
@@ -404,7 +411,7 @@ namespace MonoDevelop.Ide
 
 		internal static string GetNativeRuntimeDescription () => PlatformService.GetNativeRuntimeDescription ();
 
-		public static MemoryMonitor MemoryMonitor => memoryMonitor.Value;
+		public static MemoryMonitor MemoryMonitor { get; private set; }
 		static readonly Lazy<IPlatformTelemetryDetails> platformTelemetryDetails = new Lazy<IPlatformTelemetryDetails> (() => PlatformService.CreatePlatformTelemetryDetails ());
 		public static IPlatformTelemetryDetails PlatformTelemetry => platformTelemetryDetails.Value; 
 	}
