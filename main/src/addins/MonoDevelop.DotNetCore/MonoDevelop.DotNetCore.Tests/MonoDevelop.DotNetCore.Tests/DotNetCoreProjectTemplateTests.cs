@@ -356,7 +356,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			string language = GetLanguage (template.Id);
 			if (language == "F#")
-				return "{f2a71f9b-5d33-465a-a702-920d77279786}";
+				return "{F2A71F9B-5D33-465A-A702-920D77279786}";
 
 			// C#
 			return "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
