@@ -48,12 +48,21 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Path to the updateinfo file.
 		/// </summary>
-		protected abstract string UpdateInfoFile { get; }
+		/// <remarks>Relative paths may be specified here. Relative paths need to be relative to the bundle root.</remarks>
+		protected virtual FilePath UpdateInfoFile { get; }
 
 		public virtual UpdateInfo GetUpdateInfo ()
 		{
-			if (UpdateInfoFile != null && File.Exists (UpdateInfoFile))
-				return UpdateInfo.FromFile (UpdateInfoFile);
+			var absolutePath = UpdateInfoFile;
+			if (absolutePath != null && !absolutePath.IsAbsolute) {
+				// relative paths are relative the bundle root
+				FilePath bundlePath = Foundation.NSBundle.MainBundle.BundlePath;
+				absolutePath = bundlePath.Combine (UpdateInfoFile);
+			}
+
+			if (File.Exists (absolutePath))
+				return UpdateInfo.FromFile (absolutePath);
+
 			return null;
 		}
 	}

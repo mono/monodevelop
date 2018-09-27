@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide
 
 		public override string ApplicationId => "964ebddd-1ffe-47e7-8128-5ce17ffffb05";
 
-		protected override string UpdateInfoFile => MonoUpdateInfoFile;
+		protected override FilePath UpdateInfoFile => MonoUpdateInfoFile;
 
 		public override string Description {
 			get {
