@@ -23,9 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
 using Microsoft.VisualStudio.Text.Editor;
@@ -36,7 +34,7 @@ namespace MonoDevelop.SourceEditor.VsCompletion
 	[Export (typeof (ICompletionPresenterProvider))]
 	[ContentType ("any")]
 	[Name (nameof (CompletionUIProvider))]
-	public class CompletionUIProvider : ICompletionPresenterProvider
+	class CompletionUIProvider : ICompletionPresenterProvider
 	{
 		public int ResultsPerPage => CompletionUI.rows;
 
