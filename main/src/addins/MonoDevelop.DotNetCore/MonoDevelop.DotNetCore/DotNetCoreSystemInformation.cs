@@ -34,16 +34,9 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSystemInformation : ProductInformationProvider
 	{
-		public override string Title {
-			get { return GettextCatalog.GetString (".NET Core"); }
-		}
+		public override string Title => GettextCatalog.GetString (".NET Core");
 
-		public override string Description {
-			get {
-				return GetDescription ();
-			}
-		}
-
+		public override string Description => GetDescription ();
 
 		public override string Version => DotNetCoreSdk.Versions.FirstOrDefault().ToString ();
 
