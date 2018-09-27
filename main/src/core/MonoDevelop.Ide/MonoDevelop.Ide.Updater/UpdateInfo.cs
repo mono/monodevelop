@@ -33,12 +33,17 @@ namespace MonoDevelop.Ide.Updater
 		{
 		}
 
+		public string File { get; }
+		public string AppId { get; }
+		public long VersionId { get; }
+		public string SourceUrl { get; }
+
 		public UpdateInfo (string file, string appId, long versionId, string sourceUrl)
 		{
-			this.File = file;
-			this.AppId = appId;
-			this.VersionId = versionId;
-			this.SourceUrl = sourceUrl;
+			SourceUrl = sourceUrl;
+			VersionId = versionId;
+			AppId = appId;
+			File = file;
 		}
 
 		public UpdateInfo (string appId, Version version)
@@ -51,10 +56,7 @@ namespace MonoDevelop.Ide.Updater
 		{
 		}
 
-		public readonly string File;
-		public readonly string AppId;
-		public readonly long VersionId;
-		public readonly string SourceUrl;
+		const string sourceUrl = "source-url:";
 
 		public static UpdateInfo FromFile (string fileName)
 		{
@@ -64,9 +66,9 @@ namespace MonoDevelop.Ide.Updater
 				string url = null;
 				s = f.ReadLine ();
 				if (s != null) {
-					if (s.StartsWith ("source-url:"))
-						url = s.Substring (11).Trim ();
-
+					if (s.StartsWith (sourceUrl)) {
+						url = s.Substring (sourceUrl.Length).Trim ();
+					}
 				}
 				return new UpdateInfo (fileName, parts [0], long.Parse (parts [1]), url);//, xamarinProduct);
 			}
