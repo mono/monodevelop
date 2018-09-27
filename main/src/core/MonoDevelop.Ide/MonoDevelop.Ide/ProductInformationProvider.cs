@@ -45,11 +45,6 @@ namespace MonoDevelop.Ide
 		public abstract string Version { get; }
 
 		/// <summary>
-		/// Version number used by the updater for comparison
-		/// </summary>
-		public string VersionID => null;
-
-		/// <summary>
 		/// Path to the updateinfo file.
 		/// </summary>
 		protected abstract string UpdateInfoFile { get; }
