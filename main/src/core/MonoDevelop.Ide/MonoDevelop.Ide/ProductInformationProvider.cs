@@ -35,11 +35,9 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public abstract string ApplicationId { get; }
 
-		public virtual string Title => ApplicationName;
+		public abstract string Title { get; }
 
 		public virtual string Description => GettextCatalog.GetString("Version: {0}", Version);
-
-		//public abstract string Version;// => "";
 
 		/// <summary>
 		/// Human readable version number
@@ -62,7 +60,5 @@ namespace MonoDevelop.Ide
 				return UpdateInfo.FromFile (UpdateInfoFile);
 			return null;
 		}
-
-		public string ApplicationName => "";
 	}
 }
