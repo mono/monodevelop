@@ -150,7 +150,7 @@
     <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.5.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Composition.AttributedModel">
@@ -174,7 +174,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.4.2\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
@@ -9979,6 +9979,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataCache.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.RecoverableMetadataValueSource.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.MetadataReferenceCache.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoslynSearchCategory.ShimNavigateToSearchService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

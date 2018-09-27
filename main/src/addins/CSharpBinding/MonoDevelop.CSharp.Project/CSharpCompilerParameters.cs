@@ -193,8 +193,7 @@ namespace MonoDevelop.CSharp.Project
 			var symbols = GetDefineSymbols ();
 			if (configuration != null)
 				symbols = symbols.Concat (configuration.GetDefineSymbols ()).Distinct ();
-
-			langVersion.TryParse (out LanguageVersion lv);
+			LanguageVersionFacts.TryParse (langVersion, out LanguageVersion lv);
 
 			return new CSharpParseOptions (
 				lv,
@@ -207,7 +206,7 @@ namespace MonoDevelop.CSharp.Project
 
 		public LanguageVersion LangVersion {
 			get {
-				if (!langVersion.TryParse (out LanguageVersion val)) {
+				if (!LanguageVersionFacts.TryParse (langVersion, out LanguageVersion val)) {
 					throw new Exception ("Unknown LangVersion string '" + langVersion + "'");
 				}
 				return val;

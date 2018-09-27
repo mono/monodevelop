@@ -2,6 +2,8 @@
 
 	<Runtime>
 		<Import assembly="Newtonsoft.Json.dll" />
+		<Import assembly="System.Collections.Immutable.dll" />
+		<Import assembly="System.Reflection.Metadata.dll" />
 	</Runtime>
 	
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />

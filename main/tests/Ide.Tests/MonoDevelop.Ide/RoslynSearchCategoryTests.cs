@@ -37,7 +37,7 @@ using UnitTests;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	public class RoslynSearchCategoryTests
+	public class RoslynSearchCategoryTests : IdeTestBase
 	{
 		static async Task<List<SearchResult>> Search (string pattern)
 		{
@@ -65,7 +65,8 @@ namespace MonoDevelop.Ide
 				Assert.AreEqual (3, results.Count);
 
 				results = await Search ("My");
-				Assert.AreEqual (4, results.Count);
+				// Should be 4: https://github.com/dotnet/roslyn/issues/29031
+				Assert.AreEqual (2, results.Count);
 
 				results = await Search ("MC");
 				Assert.AreEqual (5, results.Count);
