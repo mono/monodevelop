@@ -63,9 +63,9 @@ namespace MonoDevelop.MacIntegration
 
 				if (!stockIcon && !string.IsNullOrEmpty (data.Message.Icon)) {
 					var img = ImageService.GetIcon (data.Message.Icon, Gtk.IconSize.Dialog);
-					// HACK: VK The icon is not rendered in dark style correctly
-					//       Use light variant and reder it here
-					//       as long as NSAppearance.NameVibrantDark is broken
+					// HACK: The icon is not rendered in dark mode (VibrantDark or DarkAqua) correctly.
+					//       Use light variant and reder it here.
+					// TODO: Recheck rendering issues with DarkAqua on final Mojave
 					if (IdeTheme.UserInterfaceTheme == Theme.Dark)
 						alert.Icon = img.WithStyles ("-dark").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
 					else
@@ -183,7 +183,7 @@ namespace MonoDevelop.MacIntegration
 				}
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
 					// sheeting is broken on High Sierra with dark NSAppearance
-					var sheet = IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion < MacSystemInformation.HighSierra;
+					var sheet = IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion != MacSystemInformation.HighSierra;
 					if (!sheet || nativeParent == null) {
 						response = (int)alert.RunModal ();
 					} else {

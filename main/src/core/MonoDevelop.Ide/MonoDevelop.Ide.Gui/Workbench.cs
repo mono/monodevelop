@@ -126,6 +126,11 @@ namespace MonoDevelop.Ide.Gui
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
+
+			// Very important: see https://github.com/mono/monodevelop/pull/6064
+			// Otherwise the editor may not be focused on IDE startup and can't be
+			// focused even by clicking with the mouse.
+			RootWindow.Visible = true;
 			Counters.Initialization.Trace ("Setting layout");
 			workbench.CurrentLayout = "Solution";
 			

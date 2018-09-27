@@ -2583,8 +2583,10 @@ namespace MonoDevelop.Projects
 		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor)
 		{
 			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
-				WriteProject (monitor);
-				return sourceProject.SaveToString ();
+				return await Task.Run (() => {
+					WriteProject (monitor);
+					return sourceProject.SaveToString ();
+				}).ConfigureAwait (false);
 			}
 		}
 
@@ -4444,7 +4446,10 @@ namespace MonoDevelop.Projects
 				return;
 			}
 
-			foreach (var it in globItems.Where (it => it.Metadata.GetProperties ().Count () == 0)) {
+			if (!UseAdvancedGlobSupport)
+				globItems = globItems.Where (it => it.Metadata.GetProperties ().Count () == 0);
+
+			foreach (var it in globItems) {
 				var eit = CreateFakeEvaluatedItem (sourceProject, it, include, null);
 				var pi = CreateProjectItem (eit);
 				pi.Read (this, eit);

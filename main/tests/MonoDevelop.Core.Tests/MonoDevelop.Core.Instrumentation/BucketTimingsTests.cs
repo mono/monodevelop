@@ -1,10 +1,10 @@
-﻿//
-// TestableProjectPackageReference.cs
+//
+// BucketTimingsTests.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,27 +23,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using System.Collections.Immutable;
+using NUnit.Framework;
 
-using MonoDevelop.Projects.MSBuild;
-
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.Core.Instrumentation
 {
-	class TestableProjectPackageReference : ProjectPackageReference
+	[TestFixture]
+	public class BucketTimingsTests
 	{
-		public TestableProjectPackageReference (string id, string version)
+		[Test]
+		public void BucketIndexing ()
 		{
-			Include = id;
-			Metadata.SetValue ("Version", version);
-		}
+			var bucketLimits = ImmutableArray.Create (0, 1, 2, 3, 4);
+			var bucket = new BucketTimings (bucketLimits);
 
-		public TestableProjectPackageReference (string id)
-		{
-			Include = id;
-		}
+			for (int i = 0; i < bucketLimits.Length + 1; ++i)
+				bucket.Add (TimeSpan.FromMilliseconds (i));
 
-		public void CallWrite (MSBuildItem buildItem)
-		{
-			base.Write (null, buildItem);
+			var metadata = new CounterMetadata ();
+			bucket.AddTo (metadata);
+
+			for (int i = 0; i < bucketLimits.Length + 1; ++i)
+				Assert.AreEqual (1, metadata.Properties [$"Bucket{i}"]);
+
+			Assert.That (metadata.Properties, Is.Not.Contains ($"Bucket{bucketLimits.Length + 2}"));
 		}
 	}
 }

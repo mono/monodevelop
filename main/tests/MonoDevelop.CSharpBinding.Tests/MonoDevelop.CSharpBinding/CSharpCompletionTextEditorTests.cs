@@ -368,5 +368,28 @@ namespace console61
 								  });
 		}
 
+
+		[Test]
+		public async Task TestIssue5816 ()
+		{
+			await TestCompletion (@"
+using System;
+using System.Collections.Generic;
+
+namespace MyLibrary
+{
+    public class MyClass
+    {
+        public MyClass()
+        {
+            Console.WriteLine ();
+            var str = new List<string> {$$
+        }
+    }
+}
+
+", (doc, list) => Assert.AreEqual (0, list.Count), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '{'));
+		}
+
 	}
 }

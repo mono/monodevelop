@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -44,11 +45,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeSolution solution;
 		FakeDotNetProject dotNetProject;
 		FakePackageMetadataResource packageMetadataResource;
+		List<Exception> errorsLogged;
 
 		void CreateUpdatedPackagesInWorkspace ()
 		{
 			updatedPackagesInWorkspace = new TestableUpdatedNuGetPackagesInWorkspace ();
 			taskRunner = updatedPackagesInWorkspace.TaskRunner;
+			errorsLogged = taskRunner.ErrorsLogged;
 			packageManagementEvents = updatedPackagesInWorkspace.PackageManagementEvents;
 			solution = new FakeSolution ();
 
@@ -523,6 +526,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			var package = updatedPackages.GetPackages ().Single ();
 			Assert.AreEqual ("MyPackage", package.Id);
 			Assert.AreEqual ("1.1", package.Version.ToString ());
+		}
+
+		/// <summary>
+		/// Do not check for updates if no version is set in the project.
+		/// </summary>
+		[Test]
+		public async Task GetUpdatedPackages_PackageReferenceHasNoVersion_NoUpdatedPackagesFoundForProject ()
+		{
+			CreateUpdatedPackagesInWorkspace ();
+			FakeNuGetProject project = AddNuGetProjectToSolution ();
+			project.AddPackageReference ("MyPackage", version: null);
+			packageMetadataResource.AddPackageMetadata ("MyPackage", "1.1");
+			await CheckForUpdates ();
+
+			var updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (dotNetProject);
+
+			Assert.AreEqual (project.Project, updatedPackages.Project);
+			Assert.IsNotNull (updatedPackages.Project);
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual (0, errorsLogged.Count);
 		}
 	}
 }

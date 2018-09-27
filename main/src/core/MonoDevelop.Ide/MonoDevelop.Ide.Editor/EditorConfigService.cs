@@ -39,38 +39,53 @@ namespace MonoDevelop.Ide.Editor
 		public readonly static string MaxLineLengthConvention = "max_line_length";
 		readonly static object contextCacheLock = new object ();
 		readonly static ICodingConventionsManager codingConventionsManager = CodingConventionsManagerFactory.CreateCodingConventionsManager (new ConventionsFileManager());
-		static ImmutableDictionary<string, Task<ICodingConventionContext>> contextCache = ImmutableDictionary<string, Task<ICodingConventionContext>>.Empty;
+		static ImmutableDictionary<string, ICodingConventionContext> contextCache = ImmutableDictionary<string, ICodingConventionContext>.Empty;
 
-		public static Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
+		public static async Task<ICodingConventionContext> GetEditorConfigContext (string fileName, CancellationToken token = default (CancellationToken))
 		{
 			if (string.IsNullOrEmpty (fileName))
-				return TaskUtil.Default<ICodingConventionContext> ();
-			lock (contextCacheLock) {
-				if (contextCache.TryGetValue (fileName, out Task<ICodingConventionContext> result))
-					return result;
-				try {
-					result = codingConventionsManager.GetConventionContextAsync (fileName, token);
-				} catch (OperationCanceledException) {
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while getting coding conventions,", e);
+				return null;
+			try {
+				var directory = Path.GetDirectoryName (fileName);
+				if (string.IsNullOrEmpty (directory)) {
+					return null;
 				}
-				if (result == null)
-					return TaskUtil.Default<ICodingConventionContext> ();
-				contextCache = contextCache.SetItem (fileName, result);
+			} catch {
+				return null;
+			}
+			if (contextCache.TryGetValue (fileName, out var oldresult))
+				return oldresult;
+			try {
+				var result = await codingConventionsManager.GetConventionContextAsync (fileName, token);
+				lock (contextCacheLock) {
+					// check if another thread already requested a coding convention context and ensure
+					// that only one is alive.
+					if (contextCache.TryGetValue (fileName, out var result2)) {
+						if (result != result2)
+							result.Dispose ();
+						return result2;
+					}
+					contextCache = contextCache.SetItem (fileName, result);
+				}
 				return result;
-			} 
+			} catch (OperationCanceledException) {
+				return null;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting coding conventions,", e);
+				return null;
+			}
 		}
 
 		public static async Task RemoveEditConfigContext (string fileName)
 		{
-			Task<ICodingConventionContext> ctx;
+			ICodingConventionContext ctx;
 			lock (contextCacheLock) {
 				if (!contextCache.TryGetValue (fileName, out ctx))
 					return;
 				contextCache = contextCache.Remove(fileName);
 			}
 			if (ctx != null)
-				(await ctx).Dispose ();
+				ctx.Dispose ();
 		}
 
 		class ConventionsFileManager : IFileWatcher

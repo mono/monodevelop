@@ -70,7 +70,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void AddPackageReference (string id, string version, VersionRange versionRange = null)
 		{
-			var packageId = new PackageIdentity (id, new NuGetVersion (version));
+			var packageId = new PackageIdentity (id, GetNuGetVersion (version));
 			var packageReference = new PackageReference (
 				packageId,
 				new NuGetFramework ("net45"),
@@ -80,6 +80,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				versionRange
 			);
 			InstalledPackages.Add (packageReference);
+		}
+
+		NuGetVersion GetNuGetVersion (string version)
+		{
+			if (string.IsNullOrEmpty (version))
+				return null;
+
+			return new NuGetVersion (version);
 		}
 
 		public List<NuGetProjectAction> ActionsPassedToOnBeforeUninstall;

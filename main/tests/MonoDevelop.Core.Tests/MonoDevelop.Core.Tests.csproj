@@ -115,6 +115,7 @@
     <Compile Include="MonoDevelop.Projects\ExtensionChainTests.cs" />
     <Compile Include="MonoDevelop.Core\PropertyTests.cs" />
     <Compile Include="MonoDevelop.Projects\GetAnalyzerFilesAsyncTests.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimingsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -146,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.FSW\" />
+    <Folder Include="MonoDevelop.Core.Instrumentation\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

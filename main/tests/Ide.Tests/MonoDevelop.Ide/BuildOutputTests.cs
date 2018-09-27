@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -80,21 +81,41 @@ namespace MonoDevelop.Ide
 			Assert.AreEqual (1, node.Children.Count);
 		}
 
+		BuildOutput GenerateCustomBuild (int items)
+		{
+			var processor = new BuildOutputProcessor (null, false);
+
+			for (int i = 0; i < items; i++) {
+				var projectMsg = $"Project {i}";
+				processor.AddNode (BuildOutputNodeType.Project, projectMsg, projectMsg, true, DateTime.Now);
+				for (int j = 0; j < items * 10; j++) {
+					var targetMsg = $"Target {i}.{j}";
+					processor.AddNode (BuildOutputNodeType.Target, targetMsg, targetMsg, true, DateTime.Now);
+					for (int k = 0; k < items * 100; k++) {
+						var taskMsg = $"Task {i}.{j}.{k}";
+						processor.AddNode (BuildOutputNodeType.Task, taskMsg, taskMsg, true, DateTime.Now);
+
+						var msg = $"Message {i}.{j}.{k}";
+						processor.AddNode (BuildOutputNodeType.Message, msg, msg, false, DateTime.Now);
+
+						processor.EndCurrentNode (taskMsg, DateTime.Now);
+					}
+					processor.EndCurrentNode (targetMsg, DateTime.Now);
+				}
+				processor.EndCurrentNode (projectMsg, DateTime.Now);
+			}
+
+			var bo = new BuildOutput ();
+			bo.AddProcessor (processor);
+			return bo;
+		}
+
 		[Test]
 		public async Task CustomProject_DataSearch ()
 		{
-			var bo = new BuildOutput ();
-			var monitor = bo.GetProgressMonitor ();
-
-			monitor.LogObject (new BuildSessionStartedEvent ());
-			for (int i = 0; i < 100; i++) {
-				monitor.Log.WriteLine ($"Message {i + 1}");
-			}
-			monitor.Log.WriteLine ("Custom project built");
-			monitor.LogObject (new BuildSessionFinishedEvent ());
+			var bo = GenerateCustomBuild (1);
 
 			var nodes = bo.GetRootNodes (true);
-			var dataSource = new BuildOutputDataSource (nodes);
 			var search = new BuildOutputDataSearch (nodes);
 			int matches = 0;
 			var visited = new HashSet<BuildOutputNode> ();
@@ -107,7 +128,24 @@ namespace MonoDevelop.Ide
 				matches++;
 			}
 
-			Assert.That (matches, Is.EqualTo (100));
+			Assert.That (matches, Is.EqualTo (1000));
+		}
+
+		[Test]
+		public async Task CustomProject_SearchCanBeCanceled ()
+		{
+			BuildOutputNode firstMatch = null;
+
+			var bo = GenerateCustomBuild (10);
+
+			var search = new BuildOutputDataSearch (bo.GetRootNodes (true));
+			for (int i = 0; i < 100; i++) {
+				await Task.WhenAll (Task.Run (async () => firstMatch = await search.FirstMatch ("Message ")),
+									Task.Delay (100).ContinueWith (t => search.Cancel ()));
+
+				Assert.Null (firstMatch, "Got a first match while search was canceled");
+				Assert.True (search.IsCanceled, "Search was not canceled");
+			}
 		}
 
 		[Test]
@@ -115,7 +153,7 @@ namespace MonoDevelop.Ide
 		{
 			var result = GetTestNodes ();
 			var results = new List<BuildOutputNode> ();
-			result [0].Search (results, "Error");
+			result [0].Search (results, "Error", CancellationToken.None);
 			Assert.AreEqual (2, results.Count, "#1");
 		}
 
