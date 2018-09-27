@@ -45,6 +45,14 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
+			try {
+				var directory = Path.GetDirectoryName (fileName);
+				if (string.IsNullOrEmpty (directory)) {
+					return null;
+				}
+			} catch {
+				return null;
+			}
 			if (contextCache.TryGetValue (fileName, out var oldresult))
 				return oldresult;
 			try {

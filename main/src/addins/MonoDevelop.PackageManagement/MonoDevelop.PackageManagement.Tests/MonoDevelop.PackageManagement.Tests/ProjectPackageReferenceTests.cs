@@ -86,5 +86,17 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (reference.IsAtLeastVersion (new Version (3, 2, 1)));
 			Assert.IsFalse (reference.IsAtLeastVersion (new Version (3, 3)));
 		}
+
+		[Test]
+		public void NoVersionSpecified ()
+		{
+			var projectPackageReference = new TestableProjectPackageReference ("Test");
+			var packageReference = projectPackageReference.CreatePackageReference ();
+
+			Assert.AreEqual ("Test", packageReference.PackageIdentity.Id);
+			Assert.IsFalse (packageReference.PackageIdentity.HasVersion);
+			Assert.IsFalse (packageReference.HasAllowedVersions);
+			Assert.IsFalse (projectPackageReference.IsAtLeastVersion (new Version (3, 1)));
+		}
 	}
 }

@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Tests
 		public void TestCDATASection ()
 		{
 			TestOutput ("<![CDATA[ test]]>",
-			            "<span foreground=\"#e5da73\">&lt;![CDATA[ test]]&gt;</span>",
+						"<span foreground=\"#e5da73\">&lt;![CDATA[</span><span foreground=\"#eeeeec\"> test</span><span foreground=\"#e5da73\">]]&gt;</span>",
 			            "application/xml");
 		}
 		
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug603 ()
 		{
 			TestOutput ("///<summary>foo bar</summary>",
-			            "<span foreground=\"#789769\">///</span><span foreground=\"#888a85\">&lt;</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#888a85\">&gt;</span><span foreground=\"#789769\">foo bar</span><span foreground=\"#888a85\">&lt;/</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#888a85\">&gt;</span>");
+						"<span foreground=\"#789769\">///</span><span foreground=\"#eeeeec\">&lt;</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#eeeeec\">&gt;</span><span foreground=\"#789769\">foo bar</span><span foreground=\"#eeeeec\">&lt;/</span><span foreground=\"#719dcf\">summary</span><span foreground=\"#eeeeec\">&gt;</span>");
 		}
 
 		[Test]

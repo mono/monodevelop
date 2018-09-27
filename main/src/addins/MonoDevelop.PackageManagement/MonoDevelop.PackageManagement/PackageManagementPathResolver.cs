@@ -64,6 +64,9 @@ namespace MonoDevelop.PackageManagement
 
 		public string GetPackageInstallPath (NuGetProject nugetProject, PackageIdentity package)
 		{
+			if (!package.HasVersion)
+				return string.Empty;
+
 			if (nugetProject is INuGetIntegratedProject) {
 				return pathResolver.GetPackageDirectory (package.Id, package.Version) ??
 					globalPackagesFolderResolver.GetInstallPath (package.Id, package.Version);
