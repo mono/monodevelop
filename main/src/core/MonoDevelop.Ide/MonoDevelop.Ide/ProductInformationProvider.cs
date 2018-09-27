@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide
 {
