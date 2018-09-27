@@ -36,6 +36,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			Metadata.SetValue ("Version", version);
 		}
 
+		public TestableProjectPackageReference (string id)
+		{
+			Include = id;
+		}
+
 		public void CallWrite (MSBuildItem buildItem)
 		{
 			base.Write (null, buildItem);

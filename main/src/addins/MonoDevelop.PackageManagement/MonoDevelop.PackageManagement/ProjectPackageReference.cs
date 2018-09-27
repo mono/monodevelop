@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement
 			VersionRange version,
 			NuGetFramework framework)
 		{
-			if (!version.IsFloating)
+			if (version != null && !version.IsFloating)
 				version = null;
 
 			return new PackageReference (
@@ -64,12 +64,15 @@ namespace MonoDevelop.PackageManagement
 
 		PackageIdentity GetPackageIdentity (VersionRange version)
 		{
-			return new PackageIdentity (Include, version.MinVersion);
+			return new PackageIdentity (Include, version?.MinVersion);
 		}
 
 		VersionRange GetVersion ()
 		{
 			string version = Metadata.GetValue ("Version");
+			if (string.IsNullOrEmpty (version))
+				return null;
+
 			return VersionRange.Parse (version);
 		}
 

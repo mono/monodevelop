@@ -134,6 +134,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (PackageReference.IsFloating ()) {
 				return PackageReference.AllowedVersions.Float.ToString ();
 			}
+			if (Version == null) {
+				return GettextCatalog.GetString ("None");
+			}
 			return Version.ToString ();
 		}
 
