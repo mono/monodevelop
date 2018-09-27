@@ -36,11 +36,13 @@ namespace MonoDevelop.DotNetCore
 		public static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore";
 		public static readonly string DotNetCore20DownloadUrl = "https://aka.ms/vs/mac/install-netcore2";
 		public static readonly string DotNetCore21DownloadUrl = "https://aka.ms/vs/mac/install-netcore21";
+		public static readonly string DotNetCore22DownloadUrl = "https://aka.ms/vs/mac/install-netcore22";
 
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
 		static readonly string unsupportedMessage = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
 		static readonly string dotNetCore20Message = GettextCatalog.GetString (".NET Core 2.0 SDK is not installed. This is required to build and run .NET Core 2.0 projects.");
 		static readonly string dotNetCore21Message = GettextCatalog.GetString (".NET Core 2.1 SDK is not installed. This is required to build and run .NET Core 2.1 projects.");
+		static readonly string dotNetCore22Message = GettextCatalog.GetString (".NET Core 2.2 SDK is not installed. This is required to build and run .NET Core 2.2 projects.");
 
 		GenericMessage message;
 		AlertButton downloadButton;
@@ -87,6 +89,9 @@ namespace MonoDevelop.DotNetCore
 			} else if (RequiresDotNetCore21) {
 				Message = dotNetCore21Message;
 				downloadUrl = DotNetCore21DownloadUrl;
+			} else if (RequiresDotNetCore22) {
+				Message = dotNetCore22Message;
+				downloadUrl = DotNetCore22DownloadUrl;
 			}
 
 			MessageService.GenericAlert (message);
@@ -100,5 +105,6 @@ namespace MonoDevelop.DotNetCore
 		public bool IsUnsupportedVersion { get; set; }
 		public bool RequiresDotNetCore20 { get; set; }
 		public bool RequiresDotNetCore21 { get; set; }
+		public bool RequiresDotNetCore22 { get; set; }
 	}
 }
