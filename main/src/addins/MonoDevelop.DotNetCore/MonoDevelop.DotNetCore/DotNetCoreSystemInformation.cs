@@ -43,8 +43,6 @@ namespace MonoDevelop.DotNetCore
 
 		public override string ApplicationId => "c07628e8-5521-4c1a-aa3a-f860e664f0a9";
 
-		protected override string UpdateInfoFile => throw new NotImplementedException ();
-
 		public override UpdateInfo GetUpdateInfo ()
 		{
 			if (IsSierraOrHigher ())
