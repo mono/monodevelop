@@ -856,7 +856,10 @@ namespace MonoDevelop.Ide
 			DebuggerPresent = 0x10,
 			CommandExecuted = 0x20,
 			LaunchedAsDebugger = 0x40,
-			FirstLaunchSetup = 0x80
+			FirstLaunchSetup = 0x80,
+
+			// Monodevelop specific
+			FirstLaunchAfterUpgrade = 0x10000
 		}
 
 		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails, Dictionary<string, long> timings)
@@ -868,8 +871,10 @@ namespace MonoDevelop.Ide
 				startupType = StartupType.ConfigurationChange; // Assume a restart without upgrading was the result of a config change
 			} else if (IdeApp.IsInitialRun) {
 				startupType = StartupType.FirstLaunch;
+			} else if (IdeApp.IsInitialRunAfterUpgrade) {
+				startupType = StartupType.FirstLaunchAfterUpgrade;
 			} else if (Debugger.IsAttached) {
-				startupType = StartupType.LaunchedAsDebugger;
+				startupType = StartupType.DebuggerPresent;
 			}
 
 			return new StartupMetadata {
