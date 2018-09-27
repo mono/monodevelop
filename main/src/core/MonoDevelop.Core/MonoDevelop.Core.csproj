@@ -736,6 +736,7 @@
     <Compile Include="MonoDevelop.FSW\PathTree.cs" />
     <Compile Include="MonoDevelop.FSW\PathTreeNode.cs" />
     <Compile Include="MemoryExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

@@ -25,11 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.Text.Implementation;
-using System.Linq;
-using MonoDevelop.SourceEditor;
 using MonoDevelop.Ide;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
@@ -38,6 +33,11 @@ namespace Mono.TextEditor
 {
 	class TextEditorKeyPressTimings
 	{
+		static readonly ImmutableArray<int> bucketUpperLimit = ImmutableArray.Create<int> (
+			8, 16, 32, 64, 128, 256, 512, 1024
+		);
+		readonly BucketTimings bucketTimings = new BucketTimings (bucketUpperLimit);
+
 		TimeSpan maxTime;
 		TimeSpan totalTime;
 		TimeSpan? firstTime;
@@ -55,15 +55,6 @@ namespace Mono.TextEditor
 		int activeCountIndex = 0;
 		int droppedEvents = 0;
 
-		const int numberOfBuckets = 9;
-		readonly int[] buckets = new int[numberOfBuckets];
-
-		// One less than buckets because the last bucket is everything else.
-		// This number is the max time a keystroke can take to be placed into this bucket
-		static readonly ImmutableArray<int> bucketUpperLimit = ImmutableArray.Create<int> (
-			8, 16, 32, 64, 128, 256, 512, 1024
-		);
-
 		public void StartTimer (long eventTime)
 		{
 			if (activeCountIndex == numberOfCountSpaces) {
@@ -76,18 +67,6 @@ namespace Mono.TextEditor
 
 			// evt.Time is the time in ms since system startup (on macOS at least)
 			activeCounts[activeCountIndex++] = eventTime;
-		}
-
-		int CalculateBucket (TimeSpan duration)
-		{
-			long ms = (long)duration.TotalMilliseconds;
-			for (var bucket = 0; bucket < bucketUpperLimit.Length; bucket++) {
-				if (ms <= bucketUpperLimit[bucket]) {
-					return bucket;
-				}
-			}
-
-			return numberOfBuckets - 1;
 		}
 
 		void AddTime (TimeSpan duration)
@@ -103,8 +82,7 @@ namespace Mono.TextEditor
 			totalTime += duration;
 			count++;
 
-			var bucketNumber = CalculateBucket (duration);
-			buckets[bucketNumber]++;
+			bucketTimings.Add (duration);
 		}
 
 		/// <summary>
@@ -163,7 +141,7 @@ namespace Mono.TextEditor
 			if (!string.IsNullOrEmpty (extension))
 				metadata.Extension = extension;
 
-			metadata.AddBuckets (buckets);
+			bucketTimings.AddTo (metadata);
 
 			return metadata;
 		}
@@ -211,13 +189,6 @@ namespace Mono.TextEditor
 		public int Dropped {
 			get => GetProperty<int> ();
 			set => SetProperty (value);
-		}
-
-		public void AddBuckets (int [] buckets)
-		{
-			for (var bucket = 0; bucket < buckets.Length; bucket++) {
-				Properties [$"Bucket{bucket}"] = buckets [bucket];
-			}
 		}
 	}
 
