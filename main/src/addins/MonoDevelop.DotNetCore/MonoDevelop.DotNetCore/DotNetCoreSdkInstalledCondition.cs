@@ -95,7 +95,7 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		static bool IsNetCoreSdk22 (DotNetCoreVersion version)
 		{
-			return version.Major == 2 && version.Minor == 2 && version.Patch >= 100;
+			return version.Major == 2 && version.Minor == 2;
 		}
 
 		/// <summary>
