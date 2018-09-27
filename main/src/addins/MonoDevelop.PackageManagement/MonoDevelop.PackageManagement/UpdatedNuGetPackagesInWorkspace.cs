@@ -135,6 +135,11 @@ namespace MonoDevelop.PackageManagement
 			GuiDispatch (() => result = action ());
 			return result;
 		}
+
+		protected virtual void LogError (string message, Exception ex)
+		{
+			LoggingService.LogError (message, ex);
+		}
 	}
 }
 

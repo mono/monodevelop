@@ -56,9 +56,17 @@ namespace MonoDevelop.PackageManagement.Tests
 			string packageVersion = "1.2.3",
 			bool requireReinstallation = false)
 		{
-			var version = new NuGetVersion (packageVersion);
+			var version = CreateNuGetVersion (packageVersion);
 			var identity = new PackageIdentity (packageId, version);
 			packageReference = new PackageReference (identity, null, true, false, requireReinstallation);
+		}
+
+		static NuGetVersion CreateNuGetVersion (string packageVersion)
+		{
+			if (string.IsNullOrEmpty (packageVersion))
+				return null;
+
+			return new NuGetVersion (packageVersion);
 		}
 
 		void CreatePackageReferenceWithProjectJsonWildcardVersion (string packageId, string version)
@@ -329,6 +337,17 @@ namespace MonoDevelop.PackageManagement.Tests
 			string label = node.GetPackageVersionLabel ();
 
 			Assert.AreEqual (label, "Version 1.2.3-*");
+		}
+
+		[Test]
+		public void GetVersionLabel_PackageWithoutVersion_NullReferenceExceptionIsNotThrown ()
+		{
+			CreatePackageReference ("MyPackage", packageVersion: null);
+			CreatePackageReferenceNode ();
+
+			string label = node.GetPackageVersionLabel ();
+
+			Assert.AreEqual (label, "Version None");
 		}
 	}
 }

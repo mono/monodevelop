@@ -41,6 +41,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public FakeSolutionManager SolutionManager = new FakeSolutionManager ();
+		public List<Exception> ErrorsLogged = new List<Exception> ();
 
 		protected override IMonoDevelopSolutionManager GetSolutionManager (ISolution solution)
 		{
@@ -73,6 +74,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			CheckForUpdatesTask = base.CheckForUpdates (projects, sourceRepositoryProvider);
 			AfterCheckForUpdatesAction ();
 			return CheckForUpdatesTask;
+		}
+
+		protected override void LogError (string message, Exception ex)
+		{
+			ErrorsLogged.Add (ex);
 		}
 	}
 }
