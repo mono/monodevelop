@@ -696,6 +696,64 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// TextEdit.app when saving the file for a second time will rename the file from a /.DocumentRevisions-V100/
+		/// directory to a file in the project/solution being monitored. The native file watcher converts this into
+		/// a Created event. Note that this test often works without any fix required - macOS sometimes generates
+		/// a Changed, Created and Deleted event for the Program.cs file.
+		/// </summary>
+		[Test]
+		public async Task TemporaryFileOutsideMonitoredDirectoriesRenamedToFileInProject ()
+		{
+			// Create temp file outside monitored directories.
+			FilePath tempDirectory = Util.CreateTmpDir ("temp-rename");
+			var tempFile = tempDirectory.Combine ("Program.cs-temp");
+			File.WriteAllText (tempFile, "test");
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+			ClearFileEventsCaptured ();
+			await FileWatcherService.Add (sol);
+
+			// Move temp file to Program.cs that is being monitored for changes.
+			FileService.SystemRename (tempFile, file.FilePath);
+
+			await WaitForFileChanged (file.FilePath);
+
+			AssertFileChanged (file.FilePath);
+		}
+
+		/// <summary>
+		/// This test tries to simulate the TextEdit.app when saving the file for a second time will rename the file from
+		/// a /.DocumentRevisions-V100/ directory to a file in the project/solution being monitored. The
+		/// <see cref="TemporaryFileOutsideMonitoredDirectoriesRenamedToFileInProject"/> above tries to test this but
+		/// that test often works without any fix required - macOS sometimes generates a Changed, Created and Deleted
+		/// event for the Program.cs file. In this case a new file is created in the project directory and the test
+		/// checks a FileService.Changed event is generated for this file.
+		/// </summary>
+		[Test]
+		public async Task TemporaryFileOutsideMonitoredDirectoriesRenamedToFileInProject2 ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			var file = p.Files.First (f => f.FilePath.FileName == "Program.cs");
+			var newFile = file.FilePath.ChangeName ("Test");
+			ClearFileEventsCaptured ();
+			await FileWatcherService.Add (sol);
+
+			// Create a new file in the project directory. Ideally Program.cs would be created here but that
+			// seems to generate Changed, Created and Deleted events on the Mac if the file already exists.
+			using (var stream = File.Create (newFile)) {
+				stream.Close ();
+			}
+
+			await WaitForFileChanged (newFile);
+
+			AssertFileChanged (newFile);
+		}
+
+		/// <summary>
 		/// The native file watcher sometimes has one event (Changed|Created|Deleted) which it turns into three
 		/// events in the order Changed, Created and Deleted. This test checks that the final Delete event is
 		/// ignored if the file exists. File.WriteAllText when the file does not exist seems to be a way
