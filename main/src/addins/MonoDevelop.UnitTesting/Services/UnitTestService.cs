@@ -129,9 +129,8 @@ namespace MonoDevelop.UnitTesting
 					if (t.OwnerObject is IBuildTarget bt)
 						build_targets.Add (bt);
 				}
-
 				var res = await IdeApp.ProjectOperations.CheckAndBuildForExecute (
-					build_targets, IdeApp.Workspace.ActiveConfiguration, IdeApp.Preferences.BuildBeforeRunningTests,
+					build_targets, IdeApp.Workspace.ActiveConfiguration, buildWithoutPrompting: !IdeApp.Preferences.BuildBeforeRunningTests, 
 					false, null, cs.Token);
 
 				if (!res)
