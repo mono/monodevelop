@@ -1003,7 +1003,7 @@ namespace Mono.TextEditor
 				popupWindow.Destroy ();
 
 			if (keyPressTimings != null) {
-				keyPressTimings.ReportTimings (Document);
+				keyPressTimings.ReportTimings (Document, Options);
 				keyPressTimings = null;
 			}
 
@@ -1263,6 +1263,7 @@ namespace Mono.TextEditor
 			return base.OnKeyPressEvent (evt);
 		}
 
+		Stopwatch extensionKeyPressTimer = new Stopwatch ();
 		bool HandleTextKey (EventKey evt)
 		{
 			Gdk.Key key;
@@ -1318,8 +1319,12 @@ namespace Mono.TextEditor
 
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
 			// Don't need to end the timer because the key will be drawn onscreen and the timer will end then
-			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+			extensionKeyPressTimer.Restart ();
+			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod)) {
+				keyPressTimings.AddExtensionKeypressTime (extensionKeyPressTimer.Elapsed);
 				return true;
+			}
+			keyPressTimings.AddExtensionKeypressTime (extensionKeyPressTimer.Elapsed);
 
 			return base.OnKeyPressEvent (evt);
 		}
@@ -2291,6 +2296,7 @@ namespace Mono.TextEditor
 #if DEBUG_EXPOSE
 		DateTime started = DateTime.Now;
 #endif
+		Stopwatch timingsWatch = new Stopwatch ();
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
@@ -2319,8 +2325,10 @@ namespace Mono.TextEditor
 				cr.LineWidth = Options.Zoom;
 				textViewCr.LineWidth = Options.Zoom;
 
+				timingsWatch.Restart ();
 				RenderMargins (cr, textViewCr, cairoArea);
-			
+				keyPressTimings.AddMarginDrawingTime (timingsWatch.Elapsed);
+							
 #if DEBUG_EXPOSE
 				Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
 					e.Area.X, e.Area.Y, e.Area.Width, e.Area.Height);
@@ -2329,16 +2337,22 @@ namespace Mono.TextEditor
 					textViewMargin.ResetCaretBlink (200);
 					requestResetCaretBlink = false;
 				}
-				
+
+				timingsWatch.Restart ();
 				foreach (Animation animation in actors) {
 					animation.Drawer.Draw (cr);
 				}
-				
+				keyPressTimings.AddAnimationDrawingTime (timingsWatch.Elapsed);
+
+
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
 
-			if (Caret.IsVisible)
+			if (Caret.IsVisible) {
+				timingsWatch.Restart ();
 				textViewMargin.DrawCaret (e.Window, Allocation);
+				keyPressTimings.AddCaretDrawingTime (timingsWatch.Elapsed);
+			}
 		}
 
 		protected virtual void OnPainted (PaintEventArgs e)
