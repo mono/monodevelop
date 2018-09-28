@@ -83,6 +83,9 @@ namespace MonoDevelop.Ide
 		
 		int Run (MonoDevelopOptions options)
 		{
+			bool restartRequested = PropertyService.Get ("MonoDevelop.Core.RestartRequested", false);
+			PropertyService.Set ("MonoDevelop.Core.RestartRequested", false);
+
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
@@ -181,11 +184,13 @@ namespace MonoDevelop.Ide
 			startupTimer.Restart ();
 
 			AddinManager.AddinLoadError += OnAddinError;
-			
-			var startupInfo = new StartupInfo (args);
-			
+
+			var startupInfo = new StartupInfo (args) {
+				Restarted = restartRequested
+			};
+
 			// If a combine was specified, force --newwindow.
-			
+
 			if (!options.NewWindow && startupInfo.HasFiles) {
 				Counters.Initialization.Trace ("Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
@@ -318,6 +323,7 @@ namespace MonoDevelop.Ide
 			if (error != null) {
 				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop failed to start"));
 				MessageService.ShowFatalError (message, null, error);
+
 				return 1;
 			}
 
@@ -842,13 +848,38 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
+		enum StartupType
+		{
+			Normal = 0x0,
+			ConfigurationChange = 0x1,
+			FirstLaunch = 0x2,
+			DebuggerPresent = 0x10,
+			CommandExecuted = 0x20,
+			LaunchedAsDebugger = 0x40,
+			FirstLaunchSetup = 0x80,
+
+			// Monodevelop specific
+			FirstLaunchAfterUpgrade = 0x10000
+		}
+
 		static StartupMetadata GetStartupMetadata (StartupInfo startupInfo, IPlatformTelemetryDetails platformDetails, Dictionary<string, long> timings)
 		{
 			var assetType = StartupAssetType.FromStartupInfo (startupInfo);
+			StartupType startupType = StartupType.Normal;
+
+			if (startupInfo.Restarted && !IdeApp.IsInitialRunAfterUpgrade) {
+				startupType = StartupType.ConfigurationChange; // Assume a restart without upgrading was the result of a config change
+			} else if (IdeApp.IsInitialRun) {
+				startupType = StartupType.FirstLaunch;
+			} else if (IdeApp.IsInitialRunAfterUpgrade) {
+				startupType = StartupType.FirstLaunchAfterUpgrade;
+			} else if (Debugger.IsAttached) {
+				startupType = StartupType.DebuggerPresent;
+			}
 
 			return new StartupMetadata {
 				CorrectedStartupTime = startupTimer.ElapsedMilliseconds,
-				StartupType = 0,
+				StartupType = Convert.ToInt32 (startupType),
 				AssetTypeId = assetType.Id,
 				AssetTypeName = assetType.Name,
 				IsInitialRun = IdeApp.IsInitialRun,
