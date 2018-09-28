@@ -83,7 +83,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				SearchEntryActivated?.Invoke (o, e);
 			};
 			bar.LostFocus += (sender, e) => {
-				exitAction?.Invoke ();
+				exitAction?.Invoke (Gtk.DirectionType.TabForward);
 			};
 		}
 
@@ -101,16 +101,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				SearchEntryKeyPressed?.Invoke (sender, args);
 		}
 
-		public void Focus()
+		void Focus(Gtk.DirectionType direction)
 		{
-			awesomeBar.Window.MakeFirstResponder (awesomeBar.RunButton);
+			awesomeBar.Window.MakeFirstResponder (direction == Gtk.DirectionType.TabForward ? (NSView)awesomeBar.RunButton : (NSView)awesomeBar.SearchBar);
 		}
 
-		Action exitAction;
-		public void Focus(Action exitAction)
+		Action<Gtk.DirectionType> exitAction;
+		public void Focus (Gtk.DirectionType direction, Action<Gtk.DirectionType> onExit)
 		{
-			this.exitAction = exitAction;
-			Focus();
+			exitAction = onExit;
+			Focus (direction);
 		}
 
 		public MainToolbar (Gtk.Window window)
@@ -122,10 +122,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			awesomeBar = new AwesomeBar ();
 			awesomeBar.RunButton.Activated += (o, e) => {
-				if (RunButtonClicked != null)
-					RunButtonClicked (o, e);
+				RunButtonClicked?.Invoke (o, e);
 			};
 
+			awesomeBar.RunButton.UnfocusToolbar += (o, e) => {
+				awesomeBar.Window.MakeFirstResponder (null);
+				exitAction (Gtk.DirectionType.TabBackward);
+			};
 
 			// Remove the focus from the Gtk system when Cocoa has focus
 			// Fixes BXC #29601
@@ -342,20 +345,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public Gtk.Widget PopupAnchor {
 			get {
 				var entry = searchEntry;
-				var widget = entry.gtkWidget;
+				var entryWidget = entry.gtkWidget;
 				var window = GtkMacInterop.GetGtkWindow (entry.Window);
 
 				// window will be null if the app is fullscreen.
 				if (window != null) {
-					widget.GdkWindow = window.GdkWindow;
+					entryWidget.GdkWindow = window.GdkWindow;
 
 					// We need to adjust the position of the frame so the popup will line up correctly
 					var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-					widget.Allocation = new Gdk.Rectangle ((int)(entry.Frame.X + abFrameInWindow.X - 8), (int)entry.Frame.Y, (int)entry.Frame.Width, 0);
+					entryWidget.Allocation = new Gdk.Rectangle ((int)(entry.Frame.X + abFrameInWindow.X - 8), (int)entry.Frame.Y, (int)entry.Frame.Width, 0);
 				} else {
 					// Reset the Gtk Widget each time since we can't set the GdkWindow to null.
-					widget.Dispose ();
-					widget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
+					entryWidget.Dispose ();
+					entryWidget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
 
 					var nsWindows = NSApplication.SharedApplication.Windows;
 					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
@@ -363,10 +366,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 					CGPoint gdkOrigin = ScreenMonitor.GdkPointForNSScreen (searchEntry.Window.Screen);
 
-					widget.Allocation = new Gdk.Rectangle (0, (int)(gdkOrigin.Y + fullscreenToolbarNsWindow.Frame.Height - 20),
+					entryWidget.Allocation = new Gdk.Rectangle (0, (int)(gdkOrigin.Y + fullscreenToolbarNsWindow.Frame.Height - 20),
 						(int)(gdkOrigin.X + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
 				}
-				return widget;
+				return entryWidget;
 			}
 		}
 

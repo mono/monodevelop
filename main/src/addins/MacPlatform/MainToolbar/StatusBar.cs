@@ -42,6 +42,7 @@ using MonoDevelop.Components.Mac;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -1176,9 +1177,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		bool isFirstResponder;
 		public override void KeyDown (NSEvent theEvent)
 		{
-			// 36 is <Enter>
-			// 49 is <Space>
-			if (isFirstResponder && (theEvent.KeyCode == 36 || theEvent.KeyCode == 49)) {
+			if (isFirstResponder && (theEvent.KeyCode == KeyCodes.Enter || theEvent.KeyCode == KeyCodes.Space)) {
 				sourcePad?.BringToFront (true);
 				return;
 			}

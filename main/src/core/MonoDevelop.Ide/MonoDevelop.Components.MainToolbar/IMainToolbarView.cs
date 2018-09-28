@@ -262,8 +262,7 @@ namespace MonoDevelop.Components.MainToolbar
 	/// </summary>
 	public interface IMainToolbarView : IRunButtonView, ISelectorView, ISearchEntryView, IStatusBarView, IButtonBarView
 	{
-		void Focus ();
-		void Focus (Action exitAction);
+		void Focus (Gtk.DirectionType direction, Action<Gtk.DirectionType> exitAction);
 	}
 }
 
