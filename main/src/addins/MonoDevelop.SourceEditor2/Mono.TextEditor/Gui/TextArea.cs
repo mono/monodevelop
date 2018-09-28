@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 
 		TextEditorData textEditorData;
 
-		TextEditorKeyPressTimings keyPressTimings = new TextEditorKeyPressTimings ();
+		TextEditorKeyPressTimings keyPressTimings;
 		
 		protected IconMargin       iconMargin;
 		protected ActionMargin     actionMargin;
@@ -307,6 +307,8 @@ namespace Mono.TextEditor
 
 		internal TextArea (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
+			keyPressTimings = new TextEditorKeyPressTimings (doc);
+
 			GtkWorkarounds.FixContainerLeak (this);
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			base.CanFocus = true;
