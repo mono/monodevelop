@@ -39,6 +39,7 @@ namespace MonoDevelop.DotNetCore.Templating
 	{
 		public IEnumerable<StringTagDescription> GetTags (Type type)
 		{
+			// 2.1 templates
 			yield return new StringTagDescription (
 				"DotNetCoreSdk.2.1.Templates.Common.ProjectTemplates.nupkg",
 				GettextCatalog.GetString (".NET Core SDK 2.1 Common Project Templates NuGet package path")
@@ -52,6 +53,22 @@ namespace MonoDevelop.DotNetCore.Templating
 			yield return new StringTagDescription (
 				"DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg",
 				GettextCatalog.GetString (".NET Core SDK 2.1 Web Project Templates NuGet package path")
+			);
+
+			// 2.2 templates
+			yield return new StringTagDescription (
+				"DotNetCoreSdk.2.2.Templates.Common.ProjectTemplates.nupkg",
+				GettextCatalog.GetString (".NET Core SDK 2.2 Common Project Templates NuGet package path")
+			);
+
+			yield return new StringTagDescription (
+				"DotNetCoreSdk.2.2.Templates.Test.ProjectTemplates.nupkg",
+				GettextCatalog.GetString (".NET Core SDK 2.2 Test Project Templates NuGet package path")
+			);
+
+			yield return new StringTagDescription (
+				"DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg",
+				GettextCatalog.GetString (".NET Core SDK 2.2 Web Project Templates NuGet package path")
 			);
 		}
 
@@ -107,22 +124,24 @@ namespace MonoDevelop.DotNetCore.Templating
 		}
 
 		/// <summary>
-		/// Only .NET Core SDKs 2.1 is supported.
+		/// Only .NET Core SDKs 2.1/2.2 are supported.
 		/// </summary>
 		string GetDotNetCoreSdkTemplatesDirectory (string tag)
 		{
-			DotNetCoreVersion dotNetCoreSdk21 = GetDotNetCoreSdk21Version ();
-			if (dotNetCoreSdk21 == null) {
-				return null;
+			DotNetCoreVersion dotNetCoreSdk = null;
+
+			if (tag.StartsWith ("DotNetCoreSdk.2.1", StringComparison.OrdinalIgnoreCase)) {
+				dotNetCoreSdk = GetDotNetCoreSdk21Version ();
+			} else if (tag.StartsWith ("DotNetCoreSdk.2.2", StringComparison.OrdinalIgnoreCase)) {
+				dotNetCoreSdk = GetDotNetCoreSdk22Version ();
 			}
 
-			if (!tag.StartsWith ("DotNetCoreSdk.2.1", StringComparison.OrdinalIgnoreCase)) {
+			if (dotNetCoreSdk == null)
 				return null;
-			}
 
 			string templatesDirectory = Path.Combine (
 				DotNetCoreSdk.SdkRootPath,
-				dotNetCoreSdk21.OriginalString,
+				dotNetCoreSdk.OriginalString,
 				"Templates"
 			);
 
@@ -131,6 +150,12 @@ namespace MonoDevelop.DotNetCore.Templating
 			}
 
 			return string.Empty;
+		}
+
+		DotNetCoreVersion GetDotNetCoreSdk22Version ()
+		{
+			return DotNetCoreSdk.Versions
+				.FirstOrDefault (v => v.Major == 2 && v.Minor == 2);
 		}
 
 		DotNetCoreVersion GetDotNetCoreSdk21Version ()

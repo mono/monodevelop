@@ -78,6 +78,24 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void GetNetStandardTargetFrameworks_NetCore22RuntimeInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("2.2.0");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
+
+			Assert.AreEqual (".NETStandard,Version=v2.0", frameworks[0].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.6", frameworks[1].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.5", frameworks[2].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.4", frameworks[3].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.3", frameworks[4].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.2", frameworks[5].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.1", frameworks[6].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.0", frameworks[7].Id.ToString ());
+			Assert.AreEqual (8, frameworks.Count);
+		}
+
+		[Test]
 		public void GetNetStandardTargetFrameworks_NetCore21RuntimeInstalled ()
 		{
 			DotNetCoreRuntimesInstalled ("2.1.0");
@@ -116,6 +134,17 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETCoreApp,Version=v1.1", frameworks [0].Id.ToString ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", frameworks [1].Id.ToString ());
 			Assert.AreEqual (2, frameworks.Count);
+		}
+
+		[Test]
+		public void GetNetCoreAppTargetFrameworks_NetCore22RuntimeInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("2.2.0");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+			Assert.AreEqual (".NETCoreApp,Version=v2.2", frameworks[0].Id.ToString ());
+			Assert.AreEqual (1, frameworks.Count);
 		}
 
 		[Test]
