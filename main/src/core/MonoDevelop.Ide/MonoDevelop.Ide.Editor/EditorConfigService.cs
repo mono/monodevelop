@@ -50,6 +50,11 @@ namespace MonoDevelop.Ide.Editor
 				if (string.IsNullOrEmpty (directory)) {
 					return null;
 				}
+
+				// HACK: Work around for a library issue https://github.com/mono/monodevelop/issues/6104
+				if (directory == "/") {
+					return null;
+				}
 			} catch {
 				return null;
 			}

@@ -125,10 +125,15 @@ namespace MonoDevelop.Projects
 					if (watchers.ContainsKey (path)) {
 						continue;
 					}
-
 					var watcher = new FileWatcherWrapper (path);
 					watchers.Add (path, watcher);
-					watcher.EnableRaisingEvents = true;
+					try {
+						watcher.EnableRaisingEvents = true;
+ 					} catch (UnauthorizedAccessException e) {
+						LoggingService.LogWarning ("Access to " + path + " denied. Stopping file watcher.", e);
+						watcher.Dispose ();
+						watchers.Remove (path);
+					}
 				}
 
 			}
