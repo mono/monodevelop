@@ -477,7 +477,6 @@ namespace MonoDevelop.Ide
 			}
 
 			timeToCodeTimer.Stop ();
-			timeToCodeTimer = null;
 			lock (ttcLock) {
 				ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
 
@@ -489,6 +488,7 @@ namespace MonoDevelop.Ide
 					IdeApp.ReportTimeToCode = false;
 				}
 			}
+			timeToCodeTimer = null;
 		}
 
 		static DateTime lastIdle;
