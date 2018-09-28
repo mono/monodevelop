@@ -48,6 +48,7 @@ namespace Mono.TextEditor
 		TimeSpan totalTime;
 		TimeSpan? firstTime;
 		int count;
+		int lengthAtStart;
 
 		// The length of time it takes to process a key is the time
 		// from the key being pressed to the character being drawn on screen
@@ -70,9 +71,12 @@ namespace Mono.TextEditor
 			return telemetry.TimeSinceMachineStart;
 		}
 
-		public TextEditorKeyPressTimings ()
+		public TextEditorKeyPressTimings (TextDocument document)
 		{
 			openTime = GetCurrentTime ();
+
+			if (document != null)
+				lengthAtStart = document.Length;
 		}
 
 		public void AddMarginDrawingTime (TimeSpan duration)
@@ -168,7 +172,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal TypingTimingMetadata GetTypingTimingMetadata (string extension, ITextEditorOptions options)
+		internal TypingTimingMetadata GetTypingTimingMetadata (string extension, ITextEditorOptions options, int lengthAtEnd)
 		{
 			double totalMillis = totalTime.TotalMilliseconds;
 
@@ -182,13 +186,19 @@ namespace Mono.TextEditor
 				PercentDrawCaret = totalTimeCaretDrawing.TotalMilliseconds / totalMillis * 100,
 				PercentDrawMargin = totalTimeMarginDrawing.TotalMilliseconds / totalMillis * 100,
 				PercentExtensionKeypress = totalTimeExtensionKeyPress.TotalMilliseconds / totalMillis * 100,
-				FoldMarginShown = options.ShowFoldMargin,
-				NumberMarginShown = options.ShowLineNumberMargin,
-				ShowIconMargin = options.ShowIconMargin,
-				ShowWhiteSpaces = options.ShowWhitespaces,
-				IncludeWhitespaces = options.IncludeWhitespaces,
-				DocumentSessionLength = openTime.TotalMilliseconds - GetCurrentTime ().TotalMilliseconds,
+				SessionKeypressCount = count,
+				SessionLength = openTime.TotalMilliseconds - GetCurrentTime ().TotalMilliseconds,
+				LengthAtStart = lengthAtStart,
+				LengthAtEnd = lengthAtEnd,
 			};
+
+			if (options != null) {
+				metadata.FoldMarginShown = options.ShowFoldMargin;
+				metadata.NumberMarginShown = options.ShowLineNumberMargin;
+				metadata.ShowIconMargin = options.ShowIconMargin;
+				metadata.ShowWhiteSpaces = options.ShowWhitespaces;
+				metadata.IncludeWhitespaces = options.IncludeWhitespaces;
+			}
 
 			if (!string.IsNullOrEmpty (extension))
 				metadata.Extension = extension;
@@ -207,7 +217,7 @@ namespace Mono.TextEditor
 
 			string extension = document.FileName.Extension;
 
-			var metadata = GetTypingTimingMetadata (extension, options);
+			var metadata = GetTypingTimingMetadata (extension, options, document.Length);
 			MonoDevelop.SourceEditor.Counters.Typing.Inc (metadata);
 		}
 	}
@@ -288,8 +298,23 @@ namespace Mono.TextEditor
 			set => SetProperty (value);
 		}
 
-		public double DocumentSessionLength {
+		public double SessionKeypressCount {
 			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double SessionLength {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public int LengthAtStart {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int LengthAtEnd {
+			get => GetProperty<int> ();
 			set => SetProperty (value);
 		}
 	}
