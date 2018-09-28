@@ -39,7 +39,7 @@ namespace MonoDevelop.DotNetCore
 
 		public override string Description => GetDescription ();
 
-		public override string Version => DotNetCoreSdk.Versions.FirstOrDefault().ToString ();
+		public override string Version => DotNetCoreSdk.Versions.FirstOrDefault()?.ToString ();
 
 		public override string ApplicationId => "c07628e8-5521-4c1a-aa3a-f860e664f0a9";
 
