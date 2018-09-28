@@ -961,11 +961,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			base.Dispose ();
 			console.Dispose ();
+			Disposed?.Invoke (this, EventArgs.Empty);
 		}
 
+		internal event EventHandler Disposed;
 		internal event EventHandler Completed;
 
-		class LogViewProgressConsole: OperationConsole
+		class LogViewProgressConsole : OperationConsole
 		{
 			LogViewProgressMonitor monitor;
 

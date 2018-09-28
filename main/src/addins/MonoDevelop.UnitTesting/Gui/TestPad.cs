@@ -481,10 +481,15 @@ namespace MonoDevelop.UnitTesting
 		
 		void OnStopClicked (object sender, EventArgs args)
 		{
+			StopRunningTests ();
+		}
+
+		void StopRunningTests ()
+		{
 			if (runningTestOperation != null)
 				runningTestOperation.Cancel ();
 		}
-		
+
 		UnitTest GetSelectedTest ()
 		{
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
@@ -538,6 +543,7 @@ namespace MonoDevelop.UnitTesting
 
 			if (bringToFront)
 				IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
+			StopRunningTests ();
 			runningTestOperation = UnitTestService.RunTests (tests, context);
 			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return runningTestOperation;
