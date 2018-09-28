@@ -414,6 +414,8 @@ namespace MonoDevelop.Projects
 			}
 
 			foreach (var item in GetAllItems ()) {
+				if (item == this)
+					continue;
 				if (item is IBuildTarget bt) {
 					foreach (var dep in bt.GetExecutionDependencies ()) {
 						yield return dep;
