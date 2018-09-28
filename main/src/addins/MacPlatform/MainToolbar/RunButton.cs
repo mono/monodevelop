@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt.Mac;
 using MonoDevelop.Components;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -161,6 +162,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get {
 				return new CGSize (38, 25);
 			}
+		}
+
+		internal event EventHandler<EventArgs> UnfocusToolbar;
+		public override void KeyDown (NSEvent theEvent)
+		{
+			// 0x30 is Tab
+			if (theEvent.KeyCode == KeyCodes.Tab) {
+				if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
+					UnfocusToolbar?.Invoke (this, EventArgs.Empty);
+					return;
+				}
+			}
+			base.KeyDown (theEvent);
 		}
 	}
 
