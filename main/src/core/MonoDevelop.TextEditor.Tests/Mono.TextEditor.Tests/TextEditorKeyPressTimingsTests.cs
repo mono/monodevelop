@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 			Thread.Sleep (800);
 			timings.EndTimer ();
 
-			var metadata = timings.GetTypingTimingMetadata (null, null, 0);
+			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
 			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
 			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
 		}

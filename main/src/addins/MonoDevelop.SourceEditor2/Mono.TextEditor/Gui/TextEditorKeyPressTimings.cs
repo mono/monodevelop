@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 		TimeSpan totalTime;
 		TimeSpan? firstTime;
 		int count;
-		int lengthAtStart;
+		int lengthAtStart, lineCountAtStart;
 
 		// The length of time it takes to process a key is the time
 		// from the key being pressed to the character being drawn on screen
@@ -75,8 +75,10 @@ namespace Mono.TextEditor
 		{
 			openTime = GetCurrentTime ();
 
-			if (document != null)
+			if (document != null) {
 				lengthAtStart = document.Length;
+				lineCountAtStart = document.LineCount;
+			}
 		}
 
 		public void AddMarginDrawingTime (TimeSpan duration)
@@ -172,7 +174,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal TypingTimingMetadata GetTypingTimingMetadata (string extension, ITextEditorOptions options, int lengthAtEnd)
+		internal TypingTimingMetadata GetTypingTimingMetadata (string extension, ITextEditorOptions options, int lengthAtEnd, int lineCountAtEnd)
 		{
 			double totalMillis = totalTime.TotalMilliseconds;
 
@@ -189,7 +191,9 @@ namespace Mono.TextEditor
 				SessionKeypressCount = count,
 				SessionLength = openTime.TotalMilliseconds - GetCurrentTime ().TotalMilliseconds,
 				LengthAtStart = lengthAtStart,
-				LengthAtEnd = lengthAtEnd,
+				LengthDelta = lengthAtEnd - lengthAtStart,
+				LineCountAtStart = lineCountAtStart,
+				LineCountDelta = lineCountAtEnd - lineCountAtStart,
 			};
 
 			if (options != null) {
@@ -217,7 +221,7 @@ namespace Mono.TextEditor
 
 			string extension = document.FileName.Extension;
 
-			var metadata = GetTypingTimingMetadata (extension, options, document.Length);
+			var metadata = GetTypingTimingMetadata (extension, options, document.Length, document.LineCount);
 			MonoDevelop.SourceEditor.Counters.Typing.Inc (metadata);
 		}
 	}
@@ -313,7 +317,17 @@ namespace Mono.TextEditor
 			set => SetProperty (value);
 		}
 
-		public int LengthAtEnd {
+		public int LengthDelta {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int LineCountAtStart {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int LineCountDelta {
 			get => GetProperty<int> ();
 			set => SetProperty (value);
 		}
