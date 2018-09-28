@@ -254,9 +254,6 @@
 	
 	<Extension path = "/MonoDevelop/Core/SystemInformation">
 		<Class class = "MonoDevelop.Ide.IdeVersionInfo" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Core/SystemInformation">
 		<Class class = "MonoDevelop.Ide.RuntimeVersionInfo" />
 	</Extension>
 
