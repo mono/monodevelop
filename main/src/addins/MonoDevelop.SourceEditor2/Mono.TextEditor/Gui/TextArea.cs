@@ -2237,10 +2237,10 @@ namespace Mono.TextEditor
 				// Ensure that the correct line height is set.
 				if (line != null) {
 					var wrapper = textViewMargin.GetLayout (line);
+					TextViewLines?.Add (logicalLineNumber, line, wrapper);
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
 				}
-				TextViewLines?.Add (logicalLineNumber, line);
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)
