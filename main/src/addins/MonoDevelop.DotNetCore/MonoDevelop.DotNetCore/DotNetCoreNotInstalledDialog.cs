@@ -33,10 +33,10 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
-		public static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore";
-		public static readonly string DotNetCore20DownloadUrl = "https://aka.ms/vs/mac/install-netcore2";
-		public static readonly string DotNetCore21DownloadUrl = "https://aka.ms/vs/mac/install-netcore21";
-		public static readonly string DotNetCore22DownloadUrl = "https://aka.ms/vs/mac/install-netcore22";
+		public static readonly string DotNetCoreDownloadUrl = "https://www.microsoft.com/net/download";
+		public static readonly string DotNetCore20DownloadUrl = "https://www.microsoft.com/net/download/dotnet-core/2.0";
+		public static readonly string DotNetCore21DownloadUrl = "https://www.microsoft.com/net/download/dotnet-core/2.1";
+		public static readonly string DotNetCore22DownloadUrl = "https://www.microsoft.com/net/download/dotnet-core/2.2";
 
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
 		static readonly string unsupportedMessage = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
