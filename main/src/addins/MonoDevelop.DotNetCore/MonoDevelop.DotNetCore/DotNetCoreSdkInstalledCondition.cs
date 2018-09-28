@@ -52,7 +52,8 @@ namespace MonoDevelop.DotNetCore
 		/// Note that the .NET Core SDK version is the logical version. Currently
 		/// .NET Core SDK 2.1.4 supports .NET Core 2.0 projects but it is considered
 		/// here to be version 2.0. .NET Core 2.1.300 supports .NET Core 2.1 projects
-		/// so it is considered to be version 2.1
+		/// so it is considered to be version 2.1, .NET Core 2.2.100 supports .NET Core
+		/// 2.2 projects
 		/// </summary>
 		public override bool Evaluate (NodeElement conditionNode)
 		{
@@ -76,8 +77,10 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (requiredSdkversion))
 				return true;
 
-			// Special case '2.1' and '2.0'.
-			if (requiredSdkversion == "2.1") {
+			// Special case '2.2', '2.1' and '2.0'.
+			if (requiredSdkversion == "2.2") {
+				return versions.Any (IsNetCoreSdk22);
+			} else if (requiredSdkversion == "2.1") {
 				return versions.Any (IsNetCoreSdk21);
 			} else if (requiredSdkversion == "2.0") {
 				return versions.Any (IsNetCoreSdk20);
@@ -85,6 +88,14 @@ namespace MonoDevelop.DotNetCore
 
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
 			return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
+		}
+
+		/// <summary>
+		/// 2.2.100 is the lowest version that supports .NET Core 2.2 projects.
+		/// </summary>
+		static bool IsNetCoreSdk22 (DotNetCoreVersion version)
+		{
+			return version.Major == 2 && version.Minor == 2;
 		}
 
 		/// <summary>

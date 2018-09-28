@@ -92,8 +92,8 @@ namespace MonoDevelop.DotNetCore
 		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
 			foreach (Version runtimeVersion in GetMajorRuntimeVersions ()) {
-				if (runtimeVersion.Major == 2 && runtimeVersion.Minor > 1) {
-					// Skip version 2.2 since this is not currently supported.
+				if (runtimeVersion.Major == 2 && runtimeVersion.Minor > 2) {
+					// Skip versions > 2.2 since this is not currently supported.
 					continue;
 				}
 
