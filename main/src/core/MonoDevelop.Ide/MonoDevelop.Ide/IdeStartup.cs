@@ -399,9 +399,7 @@ namespace MonoDevelop.Ide
 			timeToCodeTimer.Stop ();
 			timeToCodeTimer = null;
 
-			lock (ttcLock) {
-				ttcMetadata = null;
-			}
+			ttcMetadata = null;
 		}
 
 		/// <summary>
@@ -448,7 +446,6 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
-		static readonly object ttcLock = new object ();
 		async void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
 		{
 			var result = await Task.Run (() => DesktopService.PlatformTelemetry);
@@ -459,10 +456,8 @@ namespace MonoDevelop.Ide
 			var startupMetadata = GetStartupMetadata (startupInfo, result, timings);
 			Counters.Startup.Inc (startupMetadata);
 
-			lock (ttcLock) {
-				if (ttcMetadata != null) {
-					ttcMetadata.AddProperties (startupMetadata);
-				}
+			if (ttcMetadata != null) {
+				ttcMetadata.AddProperties (startupMetadata);
 			}
 
 			IdeApp.OnStartupCompleted ();
@@ -477,18 +472,16 @@ namespace MonoDevelop.Ide
 			}
 
 			timeToCodeTimer.Stop ();
-			timeToCodeTimer = null;
-			lock (ttcLock) {
-				ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
+			ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
 
-				ttcMetadata.CorrectedDuration = ttcMetadata.StartupTime + ttcMetadata.SolutionLoadTime;
+			ttcMetadata.CorrectedDuration = ttcMetadata.StartupTime + ttcMetadata.SolutionLoadTime;
 
 
-				if (IdeApp.ReportTimeToCode) {
-					Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
-					IdeApp.ReportTimeToCode = false;
-				}
+			if (IdeApp.ReportTimeToCode) {
+				Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
+				IdeApp.ReportTimeToCode = false;
 			}
+			timeToCodeTimer = null;
 		}
 
 		static DateTime lastIdle;
