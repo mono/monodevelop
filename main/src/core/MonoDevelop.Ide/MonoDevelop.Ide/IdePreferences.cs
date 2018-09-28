@@ -90,6 +90,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<ShowMessageBubbles> ShowMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.NewShowMessageBubbles", MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings);
 
 		public readonly ConfigurationProperty<TargetRuntime> DefaultTargetRuntime = new DefaultTargetRuntimeProperty ();
+
 		class DefaultTargetRuntimeProperty: ConfigurationProperty<TargetRuntime>
 		{
 			ConfigurationProperty<string> defaultTargetRuntimeText = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultTargetRuntime", "__current");
