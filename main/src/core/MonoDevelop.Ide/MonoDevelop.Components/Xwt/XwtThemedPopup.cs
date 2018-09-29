@@ -28,6 +28,7 @@ using System.Linq;
 using Xwt;
 using Xwt.Backends;
 using Xwt.Drawing;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -54,7 +55,9 @@ namespace MonoDevelop.Components
 		{
 			base.Content = container = new XwtPopoverCanvas ();
 			BackgroundColor = Xwt.Drawing.Colors.Transparent;
-			Decorated = true;
+			// background rendering of undecorated windows is broken in HighSierra and previous versions
+			if (MacSystemInformation.OsVersion <= MacSystemInformation.HighSierra)
+				Decorated = true;
 			Theme.TargetPosition = CurrentPosition;
 		}
 
