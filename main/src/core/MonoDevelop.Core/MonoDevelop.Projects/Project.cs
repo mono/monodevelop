@@ -4352,8 +4352,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		FSW.FileSystemWatcher watcher;
-
 		void CreateFileWatcher ()
 		{
 			DisposeFileWatcher ();
@@ -4361,27 +4359,21 @@ namespace MonoDevelop.Projects
 			if (!Directory.Exists (BaseDirectory))
 				return;
 
-			watcher = new FSW.FileSystemWatcher (BaseDirectory);
-			watcher.IncludeSubdirectories = true;
-			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
-			watcher.Created += OnFileCreated;
-			watcher.Deleted += OnFileDeleted;
-			watcher.Renamed += OnFileRenamed;
-			watcher.Error += OnFileWatcherError;
-			watcher.EnableRaisingEvents = true;
+			// Use FileWatcherService for file created event since this does not run on the UI thread.
+			FileWatcherService.Created += OnFileCreated;
+			// Use FileWatcherService for file deleted events to be consistent. Without this a deletion event
+			// would not update the Solution window until the IDE gets focus again.
+			FileWatcherService.Deleted += OnFileDeleted;
+			// Use FileWatcherService for file renamed since generating the FileService.FileRenamed event
+			// would result in non SDK style projects renaming files in the project if changed externally.
+			FileWatcherService.Renamed += OnFileRenamed;
 		}
 
 		void DisposeFileWatcher ()
 		{
-			if (watcher != null) {
-				watcher.Dispose ();
-				watcher = null;
-			}
-		}
-
-		void OnFileWatcherError (object sender, ErrorEventArgs e)
-		{
-			LoggingService.LogError ("FileWatcher error", e.GetException ());
+			FileWatcherService.Created -= OnFileCreated;
+			FileWatcherService.Deleted -= OnFileDeleted;
+			FileWatcherService.Renamed -= OnFileRenamed;
 		}
 
 		void OnFileRenamed (object sender, RenamedEventArgs e)
@@ -4433,6 +4425,12 @@ namespace MonoDevelop.Projects
 
 		void OnFileCreatedExternally (string fileName)
 		{
+			// Check file is inside the project directory. The file globs would exclude the file anyway
+			// if the relative path starts with "..\" but checking here avoids checking the file globs.
+			FilePath filePath = fileName;
+			if (!filePath.IsChildPathOf (BaseDirectory))
+				return;
+
 			if (Files.Any (file => file.FilePath == fileName)) {
 				// File exists in project. This can happen if the file was added
 				// in the IDE and not externally.
