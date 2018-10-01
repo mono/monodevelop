@@ -268,7 +268,7 @@ namespace MonoDevelop.Projects
 			FileService.FileRemoved -= FileServiceOnFileRemoved;
 
 			try {
-				directoryRemovedCompletionSource.SetResult (e);
+				directoryRemovedCompletionSource.TrySetResult (e);
 			} catch (Exception ex) {
 				directoryRemovedCompletionSource.SetException (ex);
 			}
@@ -508,6 +508,51 @@ namespace MonoDevelop.Projects
 
 			Assert.IsTrue (project.Files.Any (file => file.FilePath == csharpFilePath), $"File not added to project '{csharpFilePath}'");
 			Assert.IsFalse (project.Files.Any (file => file.FilePath == fileOutsideProjectDirectory), $"File not removed from project '{fileOutsideProjectDirectory}'");
+		}
+
+		[Test]
+		public async Task MoveDirectoryOutsideProjectDirectory ()
+		{
+			await OpenProject ();
+
+			// Create new C# file in new subdirectory.
+			var fileAdded = WaitForSingleFileAdded (project);
+			var directory = project.BaseDirectory.Combine ("Src");
+			Directory.CreateDirectory (directory);
+			var newCSharpFilePath = WriteFile (directory, "NewCSharpFile.cs");
+
+			await AssertFileAddedToProject (fileAdded, newCSharpFilePath, "Compile");
+
+			// Move directory outside the project's directory.
+			var renamedDirectory = project.ParentSolution.BaseDirectory.Combine ("RenamedSrc");
+			var renamedCSharpFileName = renamedDirectory.Combine ("NewCSharpFile.cs");
+			Directory.Move (directory, renamedDirectory);
+
+			// Create new file in project directory.
+			fileAdded = WaitForSingleFileAdded (project);
+			var newCSharpFilePath2 = WriteFile (project.BaseDirectory, "NewCSharpFile2.cs");
+			await AssertFileAddedToProject (fileAdded, newCSharpFilePath2, "Compile");
+
+			Assert.IsFalse (project.Files.Any (file => file.FilePath.FileName == "NewCSharpFile.cs"), "File not removed from project");
+		}
+
+		[Test]
+		public async Task MoveDirectoryIntoProjectDirectory ()
+		{
+			await OpenProject ();
+
+			// Create new C# file in new subdirectory inside solution.
+			var fileAdded = WaitForSingleFileAdded (project);
+			var directory = solution.BaseDirectory.Combine ("Src");
+			Directory.CreateDirectory (directory);
+			var newCSharpFilePath = WriteFile (directory, "NewCSharpFile.cs");
+
+			// Move directory inside project
+			var renamedDirectory = project.BaseDirectory.Combine ("RenamedSrc");
+			var renamedCSharpFileName = renamedDirectory.Combine ("NewCSharpFile.cs");
+			Directory.Move (directory, renamedDirectory);
+
+			await AssertFileAddedToProject (fileAdded, renamedCSharpFileName, "Compile");
 		}
 	}
 }

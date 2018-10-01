@@ -4378,13 +4378,18 @@ namespace MonoDevelop.Projects
 
 		void OnFileRenamed (object sender, RenamedEventArgs e)
 		{
-			Runtime.RunInMainThread (() => {
+			try {
 				if (Directory.Exists (e.FullPath)) {
 					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
-				} else {
-					OnFileCreatedExternally (e.FullPath);
-					OnFileDeletedExternally (e.OldFullPath);
+					return;
 				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("OnFileRenamed error.", ex);
+			}
+
+			Runtime.RunInMainThread (() => {
+				OnFileCreatedExternally (e.FullPath);
+				OnFileDeletedExternally (e.OldFullPath);
 			});
 		}
 
@@ -4418,9 +4423,49 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Move all project files in the old directory to the new directory.
 		/// </summary>
-		void OnDirectoryRenamedExternally (string oldDirectory, string newDirectory)
+		void OnDirectoryRenamedExternally (FilePath oldDirectory, FilePath newDirectory)
 		{
-			FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+			bool isOldDirectoryInsideProject = oldDirectory.IsChildPathOf (BaseDirectory);
+			bool isNewDirectoryInsideProject = newDirectory.IsChildPathOf (BaseDirectory);
+
+			if (!isOldDirectoryInsideProject && !isNewDirectoryInsideProject) {
+				// Ignore directories outside project directory.
+				return;
+			}
+
+			if (!isOldDirectoryInsideProject) {
+				OnDirectoryMovedIntoProject (newDirectory);
+				return;
+			}
+
+			if (isNewDirectoryInsideProject) {
+				Runtime.RunInMainThread (() => {
+					FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+				}).Ignore ();
+				return;
+			}
+
+			OnDirectoryMovedOutOfProject (oldDirectory);
+		}
+
+		void OnDirectoryMovedIntoProject (FilePath newDirectory)
+		{
+			foreach (string file in Directory.EnumerateFiles (newDirectory, "*", SearchOption.AllDirectories)) {
+				OnFileCreatedExternally (file);
+			}
+		}
+
+		void OnDirectoryMovedOutOfProject (FilePath oldDirectory)
+		{
+			// Directory moved outside project directory. Remove files from project.
+			var projectFilesInDirectory = Files.GetFilesInPath (oldDirectory);
+			if (!projectFilesInDirectory.Any ())
+				return;
+
+			Runtime.RunInMainThread (() => {
+				foreach (ProjectFile file in projectFilesInDirectory)
+					Files.Remove (file);
+			});
 		}
 
 		void OnFileCreatedExternally (string fileName)
