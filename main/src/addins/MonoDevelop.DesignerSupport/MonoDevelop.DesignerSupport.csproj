@@ -46,6 +46,9 @@
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -72,7 +75,7 @@
   <ItemGroup>
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TextToolboxNode.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolbox.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxItemToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\PropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\DesignerSupportService.cs" />
@@ -126,6 +129,22 @@
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ImplicitFrameworkAssemblyReferenceDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Extensions.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ProgressIndicator.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxWidget.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\SearchTextField.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ToggleButton.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ClickedButton.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\NativeViewHelper.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ScrollContainerView.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\PaddingView.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ExpanderButton.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\CollectionViewItems.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidget.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetDataSource.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetFlowLayoutDelegate.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Styles.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
@@ -161,6 +180,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
+    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
