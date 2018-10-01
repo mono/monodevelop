@@ -105,6 +105,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationWidget.UI.cs">
       <DependentUpon>DotNetCoreSdkLocationWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonoDevelop.DotNetCore\MonoRuntimeInfoExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
