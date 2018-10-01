@@ -1565,5 +1565,21 @@ namespace MonoDevelop.Ide.Gui
 			Assert.IsFalse (visible);
 			Assert.IsFalse (listWindow.Visible);
 		}
+
+		/// <summary>
+		/// Completion still commits on ENTER when an item is soft-selected #6142
+		/// </summary>
+		[Test]
+		public void TestIssue6142 ()
+		{
+			CreateListWindow ("", false, true, false,
+				"foo",
+				"bar");
+
+			var word = SimulateInput ("b\b\n");
+			Assert.IsTrue (string.IsNullOrEmpty (word));
+
+		}
+
 	}
 }
