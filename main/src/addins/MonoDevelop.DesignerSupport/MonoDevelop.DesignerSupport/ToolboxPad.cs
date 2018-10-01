@@ -30,20 +30,17 @@
 //
 
 using System;
-
 using MonoDevelop.Ide.Gui;
-
-using MonoDevelop.DesignerSupport;
-using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Components;
+using Xwt;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
 	public class ToolboxPad : PadContent
 	{
-		Toolbox.Toolbox toolbox;
-		
+		Toolbox.MacToolbox toolbox;
+		Gtk.Widget widget;
+
 		public ToolboxPad ()
 		{
 		}
@@ -51,14 +48,34 @@ namespace MonoDevelop.DesignerSupport
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
-			toolbox = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
-		}
 
+			Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac).Invoke (() => {
+				toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
+			});
+
+			var wd = Xwt.Toolkit.CurrentEngine.WrapWidget (toolbox, NativeWidgetSizing.DefaultPreferredSize);
+			widget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (wd);
+
+			toolbox.DragSourceUnset += (s, e) => {	
+				Gtk.Drag.SourceUnset (widget);
+			};
+
+			toolbox.DragSourceSet += (s, e) => {
+				Gtk.Drag.SourceSet (widget, Gdk.ModifierType.Button1Mask, e, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+			};
+
+			toolbox.DragBegin += (object sender, EventArgs e) => {
+				Gtk.Application.Invoke ((s,ev) => {
+					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
+				});
+
+			};
+		}
 		
 		#region AbstractPadContent implementations
 		
 		public override Control Control {
-			get { return toolbox; }
+			get { return widget; }
 		}
 		
 		#endregion

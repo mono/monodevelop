@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * Toolbox.cs - A toolbox widget
  * 
  * Authors: 
@@ -31,157 +31,186 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Gtk;
 using System.Drawing.Design;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
+using AppKit;
+using Xwt;
+using CoreGraphics;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public class Toolbox : VBox, IPropertyPadProvider, IToolboxConfiguration
+	public class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
 		ToolboxService toolboxService;
-		
+
 		ItemToolboxNode selectedNode;
-	//	Hashtable expandedCategories = new Hashtable ();
-		
-		ToolboxWidget toolboxWidget;
-		ScrolledWindow scrolledWindow;
-		
-		ToggleButton catToggleButton;
-		ToggleButton compactModeToggleButton;
-		SearchEntry filterEntry;
+		//Hashtable expandedCategories = new Hashtable ();
+		IToolboxWidget toolboxWidget;
+		//ScrollContainerView scrolledWindow;
+
+		public event EventHandler DragBegin;
+		public event EventHandler DragSourceUnset;
+		public event EventHandler<Gtk.TargetEntry[]> DragSourceSet;
+
+		NativeViews.ToggleButton catToggleButton;
+		NativeViews.ToggleButton compactModeToggleButton;
+		readonly NativeViews.SearchTextField filterEntry;
+
 		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
+
 		IPadWindow container;
-		Dictionary<string,int> categoryPriorities = new Dictionary<string, int> ();
-		Button toolboxAddButton;
-		
-		public Toolbox (ToolboxService toolboxService, IPadWindow container)
-		{			
+		Dictionary<string, int> categoryPriorities = new Dictionary<string, int> ();
+
+		NativeViews.ClickedButton toolboxAddButton;
+
+		Xwt.Drawing.Image groupByCategoryImage;
+
+		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
+
+		NSStackView verticalStackView;
+
+		const int IconsSpacing = 4;
+
+		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
+		{
+			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
+			Alignment = NSLayoutAttribute.Leading;
+			Spacing = 0;
+			Distribution = NSStackViewDistribution.Fill;
+
 			this.toolboxService = toolboxService;
 			this.container = container;
-			
+
 			#region Toolbar
-			DockItemToolbar toolbar = container.GetToolbar (DockPositionType.Top);
-		
-			filterEntry = new SearchEntry();
-			filterEntry.Ready = true;
-			filterEntry.HasFrame = true;
-			filterEntry.WidthRequest = 150;
-			filterEntry.Changed += new EventHandler (filterTextChanged);
-			filterEntry.Show ();
-			filterEntry.Accessible.Name = "Toolbox.SearchEntry";
-			filterEntry.Accessible.SetLabel (GettextCatalog.GetString ("Search Toolbox"));
-			filterEntry.Accessible.Description = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
 
-			toolbar.Add (filterEntry, true);
-			
-			catToggleButton = new ToggleButton ();
-			catToggleButton.Image = new ImageView (Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
-			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
-			catToggleButton.TooltipText = GettextCatalog.GetString ("Show categories");
-			catToggleButton.Accessible.Name = "Toolbox.ShowCategories";
-			catToggleButton.Accessible.SetLabel (GettextCatalog.GetString ("Show Categories"));
-			catToggleButton.Accessible.Description = GettextCatalog.GetString ("Toggle to show categories");
-			toolbar.Add (catToggleButton);
-			
-			compactModeToggleButton = new ToggleButton ();
-			compactModeToggleButton.Image = new ImageView (ImageService.GetIcon ("md-compact-display", IconSize.Menu));
-			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
-			compactModeToggleButton.TooltipText = GettextCatalog.GetString ("Use compact display");
-			compactModeToggleButton.Accessible.Name = "Toolbox.CompactButton";
-			compactModeToggleButton.Accessible.SetLabel (GettextCatalog.GetString ("Compact Layout"));
-			compactModeToggleButton.Accessible.Description = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
-			toolbar.Add (compactModeToggleButton);
-	
-			toolboxAddButton = new Button (new ImageView (Ide.Gui.Stock.Add, IconSize.Menu));
-			toolbar.Add (toolboxAddButton);
-			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
-			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
-			toolboxAddButton.Accessible.Name = "Toolbox.Add";
-			toolboxAddButton.Accessible.SetLabel (GettextCatalog.GetString ("Add"));
-			toolboxAddButton.Accessible.Description = GettextCatalog.GetString ("Add toolbox items");
+			//DockItemToolbar toolbar = container.GetToolbar (DockPositionType.Top);
+			groupByCategoryImage = ImageService.GetIcon (Ide.Gui.Stock.GroupByCategory, Gtk.IconSize.Menu);
+			var compactImage = ImageService.GetIcon ("md-compact-display", Gtk.IconSize.Menu);
+			var addImage = ImageService.GetIcon (Ide.Gui.Stock.Add, Gtk.IconSize.Menu);
 
-			toolbar.ShowAll ();
+			verticalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
+			AddArrangedSubview (verticalStackView);
+			verticalStackView.EdgeInsets = new NSEdgeInsets (7, 7, 7, 2);
+
+			//Horizontal container
+			filterEntry = new NativeViews.SearchTextField ();
+			filterEntry.AccessibilityTitle = GettextCatalog.GetString ("Search Toolbox");
+			filterEntry.AccessibilityHelp = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
+			filterEntry.Activated += filterTextChanged;
+
+			verticalStackView.AddArrangedSubview (filterEntry);
+
+			catToggleButton = new NativeViews.ToggleButton ();
+			catToggleButton.Image = groupByCategoryImage.ToNative ();
+			catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Show categories");
+			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
+			catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show categories");
+			catToggleButton.Activated += toggleCategorisation;
+
+			verticalStackView.AddArrangedSubview (catToggleButton);
+
+			compactModeToggleButton = new NativeViews.ToggleButton ();
+			compactModeToggleButton.Image = compactImage.ToNative ();
+			compactModeToggleButton.ToolTip = GettextCatalog.GetString ("Use compact display");
+			compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout");
+			compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
+			compactModeToggleButton.Activated += ToggleCompactMode;
+
+			verticalStackView.AddArrangedSubview (compactModeToggleButton);
+
+			toolboxAddButton = new NativeViews.ClickedButton ();
+			toolboxAddButton.Image = addImage.ToNative ();
+			toolboxAddButton.AccessibilityTitle = GettextCatalog.GetString ("Add toolbox items");
+			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");
+			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
+			toolboxAddButton.Activated += toolboxAddButton_Clicked;
+
+			verticalStackView.AddArrangedSubview (toolboxAddButton);
 
 			#endregion
-			
-			toolboxWidget = new ToolboxWidget ();
-			toolboxWidget.Accessible.Name = "Toolbox.Toolbox";
-			toolboxWidget.Accessible.SetLabel (GettextCatalog.GetString ("Toolbox Items"));
-			toolboxWidget.Accessible.Description = GettextCatalog.GetString ("The toolbox items");
+
+			MacToolboxWidget collectionView;
+			toolboxWidget = collectionView = new MacToolboxWidget (container) {
+				AccessibilityTitle = GettextCatalog.GetString ("Toolbar items"),
+				AccessibilityHelp = GettextCatalog.GetString ("Here are all the toolbox items to select")
+			};
+
+
+			var scrollView = new NativeViews.ScrollContainerView ();
+			scrollView.DocumentView = (NSView)toolboxWidget;
+			AddArrangedSubview (scrollView);
+			//base.FocusChain = new Gtk.Widget [] { scrolledWindow };
+			//Initialise self
+
+			//update view when toolbox service updated
+			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
+			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
+			Refresh ();
+
+			filterEntry.Changed += (s, e) => {
+				refilter ();
+			};
 
 			toolboxWidget.SelectedItemChanged += delegate {
 				selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
 				toolboxService.SelectItem (selectedNode);
 			};
-			this.toolboxWidget.DragBegin += delegate(object sender, Gtk.DragBeginArgs e) {
-				
+
+			collectionView.DragBegin += (object sender, EventArgs e) => {
 				if (this.toolboxWidget.SelectedItem != null) {
 					this.toolboxWidget.HideTooltipWindow ();
-					toolboxService.DragSelectedItem (this.toolboxWidget, e.Context);
+					DragBegin?.Invoke (this, e);
 				}
 			};
+
 			this.toolboxWidget.ActivateSelectedItem += delegate {
 				toolboxService.UseSelectedItem ();
 			};
-			
-			fontChanger = new MonoDevelop.Ide.Gui.PadFontChanger (toolboxWidget, toolboxWidget.SetCustomFont, toolboxWidget.QueueResize);
-			
+
 			this.toolboxWidget.DoPopupMenu = ShowPopup;
-			scrolledWindow = new MonoDevelop.Components.CompactScrolledWindow ();
-			base.PackEnd (scrolledWindow, true, true, 0);
-			base.FocusChain = new Gtk.Widget [] { scrolledWindow };
-			
-			//Initialise self
-			scrolledWindow.ShadowType = ShadowType.None;
-			scrolledWindow.VscrollbarPolicy = PolicyType.Automatic;
-			scrolledWindow.HscrollbarPolicy = PolicyType.Never;
-			scrolledWindow.WidthRequest = 150;
-			scrolledWindow.Add (this.toolboxWidget);
-			
-			//update view when toolbox service updated
-			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
-			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
-			Refresh ();
-			
+
 			//set initial state
 			this.toolboxWidget.ShowCategories = catToggleButton.Active = true;
 			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
 			this.toolboxWidget.IsListMode  = !compactModeToggleButton.Active;
-			this.ShowAll ();
 		}
-		
+
+		public override void SetFrameSize (CGSize newSize)
+		{
+			toolboxWidget.QueueResize ();
+			base.SetFrameSize (newSize);
+		}
+
 		#region Toolbar event handlers
-		
+
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
-			this.toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-			MonoDevelop.Core.PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
+			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
+
+			PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 
 			if (compactModeToggleButton.Active) {
-				compactModeToggleButton.Accessible.SetLabel (GettextCatalog.GetString ("Full Layout"));
-				compactModeToggleButton.Accessible.Description = GettextCatalog.GetString ("Toggle for toolbox to use full layout");
+				compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Full Layout");
+				compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use full layout");
 			} else {
-				compactModeToggleButton.Accessible.SetLabel (GettextCatalog.GetString ("Compact Layout"));
-				compactModeToggleButton.Accessible.Description = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
+				compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout"); ;
+				compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
 			}
 		}
-		
+
 		void toggleCategorisation (object sender, EventArgs e)
 		{
 			this.toolboxWidget.ShowCategories = catToggleButton.Active;
 			if (catToggleButton.Active) {
-				catToggleButton.Accessible.SetLabel (GettextCatalog.GetString ("Hide Categories"));
-				catToggleButton.Accessible.Description = GettextCatalog.GetString ("Toggle to hide toolbox categories");
+				catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Hide Categories");
+				catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to hide toolbox categories");
 			} else {
-				catToggleButton.Accessible.SetLabel (GettextCatalog.GetString ("Show Categories"));
-				catToggleButton.Accessible.Description = GettextCatalog.GetString ("Toggle to show toolbox categories");
+				catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Show Categories");
+				catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show toolbox categories");
 			}
 		}
 		
@@ -195,7 +224,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (ToolboxWidgetCategory cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
 				foreach (ToolboxWidgetItem child in cat.Items) {
-					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.Entry.Text);
+					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.Text);
 					hasVisibleChild |= child.IsVisible;
 				}
 				cat.IsVisible = hasVisibleChild;
@@ -215,9 +244,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return;
 			CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
 			if (evt != null) {
-				IdeApp.CommandService.ShowContextMenu (toolboxWidget, evt, eset, this);
+				IdeApp.CommandService.ShowContextMenu ((NSView) toolboxWidget, evt, eset, this);
 			} else {
-				IdeApp.CommandService.ShowContextMenu (toolboxWidget, Allocation.Left, Allocation.Top, eset, this);
+				//IdeApp.CommandService.ShowContextMenu (toolboxWidget, (int) Frame.Left, (int)Frame.Top, eset, this);
 			}
 		}
 
@@ -239,16 +268,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 		
 		static readonly string GtkWidgetDomain = GettextCatalog.GetString ("GTK# Widgets");
-		
+
 		#endregion
-		
+
 		#region GUI population
-		
+
 		Dictionary<string, ToolboxWidgetCategory> categories = new Dictionary<string, ToolboxWidgetCategory> ();
 		void AddItems (IEnumerable<ItemToolboxNode> nodes)
 		{
-			foreach (ItemToolboxNode itbn in nodes) {
+			foreach (var itbn in nodes) {
 				var newItem = new ToolboxWidgetItem (itbn);
+
+
 				if (!categories.ContainsKey (itbn.Category)) {
 					var cat = new ToolboxWidgetCategory (itbn.Category);
 					int prio;
@@ -261,7 +292,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					categories[itbn.Category].Add (newItem);
 			}
 		}
-		
+
+
 		public void Refresh ()
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
@@ -277,13 +309,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.CustomMessage = null;
 			
 			categories.Clear ();
+
 			AddItems (toolboxService.GetCurrentToolboxItems ());
-			
-			Drag.SourceUnset (toolboxWidget);
+
+			DragSourceUnset?.Invoke (this, EventArgs.Empty);
 			toolboxWidget.ClearCategories ();
-			
+
 			var cats = categories.Values.ToList ();
-			cats.Sort ((a,b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
+			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
 			cats.Reverse ();
 			foreach (ToolboxWidgetCategory category in cats) {
 				category.IsExpanded = true;
@@ -292,11 +325,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.QueueResize ();
 			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
-				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+				DragSourceSet?.Invoke (this, targetTable); // Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 			refilter ();
 		}
-		
+			
 		void ConfigureToolbar ()
 		{
 			// Default configuration
@@ -305,16 +338,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			toolboxService.Customize (container, this);
 		}
-		
-		protected override void OnDestroyed ()
+
+		protected override void Dispose (bool disposing)
 		{
+			catToggleButton.Activated -= toggleCategorisation;
+			compactModeToggleButton.Activated -= ToggleCompactMode;
+			toolboxAddButton.Activated -= toolboxAddButton_Clicked;
+
 			if (fontChanger != null) {
 				fontChanger.Dispose ();
 				fontChanger = null;
 			}
-			base.OnDestroyed ();
+			base.Dispose (disposing);
 		}
-		
+
 		#endregion
 		
 		#region IPropertyPadProvider
