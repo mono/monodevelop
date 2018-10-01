@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -81,9 +82,9 @@ namespace MonoDevelop.DotNetCore
 			if (requiredSdkversion == "2.2") {
 				return versions.Any (IsNetCoreSdk22);
 			} else if (requiredSdkversion == "2.1") {
-				return versions.Any (IsNetCoreSdk21);
+				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ();
 			} else if (requiredSdkversion == "2.0") {
-				return versions.Any (IsNetCoreSdk20);
+				return versions.Any (IsNetCoreSdk20) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ();
 			}
 
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
