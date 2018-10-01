@@ -72,6 +72,8 @@ namespace MonoDevelop.Projects
 
 			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
 
+			await FileWatcherService.Add (solution);
+
 			return project;
 		}
 
@@ -486,6 +488,26 @@ namespace MonoDevelop.Projects
 			var cssFilePath = WriteFile (wwwrootDirectory, "site.css");
 
 			await AssertFileAddedToProject (fileAdded, cssFilePath, "Content");
+		}
+
+		/// <summary>
+		/// File watcher service is being used which will monitor other directories, such as the solution directory,
+		/// so check that the project does not add files that are created externally outside the project directory.
+		/// </summary>
+		[Test]
+		public async Task FileCreatedOutsideProjectDirectory_FileNotAddedToProject ()
+		{
+			await OpenProject ();
+
+			// Create a file outside the project directory.
+			var fileAdded = WaitForSingleFileAdded (project);
+			var fileOutsideProjectDirectory = WriteFile (project.ParentSolution.BaseDirectory, "OutsideProjectInSolutionDirectory.cs");
+
+			var csharpFilePath = WriteFile (project.BaseDirectory, "CSharpFile.cs");
+			await AssertFileAddedToProject (fileAdded, csharpFilePath, "Compile");
+
+			Assert.IsTrue (project.Files.Any (file => file.FilePath == csharpFilePath), $"File not added to project '{csharpFilePath}'");
+			Assert.IsFalse (project.Files.Any (file => file.FilePath == fileOutsideProjectDirectory), $"File not removed from project '{fileOutsideProjectDirectory}'");
 		}
 	}
 }
