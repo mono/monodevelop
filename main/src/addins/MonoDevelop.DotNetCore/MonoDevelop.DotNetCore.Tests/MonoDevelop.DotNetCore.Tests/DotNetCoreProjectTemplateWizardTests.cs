@@ -121,7 +121,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters ("NetStandard");
 			DotNetCoreRuntimesInstalled (new string[0]);
-			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version ("5.1.99");
+			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version ("5.4.0");
 
 			int pages = wizard.TotalPages;
 
@@ -131,20 +131,21 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (WizardHasParameter ("UseNetCore20"));
 			Assert.IsFalse (WizardHasParameter ("UseNetCore1x"));
 			Assert.IsFalse (WizardHasParameter ("framework"));
-			Assert.AreEqual (".NETStandard,Version=v1.6", wizard.TargetFrameworks [0].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.5", wizard.TargetFrameworks [1].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.4", wizard.TargetFrameworks [2].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.3", wizard.TargetFrameworks [3].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.2", wizard.TargetFrameworks [4].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.1", wizard.TargetFrameworks [5].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.0", wizard.TargetFrameworks [6].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v2.0", wizard.TargetFrameworks [0].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.6", wizard.TargetFrameworks [1].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.5", wizard.TargetFrameworks [2].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.4", wizard.TargetFrameworks [3].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.3", wizard.TargetFrameworks [4].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.2", wizard.TargetFrameworks [5].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.1", wizard.TargetFrameworks [6].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.0", wizard.TargetFrameworks [7].Id.ToString ());
 
 			var page = wizard.GetPage (1);
-			Assert.AreEqual ("netstandard1.6", wizard.Parameters ["Framework"]);
+			Assert.AreEqual ("netstandard2.0", wizard.Parameters ["Framework"]);
 			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
 			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
-			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
-			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 		}
 
 		/// <summary>
@@ -156,18 +157,19 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters ("NetStandard;FSharpNetStandard");
 			DotNetCoreRuntimesInstalled (new string[0]);
-			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version ("4.8.0");
+			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version ("5.16.0");
 
 			int pages = wizard.TotalPages;
 
-			Assert.AreEqual (0, pages);
+			Assert.AreEqual (1, pages);
 			Assert.IsFalse (WizardHasParameter ("UseNetStandard20"));
-			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
 			Assert.IsFalse (WizardHasParameter ("UseNetCore20"));
 			Assert.IsFalse (WizardHasParameter ("UseNetCore1x"));
 			Assert.IsFalse (WizardHasParameter ("framework"));
-			Assert.AreEqual (".NETStandard,Version=v1.6", wizard.TargetFrameworks [0].Id.ToString ());
-			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+			Assert.AreEqual (".NETStandard,Version=v2.0", wizard.TargetFrameworks [0].Id.ToString ());
+			Assert.AreEqual (".NETStandard,Version=v1.6", wizard.TargetFrameworks [1].Id.ToString ());
+			Assert.AreEqual (2, wizard.TargetFrameworks.Count);
 		}
 
 		[Test]
