@@ -35,12 +35,12 @@ namespace MonoDevelop.DotNetCore.Tests
 	{
 		static string[] netStandardVersions = { "2.0", "1.6", "1.5", "1.4", "1.3", "1.2", "1.1", "1.0" };
 
-		[TestCase ("5.2.0", "2.0", "2.0.5")]
-		[TestCase ("5.1.99", "1.6", new string[0])]
-		[TestCase ("5.2.0", "2.0", new string[0])]
+		[TestCase ("5.4.0", "2.0", "2.0.5")]
+		[TestCase ("5.3.99", "1.6", new string[0])]
+		[TestCase ("5.4.0", "2.0", new string[0])]
 		[TestCase ("4.8.0", "1.6", "1.1")]
 		[TestCase ("4.8.0", "2.0", "2.2.0")]
-		[TestCase ("5.1.1", "2.0", "2.1.0")]
+		[TestCase ("5.3.1", "2.0", "2.1.0")]
 		[TestCase ("5.16.0", "2.0", "1.1")]
 		public void GetNetStandardTargetFrameworks_MonoAndSdkInstalled (string monoVersion, string maxNetStandardVersion, params string[] sdkVersions)
 		{
