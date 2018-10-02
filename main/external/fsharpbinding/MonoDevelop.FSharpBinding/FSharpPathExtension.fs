@@ -132,7 +132,7 @@ type FSharpPathExtension() as x =
         match x.DocumentContext.Project with
         | null -> ()
         | project when project.ParentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution ->
-            match project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) with
+            match project.ParentSolution.GetConfiguration (CompilerArguments.Project.getCurrentConfigurationOrDefault project) with
             | null -> ()
             | conf when not (conf.BuildEnabledForItem (project)) -> resetOwnerProject ()
             | _ -> ()
@@ -149,7 +149,7 @@ type FSharpPathExtension() as x =
             let sameParentSlnAndBuilt =
                 ownerProjects
                 |> Seq.filter (fun p -> let solutionMatch = p.ParentSolution = solution
-                                        let config = p.ParentSolution.GetConfiguration(IdeApp.Workspace.ActiveConfiguration)
+                                        let config = p.ParentSolution.GetConfiguration(CompilerArguments.Project.getCurrentConfigurationOrDefault p)
                                         let buildEnabled = config.BuildEnabledForItem(p)
                                         solutionMatch && buildEnabled && p.LanguageName = "F#")
 
