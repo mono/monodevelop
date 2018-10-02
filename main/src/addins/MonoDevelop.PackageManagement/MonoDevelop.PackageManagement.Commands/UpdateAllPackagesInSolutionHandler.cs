@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
+			info.Enabled = CanUpdatePackagesForSelectedDotNetProjectOrSolution ();
 		}
 	}
 }
