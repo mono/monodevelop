@@ -98,5 +98,27 @@ namespace MonoDevelop.PackageManagement.Commands
 			}
 			return IdeApp.ProjectOperations.CurrentSelectedSolution;
 		}
+
+		protected bool CanUpdatePackagesForSelectedDotNetProject ()
+		{
+			DotNetProject project = GetSelectedDotNetProject ();
+			return project?.CanUpdatePackages () == true;
+		}
+
+		bool CanUpdatePackagesForSelectedDotNetSolution ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			return solution?.CanUpdatePackages () == true;
+		}
+
+		protected bool CanUpdatePackagesForSelectedDotNetProjectOrSolution ()
+		{
+			if (IsDotNetProjectSelected ()) {
+				return CanUpdatePackagesForSelectedDotNetProject ();
+			} else if (IsDotNetSolutionSelected ()) {
+				return CanUpdatePackagesForSelectedDotNetSolution ();
+			}
+			return false;
+		}
 	}
 }

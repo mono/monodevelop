@@ -25,10 +25,14 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -383,6 +387,105 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (2, projects.Count);
 			Assert.That (projects, Contains.Item (referencingProject1));
 			Assert.That (projects, Contains.Item (referencingProject2));
+		}
+
+		[Test]
+		public void CanUpdatePackages_HasPackages_PackagesConfigFile ()
+		{
+			var csharpProject = Services.ProjectService.CreateProject ("C#") as DotNetProject;
+			FilePath directory = Util.TmpDir;
+			csharpProject.FileName = directory.Combine ("CanUpdatePackagesProject.csproj");
+
+			// No packages.config file. Cannot update.
+			bool canUpdate = csharpProject.CanUpdatePackages ();
+			bool hasPackages = csharpProject.HasPackages ();
+			Assert.IsFalse (canUpdate);
+			Assert.IsFalse (hasPackages);
+
+			// Create packages.config file.
+			var packagesConfigFile = directory.Combine ("packages.config");
+			AddExistingFile (packagesConfigFile);
+
+			// packages.config file exists. Can update.
+			canUpdate = csharpProject.CanUpdatePackages ();
+			hasPackages = csharpProject.HasPackages ();
+			Assert.IsTrue (canUpdate);
+			Assert.IsTrue (hasPackages);
+		}
+
+		[Test]
+		public void CanUpdatePackages_HasPackages_NuGetAwareProject ()
+		{
+			var nugetAwareProject = new FakeNuGetAwareProject ();
+
+			// No packages.
+			bool canUpdate = nugetAwareProject.CanUpdatePackages ();
+			bool hasPackages = nugetAwareProject.HasPackages ();
+			Assert.IsFalse (canUpdate);
+			Assert.IsFalse (hasPackages);
+
+			// Project has packages.
+			nugetAwareProject.HasPackagesReturnValue = true;
+
+			canUpdate = nugetAwareProject.CanUpdatePackages ();
+			hasPackages = nugetAwareProject.HasPackages ();
+			Assert.IsTrue (canUpdate);
+			Assert.IsTrue (hasPackages);
+		}
+
+		[Test]
+		public void CanUpdatePackages_HasPackages_PackageReference ()
+		{
+			var csharpProject = Services.ProjectService.CreateProject ("C#") as DotNetProject;
+			FilePath directory = Util.TmpDir;
+			csharpProject.FileName = directory.Combine ("CanUpdatePackagesProject.csproj");
+
+			// No package references.
+			bool canUpdate = csharpProject.CanUpdatePackages ();
+			bool hasPackages = csharpProject.HasPackages ();
+			Assert.IsFalse (canUpdate);
+			Assert.IsFalse (hasPackages);
+
+			// One package reference.
+			var packageReference = ProjectPackageReference.Create ("Test", "1.0");
+			csharpProject.Items.Add (packageReference);
+			canUpdate = csharpProject.CanUpdatePackages ();
+			hasPackages = csharpProject.HasPackages ();
+			Assert.IsTrue (canUpdate);
+			Assert.IsTrue (hasPackages);
+		}
+
+		[Test]
+		public async Task CanUpdatePackages_HasPackages_PackageReferenceFromDirectoryProps ()
+		{
+			var csharpProject = Services.ProjectService.CreateProject ("C#") as DotNetProject;
+			FilePath directory = Util.CreateTmpDir ("DirectoryPropsTest");
+			csharpProject.FileName = directory.Combine ("TestProject.csproj");
+
+			var buildPropsFileName = csharpProject.BaseDirectory.Combine ("Build.props");
+			string xml =
+				"<Project>\n" +
+				"  <ItemGroup>\n" +
+				"    <PackageReference Include=\"Newtonsoft.Json\" Version=\"8.0.1\" />\n" +
+				"  </ItemGroup>\n" +
+				"</Project>";
+			File.WriteAllText (buildPropsFileName, xml);
+
+			csharpProject.AddImportIfMissing ("Build.props", null);
+			await csharpProject.SaveAsync (Util.GetMonitor ());
+			await csharpProject.MSBuildProject.EvaluateAsync ();
+
+			// No package references in project. One imported.
+			bool canUpdate = csharpProject.CanUpdatePackages ();
+			bool hasPackages = csharpProject.HasPackages ();
+			Assert.IsFalse (canUpdate);
+			Assert.IsTrue (hasPackages);
+
+			// One package reference.
+			var packageReference = ProjectPackageReference.Create ("Test", "1.0");
+			csharpProject.Items.Add (packageReference);
+			canUpdate = csharpProject.CanUpdatePackages ();
+			Assert.IsTrue (canUpdate);
 		}
 	}
 }

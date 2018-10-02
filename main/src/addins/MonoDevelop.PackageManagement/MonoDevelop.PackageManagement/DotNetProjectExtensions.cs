@@ -314,5 +314,14 @@ namespace MonoDevelop.PackageManagement
 			return projectReference.ReferenceType == ReferenceType.Project &&
 				projectReference.ReferenceOutputAssembly;
 		}
+
+		public static bool CanUpdatePackages (this DotNetProject project)
+		{
+			var nugetAwareProject = project as INuGetAwareProject;
+			if (nugetAwareProject != null)
+				return nugetAwareProject.HasPackages ();
+
+			return HasPackages (project.BaseDirectory, project.Name) || project.Items.OfType<ProjectPackageReference> ().Any ();
+		}
 	}
 }
