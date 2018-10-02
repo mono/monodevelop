@@ -45,6 +45,7 @@ using Microsoft.CodeAnalysis.ExtractMethod;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.CSharp.Completion.Provider
 {
@@ -368,14 +369,12 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		public override async Task<CompletionChange> GetChangeAsync (Document doc, CompletionItem item, char? commitKey = default (char?), CancellationToken cancellationToken = default (CancellationToken))
 		{
 			(string beforeText, string afterText, string newMethod) = await GetInsertText (item.Properties);
-
 			TextChange change;
-			if (newMethod != null) {
+			if (newMethod != null && CompletionWindowManager.IsVisible) { // check for completion window manager to prevent the insertion cursor popup when the changes are queried by code diagnostics.
 				change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), item.Properties [MethodNameKey] + ";");
 				var semanticModel = await doc.GetSemanticModelAsync (cancellationToken);
 				if (!doc.IsOpen () || await doc.IsForkedDocumentWithSyntaxChangesAsync (cancellationToken))
 					return CompletionChange.Create (change);
-
 				await Runtime.RunInMainThread (delegate {
 					var document = IdeApp.Workbench.ActiveDocument;
 					var editor = document.Editor;
@@ -404,7 +403,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			}
 			change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), beforeText + afterText);
 
-			return CompletionChange.Create (change, item.Span.Start + beforeText.Length);
+			return CompletionChange.Create (change, item.Span.Start + (beforeText != null ? beforeText.Length : 0));
 		}
 
 		protected override async Task<TextChange?> GetTextChangeAsync (CompletionItem selectedItem, char? ch, CancellationToken cancellationToken)
@@ -418,6 +417,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			string thisLineIndent = null;
 			string oneIndent = null;
 			string eol = null;
+
 			await Runtime.RunInMainThread (delegate {
 				var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
 				var indentationTracker = editor?.IndentationTracker;
