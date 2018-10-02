@@ -24,6 +24,9 @@ type FSharpProjectNodeCommandHandler() =
         monitor.Step (1)
         monitor.EndTask()
 
+    let fileIsInFSharpProject (file: ProjectFile) =
+        file.Project.SupportedLanguages |> Array.contains "F#"
+
     let rec moveNodeInXDoc (xdoc:XElement) (moveToNode: ProjectFile) (movingNode:ProjectFile) position isNested =
         let descendantsNamed ns name ancestor =
             ///partially apply the default namespace of msbuild to xs
@@ -109,15 +112,17 @@ type FSharpProjectNodeCommandHandler() =
     override x.CanDragNode() = DragOperation.Move
 
     /// Implement drag and drop of nodes in F# projects in the solution explorer.
-    override x.CanDropNode(_dataObject, _dragOperation) = true
-
-    /// Implement drag and drop of nodes in F# projects in the solution explorer.
-    override x.CanDropNode(dataObject, _dragOperation, _position) =
+    override x.CanDropNode(dataObject, _dragOperation) =
         //currently we are going to only support dropping project files from the same parent project
         match (dataObject, x.CurrentNode.DataItem) with
-        | (:? ProjectFile as drag), (:? ProjectFile as drop) ->
+        | (:? ProjectFile as drag), (:? ProjectFile as drop) when fileIsInFSharpProject drag && fileIsInFSharpProject drop ->
+          drag <> drop &&
           drag.Project = drop.Project && drop.ProjectVirtualPath.ParentDirectory = drag.ProjectVirtualPath.ParentDirectory
         | _ -> false
+
+    /// Implement drag and drop of nodes in F# projects in the solution explorer.
+    override x.CanDropNode(dataObject, dragOperation, _position) =
+        x.CanDropNode(dataObject, dragOperation)
   //This would allow anything to be droppped as long as it was in the same project and path level
   //We would need to add to moveNodes so it knows how to find ProvectFolders and other items that mught be present
   //      | drag, drop ->
