@@ -29,6 +29,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.DotNetCore.Templating;
 using MonoDevelop.Ide.Templates;
 using NUnit.Framework;
+using System;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -120,6 +121,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters ("NetStandard");
 			DotNetCoreRuntimesInstalled (new string[0]);
+			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version ("5.1.99");
 
 			int pages = wizard.TotalPages;
 
@@ -154,6 +156,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			CreateWizard ();
 			AddSupportedParameters ("NetStandard;FSharpNetStandard");
 			DotNetCoreRuntimesInstalled (new string[0]);
+			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version ("4.8.0");
 
 			int pages = wizard.TotalPages;
 
