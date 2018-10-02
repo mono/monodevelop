@@ -82,9 +82,9 @@ namespace MonoDevelop.DotNetCore
 			if (requiredSdkversion == "2.2") {
 				return versions.Any (IsNetCoreSdk22);
 			} else if (requiredSdkversion == "2.1") {
-				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ();
+				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
 			} else if (requiredSdkversion == "2.0") {
-				return versions.Any (IsNetCoreSdk20) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ();
+				return versions.Any (IsNetCoreSdk20) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
 			}
 
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
@@ -92,7 +92,7 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		/// <summary>
-		/// 2.2.100 is the lowest version that supports .NET Core 2.2 projects.
+		/// 2.2 is the lowest version that supports .NET Core 2.2 projects.
 		/// </summary>
 		static bool IsNetCoreSdk22 (DotNetCoreVersion version)
 		{

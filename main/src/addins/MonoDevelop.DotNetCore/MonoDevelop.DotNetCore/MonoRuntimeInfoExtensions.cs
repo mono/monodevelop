@@ -31,13 +31,19 @@ namespace MonoDevelop.DotNetCore
 {
 	static class MonoRuntimeInfoExtensions
 	{
-		static readonly Version MonoVersion5_2 = new Version (5, 2, 0);
+		static readonly Version MonoVersion5_4 = new Version (5, 4, 0);
+		static readonly Version DotNetCore2_1 = new Version (2, 1);
 
 		internal static Version CurrentRuntimeVersion { get; set; } = MonoRuntimeInfo.FromCurrentRuntime ().RuntimeVersion;
 
 		public static bool SupportsNetStandard20 (this Version monoVersion)
 		{
-			return monoVersion >= MonoVersion5_2;
+			return monoVersion >= MonoVersion5_4;
+		}
+
+		public static bool SupportsNetCore (this Version monoVersion, string netCoreVersion)
+		{
+			return monoVersion >= MonoVersion5_4 && Version.Parse (netCoreVersion) <= DotNetCore2_1;
 		}
 	}
 }
