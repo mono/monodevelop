@@ -411,5 +411,33 @@
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
 		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNetCore.Templating.AspNetCoreFileTemplateCondition" />
 	</Extension>
+	
+	<!-- Publish commands -->
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" 
+				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishCommandHandler"
+				type="array"
+				_label = "Publish" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">		
+		<Condition id="ItemType" value="Project">
+			<ItemSet id = "PublishToFolder" _label = "Publish" autohide="True" insertafter="MonoDevelop.Ide.ArchiveCommands.ViewArchives" >
+				<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+			</ItemSet>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">		
+		<ItemSet id = "PublishToFolder" _label = "Publish" autohide="True" insertafter="MonoDevelop.Ide.ArchiveCommands.ViewArchives" >
+				<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+		</ItemSet>
+	</Extension>
 
+	
 </ExtensionModel>
