@@ -240,7 +240,11 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public CounterMetadata (CounterMetadata original)
 		{
-			this.properties = new Dictionary<string, object> (original.properties);
+			if (original != null) {
+				this.properties = new Dictionary<string, object> (original.properties);
+			} else {
+				this.properties = new Dictionary<string, object> ();
+			}
 		}
 
 		public void AddProperties (CounterMetadata original)
