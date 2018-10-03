@@ -40,8 +40,8 @@
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishCommandHandler.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishCommandItem.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\ProjectPublishProfile.cs" />
-    <Compile Include="ProjectExtensions.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Dialogs\PublishToFolderDialog.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\ProjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
