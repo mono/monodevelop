@@ -3,7 +3,7 @@
 	using MonoDevelop.Core.Serialization;
 
 	[DataItem]
-	sealed public class ProjectPublishProfile
+	public sealed class ProjectPublishProfile
 	{
 		public const string ProjectPublishProfileKey = "PublishProfiles";
 
