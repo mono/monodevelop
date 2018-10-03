@@ -1066,7 +1066,14 @@ namespace MonoDevelop.Ide
 
 		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, ConfigurationSelector configuration, RunConfiguration runConfiguration, bool buildBeforeExecuting)
 		{
-			var metadata = new CounterMetadata ();
+			var metadata = new BuildAndDeployMetadata ();
+
+			if (entry is Solution solution) {
+				var startupProject = solution.StartupItem;
+				metadata.ProjectID = startupProject.ItemId;
+				metadata.ProjectType = startupProject.TypeGuid;
+				metadata.ProjectFlavor = startupProject.TypeGuid;
+			}
 			metadata.SetSuccess ();
 			Counters.BuildAndDeploy.BeginTiming ("Execute", metadata);
 			Counters.TrackingBuildAndDeploy = true;
@@ -1088,12 +1095,19 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (buildBeforeExecuting) {
+				Stopwatch buildTimer = new Stopwatch ();
+				buildTimer.Start ();
+
 				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration)) {
 					metadata.SetFailure ();
 					Counters.TrackingBuildAndDeploy = false;
 					Counters.BuildAndDeploy.EndTiming ();
+					buildTimer.Stop ();
 					return;
 				}
+
+				buildTimer.Stop ();
+				metadata.BuildTime = buildTimer.ElapsedMilliseconds;
 			}
 
 			ProgressMonitor monitor = new ProgressMonitor (cs);
