@@ -29,7 +29,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Ide
 {
-	class IdeVersionInfo : ISystemInformationProvider
+	class IdeVersionInfo : ProductInformationProvider
 	{
 		static bool IsMono ()
 		{
@@ -92,26 +92,9 @@ namespace MonoDevelop.Ide
 
 		}
 
-		public static string GetRuntimeInfo ()
-		{
-			string val;
-			if (IsMono ()) {
-				val = "Mono " + GetMonoVersionNumber ();
-			} else {
-				val = "Microsoft .NET " + Environment.Version;
-			}
+		public override string Title => BrandingService.ApplicationLongName;
 
-			if (IntPtr.Size == 8)
-				val += (" (64-bit)");
-
-			return val;
-		}
-		
-		string ISystemInformationProvider.Title {
-			get { return BrandingService.ApplicationLongName; }
-		}
-
-		string ISystemInformationProvider.Description {
+		public override string Description {
 			get {
 				var sb = new System.Text.StringBuilder ();
 				sb.Append ("Version ");
@@ -120,10 +103,6 @@ namespace MonoDevelop.Ide
 				sb.Append ("Installation UUID: ");
 				sb.AppendLine (SystemInformation.InstallationUuid);
 							
-				sb.AppendLine ("Runtime:");
-				sb.Append ("\t");
-				sb.Append (GetRuntimeInfo ());
-				sb.AppendLine ();
 				sb.Append ("\tGTK+ ");
 				sb.Append (GetGtkVersion ());
 				var gtkTheme = GetGtkTheme ();
@@ -140,8 +119,7 @@ namespace MonoDevelop.Ide
 
 				if (Platform.IsWindows && !IsMono ()) {
 					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
-						Version ver;
-						if (key != null && Version.TryParse (key.GetValue (null) as string, out ver))
+						if (key != null && System.Version.TryParse (key.GetValue (null) as string, out var ver))
 							sb.Append ("\tGTK# ").Append (ver);
 					}
 				}
@@ -176,6 +154,12 @@ namespace MonoDevelop.Ide
 					return BuildInfo.VersionLabel + " (" + v + ")";
 			}
 		}
+
+		public override string Version => BuildInfo.FullVersion;
+
+		public override string ApplicationId => "34937104-97FC-42A0-9159-D951135F72CA";
+
+		protected override FilePath UpdateInfoFile => "./Contents/MacOS/updateinfo";
 	}
 }
 

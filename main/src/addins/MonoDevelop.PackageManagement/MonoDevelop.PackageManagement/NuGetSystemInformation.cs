@@ -43,6 +43,8 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public string Version => GetNuGetVersion ();
+
 		static string GetDescription ()
 		{
 			return GettextCatalog.GetString ("Version: {0}", GetNuGetVersion ());
