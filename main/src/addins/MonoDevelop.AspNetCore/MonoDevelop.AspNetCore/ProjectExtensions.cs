@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonoDevelop.AspNetCore.Commands;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore
 {
-	public static class ProjectExtensions
+	static class ProjectExtensions
 	{
 		public static ProjectPublishProfile [] GetPublishProfiles (this DotNetProject project)
 		{
-			if (project == null || !project.UserProperties.HasValue (ProjectPublishProfile.ProjectPublishProfileKey)) {
-				return new ProjectPublishProfile [0];
-			}
-
-			var profiles = new List<ProjectPublishProfile> ();
-
-			foreach (var item in project.UserProperties.GetValue<ProjectPublishProfile []> (ProjectPublishProfile.ProjectPublishProfileKey)) {
-				profiles.Add (item);
-			}
-
-			return profiles.ToArray ();
+			return project == null || !project.UserProperties.HasValue (ProjectPublishProfile.ProjectPublishProfileKey)
+				? Array.Empty<ProjectPublishProfile> ()
+				: project.UserProperties.GetValue<ProjectPublishProfile []> (ProjectPublishProfile.ProjectPublishProfileKey);
 		}
 
 		public static void AddPublishProfiles (this DotNetProject project, ProjectPublishProfile newEntry)
@@ -33,6 +26,11 @@ namespace MonoDevelop.AspNetCore
 			}
 			profiles.Add (newEntry);
 			project.UserProperties.SetValue<ProjectPublishProfile []> (ProjectPublishProfile.ProjectPublishProfileKey, profiles.ToArray());
+		}
+
+		public static string GetActiveConfiguration (this DotNetProject project)
+		{
+			return project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)?.Name;
 		}
 	}
 }

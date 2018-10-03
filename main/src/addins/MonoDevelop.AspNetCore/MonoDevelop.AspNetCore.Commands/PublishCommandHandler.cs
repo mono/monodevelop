@@ -8,10 +8,12 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNetCore.Dialogs;
+using MonoDevelop.DotNetCore;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
-	public enum Commands
+	enum Commands
 	{
 		PublishToFolder
 	}
@@ -39,27 +41,27 @@ namespace MonoDevelop.AspNetCore.Commands
 			}
 
 			foreach (var profile in profiles) {
-				info.Add (GettextCatalog.GetString ("Publish to ") + profile.Name + " - " + GettextCatalog.GetString ("Folder"), new PublishCommandItem (project, profile));
+				info.Add (GettextCatalog.GetString ("Publish to {0} - Folder", profile.Name), new PublishCommandItem (project, profile));
 			}
 		}
 
 		protected override async void Run (object dataItem)
 		{
-			if (dataItem is PublishCommandItem publishCommandItem) {
+			if (!(dataItem is PublishCommandItem publishCommandItem))
+				return;
 
-				try {
-					if (publishCommandItem.Profile != null) {
-						await Publish (publishCommandItem);
-					} else {
-						dialog = new PublishToFolderDialog (publishCommandItem);
-						dialog.PublishToFolderRequested += Dialog_PublishToFolderRequested;
-						if (dialog.Run () == Xwt.Command.Close) {
-							CloseDialog ();
-						}
+			try {
+				if (publishCommandItem.Profile != null) {
+					await Publish (publishCommandItem);
+				} else {
+					dialog = new PublishToFolderDialog (publishCommandItem);
+					dialog.PublishToFolderRequested += Dialog_PublishToFolderRequested;
+					if (dialog.Run () == Xwt.Command.Close) {
+						CloseDialog ();
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Failed to publish project", ex);
 				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to publish project", ex);
 			}
 		}
 
@@ -73,34 +75,62 @@ namespace MonoDevelop.AspNetCore.Commands
 			dialog.Dispose ();
 		}
 
-		async void Dialog_PublishToFolderRequested (object sender, PublishCommandItem item) => await Publish (item);
+		async void Dialog_PublishToFolderRequested (object sender, PublishCommandItem item)
+		{
+			try {
+				await Publish (item);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to publish project", ex);
+			}
+		}
+
+		string BuildArgs (PublishCommandItem item)
+		{
+			var config = string.Empty;
+			if (item.Project.GetActiveConfiguration () != null)
+				config = $"--configuration {item.Project.GetActiveConfiguration ()}";
+
+			return $"publish {config} --output {item.Profile.FileName}";
+		}
 
 		public async Task Publish (PublishCommandItem item)
 		{
-			var currentConfig = item.Project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).Name;
 			using (var progressMonitor = CreateProgressMonitor ()) {
-				var dotnetPath = new DotNetCore.DotNetCorePath ().FileName;
-				progressMonitor.BeginTask ("dotnet restore", 1);
-				var proc = Runtime.ProcessService.StartConsoleProcess (
-					dotnetPath,
-					$"publish --configuration {currentConfig} --output {item.Profile.FileName}",
-					item.Project.BaseDirectory, 
-					consoleMonitor.Console);
-
-				await proc.Task;
-
-				if (proc.ExitCode != 0) {
-					progressMonitor.ReportError ($"dotnet publish returned {proc.ExitCode}");
-					LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.FileName}': {proc.ExitCode}");
-				} else {
-					DesktopService.OpenFolder (item.Profile.FileName);
-					if (!item.IsReentrant)
-						item.Project.AddPublishProfiles (item.Profile);
-					if (dialog != null) {
-						CloseDialog ();
+				try {
+					var dotnetPath = DotNetCoreRuntime.FileName;
+					if (!System.IO.File.Exists (dotnetPath)) {
+						progressMonitor.ReportError (GettextCatalog.GetString ("dotnet not found at {0}", dotnetPath));
+						return;
 					}
+					progressMonitor.BeginTask ("dotnet publish", 1);
+					var process = Runtime.ProcessService.StartConsoleProcess (
+						dotnetPath,
+						BuildArgs (item),
+						item.Project.BaseDirectory,
+						consoleMonitor.Console);
+
+					using (progressMonitor.CancellationToken.Register (process.Cancel)) {
+						await process.Task;
+					}
+
+					if (!progressMonitor.CancellationToken.IsCancellationRequested) {
+						if (process.ExitCode != 0) {
+							progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
+							LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.FileName}': {process.ExitCode}");
+						} else {
+							DesktopService.OpenFolder (item.Profile.FileName);
+							if (!item.IsReentrant)
+								item.Project.AddPublishProfiles (item.Profile);
+						}
+					}
+					CloseDialog ();
+					progressMonitor.EndTask ();
+				} catch (OperationCanceledException) {
+					throw;
+				} catch (Exception ex) {
+					progressMonitor.Log.WriteLine (ex.Message);
+					LoggingService.LogError ("Failed to exexute dotnet publish.", ex);
 				}
-				progressMonitor.EndTask ();
 			}
 		}
 
@@ -112,36 +142,24 @@ namespace MonoDevelop.AspNetCore.Commands
 				Stock.Console,
 				bringToFront: false,
 				allowMonitorReuse: true);
+
 			var pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
-			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+
+			var mon = new AggregatedProgressMonitor (consoleMonitor);
+			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				GettextCatalog.GetString ("Publishing to folder..."),
 				Stock.CopyIcon,
 				showErrorDialogs: true,
 				showTaskTitle: false,
 				lockGui: false,
 				statusSourcePad: pad,
-				showCancelButton: true);
+				showCancelButton: true));
+			return mon; 
 		}
 
 		static bool ProjectSupportsAzurePublishing (DotNetProject project)
 		{
-			return IsWebProject (project) || IsFunctionsProject (project);
-		}
-
-		internal static bool IsWebProject (DotNetProject project)
-		{
-			if (project == null)
-				return false;
-
-			return project.MSBuildProject.EvaluatedItems.Where (i => i.Include == "Web" && i.Name == "ProjectCapability").Any ();
-		}
-
-		internal static bool IsFunctionsProject (DotNetProject project)
-		{
-			if (project == null)
-				return false;
-
-			return project.MSBuildProject.EvaluatedItems.Where (i => i.Include == "AzureFunctions" && i.Name == "ProjectCapability").Any ();
+			return project != null && project.GetProjectCapabilities ().Any (i => i == "Web" || i == "AzureFunctions");
 		}
 	}
 }
