@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide
 		internal static Counter<CompletionStatisticsMetadata> CodeCompletionStats = InstrumentationService.CreateCounter<CompletionStatisticsMetadata> ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
 		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
 		internal static bool TrackingBuildAndDeploy;
-		internal static TimerCounter<CounterMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<CounterMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
+		internal static TimerCounter<BuildAndDeployMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<BuildAndDeployMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 		internal static Counter<PlatformMemoryMetadata> MemoryPressure = InstrumentationService.CreateCounter<PlatformMemoryMetadata> ("Memory Pressure", "IDE", id: "Ide.MemoryPressure");
 
 		internal static Counter<UnhandledExceptionMetadata> UnhandledExceptions = InstrumentationService.CreateCounter<UnhandledExceptionMetadata> ("Unhandled Exceptions", "IDE", id: "Ide.UnhandledExceptions");
@@ -175,6 +175,29 @@ namespace MonoDevelop.Ide
 	{
 		public System.Exception Exception {
 			get => GetProperty<System.Exception> ();
+			set => SetProperty (value);
+		}
+	}
+
+	class BuildAndDeployMetadata : CounterMetadata
+	{
+		public string ProjectID {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectType {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public string ProjectFlavor {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
+		public long BuildTime {
+			get => GetProperty<long> ();
 			set => SetProperty (value);
 		}
 	}
