@@ -62,8 +62,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			};
 			PathEntry = new TextEntry {
 				Name = "PathEntry",
-				Text = Path.Combine (publishCommandItem.Project.BaseDirectory, "bin",
-						publishCommandItem.Project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).Name)
+				Text = publishCommandItem.Project.GetActiveConfiguration () == null
+				? Path.Combine (publishCommandItem.Project.BaseDirectory, "bin")
+				: Path.Combine (publishCommandItem.Project.BaseDirectory, "bin", publishCommandItem.Project.GetActiveConfiguration ())
 			};
 			PathEntry.LostFocus += (sender, e) => {
 				PublishButton.Sensitive = !string.IsNullOrEmpty (PathEntry.Text);
@@ -90,6 +91,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				publishCommandItem.Profile = new ProjectPublishProfile (publishCommandItem.Project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).Name, PathEntry.Text);
 				PublishToFolderRequested?.Invoke (this, publishCommandItem);
 				PublishButton.Sensitive = false;
+				return;
 			}
 
 			base.OnCommandActivated (cmd);
@@ -103,6 +105,13 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			};
 			fileDialog.Run ();
 			PathEntry.Text = fileDialog.SelectedFile;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			BrowseButton.Clicked -= BrowseButton_Clicked;
+
+			base.Dispose (disposing);
 		}
 	}
 }
