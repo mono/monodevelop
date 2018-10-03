@@ -424,7 +424,7 @@ namespace MonoDevelop.MacIntegration
 				return;
 			var m = NSApplication.SharedApplication.MainMenu;
 			if (m != null) {
-				foreach (NSMenuItem item in m.ItemArray ()) {
+				foreach (NSMenuItem item in m.Items) {
 					var submenu = item.Submenu as MDMenu;
 					if (submenu != null && submenu.FlashIfContainsCommand (args.CommandId))
 						return;
