@@ -50,5 +50,7 @@ namespace MonoDevelop.Ide.Desktop
 		PlatformHardDriveMediaType HardDriveOsMediaType { get; }
 		int CpuCoresCount { get; }
 		int CpuThreadCount { get; }
+
+		bool TrySampleHostCpuLoad (out double value);
 	}
 }

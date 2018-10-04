@@ -222,5 +222,10 @@ namespace MacPlatform
 
 		[DllImport ("libc")]
 		extern static IntPtr getlastlogxbyname (string name, ref LastLogX ll);
+
+		public bool TrySampleHostCpuLoad (out double value)
+		{
+			return KernelInterop.TrySampleHostCpu (out value);
+		}
 	}
 }
