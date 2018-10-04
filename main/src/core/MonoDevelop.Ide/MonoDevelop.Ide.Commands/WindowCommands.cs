@@ -374,16 +374,18 @@ namespace MonoDevelop.Ide.Commands
 				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextDocument : WindowCommands.PrevDocument);
 				return;
 			}
-			
-			var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
-				?? IdeApp.Workbench.RootWindow;
 
-			bool hasContent;
-			var sw = new DocumentSwitcher (toplevel, next, out hasContent);
-			if (hasContent) {
-				sw.Present ();
-			} else {
-				sw.Destroy ();
+			if (!DesktopService.IsModalDialogRunning ()) {
+				var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
+					?? IdeApp.Workbench.RootWindow;
+
+				bool hasContent;
+				var sw = new DocumentSwitcher (toplevel, next, out hasContent);
+				if (hasContent) {
+					sw.Present ();
+				} else {
+					sw.Destroy ();
+				}
 			}
 		}
 
