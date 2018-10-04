@@ -110,7 +110,7 @@ namespace MacPlatform
 
 		public PlatformHardDriveMediaType HardDriveOsMediaType => osType;
 
-		public int CpuCoreCount => coreCount;
+		public int CpuCoresCount => coreCount;
 
 		public int CpuThreadCount => threadCount;
 
