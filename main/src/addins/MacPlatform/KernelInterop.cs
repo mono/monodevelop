@@ -97,7 +97,9 @@ namespace MacPlatform
 		#region Host CPU load
 		unsafe struct host_load_info
 		{
-			public fixed int avenrun[3];
+			public int avenrun_5;
+			public int avenrun_30;
+			public int avenrun_60;
 			public fixed int mach_factor[3];
 		}
 
@@ -125,9 +127,7 @@ namespace MacPlatform
 				return false;
 			}
 
-			unsafe {
-				percentLast5 = (double)loadInfo.avenrun [0] / 1000;
-			}
+			percentLast5 = (double)loadInfo.avenrun_5 / 1000;
 			return true;
 		}
 		#endregion
