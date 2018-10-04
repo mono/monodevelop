@@ -599,9 +599,15 @@ namespace MonoDevelop.Ide.Desktop
 		}
 
 		internal virtual MemoryMonitor CreateMemoryMonitor () => new NullMemoryMonitor ();
+		internal virtual ThermalMonitor CreateThermalMonitor () => new NullThermalMonitor ();
 
 		internal class NullMemoryMonitor : MemoryMonitor
 		{
+		}
+
+		internal class NullThermalMonitor : ThermalMonitor
+		{
+
 		}
 	}
 }

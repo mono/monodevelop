@@ -75,12 +75,20 @@ namespace MonoDevelop.Ide
 			MemoryMonitor = platformService.CreateMemoryMonitor ();
 			MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
 
+			ThermalMonitor = platformService.CreateThermalMonitor ();
+			ThermalMonitor.StatusChanged += OnThermalStatusChanged;
+
 			FontService.Initialize ();
 		}
 
 		static void OnMemoryStatusChanged (object sender, PlatformMemoryStatusEventArgs args)
 		{
 			Counters.MemoryPressure.Inc (args.CounterMetadata);
+		}
+
+		static void OnThermalStatusChanged (object sender, PlatformThermalStatusEventArgs args)
+		{
+			Counters.ThermalNotification.Inc (args.CounterMetadata);
 		}
 
 		/// <summary>
@@ -420,6 +428,7 @@ namespace MonoDevelop.Ide
 
 		internal static string GetNativeRuntimeDescription () => PlatformService.GetNativeRuntimeDescription ();
 
+		public static ThermalMonitor ThermalMonitor { get; private set; }
 		public static MemoryMonitor MemoryMonitor { get; private set; }
 		static readonly Lazy<IPlatformTelemetryDetails> platformTelemetryDetails = new Lazy<IPlatformTelemetryDetails> (() => PlatformService.CreatePlatformTelemetryDetails ());
 		public static IPlatformTelemetryDetails PlatformTelemetry => platformTelemetryDetails.Value; 

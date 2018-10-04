@@ -4195,6 +4195,8 @@
     <Compile Include="MonoDevelop.Ide\ProductInformationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\RuntimeVersionInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.Desktop\ThermalMonitor.cs" />
+    <Compile Include="MonoDevelop.Ide\PlatformThermalStatusEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

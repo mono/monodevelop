@@ -1250,6 +1250,47 @@ namespace MonoDevelop.MacIntegration
 				}
 			}
 		}
+
+		internal override ThermalMonitor CreateThermalMonitor ()
+		{
+			if (MacSystemInformation.OsVersion < new Version (10, 10, 3))
+				return base.CreateThermalMonitor ();
+
+			return new MacThermalMonitor ();
+		}
+
+		class MacThermalMonitor : ThermalMonitor
+		{
+			public MacThermalMonitor ()
+			{
+				NSProcessInfo.Notifications.ObserveThermalStateDidChange ((o, args) => {
+					var metadata = new PlatformThermalMetadata {
+						ThermalStatus = ToPlatform (NSProcessInfo.ProcessInfo.ThermalState),
+					};
+
+					var thermalArgs = new PlatformThermalStatusEventArgs (metadata);
+					OnStatusChanged (thermalArgs);
+				});
+			}
+
+			static PlatformThermalStatus ToPlatform (NSProcessInfoThermalState status)
+			{
+				switch (status)
+				{
+				case NSProcessInfoThermalState.Nominal:
+					return PlatformThermalStatus.Normal;
+				case NSProcessInfoThermalState.Fair:
+					return PlatformThermalStatus.Fair;
+				case NSProcessInfoThermalState.Critical:
+					return PlatformThermalStatus.Critical;
+				case NSProcessInfoThermalState.Serious:
+					return PlatformThermalStatus.Serious;
+				default:
+					LoggingService.LogError ("Unknown NSProcessInfoThermalState value {0}", status.ToString ());
+					return PlatformThermalStatus.Normal;
+				}
+			}
+		}
 	}
 
 	public class ThemedMacWindowBackend : Xwt.Mac.WindowBackend

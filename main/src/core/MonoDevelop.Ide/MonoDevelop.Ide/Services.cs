@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide
 		internal static bool TrackingBuildAndDeploy;
 		internal static TimerCounter<BuildAndDeployMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<BuildAndDeployMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 		internal static Counter<PlatformMemoryMetadata> MemoryPressure = InstrumentationService.CreateCounter<PlatformMemoryMetadata> ("Memory Pressure", "IDE", id: "Ide.MemoryPressure");
+		internal static Counter<PlatformThermalMetadata> ThermalNotification = InstrumentationService.CreateCounter<PlatformThermalMetadata> ("Thermal Notification", "IDE", id: "Ide.ThermalNotification");
 
 		internal static Counter<UnhandledExceptionMetadata> UnhandledExceptions = InstrumentationService.CreateCounter<UnhandledExceptionMetadata> ("Unhandled Exceptions", "IDE", id: "Ide.UnhandledExceptions");
 		internal static class ParserService {
