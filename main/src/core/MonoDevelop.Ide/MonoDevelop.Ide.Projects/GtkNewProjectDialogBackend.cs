@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Projects
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
 			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;
+
 			templatesTreeView.Selection.Changed += TemplatesTreeViewSelectionChanged;
 			templatesTreeView.ButtonPressEvent += TemplatesTreeViewButtonPressed;
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
@@ -322,19 +323,21 @@ namespace MonoDevelop.Ide.Projects
 			Xwt.Drawing.Image icon = GetIcon (category.IconId ?? "md-platform-other", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
-			templateCategoriesListStore.AppendValues (
+			var iter = templateCategoriesListStore.AppendValues (
 				MarkupTopLevelCategoryName (category.Name),
 				icon,
 				category);
 
 			foreach (TemplateCategory subCategory in category.Categories) {
-				AddSubTemplateCategory (subCategory);
+				AddSubTemplateCategory (iter, subCategory);
 			}
+			templateCategoriesTreeView.ExpandAll ();
 		}
 
-		void AddSubTemplateCategory (TemplateCategory category)
+		void AddSubTemplateCategory (TreeIter iter, TemplateCategory category)
 		{
 			templateCategoriesListStore.AppendValues (
+				iter,
 				GLib.Markup.EscapeText (category.Name),
 				null,
 				category);
