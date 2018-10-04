@@ -97,11 +97,11 @@ namespace MonoDevelop.AspNetCore.Commands
 		{
 			using (var progressMonitor = CreateProgressMonitor ()) {
 				try {
-					var dotnetPath = DotNetCoreRuntime.FileName;
-					if (!System.IO.File.Exists (dotnetPath)) {
-						progressMonitor.ReportError (GettextCatalog.GetString ("dotnet not found at {0}", dotnetPath));
+					if (!DotNetCoreRuntime.IsInstalled) {
+						progressMonitor.ReportError (GettextCatalog.GetString (".NET Core Runtime not installed"));
 						return;
 					}
+					var dotnetPath = DotNetCoreRuntime.FileName;
 					progressMonitor.BeginTask ("dotnet publish", 1);
 					var process = Runtime.ProcessService.StartConsoleProcess (
 						dotnetPath,
