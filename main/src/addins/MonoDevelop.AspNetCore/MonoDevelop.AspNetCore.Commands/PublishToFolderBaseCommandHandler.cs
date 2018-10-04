@@ -13,52 +13,23 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
-	enum Commands
-	{
-		PublishToFolder
-	}
-
-	sealed class PublishCommandHandler : CommandHandler
+	abstract class PublishToFolderBaseCommandHandler : CommandHandler
 	{
 		PublishToFolderDialog dialog;
 		OutputProgressMonitor consoleMonitor;
-
-		protected override void Update (CommandArrayInfo info)
-		{
-			base.Update (info);
-
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-
-			if (!ProjectSupportsAzurePublishing (project)) {
-				return;
-			}
-
-			info.Add (GettextCatalog.GetString ("Publish to Folder\u2026"), new PublishCommandItem (project, null));
-
-			var profiles = project.GetPublishProfiles ();
-			if (profiles.Length > 0) {
-				info.AddSeparator ();
-			}
-
-			foreach (var profile in profiles) {
-				info.Add (GettextCatalog.GetString ("Publish to {0} - Folder", profile.Name), new PublishCommandItem (project, profile));
-			}
-		}
+		protected DotNetProject project;
 
 		protected override async void Run (object dataItem)
 		{
-			if (!(dataItem is PublishCommandItem publishCommandItem))
-				return;
-
 			try {
-				if (publishCommandItem.Profile != null) {
-					await Publish (publishCommandItem);
-				} else {
-					dialog = new PublishToFolderDialog (publishCommandItem);
+				if (!(dataItem is PublishCommandItem publishCommandItem)) {
+					dialog = new PublishToFolderDialog (new PublishCommandItem (project, null));
 					dialog.PublishToFolderRequested += Dialog_PublishToFolderRequested;
 					if (dialog.Run () == Xwt.Command.Close) {
 						CloseDialog ();
 					}
+				} else {
+					await Publish (publishCommandItem);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Failed to publish project", ex);
@@ -154,10 +125,10 @@ namespace MonoDevelop.AspNetCore.Commands
 				lockGui: false,
 				statusSourcePad: pad,
 				showCancelButton: true));
-			return mon; 
+			return mon;
 		}
 
-		static bool ProjectSupportsAzurePublishing (DotNetProject project)
+		protected static bool ProjectSupportsAzurePublishing (DotNetProject project)
 		{
 			return project != null && project.GetProjectCapabilities ().Any (i => i == "Web" || i == "AzureFunctions");
 		}
