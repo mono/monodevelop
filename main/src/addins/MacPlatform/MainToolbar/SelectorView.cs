@@ -631,6 +631,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public override bool BecomeFirstResponder ()
 			{
 				var currentEvent = NSApplication.SharedApplication.CurrentEvent;
+				if (currentEvent == null) {
+					return base.BecomeFirstResponder ();
+				}
+
 				// Check if the currentEvent that caused us to become first responder is a Tab or a Reverse Tab
 				if (currentEvent.Type == NSEventType.KeyDown) {
 					if (currentEvent.KeyCode == KeyCodes.Tab) {
