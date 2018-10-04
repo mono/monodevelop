@@ -38,6 +38,8 @@ namespace MacPlatform
 	internal class MacTelemetryDetails : IPlatformTelemetryDetails
 	{
 		int family;
+		int coreCount;
+		int threadCount;
 		long freq;
 		string arch;
 		ulong size;
@@ -57,6 +59,8 @@ namespace MacPlatform
 			Interop.SysCtl ("hw.machine", out result.arch);
 			Interop.SysCtl ("hw.cpufamily", out result.family);
 			Interop.SysCtl ("hw.cpufrequency", out result.freq);
+			Interop.SysCtl ("hw.physicalcpu", out result.coreCount);
+			Interop.SysCtl ("hw.logicalcpu", out result.threadCount);
 
 			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
 			result.size = attrs.Size;
@@ -106,7 +110,9 @@ namespace MacPlatform
 
 		public PlatformHardDriveMediaType HardDriveOsMediaType => osType;
 
+		public int CpuCoreCount => coreCount;
 
+		public int CpuThreadCount => threadCount;
 
 		static PlatformHardDriveMediaType GetMediaType (string path)
 		{

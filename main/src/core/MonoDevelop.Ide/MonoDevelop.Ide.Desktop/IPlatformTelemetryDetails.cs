@@ -48,5 +48,7 @@ namespace MonoDevelop.Ide.Desktop
 		ulong HardDriveFreeVolumeSize { get; }
 		ulong RamTotal { get; }
 		PlatformHardDriveMediaType HardDriveOsMediaType { get; }
+		int CpuCoresCount { get; }
+		int CpuThreadCount { get; }
 	}
 }
