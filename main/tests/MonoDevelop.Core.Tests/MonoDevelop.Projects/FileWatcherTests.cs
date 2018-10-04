@@ -869,5 +869,25 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.NeedsReload);
 			Assert.AreEqual (p, reloadRequiredEventFiredProject);
 		}
+
+		[Test]
+		public async Task GetRootDirectories_WindowsPathUsedForProjectItem_EmptyDirectoryNotIncluded ()
+		{
+			if (Platform.IsWindows)
+				Assert.Ignore ("Not valid on Windows");
+
+			FilePath solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			var fileName = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\MSBuild\MSBuild.dll";
+			var reference = ProjectReference.CreateAssemblyFileReference (fileName);
+			p.References.Add (reference);
+
+			var directories = sol.GetRootDirectories ();
+			Assert.IsFalse (directories.Contains (FilePath.Empty));
+			Assert.IsFalse (directories.Contains (FilePath.Null));
+			Assert.AreEqual (1, directories.Count);
+			Assert.IsTrue (directories.First () == sol.BaseDirectory);
+		}
 	}
 }
