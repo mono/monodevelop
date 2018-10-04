@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	class DebugValueWindow : PopoverWindow
+	class DebugValueWindow : PopoverWindow, IDisposable
 	{
 		internal ObjectValueTreeView tree;
 		ScrolledWindow sw;
@@ -217,6 +217,11 @@ namespace MonoDevelop.SourceEditor
 			// otherwise CommandManager will think IDE doesn't have any window Active/Focused and think
 			// user switched to another app and DebugValueWindow will closed itself on "FocusOut" event
 			this.Present ();
+		}
+
+		void IDisposable.Dispose()
+		{
+			this.Destroy ();
 		}
 	}
 }

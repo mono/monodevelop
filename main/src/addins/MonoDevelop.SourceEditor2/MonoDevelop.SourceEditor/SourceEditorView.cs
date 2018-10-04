@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -3002,31 +3002,18 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<MonoDevelop.Ide.Editor.TooltipProvider> ITextEditorImpl.TooltipProvider {
 			get {
-				foreach (var p in GetTextEditorData ().TooltipProviders) {
-					var wrapper = p as TooltipProviderWrapper;
-					if (wrapper == null)
-						continue;
-					yield return wrapper.OriginalProvider;
-				}
+				return GetTextEditorData ().TooltipProviders;
 			}
 		}
 
 		void ITextEditorImpl.AddTooltipProvider (MonoDevelop.Ide.Editor.TooltipProvider provider)
 		{
-			TextEditor.AddTooltipProvider (new TooltipProviderWrapper (provider));
+			TextEditor.AddTooltipProvider (provider);
 		}
 
 		void ITextEditorImpl.RemoveTooltipProvider (MonoDevelop.Ide.Editor.TooltipProvider provider)
 		{
-			foreach (var p in GetTextEditorData ().TooltipProviders) {
-				var wrapper = p as TooltipProviderWrapper;
-				if (wrapper == null)
-					continue;
-				if (wrapper.OriginalProvider == provider) {
-					TextEditor.RemoveTooltipProvider (p);
-					return;
-				}
-			}
+			TextEditor.RemoveTooltipProvider (provider);
 		}
 
 		Xwt.Point ITextEditorImpl.GetEditorWindowOrigin ()
@@ -3359,7 +3346,7 @@ namespace MonoDevelop.SourceEditor
 			
 			var caret = TextEditor.Caret;
 			var p = TextEditor.LocationToPoint (caret.Location);
-			Mono.TextEditor.TooltipProvider.ShowAndPositionTooltip (TextEditor, tooltipWindow, p.X, p.Y, (int)tooltipWindow.Width, 0.5);
+			TooltipUtility.ShowAndPositionTooltip (TextEditor, tooltipWindow, p.X, p.Y, (int)tooltipWindow.Width, 0.5);
 			TextEditor.TextArea.SetTooltip (tooltipWindow);
 		}
 

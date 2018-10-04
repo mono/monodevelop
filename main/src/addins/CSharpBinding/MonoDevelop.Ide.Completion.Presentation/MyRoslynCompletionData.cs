@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			}
 			else {
 				markup.AppendTaggedText (theme, taggedParts.Take (i));
-				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+				FontService.AppendSmallSansFontMarkup (markup);
 				markup.AppendLine ();
 				markup.AppendLine ();
 				markup.AppendTaggedText (theme, taggedParts.Skip (i + 1), 0, 50);

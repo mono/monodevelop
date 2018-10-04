@@ -360,34 +360,6 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 
-		internal string GetErrorInformationAt (int offset)
-		{
-			var location = Document.OffsetToLocation (offset);
-			DocumentLine line = Document.GetLine (location.Line);
-			if (line == null)
-				return null;
-
-			var errors = Document.GetTextSegmentMarkersAt(offset).OfType<ErrorMarker>();
-			StringBuilder sb = null;
-
-			foreach (var error in errors)
-			{
-				if (sb != null)
-					sb.AppendLine();
-				else
-					sb = StringBuilderCache.Allocate();
-
-				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
-					sb.Append(GettextCatalog.GetString("<b>Warning</b>: {0}",
-						GLib.Markup.EscapeText(error.Error.Message)));
-				else
-					sb.Append(GettextCatalog.GetString("<b>Error</b>: {0}",
-						GLib.Markup.EscapeText(error.Error.Message)));
-			}
-
-			return sb != null ? StringBuilderCache.ReturnAndFree (sb) : null;
-		}
-
 		public MonoDevelop.Projects.Project Project {
 			get {
 				var doc = IdeApp.Workbench.ActiveDocument;

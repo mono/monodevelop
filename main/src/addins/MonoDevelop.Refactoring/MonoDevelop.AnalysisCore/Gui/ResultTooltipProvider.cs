@@ -37,12 +37,13 @@ using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
-	class ResultTooltipProvider : TooltipProvider
+	class ResultTooltipProvider : TooltipInformationTooltipProvider
 	{
-		#region ITooltipProvider implementation 
 		public override Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
 		{
 			var results = new List<Result> ();
@@ -60,61 +61,49 @@ namespace MonoDevelop.AnalysisCore.Gui
 					results.Add (result);
 				}
 			}
-			if (results.Count > 0)
-				return Task.FromResult (new TooltipItem (results, markerOffset, markerEndOffset - markerOffset));
+			if (results.Count > 0) {
+				var sb = StringBuilderCache.Allocate ();
+				FontService.AppendSmallSansFontMarkup (sb);
+				for (int i = 0; i < results.Count; i++) {
+					var r = results [i];
+					var escapedMessage = Ambience.EscapeText (r.Message);
+					if (i > 0)
+						sb.AppendLine ();
+					if (results.Count > 1) {
+						string severity;
+						HslColor color;
+						switch (r.Level) {
+						case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
+							severity = GettextCatalog.GetString ("Info");
+							editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
+							break;
+						case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
+							severity = GettextCatalog.GetString ("Warning");
+							editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineWarning, out color);
+							break;
+						case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
+							severity = GettextCatalog.GetString ("Error");
+							editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineError, out color);
+							break;
+						default:
+							severity = "?";
+							editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
+							break;
+						}
 
-			return Task.FromResult<TooltipItem> (null);
-
-		}
-
-		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
-		{
-			var result = item.Item as List<Result>;
-
-			var sb = new StringBuilder ();
-			foreach (var r in result) {
-				var escapedMessage = Ambience.EscapeText (r.Message);
-				if (sb.Length > 0)
-					sb.AppendLine ();
-				if (result.Count > 1) {
-					string severity;
-					HslColor color;
-					switch (r.Level) {
-					case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
-						severity = GettextCatalog.GetString ("Info");
-						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
-						break;
-					case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
-						severity = GettextCatalog.GetString ("Warning");
-						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineWarning, out color);
-						break;
-					case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
-						severity = GettextCatalog.GetString ("Error");
-						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineError, out color);
-						break;
-					default:
-						severity = "?";
-						editor.Options.GetEditorTheme ().TryGetColor (EditorThemeColors.UnderlineSuggestion, out color);
-						break;
+						sb.AppendFormat ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ());
+					} else {
+						sb.Append (escapedMessage);
 					}
-
-					sb.AppendFormat ("<span foreground ='{2}'font_weight='bold'>{0}</span>: {1}", severity, escapedMessage, color.ToPangoString ());
-				} else {
-					sb.Append (escapedMessage);
 				}
-			}
-			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, sb.ToString (), null);
-			if (window.IsEmpty)
-				return null;
-			return window;
-		}
 
-		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
-		{
-			var win = (LanguageItemWindow) tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
-			xalign = 0.5;
+				sb.Append ("</span>");
+				var tooltipInfo = new TooltipInformation {
+					SignatureMarkup = StringBuilderCache.ReturnAndFree (sb)
+				};
+				return Task.FromResult (new TooltipItem (tooltipInfo, markerOffset, markerEndOffset - markerOffset));
+			}
+			return Task.FromResult<TooltipItem> (null);
 		}
-		#endregion
 	}
 }

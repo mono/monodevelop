@@ -45,10 +45,9 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
-	class LanguageItemTooltipProvider : TooltipProvider, IDisposable
+	class LanguageItemTooltipProvider : TooltipInformationTooltipProvider, IDisposable
 	{
-		#region ITooltipProvider implementation 
-		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
+		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
 		{
 			if (ctx == null)
 				return null;
@@ -94,75 +93,31 @@ namespace MonoDevelop.SourceEditor
 			return node;
 		}
 
-		static TooltipInformationWindow lastWindow = null;
-
-		static void DestroyLastTooltipWindow ()
-		{
-			if (lastWindow != null) {
-				lastWindow.Destroy ();
-				lastWindow = null;
-			}
-		}
-
-		#region IDisposable implementation
-
-		public override void Dispose ()
-		{
-			if (IsDisposed)
-				return;
-			DestroyLastTooltipWindow ();
-			base.Dispose ();
-		}
-
-		#endregion
-
-
-		public override Components.Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
-		{
-			var doc = ctx;
-			if (doc == null)
-				return null;
-
-			var result = new TooltipInformationWindow ();
-			result.ShowArrow = true;
-			result.AddOverload ((TooltipInformation)item.Item);
-			result.RepositionWindow ();
-			return result;
-		}
-
 		async Task<TooltipInformation> CreateTooltip (ISymbol symbol, SyntaxToken token, int caretOffset, EditorTheme theme, DocumentContext doc, int offset)
 		{
 			try {
 				TooltipInformation result;
 				var sig = new SignatureMarkupCreator (doc, offset);
 				sig.BreakLineAfterReturnType = false;
-				
+
 				var typeOfExpression = token.Parent as TypeOfExpressionSyntax;
 				if (typeOfExpression != null && symbol is ITypeSymbol)
 					return sig.GetTypeOfTooltip (typeOfExpression, (ITypeSymbol)symbol);
 
-				result = sig.GetKeywordTooltip (token); 
+				result = sig.GetKeywordTooltip (token);
 				if (result != null)
 					return result;
-				
+
 				if (symbol != null) {
 					result = await QuickInfoProvider.GetQuickInfoAsync (caretOffset, theme, doc, symbol);
 				}
-				
+
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating tooltip.", e);
 				return null;
 			}
 		}
-
-		public override void GetRequiredPosition (TextEditor editor, Components.Window tipWindow, out int requiredWidth, out double xalign)
-		{
-			var win = (TooltipInformationWindow)tipWindow;
-			requiredWidth = (int)win.Width;
-			xalign = 0.5;
-		}
-		#endregion
 
 		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{

@@ -845,7 +845,7 @@ namespace Mono.TextEditor
 				imContext.FocusOut ();
 
 				if (tipWindow != null && currentTooltipProvider != null) {
-					if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+					if (!currentTooltipProvider.IsInteractive (TooltipUtility.GetDocument (textEditorData.Parent).Editor, tipWindow))
 						DelayedHideTooltip ();
 				} else {
 					HideTooltip ();
@@ -1784,10 +1784,10 @@ namespace Mono.TextEditor
 		{
 			IsMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
-				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow)) {
+				if (!currentTooltipProvider.IsInteractive (TooltipUtility.GetDocument (textEditorData.Parent).Editor, tipWindow)) {
 					DelayedHideTooltip ();
 				} else {
-					currentTooltipProvider.TakeMouseControl (textEditorData.Parent, tipWindow);
+					currentTooltipProvider.TakeMouseControl (TooltipUtility.GetDocument (textEditorData.Parent).Editor, tipWindow);
 				}
 			} else {
 				HideTooltip ();
@@ -3139,7 +3139,7 @@ namespace Mono.TextEditor
 		int tipX, tipY, tipOffset;
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
-		static Xwt.WindowFrame tipWindow;
+		static MonoDevelop.Components.Window tipWindow;
 		static TooltipProvider currentTooltipProvider;
 
 		// Data for the next tooltip to be shown
@@ -3192,9 +3192,9 @@ namespace Mono.TextEditor
 			CancelScheduledShow ();
 			if (textEditorData.SuppressTooltips)
 				return;
-			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (editor, tipWindow)) {
+			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (TooltipUtility.GetDocument (editor).Editor, tipWindow)) {
 				int wx, ww, wh;
-				var s = tipWindow.Size;
+				var s = ((Xwt.WindowFrame)tipWindow).Size;
 				ww = (int)s.Width;
 				wh = (int)s.Height;
 				wx = tipX - ww/2;
@@ -3235,7 +3235,8 @@ namespace Mono.TextEditor
 			
 			foreach (TooltipProvider tp in textEditorData.tooltipProviders) {
 				try {
-					item = await tp.GetItem (editor, nextTipOffset, token);
+					var doc = TooltipUtility.GetDocument (editor);
+					item = await tp.GetItem (doc.Editor, doc, nextTipOffset, token);
 				} catch (OperationCanceledException) {
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception in tooltip provider " + tp + " GetItem:", e);
@@ -3259,11 +3260,13 @@ namespace Mono.TextEditor
 				tipY = nextTipY;
 				tipOffset = nextTipOffset;
 				tipItem = item;
-				Xwt.WindowFrame tw = null;
+				MonoDevelop.Components.Window tw = null;
 				try {
-					tw = provider.CreateTooltipWindow (editor, nextTipOffset, nextTipModifierState, item);
+					var doc = TooltipUtility.GetDocument (editor);
+					var xwtState = Xwt.GtkBackend.Conversion.ToXwtValue (nextTipModifierState);
+					tw = provider.CreateTooltipWindow (doc.Editor, doc, item, nextTipOffset, xwtState);
 					if (tw != null)
-						provider.ShowTooltipWindow (editor, tw, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
+						provider.ShowTooltipWindow (doc.Editor, tw, item, xwtState, tipX + (int) TextViewMargin.XOffset, tipY);
 				} catch (Exception e) {
 					LoggingService.LogError ("-------- Exception while creating tooltip: " + provider, e);
 				}
@@ -3304,7 +3307,7 @@ namespace Mono.TextEditor
 //					if (x >= 0 && y >= 0 && x < w && y < h)
 //						return;
 //				}
-				tipWindow.Dispose ();
+				currentTooltipProvider.DestroyTooltip (tipWindow);
 				tipWindow = null;
 				tipItem = null;
 			}

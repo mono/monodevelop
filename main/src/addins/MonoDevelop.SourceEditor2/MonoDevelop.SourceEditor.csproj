@@ -119,7 +119,6 @@
     <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.ITextView.MouseHover.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\BehaviorPanel.cs" />
@@ -164,7 +163,6 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\AsmLineMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LinkMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
@@ -188,7 +186,6 @@
     <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorAccessibility.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextViewMargin.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\IListDataProvider.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ListWidget.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
@@ -283,6 +280,7 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSNetFoldMarkerMarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.VSCodeFoldMarkerMarginDrawer.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfObjectViewElementFactory.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TooltipUtility.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorKeyPressTimings.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentService.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Braces\BraceCompletionAdornmentServiceFactory.cs" />

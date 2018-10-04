@@ -199,6 +199,60 @@ namespace MonoDevelop.Ide.Editor
 		{
 			IsDisposed = true;
 		}
+
+		public virtual void DestroyTooltip (Window tipWindow)
+		{
+			(tipWindow.nativeWidget as IDisposable)?.Dispose ();
+		}
 	}
+
+	abstract class TooltipInformationTooltipProvider : TooltipProvider, IDisposable
+	{
+		#region ITooltipProvider implementation 
+
+		static TooltipInformationWindow lastWindow = null;
+
+		static void DestroyLastTooltipWindow ()
+		{
+			if (lastWindow != null) {
+				lastWindow.Destroy ();
+				lastWindow = null;
+			}
+		}
+
+		#region IDisposable implementation
+
+		public override void Dispose ()
+		{
+			if (IsDisposed)
+				return;
+			DestroyLastTooltipWindow ();
+			base.Dispose ();
+		}
+
+		#endregion
+
+		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		{
+			var doc = ctx;
+			if (doc == null)
+				return null;
+
+			var result = new TooltipInformationWindow ();
+			result.ShowArrow = true;
+			result.AddOverload ((TooltipInformation)item.Item);
+			result.RepositionWindow ();
+			return result;
+		}
+
+		public override void GetRequiredPosition (TextEditor editor, Components.Window tipWindow, out int requiredWidth, out double xalign)
+		{
+			var win = (TooltipInformationWindow)tipWindow;
+			requiredWidth = (int)win.Width;
+			xalign = 0.5;
+		}
+		#endregion
+	}
+
 }
 

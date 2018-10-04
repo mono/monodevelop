@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 				if (!inDocumentation) {
 					if (part.ClassificationType.Classification == ClassificationTypeNames.Text) {
 						inDocumentation = true;
-						markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+						FontService.AppendSmallSansFontMarkup (markup);
 						markup.AppendLine ();
 					}
 					else {
@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
 			if (currentParameter != null) {
 				if (!string.IsNullOrEmpty(currentParameter.Documentation)) {
-					markup.Append ("<span font='" + FontService.SansFontName + "'");
+					FontService.AppendSmallSansFontMarkup (markup);
 					//markup.Append ("foreground ='" + GetThemeColor (theme, "source.cs") + "'");
 					markup.Append (" size='small'>");
 					markup.AppendLine ();
