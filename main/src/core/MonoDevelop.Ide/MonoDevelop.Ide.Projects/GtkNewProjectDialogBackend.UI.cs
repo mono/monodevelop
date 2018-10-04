@@ -55,8 +55,8 @@ namespace MonoDevelop.Ide.Projects
 		const int TemplateCategoryNameColumn = 0;
 		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
-		ListStore templateCategoriesListStore =
-			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
+		TreeStore templateCategoriesListStore =
+			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
 		const int TemplateIconColumn = 1;
@@ -176,6 +176,8 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
 			templateCategoriesTreeView.SearchColumn = -1; // disable the interactive search
+			templateCategoriesTreeView.ShowExpanders = false;
+
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
 			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
