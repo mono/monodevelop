@@ -1078,9 +1078,15 @@ namespace MonoDevelop.Ide
 			ProjectEventMetadata eventMetadata = null;
 
 			if (entry is Solution solution) {
-				if (runConfiguration == null || runConfiguration is SingleItemSolutionRunConfiguration) {
-					var startupProject = solution.StartupItem;
-					eventMetadata = startupProject.CreateProjectEventMetadata (configuration);
+				SolutionItem solutionItem = null;
+				if (runConfiguration == null) {
+					solutionItem = solution.StartupItem;
+				} else if (runConfiguration is SingleItemSolutionRunConfiguration singleItemSolution) {
+					solutionItem = singleItemSolution.Item;
+				}
+
+				if (solutionItem != null) {
+					eventMetadata = solutionItem.CreateProjectEventMetadata (configuration);
 				}
 			} else if (entry is SolutionItem item) {
 				eventMetadata = item.CreateProjectEventMetadata (configuration);
