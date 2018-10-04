@@ -35,29 +35,30 @@ namespace MonoDevelop.DotNetCore.Tests
 	[TestFixture]
 	class DotNetCoreSdkInstalledConditionTests : DotNetCoreVersionsRestorerTestBase
 	{
-		[TestCase ("<Condition sdkVersion='2.*' />", "2.1.4", true)]
-		[TestCase ("<Condition sdkVersion='2.*' />", "2.0.3", true)]
-		[TestCase ("<Condition sdkVersion='2.*' />", "2.0.0", true)]
-		[TestCase ("<Condition sdkVersion='2.*' />", "1.0.0", false)]
-		[TestCase ("<Condition sdkVersion='1.*' />", "1.0.0", true)]
-		[TestCase ("<Condition sdkVersion='1.*' />", "1.1.0", true)]
-		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.4", true)]
-		[TestCase ("<Condition sdkVersion='2.0' />", "2.0.3", true)]
+		[TestCase ("<Condition sdkVersion='2.*' />", "2.1.4", "4.8.0", true)]
+		[TestCase ("<Condition sdkVersion='2.*' />", "2.0.3", "5.1.99", true)]
+		[TestCase ("<Condition sdkVersion='2.*' />", "2.0.0", "5.1.99", true)]
+		[TestCase ("<Condition sdkVersion='2.*' />", "1.0.0", "5.1.99", false)]
+		[TestCase ("<Condition sdkVersion='1.*' />", "1.0.0", "5.1.99", true)]
+		[TestCase ("<Condition sdkVersion='1.*' />", "1.1.0", "5.4.0", true)]
+		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.4", "5.4.0", true)]
+		[TestCase ("<Condition sdkVersion='2.0' />", "2.0.3", "5.4.0", true)]
 
 		// Here the sdkVersion is the logical version and not the actual version
 		// .NET Core SDK 2.1.4 supports .NET Core 2.0 so this is treated as the '2.0' SDK.
 		// .NET Core SDK 2.1.300 supports .NET Core 2.1 so this is treated as '2.1' SDK.
-		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.3", true)]
-		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.4", false)]
-		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.300", true)]
-		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.301", true)]
-		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.200", false)]
-		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.200", true)]
-		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.299", false)]
-		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.299", true)]
-		public void DotNetCoreSdkInstalled (string conditionXml, string sdk, bool expected)
+		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.3", "5.4.0", true)]
+		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.4", "4.8.0", false)]
+		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.300", "5.4.0", true)]
+		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.301", "5.1.0", true)]
+		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.200", "4.8.0", false)]
+		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.200", "5.0.0", true)]
+		[TestCase ("<Condition sdkVersion='2.1' />", "2.1.299", "4.6.0", false)]
+		[TestCase ("<Condition sdkVersion='2.0' />", "2.1.299", "5.16.0", true)]
+		public void DotNetCoreSdkInstalled (string conditionXml, string sdk, string monoVersion, bool expected)
 		{
 			DotNetCoreSdksInstalled (new [] { sdk });
+			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version (monoVersion);
 
 			bool result = EvaluateCondition (conditionXml);
 
