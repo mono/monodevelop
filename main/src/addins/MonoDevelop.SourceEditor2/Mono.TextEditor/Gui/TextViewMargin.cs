@@ -310,8 +310,10 @@ namespace Mono.TextEditor
 
 		void HandleSyntaxModeChanged(object sender, EventArgs e)
 		{
-			PurgeLayoutCache ();
-			textEditor.Document.CommitUpdateAll ();
+			Runtime.RunInMainThread (() => {
+				PurgeLayoutCache ();
+				textEditor.Document.CommitUpdateAll ();
+			});
 		}
 
 		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
