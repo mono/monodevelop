@@ -809,6 +809,20 @@ namespace MonoDevelop.Projects
 			}
 			metadata.ProjectTypes = sb.ToString ();
 
+			metadata.ProjectID = ItemId;
+			metadata.ProjectType = TypeGuid;
+			metadata.ProjectFlavor = FlavorGuids.FirstOrDefault () ?? TypeGuid;
+
+			var capabilities = GetProjectCapabilities ();
+			if (capabilities.Any ())
+				metadata.Capabilities = string.Join (" ", capabilities);
+
+			var c = GetConfiguration (configurationSelector);
+			if (c != null) {
+				metadata.Configuration = c.Id;
+				metadata.Platform = GetExplicitPlatform (c);
+			}
+
 			return metadata;
 		}
 
@@ -1465,19 +1479,6 @@ namespace MonoDevelop.Projects
 			metadata.BuildTypeString = target;
 
 			metadata.FirstBuild = IsFirstBuild;
-			metadata.ProjectID = ItemId;
-			metadata.ProjectType = TypeGuid;
-			metadata.ProjectFlavor = FlavorGuids.FirstOrDefault () ?? TypeGuid;
-
-			var capabilities = GetProjectCapabilities ();
-			if (capabilities.Any ())
-				metadata.Capabilities = string.Join (" ", capabilities);
-
-			var c = GetConfiguration (configuration);
-			if (c != null) {
-				metadata.Configuration = c.Id;
-				metadata.Platform = GetExplicitPlatform (c);
-			}
 
 			bool success = false;
 			bool cancelled = false;
