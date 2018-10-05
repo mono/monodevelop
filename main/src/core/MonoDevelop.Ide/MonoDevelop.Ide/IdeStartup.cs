@@ -377,7 +377,8 @@ namespace MonoDevelop.Ide
 
 			// Start this timer to limit the time to decide if the app was opened by a file manager
 			IdeApp.StartFMOpenTimer (FMOpenTimerExpired);
-			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteTimeToCode;
+			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteSolutionTimeToCode;
+			IdeApp.Workbench.DocumentOpened += CompleteFileTimeToCode;
 
 			CreateStartupMetadata (startupInfo, sectionTimings);
 
@@ -403,7 +404,9 @@ namespace MonoDevelop.Ide
 
 		void FMOpenTimerExpired ()
 		{
-			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteTimeToCode;
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteSolutionTimeToCode;
+			IdeApp.Workbench.DocumentOpened -= CompleteFileTimeToCode;
+
 			timeToCodeTimer.Stop ();
 			timeToCodeTimer = null;
 
@@ -471,9 +474,26 @@ namespace MonoDevelop.Ide
 			IdeApp.OnStartupCompleted ();
 		}
 
-		static void CompleteTimeToCode (object sender, EventArgs args)
+		enum TimeToCodeFileType
 		{
-			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteTimeToCode;
+			Solution,
+			Document
+		}
+
+		static void CompleteSolutionTimeToCode (object sender, EventArgs args)
+		{
+			CompleteTimeToCode (TimeToCodeMetadata.DocumentType.Solution);
+		}
+
+		static void CompleteFileTimeToCode (object sender, EventArgs args)
+		{
+			CompleteTimeToCode (TimeToCodeMetadata.DocumentType.File);
+		}
+
+		static void CompleteTimeToCode (TimeToCodeMetadata.DocumentType type)
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteSolutionTimeToCode;
+			IdeApp.Workbench.DocumentOpened -= CompleteFileTimeToCode;
 
 			if (timeToCodeTimer == null) {
 				return;
@@ -483,7 +503,7 @@ namespace MonoDevelop.Ide
 			ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
 
 			ttcMetadata.CorrectedDuration = ttcMetadata.StartupTime + ttcMetadata.SolutionLoadTime;
-
+			ttcMetadata.Type = type;
 
 			if (IdeApp.ReportTimeToCode) {
 				Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
