@@ -219,6 +219,12 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value>The placeholder message.</value>
 		string SearchPlaceholderMessage { set; }
+
+		/// <summary>
+		/// Shows an accessibility announcement.
+		/// </summary>
+		/// <param name="message">The accessibility message.</param>
+		void ShowAccessibilityAnnouncement (string message);
 	}
 
 	/// <summary>
@@ -256,8 +262,7 @@ namespace MonoDevelop.Components.MainToolbar
 	/// </summary>
 	public interface IMainToolbarView : IRunButtonView, ISelectorView, ISearchEntryView, IStatusBarView, IButtonBarView
 	{
-		void Focus ();
-		void Focus (Action exitAction);
+		void Focus (Gtk.DirectionType direction, Action<Gtk.DirectionType> exitAction);
 	}
 }
 

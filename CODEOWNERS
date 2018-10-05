@@ -14,6 +14,7 @@
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking @slluis @sevoku
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components.Theming @sevoku
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Components @slluis @sevoku
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView @netonjm @rodrmoya
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion @slluis @mkrueger
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeFormatting @slluis @mkrueger
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates @mkrueger
@@ -27,6 +28,7 @@
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components @slluis @sevoku
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content @slluis
+/main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs @netonjm @rodrmoya
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring @slluis
 /main/src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem @mkrueger @DavidKarlas

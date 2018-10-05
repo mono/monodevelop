@@ -58,6 +58,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		internal bool Restarted { get; set; }
+
 		/// <summary>
 		/// Set to true if a project was opened on startup.
 		/// </summary>

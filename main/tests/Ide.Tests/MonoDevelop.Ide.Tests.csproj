@@ -24,7 +24,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
@@ -141,6 +141,9 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceProjectDataTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceOpenDocumentDataTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopRuleSetManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidgetTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\AbstractCodeFormatterTests.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

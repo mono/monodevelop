@@ -122,8 +122,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			internal ProjectData RemoveData (ProjectId id)
 			{
 				lock (Workspace.updatingProjectDataLock) {
-					if (projectDataMap.TryGetValue (id, out ProjectData result))
+					if (projectDataMap.TryGetValue (id, out ProjectData result)) {
 						projectDataMap.Remove (id);
+						result.Disconnect ();
+					}
 					return result;
 				}
 			}

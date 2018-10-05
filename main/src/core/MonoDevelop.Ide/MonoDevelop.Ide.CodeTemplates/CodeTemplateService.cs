@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}*/
 		
-		static List<CodeTemplate> LoadTemplates (XmlReader reader)
+		static List<CodeTemplate> LoadTemplates (XmlReader reader, string filePathForDebugging = null)
 		{
 			List<CodeTemplate> result = new List<CodeTemplate> ();
 			
@@ -312,8 +312,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 						switch (reader.LocalName) {
 						case Node:
 							string fileVersion = reader.GetAttribute (VersionAttribute);
-							if (fileVersion != Version) 
-								return null;
+							if (fileVersion != Version) {
+								LoggingService.LogError ($"CodeTemplateService: unsupported fileVersion ({fileVersion}), supported is: {Version}");
+								return result;
+							}
 							break;
 						case CodeTemplate.Node:
 							result.Add (CodeTemplate.Read (reader));
@@ -322,8 +324,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("CodeTemplateService: Exception while loading template.", e);
-				return null;
+				LoggingService.LogError ("CodeTemplateService: Exception while loading template: " + filePathForDebugging, e);
+				return result;
 			} finally {
 				reader.Close ();
 			}
@@ -342,8 +344,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var builtinTemplates = LoadTemplates (XmlReader.Create (typeof (CodeTemplateService).Assembly.GetManifestResourceStream (ManifestResourceName)));
 			if (Directory.Exists (TemplatePath)) {
 				var result = new List<CodeTemplate> ();
-				foreach (string templateFile in Directory.GetFiles (TemplatePath, "*.xml")) {
-					result.AddRange (LoadTemplates (XmlReader.Create (templateFile)));
+				try {
+					foreach (string templateFile in Directory.GetFiles (TemplatePath, "*.xml")) {
+						result.AddRange (LoadTemplates (XmlReader.Create (templateFile), filePathForDebugging: templateFile));
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception when reading snippets from directory: " + TemplatePath, ex);
 				}
 				// merge user templates with built in templates
 				for (int i = 0; i < builtinTemplates.Count; i++) {

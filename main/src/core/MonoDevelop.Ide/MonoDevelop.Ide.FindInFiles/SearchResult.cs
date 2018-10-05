@@ -36,6 +36,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Text;
 using MonoDevelop.Core;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -100,20 +101,25 @@ namespace MonoDevelop.Ide.FindInFiles
 			location = DocumentLocation.Empty;
 			copyData = "";
 			markup = selectedMarkup = "";
-			var doc = GetDocument (this);
-			if (doc == null)
+
+			var doc = GetDocument ();
+			if (doc == null) {
 				return;
+			}
 			try {
 				int lineNr = doc.OffsetToLineNumber (Offset);
 				var line = doc.GetLine (lineNr);
 				if (line != null) {
 					location = new DocumentLocation (lineNr, Offset - line.Offset + 1);
-					copyData = $"{FileName} ({location.Value.Line}, {location.Value.Column}):{doc.GetTextAt (Offset, line.Length)}";
+					copyData = $"{FileName} ({location.Value.Line}, {location.Value.Column}):{doc.GetTextAt (line.Offset, line.Length)}";
 					CreateMarkup (widget, doc, line);
 				}
-			} catch (ArgumentOutOfRangeException) {
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting search result", e);
 			}
 		}
+
+		const int maximumMarkupLength = 78;
 
 		void CreateMarkup (SearchResultWidget widget, TextEditor doc, Editor.IDocumentLine line)
 		{
@@ -122,27 +128,32 @@ namespace MonoDevelop.Ide.FindInFiles
 			int indent = line.GetIndentation (doc).Length;
 			string lineText;
 			int col = Offset - line.Offset;
-
+			int markupStartOffset = 0;
+			bool trimStart = false, trimEnd = false;
+			int length;
 			if (col < indent) {
+				trimEnd = line.Length > maximumMarkupLength;
+				length = Math.Min (maximumMarkupLength, line.Length);
 				// search result contained part of the indent.
-				lineText = doc.GetTextAt (line.Offset, line.Length);
-				markup = doc.GetMarkup (line.Offset, line.Length, new MarkupOptions (MarkupFormat.Pango));
+				lineText = doc.GetTextAt (line.Offset, length);
 			} else {
 				// if not crop the indent
-				lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
-				markup = doc.GetMarkup (line.Offset + indent, line.Length - indent, new MarkupOptions (MarkupFormat.Pango));
+				length = line.Length - indent;
+				if (length > maximumMarkupLength) {
+					markupStartOffset = Math.Min (Math.Max (0, col - indent - maximumMarkupLength / 2), line.Length - maximumMarkupLength);
+					trimEnd = markupStartOffset + maximumMarkupLength < line.Length;
+					trimStart = markupStartOffset > 0;
+					length = maximumMarkupLength;
+				}
+				lineText = doc.GetTextAt (line.Offset + markupStartOffset + indent, length);
 				col -= indent;
 			}
-
-			selectedMarkup = Ambience.EscapeText (lineText);
-			markup = widget.AdjustColors (markup);
-
 			if (col >= 0) {
 				uint start;
 				uint end;
 				try {
-					start = (uint)TranslateIndexToUTF8 (lineText, col);
-					end = (uint)TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + Length));
+					start = (uint)TranslateIndexToUTF8 (lineText, col - markupStartOffset);
+					end = (uint)TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col - markupStartOffset + Length));
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception while translating index to utf8 (column was:" + col + " search result length:" + Length + " line text:" + lineText + ")", e);
 					return;
@@ -151,35 +162,68 @@ namespace MonoDevelop.Ide.FindInFiles
 				endIndex = (int)end;
 			}
 
-			try {
-				var searchColor = GetBackgroundMarkerColor (widget.HighlightStyle);
-				double b1 = HslColor.Brightness (searchColor);
+			var tabSize = doc.Options.TabSize;
+			this.markup = this.selectedMarkup = markup = Ambience.EscapeText (lineText);
 
-				double b2 = HslColor.Brightness (SearchResultWidget.AdjustColor (widget.Style.Base (Gtk.StateType.Normal), SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.Foreground)));
-				double delta = Math.Abs (b1 - b2);
-				if (delta < 0.1) {
-					var color1 = SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.FindHighlight);
-					if (color1.L + 0.5 > 1.0) {
-						color1.L -= 0.5;
-					} else {
-						color1.L += 0.5;
+			var searchColor = GetBackgroundMarkerColor (widget.HighlightStyle);
+
+			var selectedSearchColor = widget.Style.Base (Gtk.StateType.Selected);
+			selectedSearchColor = searchColor.AddLight (-0.2);
+			double b1 = HslColor.Brightness (searchColor);
+			double b2 = HslColor.Brightness (SearchResultWidget.AdjustColor (widget.Style.Base (Gtk.StateType.Normal), SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.Foreground)));
+			// selected
+			markup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, searchColor), trimStart, trimEnd, tabSize);
+			selectedMarkup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor), trimStart, trimEnd, tabSize);
+
+			Task.Run (delegate {
+				var newMarkup = doc.GetMarkup (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
+				Runtime.RunInMainThread (delegate {
+					newMarkup = widget.AdjustColors (newMarkup);
+
+					try {
+						double delta = Math.Abs (b1 - b2);
+						if (delta < 0.1) {
+							var color1 = SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.FindHighlight);
+							if (color1.L + 0.5 > 1.0) {
+								color1.L -= 0.5;
+							} else {
+								color1.L += 0.5;
+							}
+							searchColor = color1;
+						}
+						if (startIndex != endIndex) {
+							newMarkup = PangoHelper.ColorMarkupBackground (newMarkup, (int)startIndex, (int)endIndex, searchColor);
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while setting the text renderer markup to: " + newMarkup, e);
 					}
-					searchColor = color1;
-				}
-				if (startIndex != endIndex) {
-					markup = PangoHelper.ColorMarkupBackground (markup, (int)startIndex, (int)endIndex, searchColor);
-				}
 
-				// selected
-				var selectedSearchColor = widget.Style.Base (Gtk.StateType.Selected);
-				selectedSearchColor = searchColor.AddLight (-0.2);
-				selectedMarkup = PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while setting the text renderer markup to: " + markup, e);
+					newMarkup = FormatMarkup (newMarkup, trimStart, trimEnd, tabSize);
+
+					this.markup = newMarkup;
+					widget.QueueDraw ();
+				});
+			});
+		}
+
+		static string FormatMarkup (string str, bool trimeStart, bool trimEnd, int tabSize)
+		{
+			var result = StringBuilderCache.Allocate ();
+			var tab = new string (' ', tabSize);
+			if (trimeStart)
+				result.Append ("…");
+			foreach (var ch in str) {
+				if (ch == '\n' || ch == '\r')
+					continue;
+				if (ch == '\t') {
+					result.Append (tab);
+					continue;
+				}
+				result.Append (ch);
 			}
-
-			markup = markup.Replace ("\t", new string (' ', doc.Options.TabSize));
-			selectedMarkup = selectedMarkup.Replace ("\t", new string (' ', doc.Options.TabSize));
+			if (trimEnd)
+				result.Append ("…");
+			return StringBuilderCache.ReturnAndFree (result);
 		}
 
 		static int TranslateIndexToUTF8 (string text, int index)
@@ -213,20 +257,18 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		static TextEditor cachedEditor;
+		static FileProvider cachedEditorFileProvider;
 
-		TextEditor GetDocument (SearchResult result)
+		TextEditor GetDocument ()
 		{
-			if (cachedEditor == null) {
-				var content = result.FileProvider.ReadString ();
-				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
-			} else {
-				if (cachedEditor.FileName != result.FileName) {
-					var content = result.FileProvider.ReadString ();
-					cachedEditor.Text = content.ReadToEnd ();
-					cachedEditor.FileName = result.FileName;
-				}
+			if (cachedEditor == null || cachedEditor.FileName != FileName || cachedEditorFileProvider != FileProvider) {
+				var content = FileProvider.ReadString ();
+				cachedEditor?.Dispose ();
+				cachedEditor = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new Core.Text.StringTextSource (content.ReadToEnd ()), FileName, DesktopService.GetMimeTypeForUri (FileName)));
+				cachedEditorFileProvider = FileProvider;
 			}
 			return cachedEditor;
 		}
+
 	}
 }

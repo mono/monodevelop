@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -129,6 +130,93 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		[Test]
+		public void GetBuildTargetsForExecution_ProjectIsExecutionTarget ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing")) {
+				var targets = ProjectOperations.GetBuildTargetsForExecution (project, null);
+
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_SingleItemRunConfiguration ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				var runConfig = new SingleItemSolutionRunConfiguration (project, null);
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, runConfig);
+
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_MultiItemRunConfiguration ()
+		{
+			using (var executionDep = new ProjectWithExecutionDeps ("Dependency"))
+			using (var executing = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (executionDep, executing)) {
+				var runConfig = new MultiItemSolutionRunConfiguration ();
+				runConfig.Items.Add (new StartupItem (executing, null));
+				runConfig.Items.Add (new StartupItem (executionDep, null));
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, runConfig);
+
+				Assert.AreEqual (2, targets.Length);
+				Assert.AreEqual (executing, targets [0]);
+				Assert.AreEqual (executionDep, targets [1]);
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_NoStartupItem_NoRunConfigurationPassed ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				sln.StartupConfiguration = null;
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.IsNull (sln.StartupItem);
+				Assert.AreEqual (sln, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_SingleStartupItem_NoRunConfigurationPassed ()
+		{
+			using (var project = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (project)) {
+				var runConfig = new SingleItemSolutionRunConfiguration (project, null);
+				sln.StartupConfiguration = runConfig;
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.AreEqual (project, sln.StartupItem);
+				Assert.AreEqual (project, targets.Single ());
+			}
+		}
+
+		[Test]
+		public void GetBuildTargetsForExecution_Solution_MultiStartupItems_NoRunConfigurationPassed ()
+		{
+			using (var executionDep = new ProjectWithExecutionDeps ("Dependency"))
+			using (var executing = new ProjectWithExecutionDeps ("Executing"))
+			using (var sln = CreateSimpleSolutionWithItems (executionDep, executing)) {
+				var runConfig = new MultiItemSolutionRunConfiguration ();
+				runConfig.Items.Add (new StartupItem (executing, null));
+				runConfig.Items.Add (new StartupItem (executionDep, null));
+				sln.StartupConfiguration = runConfig;
+
+				var targets = ProjectOperations.GetBuildTargetsForExecution (sln, null);
+
+				Assert.AreEqual (2, targets.Length);
+				Assert.AreEqual (executing, targets [0]);
+				Assert.AreEqual (executionDep, targets [1]);
+			}
+		}
+
 		[DebuggerDisplay ("Project {Name}")]
 		class ProjectWithExecutionDeps : Project
 		{
@@ -157,6 +245,54 @@ namespace MonoDevelop.Ide.Projects
 			protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
 			{
 				return !IsBuildUpToDate;
+			}
+		}
+
+		[Test]
+		public async Task BuildingForExecutionProperty ()
+		{
+			using (var proj = new CheckBuildingForExecutionPropertyProject ())
+			using (var sln = CreateSimpleSolutionWithItems (proj)) {
+
+				Assert.AreEqual (null, proj.BuildPropertyValue);
+				Assert.AreEqual (null, proj.CheckPropertyValue);
+
+				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { proj }, ConfigurationSelector.Default);
+				Assert.IsTrue (success);
+				Assert.AreEqual (true, proj.BuildPropertyValue);
+				Assert.AreEqual (true, proj.CheckPropertyValue);
+
+				proj.CheckPropertyValue = null;
+				proj.BuildPropertyValue = null;
+
+				var result = await IdeApp.ProjectOperations.Build (proj).Task;
+				Assert.IsFalse (result.Failed);
+				Assert.AreEqual (false, proj.BuildPropertyValue);
+				Assert.AreEqual (false, proj.CheckPropertyValue);
+			}
+		}
+
+		class CheckBuildingForExecutionPropertyProject : Project
+		{
+			public CheckBuildingForExecutionPropertyProject ()
+			{
+				EnsureInitialized ();
+			}
+
+			public bool? BuildPropertyValue { get; set; }
+			public bool? CheckPropertyValue { get; set; }
+
+			protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+			{
+				var ctx = operationContext as TargetEvaluationContext;
+				BuildPropertyValue = ctx?.GlobalProperties?.GetValue<bool> ("IsBuildingForExecution") ?? false;
+				return Task.FromResult (new BuildResult { BuildCount = 1 });
+			}
+
+			protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration, TargetEvaluationContext context)
+			{
+				CheckPropertyValue = context.GlobalProperties.GetValue<bool> ("IsBuildingForExecution");
+				return true;
 			}
 		}
 	}

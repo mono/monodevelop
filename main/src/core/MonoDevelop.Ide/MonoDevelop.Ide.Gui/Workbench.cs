@@ -126,6 +126,11 @@ namespace MonoDevelop.Ide.Gui
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
+
+			// Very important: see https://github.com/mono/monodevelop/pull/6064
+			// Otherwise the editor may not be focused on IDE startup and can't be
+			// focused even by clicking with the mouse.
+			RootWindow.Visible = true;
 			Counters.Initialization.Trace ("Setting layout");
 			workbench.CurrentLayout = "Solution";
 			
@@ -304,7 +309,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Toolbar.HideCommandBar (barId);
 		}
 
-		internal void ShowInfoBar (bool inActiveView, string description, params InfoBarItem[] items)
+		public void ShowInfoBar (bool inActiveView, InfoBarOptions options)
 		{
 			IInfoBarHost infoBarHost = null;
 			if (inActiveView) {
@@ -315,7 +320,7 @@ namespace MonoDevelop.Ide.Gui
 			if (infoBarHost == null)
 				infoBarHost = IdeApp.Workbench.RootWindow as IInfoBarHost;
 
-			infoBarHost?.AddInfoBar (description, items);
+			infoBarHost?.AddInfoBar (options);
 		}
 
 		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {

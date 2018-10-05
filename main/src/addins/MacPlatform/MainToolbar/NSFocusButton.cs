@@ -30,6 +30,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	public class NSFocusButton: NSButton
 	{
+		/*
 		public override void KeyDown (NSEvent theEvent)
 		{
 			var key = theEvent.Characters.FirstOrDefault ();
@@ -48,5 +49,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			
 			return GetNextFocusable (view.NextKeyView);
 		}
+		*/
 	}
 }

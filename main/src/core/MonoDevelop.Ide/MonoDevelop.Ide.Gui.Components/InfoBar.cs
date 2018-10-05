@@ -32,29 +32,22 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	interface IInfoBarHost
-	{
-		void AddInfoBar (string description, params InfoBarItem [] items);
-	}
-
 	class XwtInfoBar : Widget
 	{
 		static Image closeImage = Image.FromResource ("pad-close-9.png");
 		static Image closeImageInactive = Image.FromResource ("pad-close-9.png").WithAlpha (0.5);
 
-		public XwtInfoBar (string description, params InfoBarItem[] items)
-		{
-			Build (description, items);
-		}
+		readonly Label descriptionLabel;
+		Size minTextSize = Size.Zero;
 
-		void Build (string description, params InfoBarItem[] items)
+		public XwtInfoBar (string description, params InfoBarItem[] items)
 		{
 			var mainBox = new HBox {
 				BackgroundColor = Styles.NotificationBar.BarBackgroundColor,
 			};
 
 			mainBox.PackStart (new ImageView (ImageService.GetIcon (Stock.Information, Gtk.IconSize.Menu)), marginLeft: 11);
-			mainBox.PackStart (new Label (description));
+			mainBox.PackStart (descriptionLabel = new Label (description));
 
 			if (items.Length > 0) {
 				mainBox.PackStart (new Label ("–"));
@@ -71,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				Widget toAdd = null;
 				switch (item.Kind)
 				{
-				case InfoBarItem.InfoBarItemKind.Button:
+				case InfoBarItemKind.Button:
 					var btn = new InfoBarButton {
 						Label = item.Title,
 						LabelColor = Styles.NotificationBar.ButtonLabelColor,
@@ -86,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					toAdd = btn;
 					break;
 				// Creates a clickable hyperlink
-				case InfoBarItem.InfoBarItemKind.Hyperlink:
+				case InfoBarItemKind.Hyperlink:
 					var link = new InfoBarLink {
 						Text = item.Title,
 					};
@@ -96,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					toAdd = link;
 					break;
 				// We only have 1 close button, we attach all close actions to it
-				case InfoBarItem.InfoBarItemKind.Close:
+				case InfoBarItemKind.Close:
 					closeButton.AddAction (item.Action);
 					break;
 				}
@@ -115,6 +108,27 @@ namespace MonoDevelop.Ide.Gui.Components
 			} else {
 				Content = mainBox;
 			}
+		}
+
+		protected override void OnBoundsChanged ()
+		{
+			if (minTextSize.IsZero && !string.IsNullOrEmpty (descriptionLabel.Text)) {
+				var measureLayout = new TextLayout {
+					Text = descriptionLabel.Text,
+					Font = descriptionLabel.Font
+				};
+				minTextSize = measureLayout.GetSize ();
+			}
+			if (descriptionLabel.Size.Width < minTextSize.Width) {
+				TooltipText = descriptionLabel.Text;
+				descriptionLabel.Ellipsize = EllipsizeMode.End;
+				descriptionLabel.ExpandHorizontal = true;
+			} else {
+				TooltipText = string.Empty;
+				descriptionLabel.Ellipsize = EllipsizeMode.None;
+				descriptionLabel.ExpandHorizontal = false;
+			}
+			base.OnBoundsChanged ();
 		}
 
 		sealed class InfoBarCloseButton : InfoBarButton
@@ -168,31 +182,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				actions = null;
 				base.Dispose (disposing);
 			}
-		}
-	}
-
-	struct InfoBarItem
-	{
-		public readonly string Title;
-		public readonly InfoBarItemKind Kind;
-		public readonly Action Action;
-		public readonly bool CloseAfter;
-
-		public bool IsDefault => Title == null;
-
-		public InfoBarItem (string title, InfoBarItemKind kind, Action action, bool closeAfter)
-		{
-			Title = title ?? throw new ArgumentNullException (nameof (title));
-			Kind = kind;
-			Action = action;
-			CloseAfter = closeAfter;
-		}
-
-		internal enum InfoBarItemKind
-		{
-			Button,
-			Hyperlink,
-			Close
 		}
 	}
 }

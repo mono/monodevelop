@@ -42,6 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -144,6 +145,7 @@ namespace MonoDevelop.Components.MainToolbar
 			runConfigurationCombo.Model = runConfigurationStore;
 			runConfigurationCombo.PackStart (ctx, true);
 			runConfigurationCombo.AddAttribute (ctx, "text", 0);
+			runConfigurationCombo.TooltipText = GettextCatalog.GetString ("A project or named set of projects and execution options that should be launched when running or debugging the solution.");
 
 			var runConfigurationComboVBox = new VBox ();
 			runConfigurationComboVBox.PackStart (runConfigurationCombo, true, false, 0);
@@ -153,7 +155,8 @@ namespace MonoDevelop.Components.MainToolbar
 			configurationCombo.Model = configurationStore;
 			configurationCombo.PackStart (ctx, true);
 			configurationCombo.AddAttribute (ctx, "text", 0);
-		
+			configurationCombo.TooltipText = GettextCatalog.GetString ("A named set of projects and their configurations to be built when building the solution.");
+
 			var configurationComboVBox = new VBox ();
 			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
 			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
@@ -169,6 +172,7 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
+			runtimeCombo.TooltipText = GettextCatalog.GetString ("The device on which to deploy and launch the projects when running or debugging.");
 
 			var runtimeComboVBox = new VBox ();
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
@@ -404,7 +408,23 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public OperationIcon RunButtonIcon {
-			set { button.Icon = value; }
+			set {
+				button.Icon = value;
+				switch (value) {
+				case OperationIcon.Stop:
+					button.TooltipText = GettextCatalog.GetString ("Stop the executing solution");
+					break;
+				case OperationIcon.Run:
+					button.TooltipText = GettextCatalog.GetString ("Run the project or projects in the active run configuration. Builds the projects in the active solution build configuration if necessary.");
+					break;
+				case OperationIcon.Build:
+					button.TooltipText = GettextCatalog.GetString ("Build the projects in the active solution build configuration.");
+					break;
+				default:
+					button.TooltipText = string.Empty;
+					break;
+				}
+			}
 		}
 
 		public bool ConfigurationPlatformSensitivity {
@@ -590,8 +610,7 @@ namespace MonoDevelop.Components.MainToolbar
 			buttonBar.Groups = groups;
 		}
 
-		public void Focus (){}
-		public void Focus (System.Action exitAction) {}
+		public void Focus (DirectionType direction, Action<DirectionType> exitAction) {}
 
 		public bool ButtonBarSensitivity {
 			set { buttonBar.Sensitive = value; }
@@ -601,6 +620,10 @@ namespace MonoDevelop.Components.MainToolbar
 		public event EventHandler RunConfigurationChanged;
 		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
+		public void ShowAccessibilityAnnouncement (string message)
+		{
+			this.Accessible.MakeAccessibilityAnnouncement (message);
+		}
 		#endregion
 	}
 }

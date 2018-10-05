@@ -55,14 +55,14 @@ namespace MonoDevelop.Ide.Projects
 		const int TemplateCategoryNameColumn = 0;
 		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
-		ListStore templateCategoriesListStore =
-			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
+		TreeStore templateCategoriesListStore =
+			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
 		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
-		ListStore templatesListStore =
-			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
+		TreeStore templatesTreeStore =
+			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
 		VBox templateVBox;
 		ImageView templateImage;
 		Label templateNameLabel;
@@ -121,13 +121,6 @@ namespace MonoDevelop.Ide.Projects
 			topLabelEventBox.ModifyFg (StateType.Normal, whiteColor);
 			topLabelEventBox.BorderWidth = 0;
 
-			var topBannerTopEdgeLineEventBox = new EventBox ();
-			topBannerTopEdgeLineEventBox.Accessible.SetShouldIgnore (true);
-			topBannerTopEdgeLineEventBox.Name = "topBannerTopEdgeLineEventBox";
-			topBannerTopEdgeLineEventBox.HeightRequest = 1;
-			topBannerTopEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
-			topBannerTopEdgeLineEventBox.BorderWidth = 0;
-
 			var topBannerBottomEdgeLineEventBox = new EventBox ();
 			topBannerBottomEdgeLineEventBox.Accessible.SetShouldIgnore (true);
 			topBannerBottomEdgeLineEventBox.Name = "topBannerBottomEdgeLineEventBox";
@@ -139,7 +132,8 @@ namespace MonoDevelop.Ide.Projects
 			topBannerLabel.Name = "topBannerLabel";
 			topBannerLabel.Accessible.Name = "topBannerLabel";
 			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy (); // UNDONE: VV: Use FontService?
-			font.Size = (int)(font.Size * 1.8);
+			font.Size = (int)(font.Size * 2.0);
+			font.Weight = Pango.Weight.Bold;
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);
 			var topLabelHBox = new HBox ();
@@ -148,7 +142,6 @@ namespace MonoDevelop.Ide.Projects
 			topLabelHBox.PackStart (topBannerLabel, false, false, 20);
 			topLabelEventBox.Add (topLabelHBox);
 
-			VBox.PackStart (topBannerTopEdgeLineEventBox, false, false, 0);
 			VBox.PackStart (topLabelEventBox, false, false, 0);
 			VBox.PackStart (topBannerBottomEdgeLineEventBox, false, false, 0);
 
@@ -183,6 +176,8 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
 			templateCategoriesTreeView.SearchColumn = -1; // disable the interactive search
+			templateCategoriesTreeView.ShowExpanders = false;
+
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
 			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
@@ -206,8 +201,9 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Accessible.SetTitle (GettextCatalog.GetString ("Project Templates"));
 			templatesTreeView.Accessible.Description = GettextCatalog.GetString ("Select the project template");
 			templatesTreeView.HeadersVisible = false;
-			templatesTreeView.Model = templatesListStore;
+			templatesTreeView.Model = templatesTreeStore;
 			templatesTreeView.SearchColumn = -1; // disable the interactive search
+			templatesTreeView.ShowExpanders = false;
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
 			templatesBgBox.Add (templatesScrolledWindow);
@@ -285,7 +281,7 @@ namespace MonoDevelop.Ide.Projects
 			cancelButton.Name = "cancelButton";
 			cancelButton.Accessible.Name = "cancelButton";
 			cancelButton.Accessible.Description = GettextCatalog.GetString ("Cancel the dialog");
-			cancelButton.Label = "gtk-cancel";
+			cancelButton.Label = GettextCatalog.GetString ("Cancel");
 			cancelButton.UseStock = true;
 			cancelButtonBox.PackStart (cancelButton, false, false, 0);
 			bottomHBox.PackStart (cancelButtonBox, false, false, 0);

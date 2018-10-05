@@ -32,6 +32,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Projection;
@@ -46,6 +47,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectDataMap projectMap;
 			readonly ProjectionData projections;
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
+			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
 
 			bool added;
 			readonly object addLock = new object ();
@@ -59,6 +61,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projections = projections;
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
+				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
 			}
 
 			#region Solution mapping
@@ -122,33 +125,42 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (token.IsCancellationRequested)
 					return null;
 
+				var analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+				if (token.IsCancellationRequested)
+					return null;
+
+				var loader = workspace.Services.GetService<IAnalyzerService> ().GetLoader ();
+
 				lock (workspace.updatingProjectDataLock) {
 					//when reloading e.g. after a save, preserve document IDs
-					using (var oldProjectData = projectMap.RemoveData (projectId)) {
-						var projectData = projectMap.CreateData (projectId, references);
+					var oldProjectData = projectMap.RemoveData (projectId);
+					var projectData = projectMap.CreateData (projectId, references);
 
-						var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
-						if (documents == null)
-							return null;
+					var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
+					if (documents == null)
+						return null;
 
-						// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
-						var info = ProjectInfo.Create (
-							projectId,
-							VersionStamp.Create (),
-							p.Name,
-							fileName.FileNameWithoutExtension,
-							LanguageNames.CSharp,
-							p.FileName,
-							fileName,
-							cp?.CreateCompilationOptions (),
-							cp?.CreateParseOptions (config),
-							documents.Item1,
-							projectReferences,
-							references.Select (x => x.CurrentSnapshot),
-							additionalDocuments: documents.Item2
-						);
-						return info;
-					}
+					// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
+					var info = ProjectInfo.Create (
+						projectId,
+						VersionStamp.Create (),
+						p.Name,
+						fileName.FileNameWithoutExtension,
+						(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
+						p.FileName,
+						fileName,
+						cp?.CreateCompilationOptions (),
+						cp?.CreateParseOptions (config),
+						documents.Item1,
+						projectReferences,
+						references.Select (x => x.CurrentSnapshot),
+						analyzerReferences: analyzerFiles.SelectAsArray (x => {
+							var analyzer = new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp);
+							return analyzer.GetReference ();
+						}),
+						additionalDocuments: documents.Item2
+					);
+					return info;
 				}
 			}
 
@@ -300,11 +312,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 						continue;
 
-					if (TypeSystemParserNode.IsCompileableFile (f, out SourceCodeKind sck) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
-						var id = projectData.DocumentData.GetOrCreate (f.Name, oldProjectData?.DocumentData);
+					if (p.IsCompileable (f.FilePath) || CanGenerateAnalysisContextForNonCompileable (p, f)) {
+						var filePath = (FilePath)f.Name;
+						var id = projectData.DocumentData.GetOrCreate (filePath.ResolveLinks (), oldProjectData?.DocumentData);
 						if (!duplicates.Add (id))
 							continue;
-						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f, sck));
+						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f));
 					} else {
 						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, null)) {
 							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData?.DocumentData);
@@ -361,18 +374,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				projections.AddProjectionEntry (entry);
 			}
 
-			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
+			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 			{
-				var filePath = f.FilePath;
+				var filePath = f.FilePath.ResolveLinks ();
 				var folders = GetFolders (projectName, f);
 
 				return DocumentInfo.Create (
 					id.DocumentData.GetOrCreate (filePath),
 					filePath,
 					folders,
-					sourceCodeKind,
-					CreateTextLoader (f.Name),
-					f.Name,
+					f.SourceCodeKind,
+					CreateTextLoader (filePath),
+					filePath,
 					isGenerated: false
 				);
 

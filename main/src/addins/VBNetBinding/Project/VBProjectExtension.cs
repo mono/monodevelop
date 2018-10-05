@@ -109,6 +109,8 @@ namespace MonoDevelop.VBNetBinding
 			base.OnInitialize ();
 			DefaultNamespaceIsImplicit = true;
 			SupportsRoslyn = true;
+			RoslynLanguageName = Microsoft.CodeAnalysis.LanguageNames.VisualBasic;
+
 			StockIcon = "md-project";
 		}
 

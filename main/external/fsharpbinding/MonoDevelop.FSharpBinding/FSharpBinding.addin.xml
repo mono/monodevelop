@@ -37,7 +37,7 @@
   </Extension>
 
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
-    <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
+    <DotNetProjectType language="F#" extension="fsproj" guid="{F2A71F9B-5D33-465A-A702-920D77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">

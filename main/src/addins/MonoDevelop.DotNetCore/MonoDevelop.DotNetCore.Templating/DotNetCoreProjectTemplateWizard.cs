@@ -128,15 +128,23 @@ namespace MonoDevelop.DotNetCore.Templating
 			} else {
 				if (!SupportsNetCore1x ()) {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
-					if (highestFramework != null && highestFramework.IsNetCoreApp21 ()) {
-						Parameters ["UseNetCore21"] = "true";
+					if (highestFramework != null) {
+						if (highestFramework.IsNetCoreApp22 ()) {
+							Parameters ["UseNetCore22"] = "true";
+						} else if (highestFramework != null && highestFramework.IsNetCoreApp21 ()) {
+							Parameters ["UseNetCore21"] = "true";
+						} else {
+							Parameters ["UseNetCore20"] = "true";
+						}
 					} else {
 						Parameters ["UseNetCore20"] = "true";
 					}
 				} else {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 					if (highestFramework != null) {
-						if (highestFramework.IsNetCoreApp21 ()) {
+						if (highestFramework.IsNetCoreApp22 ()) {
+							Parameters["UseNetCore22"] = "true";
+						} else if (highestFramework.IsNetCoreApp21 ()) {
 							Parameters ["UseNetCore21"] = "true";
 						} else if (highestFramework.IsNetCoreApp20 ()) {
 							Parameters ["UseNetCore20"] = "true";

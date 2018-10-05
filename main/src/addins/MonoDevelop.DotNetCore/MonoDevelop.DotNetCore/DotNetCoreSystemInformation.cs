@@ -28,19 +28,43 @@ using System;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.DotNetCore
 {
-	class DotNetCoreSystemInformation : ISystemInformationProvider
+	class DotNetCoreSystemInformation : ProductInformationProvider
 	{
-		public string Title {
-			get { return GettextCatalog.GetString (".NET Core"); }
+		public override string Title => GettextCatalog.GetString (".NET Core");
+
+		public override string Description => GetDescription ();
+
+		public override string Version => DotNetCoreSdk.Versions.FirstOrDefault()?.ToString ();
+
+		public override string ApplicationId => "c07628e8-5521-4c1a-aa3a-f860e664f0a9";
+
+		public override UpdateInfo GetUpdateInfo ()
+		{
+			if (IsSierraOrHigher ())
+				return GenerateDotNetCoreUpdateInfo ();
+			return null;
 		}
 
-		public string Description {
-			get {
-				return GetDescription ();
+		UpdateInfo GenerateDotNetCoreUpdateInfo ()
+		{
+			var latestSdkVersion = DotNetCoreSdk.Versions.FirstOrDefault ();
+			if (latestSdkVersion != null) {
+				return new UpdateInfo (ApplicationId, latestSdkVersion.Version);
 			}
+
+			// Return an UpdateInfo with version set to 0 if there is no .NET Core SDK installed.
+			// Without this no update will be available for .NET Core SDK in the Updates dialog.
+			return new UpdateInfo (ApplicationId, versionId: 0);
+		}
+
+		static bool IsSierraOrHigher ()
+		{
+			return Platform.IsMac && (Platform.OSVersion >= MacSystemInformation.Sierra);
 		}
 
 		string GetDescription ()

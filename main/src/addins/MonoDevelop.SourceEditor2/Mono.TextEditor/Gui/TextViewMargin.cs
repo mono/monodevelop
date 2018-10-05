@@ -310,8 +310,10 @@ namespace Mono.TextEditor
 
 		void HandleSyntaxModeChanged(object sender, EventArgs e)
 		{
-			PurgeLayoutCache ();
-			textEditor.Document.CommitUpdateAll ();
+			Runtime.RunInMainThread (() => {
+				PurgeLayoutCache ();
+				textEditor.Document.CommitUpdateAll ();
+			});
 		}
 
 		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
@@ -2502,8 +2504,8 @@ namespace Mono.TextEditor
 			this.previewWindow.GdkWindow.GetOrigin (out x, out y);
 			int w = previewWindow.Allocation.Width;
 			int h = previewWindow.Allocation.Height;
-			if (!previewWindow.HideCodeSegmentPreviewInformString)
-				h -= previewWindow.PreviewInformStringHeight;
+			if (previewWindow.HasFooterText)
+				h -= previewWindow.FooterTextHeight;
 			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
@@ -2564,7 +2566,6 @@ namespace Mono.TextEditor
 
 				int x = hintRectangle.Right;
 				int y = hintRectangle.Bottom;
-				previewWindow.CalculateSize ();
 				var req = previewWindow.SizeRequest ();
 				int w = req.Width;
 				int h = req.Height;
@@ -3359,8 +3360,11 @@ namespace Mono.TextEditor
 						layoutWrapper.IndexToLineX (index + 1, false, out lineNr, out xp2);
 						index = TranslateIndexToUTF8 (layoutWrapper.Text, index);
 
-						if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
+						if (snapCharacters && !IsNearX1 (xp, xp1, xp2)) {
 							index++;
+							if (index < layoutWrapper.Text.Length  && (layoutWrapper.Text[index] & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker)
+								index++;
+						}
 						return true;
 					}
 				}

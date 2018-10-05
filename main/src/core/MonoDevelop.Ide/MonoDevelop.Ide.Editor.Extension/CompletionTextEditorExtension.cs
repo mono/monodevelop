@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		RetriggerCommand
 	}
 
-	public struct SignatureHelpTriggerInfo
+	public readonly struct SignatureHelpTriggerInfo
 	{
 		public char? TriggerCharacter {
 			get;

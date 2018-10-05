@@ -36,7 +36,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestSimpleTimer ()
 		{
-			var timings = new TextEditorKeyPressTimings ();
+			var timings = new TextEditorKeyPressTimings (null);
 
 			var telemetry = DesktopService.PlatformTelemetry;
 			if (telemetry == null)
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 			Thread.Sleep (800);
 			timings.EndTimer ();
 
-			var metadata = timings.GetTypingTimingMetadata (null);
+			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
 			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
 			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
 		}

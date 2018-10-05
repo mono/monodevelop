@@ -1,6 +1,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,16 +10,13 @@
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\tests</OutputPath>
+    <RARResolveFromOutputDirectory>true</RARResolveFromOutputDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Tests\DocumentTests.cs" />
@@ -59,6 +57,7 @@
     <Compile Include="Mono.TextEditor.Tests\TextViewTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextLinkModeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextEditorKeyPressTimingsTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\PointToLocationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

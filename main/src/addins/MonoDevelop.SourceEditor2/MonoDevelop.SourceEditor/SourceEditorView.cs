@@ -64,7 +64,7 @@ using System.Threading;
 using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor
-{	
+{
 	partial class SourceEditorView : ViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget2,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
@@ -224,7 +224,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.IconMargin.MouseMoved += OnIconMarginMouseMoved;
 			widget.TextEditor.IconMargin.MouseLeave += OnIconMarginMouseLeave;
 			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
-			ClipbardRingUpdated += UpdateClipboardRing;
+			ClipboardRingService.Updated += OnClipboardItemsChanged;
 			
 			TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
@@ -1042,7 +1042,7 @@ namespace MonoDevelop.SourceEditor
 			
 			DisposeErrorMarkers ();
 			
-			ClipbardRingUpdated -= UpdateClipboardRing;
+			ClipboardRingService.Updated -= OnClipboardItemsChanged;
 
 			widget.TextEditor.Document.TextChanged -= HandleTextReplaced;
 			widget.TextEditor.Document.BeginUndo -= HandleBeginUndo; 
@@ -2171,84 +2171,26 @@ namespace MonoDevelop.SourceEditor
 				//FIXME: can't show more details, GTK# GetError binding is bad
 				MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
 		}
-		
-		#endregion
-	
-		#region Toolbox
-		static List<TextToolboxNode> clipboardRing = new List<TextToolboxNode> ();
 
-		static event EventHandler ClipbardRingUpdated;
-		
-		static SourceEditorView ()
+		#endregion
+
+		#region Toolbox
+
+		void OnClipboardItemsChanged (object sender, EventArgs e)
 		{
-			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press F2 to focus");
-			ClipboardActions.CopyOperation.Copy += delegate (string text) {
-				if (String.IsNullOrEmpty (text))
-					return;
-				foreach (TextToolboxNode node in clipboardRing) {
-					if (node.Text == text) {
-						clipboardRing.Remove (node);
-						break;
-					}
-				}
-				TextToolboxNode item = new TextToolboxNode (text);
-				string[] lines = text.Split ('\n');
-				for (int i = 0; i < 3 && i < lines.Length; i++) {
-					if (i > 0)
-						item.Description += Environment.NewLine;
-					string line = lines [i];
-					if (line.Length > 16)
-						line = line.Substring (0, 16) + "...";
-					item.Description += line;
-				}
-				item.Category = GettextCatalog.GetString ("Clipboard ring");
-				item.Icon = DesktopService.GetIconForFile ("a.txt", IconSize.Menu);
-				item.Name = text.Length > 16 ? text.Substring (0, 16) + "..." : text;
-				item.Name = item.Name.Replace ("\t", "\\t");
-				item.Name = item.Name.Replace ("\n", "\\n");
-				clipboardRing.Add (item);
-				while (clipboardRing.Count > 12) {
-					clipboardRing.RemoveAt (0);
-				}
-				if (ClipbardRingUpdated != null)
-					ClipbardRingUpdated (null, EventArgs.Empty);
-			};
-		}
-		
-		public void UpdateClipboardRing (object sender, EventArgs e)
-		{
-			if (ItemsChanged != null)
-				ItemsChanged (this, EventArgs.Empty);
+			ItemsChanged?.Invoke (this, EventArgs.Empty);
 		}
 		
 		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			foreach (TextToolboxNode item in clipboardRing)
-				yield return item;
-			//FIXME: make this work again
-//			CategoryToolboxNode category = new CategoryToolboxNode (GettextCatalog.GetString ("Clipboard ring"));
-//			category.IsDropTarget    = false;
-//			category.CanIconizeItems = false;
-//			category.IsSorted        = false;
-//			foreach (TextToolboxNode item in clipboardRing) {
-//				category.Add (item);
-//			}
-//			
-//			if (clipboardRing.Count == 0) {
-//				TextToolboxNode item = new TextToolboxNode (null);
-//				item.Category = GettextCatalog.GetString ("Clipboard ring");
-//				item.Name = null;
-//				//category.Add (item);
-//			}
-//			return new BaseToolboxNode [] { category };
+			return ClipboardRingService.GetToolboxItems ();
 		}
 		
 		public event EventHandler ItemsChanged;
 		
 		void IToolboxConsumer.ConsumeItem (ItemToolboxNode item)
 		{
-			var tn = item as ITextToolboxNode;
-			if (tn != null) {
+			if (item is ITextToolboxNode tn) {
 				tn.InsertAtCaret (WorkbenchWindow.Document);
 				TextEditor.GrabFocus ();
 			}
@@ -2291,8 +2233,7 @@ namespace MonoDevelop.SourceEditor
 		
 		string GetDragPreviewText (ItemToolboxNode item)
 		{
-			ITextToolboxNode tn = item as ITextToolboxNode;
-			if (tn == null) {
+			if (!(item is ITextToolboxNode tn)) {
 				LoggingService.LogWarning ("Cannot use non-ITextToolboxNode toolbox items in the text editor.");
 				return null;
 			}
@@ -2307,9 +2248,9 @@ namespace MonoDevelop.SourceEditor
 			
 		bool ICustomFilteringToolboxConsumer.SupportsItem (ItemToolboxNode item)
 		{
-			ITextToolboxNode textNode = item as ITextToolboxNode;
-			if (textNode == null)
+			if (!(item is ITextToolboxNode textNode)) {
 				return false;
+			}
 			
 			//string filename = this.IsUntitled ? UntitledName : ContentName;
 			//int i = filename.LastIndexOf ('.');

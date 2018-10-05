@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return text;
 			var sourceText = indent.Editor;
 			var syntaxRoot = indent.DocumentContext.AnalysisDocument.GetSyntaxRootAsync ().WaitAndGetResult ();
-			var token = syntaxRoot.FindToken (offset);
+			var token = syntaxRoot.FindTokenOnLeftOfPosition (offset);
 
 			if (copyData != null && copyData.Length == 1) {
 				var strategy = TextPasteUtils.Strategies [(PasteStrategy)copyData [0]];

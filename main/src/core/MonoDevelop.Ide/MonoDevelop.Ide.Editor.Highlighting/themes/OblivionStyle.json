@@ -186,7 +186,7 @@
 		{ "name": "Keyword(Declaration)", "fore": "plum1" },
 		{ "name": "Keyword(Parameter)", "fore": "white" },
 		{ "name": "Keyword(Operator Declaration)", "fore": "plum1" },
-		{ "name": "Keyword(Other)", "fore": "white" },
+		{ "name": "Keyword(Other)", "fore": "plum1" },
 
 		{ "name": "User Types", "fore": "chameleon1" },
 		{ "name": "User Types(Enums)", "fore": "chameleon1" },

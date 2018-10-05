@@ -227,6 +227,7 @@ namespace MonoDevelop.DotNetCore
 
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.IsUnsupportedVersion = unsupportedSdkVersion;
+					dialog.RequiresDotNetCore22 = Project.TargetFramework.IsNetCoreApp22 ();
 					dialog.RequiresDotNetCore21 = Project.TargetFramework.IsNetCoreApp21 ();
 					dialog.RequiresDotNetCore20 = Project.TargetFramework.IsNetStandard20OrNetCore20 ();
 					dialog.Show ();
@@ -400,6 +401,8 @@ namespace MonoDevelop.DotNetCore
 				return GettextCatalog.GetString (".NET Core 2.0 SDK is not installed. This is required to build .NET Core 2.0 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore20DownloadUrl);
 			else if (targetFramework.IsNetCoreApp21 ())
 				return GettextCatalog.GetString (".NET Core 2.1 SDK is not installed. This is required to build .NET Core 2.1 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore21DownloadUrl);
+			else if (targetFramework.IsNetCoreApp22 ())
+				return GettextCatalog.GetString (".NET Core 2.2 SDK is not installed. This is required to build .NET Core 2.2 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore22DownloadUrl);
 
 			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
 		}

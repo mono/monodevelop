@@ -331,19 +331,19 @@ namespace MonoDevelop.Ide.Gui
 			topMenu = null;
 		}
 
-		public void AddInfoBar (string description, params InfoBarItem [] items)
+		public void AddInfoBar (InfoBarOptions options)
 		{
 #if NATIVE_INFO_BAR
 			// disabled for now, needs a patch in gtk.
 			Xwt.Widget infoBar = null;
 			Xwt.Toolkit.NativeEngine.Invoke (() => {
-				infoBar = new XwtInfoBar (description, items);
+				infoBar = new XwtInfoBar (options.Description, options.Items);
 			});
 			var widget = Xwt.Toolkit.CurrentEngine.WrapWidget (infoBar);
 			var gtkWidget = widget.ToGtkWidget ();
 			infoBarFrame.Add (gtkWidget);
 #else
-			var infoBar = new XwtInfoBar (description, items);
+			var infoBar = new XwtInfoBar (options.Description, options.Items);
 			infoBarFrame.Add (infoBar.ToGtkWidget ());
 #endif
 		}
@@ -804,6 +804,7 @@ namespace MonoDevelop.Ide.Gui
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			
 			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
+
 			IdeApp.OnExited ();
 			OnClosed (null);
 			
@@ -1170,10 +1171,10 @@ namespace MonoDevelop.Ide.Gui
 			case DirectionType.TabForward:
 				if (!haveFocusedToolbar) {
 					haveFocusedToolbar = true;
-					toolbar.ToolbarView.Focus(() => {
-						if (!dock.ChildFocus(direction)) {
-							haveFocusedToolbar = false;
-							OnFocused(direction);
+					toolbar.ToolbarView.Focus(direction, (d) => {
+						haveFocusedToolbar = false;
+						if (!dock.ChildFocus(d)) {
+							OnFocused(d);
 						}
 					});
 				} else {
@@ -1186,8 +1187,13 @@ namespace MonoDevelop.Ide.Gui
 
 			case DirectionType.TabBackward:
 				if (!dock.ChildFocus(direction)) {
-					haveFocusedToolbar = false;
-					OnFocused(DirectionType.TabForward);
+					haveFocusedToolbar = true;
+					toolbar.ToolbarView.Focus (direction, (d) => {
+						haveFocusedToolbar = false;
+						if (!dock.ChildFocus (d)) {
+							OnFocused (d);
+						}
+					});
 				}
 				break;
 

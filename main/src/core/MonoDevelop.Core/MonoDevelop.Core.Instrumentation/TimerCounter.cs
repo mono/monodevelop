@@ -235,12 +235,27 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public CounterMetadata (IDictionary<string, object> properties)
 		{
-			this.properties = properties;
+			if (properties == null) {
+				this.properties = new Dictionary<string, object> ();
+			} else {
+				this.properties = properties;
+			}
 		}
 
 		public CounterMetadata (CounterMetadata original)
 		{
-			this.properties = new Dictionary<string, object> (original.properties);
+			if (original != null && original.properties != null) {
+				this.properties = new Dictionary<string, object> (original.properties);
+			} else {
+				this.properties = new Dictionary<string, object> ();
+			}
+		}
+
+		public void AddProperties (CounterMetadata original)
+		{
+			foreach (var kvp in original.Properties) {
+				properties [kvp.Key] = kvp.Value;
+			}
 		}
 
 		public CounterResult Result {

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.25806.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnetcore-console", "dotnetcore-console\dotnetcore-sdk-console.csproj", "{57E09661-7610-453D-8F3D-F4B68461DEFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnetcore-sdk-console", "dotnetcore-console\dotnetcore-sdk-console.csproj", "{57E09661-7610-453D-8F3D-F4B68461DEFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

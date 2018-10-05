@@ -414,6 +414,8 @@ namespace MonoDevelop.Projects
 			}
 
 			foreach (var item in GetAllItems ()) {
+				if (item == this)
+					continue;
 				if (item is IBuildTarget bt) {
 					foreach (var dep in bt.GetExecutionDependencies ()) {
 						yield return dep;
@@ -906,7 +908,7 @@ namespace MonoDevelop.Projects
 		
 		void OnItemReloadRequired (SolutionItemEventArgs e)
 		{
-			if (ParentFolder == null && ParentSolution != null)
+			if (ParentSolution != null)
 				ParentSolution.OnItemReloadRequired (e);
 			ItemReloadRequired?.Invoke (this, e);
 		}

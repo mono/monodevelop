@@ -26,12 +26,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	class CompletionStatistics
 	{
+		static readonly ImmutableArray<int> bucketUpperLimit = ImmutableArray.Create<int> (
+			8, 16, 32, 64, 128, 256, 512
+		);
+		readonly BucketTimings bucketTimings = new BucketTimings (bucketUpperLimit);
+
 		TimeSpan maxTime;
 		TimeSpan minTime = TimeSpan.MaxValue;
 		TimeSpan totalTime;
@@ -75,6 +81,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			totalTime += duration;
 			timingsCount++;
+
+			bucketTimings.Add (duration);
 		}
 
 		public void Report ()
@@ -95,6 +103,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				SuccessCount = successCount,
 				CancelCount = cancelCount
 			};
+
+			bucketTimings.AddTo (metadata);
 
 			Counters.CodeCompletionStats.Inc (metadata);
 		}

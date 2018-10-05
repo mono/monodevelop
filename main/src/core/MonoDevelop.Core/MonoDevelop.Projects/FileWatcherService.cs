@@ -125,10 +125,15 @@ namespace MonoDevelop.Projects
 					if (watchers.ContainsKey (path)) {
 						continue;
 					}
-
 					var watcher = new FileWatcherWrapper (path);
 					watchers.Add (path, watcher);
-					watcher.EnableRaisingEvents = true;
+					try {
+						watcher.EnableRaisingEvents = true;
+ 					} catch (UnauthorizedAccessException e) {
+						LoggingService.LogWarning ("Access to " + path + " denied. Stopping file watcher.", e);
+						watcher.Dispose ();
+						watchers.Remove (path);
+					}
 				}
 
 			}
@@ -218,6 +223,7 @@ namespace MonoDevelop.Projects
 			};
 
 			watcher.Changed += OnFileChanged;
+			watcher.Created += OnFileCreated;
 			watcher.Deleted += OnFileDeleted;
 			watcher.Renamed += OnFileRenamed;
 			watcher.Error += OnFileWatcherError;
@@ -237,6 +243,14 @@ namespace MonoDevelop.Projects
 
 		void OnFileChanged (object sender, FileSystemEventArgs e)
 		{
+			FileService.NotifyFileChanged (e.FullPath);
+		}
+
+		void OnFileCreated (object sender, FileSystemEventArgs e)
+		{
+			// The native file watcher sometimes generates a single Created event for a file when it is renamed
+			// from a non-monitored directory to a monitored directory. So this is turned into a Changed
+			// event so the file will be reloaded.
 			FileService.NotifyFileChanged (e.FullPath);
 		}
 

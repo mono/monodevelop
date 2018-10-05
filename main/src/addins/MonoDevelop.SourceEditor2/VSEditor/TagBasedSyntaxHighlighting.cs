@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.Platform
 			int start = snapshotSpan.Start.Position;
 			int end = snapshotSpan.End.Position;
 
-			IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans (snapshotSpan);
+			IList<ClassificationSpan> classifications = this.classifier.GetAllClassificationSpans (snapshotSpan, cancellationToken);
 
 			int lastClassifiedOffsetEnd = start;
 			ScopeStack scopeStack;
@@ -430,8 +430,8 @@ namespace Microsoft.VisualStudio.Platform
 				[ClassificationTypeNames.XmlDocCommentAttributeQuotes] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
 				[ClassificationTypeNames.XmlDocCommentAttributeValue] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
 				[ClassificationTypeNames.XmlDocCommentCDataSection] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentComment] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
-				[ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
+                [ClassificationTypeNames.XmlDocCommentComment] = MakeScope(baseScopeStack, "comment.line.documentation." + scope),
+                [ClassificationTypeNames.XmlDocCommentDelimiter] = MakeScope (baseScopeStack, "comment.line.documentation.delimiter." + scope),
 				[ClassificationTypeNames.XmlDocCommentEntityReference] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
 				[ClassificationTypeNames.XmlDocCommentName] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),
 				[ClassificationTypeNames.XmlDocCommentProcessingInstruction] = MakeScope (baseScopeStack, "comment.line.documentation." + scope),

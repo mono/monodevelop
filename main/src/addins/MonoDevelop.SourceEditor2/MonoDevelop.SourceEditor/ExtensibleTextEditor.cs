@@ -287,54 +287,6 @@ namespace MonoDevelop.SourceEditor
 			LoggingService.LogInternalError ("Error in text editor extension chain", ex);
 		}
 
-		internal static IEnumerable<char> GetTextWithoutCommentsAndStrings (Mono.TextEditor.TextDocument doc, int start, int end) 
-		{
-			bool isInString = false, isInChar = false;
-			bool isInLineComment = false, isInBlockComment = false;
-			int escaping = 0;
-			
-			for (int pos = start; pos < end; pos++) {
-				char ch = doc.GetCharAt (pos);
-				switch (ch) {
-					case '\r':
-					case '\n':
-						isInLineComment = false;
-						break;
-					case '/':
-						if (isInBlockComment) {
-							if (pos > 0 && doc.GetCharAt (pos - 1) == '*') 
-								isInBlockComment = false;
-						} else  if (!isInString && !isInChar && pos + 1 < doc.Length) {
-							char nextChar = doc.GetCharAt (pos + 1);
-							if (nextChar == '/')
-								isInLineComment = true;
-							if (!isInLineComment && nextChar == '*')
-								isInBlockComment = true;
-						}
-						break;
-					case '"':
-						if (!(isInChar || isInLineComment || isInBlockComment))
-							if (!isInString || escaping != 1)
-								isInString = !isInString;
-						break;
-					case '\'':
-						if (!(isInString || isInLineComment || isInBlockComment))
-							if (!isInChar || escaping != 1)
-								isInChar = !isInChar;
-						break;
-					case '\\':
-						if (escaping != 1)
-							escaping = 2;
-						break;
-					default :
-						if (!(isInString || isInChar || isInLineComment || isInBlockComment))
-							yield return ch;
-						break;
-				}
-				escaping--;
-			}
-		}
-
 		protected internal override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			bool result = true;
@@ -590,24 +542,30 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
-		
+
 		public bool DoInsertTemplate ()
 		{
-			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
+			var doc = view.WorkbenchWindow?.Document ?? IdeApp.Workbench.ActiveDocument;
+			if (doc == null) {
+				LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
+				return false;
+			}
+
+			return DoInsertTemplate (EditorExtension.Editor, doc);
+		}
+
+		public bool DoInsertTemplate (TextEditor editor, DocumentContext ctx)
+		{
+			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (editor);
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
-					var doc = view.WorkbenchWindow?.Document ?? IdeApp.Workbench.ActiveDocument;
-					if (doc != null) {
-						InsertTemplate (template, doc.Editor, doc);
-					} else {
-						LoggingService.LogError ("DoInsertTemplate(): Can't find valid document");
-					}
+					InsertTemplate (template, editor, ctx);
 					return true;
 				}
 			}
 			return false;
 		}
-		
+
 
 		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext context)
 		{

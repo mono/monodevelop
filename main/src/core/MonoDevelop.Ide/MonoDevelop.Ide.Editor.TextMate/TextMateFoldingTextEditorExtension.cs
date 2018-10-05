@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			base.Dispose ();
 		}
 
-		struct LineInfo {
+		readonly struct LineInfo {
 			public readonly IDocumentLine line;
 			public readonly int indentLength;
 			public readonly int nonWsLineNumber;

@@ -94,8 +94,10 @@ namespace MonoDevelop.Refactoring
 					AddItem (submenu.CommandInfos, subItem);
 				}
 				cis.Add (submenu, item.Action);
-			} else { 
-				cis.Add (new CommandInfo (item.Label), item.Action);
+			} else {
+				var info = new CommandInfo (item.Label);
+				info.Enabled = item.Action != null;
+				cis.Add (info, item.Action);
 			}
 		}
 

@@ -407,5 +407,35 @@ namespace MonoDevelop.DotNetCore.Tests
 				Assert.IsTrue (p.HasFlavor<DotNetCoreProjectExtension> ());
 			}
 		}
+
+		[Test]
+		public async Task SolutionUsingCSharpProjectTypeGuid_SaveSolution_ProjectTypeGuidUnchanged ()
+		{
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllProjects ().Single ();
+			string solutionFileText = File.ReadAllText (solutionFileName);
+
+			await solution.SaveAsync (Util.GetMonitor ());
+
+			string newSolutionFileText = File.ReadAllText (solutionFileName);
+			Assert.AreEqual ("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", project.TypeGuid);
+			Assert.AreEqual (solutionFileText, newSolutionFileText);
+		}
+
+		[Test]
+		public async Task SolutionUsingAlternativeVisualStudioProjectTypeGuid_SaveSolution_ProjectTypeGuidUnchanged ()
+		{
+			string solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-alternative-guid.sln");
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllProjects ().Single ();
+			string solutionFileText = File.ReadAllText (solutionFileName);
+
+			await solution.SaveAsync (Util.GetMonitor ());
+
+			string newSolutionFileText = File.ReadAllText (solutionFileName);
+			Assert.AreEqual ("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}", project.TypeGuid);
+			Assert.AreEqual (solutionFileText, newSolutionFileText);
+		}
 	}
 }

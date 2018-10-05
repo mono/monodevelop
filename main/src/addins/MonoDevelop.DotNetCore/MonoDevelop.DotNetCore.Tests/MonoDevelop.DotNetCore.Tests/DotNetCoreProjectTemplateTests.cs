@@ -174,6 +174,27 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateAndBuild (template, config);
 		}
 
+		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore22=true")]
+
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore22=true")]
+		public async Task NetCore22 (string templateId, string parameters)
+		{
+			if (!IsDotNetCoreSdk22Installed ()) {
+				Assert.Ignore (".NET Core 2.2 SDK is not installed - required by project template.");
+			}
+
+			var config = CreateNewProjectConfig ("NetCore2x", templateId, parameters);
+			SolutionTemplate template = FindTemplate (templateId, config);
+
+			await CreateAndBuild (template, config);
+		}
+
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
@@ -238,6 +259,25 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateAndBuild (template, config);
 		}
 
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore22=true")]
+		public async Task AspNetCore22 (string templateId, string parameters)
+		{
+			if (!IsDotNetCoreSdk22Installed ()) {
+				Assert.Ignore (".NET Core 2.2 SDK is not installed - required by project template.");
+			}
+
+			var config = CreateNewProjectConfig ("NetCore2x", templateId, parameters);
+			SolutionTemplate template = FindTemplate (templateId, config);
+
+			await CreateAndBuild (template, config);
+		}
+
 		static bool IsDotNetCoreSdk2xInstalled ()
 		{
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 2);
@@ -252,6 +292,11 @@ namespace MonoDevelop.DotNetCore.Tests
 		static bool IsDotNetCoreSdk21Installed ()
 		{
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 1 && version.Patch >= 300);
+		}
+
+		static bool IsDotNetCoreSdk22Installed ()
+		{
+			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
 		}
 
 		NewProjectConfiguration CreateNewProjectConfig (string baseName, string templateId, string parameters)
@@ -334,6 +379,8 @@ namespace MonoDevelop.DotNetCore.Tests
 			// the restore to fail on Mono.
 			RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solution.FileName}\"");
 			RunMSBuild ($"/t:Build \"{solution.FileName}\"");
+
+			CheckProjectTypeGuids (solution, GetProjectTypeGuid (template));
 		}
 
 		void RunMSBuild (string arguments)
@@ -341,6 +388,23 @@ namespace MonoDevelop.DotNetCore.Tests
 			var process = Process.Start ("msbuild", arguments);
 			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
 			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
+		}
+
+		static void CheckProjectTypeGuids (Solution solution, string expectedProjectTypeGuid)
+		{
+			foreach (Project project in solution.GetAllProjects ()) {
+				Assert.AreEqual (expectedProjectTypeGuid, project.TypeGuid);
+			}
+		}
+
+		static string GetProjectTypeGuid (SolutionTemplate template)
+		{
+			string language = GetLanguage (template.Id);
+			if (language == "F#")
+				return "{F2A71F9B-5D33-465A-A702-920D77279786}";
+
+			// C#
+			return "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
 		}
 	}
 }

@@ -38,7 +38,7 @@ using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public struct SearchPopupSearchPattern
+	public readonly struct SearchPopupSearchPattern
 	{
 		public readonly string Tag;
 		public readonly string Pattern;

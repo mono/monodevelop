@@ -77,7 +77,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (name == null) {
 					int i = FullName.IndexOf (',');
 					if (i != -1)
-						name = FullName.Substring (0, i).Trim ();
+						name = FullName.AsSpan (0, i).Trim ().ToString ();
 					else
 						name = FullName;
 				}

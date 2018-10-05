@@ -1066,7 +1066,28 @@ namespace MonoDevelop.Ide
 
 		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, ConfigurationSelector configuration, RunConfiguration runConfiguration, bool buildBeforeExecuting)
 		{
-			var metadata = new CounterMetadata ();
+			ProjectEventMetadata eventMetadata = null;
+
+			if (entry is Solution solution) {
+				SolutionItem solutionItem = null;
+				if (runConfiguration == null) {
+					solutionItem = solution.StartupItem;
+				} else if (runConfiguration is SingleItemSolutionRunConfiguration singleItemSolution) {
+					solutionItem = singleItemSolution.Item;
+				}
+
+				if (solutionItem != null) {
+					eventMetadata = solutionItem.CreateProjectEventMetadata (configuration);
+				}
+			} else if (entry is SolutionItem item) {
+				eventMetadata = item.CreateProjectEventMetadata (configuration);
+			}
+
+			var metadata = new BuildAndDeployMetadata (eventMetadata);
+
+			// CheckAndBuildForExecute may open a dialog, so track that here if it does
+			metadata.BuildWithoutPrompting = IdeApp.Preferences.BuildBeforeExecuting;
+
 			metadata.SetSuccess ();
 			Counters.BuildAndDeploy.BeginTiming ("Execute", metadata);
 			Counters.TrackingBuildAndDeploy = true;
@@ -1088,12 +1109,19 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (buildBeforeExecuting) {
+				Stopwatch buildTimer = new Stopwatch ();
+				buildTimer.Start ();
+
 				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration)) {
 					metadata.SetFailure ();
 					Counters.TrackingBuildAndDeploy = false;
 					Counters.BuildAndDeploy.EndTiming ();
+					buildTimer.Stop ();
 					return;
 				}
+
+				buildTimer.Stop ();
+				metadata.BuildTime = buildTimer.ElapsedMilliseconds;
 			}
 
 			ProgressMonitor monitor = new ProgressMonitor (cs);
@@ -1351,9 +1379,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		static IBuildTarget[] GetBuildTargetsForExecution (IBuildTarget executionTarget, RunConfiguration runConfiguration)
+		internal static IBuildTarget[] GetBuildTargetsForExecution (IBuildTarget executionTarget, RunConfiguration runConfiguration)
 		{
 			if (executionTarget is Solution sol) {
+				if (runConfiguration == null) {
+					runConfiguration = sol.StartupConfiguration;
+				}
 				if (runConfiguration is SingleItemSolutionRunConfiguration src) {
 					return new [] { src.Item };
 				}
@@ -1441,7 +1472,10 @@ namespace MonoDevelop.Ide
 			var executionDeps = executionTargets.SelectMany (et => et.GetExecutionDependencies ());
 			IBuildTarget buildTarget = SolutionItemBuildBatch.Create (executionDeps);
 
-			if (!FastCheckNeedsBuild (buildTarget, configuration)) {
+			var context = new TargetEvaluationContext ();
+			context.GlobalProperties.SetValue ("IsBuildingForExecution", true);
+
+			if (!FastCheckNeedsBuild (buildTarget, configuration, context)) {
 				return true;
 			}
 
@@ -1466,7 +1500,7 @@ namespace MonoDevelop.Ide
 				prepareExecutionTask = RunPrepareExecutionTasks ();
 			}
 
-			BuildResult result = await Build (buildTarget, token).Task;
+			BuildResult result = await Build (buildTarget, token, context).Task;
 
 			if (result.HasErrors || (cancelOnWarning && result.HasWarnings)) {
 				prepareOpTokenSource?.Cancel ();
@@ -1528,7 +1562,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		/// <param name="target">The build target to check.</param>
 		/// <param name="configuration">The build configuration selector.</param>
-		static bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		static bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (FastBuildCheckDisabled ()) {
 				return true;
@@ -1560,7 +1594,7 @@ namespace MonoDevelop.Ide
 			}
 
 			foreach (var item in items) {
-				if (!(item is Project p) || p.FastCheckNeedsBuild (configuration, InitOperationContext (target, new TargetEvaluationContext ()))) {
+				if (!(item is Project p) || p.FastCheckNeedsBuild (configuration, InitOperationContext (target, context))) {
 					return true;
 				}
 			}

@@ -2,6 +2,7 @@
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -21,11 +22,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
   <ItemGroup>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -57,8 +53,6 @@
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Posix" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -118,7 +112,7 @@
       <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
@@ -3572,8 +3566,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\PropertyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\SolutionNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ReferenceNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeedbackDialog.cs" />
-    <Compile Include="MonoDevelop.Ide\FeedbackService.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\IUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\AddinsUpdateHandler.cs" />
@@ -3596,7 +3588,6 @@
     <Compile Include="MonoDevelop.Ide\LogReportingStartup.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ExportSolutionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
-    <Compile Include="MonoDevelop.Ide.Extensions\ServiceUrlExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectCreatedEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Ambience.cs" />
@@ -4198,6 +4189,12 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.Shims.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.MetadataReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.ProjectSystemHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\IInfoBarHost.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopAnalyzer.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\HostDiagnosticUpdateSource.cs" />
+    <Compile Include="MonoDevelop.Ide\ProductInformationProvider.cs" />
+    <Compile Include="MonoDevelop.Ide\RuntimeVersionInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

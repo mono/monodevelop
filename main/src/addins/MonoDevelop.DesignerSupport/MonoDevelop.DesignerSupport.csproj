@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,14 +17,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
-    <Reference Include="Mono.Posix" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Cairo" />
     <Reference Include="System.Reflection.Metadata">
       <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
@@ -131,6 +125,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ImplicitFrameworkAssemblyReferenceDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

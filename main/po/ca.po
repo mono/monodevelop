@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop rev62170\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 13:53:44+0300\n"
+"POT-Creation-Date: 2018-09-06 14:03:38+0300\n"
 "PO-Revision-Date: 2008-12-15 02:13+0200\n"
 "Last-Translator: Jordi Mas i Hernàndez <jmas@softcatala.org>\n"
 "Language-Team: Catalan\n"
@@ -643,7 +643,7 @@ msgstr ""
 msgid ".NET Portable:"
 msgstr "Programa .NET"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:306
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:301
 #, fuzzy
 msgid ".NET Resource Files"
 msgstr "Fitxers de recursos"
@@ -726,15 +726,15 @@ msgstr ""
 msgid "3D based graphical application"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
 msgid "3rd copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
 msgid "4th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
 msgid "5th copy"
 msgstr ""
 
@@ -742,19 +742,19 @@ msgstr ""
 msgid "64-bit"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2366
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
 msgid "6th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2367
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
 msgid "7th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2368
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2371
 msgid "8th copy"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2369
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2372
 msgid "9th copy"
 msgstr ""
 
@@ -866,7 +866,7 @@ msgid ""
 "No ChangeLog entries will be generated for this project."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:432
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:384
 #, fuzzy
 msgid "<b>Error</b>: {0}"
 msgstr "<b>Fallides</b>"
@@ -1100,7 +1100,7 @@ msgid ""
 "<b>User credentials are required to access the Subversion repository.</b>"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:429
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:381
 #, fuzzy
 msgid "<b>Warning</b>: {0}"
 msgstr "<b>Avís de l'analitzador</b>: {0}"
@@ -2584,7 +2584,7 @@ msgstr ""
 msgid "Adding failed"
 msgstr "S'estant afegint els fitxers..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1920
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1923
 msgid "Adding files..."
 msgstr "S'estant afegint els fitxers..."
 
@@ -2943,7 +2943,7 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2058
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2061
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3027,7 +3027,7 @@ msgstr "Interromp quan l'expressió canviï"
 msgid "Android"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
 msgid "Animates the text editor caret to help find it"
 msgstr ""
 
@@ -3478,7 +3478,7 @@ msgstr "Arguments"
 msgid "Argument is not used in format string"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:359
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:354
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:100
 msgid "Arguments"
 msgstr "Arguments"
@@ -3502,7 +3502,7 @@ msgstr ""
 msgid "Ask"
 msgstr "Demana"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:300
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:295
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:154
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/AssemblyDependenciesNode.cs:53
 msgid "Assemblies"
@@ -4095,7 +4095,7 @@ msgstr "_Munta"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:21
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:45
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:54
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1501
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:95
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:50
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:98
@@ -4146,7 +4146,7 @@ msgstr "Munta tots els projectes de totes les solucions"
 msgid "Build and run the current solution"
 msgstr "Munta el projecte actual"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1767
 #, fuzzy
 msgid "Build canceled."
 msgstr "S'ha cancel·lat el muntatge"
@@ -4165,8 +4165,8 @@ msgstr "Munta el projecte actual"
 msgid "Build failed"
 msgstr "Muntatge fallit."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1638
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1641
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1775
 msgid "Build failed."
 msgstr "Muntatge fallit."
 
@@ -4201,7 +4201,7 @@ msgstr "Munta la solució {0}"
 msgid "Build succeeded"
 msgstr "S'ha cancel·lat el muntatge"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1766
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1769
 msgid "Build successful."
 msgstr "Muntatge amb èxit."
 
@@ -4222,12 +4222,12 @@ msgstr "Munta el projecte actual"
 msgid "Build {0}"
 msgstr "Munta {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1768
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1770
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1771
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1773
 msgid "Build: "
 msgstr "Muntatge: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1748
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1751
 msgid "Build: {0} succeeded, {1} failed, {2} up-to-date, {3} skipped"
 msgstr ""
 
@@ -5475,7 +5475,7 @@ msgstr "_Neteja les cerques recents"
 msgid "Clear Recent Solutions"
 msgstr "Neteja les solucions recents"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1002
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
 msgid "Clear bookmarks"
 msgstr "Neteja les adreces d'interès"
 
@@ -5585,10 +5585,6 @@ msgstr "Torna a muntar el projecte actual"
 msgid "Click to remove this custom command"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:95
-msgid "Click to send feedback to the development team"
-msgstr ""
-
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:111
 msgid "Click to set the currently selected runtime as default"
 msgstr ""
@@ -5619,7 +5615,7 @@ msgstr "Tanca tots els fitxers"
 msgid "Close MonoDevelop"
 msgstr "Amaga el MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2452
 msgid "Close Project"
 msgstr "Tanca el projecte"
 
@@ -5775,7 +5771,7 @@ msgstr "Estil del text"
 msgid "Code block preferences:"
 msgstr "Referències seleccionades:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2510
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2513
 msgid "Code completion database generation"
 msgstr ""
 
@@ -5914,7 +5910,7 @@ msgstr "Comenta o descomenta les línies de codi seleccionades"
 msgid "Comment:"
 msgstr "Comentari:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:290
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:285
 msgid "Comments"
 msgstr "Comentaris"
 
@@ -6011,12 +6007,12 @@ msgstr "Opcions del compilador"
 msgid "Compiling resource {0} with {1}"
 msgstr "S'està compilant el recurs {0} amb {1}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1020
 #, fuzzy
 msgid "Complete Word"
 msgstr "Espais de nom imbricats"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1160
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1155
 #, fuzzy
 msgid "Complete current statement"
 msgstr "Completa la sentència actual"
@@ -6030,7 +6026,7 @@ msgstr "Espais de nom imbricats"
 msgid "Complete with Space or Punctuation"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1156
 msgid "Completes the current statement"
 msgstr "Completa la sentència actual"
 
@@ -6493,7 +6489,7 @@ msgstr "<b>Directori de sortida</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:359
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2231
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2234
 msgid "Copying files..."
 msgstr "S'estan copiant els fitxers..."
 
@@ -6537,7 +6533,7 @@ msgid ""
 "Could not create credential response object because the response was invalid."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2212
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2215
 msgid "Could not create directory '{0}'."
 msgstr "No s'ha pogut crear el directori '{0}'."
 
@@ -6570,7 +6566,7 @@ msgid ""
 "project configurations."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2185
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2188
 msgid "Could not get any file from '{0}'."
 msgstr "No s'ha pogut obtenir cap fitxer des de '{0}'."
 
@@ -7583,7 +7579,7 @@ msgstr "Re_talla"
 msgid "Cut the selection"
 msgstr "Retalla la selecció"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1191
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1186
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
@@ -7936,7 +7932,7 @@ msgstr "Suprimeix també configuracions dels elements de la solució"
 msgid "Delete current layout"
 msgstr "Suprimeix la disposició actual"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1074
 msgid "Delete entire line"
 msgstr "Suprimeix la línia sencera"
 
@@ -7945,27 +7941,27 @@ msgstr "Suprimeix la línia sencera"
 msgid "Delete from Disk"
 msgstr "Suprimeix comentari de la tasca"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1045
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1040
 msgid "Delete left character"
 msgstr "Suprimeix el caràcter de l'esquerre"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1170
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1165
 msgid "Delete next subword"
 msgstr "Suprimeix la sota-paraula posterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1166
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1161
 msgid "Delete next word"
 msgstr "Suprimeix la paraula següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1168
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1163
 msgid "Delete previous subword"
 msgstr "Suprimeix la sota-paraula anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1164
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1159
 msgid "Delete previous word"
 msgstr "Suprimeix la paraula anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1047
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1042
 msgid "Delete right character"
 msgstr "Suprimeix el caràcter de la dreta"
 
@@ -7982,11 +7978,11 @@ msgstr ""
 msgid "Delete the selection"
 msgstr "Suprimeix la selecció"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1078
 msgid "Delete to end of line"
 msgstr "Suprimeix fins al final de la línia"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1081
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1076
 #, fuzzy
 msgid "Delete to start of line"
 msgstr "Suprimeix fins al final de la línia"
@@ -8013,7 +8009,7 @@ msgid ""
 "defined name2 group and the current group."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1084
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1079
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
 "Suprimeix fins al final de la línia, o si és al final, suprimeix el final de "
@@ -8245,7 +8241,7 @@ msgstr "Directoris"
 msgid "Directory"
 msgstr "Directori"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2223
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2226
 #, fuzzy
 msgid "Directory '{0}' could not be moved."
 msgstr "No s'ha pogut suprimir el directori '{0}'."
@@ -8671,16 +8667,16 @@ msgstr "Baixa"
 msgid "Downloads"
 msgstr "Baixa"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:884
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:879
 #, fuzzy
 msgid "Dump Accessibility Tree"
 msgstr "_Visibilitat:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:887
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:882
 msgid "Dump Accessibility Tree (10s)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "Dump UI Tree"
 msgstr ""
 
@@ -8700,7 +8696,7 @@ msgstr "Muntatge: "
 msgid "Duplicate Configuration"
 msgstr "Suprimeix la configuració"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1187
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1182
 #, fuzzy
 msgid "Duplicate line"
 msgstr "Muntatge: "
@@ -8714,7 +8710,7 @@ msgstr "Muntatge: "
 msgid "Dutch"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
 msgid "Dynamic abbrev"
 msgstr ""
 
@@ -10047,64 +10043,64 @@ msgstr "Expansiona-ho tot"
 msgid "Expand matches"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1137
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1132
 msgid "Expand selection to document end"
 msgstr "Expandeix la selecció al final del document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1135
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1130
 msgid "Expand selection to document start"
 msgstr "Expandeix la selecció a l'inici del document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1139
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1134
 #, fuzzy
 msgid "Expand selection to line"
 msgstr "Expandeix la selecció al final de la línia"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1133
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1128
 msgid "Expand selection to line end"
 msgstr "Expandeix la selecció al final de la línia"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1131
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1126
 msgid "Expand selection to line start"
 msgstr "Expandeix la selecció a l'inici de la línia"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1129
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1124
 msgid "Expand selection to next line"
 msgstr "Expandeix la selecció a la línia següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1125
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1120
 msgid "Expand selection to next subword"
 msgstr "Expandeix la selecció a sota-paraula següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1117
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1112
 msgid "Expand selection to next word"
 msgstr "Expandeix la selecció a paraula següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1167
 msgid "Expand selection to page down"
 msgstr "Expandeix la selecció a la pàgina d'avall"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1174
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1169
 msgid "Expand selection to page up"
 msgstr "Expandeix la selecció a la pàgina de dalt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1127
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1122
 msgid "Expand selection to previous line"
 msgstr "Expandeix la selecció a la línia anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1123
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1118
 msgid "Expand selection to previous subword"
 msgstr "Expandeix la selecció a sota-paraula anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1115
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1110
 msgid "Expand selection to previous word"
 msgstr "Expandeix la selecció a paraula anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1107
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1102
 msgid "Expand selection to the left"
 msgstr "Expandeix la selecció cap a la dreta"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1109
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1104
 msgid "Expand selection to the right"
 msgstr "Expandeix la selecció cap a l'esquerra"
 
@@ -10367,7 +10363,7 @@ msgstr "Fitxers del _projecte"
 msgid "F# script files"
 msgstr "Seleccioneu el fitxer"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:944
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:939
 msgid "F_ind in Files..."
 msgstr "C_erca als fitxers..."
 
@@ -10459,13 +10455,7 @@ msgid "Falling blocks game"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:46
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:85
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:94
 msgid "Feedback"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:186
-msgid "Feedbacks sent: {0}"
 msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/Gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:307
@@ -10529,12 +10519,12 @@ msgstr "Camps"
 msgid "File"
 msgstr "Fitxer"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2269
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2272
 #, fuzzy
 msgid "File '{0}' could not be copied."
 msgstr "No s'ha pogut obrir el fitxer '{0}'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2267
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2270
 #, fuzzy
 msgid "File '{0}' could not be moved."
 msgstr "No s'ha pogut obrir el fitxer '{0}'."
@@ -10841,7 +10831,7 @@ msgstr "Cerca c_lasses derivades"
 msgid "Find Indexer Overloads"
 msgstr "_Cerca referències"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1012
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1007
 #, fuzzy
 msgid "Find Like Selection"
 msgstr "Cerca la següent selecció"
@@ -10859,12 +10849,12 @@ msgstr "_Cerca referències"
 msgid "Find Method Overloads"
 msgstr "_Cerca referències"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:932
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
 #, fuzzy
 msgid "Find Next Like Selection"
 msgstr "Cerca la següent selecció"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:937
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:932
 #, fuzzy
 msgid "Find Previous Like Selection"
 msgstr "Cerca l'_anterior selecció"
@@ -10879,28 +10869,28 @@ msgstr "Extensió"
 msgid "Find _Derived Symbols"
 msgstr "Defineix els símbols:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:910
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
 msgid "Find _Next"
 msgstr "Cerca la _següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
 msgid "Find _Next (Emacs behavior)"
 msgstr "_Cerca el següent (amb comportament Emacs)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:916
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:911
 msgid "Find _Previous"
 msgstr "Cerca l'_anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:927
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:922
 msgid "Find _Previous (Emacs behavior)"
 msgstr "_Cerca l'anterior (amb comportament Emacs)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:960
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:955
 #, fuzzy
 msgid "Find and run a specific command."
 msgstr "_Pregunta els arguments"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1190
 #, fuzzy
 msgid "Find caret"
 msgstr "Cerca la _següent"
@@ -11233,11 +11223,6 @@ msgstr "Torna a carregar el projecte o solució seleccionat"
 msgid "From type:\t{0}"
 msgstr "Forma {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:137
-#, fuzzy
-msgid "From: {0}"
-msgstr "Forma {0}"
-
 #: ../src/addins/CSharpBinding/Gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:171
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:185
 msgid "Full"
@@ -11280,7 +11265,7 @@ msgstr "Defineix els símbols:"
 msgid "GNOME Desktop"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:278
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:273
 msgid "GNU/Emacs"
 msgstr "GNU/Emacs"
 
@@ -11394,7 +11379,7 @@ msgstr "General"
 msgid "General Options"
 msgstr "Opcions generals"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:368
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:363
 #, fuzzy
 msgid "General Pad Text"
 msgstr "General"
@@ -11755,7 +11740,7 @@ msgstr "Vés enrere una pàgina"
 msgid "Go back to the home page"
 msgstr "Torna a la pàgina d'inici"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1058
 msgid "Go down one page"
 msgstr "Vés avall una pàgina"
 
@@ -11763,11 +11748,11 @@ msgstr "Vés avall una pàgina"
 msgid "Go forward one page"
 msgstr "Vés endavant una pàgina"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1049
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1044
 msgid "Go left one character"
 msgstr "Vés a l'esquerra un caràcter"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1051
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1046
 msgid "Go right one character"
 msgstr "Vés a la dreta un caràcter"
 
@@ -11786,32 +11771,32 @@ msgstr "Controlador..."
 msgid "Go to Download Page"
 msgstr "Baixa"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:972
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:967
 msgid "Go to File..."
 msgstr "Vés al fitxer..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1006
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1001
 #, fuzzy
 msgid "Go to Line..."
 msgstr "_Vés a la línia..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1101
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1103
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1098
 #, fuzzy
 msgid "Go to Matching Brace"
 msgstr "Vés a la _clau coincident"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:999
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:994
 #, fuzzy
 msgid "Go to Next Bookmark"
 msgstr "Vés a l'adreça d'interès següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:988
 #, fuzzy
 msgid "Go to Previous Bookmark"
 msgstr "Vés a l'adreça d'interès anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:965
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:960
 msgid "Go to Type..."
 msgstr "Vés al tipus..."
 
@@ -11883,23 +11868,23 @@ msgstr "_Vés a"
 msgid "Go to _Reference"
 msgstr "Mostra la referència de l'error"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1003
 msgid "Go to a specific line"
 msgstr "Vés a una línia específica"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1057
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1052
 msgid "Go to beginning of document"
 msgstr "Vés al començament del document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1043
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
 msgid "Go to beginning of line"
 msgstr "Vés al començament de la línia"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1059
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1054
 msgid "Go to end of document"
 msgstr "Vés al final del document"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1036
 msgid "Go to end of line"
 msgstr "Vés al final de la línia"
 
@@ -11907,39 +11892,39 @@ msgstr "Vés al final de la línia"
 msgid "Go to failure"
 msgstr "Vés a la fallida"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:997
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
 msgid "Go to next bookmark"
 msgstr "Vés a l'adreça d'interès següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1055
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1050
 msgid "Go to next line"
 msgstr "Vés a la línia següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1121
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1116
 msgid "Go to next subword"
 msgstr "Vés a la sota-paraula següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1113
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1108
 msgid "Go to next word"
 msgstr "Vés a la paraula següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:991
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
 msgid "Go to previous bookmark"
 msgstr "Vés a l'adreça d'interès anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1053
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1048
 msgid "Go to previous line"
 msgstr "Vés a la línia anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1119
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1114
 msgid "Go to previous subword"
 msgstr "Vés a la sota-paraula anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1111
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1106
 msgid "Go to previous word"
 msgstr "Vés a la paraula anterior"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1061
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1056
 msgid "Go up one page"
 msgstr "Vés amunt una pàgina"
 
@@ -12144,7 +12129,7 @@ msgstr "Aplicació Web"
 msgid "Hide Categories"
 msgstr "Categories:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1202
 #, fuzzy
 msgid "Hide Current Message"
 msgstr "Torna a carregar la pàgina actual"
@@ -12623,7 +12608,7 @@ msgid ""
 "browser"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1080
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/MSBuildEvaluationContext.cs:1088
 msgid ""
 "Importing the file \"{0}\" into the file \"{1}\" results in a circular "
 "dependency."
@@ -12964,7 +12949,7 @@ msgstr ""
 msgid "Insert Separator Before"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
 #, fuzzy
 msgid "Insert Snippet..."
 msgstr "I_nsereix una plantilla..."
@@ -12992,11 +12977,11 @@ msgstr ""
 msgid "Insert format argument"
 msgstr "_Pregunta els arguments"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1154
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1149
 msgid "Insert line break after the caret"
 msgstr "Insereix el salt de línia després del cursor"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1147
 msgid "Insert new line"
 msgstr "Insereix una línia nova"
 
@@ -13089,7 +13074,7 @@ msgstr ""
 msgid "Insert space within square brackets"
 msgstr "_Insereix la clau coincident"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1148
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
 msgid "Insert tab"
 msgstr "Insereix una tabulació"
 
@@ -13098,7 +13083,7 @@ msgstr "Insereix una tabulació"
 msgid "Inserts a Guid at caret position"
 msgstr "Mostra les proves fallides"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1028
 #, fuzzy
 msgid "Inserts a snippet"
 msgstr "I_nsereix una plantilla..."
@@ -13465,11 +13450,11 @@ msgstr "_Uneix les línies"
 msgid "Join the current line with the next line"
 msgstr "Uneix la línia actual amb la següent línia"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:975
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:970
 msgid "Jump to a file in the current workspace"
 msgstr "Vés al fitxer en l'espai de treball actual"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:979
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:974
 msgid "Jump to a item in the current workspace"
 msgstr "Vés a l'element a l'espai de treball actual"
 
@@ -13488,7 +13473,7 @@ msgstr ""
 msgid "Jump to line {0}"
 msgstr "Obre la solució {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:966
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:961
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "Vés a la declaració del tipus a l'espai de treball actual"
 
@@ -13515,7 +13500,7 @@ msgid "Keep Current Identifiers"
 msgstr "Document actual"
 
 #
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1829
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1832
 #, fuzzy
 msgid "Keep file path"
 msgstr "Copia el camí i nom del fitxer"
@@ -14115,7 +14100,7 @@ msgstr ""
 msgid "Lowercase Selection"
 msgstr "Selecciona minúscu_les"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:318
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:313
 #, fuzzy
 msgid "MD Workbench"
 msgstr "S'està carregant el banc de treball"
@@ -14310,7 +14295,7 @@ msgstr ""
 msgid "Manifest File"
 msgstr "Fitxer objectiu"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:885
 #, fuzzy
 msgid "Mark Log"
 msgstr "Registre de missatges"
@@ -14465,7 +14450,7 @@ msgid ""
 "is interpreted as an expression test."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1100
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1095
 #, fuzzy
 msgid "Matching _Brace"
 msgstr "Vés a la _clau coincident"
@@ -14762,7 +14747,7 @@ msgstr "Documentació del Mono"
 msgid "Mono Path"
 msgstr "Camí del Mono"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:288
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
 msgid "Mono Project"
 msgstr "Projecte Mono"
 
@@ -14782,12 +14767,12 @@ msgid "Mono runtime settings:"
 msgstr "Fitxer no trobat: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:229
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:287
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:286
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:559
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:282
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:277
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop 1.0"
 
@@ -14795,7 +14780,7 @@ msgstr "MonoDevelop 1.0"
 msgid "MonoDevelop 1.0 Solution"
 msgstr "Solució del MonoDevelop 1.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:283
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:278
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
@@ -14875,7 +14860,7 @@ msgstr ""
 msgid "More..."
 msgstr "Més..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1157
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1152
 msgid "Move caret to EOL and insert new line"
 msgstr "Mou el cursor al final de línia i insereix una línia nova"
 
@@ -14887,11 +14872,11 @@ msgstr "Mou el cursor a l'error següent o cerca una coincidència"
 msgid "Move cursor to previous error or search match"
 msgstr "Mou el cursor a l'error anterior o cerca una coincidència"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1092
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1087
 msgid "Move the line or highlighted selection down"
 msgstr "Mou la línia o la selecció ressaltada cap abaix"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1088
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1083
 msgid "Move the line or highlighted selection up"
 msgstr "Mou la línia o la selecció ressaltada cap amunt"
 
@@ -14936,7 +14921,7 @@ msgid "Moving files"
 msgstr "S'estan copiant els fitxers..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2232
 #, fuzzy
 msgid "Moving files..."
 msgstr "S'estan copiant els fitxers..."
@@ -15203,7 +15188,7 @@ msgstr "Nadiu"
 msgid "Navigate"
 msgstr "Navega a"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:973
 msgid "Navigate To..."
 msgstr "Navega a..."
 
@@ -15223,7 +15208,7 @@ msgstr "Navega l'històric"
 msgid "Navigation _History"
 msgstr "_Històric de navegació"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:993
 msgid "Ne_xt"
 msgstr ""
 
@@ -16232,7 +16217,7 @@ msgid "Other entries"
 msgstr "Altres entrades"
 
 #
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1504
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1507
 #, fuzzy
 msgid "Outdated Build"
 msgstr "Després de muntar"
@@ -16244,7 +16229,7 @@ msgstr "Després de muntar"
 msgid "Output"
 msgstr "Sortida"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:369
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:364
 #, fuzzy
 msgid "Output Pad Contents"
 msgstr "Camí de sortida:"
@@ -16891,18 +16876,9 @@ msgstr "Plataforma:"
 msgid "Please enter a valid configuration name."
 msgstr "Si us plau, introduïu un nom de configuració vàlid."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:83
-#, fuzzy
-msgid "Please enter a valid e-mail address"
-msgstr "Si us plau, introduïu un nom de projecte vàlid"
-
 #: ../src/addins/MonoDevelop.Autotools/ImportMakefileDialog.cs:63
 msgid "Please enter a valid project name"
 msgstr "Si us plau, introduïu un nom de projecte vàlid"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:103
-msgid "Please enter some feedback"
-msgstr ""
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:187
 msgid "Please enter the password for your private key for the XSP Web Server"
@@ -17086,7 +17062,7 @@ msgstr ""
 msgid "Pr_eferences..."
 msgstr "Preferències..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:992
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
 #, fuzzy
 msgid "Pre_vious"
 msgstr "Mostra l'anterior"
@@ -17486,7 +17462,7 @@ msgstr "Directori del _projecte"
 msgid "Project File"
 msgstr "Directoris del projecte"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:315
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:310
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:823
 #, fuzzy
 msgid "Project Files"
@@ -17891,7 +17867,7 @@ msgstr "_Desa i surt"
 msgid "R_eplace"
 msgstr "_Reemplaça"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:950
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:945
 msgid "R_eplace in Files..."
 msgstr "R_eemplaça als fitxers..."
 
@@ -17976,7 +17952,7 @@ msgstr "Suprimeix la plantilla"
 msgid "Razor templates are only supported in C# projects"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:286
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:281
 msgid "ReSharper / Rider"
 msgstr ""
 
@@ -18590,7 +18566,7 @@ msgstr "Opcions ASP.NET"
 msgid "Remove submenu (Ctrl+Left)"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1150
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
 msgid "Remove tab"
 msgstr "Suprimeix la tabulació"
 
@@ -18839,7 +18815,7 @@ msgstr "S'està reemplaçant '{0}' a {1}."
 msgid "Replace '{0}--' with '{0} -= 1'"
 msgstr "S'està reemplaçant '{0}' a {1}."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1010
 #, fuzzy
 msgid "Replace Like Selection"
 msgstr "Canvia el nom de la selecció"
@@ -19107,7 +19083,7 @@ msgstr "S'està reemplaçant el fitxer existent '{0}'"
 msgid "Replay Session..."
 msgstr "_Reemplaça..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:292
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:291
 #, fuzzy
 msgid "Report Problem..."
 msgstr "_Exporta..."
@@ -19997,7 +19973,7 @@ msgstr "Anomena i desa..."
 msgid "Save build output"
 msgstr "Mostra la sortida del muntatge"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1679
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1682
 #, fuzzy
 msgid "Save changed documents before building?"
 msgstr "Voleu desar els canvis al document '{0}' abans de tancar?"
@@ -20150,32 +20126,32 @@ msgstr ""
 msgid "Script name:"
 msgstr "Nom de l'script:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1063
 msgid "Scroll line down"
 msgstr "Desplaça una línia cap abaix"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1065
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1060
 msgid "Scroll line up"
 msgstr "Desplaça una línia cap amunt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1073
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1068
 msgid "Scroll page down"
 msgstr "Desplaça una pàgina cap abaix"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1071
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1066
 msgid "Scroll page up"
 msgstr "Desplaça una pàgina cap amunt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1077
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1072
 msgid "Scroll to bottom"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1075
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1070
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Desplaça una línia cap amunt"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:889
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:239
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:170
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/SearchEntry.cs:166
@@ -20239,15 +20215,15 @@ msgstr "_Cerca a:"
 msgid "Search Types"
 msgstr "Resultats de la cerca"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:918
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:913
 msgid "Search backwards for the same text"
 msgstr "Cerca cap enrere el mateix text"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:929
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:924
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "Cerca cap enrere el mateix text amb comportament Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:938
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
 msgid "Search backwards for the selected text"
 msgstr "Cerca cap enrere el text seleccionat"
 
@@ -20269,11 +20245,11 @@ msgstr "Cerca completada."
 msgid "Search filter menu"
 msgstr "S'està cercant el membre..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:900
 msgid "Search for and replace text"
 msgstr "Cerca i reemplaça el text"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:953
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:948
 msgid "Search for and replace text in all files of a directory"
 msgstr "Cerca i reemplaça text en tots els fitxers d'un directori"
 
@@ -20282,11 +20258,11 @@ msgstr "Cerca i reemplaça text en tots els fitxers d'un directori"
 msgid "Search for members"
 msgstr "S'està cercant el membre..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:894
 msgid "Search for text"
 msgstr "Cerca un text"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:947
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:942
 msgid "Search for text in all files of a directory"
 msgstr "Cerca el text a tots els fitxers d'un directori"
 
@@ -20300,15 +20276,15 @@ msgstr "Cerca un text"
 msgid "Search for types and members"
 msgstr "Cerca per tipus o membres"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:912
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:907
 msgid "Search forwards for the same text"
 msgstr "Cerca cap endavant el mateix text"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:925
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:920
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "Cerca cap endavant el mateix text amb comportament Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:933
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:928
 msgid "Search forwards for the selected text"
 msgstr "Cerca cap endavant el text seleccionat"
 
@@ -21072,17 +21048,8 @@ msgid ""
 "a 32-bit build)."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:114
-msgid "Send Feedback"
-msgstr ""
-
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:261
 msgid "Send current file to F# Interactive"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:878
-msgid "Send feedback to the MonoDevelop development team"
 msgstr ""
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml:275
@@ -21400,7 +21367,7 @@ msgstr "_Mostra a l'inici"
 msgid "Show Output"
 msgstr "Mostra sortida"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1096
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1091
 msgid "Show Parameter List"
 msgstr "Mostra la llista de paràmetres"
 
@@ -21437,7 +21404,7 @@ msgstr "Mostra l'anterior ({0})"
 msgid "Show Remote Status"
 msgstr "_Mostra a l'inici"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1222
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1217
 #, fuzzy
 msgid "Show Scopes"
 msgstr "Mostra els errors"
@@ -21602,7 +21569,7 @@ msgstr "Mostra només els membres públics i protegits"
 msgid "Show public members only"
 msgstr "Mostra només els membres públics"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1200
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1195
 msgid "Show quick info"
 msgstr ""
 
@@ -21677,12 +21644,12 @@ msgstr "Mostra la pàgina de benvinguda a l'inici"
 msgid "Show {0}"
 msgstr "Mostra {0}"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1208
 #, fuzzy
 msgid "Show/Hide Inline Messages"
 msgstr "Mostra els missatges"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1208
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1203
 msgid "Show/Hide current Inline Message"
 msgstr ""
 
@@ -21717,7 +21684,7 @@ msgstr ""
 msgid "Shows the source control log for the current file"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1201
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1196
 msgid "Shows the tooltip at editor positon"
 msgstr ""
 
@@ -21771,7 +21738,7 @@ msgstr "Mida"
 msgid "Size:"
 msgstr "Mida"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1910
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1913
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:177
 msgid "Skip"
 msgstr ""
@@ -21844,7 +21811,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:31
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:49
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:295
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:290
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SolutionPad.cs:54
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.cs:54
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/ProjectSearchCategory.fs:182
@@ -21868,7 +21835,7 @@ msgstr "Directori de la solució"
 msgid "Solution File"
 msgstr "Fitxer de la solució"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:312
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:307
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:749
 #, fuzzy
 msgid "Solution Files"
@@ -21984,7 +21951,7 @@ msgstr ""
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1680
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1683
 msgid "Some of the open documents have unsaved changes."
 msgstr ""
 
@@ -22798,7 +22765,7 @@ msgstr "Resum"
 msgid "Support"
 msgstr "Paràmeteres de compatibilitat GTK#..."
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1039
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
 msgid "Surround Selection With..."
 msgstr ""
 
@@ -22806,7 +22773,7 @@ msgstr ""
 msgid "Surround With..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1037
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1032
 msgid "Surrounds selection with a snippet when something is selected"
 msgstr ""
 
@@ -22815,7 +22782,7 @@ msgstr ""
 msgid "Swap parameter"
 msgstr "Mostra la llista de paràmetres"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1177
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1172
 msgid "Swaps the characters on either side of the caret"
 msgstr "Intercanvia els caràcters a ambdós costats del cursor"
 
@@ -22823,8 +22790,8 @@ msgstr "Intercanvia els caràcters a ambdós costats del cursor"
 msgid "Swedish"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1030
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1026
 #, fuzzy
 msgid "Switch Completion/Suggestion Mode"
 msgstr "Commuta els suggeriments de l'autocompletat"
@@ -22833,7 +22800,7 @@ msgstr "Commuta els suggeriments de l'autocompletat"
 msgid "Switch active layout"
 msgstr "Commuta la disposició activa"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1146
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
 msgid "Switch between insert and overwrite caret modes"
 msgstr ""
 
@@ -22845,7 +22812,7 @@ msgstr ""
 msgid "Switch between related files, such as CodeBehind, headers, etc."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1145
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1140
 msgid "Switch caret mode"
 msgstr ""
 
@@ -23097,10 +23064,6 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:59
 msgid "Telephony via PC"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:90
-msgid "Tell us how we can make {0} better."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:214
@@ -23427,9 +23390,9 @@ msgstr "Executa prova"
 msgid "Text"
 msgstr "Text"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1022
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1017
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:28
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:367
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:362
 #: ../src/addins/MonoDevelop.SourceEditor2/Mono.TextEditor/Gui/TextArea.cs:392
 msgid "Text Editor"
 msgstr "Editor de text"
@@ -23462,10 +23425,6 @@ msgstr "Plantilla de text"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:216
 msgid "Thai"
 msgstr "Tai"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:181
-msgid "Thank you for your feedback!"
-msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:401
 msgid ""
@@ -23778,7 +23737,7 @@ msgstr "No s'ha pogut suprimir el fitxer {0}"
 msgid "The file '{0}' already exists. Do you want to overwrite it?"
 msgstr "El fitxer '{0}' ja existeix. Voleu reemplaçar-lo?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2103
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "El fitxer '{0}' ja existeix. Voleu reemplaçar-lo?"
 
@@ -23864,7 +23823,7 @@ msgstr "El fitxer '{0}' ja existeix. Voleu reemplaçar-lo?"
 msgid "The file {0} could not be deleted"
 msgstr "No s'ha pogut suprimir el fitxer {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1843
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1846
 #, fuzzy
 msgid "The file {0} is outside the folder directory. What do you want to do?"
 msgstr "{0} està fora del directori del projecte, què faig?"
@@ -24039,7 +23998,7 @@ msgid ""
 "names include 'MyPackage' and 'MyPackage.Sample'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2086
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2089
 msgid "The link '{0}' in the project already includes the file '{1}'"
 msgstr ""
 
@@ -24238,7 +24197,7 @@ msgid ""
 "targetting ({2})"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2446
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2449
 #, fuzzy
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
@@ -24285,7 +24244,7 @@ msgstr ""
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1505
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1508
 #, fuzzy
 msgid ""
 "The project you are executing has changes done after the last time it was "
@@ -24953,7 +24912,7 @@ msgstr "Ja existeix una disposició amb aquest nom"
 msgid "There is a warning for the print expression"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2076
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2079
 #, fuzzy
 msgid "There is already a file in the project with the name '{0}'"
 msgstr "Ja existeix una disposició amb aquest nom"
@@ -24974,7 +24933,7 @@ msgstr "Ja existeix una disposició amb aquest nom"
 msgid "There is already a layout with that name"
 msgstr "Ja existeix una disposició amb aquest nom"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1960
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1963
 #, fuzzy
 msgid "There is already a link in the project with the name '{0}'"
 msgstr "Ja existeix una disposició amb aquest nom"
@@ -25407,7 +25366,7 @@ msgstr ""
 msgid "Toggle Action"
 msgstr "Acció"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1185
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1180
 #, fuzzy
 msgid "Toggle Block Selection Mode"
 msgstr "Commuta el mode de selecció per blocs"
@@ -25416,7 +25375,7 @@ msgstr "Commuta el mode de selecció per blocs"
 msgid "Toggle Breakpoint"
 msgstr "Commuta el punt de ruptura"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1218
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1213
 #, fuzzy
 msgid "Toggle Issues"
 msgstr "Acció"
@@ -25435,7 +25394,7 @@ msgstr "Acció"
 msgid "Toggle between search and replace mode"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:986
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:981
 msgid "Toggle bookmark"
 msgstr "Commuta l'adreça d'interès"
 
@@ -25485,11 +25444,11 @@ msgstr ""
 msgid "Toggles the folding at caret position."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1214
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
 msgid "Toggles the visibility of Inline Messages"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1209
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1204
 msgid "Toggles the visibility of the current Inline Message"
 msgstr ""
 
@@ -25651,7 +25610,7 @@ msgstr "Sortida del traductor"
 msgid "Transmitting file data"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1176
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1171
 msgid "Transpose characters"
 msgstr "Inverteix els caràcters"
 
@@ -26582,7 +26541,7 @@ msgstr "Tema de la interfície d'usuari:"
 msgid "User Task"
 msgstr "Tasca de l'usuari"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:291
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:286
 msgid "User Tasks"
 msgstr "Tasques de l'usuari"
 
@@ -26625,11 +26584,11 @@ msgstr "Usuari"
 msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1013
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1008
 msgid "Uses the current selection as find string"
 msgstr "Usa la selecció actual com a cadena de cerca"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1016
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1011
 msgid "Uses the current selection as replace string"
 msgstr "Usa la selecció actual com a cadena de reemplaçament"
 
@@ -26941,21 +26900,21 @@ msgstr "Mostra el codi font de la prova"
 msgid "Visual Design"
 msgstr "Disseny visual"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:279
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:274
 msgid "Visual Studio"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:280
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:275
 #, fuzzy
 msgid "Visual Studio (Mixed)"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:281
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:276
 #, fuzzy
 msgid "Visual Studio (Windows)"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:285
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:280
 #, fuzzy
 msgid "Visual Studio Code"
 msgstr "Visual Studio"
@@ -27508,7 +27467,7 @@ msgstr "XML"
 msgid "XML Filename"
 msgstr "Tots els fitxers"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:303
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:298
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:232
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:254
 #, fuzzy
@@ -27566,7 +27525,7 @@ msgid ""
 "to use Visual Studio, or Xamarin Studio on Mac."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:284
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:279
 #, fuzzy
 msgid "Xcode"
 msgstr "Unicode"
@@ -27654,10 +27613,6 @@ msgstr ""
 msgid ""
 "You need a newer monodoc to use it externally from MonoDevelop. Using the "
 "integrated help viewer now."
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:141
-msgid "Your feedbacks: {0}"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs:149
@@ -28124,7 +28079,7 @@ msgstr "_Tanca el fitxer"
 msgid "_Collapse All"
 msgstr "Col·lapsa-ho tot"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:957
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:952
 #, fuzzy
 msgid "_Command..."
 msgstr "_Ordre:"
@@ -28241,7 +28196,7 @@ msgstr "_Suprimeix disposició actual"
 msgid "_Description:"
 msgstr "_Descripció:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:297
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:296
 #: ../src/addins/PerformanceDiagnostics/PerformanceDiagnostics/Properties/PerformanceDiagnostics.addin.xml:25
 msgid "_Diagnostics"
 msgstr ""
@@ -28291,8 +28246,8 @@ msgstr "_Exclou tot"
 msgid "_Expand All"
 msgstr "Expansiona-ho tot"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1141
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1143
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1136
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1138
 #, fuzzy
 msgid "_Expand selection"
 msgstr "Expandeix la selecció a la pàgina de dalt"
@@ -28310,7 +28265,7 @@ msgstr "_Fitxer"
 msgid "_File Mask:"
 msgstr "_Màscara de fitxer:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:971
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:966
 msgid "_File..."
 msgstr "_Fitxer..."
 
@@ -28340,7 +28295,7 @@ msgstr "_Cerca referències"
 msgid "_Find References of All Overloads"
 msgstr "_Cerca referències"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:897
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:892
 msgid "_Find..."
 msgstr "_Cerca..."
 
@@ -28501,7 +28456,7 @@ msgstr "Mode de sag_nat:"
 msgid "_Initialize from profile:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:550
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:502
 msgid "_Input Methods"
 msgstr "_Mètodes d'entrada"
 
@@ -28552,7 +28507,7 @@ msgstr "_Finals de línies:"
 msgid "_Line endings:"
 msgstr "_Finals de línies:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1005
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1000
 #, fuzzy
 msgid "_Line..."
 msgstr "_Fitxer..."
@@ -28638,7 +28593,7 @@ msgstr "_Formata el document"
 msgid "_Next Tip"
 msgstr "Consell _següent"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1212
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1207
 #, fuzzy
 msgid "_None"
 msgstr "Cap"
@@ -28855,7 +28810,7 @@ msgstr "_Torna'l a carregar del disc"
 msgid "_Remove"
 msgstr "_Suprimeix"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1003
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:998
 #, fuzzy
 msgid "_Remove All Bookmarks"
 msgstr "_Neteja les adreces d'interès"
@@ -28901,7 +28856,7 @@ msgstr ""
 msgid "_Replace"
 msgstr "_Reemplaça"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:903
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:898
 msgid "_Replace..."
 msgstr "_Reemplaça..."
 
@@ -29079,7 +29034,7 @@ msgstr "_Signa aquest assemblat"
 msgid "_Smart semicolon placement"
 msgstr "_Ubicació intel·ligent de punt i coma"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1034
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1029
 #, fuzzy
 msgid "_Snippet..."
 msgstr "Projecte: {0}"
@@ -29117,7 +29072,7 @@ msgstr ""
 msgid "_Suppress"
 msgstr "Obre amb el navegador de fitxers"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1038
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:1033
 msgid "_Surround With..."
 msgstr ""
 
@@ -29146,7 +29101,7 @@ msgstr "_Consell del dia"
 msgid "_Title:"
 msgstr "_Títol:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:987
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:982
 msgid "_Toggle Bookmark"
 msgstr "_Commuta l'adreça d'interès"
 
@@ -29190,7 +29145,7 @@ msgstr ""
 msgid "_Translator name:"
 msgstr "_Nom del traductor:"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:964
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:959
 #, fuzzy
 msgid "_Type..."
 msgstr "Vés al tipus..."
@@ -29345,7 +29300,7 @@ msgstr ""
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2362
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2365
 msgid "another copy"
 msgstr ""
 
@@ -29367,11 +29322,11 @@ msgstr "columnes"
 msgid "comment block"
 msgstr "Comentaris"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2364
 msgid "copy"
 msgstr "copia"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2370
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:2373
 msgid "copy {0}"
 msgstr "copia {0}"
 
@@ -29418,11 +29373,6 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:84
 msgid "e.g. colorName == \"Red\""
 msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:68
-#, fuzzy
-msgid "email address"
-msgstr "Carrega l'adreça"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:180
 #, fuzzy
@@ -30063,7 +30013,7 @@ msgstr "Obté la del «get»"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1807
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1240
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1760
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1763
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:366
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:241
 msgid "{0} error"
@@ -30385,7 +30335,7 @@ msgstr "L'operació s'ha completat amb avisos."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1808
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1241
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1761
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1764
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
 #: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:239
 msgid "{0} warning"
@@ -32201,6 +32151,10 @@ msgstr ""
 #~ msgstr "MonoDevelop"
 
 #, fuzzy
+#~ msgid "From: {0}"
+#~ msgstr "Forma {0}"
+
+#, fuzzy
 #~ msgid "Function name not specified"
 #~ msgstr "Arguments de la funció"
 
@@ -32893,6 +32847,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "Platform Target"
 #~ msgstr "Plataforma objectiu:"
+
+#, fuzzy
+#~ msgid "Please enter a valid e-mail address"
+#~ msgstr "Si us plau, introduïu un nom de projecte vàlid"
 
 #~ msgid "Port number:"
 #~ msgstr "Número de port:"
@@ -34409,6 +34367,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "constructor ({0})"
 #~ msgstr "Restricció"
+
+#, fuzzy
+#~ msgid "email address"
+#~ msgstr "Carrega l'adreça"
 
 #, fuzzy
 #~ msgid "errorCode"

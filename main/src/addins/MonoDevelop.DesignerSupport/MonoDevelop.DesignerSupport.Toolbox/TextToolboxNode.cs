@@ -50,13 +50,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override bool Filter (string keyword)
 		{
 			return base.Filter (keyword)
-				   || ((Text==null)? false :  (Text.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
+				   || ((Text != null) && (Text.IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
 		}
 		
 		public override bool Equals (object o)
 		{
-			TextToolboxNode n = o as TextToolboxNode;
-			return n != null && text == n.text && base.Equals (o);
+			return o is TextToolboxNode n && text == n.text && base.Equals (o);
 		}
 		
 		public override int GetHashCode ()

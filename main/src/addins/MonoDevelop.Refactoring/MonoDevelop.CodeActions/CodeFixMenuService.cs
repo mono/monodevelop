@@ -202,8 +202,10 @@ namespace MonoDevelop.CodeActions
 			// TODO: Add support for more than doc when we have global undo.
 			fixState = fixState?.WithScopeAndEquivalenceKey (FixAllScope.Document, fix.EquivalenceKey);
 			var fixAllMenuEntry = CreateFixAllMenuEntry (editor, fixState, ref mnemonic, token);
-			if (fixAllMenuEntry != null)
+			if (fixAllMenuEntry != null) {
+				fixAllMenu.Add (new CodeFixMenuEntry (fix.Message, null));
 				fixAllMenu.Add (fixAllMenuEntry);
+			}
 		}
 
 		static void AddNestedFixMenu (TextEditor editor, CodeFixMenu menu, CodeFixMenu fixAllMenu, CodeAction.CodeActionWithNestedActions fixes, FixAllState fixState, CancellationToken token)

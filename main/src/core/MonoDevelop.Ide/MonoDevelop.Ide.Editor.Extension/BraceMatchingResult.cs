@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Editor
 		None   = 0,
 		Hidden = 1
 	}
-	public struct BraceMatchingResult
+	public readonly struct BraceMatchingResult
 	{
 		public ISegment LeftSegment { get; }
 
