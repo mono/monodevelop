@@ -84,9 +84,6 @@ namespace MonoDevelop.Ide
 		
 		int Run (MonoDevelopOptions options)
 		{
-			bool restartRequested = PropertyService.Get ("MonoDevelop.Core.RestartRequested", false);
-			PropertyService.Set ("MonoDevelop.Core.RestartRequested", false);
-
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", RuntimeVersionInfo.GetRuntimeInfo ());
@@ -186,9 +183,7 @@ namespace MonoDevelop.Ide
 
 			AddinManager.AddinLoadError += OnAddinError;
 
-			var startupInfo = new StartupInfo (args) {
-				Restarted = restartRequested
-			};
+			var startupInfo = new StartupInfo (args);
 
 			// If a combine was specified, force --newwindow.
 
@@ -206,8 +201,12 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
-			sectionTimings["RuntimeInitialization"] = startupSectionTimer.ElapsedMilliseconds;
+			sectionTimings ["RuntimeInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
+
+			bool restartRequested = PropertyService.Get ("MonoDevelop.Core.RestartRequested", false);
+			startupInfo.Restarted = restartRequested;
+			PropertyService.Set ("MonoDevelop.Core.RestartRequested", false);
 
 			IdeApp.Customizer.OnCoreInitialized ();
 
