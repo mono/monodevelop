@@ -24,17 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using Gdk;
 using Gtk;
-using MonoDevelop.Ide;
-using MonoDevelop.Debugger.PreviewVisualizers;
-using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Debugger.PreviewVisualizers;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Debugger
 {
@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger
 				InactiveImage = ImageService.GetIcon ("md-popup-close", IconSize.Menu),
 				Image = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu)
 			};
-			closeButton.SetCommonAccessibilityAttributes ("Preview visualizer close button", "Close button", null);
+			closeButton.SetCommonAccessibilityAttributes ("Preview visualizer close button", GettextCatalog.GetString ("Close button"), null);
 			closeButton.Clicked += delegate {
 				this.Destroy ();
 			};
