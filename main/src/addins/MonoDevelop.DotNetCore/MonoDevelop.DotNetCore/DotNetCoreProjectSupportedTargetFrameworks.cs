@@ -62,13 +62,11 @@ namespace MonoDevelop.DotNetCore
 
 		public static IEnumerable<TargetFramework> GetNetStandardTargetFrameworks ()
 		{
-			if (DotNetCoreRuntime.IsNetCore2xInstalled ())
+			if (DotNetCoreRuntime.IsNetCore2xInstalled () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ())
 				yield return CreateTargetFramework (".NETStandard", "2.0");
 
-			if (DotNetCoreRuntime.IsNetCore2xInstalled () || DotNetCoreRuntime.IsNetCore1xInstalled ()) {
-				foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
-					yield return targetFramework;
-			}
+			foreach (var targetFramework in GetTargetFrameworksVersion1x (".NETStandard", HighestNetStandard1xMinorVersionSupported).Reverse ())
+				yield return targetFramework;
 		}
 
 		/// <summary>
