@@ -34,6 +34,7 @@ using MonoDevelop.Debugger.PreviewVisualizers;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Debugger
 {
@@ -58,6 +59,7 @@ namespace MonoDevelop.Debugger
 				InactiveImage = ImageService.GetIcon ("md-popup-close", IconSize.Menu),
 				Image = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu)
 			};
+			closeButton.SetCommonAccessibilityAttributes ("Preview visualizer close button", "Close button", null);
 			closeButton.Clicked += delegate {
 				this.Destroy ();
 			};
