@@ -186,7 +186,8 @@ namespace MonoDevelop.CodeActions
 						return engine.Invoke (async () => {
 							using (var dialog = new FixAllPreviewDialog (string.Join (", ", fixState.DiagnosticIds), doc.Name, fixState.Scope, previewOperations, editor)) {
 								await dialog.InitializeEditor ();
-								var changes = dialog.Run () == Xwt.Command.Apply ? dialog.GetApplicableChanges ().ToArray () : Array.Empty<Microsoft.CodeAnalysis.Text.TextChange> ();
+								var parent = Xwt.Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+								var changes = dialog.Run (parent) == Xwt.Command.Apply ? dialog.GetApplicableChanges ().ToArray () : Array.Empty<Microsoft.CodeAnalysis.Text.TextChange> ();
 								return changes;
 							}
 						});
