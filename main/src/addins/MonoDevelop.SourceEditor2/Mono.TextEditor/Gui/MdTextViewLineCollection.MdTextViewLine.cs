@@ -45,8 +45,6 @@ namespace Mono.TextEditor
 			internal readonly TextViewMargin.LayoutWrapper layoutWrapper;
 			readonly MdTextViewLineCollection collection; 
 			MonoTextEditor textEditor;
-			SnapshotSpan lineSpan;
-			int lineBreakLength;
 
 			/// <summary>
 			/// 1-based
@@ -60,14 +58,14 @@ namespace Mono.TextEditor
 				this.textEditor = textEditor;
 				this.line = line;
 				this.LineNumber = lineNumber;
- 				this.lineSpan = new SnapshotSpan(textEditor.VisualSnapshot, line.Offset, line.LengthIncludingDelimiter);
-				this.lineBreakLength = line.DelimiterLength;
+				Snapshot = textEditor.VisualSnapshot;
+				this.LineBreakLength = line.DelimiterLength;
 			}
 
 			object indentityTag = new object ();
 			public object IdentityTag => indentityTag;
 
-			public ITextSnapshot Snapshot => lineSpan.Snapshot;
+			public ITextSnapshot Snapshot { get; }
 
 			public bool IsFirstTextViewLineForSnapshotLine => collection[0] == this;
 
@@ -83,17 +81,17 @@ namespace Mono.TextEditor
 
 			public IMappingSpan ExtentIncludingLineBreakAsMappingSpan => new MappingSpan (ExtentIncludingLineBreak, SpanTrackingMode.EdgeInclusive, null);
 
-			public SnapshotPoint Start => lineSpan.Start;
+			public SnapshotPoint Start => new SnapshotPoint (Snapshot, line.Offset);
 
 			public int Length => Length - LineBreakLength;
 
-			public int LengthIncludingLineBreak => lineSpan.Length;
+			public int LengthIncludingLineBreak => line.LengthIncludingDelimiter;
 
 			public SnapshotPoint End => EndIncludingLineBreak - LineBreakLength;
 
-			public SnapshotPoint EndIncludingLineBreak => lineSpan.End;
+			public SnapshotPoint EndIncludingLineBreak => new SnapshotPoint (Snapshot, line.EndOffsetIncludingDelimiter);
 
-			public int LineBreakLength => lineBreakLength;
+			public int LineBreakLength { get; }
 
 			public double Left => textEditor.VAdjustment.Value;
 
@@ -137,7 +135,7 @@ namespace Mono.TextEditor
 
 			SnapshotPoint FixBufferPosition(SnapshotPoint bufferPosition)
 			{
-				if (bufferPosition.Snapshot != this.lineSpan.Snapshot)
+				if (bufferPosition.Snapshot != Snapshot)
 					throw new ArgumentException("The specified SnapshotPoint is on a different ITextSnapshot than this SnapshotPoint.");
 
 				return bufferPosition;
@@ -147,10 +145,10 @@ namespace Mono.TextEditor
 			{
 				bufferPosition = this.FixBufferPosition(bufferPosition);
 
-				return ((bufferPosition >= lineSpan.Start) &&
-						((bufferPosition < lineSpan.End) ||
-						 ((bufferPosition == lineSpan.End) &&
-						 (lineBreakLength == 0) && (lineSpan.End == lineSpan.Snapshot.Length))));
+				return ((bufferPosition >= line.Offset) &&
+						((bufferPosition < line.EndOffsetIncludingDelimiter) ||
+						 ((bufferPosition == line.EndOffsetIncludingDelimiter) &&
+						 (LineBreakLength == 0) && (line.EndOffsetIncludingDelimiter == Snapshot.Length))));
 			}
 
 			public TextBounds? GetAdornmentBounds(object identityTag)
@@ -165,7 +163,7 @@ namespace Mono.TextEditor
 
 			public SnapshotPoint? GetBufferPositionFromXCoordinate(double xCoordinate, bool textOnly)
 			{
-				var y = textEditor.LocationToPoint(textEditor.OffsetToLocation(lineSpan.Start)).Y;
+				var y = textEditor.LocationToPoint(textEditor.OffsetToLocation(line.Offset)).Y;
 				var loc = textEditor.PointToLocation(xCoordinate, y);
 				return Snapshot.GetSnapshotPoint (loc.Line, loc.Column);
 			}
@@ -209,12 +207,12 @@ namespace Mono.TextEditor
 
 			public Collection<TextBounds> GetNormalizedTextBounds(SnapshotSpan bufferSpan)
 			{
-				if (bufferSpan.OverlapsWith(lineSpan))
+				if (bufferSpan.OverlapsWith(new Span (line.Offset, line.Length)))
 				{
 					double leading = 0;
-					if (lineSpan.Contains(bufferSpan.Start))
+					if (line.Contains(bufferSpan.Start))
 						leading = textEditor.LocationToPoint(textEditor.OffsetToLocation(bufferSpan.Start)).X;
-					var endLoc = textEditor.OffsetToLocation(lineSpan.Contains(bufferSpan.End) ? bufferSpan.End : lineSpan.End);
+					var endLoc = textEditor.OffsetToLocation(line.Contains(bufferSpan.End) ? bufferSpan.End : line.EndOffsetIncludingDelimiter);
 					double endPos = textEditor.LocationToPoint(endLoc).X;
 					return new Collection<TextBounds>(new List<TextBounds>() { new TextBounds(leading, Top, endPos - leading, TextHeight, TextTop, TextHeight) });
 				}
@@ -228,8 +226,8 @@ namespace Mono.TextEditor
 				if (!this.ContainsBufferPosition (bufferPosition))
 					throw new ArgumentOutOfRangeException (nameof (bufferPosition));
 
-				if (bufferPosition >= ExtentIncludingLineBreak.End - lineBreakLength) {
-					return new SnapshotSpan (ExtentIncludingLineBreak.End - lineBreakLength, lineBreakLength);
+				if (bufferPosition >= ExtentIncludingLineBreak.End - LineBreakLength) {
+					return new SnapshotSpan (ExtentIncludingLineBreak.End - LineBreakLength, LineBreakLength);
 				}
 				var line = textEditor.GetLineByOffset (bufferPosition.Position);
 				var lineOffset = line.Offset;
@@ -258,7 +256,7 @@ namespace Mono.TextEditor
 
 			public bool IntersectsBufferSpan(SnapshotSpan bufferSpan)
 			{
-				return lineSpan.IntersectsWith (bufferSpan);
+				return new Span (line.Offset, line.LengthIncludingDelimiter).IntersectsWith (bufferSpan);
 			}
 		}
 	}
