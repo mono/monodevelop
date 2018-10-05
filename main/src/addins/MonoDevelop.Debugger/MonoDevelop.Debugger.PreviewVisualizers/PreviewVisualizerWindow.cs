@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger
 				InactiveImage = ImageService.GetIcon ("md-popup-close", IconSize.Menu),
 				Image = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu)
 			};
-			closeButton.SetCommonAccessibilityAttributes ("Preview visualizer close button", GettextCatalog.GetString ("Close button"), null);
+			closeButton.SetCommonAccessibilityAttributes ("Preview visualizer close button", GettextCatalog.GetString ("Close"), null);
 			closeButton.Clicked += delegate {
 				this.Destroy ();
 			};
