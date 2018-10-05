@@ -39,7 +39,6 @@ namespace MacPlatform
 	{
 		int family;
 		int coreCount;
-		int threadCount;
 		long freq;
 		string arch;
 		ulong size;
@@ -60,7 +59,6 @@ namespace MacPlatform
 			Interop.SysCtl ("hw.cpufamily", out result.family);
 			Interop.SysCtl ("hw.cpufrequency", out result.freq);
 			Interop.SysCtl ("hw.physicalcpu", out result.coreCount);
-			Interop.SysCtl ("hw.logicalcpu", out result.threadCount);
 
 			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
 			result.size = attrs.Size;
@@ -98,6 +96,8 @@ namespace MacPlatform
 
 		public int CpuCount => (int)NSProcessInfo.ProcessInfo.ActiveProcessorCount;
 
+		public int PhysicalCpuCount => coreCount;
+
 		public int CpuFamily => family;
 
 		public long CpuFrequency => freq;
@@ -109,10 +109,6 @@ namespace MacPlatform
 		public ulong RamTotal => NSProcessInfo.ProcessInfo.PhysicalMemory;
 
 		public PlatformHardDriveMediaType HardDriveOsMediaType => osType;
-
-		public int CpuCoresCount => coreCount;
-
-		public int CpuThreadCount => threadCount;
 
 		static PlatformHardDriveMediaType GetMediaType (string path)
 		{
