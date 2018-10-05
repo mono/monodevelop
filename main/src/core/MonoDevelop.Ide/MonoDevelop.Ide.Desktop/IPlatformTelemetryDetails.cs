@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Desktop
 		TimeSpan UserTime { get; }
 
 		string CpuArchitecture { get; }
+		int PhysicalCpuCount { get; }
 		int CpuCount { get; }
 		int CpuFamily { get; }
 		long CpuFrequency { get; }
@@ -48,8 +49,6 @@ namespace MonoDevelop.Ide.Desktop
 		ulong HardDriveFreeVolumeSize { get; }
 		ulong RamTotal { get; }
 		PlatformHardDriveMediaType HardDriveOsMediaType { get; }
-		int CpuCoresCount { get; }
-		int CpuThreadCount { get; }
 
 		bool TrySampleHostCpuLoad (out double value);
 	}
