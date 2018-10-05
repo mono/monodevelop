@@ -207,8 +207,11 @@ namespace MonoDevelop.Projects
 
 			var directories = new HashSet<FilePath> ();
 			foreach (FilePath file in GetItemFiles (true)) {
+				var parentDirectory = file.ParentDirectory;
+				if (parentDirectory.IsNullOrEmpty)
+					continue;
 				if (!directories.Any (directory => file.IsChildPathOf (directory)))
-					directories.Add (file.ParentDirectory);
+					directories.Add (parentDirectory);
 			}
 
 			rootDirectories = directories;
