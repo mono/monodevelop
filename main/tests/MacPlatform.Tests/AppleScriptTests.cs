@@ -24,19 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
 
 namespace MacPlatform.Tests
 {
-	public class AppleScriptTests
+	public class AppleScriptTests : IdeTestBase
 	{
 		[Test]
 		public void TestAppleScript ()
 		{
-			// Include the quotes in the test string because AppleScript is a bit janky
-			string testStr = "\"hello world\"";
-			string result = AppleScript.Run ("return {0}", testStr);
+			string testStr = "hello world";
+			var result = AppleScript.RunAndReturnString ("return \"{0}\"", testStr);
+
 			Assert.AreEqual (result, testStr);
 		}
 	}
