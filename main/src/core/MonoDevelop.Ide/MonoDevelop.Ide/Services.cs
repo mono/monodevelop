@@ -156,6 +156,11 @@ namespace MonoDevelop.Ide
 
 	class TimeToCodeMetadata : CounterMetadata
 	{
+		public enum DocumentType {
+			Solution,
+			File
+		};
+
 		public long CorrectedDuration {
 			get => GetProperty<long> ();
 			set => SetProperty (value);
@@ -168,6 +173,11 @@ namespace MonoDevelop.Ide
 
 		public long SolutionLoadTime {
 			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public DocumentType Type {
+			get => GetProperty<DocumentType> ();
 			set => SetProperty (value);
 		}
 	}
