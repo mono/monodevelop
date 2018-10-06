@@ -120,6 +120,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard20=true")]
 		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard20=true")]
+		[TestCase ("Microsoft.Common.Library.VisualBasic", "UseNetStandard20=true")]
 		public async Task NetStandard20 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk2xInstalled ()) {
@@ -162,6 +163,11 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore21=true;Framework=netcoreapp2.1")]
 		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore21=true")]
+
+		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore21=true")]
+		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore21=true;Framework=netcoreapp2.1")]
+		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore21=true")]
+		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore21=true")]
 		public async Task NetCore21 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk21Installed ()) {
@@ -183,6 +189,11 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
 		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore22=true")]
+
+		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
+		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore22=true")]
 		public async Task NetCore22 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk22Installed ()) {
@@ -362,6 +373,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			if (templateId.Contains ("FSharp")) {
 				return "F#";
 			}
+			if (templateId.Contains ("VisualBasic")) {
+				return "VB";
+			}
 
 			return "C#";
 		}
@@ -402,6 +416,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			string language = GetLanguage (template.Id);
 			if (language == "F#")
 				return "{F2A71F9B-5D33-465A-A702-920D77279786}";
+
+			if (language == "VB")
+				return "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}";
 
 			// C#
 			return "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
