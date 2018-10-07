@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Templates
 			this.templateInfo = templateInfo;
 			Description = ParseDescription (template.OverrideDescription) ?? templateInfo.Description;
 			Category = template.Category;
-			Language = MicrosoftTemplateEngine.GetLanguage (templateInfo);
+			Language = template.OverrideLanguage ?? MicrosoftTemplateEngine.GetLanguage (templateInfo);
 			GroupId = template.GroupId ?? templateInfo.GroupIdentity;
 			//TODO: Support all this params
 			Condition = template.Condition;
