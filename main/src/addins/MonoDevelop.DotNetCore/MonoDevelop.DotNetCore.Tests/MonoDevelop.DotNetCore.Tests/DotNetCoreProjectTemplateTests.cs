@@ -374,7 +374,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				return "F#";
 			}
 			if (templateId.Contains ("VisualBasic")) {
-				return "VB";
+				return "VBNet";
 			}
 
 			return "C#";
@@ -417,7 +417,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			if (language == "F#")
 				return "{F2A71F9B-5D33-465A-A702-920D77279786}";
 
-			if (language == "VB")
+			if (language == "VBNet")
 				return "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}";
 
 			// C#
