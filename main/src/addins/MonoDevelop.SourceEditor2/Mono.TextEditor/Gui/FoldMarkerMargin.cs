@@ -162,11 +162,24 @@ namespace Mono.TextEditor
 		}
 
 		Dictionary<FoldSegment, FoldingAccessible> accessibles = null;
+		uint updateAccessibilityId = 0;
 		void UpdateAccessibility ()
 		{
 			if (!IdeTheme.AccessibilityEnabled) {
 				return;
 			}
+
+			// If a timer is already scheduled then ignore this update
+			if (updateAccessibilityId != 0) {
+				return;
+			}
+
+			updateAccessibilityId = GLib.Timeout.Add (5000, UpdateAccessibilityTimer);
+		}
+
+		bool UpdateAccessibilityTimer ()
+		{
+			updateAccessibilityId = 0;
 
 			if (accessibles == null) {
 				accessibles = new Dictionary<FoldSegment, FoldingAccessible> ();
@@ -185,6 +198,8 @@ namespace Mono.TextEditor
 
 				Accessible.AddAccessibleChild (accessible.Accessible);
 			}
+
+			return false;
 		}
 
 		void HandleEditorCaretPositionChanged (object sender, DocumentLocationEventArgs e)
