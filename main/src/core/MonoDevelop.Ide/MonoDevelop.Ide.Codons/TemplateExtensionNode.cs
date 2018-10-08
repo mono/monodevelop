@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Codons
 			}
 		}
 
-		[NodeAttribute ("_overrideLanguage", "If template.json is outside AddIn creator control use this to change language", Localizable = false)]
+		[NodeAttribute ("overrideLanguage", "If template.json is outside AddIn creator control use this to change language", Localizable = false)]
 		string overrideLanguage;
 		public string OverrideLanguage {
 			get => overrideLanguage;
