@@ -166,6 +166,8 @@ namespace MonoDevelop.SourceEditor
 
 		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{
+			if (entity == null)
+				return TaskUtil.Default<TooltipInformation> ();
 			var tooltipInfo = new TooltipInformation ();
 
 			var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0);
