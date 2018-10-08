@@ -414,7 +414,7 @@
 	
 	<!-- Publish commands -->
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
+	<ExtensionPoint path = "/MonoDevelop/Azure/ContextMenu/ProjectPad/Publish">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 	
@@ -430,7 +430,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">		
 		<Condition id="ItemType" value="Project">
-			<ItemSet id = "PublishToFolderProfiles" _label = "Publish" autohide="True" insertafter="MonoDevelop.Ide.ArchiveCommands.ViewArchives" >
+			<ItemSet id = "PublishToFolderProfiles" _label = "Publish" autohide="True" >
 				<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
 				<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
 			</ItemSet>
@@ -438,7 +438,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">		
-		<ItemSet id = "PublishToFolder" _label = "Publish" autohide="True" insertafter="MonoDevelop.Ide.ArchiveCommands.ViewArchives" >
+		<ItemSet id = "PublishToFolder" _label = "Publish" autohide="True" >
 			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />	
 			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
 		</ItemSet>
