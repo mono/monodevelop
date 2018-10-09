@@ -732,13 +732,13 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 		}
 
-		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			if (evnt.Key == Gdk.Key.Escape) {
 				this.Destroy ();
 				return true;
 			}
-			return base.OnKeyReleaseEvent (evnt);
+			return base.OnKeyPressEvent (evnt);
 		}
 	}
 

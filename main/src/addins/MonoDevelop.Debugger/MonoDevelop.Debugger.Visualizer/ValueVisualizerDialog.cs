@@ -82,13 +82,9 @@ namespace MonoDevelop.Debugger.Viewers
 		protected override bool OnKeyPressEvent (EventKey evnt)
 		{
 			if (evnt.Key == Gdk.Key.Escape) {
-				GLib.Timeout.Add (100, delegate {
-					this.Destroy ();
-					return false;
-				});
-
+				Respond (Gtk.ResponseType.Cancel);
 				// Prevent the escape key from propagating down to the ExceptionCaughtDialog
-				return false;
+				return true;
 			}
 			return base.OnKeyPressEvent (evnt);
 		}
