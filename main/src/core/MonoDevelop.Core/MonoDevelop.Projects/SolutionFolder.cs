@@ -565,20 +565,25 @@ namespace MonoDevelop.Projects
 		public SolutionItem FindSolutionItem (string fileName)
 		{
 			string path = Path.GetFullPath (fileName);
-			foreach (SolutionFolderItem it in Items) {
+
+			return FindSolutionItemRecursive (items, path);
+		}
+
+		static SolutionItem FindSolutionItemRecursive (SolutionFolderItemCollection items, string fullPath)
+		{
+			foreach (SolutionFolderItem it in items) {
 				if (it is SolutionFolder sf) {
-					SolutionItem r = sf.FindSolutionItem (fileName);
+					SolutionItem r = FindSolutionItemRecursive (sf.Items, fullPath);
 					if (r != null)
 						return r;
-				}
-				else if (it is SolutionItem se) {
-					if (!string.IsNullOrEmpty (se.FileName) && path == Path.GetFullPath (se.FileName))
+				} else if (it is SolutionItem se) {
+					if (!string.IsNullOrEmpty (se.FileName) && fullPath == Path.GetFullPath (se.FileName))
 						return (SolutionItem)it;
 				}
 			}
 			return null;
 		}
-		
+
 		public Project FindProjectByName (string name)
 		{
 			foreach (SolutionFolderItem it in Items) {
