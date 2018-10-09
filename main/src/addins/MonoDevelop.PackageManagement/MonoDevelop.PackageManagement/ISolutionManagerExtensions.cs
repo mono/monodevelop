@@ -49,7 +49,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var versions = new List<NuGetVersion> ();
 
-			foreach (NuGetProject project in solutionManager.GetNuGetProjects ()) {
+			foreach (NuGetProject project in await solutionManager.GetNuGetProjectsAsync ()) {
 				var packages = await project.GetInstalledPackagesAsync (token);
 				versions.AddRange (packages.Where (p => IsMatch (p, packageId))
 					.Select (p => p.PackageIdentity.Version));
@@ -68,7 +68,7 @@ namespace MonoDevelop.PackageManagement
 
 			var projects = new List<IDotNetProject> ();
 
-			foreach (NuGetProject project in solutionManager.GetNuGetProjects ()) {
+			foreach (NuGetProject project in await solutionManager.GetNuGetProjectsAsync ()) {
 				var packages = await project.GetInstalledPackagesAsync (token);
 
 				if (packages.Any (p => IsMatch (p, packageId, nugetVersion)))

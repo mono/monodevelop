@@ -111,6 +111,27 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return $"{section}-{key}";
 		}
+
+		public IReadOnlyList<string> GetAllSubsections (string section)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public IReadOnlyList<SettingValue> GetNestedSettingValues (string section, string subSection)
+		{
+			var values = new List<SettingValue> ();
+			return values.AsReadOnly ();
+		}
+
+		public void UpdateSubsections (string section, string subsection, IReadOnlyList<SettingValue> values)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void SetNestedSettingValues (string section, string subsection, IList<SettingValue> values)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

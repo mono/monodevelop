@@ -18,29 +18,29 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
     <Reference Include="NuGet.Protocol">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Protocol.4.7.0\lib\net46\NuGet.Protocol.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Packaging.4.7.0\lib\net46\NuGet.Packaging.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging.Core">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Packaging.Core.4.7.0\lib\net46\NuGet.Packaging.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Frameworks">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Frameworks.4.7.0\lib\net46\NuGet.Frameworks.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Versioning.4.7.0\lib\net46\NuGet.Versioning.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="NuGet.PackageManagement">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.PackageManagement.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.PackageManagement.4.7.0\lib\net46\NuGet.PackageManagement.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

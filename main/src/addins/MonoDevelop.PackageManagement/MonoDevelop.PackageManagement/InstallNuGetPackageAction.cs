@@ -146,10 +146,12 @@ namespace MonoDevelop.PackageManagement
 
 			var identity = new PackageIdentity (PackageId, Version);
 
+			var resolutionContext = CreateResolutionContext ();
+
 			actions = await packageManager.PreviewInstallPackageAsync (
 				project,
 				identity,
-				CreateResolutionContext (),
+				resolutionContext,
 				context,
 				primarySources,
 				secondarySources,
@@ -169,6 +171,7 @@ namespace MonoDevelop.PackageManagement
 						project,
 						actions,
 						context,
+						resolutionContext.SourceCacheContext,
 						cancellationToken);
 				}
 			}

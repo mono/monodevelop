@@ -38,13 +38,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	public class FakePackageMetadataResource : PackageMetadataResource
 	{
-		public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync (string packageId, bool includePrerelease, bool includeUnlisted, ILogger log, CancellationToken token)
+		public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync (string packageId, bool includePrerelease, bool includeUnlisted, SourceCacheContext sourceCacheContext, ILogger log, CancellationToken token)
 		{
 			var packages = packageMetadataList.Where (p => IsMatch (p, packageId, includePrerelease));
 			return Task.FromResult (packages);
 		}
 
-		public override Task<IPackageSearchMetadata> GetMetadataAsync (PackageIdentity package, ILogger log, CancellationToken token)
+		public override Task<IPackageSearchMetadata> GetMetadataAsync (PackageIdentity package, SourceCacheContext sourceCacheContext, ILogger log, CancellationToken token)
 		{
 			var metadata = packageMetadataList.Where (p => IsMatch (p, package.Id, true)).FirstOrDefault ();
 			return Task.FromResult (metadata);

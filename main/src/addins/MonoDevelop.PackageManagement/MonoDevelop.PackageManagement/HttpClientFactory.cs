@@ -80,7 +80,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static ICredentialService CreateNonInteractiveCredentialService ()
 		{
-			var existingCredentialService = HttpHandlerResourceV3.CredentialService as CredentialService;
+			var existingCredentialService = HttpHandlerResourceV3Extensions.GetCustomCredentialService ();
 			if (existingCredentialService != null) {
 				return existingCredentialService.CreateNonInteractive ();
 			}

@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeDefaultCredentialProvider ()
 		{
-			var credentialService = new CredentialService (
+			var credentialService = new CustomCredentialService (
 				GetCredentialProviders (),
 				nonInteractive: false);
 
@@ -84,7 +84,7 @@ namespace MonoDevelop.PackageManagement
 		public static void Reset ()
 		{
 			try {
-				var credentialService = HttpHandlerResourceV3.CredentialService as CredentialService;
+				var credentialService = HttpHandlerResourceV3Extensions.GetCustomCredentialService ();
 				if (credentialService != null)
 					credentialService.Reset ();
 			} catch (Exception ex) {

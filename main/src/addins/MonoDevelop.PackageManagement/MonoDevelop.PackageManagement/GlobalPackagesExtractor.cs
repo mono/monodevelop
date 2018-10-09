@@ -35,6 +35,7 @@ using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Packaging.PackageExtraction;
+using NuGet.Packaging.Signing;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 
@@ -59,17 +60,22 @@ namespace MonoDevelop.PackageManagement
 			if (File.Exists (hashPath))
 				return;
 
-			var versionFolderPathContext = new VersionFolderPathContext (
-				packageIdentity,
-				globalPackagesFolder,
-				NullLogger.Instance,
+			var signedPackageVerifier = new PackageSignatureVerifier (SignatureVerificationProviderFactory.GetSignatureVerificationProviders ());
+
+			var packageExtractionContext = new PackageExtractionContext (
 				PackageSaveMode.Defaultv3,
-				PackageExtractionBehavior.XmlDocFileSaveMode);
+				PackageExtractionBehavior.XmlDocFileSaveMode,
+				NullLogger.Instance,
+				signedPackageVerifier,
+				SignedPackageVerifierSettings.GetDefault ());
 
 			downloadResult.PackageStream.Position = 0;
 			await PackageExtractor.InstallFromSourceAsync (
+				downloadResult.PackageSource,
+				packageIdentity,
 				stream => downloadResult.PackageStream.CopyToAsync (stream, BufferSize, token),
-				versionFolderPathContext,
+				defaultPackagePathResolver,
+				packageExtractionContext,
 				token);
 		}
 
