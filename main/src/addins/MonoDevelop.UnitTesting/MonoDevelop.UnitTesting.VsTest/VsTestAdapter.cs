@@ -93,9 +93,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 						cache = false;
 						continue;
 					}
-					foreach (var path in Directory.GetFiles (folder, "*.TestAdapter.dll", SearchOption.AllDirectories))
-						result += path + ";";
-					foreach (var path in Directory.GetFiles (folder, "*.testadapter.dll", SearchOption.AllDirectories))
+					foreach (var path in Directory.EnumerateFiles (folder, "*.testadapter.dll", SearchOption.AllDirectories))
 						if (!result.Contains (path))
 							result += path + ";";
 				}
