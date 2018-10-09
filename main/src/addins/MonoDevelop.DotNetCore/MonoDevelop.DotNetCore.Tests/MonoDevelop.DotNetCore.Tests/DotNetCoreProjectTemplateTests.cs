@@ -120,7 +120,6 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard20=true")]
 		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard20=true")]
-		[TestCase ("Microsoft.Common.Library.VisualBasic", "UseNetStandard20=true")]
 		public async Task NetStandard20 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk2xInstalled ()) {
@@ -131,6 +130,19 @@ namespace MonoDevelop.DotNetCore.Tests
 			SolutionTemplate template = FindTemplate (templateId, config);
 
 			await CreateAndBuild (template, config);
+		}
+
+		[Test]
+		public async Task NetStandard20_VBNet ()
+		{
+			if (IsDotNetCoreSdk21Installed () || IsDotNetCoreSdk22Installed ()) {
+				var config = CreateNewProjectConfig ("NetStandard2x", "Microsoft.Common.Library.VisualBasic", "UseNetStandard20=true");
+				SolutionTemplate template = FindTemplate ("Microsoft.Common.Library.VisualBasic", config);
+
+				await CreateAndBuild (template, config);
+			} else {
+				Assert.Ignore (".NET Core >= 2.1 SDK is not installed - required by project template.");
+			}
 		}
 
 		[TestCase ("Microsoft.Common.Console.CSharp","UseNetCore20=true")]
