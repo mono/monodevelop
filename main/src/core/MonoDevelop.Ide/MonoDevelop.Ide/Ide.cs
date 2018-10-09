@@ -205,7 +205,9 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static void Initialize (ProgressMonitor monitor, bool hideWelcomePage)
+		public static void Initialize (ProgressMonitor monitor) => Initialize (monitor, false);
+
+		internal static void Initialize (ProgressMonitor monitor, bool hideWelcomePage)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
