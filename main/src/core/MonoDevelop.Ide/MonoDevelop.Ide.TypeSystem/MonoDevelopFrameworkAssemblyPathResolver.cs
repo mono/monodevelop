@@ -33,64 +33,85 @@ using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[ExportWorkspaceService (typeof (IFrameworkAssemblyPathResolver), ServiceLayer.Host), Shared]
-	class MonoDevelopFrameworkAssemblyPathResolver : IFrameworkAssemblyPathResolver
+	[ExportWorkspaceServiceFactory (typeof (IFrameworkAssemblyPathResolver), ServiceLayer.Host), Shared]
+	class MonoDevelopFrameworkAssemblyPathResolverFactory : IWorkspaceServiceFactory
 	{
-		public string ResolveAssemblyPath (ProjectId projectId, string assemblyName, string fullyQualifiedName = null)
+		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
-			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, null);
-			if (assemblyFile != null) {
-				//if (string.IsNullOrEmpty(fullyQualifiedName) || CanResolveType(ResolveAssembly (projectId, assemblyName), fullyQualifiedName))
-				return assemblyFile;
-			}
-
-			return null;
+			return new MonoDevelopFrameworkAssemblyPathResolver (workspaceServices.Workspace as MonoDevelopWorkspace);
 		}
 
-		//static bool CanResolveType (Assembly assembly, string fullyQualifiedTypeName)
-		//{
-		//	if (fullyQualifiedTypeName == null) {
-		//		// nothing to resolve.
-		//		return true;
-		//	}
+		class MonoDevelopFrameworkAssemblyPathResolver : IFrameworkAssemblyPathResolver
+		{
+			readonly MonoDevelopWorkspace workspace;
+			public MonoDevelopFrameworkAssemblyPathResolver (MonoDevelopWorkspace workspace)
+			{
+				this.workspace = workspace;
+			}
 
-		//	// We only get a type name without generic indicators.  So try to few different
-		//	// generic versions of the type name in case any of those hit.  it's highly 
-		//	// unlikely we'd find something with more than 4 generic parameters, so only try
-		//	// up that point.
-		//	for (var i = 0; i < 5; i++) {
-		//		var name = i == 0
-		//			? fullyQualifiedTypeName
-		//			: fullyQualifiedTypeName + "`" + i;
+			public string ResolveAssemblyPath (ProjectId projectId, string assemblyName, string fullyQualifiedName = null)
+			{
+				if (workspace == null)
+					return null;
 
-		//		try {
-		//			var type = assembly.GetType (name, throwOnError: false);
-		//			if (type != null) {
-		//				return true;
-		//			}
-		//		} catch (FileNotFoundException) {
-		//		} catch (FileLoadException) {
-		//		} catch (BadImageFormatException) {
-		//		}
-		//	}
-		//	return false;
-		//}
+				if (!(workspace.GetMonoProject (projectId) is DotNetProject monoProject))
+					return null;
 
-		//Assembly ResolveAssembly (ProjectId projectId, string assemblyLocation)
-		//{
-		//	Runtime.AssertMainThread ();
+				string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, monoProject.TargetFramework);
+				if (assemblyFile != null) {
+					//if (string.IsNullOrEmpty(fullyQualifiedName) || CanResolveType(ResolveAssembly (projectId, assemblyName), fullyQualifiedName))
+					return assemblyFile;
+				}
 
-		//	try {
-		//		return Assembly.LoadFrom (assemblyLocation);
-		//	} catch (Exception e) {
-		//		// Something wrong with our TFM.  We don't have enough information to 
-		//		// properly resolve this assembly name.
-		//		LoggingService.LogError ("Error while resolving assembly assemblyName");
-		//		return null;
-		//	}
-		//}
+				return null;
+			}
+
+			//static bool CanResolveType (Assembly assembly, string fullyQualifiedTypeName)
+			//{
+			//	if (fullyQualifiedTypeName == null) {
+			//		// nothing to resolve.
+			//		return true;
+			//	}
+
+			//	// We only get a type name without generic indicators.  So try to few different
+			//	// generic versions of the type name in case any of those hit.  it's highly 
+			//	// unlikely we'd find something with more than 4 generic parameters, so only try
+			//	// up that point.
+			//	for (var i = 0; i < 5; i++) {
+			//		var name = i == 0
+			//			? fullyQualifiedTypeName
+			//			: fullyQualifiedTypeName + "`" + i;
+
+			//		try {
+			//			var type = assembly.GetType (name, throwOnError: false);
+			//			if (type != null) {
+			//				return true;
+			//			}
+			//		} catch (FileNotFoundException) {
+			//		} catch (FileLoadException) {
+			//		} catch (BadImageFormatException) {
+			//		}
+			//	}
+			//	return false;
+			//}
+
+			//Assembly ResolveAssembly (ProjectId projectId, string assemblyLocation)
+			//{
+			//	Runtime.AssertMainThread ();
+
+			//	try {
+			//		return Assembly.LoadFrom (assemblyLocation);
+			//	} catch (Exception e) {
+			//		// Something wrong with our TFM.  We don't have enough information to 
+			//		// properly resolve this assembly name.
+			//		LoggingService.LogError ("Error while resolving assembly assemblyName");
+			//		return null;
+			//	}
+			//}
+		}
 	}
 }
