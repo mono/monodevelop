@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
 using Gtk;
+using Gdk;
 
 namespace MonoDevelop.Debugger.Viewers
 {
@@ -76,6 +77,16 @@ namespace MonoDevelop.Debugger.Viewers
 				buttonCancel.Label = Gtk.Stock.Close;
 				buttonSave.Hide ();
 			}
+		}
+
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Escape) {
+				Respond (Gtk.ResponseType.Cancel);
+				// Prevent the escape key from propagating down to the ExceptionCaughtDialog
+				return true;
+			}
+			return base.OnKeyPressEvent (evnt);
 		}
 
 		protected virtual void OnComboVisualizersChanged (object sender, EventArgs e)
