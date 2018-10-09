@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
-		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
+		ImmutableDictionary<string, MSBuildProperty> properties = ImmutableDictionary<string, MSBuildProperty>.Empty.WithComparers (StringComparer.OrdinalIgnoreCase);
 		internal List<MSBuildProperty> PropertiesAttributeOrder { get; } = new List<MSBuildProperty> ();
 		public MSBuildPropertyGroup ()
 		{
@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.MSBuild
 			prop.Owner = this;
 			prop.ReadUnknownAttribute (reader, lastAttr);
 			ChildNodes = ChildNodes.Add (prop);
-			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+			properties = properties.SetItem (prop.Name, prop);// If a property is defined more than once, we only care about the last registered value
 			PropertiesAttributeOrder.Add (prop);
 		}
 
@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.MSBuild
 			prop.Owner = this;
 			prop.Read (reader);
 			ChildNodes = ChildNodes.Add (prop);
-			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+			properties = properties.SetItem (prop.Name, prop);// If a property is defined more than once, we only care about the last registered value
 		}
 
 		internal override string GetElementName ()
@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.MSBuild
 					} else {
 						ChildNodes = ChildNodes.Add (cp);
 					}
-					properties [cp.Name] = cp;
+					properties = properties.SetItem (cp.Name, cp);
 					cp.ParentNode = PropertiesParent;
 					cp.Owner = this;
 				} else
@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.MSBuild
 			prop.IsNew = true;
 			prop.ParentNode = PropertiesParent;
 			prop.Owner = this;
-			properties [name] = prop;
+			properties = properties.SetItem (name, prop);
 
 			if (insertIndex != -1)
 				ChildNodes = ChildNodes.Insert (insertIndex, prop);
@@ -404,7 +404,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (PropertyGroupListener != null)
 				PropertyGroupListener.PropertyRemoved (prop);
 			prop.RemoveIndent ();
-			properties.Remove (prop.Name);
+			properties = properties.Remove (prop.Name);
 			ChildNodes = ChildNodes.Remove (prop);
 			NotifyChanged ();
 		}
