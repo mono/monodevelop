@@ -565,7 +565,7 @@ namespace MonoDevelop.Ide
 						BrandingService.ApplicationName
 					),
 					GettextCatalog.GetString (
-						"Changes done in those files will be overwritten by {0}.",
+						"Changes made in those files will be overwritten by {0}.",
 						BrandingService.ApplicationName
 					),
 					AlertButton.OverwriteFile);
@@ -1536,7 +1536,7 @@ namespace MonoDevelop.Ide
 			var bRun = new AlertButton (Gtk.Stock.Execute, true);
 			var res = MessageService.AskQuestion (
 				GettextCatalog.GetString ("Outdated Build"),
-				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
+				GettextCatalog.GetString ("The project you are executing has changed since the last time it was compiled. Do you want to continue or rebuild it?"),
 				1,
 				AlertButton.Cancel,
 				bBuild,
