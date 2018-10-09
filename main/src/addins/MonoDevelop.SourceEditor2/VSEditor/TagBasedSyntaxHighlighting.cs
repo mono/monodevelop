@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.Platform
 			int start = snapshotSpan.Start.Position;
 			int end = snapshotSpan.End.Position;
 
-			IList<ClassificationSpan> classifications = this.classifier.GetAllClassificationSpans (snapshotSpan, cancellationToken);
+			IList<ClassificationSpan> classifications = this.classifier.GetClassificationSpans (snapshotSpan);
 
 			int lastClassifiedOffsetEnd = start;
 			ScopeStack scopeStack;
