@@ -129,10 +129,15 @@ type FSharpPathExtension() as x =
     let activeConfigurationChanged _args =
         // If the current configuration changes and the project to which this document is bound is disabled in the
         // new configuration, try to find another project
-        match x.DocumentContext.Project with
-        | null -> ()
-        | project when project.ParentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution ->
-            match project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) with
+        let projectAndSolution =
+            maybe {
+                let! project = x.DocumentContext.Project |> Option.ofObj
+                let! parentSolution = project.ParentSolution |> Option.ofObj
+                return project, parentSolution
+            }
+        match projectAndSolution with
+        | Some (project, solution) when solution = IdeApp.ProjectOperations.CurrentSelectedSolution ->
+            match solution.GetConfiguration (CompilerArguments.Project.getCurrentConfigurationOrDefault project) with
             | null -> ()
             | conf when not (conf.BuildEnabledForItem (project)) -> resetOwnerProject ()
             | _ -> ()
@@ -149,7 +154,7 @@ type FSharpPathExtension() as x =
             let sameParentSlnAndBuilt =
                 ownerProjects
                 |> Seq.filter (fun p -> let solutionMatch = p.ParentSolution = solution
-                                        let config = p.ParentSolution.GetConfiguration(IdeApp.Workspace.ActiveConfiguration)
+                                        let config = p.ParentSolution.GetConfiguration(CompilerArguments.Project.getCurrentConfigurationOrDefault p)
                                         let buildEnabled = config.BuildEnabledForItem(p)
                                         solutionMatch && buildEnabled && p.LanguageName = "F#")
 

@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -117,6 +118,7 @@ namespace MonoDevelop.PackageManagement
 				project,
 				actions,
 				context,
+				NullSourceCacheContext.Instance,
 				cancellationToken);
 
 			project.OnAfterExecuteActions (actions);

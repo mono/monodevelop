@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			this.ex = ex;
 		}
 
-		public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync (string packageId, bool includePrerelease, bool includeUnlisted, ILogger log, CancellationToken token)
+		public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync (string packageId, bool includePrerelease, bool includeUnlisted, SourceCacheContext sourceCacheContext, ILogger log, CancellationToken token)
 		{
 			throw ex;
 		}

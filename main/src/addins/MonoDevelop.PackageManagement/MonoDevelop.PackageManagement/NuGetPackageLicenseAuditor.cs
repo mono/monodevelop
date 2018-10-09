@@ -122,22 +122,25 @@ namespace MonoDevelop.PackageManagement
 			PackageIdentity package,
 			CancellationToken cancellationToken)
 		{
-			foreach (SourceRepository source in sources) {
-				var metadataResource = source.GetResource<PackageMetadataResource> ();
-				if (metadataResource != null) {
-					var packagesMetadata = await metadataResource.GetMetadataAsync (
-						package.Id,
-						includePrerelease: true,
-						includeUnlisted: true,
-						log: NullLogger.Instance,
-						token: cancellationToken);
+			using (var sourceCacheContext = new SourceCacheContext ()) {
+				foreach (SourceRepository source in sources) {
+					var metadataResource = source.GetResource<PackageMetadataResource> ();
+					if (metadataResource != null) {
+						var packagesMetadata = await metadataResource.GetMetadataAsync (
+							package.Id,
+							includePrerelease: true,
+							includeUnlisted: true,
+							sourceCacheContext: sourceCacheContext,
+							log: NullLogger.Instance,
+							token: cancellationToken);
 
-					var metadata = packagesMetadata.FirstOrDefault (p => p.Identity.Version == package.Version);
-					if (metadata != null) {
-						if (metadata.RequireLicenseAcceptance) {
-							return new NuGetPackageLicense (metadata);
+						var metadata = packagesMetadata.FirstOrDefault (p => p.Identity.Version == package.Version);
+						if (metadata != null) {
+							if (metadata.RequireLicenseAcceptance) {
+								return new NuGetPackageLicense (metadata);
+							}
+							return null;
 						}
-						return null;
 					}
 				}
 			}

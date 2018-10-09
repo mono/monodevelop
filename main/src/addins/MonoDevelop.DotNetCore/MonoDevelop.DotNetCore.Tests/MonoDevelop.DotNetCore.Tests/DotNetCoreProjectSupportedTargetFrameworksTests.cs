@@ -26,73 +26,35 @@
 
 using NUnit.Framework;
 using System.Linq;
+using System;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
 	[TestFixture]
 	class DotNetCoreProjectSupportedTargetFrameworksTests : DotNetCoreVersionsRestorerTestBase
 	{
-		[Test]
-		public void GetNetStandardTargetFrameworks_NetCore20RuntimeInstalled ()
+		static string[] netStandardVersions = { "2.0", "1.6", "1.5", "1.4", "1.3", "1.2", "1.1", "1.0" };
+
+		[TestCase ("5.4.0", "2.0", "2.0.5")]
+		[TestCase ("5.3.99", "1.6", new string[0])]
+		[TestCase ("5.4.0", "2.0", new string[0])]
+		[TestCase ("4.8.0", "1.6", "1.1")]
+		[TestCase ("4.8.0", "2.0", "2.2.0")]
+		[TestCase ("5.3.1", "2.0", "2.1.0")]
+		[TestCase ("5.16.0", "2.0", "1.1")]
+		public void GetNetStandardTargetFrameworks_MonoAndSdkInstalled (string monoVersion, string maxNetStandardVersion, params string[] sdkVersions)
 		{
-			DotNetCoreRuntimesInstalled ("2.0.5");
+			DotNetCoreRuntimesInstalled (sdkVersions);
+			MonoRuntimeInfoExtensions.CurrentRuntimeVersion = new Version (monoVersion);
 
 			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
 
-			Assert.AreEqual (".NETStandard,Version=v2.0", frameworks [0].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.6", frameworks [1].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.5", frameworks [2].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.4", frameworks [3].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.3", frameworks [4].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.2", frameworks [5].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.1", frameworks [6].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.0", frameworks [7].Id.ToString ());
-			Assert.AreEqual (8, frameworks.Count);
-		}
-
-		[Test]
-		public void GetNetStandardTargetFrameworks_NetCore11RuntimeInstalled ()
-		{
-			DotNetCoreRuntimesInstalled ("1.1");
-
-			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
-
-			Assert.AreEqual (".NETStandard,Version=v1.6", frameworks [0].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.5", frameworks [1].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.4", frameworks [2].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.3", frameworks [3].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.2", frameworks [4].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.1", frameworks [5].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.0", frameworks [6].Id.ToString ());
-			Assert.AreEqual (7, frameworks.Count);
-		}
-
-		[Test]
-		public void GetNetStandardTargetFrameworks_NoRuntimeInstalled ()
-		{
-			DotNetCoreRuntimesInstalled (new string [0]);
-
-			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
-
-			Assert.AreEqual (0, frameworks.Count);
-		}
-
-		[Test]
-		public void GetNetStandardTargetFrameworks_NetCore21RuntimeInstalled ()
-		{
-			DotNetCoreRuntimesInstalled ("2.1.0");
-
-			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().ToList ();
-
-			Assert.AreEqual (".NETStandard,Version=v2.0", frameworks [0].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.6", frameworks [1].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.5", frameworks [2].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.4", frameworks [3].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.3", frameworks [4].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.2", frameworks [5].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.1", frameworks [6].Id.ToString ());
-			Assert.AreEqual (".NETStandard,Version=v1.0", frameworks [7].Id.ToString ());
-			Assert.AreEqual (8, frameworks.Count);
+			int start = netStandardVersions.IndexOf (maxNetStandardVersion);
+			Assert.That (start, Is.GreaterThanOrEqualTo (0));
+			Assert.That (frameworks.Count, Is.EqualTo (netStandardVersions.Length - start));
+			for (int i = start; i < netStandardVersions.Length; i++) {
+				Assert.AreEqual ($".NETStandard,Version=v{netStandardVersions[i]}", frameworks[i - start].Id.ToString ());
+			}
 		}
 
 		[Test]
@@ -116,6 +78,17 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETCoreApp,Version=v1.1", frameworks [0].Id.ToString ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", frameworks [1].Id.ToString ());
 			Assert.AreEqual (2, frameworks.Count);
+		}
+
+		[Test]
+		public void GetNetCoreAppTargetFrameworks_NetCore22RuntimeInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("2.2.0");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+			Assert.AreEqual (".NETCoreApp,Version=v2.2", frameworks[0].Id.ToString ());
+			Assert.AreEqual (1, frameworks.Count);
 		}
 
 		[Test]

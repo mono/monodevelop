@@ -92,6 +92,7 @@ namespace MonoDevelop.PackageManagement
 				new RestoreCommandProvidersCache (),
 				cacheContextModifier,
 				sourceRepositories,
+				Guid.NewGuid (),
 				forceRestore,
 				spec,
 				context.Logger,
@@ -184,6 +185,7 @@ namespace MonoDevelop.PackageManagement
 				new RestoreCommandProvidersCache (),
 				cacheContextModifier,
 				sourceRepositories,
+				Guid.NewGuid (),
 				context.Logger,
 				cancellationToken);
 

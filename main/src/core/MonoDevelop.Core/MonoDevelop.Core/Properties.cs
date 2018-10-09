@@ -90,7 +90,7 @@ namespace MonoDevelop.Core
 
 		public object Get (string property, object defaultValue, Type type)
 		{
-			if (!defaultValues.ContainsKey (property))
+			if (!defaultValues.ContainsKey (property) && IsSupportedDefaultValueType (type))
 				defaultValues = defaultValues.SetItem (property, defaultValue);
 
 			if (GetPropertyValue (property, out object value, type))
@@ -99,7 +99,16 @@ namespace MonoDevelop.Core
 			return defaultValue;
 		}
 
-		
+		/// <summary>
+		/// Only value types, strings and Properties are supported when checking for default values.
+		/// Other reference types are not supported because on saving they will match the default value,
+		/// since it is the same instance, and not be written to the properties file.
+		/// </summary>
+		static bool IsSupportedDefaultValueType (Type type)
+		{
+			return type.IsValueType || type == typeof (string) || type == typeof (Properties);
+		}
+
 		public T Get<T> (string property, T defaultValue)
 		{
 			var result = Get (property, defaultValue, typeof (T));

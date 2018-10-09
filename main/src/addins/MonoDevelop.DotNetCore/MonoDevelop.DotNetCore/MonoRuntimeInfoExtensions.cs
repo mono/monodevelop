@@ -1,10 +1,10 @@
 //
-// TextEditorKeyPressTimingsTests.cs
+// MonoRuntimeInfoExtensions.cs
 //
 // Author:
-//       Marius Ungureanu <maungu@microsoft.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft Inc.
+// Copyright (c) 2018, Microsoft, Inc (http://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Threading;
-using MonoDevelop.Ide;
-using NUnit.Framework;
+using MonoDevelop.Core.Assemblies;
 
-namespace Mono.TextEditor.Tests
+namespace MonoDevelop.DotNetCore
 {
-	[TestFixture]
-	class TextEditorKeyPressTimingsTests : TextEditorTestBase
+	static class MonoRuntimeInfoExtensions
 	{
-		[Test]
-		public void TestSimpleTimer ()
+		static readonly Version MonoVersion5_4 = new Version (5, 4, 0);
+		static readonly Version DotNetCore2_1 = new Version (2, 1);
+
+		internal static Version CurrentRuntimeVersion { get; set; } = MonoRuntimeInfo.FromCurrentRuntime ().RuntimeVersion;
+
+		public static bool SupportsNetStandard20 (this Version monoVersion)
 		{
-			var timings = new TextEditorKeyPressTimings (null);
+			return monoVersion >= MonoVersion5_4;
+		}
 
-			var telemetry = DesktopService.PlatformTelemetry;
-			if (telemetry == null)
-				Assert.Ignore ("Platform does not implement telemetry details");
-
-			var time = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
-			timings.StartTimer (time);
-			Thread.Sleep (800);
-			timings.EndTimer ();
-
-			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
-			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
-			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
+		public static bool SupportsNetCore (this Version monoVersion, string netCoreVersion)
+		{
+			return monoVersion >= MonoVersion5_4 && Version.Parse (netCoreVersion) <= DotNetCore2_1;
 		}
 	}
 }

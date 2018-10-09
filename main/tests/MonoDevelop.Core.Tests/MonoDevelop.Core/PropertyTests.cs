@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnitTests;
@@ -96,6 +97,30 @@ namespace MonoDevelop.Core
 			string text = File.ReadAllText (fileName);
 
 			Assert.IsFalse (text.Contains ("First"), "Default properties should not be saved.");
+		}
+
+		/// <summary>
+		/// Ensures that a List instance used as a property value can be saved
+		/// and re-loaded with the updated values.
+		/// </summary>
+		[Test]
+		public void PropertyIsListOfStrings_SaveAndReload ()
+		{
+			var mainProperties = new Properties ();
+			var list = mainProperties.Get ("ListInstance", new List<string> ());
+			list.Add ("FirstItem");
+			list.Add ("SecondItem");
+
+			FilePath directory = Util.CreateTmpDir ("ListInstance");
+			var fileName = directory.Combine ("Properties.xml");
+			mainProperties.Save (fileName);
+
+			mainProperties = Properties.Load (fileName);
+			var savedList = mainProperties.Get ("ListInstance", new List<string> ());
+
+			Assert.AreEqual (2, savedList.Count);
+			Assert.AreEqual ("FirstItem", savedList [0]);
+			Assert.AreEqual ("SecondItem", savedList [1]);
 		}
 	}
 }

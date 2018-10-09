@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide
 		internal static Counter<CompletionStatisticsMetadata> CodeCompletionStats = InstrumentationService.CreateCounter<CompletionStatisticsMetadata> ("Code Completion Statistics", "IDE", id:"Ide.CodeCompletionStatistics");
 		internal static Counter<TimeToCodeMetadata> TimeToCode = InstrumentationService.CreateCounter<TimeToCodeMetadata> ("Time To Code", "IDE", id: "Ide.TimeToCode");
 		internal static bool TrackingBuildAndDeploy;
-		internal static TimerCounter<CounterMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<CounterMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
+		internal static TimerCounter<BuildAndDeployMetadata> BuildAndDeploy = InstrumentationService.CreateTimerCounter<BuildAndDeployMetadata> ("Build and Deploy", "IDE", id: "Ide.BuildAndDeploy");
 		internal static Counter<PlatformMemoryMetadata> MemoryPressure = InstrumentationService.CreateCounter<PlatformMemoryMetadata> ("Memory Pressure", "IDE", id: "Ide.MemoryPressure");
 
 		internal static Counter<UnhandledExceptionMetadata> UnhandledExceptions = InstrumentationService.CreateCounter<UnhandledExceptionMetadata> ("Unhandled Exceptions", "IDE", id: "Ide.UnhandledExceptions");
@@ -156,6 +156,11 @@ namespace MonoDevelop.Ide
 
 	class TimeToCodeMetadata : CounterMetadata
 	{
+		public enum DocumentType {
+			Solution,
+			File
+		};
+
 		public long CorrectedDuration {
 			get => GetProperty<long> ();
 			set => SetProperty (value);
@@ -170,12 +175,37 @@ namespace MonoDevelop.Ide
 			get => GetProperty<long> ();
 			set => SetProperty (value);
 		}
+
+		public DocumentType Type {
+			get => GetProperty<DocumentType> ();
+			set => SetProperty (value);
+		}
 	}
 
 	class UnhandledExceptionMetadata : CounterMetadata
 	{
 		public System.Exception Exception {
 			get => GetProperty<System.Exception> ();
+			set => SetProperty (value);
+		}
+	}
+
+	class BuildAndDeployMetadata : CounterMetadata
+	{
+		public BuildAndDeployMetadata ()
+		{
+		}
+
+		public BuildAndDeployMetadata (CounterMetadata clone) : base (clone)
+		{
+		}
+
+		public bool BuildWithoutPrompting {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+		public long BuildTime {
+			get => GetProperty<long> ();
 			set => SetProperty (value);
 		}
 	}

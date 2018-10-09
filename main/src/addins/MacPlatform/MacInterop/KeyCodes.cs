@@ -1,10 +1,10 @@
 //
-// TextEditorKeyPressTimingsTests.cs
+// KeyCodes.cs
 //
 // Author:
-//       Marius Ungureanu <maungu@microsoft.com>
+//       iain <iaholmes@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Inc.
+// Copyright (c) 2018 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading;
-using MonoDevelop.Ide;
-using NUnit.Framework;
 
-namespace Mono.TextEditor.Tests
+namespace MonoDevelop.MacInterop
 {
-	[TestFixture]
-	class TextEditorKeyPressTimingsTests : TextEditorTestBase
+	// These are the keycodes values NSEvent.KeyCode
+	// To find the code for a key not here, you can use the Key Codes application
+	// available from https://manytricks.com/keycodes/
+	internal static class KeyCodes
 	{
-		[Test]
-		public void TestSimpleTimer ()
-		{
-			var timings = new TextEditorKeyPressTimings (null);
-
-			var telemetry = DesktopService.PlatformTelemetry;
-			if (telemetry == null)
-				Assert.Ignore ("Platform does not implement telemetry details");
-
-			var time = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
-			timings.StartTimer (time);
-			Thread.Sleep (800);
-			timings.EndTimer ();
-
-			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
-			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
-			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
-		}
+		internal const ushort Enter = 0x24;
+		internal const ushort Tab = 0x30;
+		internal const ushort Space = 0x31;
 	}
 }

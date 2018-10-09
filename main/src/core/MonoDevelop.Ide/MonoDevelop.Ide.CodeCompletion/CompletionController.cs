@@ -880,12 +880,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				//tab always completes current item even if selection is disabled
 				if (!AutoSelect)
 					AutoSelect = true;
+				if (!AutoCompleteEmptyMatch)
+					AutoCompleteEmptyMatch = true;
 				goto case SpecialKey.Return;
 
 			case SpecialKey.Return:
 				if (descriptor.ModifierKeys != ModifierKeys.None && descriptor.ModifierKeys != ModifierKeys.Shift)
 					return KeyActions.CloseWindow;
-				if (dataList == null || dataList.Count == 0)
+				if (dataList == null || dataList.Count == 0 || !listWindow.SelectionEnabled)
 					return KeyActions.CloseWindow;
 				WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
 

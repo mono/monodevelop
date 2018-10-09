@@ -22,6 +22,8 @@
 // limitations under the License.
 //
 
+using System;
+using NuGet.Configuration;
 using NuGet.Credentials;
 using NuGet.Protocol;
 
@@ -29,9 +31,18 @@ namespace MonoDevelop.PackageManagement
 {
 	internal static class HttpHandlerResourceV3Extensions
 	{
-		public static void InitializeHttpHandlerResourceV3 (CredentialService credentialService)
+		public static void InitializeHttpHandlerResourceV3 (CustomCredentialService credentialService)
 		{
-			HttpHandlerResourceV3.CredentialService = credentialService;
+			HttpHandlerResourceV3.CredentialService = new Lazy<ICredentialService> (() => credentialService);
+		}
+
+		public static CustomCredentialService GetCustomCredentialService ()
+		{
+			var lazyCredentialService = HttpHandlerResourceV3.CredentialService;
+			if (lazyCredentialService != null) {
+				return lazyCredentialService.Value as CustomCredentialService;
+			}
+			return null;
 		}
 	}
 }

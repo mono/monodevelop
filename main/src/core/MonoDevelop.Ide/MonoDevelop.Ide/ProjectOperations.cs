@@ -565,7 +565,7 @@ namespace MonoDevelop.Ide
 						BrandingService.ApplicationName
 					),
 					GettextCatalog.GetString (
-						"Changes done in those files will be overwritten by {0}.",
+						"Changes made in those files will be overwritten by {0}.",
 						BrandingService.ApplicationName
 					),
 					AlertButton.OverwriteFile);
@@ -1066,7 +1066,28 @@ namespace MonoDevelop.Ide
 
 		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, ConfigurationSelector configuration, RunConfiguration runConfiguration, bool buildBeforeExecuting)
 		{
-			var metadata = new CounterMetadata ();
+			ProjectEventMetadata eventMetadata = null;
+
+			if (entry is Solution solution) {
+				SolutionItem solutionItem = null;
+				if (runConfiguration == null) {
+					solutionItem = solution.StartupItem;
+				} else if (runConfiguration is SingleItemSolutionRunConfiguration singleItemSolution) {
+					solutionItem = singleItemSolution.Item;
+				}
+
+				if (solutionItem != null) {
+					eventMetadata = solutionItem.CreateProjectEventMetadata (configuration);
+				}
+			} else if (entry is SolutionItem item) {
+				eventMetadata = item.CreateProjectEventMetadata (configuration);
+			}
+
+			var metadata = new BuildAndDeployMetadata (eventMetadata);
+
+			// CheckAndBuildForExecute may open a dialog, so track that here if it does
+			metadata.BuildWithoutPrompting = IdeApp.Preferences.BuildBeforeExecuting;
+
 			metadata.SetSuccess ();
 			Counters.BuildAndDeploy.BeginTiming ("Execute", metadata);
 			Counters.TrackingBuildAndDeploy = true;
@@ -1088,12 +1109,19 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (buildBeforeExecuting) {
+				Stopwatch buildTimer = new Stopwatch ();
+				buildTimer.Start ();
+
 				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration)) {
 					metadata.SetFailure ();
 					Counters.TrackingBuildAndDeploy = false;
 					Counters.BuildAndDeploy.EndTiming ();
+					buildTimer.Stop ();
 					return;
 				}
+
+				buildTimer.Stop ();
+				metadata.BuildTime = buildTimer.ElapsedMilliseconds;
 			}
 
 			ProgressMonitor monitor = new ProgressMonitor (cs);
@@ -1508,7 +1536,7 @@ namespace MonoDevelop.Ide
 			var bRun = new AlertButton (Gtk.Stock.Execute, true);
 			var res = MessageService.AskQuestion (
 				GettextCatalog.GetString ("Outdated Build"),
-				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
+				GettextCatalog.GetString ("The project you are executing has changed since the last time it was compiled. Do you want to continue or rebuild it?"),
 				1,
 				AlertButton.Cancel,
 				bBuild,

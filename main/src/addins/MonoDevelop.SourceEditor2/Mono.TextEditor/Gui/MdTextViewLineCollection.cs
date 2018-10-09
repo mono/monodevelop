@@ -50,7 +50,7 @@ namespace Mono.TextEditor
 			textEditor.TextViewModel.VisualBuffer.ChangedLowPriority += OnVisualBufferChanged;
 		}
 
-		internal ITextViewLine Add (int logicalLineNumber, DocumentLine line)
+		internal ITextViewLine Add (int logicalLineNumber, DocumentLine line, TextViewMargin.LayoutWrapper layoutWrapper)
 		{
 			if (line == null)
 				return null;
@@ -60,7 +60,10 @@ namespace Mono.TextEditor
 			else
 				System.Diagnostics.Debug.Assert (this.textSnapshot == textEditor.TextSnapshot);
 
-			var newLine = new MdTextViewLine (this, textEditor, line, logicalLineNumber, textEditor.TextViewMargin.GetLayout (line));
+			if (line.EndOffsetIncludingDelimiter > textSnapshot.Length) // prevent to create invalid text view lines.
+				return null;
+
+			var newLine = new MdTextViewLine (this, textEditor, line, logicalLineNumber, layoutWrapper);
 			for (int i = 0; i < Count; i++) {
 				if (((MdTextViewLine)this [i]).LineNumber == logicalLineNumber) {
 					this [i] = newLine;
@@ -272,7 +275,10 @@ namespace Mono.TextEditor
 		private ITextViewLine CreateAndAddLineFromPosition (SnapshotPoint position)
 		{
 			int lineNumber1Based = textSnapshot.GetLineNumberFromPosition (position) + 1;
-			return Add (lineNumber1Based, textEditor.Document.GetLine (lineNumber1Based));
+			var line = textEditor.Document.GetLine (lineNumber1Based);
+			var wrapper = textEditor.TextViewMargin.GetLayout (line);
+
+			return Add (lineNumber1Based, line, wrapper);
 		}
 
 		public ITextViewLine GetTextViewLineContainingYCoordinate (double y)

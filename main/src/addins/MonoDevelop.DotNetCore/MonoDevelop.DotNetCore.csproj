@@ -26,7 +26,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Versioning.4.7.0\lib\net46\NuGet.Versioning.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -105,6 +105,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Gui\DotNetCoreSdkLocationWidget.UI.cs">
       <DependentUpon>DotNetCoreSdkLocationWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonoDevelop.DotNetCore\MonoRuntimeInfoExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

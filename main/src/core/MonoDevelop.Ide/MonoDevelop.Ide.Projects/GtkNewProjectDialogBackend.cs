@@ -54,10 +54,11 @@ namespace MonoDevelop.Ide.Projects
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateCategoriesListStore__Name", "templateCategoriesListStore__Icon", "templateCategoriesListStore__Category");
 			TypeDescriptor.AddAttributes (templateCategoriesListStore, modelAttr);
 			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Icon", "templateListStore__Template");
-			TypeDescriptor.AddAttributes (templatesListStore, modelAttr);
+			TypeDescriptor.AddAttributes (templatesTreeStore, modelAttr);
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
 			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;
+
 			templatesTreeView.Selection.Changed += TemplatesTreeViewSelectionChanged;
 			templatesTreeView.ButtonPressEvent += TemplatesTreeViewButtonPressed;
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
@@ -322,19 +323,21 @@ namespace MonoDevelop.Ide.Projects
 			Xwt.Drawing.Image icon = GetIcon (category.IconId ?? "md-platform-other", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
-			templateCategoriesListStore.AppendValues (
+			var iter = templateCategoriesListStore.AppendValues (
 				MarkupTopLevelCategoryName (category.Name),
 				icon,
 				category);
 
 			foreach (TemplateCategory subCategory in category.Categories) {
-				AddSubTemplateCategory (subCategory);
+				AddSubTemplateCategory (iter, subCategory);
 			}
+			templateCategoriesTreeView.ExpandAll ();
 		}
 
-		void AddSubTemplateCategory (TemplateCategory category)
+		void AddSubTemplateCategory (TreeIter iter, TemplateCategory category)
 		{
 			templateCategoriesListStore.AppendValues (
+				iter,
 				GLib.Markup.EscapeText (category.Name),
 				null,
 				category);
@@ -366,7 +369,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void ClearSelectedCategoryInformation ()
 		{
-			templatesListStore.Clear ();
+			templatesTreeStore.Clear ();
 		}
 
 		TemplateCategory GetSelectedTemplateCategory ()
@@ -383,38 +386,42 @@ namespace MonoDevelop.Ide.Projects
 			templateTextRenderer.RenderRecentTemplate = false;
 			languageCellRenderer.RenderRecentTemplate = false;
 			foreach (TemplateCategory subCategory in category.Categories) {
-				templatesListStore.AppendValues (
+				var iter = templatesTreeStore.AppendValues (
 					MarkupTopLevelCategoryName (subCategory.Name),
 					null,
 					null);
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
 					if (template.HasProjects || controller.IsNewSolution) {
-						templatesListStore.AppendValues (
+						templatesTreeStore.AppendValues (
+							iter,
 							template.Name,
 							GetIcon (template.IconId, IconSize.Dnd),
 							template);
 					}
 				}
 			}
+			templatesTreeView.ExpandAll ();
 		}
 
 		void ShowRecentTemplates ()
 		{
 			templateTextRenderer.RenderRecentTemplate = true;
 			languageCellRenderer.RenderRecentTemplate = true;
-			templatesListStore.AppendValues (
+			var iter = templatesTreeStore.AppendValues (
 				MarkupTopLevelCategoryName (Core.GettextCatalog.GetString ("Recently used templates")),
 				null,
 				null);
 			foreach (SolutionTemplate template in controller.RecentTemplates) {
 				if (template.HasProjects || controller.IsNewSolution) {
-					templatesListStore.AppendValues (
+					templatesTreeStore.AppendValues (
+						iter,
 						controller.GetCategoryPathText (template),
 						GetIcon (template.IconId, IconSize.Dnd),
 						template);
 				}
 			}
+			templatesTreeView.ExpandAll ();
 		}
 
 		static Xwt.Drawing.Image GetIcon (string id, IconSize size)
@@ -443,7 +450,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			TreeIter item;
 			if (templatesTreeView.Selection.GetSelected (out item)) {
-				return templatesListStore.GetValue (item, TemplateColumn) as SolutionTemplate;
+				return templatesTreeStore.GetValue (item, TemplateColumn) as SolutionTemplate;
 			}
 			return null;
 		}
@@ -532,15 +539,15 @@ namespace MonoDevelop.Ide.Projects
 		void SelectTemplate (SolutionTemplate template)
 		{
 			TreeIter iter = TreeIter.Zero;
-			if (!templatesListStore.GetIterFirst (out iter)) {
+			if (!templatesTreeStore.GetIterFirst (out iter)) {
 				return;
 			}
 
-			while (templatesListStore.IterNext (ref iter)) {
-				var currentTemplate = templatesListStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
+			while (templatesTreeStore.IterNext (ref iter)) {
+				var currentTemplate = templatesTreeStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
 				if (currentTemplate == template) {
 					templatesTreeView.Selection.SelectIter (iter);
-					TreePath path = templatesListStore.GetPath (iter);
+					TreePath path = templatesTreeStore.GetPath (iter);
 					templatesTreeView.ScrollToCell (path, null, true, 1, 0);
 					break;
 				}
@@ -550,7 +557,7 @@ namespace MonoDevelop.Ide.Projects
 		void SelectFirstTemplate ()
 		{
 			TreeIter iter = TreeIter.Zero;
-			if (templatesListStore.IterNthChild (out iter, 1)) {
+			if (templatesTreeStore.IterNthChild (out iter, 1)) {
 				templatesTreeView.Selection.SelectIter (iter);
 			}
 		}

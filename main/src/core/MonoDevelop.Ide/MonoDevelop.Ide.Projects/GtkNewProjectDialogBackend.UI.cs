@@ -55,14 +55,14 @@ namespace MonoDevelop.Ide.Projects
 		const int TemplateCategoryNameColumn = 0;
 		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
-		ListStore templateCategoriesListStore =
-			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
+		TreeStore templateCategoriesListStore =
+			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
 		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
-		ListStore templatesListStore =
-			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
+		TreeStore templatesTreeStore =
+			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
 		VBox templateVBox;
 		ImageView templateImage;
 		Label templateNameLabel;
@@ -176,6 +176,8 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
 			templateCategoriesTreeView.SearchColumn = -1; // disable the interactive search
+			templateCategoriesTreeView.ShowExpanders = false;
+
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
 			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
@@ -199,8 +201,9 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Accessible.SetTitle (GettextCatalog.GetString ("Project Templates"));
 			templatesTreeView.Accessible.Description = GettextCatalog.GetString ("Select the project template");
 			templatesTreeView.HeadersVisible = false;
-			templatesTreeView.Model = templatesListStore;
+			templatesTreeView.Model = templatesTreeStore;
 			templatesTreeView.SearchColumn = -1; // disable the interactive search
+			templatesTreeView.ShowExpanders = false;
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
 			templatesBgBox.Add (templatesScrolledWindow);

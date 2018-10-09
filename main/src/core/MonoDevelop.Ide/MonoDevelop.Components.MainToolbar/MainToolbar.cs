@@ -610,8 +610,7 @@ namespace MonoDevelop.Components.MainToolbar
 			buttonBar.Groups = groups;
 		}
 
-		public void Focus (){}
-		public void Focus (System.Action exitAction) {}
+		public void Focus (DirectionType direction, Action<DirectionType> exitAction) {}
 
 		public bool ButtonBarSensitivity {
 			set { buttonBar.Sensitive = value; }

@@ -67,6 +67,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			NuGetProject nuGetProject,
 			IEnumerable<NuGetProjectAction> nuGetProjectActions,
 			INuGetProjectContext nuGetProjectContext,
+			SourceCacheContext sourceCacheContext,
 			CancellationToken token)
 		{
 			ExecutedNuGetProject = nuGetProject;

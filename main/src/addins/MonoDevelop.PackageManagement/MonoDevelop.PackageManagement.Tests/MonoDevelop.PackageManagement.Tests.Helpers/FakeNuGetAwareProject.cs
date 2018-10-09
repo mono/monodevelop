@@ -1,10 +1,10 @@
 //
-// TextEditorKeyPressTimingsTests.cs
+// FakeNuGetAwareProject.cs
 //
 // Author:
-//       Marius Ungureanu <maungu@microsoft.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Inc.
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Threading;
-using MonoDevelop.Ide;
-using NUnit.Framework;
+using System.Threading.Tasks;
+using NuGet.ProjectManagement;
 
-namespace Mono.TextEditor.Tests
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	[TestFixture]
-	class TextEditorKeyPressTimingsTests : TextEditorTestBase
+	class FakeNuGetAwareProject : DummyDotNetProject, INuGetAwareProject
 	{
-		[Test]
-		public void TestSimpleTimer ()
+		public NuGetProject CreateNuGetProject ()
 		{
-			var timings = new TextEditorKeyPressTimings (null);
+			throw new NotImplementedException ();
+		}
 
-			var telemetry = DesktopService.PlatformTelemetry;
-			if (telemetry == null)
-				Assert.Ignore ("Platform does not implement telemetry details");
+		public Task<bool> HasMissingPackages (IMonoDevelopSolutionManager solutionManager)
+		{
+			throw new NotImplementedException ();
+		}
 
-			var time = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
-			timings.StartTimer (time);
-			Thread.Sleep (800);
-			timings.EndTimer ();
+		public bool HasPackagesReturnValue;
 
-			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
-			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
-			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
+		public bool HasPackages ()
+		{
+			return HasPackagesReturnValue;
+		}
+
+		public Task RestorePackagesAsync (IMonoDevelopSolutionManager solutionManager, INuGetProjectContext context, CancellationToken token)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

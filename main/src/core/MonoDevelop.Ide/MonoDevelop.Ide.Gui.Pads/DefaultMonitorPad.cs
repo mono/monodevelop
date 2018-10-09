@@ -165,7 +165,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				Window.IsWorking = true;
 				buttonStop.Sensitive = true;
 			});
-			
+			monitor.Disposed += delegate {
+				if (progressStarted)
+					EndProgress ();
+			};
+
 			monitor.Completed += delegate {
 				EndProgress ();
 			};

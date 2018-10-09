@@ -310,8 +310,10 @@ namespace Mono.TextEditor
 
 		void HandleSyntaxModeChanged(object sender, EventArgs e)
 		{
-			PurgeLayoutCache ();
-			textEditor.Document.CommitUpdateAll ();
+			Runtime.RunInMainThread (() => {
+				PurgeLayoutCache ();
+				textEditor.Document.CommitUpdateAll ();
+			});
 		}
 
 		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
@@ -611,8 +613,8 @@ namespace Mono.TextEditor
 			markerLayout.FontDescription = markerLayoutFont;
 
 			// Gutter font may be bigger
-			GetFontMetrics (textEditor.Options.GutterFont, textEditor.Options.GutterFontName, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
-			GetFontMetrics (textEditor.Options.Font, textEditor.Options.FontName, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics (textEditor.Options.GutterFont, out double gutterFontLineHeight, out double fontCharWidth, out underlinePosition, out underLineThickness);
+			GetFontMetrics (textEditor.Options.Font, out double fontLineHeight, out fontCharWidth, out underlinePosition, out underLineThickness);
 			this.textEditor.GetTextEditorData ().LineHeight = fontLineHeight;
 			this.charWidth = fontCharWidth;
 
@@ -663,14 +665,15 @@ namespace Mono.TextEditor
 		public int UnderlinePosition => underlinePosition;
 		public int UnderLineThickness => underLineThickness;
 
-		void GetFontMetrics(Pango.FontDescription font, string fontName, out double lineHeight, out double charWidth, out int underlinePosition, out int underLineThickness)
+		void GetFontMetrics (Pango.FontDescription font, out double lineHeight, out double charWidth, out int underlinePosition, out int underLineThickness)
 		{
 			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
 #if MAC
 				double baseHeight;
-				if (fontName != null) {
-					baseHeight = OSXEditor.GetLineHeight(fontName) * textEditor.Options.Zoom;
-				} else {
+				try {
+					baseHeight = OSXEditor.GetLineHeight(font.ToString ()) * textEditor.Options.Zoom;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting the macOS font metrics for " + font, e);
 					baseHeight = (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale;
 				}
 				lineHeight = System.Math.Ceiling (0.5 + baseHeight);
