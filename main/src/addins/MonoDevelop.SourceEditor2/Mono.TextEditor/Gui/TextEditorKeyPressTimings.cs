@@ -37,11 +37,18 @@ namespace Mono.TextEditor
 			8, 16, 32, 64, 128, 256, 512, 1024
 		);
 		readonly BucketTimings bucketTimings = new BucketTimings (bucketUpperLimit);
+		TimeSpan totalTimeMarginDrawing;
+		TimeSpan totalTimeExtensionKeyPress;
+		TimeSpan totalTimeAnimationDrawing;
+		TimeSpan totalTimeCaretDrawing;
+
+		TimeSpan openTime;
 
 		TimeSpan maxTime;
 		TimeSpan totalTime;
 		TimeSpan? firstTime;
 		int count;
+		int lengthAtStart, lineCountAtStart;
 
 		// The length of time it takes to process a key is the time
 		// from the key being pressed to the character being drawn on screen
@@ -54,6 +61,45 @@ namespace Mono.TextEditor
 		long[] activeCounts = new long[numberOfCountSpaces];
 		int activeCountIndex = 0;
 		int droppedEvents = 0;
+
+		public TimeSpan GetCurrentTime ()
+		{
+			var telemetry = DesktopService.PlatformTelemetry;
+			if (telemetry == null) {
+				return TimeSpan.Zero;
+			}
+			return telemetry.TimeSinceMachineStart;
+		}
+
+		public TextEditorKeyPressTimings (TextDocument document)
+		{
+			openTime = GetCurrentTime ();
+
+			if (document != null) {
+				lengthAtStart = document.Length;
+				lineCountAtStart = document.LineCount;
+			}
+		}
+
+		public void AddMarginDrawingTime (TimeSpan duration)
+		{
+			totalTimeMarginDrawing += duration;
+		}
+
+		public void AddExtensionKeypressTime (TimeSpan duration)
+		{
+			totalTimeExtensionKeyPress += duration;
+		}
+
+		public void AddAnimationDrawingTime (TimeSpan duration)
+		{
+			totalTimeAnimationDrawing += duration;
+		}
+
+		public void AddCaretDrawingTime (TimeSpan duration)
+		{
+			totalTimeCaretDrawing += duration;
+		}
 
 		public void StartTimer (long eventTime)
 		{
@@ -99,15 +145,15 @@ namespace Mono.TextEditor
 				return;
 			}
 
-			var telemetry = DesktopService.PlatformTelemetry;
-			if (telemetry == null) {
+			var currentTime = GetCurrentTime ();
+			if (currentTime == TimeSpan.Zero) {
 				activeCountIndex = 0;
 				return;
 			}
 
 			// Gdk key events are wrapped to uint32, so if we use longs here, we will get keypresses that
 			// seemingly last for days.
-			var sinceStartup = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
+			var sinceStartup = (long)currentTime.TotalMilliseconds;
 
 			if (complete) {
 				for (int i = 0; i < activeCountIndex; i++) {
@@ -128,15 +174,35 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal TypingTimingMetadata GetTypingTimingMetadata (string extension)
+		internal TypingTimingMetadata GetTypingTimingMetadata (string extension, ITextEditorOptions options, int lengthAtEnd, int lineCountAtEnd)
 		{
-			var average = totalTime.TotalMilliseconds / count;
+			double totalMillis = totalTime.TotalMilliseconds;
+
+			var average = totalMillis / count;
 			var metadata = new TypingTimingMetadata {
 				Average = average,
 				First = firstTime.Value.TotalMilliseconds,
 				Maximum = maxTime.TotalMilliseconds,
-				Dropped = droppedEvents
+				Dropped = droppedEvents,
+				PercentAnimation = totalTimeAnimationDrawing.TotalMilliseconds / totalMillis * 100,
+				PercentDrawCaret = totalTimeCaretDrawing.TotalMilliseconds / totalMillis * 100,
+				PercentDrawMargin = totalTimeMarginDrawing.TotalMilliseconds / totalMillis * 100,
+				PercentExtensionKeypress = totalTimeExtensionKeyPress.TotalMilliseconds / totalMillis * 100,
+				SessionKeypressCount = count,
+				SessionLength = openTime.TotalMilliseconds - GetCurrentTime ().TotalMilliseconds,
+				LengthAtStart = lengthAtStart,
+				LengthDelta = lengthAtEnd - lengthAtStart,
+				LineCountAtStart = lineCountAtStart,
+				LineCountDelta = lineCountAtEnd - lineCountAtStart,
 			};
+
+			if (options != null) {
+				metadata.FoldMarginShown = options.ShowFoldMargin;
+				metadata.NumberMarginShown = options.ShowLineNumberMargin;
+				metadata.ShowIconMargin = options.ShowIconMargin;
+				metadata.ShowWhiteSpaces = options.ShowWhitespaces;
+				metadata.IncludeWhitespaces = options.IncludeWhitespaces;
+			}
 
 			if (!string.IsNullOrEmpty (extension))
 				metadata.Extension = extension;
@@ -146,7 +212,7 @@ namespace Mono.TextEditor
 			return metadata;
 		}
 
-		public void ReportTimings (Mono.TextEditor.TextDocument document)
+		public void ReportTimings (Mono.TextEditor.TextDocument document, ITextEditorOptions options)
 		{
 			if (count == 0) {
 				// No timings recorded.
@@ -155,7 +221,7 @@ namespace Mono.TextEditor
 
 			string extension = document.FileName.Extension;
 
-			var metadata = GetTypingTimingMetadata (extension);
+			var metadata = GetTypingTimingMetadata (extension, options, document.Length, document.LineCount);
 			MonoDevelop.SourceEditor.Counters.Typing.Inc (metadata);
 		}
 	}
@@ -187,6 +253,81 @@ namespace Mono.TextEditor
 		}
 
 		public int Dropped {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public double PercentDrawMargin {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double PercentExtensionKeypress {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double PercentDrawCaret {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double PercentAnimation {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public bool FoldMarginShown {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+
+		public bool NumberMarginShown {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+
+		public bool ShowIconMargin {
+			get => GetProperty<bool> ();
+			set => SetProperty (value);
+		}
+
+		public ShowWhitespaces ShowWhiteSpaces {
+			get => GetProperty<ShowWhitespaces> ();
+			set => SetProperty (value);
+		}
+
+		public IncludeWhitespaces IncludeWhitespaces {
+			get => GetProperty<IncludeWhitespaces> ();
+			set => SetProperty (value);
+		}
+
+		public double SessionKeypressCount {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public double SessionLength {
+			get => GetProperty<double> ();
+			set => SetProperty (value);
+		}
+
+		public int LengthAtStart {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int LengthDelta {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int LineCountAtStart {
+			get => GetProperty<int> ();
+			set => SetProperty (value);
+		}
+
+		public int LineCountDelta {
 			get => GetProperty<int> ();
 			set => SetProperty (value);
 		}
