@@ -47,4 +47,4 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = d16-0-p1
+	branch = master
