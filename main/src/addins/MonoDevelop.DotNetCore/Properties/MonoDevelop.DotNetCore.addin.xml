@@ -774,6 +774,40 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore22=true"
 			category="netcore/test/general" />
+		<Template
+			id="NUnit3.DotNetNew.Template.CSharp"
+			templateId="NUnit3.DotNetNew.Template.CSharp"
+			_overrideName="NUnit Test Project"
+			_overrideDescription="Creates a new NUnit test project."
+			path="${DotNetCoreSdk.2.2.Templates.NUnit3.DotNetNew.Template.nupkg}"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Template
+			id="NUnit3.DotNetNew.Template.FSharp"
+			templateId="NUnit3.DotNetNew.Template.FSharp"
+			_overrideName="NUnit Test Project"
+			_overrideDescription="Creates a new NUnit test project."
+			path="${DotNetCoreSdk.2.2.Templates.NUnit3.DotNetNew.Template.nupkg}"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Template
+			id="NUnit3.DotNetNew.Template.VisualBasic"
+			templateId="NUnit3.DotNetNew.Template.VisualBasic"
+			_overrideName="NUnit Test Project"
+			_overrideDescription="Creates a new NUnit test project."
+			overrideLanguage="VBNet"
+			path="${DotNetCoreSdk.2.2.Templates.NUnit3.DotNetNew.Template.nupkg}"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
 		</Condition>
 	</Extension>
 

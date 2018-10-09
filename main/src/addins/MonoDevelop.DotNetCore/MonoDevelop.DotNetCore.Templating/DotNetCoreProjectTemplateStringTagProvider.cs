@@ -70,6 +70,11 @@ namespace MonoDevelop.DotNetCore.Templating
 				"DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg",
 				GettextCatalog.GetString (".NET Core SDK 2.2 Web Project Templates NuGet package path")
 			);
+
+			yield return new StringTagDescription (
+				"DotNetCoreSdk.2.2.Templates.NUnit3.DotNetNew.Template.nupkg",
+				GettextCatalog.GetString (".NET Core SDK 2.2 NUnit Project Templates NuGet package path")
+			);
 		}
 
 		public object GetTagValue (object instance, string tag)
@@ -120,7 +125,9 @@ namespace MonoDevelop.DotNetCore.Templating
 
 			partialFileName = partialFileName.Substring (0, partialFileName.Length - nupkgTagString.Length + 1);
 
-			return "microsoft.dotnet." + partialFileName.ToLowerInvariant ();
+			return partialFileName.IndexOf ("NUnit3.", StringComparison.OrdinalIgnoreCase) == 0 ?
+				partialFileName.ToLowerInvariant () :
+				"microsoft.dotnet." + partialFileName.ToLowerInvariant ();
 		}
 
 		/// <summary>
