@@ -331,21 +331,28 @@ namespace MonoDevelop.Ide.Gui
 			topMenu = null;
 		}
 
+		readonly HashSet<object> deduplicationMap = new HashSet<object> ();
 		public void AddInfoBar (InfoBarOptions options)
 		{
+			var dedupId = options.Id ?? options.Description;
+			if (!deduplicationMap.Add (dedupId))
+				return;
+
 #if NATIVE_INFO_BAR
 			// disabled for now, needs a patch in gtk.
 			Xwt.Widget infoBar = null;
 			Xwt.Toolkit.NativeEngine.Invoke (() => {
-				infoBar = new XwtInfoBar (options.Description, options.Items);
+				infoBar = new XwtInfoBar (options.Description, OnDispose, options.Items);
 			});
 			var widget = Xwt.Toolkit.CurrentEngine.WrapWidget (infoBar);
 			var gtkWidget = widget.ToGtkWidget ();
 			infoBarFrame.Add (gtkWidget);
 #else
-			var infoBar = new XwtInfoBar (options.Description, options.Items);
+			var infoBar = new XwtInfoBar (options.Description, OnDispose, options.Items);
 			infoBarFrame.Add (infoBar.ToGtkWidget ());
 #endif
+
+			void OnDispose () => deduplicationMap.Remove (dedupId);
 		}
 		
 		public void CloseContent (ViewContent content)

@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		public string Description { get; }
 		public InfoBarItem[] Items { get; set; }
+		public object Id { get; set; }
 
 		public InfoBarOptions (string description)
 		{
