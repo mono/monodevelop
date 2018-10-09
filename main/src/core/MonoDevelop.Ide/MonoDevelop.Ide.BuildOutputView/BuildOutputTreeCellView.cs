@@ -63,31 +63,29 @@ namespace MonoDevelop.Ide.BuildOutputView
 			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
 			CellTextSkippedColor = Ide.Gui.Styles.SecondaryTextColor;
 			CellTextSkippedSelectionColor = Ide.Gui.Styles.SecondarySelectionTextColor;
-			LinkForegroundColor = Xwt.Drawing.Color.FromName ("#999999");
-			SearchMatchFocusedBackgroundColor = Xwt.Drawing.Color.FromName ("#fcff54");
+			LinkForegroundColor = Color.FromName ("#999999");
+			SearchMatchFocusedBackgroundColor = Color.FromName ("#fcff54");
 			CellTextSelectionColorSecundary = Colors.LightBlue;
 		}
 
-		public static Xwt.Drawing.Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
+		public static Color GetTextColor (BuildOutputNode buildOutputNode, bool isSelected)
 		{
 			if (isSelected) {
-				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					return Styles.CellTextSkippedSelectionColor;
-				} else {
-					return Styles.CellTextSelectionColor;
-				}
-			} else {
-				if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
-					return Styles.CellTextSkippedColor;
-				} else {
-					return Styles.CellTextColor;
-				}
+				return CellTextSelectionColor;
 			}
+
+			if (buildOutputNode.NodeType == BuildOutputNodeType.TargetSkipped) {
+				return CellTextSkippedColor;
+			}
+			return CellTextColor;
 		}
 
 		public static Color GetSearchMatchBackgroundColor (bool focused)
 		{
-			return focused ? Styles.SearchMatchFocusedBackgroundColor : Styles.SearchMatchUnfocusedBackgroundColor;
+			if (focused) {
+				return SearchMatchFocusedBackgroundColor;
+			}
+			return SearchMatchUnfocusedBackgroundColor;
 		}
 	}
 
@@ -454,7 +452,6 @@ namespace MonoDevelop.Ide.BuildOutputView
 					if (status.DrawsBottomLine) {
 						DrawBottomLine (ctx, Styles.CellErrorLineBackgroundColor);
 					}
-
 				} else if (buildOutputNode.NodeType == BuildOutputNodeType.Warning) {
 					FillCellBackground (ctx, Styles.CellWarningBackgroundColor);
 
@@ -855,8 +852,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 			//HACK: to avoid automatic scroll behaviour in Gtk (we handle the behaviour)
 			//we only want break the normal click behaviour of treeview, in cases when label size is bigger than tree height
-			var treeView = ((TreeView)ParentWidget);
-			if (status.Expanded && status.LastRenderBounds.Height > treeView.Size.Height) {
+			var treeView = ParentWidget as TreeView;
+			if (treeView != null && status.Expanded && status.LastRenderBounds.Height > treeView.Size.Height) {
 				args.Handled = true;
 				treeView.SelectRow (node);
 			}
