@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
@@ -58,10 +59,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
-		public bool IsSolutionAvailable {
-			get {
-				throw new NotImplementedException ();
-			}
+		public Task<bool> IsSolutionAvailableAsync ()
+		{
+			throw new NotImplementedException ();
 		}
 
 		public bool IsSolutionOpen {
@@ -109,7 +109,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return SourceRepositoryProvider;
 		}
 
-		public NuGetProject GetNuGetProject (string nuGetProjectSafeName)
+		public Task<NuGetProject> GetNuGetProjectAsync (string nuGetProjectSafeName)
 		{
 			throw new NotImplementedException ();
 		}
@@ -131,12 +131,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return new FakeNuGetProject (project);
 		}
 
-		public IEnumerable<NuGetProject> GetNuGetProjects ()
+		public Task<IEnumerable<NuGetProject>> GetNuGetProjectsAsync ()
 		{
-			return NuGetProjects.Values;
+			return Task.FromResult (NuGetProjects.Values.AsEnumerable ());
 		}
 
-		public string GetNuGetProjectSafeName (NuGetProject nuGetProject)
+		public Task<string> GetNuGetProjectSafeNameAsync (NuGetProject nuGetProject)
 		{
 			throw new NotImplementedException ();
 		}
@@ -155,8 +155,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public bool IsSolutionDPLEnabled { get; set; }
-
 		public void EnsureSolutionIsLoaded ()
 		{
 		}
@@ -165,7 +163,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public Task<NuGetProject> UpdateNuGetProjectToPackageRef (NuGetProject oldProject)
+		public Task<bool> DoesNuGetSupportsAnyProjectAsync ()
 		{
 			throw new NotImplementedException ();
 		}

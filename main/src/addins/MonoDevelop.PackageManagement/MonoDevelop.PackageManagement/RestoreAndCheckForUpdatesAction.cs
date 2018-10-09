@@ -59,12 +59,15 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			solutionManager = new MonoDevelopSolutionManager (solution);
-			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 
 			// Use the same source repository provider for all restores and updates to prevent
 			// the credential dialog from being displayed for each restore and updates.
 			sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
+		}
 
+		async Task PrepareForExecute ()
+		{
+			nugetProjects = (await solutionManager.GetNuGetProjectsAsync ()).ToList ();
 			if (AnyProjectsUsingPackagesConfig ()) {
 				restoreManager = new PackageRestoreManager (
 					sourceRepositoryProvider,
@@ -114,6 +117,8 @@ namespace MonoDevelop.PackageManagement
 
 		public async Task<bool> HasMissingPackages (CancellationToken cancellationToken = default(CancellationToken))
 		{
+			await PrepareForExecute ();
+
 			if (restoreManager != null) {
 				var packages = await restoreManager.GetPackagesInSolutionAsync (
 					solutionManager.SolutionDirectory,

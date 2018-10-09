@@ -121,24 +121,27 @@ namespace MonoDevelop.PackageManagement
 			if (metadataResource == null)
 				return null;
 
-			var packages = await metadataResource.GetMetadataAsync (
-				packageReference.PackageIdentity.Id,
-				includePrerelease: packageReference.PackageIdentity.Version.IsPrerelease,
-				includeUnlisted: false,
-				log: NullLogger.Instance,
-				token: cancellationToken);
+			using (var sourceCacheContext = new SourceCacheContext ()) {
+				var packages = await metadataResource.GetMetadataAsync (
+					packageReference.PackageIdentity.Id,
+					includePrerelease: packageReference.PackageIdentity.Version.IsPrerelease,
+					includeUnlisted: false,
+					log: NullLogger.Instance,
+					sourceCacheContext: sourceCacheContext,
+					token: cancellationToken);
 
-			var package = packages
-				.Where (p => IsPackageVersionAllowed (p, packageReference))
-				.MaxValueOrDefault (x => x.Identity.Version);
+				var package = packages
+					.Where (p => IsPackageVersionAllowed (p, packageReference))
+					.MaxValueOrDefault (x => x.Identity.Version);
 
-			if (package == null)
+				if (package == null)
+					return null;
+
+				if (package.Identity.Version > packageReference.PackageIdentity.Version)
+					return package.Identity;
+
 				return null;
-
-			if (package.Identity.Version > packageReference.PackageIdentity.Version)
-				return package.Identity;
-
-			return null;
+			}
 		}
 
 		void LogError (Task<PackageIdentity> task)

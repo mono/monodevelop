@@ -88,6 +88,7 @@ namespace MonoDevelop.PackageManagement
 			NuGetProject nuGetProject,
 			IEnumerable<NuGetProjectAction> nuGetProjectActions,
 			INuGetProjectContext nuGetProjectContext,
+			SourceCacheContext sourceCacheContext,
 			CancellationToken token);
 
 		void SetDirectInstall (PackageIdentity directInstall, INuGetProjectContext nuGetProjectContext);
