@@ -60,7 +60,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		{
 			var args = string.Empty;
 			if (item.Project.GetActiveConfiguration () != null)
-				args = $"--configuration {item.Project.GetActiveConfiguration ()}";
+				args = $"--configuration {item.Profile.LastUsedBuildConfiguration}";
 
 			if (bool.Parse (item.Profile.SelfContained))
 				args += $" --self-contained --runtime {item.Profile.RuntimeIdentifier}";
