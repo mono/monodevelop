@@ -30,6 +30,11 @@ namespace MonoDevelop.AspNetCore
 			return project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)?.Name;
 		}
 
+		public static string GetActivePlatform (this DotNetProject project)
+		{
+			return project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)?.Platform;
+		}
+
 		public static bool CreatePublishProfileFile (this DotNetProject project, ProjectPublishProfile profile)
 		{
 			string profileFileContents = null;

@@ -99,8 +99,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				publishCommandItem.Profile.PublishUrl = PathEntry.Text;
 				publishCommandItem.Profile.TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName ();
 				publishCommandItem.Profile.LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration ();
-				//FIXME 
-				//publishCommandItem.Profile.LastUsedPlatform = publishCommandItem.Project;
+				publishCommandItem.Profile.LastUsedPlatform = publishCommandItem.Project.GetActivePlatform ();
 
 				PublishToFolderRequested?.Invoke (this, publishCommandItem);
 				PublishButton.Sensitive = false;
