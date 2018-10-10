@@ -18,6 +18,8 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		Button BrowseButton;
 		DialogButton PublishButton;
 		DialogButton CancelButton;
+		Uri BinBaseUri => new Uri (Path.Combine (publishCommandItem.Project.BaseDirectory, "bin"));
+
 		readonly PublishCommandItem publishCommandItem;
 
 		public event EventHandler<PublishCommandItem> PublishToFolderRequested;
@@ -60,13 +62,16 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "BrowseEntryHBox",
 				Spacing = 4
 			};
+			var defaultDirectory = publishCommandItem.Project.GetActiveConfiguration () == null
+				? BinBaseUri.ToString ()
+				: Path.Combine (BinBaseUri.ToString (),
+								publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
+								publishCommandItem.Project.GetActiveConfiguration ());
+			//make it relative by default
+			defaultDirectory = BinBaseUri.MakeRelativeUri (new Uri (defaultDirectory)).ToString ();
 			PathEntry = new TextEntry {
 				Name = "PathEntry",
-				Text = publishCommandItem.Project.GetActiveConfiguration () == null
-				? Path.Combine (publishCommandItem.Project.BaseDirectory, "bin")
-				: Path.Combine (publishCommandItem.Project.BaseDirectory, "bin", 
-								publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (), 
-								publishCommandItem.Project.GetActiveConfiguration ())
+				Text = defaultDirectory
 			};
 			PathEntry.LostFocus += (sender, e) => {
 				PublishButton.Sensitive = !string.IsNullOrEmpty (PathEntry.Text);
@@ -91,7 +96,6 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		{
 			if (cmd == Command.Ok) {
 				publishCommandItem.Profile = new ProjectPublishProfile ();
-				//TODO should be relative path here
 				publishCommandItem.Profile.PublishUrl = PathEntry.Text;
 				publishCommandItem.Profile.TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName ();
 				publishCommandItem.Profile.LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration ();
@@ -113,7 +117,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				CurrentFolder = PathEntry.Text
 			};
 			fileDialog.Run ();
-			PathEntry.Text = fileDialog.SelectedFile;
+			PathEntry.Text = BinBaseUri.MakeRelativeUri (new Uri (fileDialog.SelectedFile)).ToString ();
 		}
 
 		protected override void Dispose (bool disposing)
