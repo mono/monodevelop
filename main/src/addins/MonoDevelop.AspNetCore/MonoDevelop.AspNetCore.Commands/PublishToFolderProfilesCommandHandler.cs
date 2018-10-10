@@ -24,7 +24,8 @@ namespace MonoDevelop.AspNetCore.Commands
 			}
 
 			foreach (var profile in profiles.OrderBy (x => x.Name)) {
-				info.Add (GettextCatalog.GetString ("Publish to {0} - {1}", profile.Name, profile.WebPublishMethod), new PublishCommandItem (project, profile));
+				if (profile.WebPublishMethod == "FileSystem")
+					info.Add (GettextCatalog.GetString ("Publish to {0} - {1}", profile.Name, profile.WebPublishMethod), new PublishCommandItem (project, profile));
 			}
 		}
 	}

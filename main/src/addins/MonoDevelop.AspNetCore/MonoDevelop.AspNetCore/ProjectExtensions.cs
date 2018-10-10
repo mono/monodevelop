@@ -50,8 +50,8 @@ namespace MonoDevelop.AspNetCore
 					xmlWriter.WriteStartElement ("PropertyGroup");
 					var propertyInfo = profile.GetType ().GetProperties ()
 							.Where (prop => prop.PropertyType == typeof (string) || prop.PropertyType == typeof (bool))
-							.OrderBy (p => p.GetCustomAttributes (typeof (ItemProperty), true)
-							.Cast<ItemProperty> ()
+							.OrderBy (p => p.GetCustomAttributes (typeof (XmlElement), true)
+							.Cast<XmlElement> ()
 							.Select (a => a.Name)
 							.FirstOrDefault ());
 					foreach (var pi in propertyInfo) {
