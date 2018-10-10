@@ -2,7 +2,7 @@
 using System.IO;
 using MonoDevelop.AspNetCore.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
+using MonoDevelop.DotNetCore;
 using Xwt;
 
 namespace MonoDevelop.AspNetCore.Dialogs
@@ -64,7 +64,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "PathEntry",
 				Text = publishCommandItem.Project.GetActiveConfiguration () == null
 				? Path.Combine (publishCommandItem.Project.BaseDirectory, "bin")
-				: Path.Combine (publishCommandItem.Project.BaseDirectory, "bin", publishCommandItem.Project.GetActiveConfiguration ())
+				: Path.Combine (publishCommandItem.Project.BaseDirectory, "bin", 
+								publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (), 
+								publishCommandItem.Project.GetActiveConfiguration ())
 			};
 			PathEntry.LostFocus += (sender, e) => {
 				PublishButton.Sensitive = !string.IsNullOrEmpty (PathEntry.Text);
@@ -88,7 +90,14 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		protected override void OnCommandActivated (Command cmd)
 		{
 			if (cmd == Command.Ok) {
-				publishCommandItem.Profile = new ProjectPublishProfile (publishCommandItem.Project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).Name, PathEntry.Text);
+				publishCommandItem.Profile = new ProjectPublishProfile ();
+				//TODO should be relative path here
+				publishCommandItem.Profile.PublishUrl = PathEntry.Text;
+				publishCommandItem.Profile.TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName ();
+				publishCommandItem.Profile.LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration ();
+				//FIXME 
+				//publishCommandItem.Profile.LastUsedPlatform = publishCommandItem.Project;
+
 				PublishToFolderRequested?.Invoke (this, publishCommandItem);
 				PublishButton.Sensitive = false;
 				return;
