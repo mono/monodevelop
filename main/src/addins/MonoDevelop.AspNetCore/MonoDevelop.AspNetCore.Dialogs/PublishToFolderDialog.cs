@@ -3,6 +3,7 @@ using System.IO;
 using MonoDevelop.AspNetCore.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.DotNetCore;
+using MonoDevelop.Ide;
 using Xwt;
 
 namespace MonoDevelop.AspNetCore.Dialogs
@@ -18,6 +19,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		Button BrowseButton;
 		DialogButton PublishButton;
 		DialogButton CancelButton;
+		HBox MessageBox;
+		Label MessageLabel;
+		ImageView MessageIcon;
 		Uri BinBaseUri => new Uri (Path.Combine (publishCommandItem.Project.BaseDirectory, "bin"));
 
 		readonly PublishCommandItem publishCommandItem;
@@ -33,7 +37,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		protected void Initialize ()
 		{
 			Width = 400;
-			Height = 180;
+			Height = 120;
 			Name = "MainWindow";
 			Title = GettextCatalog.GetString ("Publish to Folder");
 			Resizable = false;
@@ -48,11 +52,10 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			};
 			MainVBox.PackStart (PublishYourAppLabel);
 			BrowseVBox = new VBox {
-				WidthRequest = 50,
-				HeightRequest = 70,
 				Name = "BrowseVBox",
 				Spacing = 6
 			};
+			BrowseVBox.MarginTop = 20;
 			ChooseLabel = new Label {
 				Name = "ChooseLabel",
 				Text = GettextCatalog.GetString ("Choose a folder:")
@@ -73,8 +76,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "PathEntry",
 				Text = defaultDirectory
 			};
+			PathEntry.Changed += PathEntry_Changed;
 			PathEntry.LostFocus += (sender, e) => {
-				PublishButton.Sensitive = !string.IsNullOrEmpty (PathEntry.Text);
+				PublishButton.Sensitive = !string.IsNullOrEmpty (PathEntry.Text) && !MessageBox.Visible;
 			};
 			BrowseEntryHBox.PackStart (PathEntry, expand: true);
 			BrowseButton = new Button {
@@ -84,7 +88,18 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			BrowseButton.Clicked += BrowseButton_Clicked;
 			BrowseEntryHBox.PackEnd (BrowseButton);
 			BrowseVBox.PackStart (BrowseEntryHBox);
-			MainVBox.PackEnd (this.BrowseVBox);
+
+			MessageBox = new HBox ();
+			MessageBox.Hide ();
+			MessageLabel = new Label ();
+			MessageIcon = new ImageView ();
+			MessageLabel.Text = GettextCatalog.GetString ("The path provided is not a valid folder path.");
+			MessageIcon.Image = ImageService.GetIcon (Gtk.Stock.Cancel, Gtk.IconSize.Menu);//.WithStyles (sensitive ? "" : "disabled");
+			MessageBox.PackStart (MessageIcon);
+			MessageBox.PackStart (MessageLabel);
+			MainVBox.PackStart (BrowseVBox);
+			MainVBox.PackEnd (MessageBox);
+
 			PublishButton = new DialogButton (GettextCatalog.GetString ("Publish"), Command.Ok);
 			CancelButton = new DialogButton (GettextCatalog.GetString ("Cancel"), Command.Close);
 			Content = MainVBox;
@@ -92,14 +107,24 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			Buttons.Add (CancelButton);
 		}
 
+		void PathEntry_Changed (object sender, EventArgs e)
+		{
+			if (Uri.IsWellFormedUriString (PathEntry.Text, UriKind.RelativeOrAbsolute))
+				MessageBox.Hide ();
+			else
+				MessageBox.Show ();
+		}
+
+
 		protected override void OnCommandActivated (Command cmd)
 		{
 			if (cmd == Command.Ok) {
-				publishCommandItem.Profile = new ProjectPublishProfile ();
-				publishCommandItem.Profile.PublishUrl = PathEntry.Text;
-				publishCommandItem.Profile.TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName ();
-				publishCommandItem.Profile.LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration ();
-				publishCommandItem.Profile.LastUsedPlatform = publishCommandItem.Project.GetActivePlatform ();
+				publishCommandItem.Profile = new ProjectPublishProfile {
+					PublishUrl = PathEntry.Text,
+					TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
+					LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration (),
+					LastUsedPlatform = publishCommandItem.Project.GetActivePlatform ()
+				};
 
 				PublishToFolderRequested?.Invoke (this, publishCommandItem);
 				PublishButton.Sensitive = false;
