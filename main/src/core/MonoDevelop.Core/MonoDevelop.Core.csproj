@@ -737,6 +737,7 @@
     <Compile Include="MonoDevelop.FSW\PathTreeNode.cs" />
     <Compile Include="MemoryExtensions.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimings.cs" />
+    <Compile Include="MonoDevelop.Utilities\RaceChecker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
@@ -773,6 +774,9 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">
