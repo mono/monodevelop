@@ -57,11 +57,14 @@ namespace MonoDevelop.AspNetCore.Commands
 
 		string BuildArgs (PublishCommandItem item)
 		{
-			var config = string.Empty;
+			var args = string.Empty;
 			if (item.Project.GetActiveConfiguration () != null)
-				config = $"--configuration {item.Project.GetActiveConfiguration ()}";
+				args = $"--configuration {item.Project.GetActiveConfiguration ()}";
 
-			return $"publish {config} --output {item.Profile.FileName}";
+			if (bool.Parse (item.Profile.SelfContained))
+				args += $" --self-contained --runtime {item.Profile.RuntimeIdentifier}";
+
+			return $"publish {args} --output {item.Profile.PublishUrl}";
 		}
 
 		public async Task Publish (PublishCommandItem item)
@@ -87,11 +90,11 @@ namespace MonoDevelop.AspNetCore.Commands
 					if (!progressMonitor.CancellationToken.IsCancellationRequested) {
 						if (process.ExitCode != 0) {
 							progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
-							LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.FileName}': {process.ExitCode}");
+							LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {process.ExitCode}");
 						} else {
-							DesktopService.OpenFolder (item.Profile.FileName);
+							DesktopService.OpenFolder (item.Profile.PublishUrl);
 							if (!item.IsReentrant)
-								item.Project.AddPublishProfiles (item.Profile);
+								item.Project.CreatePublishProfileFile (item.Profile);
 						}
 					}
 					CloseDialog ();
