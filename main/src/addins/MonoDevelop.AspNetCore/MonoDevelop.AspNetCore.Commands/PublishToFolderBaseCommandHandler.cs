@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -92,7 +93,7 @@ namespace MonoDevelop.AspNetCore.Commands
 							progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
 							LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {process.ExitCode}");
 						} else {
-							DesktopService.OpenFolder (item.Profile.PublishUrl);
+							OpenFolder (item.Profile.PublishUrl);
 							if (!item.IsReentrant)
 								item.Project.CreatePublishProfileFile (item.Profile);
 						}
@@ -106,6 +107,20 @@ namespace MonoDevelop.AspNetCore.Commands
 					LoggingService.LogError ("Failed to exexute dotnet publish.", ex);
 				}
 			}
+		}
+
+		void OpenFolder (string path)
+		{
+			Uri pathUri;
+			if (!Uri.TryCreate (path, UriKind.Absolute, out pathUri)) {
+				var binBaseUri = new Uri (Path.Combine (project.BaseDirectory));
+				path = Path.Combine (binBaseUri.AbsolutePath, path);
+			}
+
+			if (Directory.Exists (path))
+				DesktopService.OpenFolder (path);
+			else
+				LoggingService.LogError ("Trying to open {0} but it does not exists.", path);
 		}
 
 		ProgressMonitor CreateProgressMonitor ()
