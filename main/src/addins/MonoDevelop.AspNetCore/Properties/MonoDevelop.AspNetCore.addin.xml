@@ -425,7 +425,7 @@
 				_label = "Publish" />
 		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" 
 				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderCommandHandler"
-				_label = "Publish" />
+				_label = "Publish to Folder..." />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">		

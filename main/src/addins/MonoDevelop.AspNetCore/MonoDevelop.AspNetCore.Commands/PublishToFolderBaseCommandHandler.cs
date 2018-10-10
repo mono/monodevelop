@@ -111,8 +111,7 @@ namespace MonoDevelop.AspNetCore.Commands
 
 		void OpenFolder (string path)
 		{
-			Uri pathUri;
-			if (!Uri.TryCreate (path, UriKind.Absolute, out pathUri)) {
+			if (!Uri.TryCreate (path, UriKind.Absolute, out var pathUri)) {
 				var binBaseUri = new Uri (Path.Combine (project.BaseDirectory));
 				path = Path.Combine (binBaseUri.AbsolutePath, path);
 			}
