@@ -23,7 +23,6 @@ namespace MonoDevelop.AspNetCore.Commands
 				info.AddSeparator ();
 			}
 
-			//TODO: ordering is not correct (IComparer required)
 			foreach (var profile in profiles.OrderBy (x => x.Name)) {
 				info.Add (GettextCatalog.GetString ("Publish to {0} - {1}", profile.Name, profile.WebPublishMethod), new PublishCommandItem (project, profile));
 			}
