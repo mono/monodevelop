@@ -129,12 +129,14 @@ namespace MonoDevelop.UnitTesting
 					if (t.OwnerObject is IBuildTarget bt)
 						build_targets.Add (bt);
 				}
-				var res = await IdeApp.ProjectOperations.CheckAndBuildForExecute (
-					build_targets, IdeApp.Workspace.ActiveConfiguration, buildWithoutPrompting: !IdeApp.Preferences.BuildBeforeRunningTests, 
-					false, null, cs.Token);
+				if (IdeApp.Preferences.BuildBeforeRunningTests) {
+					var res = await IdeApp.ProjectOperations.CheckAndBuildForExecute (
+						build_targets, IdeApp.Workspace.ActiveConfiguration, true,
+						false, null, cs.Token);
 
-				if (!res)
-					return;
+					if (!res)
+						return;
+				}
 
 				var test_names = new HashSet<string> (tests.Select ((v) => v.FullName));
 
