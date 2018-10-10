@@ -976,12 +976,12 @@ namespace MonoDevelop.Ide.Editor
 			fileTypeCondition = null;
 			isDisposed = true;
 			DetachExtensionChain ();
+			DisposeProjections ();
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
 			foreach (var provider in textEditorImpl.TooltipProvider)
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
-
 			base.Dispose (disposing);
 		}
 
@@ -1417,11 +1417,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (ctx == null)
 				throw new ArgumentNullException (nameof (ctx));
-			if (this.projections != null) {
-				foreach (var projection in this.projections) {
-					projection.Dettach ();
-				}
-			}
+			DisposeProjections ();
 			this.projections = projections;
 			if (projections != null) {
 				foreach (var projection in projections) {
@@ -1455,6 +1451,20 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			InitializeProjectionExtensions (ctx, disabledFeatures);
+		}
+
+		void DisposeProjections ()
+		{
+			if (this.projections == null)
+				return;
+			foreach (var projection in this.projections) {
+				try {
+					projection.Dettach ();
+					projection.Dispose ();
+ 				} catch (Exception e) {
+					LoggingService.LogError ("Error while disposing projection.", e);
+				}
+			}
 		}
 
 		bool projectionsAdded = false;
