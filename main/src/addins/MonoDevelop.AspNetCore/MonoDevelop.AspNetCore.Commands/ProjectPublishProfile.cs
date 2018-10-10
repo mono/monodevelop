@@ -30,57 +30,51 @@ namespace MonoDevelop.AspNetCore.Commands
 			WebPublishMethod = "FileSystem";
 		}
 
-		[ItemProperty (Name = nameof (WebPublishMethod))]
+		[XmlElement]
 		public string WebPublishMethod { get; set; }
 
-		[ItemProperty (Name = nameof (LastUsedBuildConfiguration))]
+		[XmlElement]
 		public string LastUsedBuildConfiguration { get; set; }
 
-		[ItemProperty (Name = nameof (LastUsedPlatform))]
+		[XmlElement]
 		public string LastUsedPlatform { get; set; }
 
-		[ItemProperty (Name = nameof (PublishUrl))]
+		[XmlElement (ElementName = "publishUrl")]
 		public string PublishUrl { get; set; }
 
-		[ItemProperty (Name = nameof (DeleteExistingFiles))]
+		[XmlElement]
 		public string DeleteExistingFiles {
 			get {
 				return XmlConvert.ToString (deleteExistingFiles);
 			}
 			set {
-				bool parsedValue;
-
-				if (!bool.TryParse (value, out parsedValue))
+				if (!bool.TryParse (value, out var parsedValue))
 					deleteExistingFiles = XmlConvert.ToBoolean (value);
 			}
 		}
 
 		//https://docs.microsoft.com/en-us/dotnet/standard/frameworks
-		[ItemProperty (Name = nameof (TargetFramework))]
+		[XmlElement]
 		public string TargetFramework { get; set; }
 
 		// should be 'true' if a runtime identifier is specified.
-		[ItemProperty (Name = nameof (SelfContained))]
+		[XmlElement]
 		public string SelfContained {
 			get => XmlConvert.ToString (selfContained);
 			set {
-				bool parsedValue;
-
-				if (!bool.TryParse (value, out parsedValue))
+				if (!bool.TryParse (value, out var parsedValue))
 					selfContained = XmlConvert.ToBoolean (value);
 			}
 		}
 
-		[ItemProperty (Name = "_IsPortable")]
+		[XmlElement (ElementName = "_IsPortable")]
 		public string IsPortable {
 			get => XmlConvert.ToString (isPortable);
 			set {
-				bool parsedValue;
-
-				if (!bool.TryParse (value, out parsedValue))
+				if (!bool.TryParse (value, out var parsedValue))
 					isPortable = XmlConvert.ToBoolean (value);
 			}
-		} 
+		}
 
 		//https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 		[ItemProperty (Name = nameof (RuntimeIdentifier))]
@@ -95,7 +89,7 @@ namespace MonoDevelop.AspNetCore.Commands
 
 		public string Name { get; set; }
 
-		public  ProjectPublishProfile () { }
+		public ProjectPublishProfile () { }
 
 		public static ProjectPublishProfile ReadModel (string file)
 		{
@@ -110,6 +104,10 @@ namespace MonoDevelop.AspNetCore.Commands
 					var profileNode = root.FirstChild;
 					var profile = (ProjectPublishProfile)serializer.Deserialize (new XmlNodeReader (root.FirstChild));
 					profile.Name = Path.GetFileNameWithoutExtension (file);
+
+					if (Path.DirectorySeparatorChar != '\\')
+						profile.PublishUrl = profile.PublishUrl?.Replace ('\\', Path.DirectorySeparatorChar);
+
 					return profile;
 				}
 			} catch (Exception ex) {
