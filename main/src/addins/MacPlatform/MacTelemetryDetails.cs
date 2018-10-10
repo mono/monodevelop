@@ -38,6 +38,7 @@ namespace MacPlatform
 	internal class MacTelemetryDetails : IPlatformTelemetryDetails
 	{
 		int family;
+		int coreCount;
 		long freq;
 		string arch;
 		ulong size;
@@ -57,6 +58,7 @@ namespace MacPlatform
 			Interop.SysCtl ("hw.machine", out result.arch);
 			Interop.SysCtl ("hw.cpufamily", out result.family);
 			Interop.SysCtl ("hw.cpufrequency", out result.freq);
+			Interop.SysCtl ("hw.physicalcpu", out result.coreCount);
 
 			var attrs = NSFileManager.DefaultManager.GetFileSystemAttributes ("/");
 			result.size = attrs.Size;
@@ -94,6 +96,8 @@ namespace MacPlatform
 
 		public int CpuCount => (int)NSProcessInfo.ProcessInfo.ActiveProcessorCount;
 
+		public int PhysicalCpuCount => coreCount;
+
 		public int CpuFamily => family;
 
 		public long CpuFrequency => freq;
@@ -105,8 +109,6 @@ namespace MacPlatform
 		public ulong RamTotal => NSProcessInfo.ProcessInfo.PhysicalMemory;
 
 		public PlatformHardDriveMediaType HardDriveOsMediaType => osType;
-
-
 
 		static PlatformHardDriveMediaType GetMediaType (string path)
 		{
@@ -216,5 +218,10 @@ namespace MacPlatform
 
 		[DllImport ("libc")]
 		extern static IntPtr getlastlogxbyname (string name, ref LastLogX ll);
+
+		public bool TrySampleHostCpuLoad (out double value)
+		{
+			return KernelInterop.TrySampleHostCpu (out value);
+		}
 	}
 }

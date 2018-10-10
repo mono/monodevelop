@@ -30,6 +30,7 @@ namespace MacPlatform
 {
 	static class KernelInterop
 	{
+		#region Virtual memory
 		const int TASK_VM_INFO = 22;
 		const int KERN_SUCCESS = 0;
 
@@ -91,5 +92,44 @@ namespace MacPlatform
 				virtualBytes = info.virtual_size;
 			}
 		}
+		#endregion
+
+		#region Host CPU load
+		unsafe struct host_load_info
+		{
+			public int avenrun_5;
+			public int avenrun_30;
+			public int avenrun_60;
+			public fixed int mach_factor[3];
+		}
+
+		const int HOST_LOAD_INFO = 1;
+		const int LOAD_SCALE = 1000;
+
+
+		[DllImport ("/usr/lib/system/libsystem_kernel.dylib")]
+		static extern IntPtr mach_host_self ();
+
+		[DllImport ("/usr/lib/system/libsystem_kernel.dylib")]
+		static extern int host_statistics (IntPtr host_priv, int flavor, ref host_load_info host_info_out, ref int host_info_outCnt);
+
+		public static bool TrySampleHostCpu (out double percentLast5)
+		{
+			var loadInfo = new host_load_info ();
+			int count;
+			unsafe {
+				count = sizeof (host_load_info) / sizeof (int);
+			}
+
+			int ret = host_statistics (mach_host_self (), HOST_LOAD_INFO, ref loadInfo, ref count);
+			if (ret != KERN_SUCCESS) {
+				percentLast5 = 0;
+				return false;
+			}
+
+			percentLast5 = (double)loadInfo.avenrun_5 / 1000;
+			return true;
+		}
+		#endregion
 	}
 }
