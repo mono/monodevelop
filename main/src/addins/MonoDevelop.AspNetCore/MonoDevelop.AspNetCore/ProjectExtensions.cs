@@ -32,7 +32,10 @@ namespace MonoDevelop.AspNetCore
 
 		public static string GetActivePlatform (this DotNetProject project)
 		{
-			return project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)?.Platform;
+			var platform = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)?.Platform;
+			if (string.IsNullOrEmpty (platform))
+				platform = "AnyCPU";
+			return platform;
 		}
 
 		public static bool CreatePublishProfileFile (this DotNetProject project, ProjectPublishProfile profile)
