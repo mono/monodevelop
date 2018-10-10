@@ -407,7 +407,7 @@ namespace Mono.TextEditor
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged;
 			this.textEditorData.UpdateAdjustmentsRequested += TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.DocumentUpdated += DocumentUpdatedHandler;
-			
+			Document.EndUndo += delegate { HandleAccessibilityCursorChange (); };
 			this.textEditorData.Options.Changed += OptionsChanged;
 			
 			
@@ -571,7 +571,99 @@ namespace Mono.TextEditor
 				RedrawMarginLine (TextViewMargin, Caret.Line);
 			}
 		}
-		
+		ISegment lastAccessiblitySelection = null;
+		ITextSourceVersion lastAccessiblityVersion;
+		DocumentLocation oldAccessibilityCursorLocation;
+		static readonly string selectedTextMessage = GettextCatalog.GetString (", selected");
+		static readonly string unselectedTextMessage = GettextCatalog.GetString (", unselected");
+
+		void HandleAccessibilityCursorChange ()
+		{
+			void NewLineAnnouncement () { ShowAccessibilityAnnouncement (GettextCatalog.GetString ("New line")); }
+
+			var oldLocation = oldAccessibilityCursorLocation;
+			oldAccessibilityCursorLocation = Caret.Location;
+			if (lastAccessiblityVersion != null && editor.Document.Version.CompareAge (lastAccessiblityVersion) != 0) { // don't announce on text change
+				lastAccessiblityVersion = editor.Document.Version;
+				lastAccessiblitySelection = null;
+				return;
+			}
+			// handle selection case
+			var curSelection = editor.SelectionRange;
+			try {
+				if (editor.IsSomethingSelected) {
+					if (lastAccessiblitySelection == null) {
+						ShowAccessibilityAnnouncement (editor.GetTextAt (curSelection) + selectedTextMessage);
+						return;
+					}
+					if (curSelection.Offset < lastAccessiblitySelection.Offset) {
+						ShowAccessibilityAnnouncement (editor.GetTextAt (curSelection.Offset, lastAccessiblitySelection.Offset - curSelection.Offset) + selectedTextMessage);
+						return;
+					}
+					if (lastAccessiblitySelection.EndOffset < curSelection.EndOffset) {
+						ShowAccessibilityAnnouncement (editor.GetTextAt (lastAccessiblitySelection.EndOffset, curSelection.EndOffset - lastAccessiblitySelection.EndOffset) + selectedTextMessage);
+						return;
+					}
+
+					if (curSelection.Offset > lastAccessiblitySelection.Offset) {
+						ShowAccessibilityAnnouncement (editor.GetTextAt (curSelection.Offset, curSelection.Offset - lastAccessiblitySelection.Offset) + unselectedTextMessage);
+						return;
+					}
+
+					if (lastAccessiblitySelection.EndOffset > curSelection.EndOffset) {
+						ShowAccessibilityAnnouncement (editor.GetTextAt (curSelection.EndOffset, lastAccessiblitySelection.EndOffset - curSelection.EndOffset) + unselectedTextMessage);
+						return;
+					}
+				} else {
+					if (lastAccessiblitySelection != null) {
+						ShowAccessibilityAnnouncement (editor.GetTextAt (lastAccessiblitySelection) + unselectedTextMessage);
+						return;
+					}
+				}
+			} finally {
+				lastAccessiblitySelection = editor.IsSomethingSelected ? curSelection : null;
+			}
+
+			// handle non selected caret movement
+			if (oldLocation == Caret.Location)
+				return;
+			var line = Document.GetLine (Caret.Line);
+			if (Caret.Line != oldLocation.Line) {
+				var text = Document.GetTextAt (line);
+				if (string.IsNullOrEmpty (text))
+					NewLineAnnouncement (); 
+				else
+					ShowAccessibilityAnnouncement (text);
+				return;
+			}
+			var offset = line.Offset + Caret.Column - 1;
+			if (Caret.Column - oldLocation.Column == 1) {
+				ShowAccessibilityAnnouncement (Document.GetTextAt (offset - 1, 1));
+			} else if (Caret.Column - oldLocation.Column == -1) {
+				ShowAccessibilityAnnouncement (Document.GetTextAt (offset, 1));
+			} else {
+				var o1 = GetTextEditorData ().FindCurrentWordStart (offset);
+				var o2 = GetTextEditorData ().FindCurrentWordEnd (offset);
+				if (o1 >= o2) {
+					o1 = offset;
+					o2 = offset + 1;
+					if (o2 > line.Offset) {
+						o1--; o2--;
+						if (o1 < line.Offset) {
+							NewLineAnnouncement ();
+							return;
+						}
+					}
+				}
+				ShowAccessibilityAnnouncement (Document.GetTextAt (o1, o2 - o1));
+			}
+		}
+
+		void ShowAccessibilityAnnouncement (string message)
+		{
+			Accessible.MakeAccessibilityAnnouncement (message);
+		}
+
 		MonoDevelop.Ide.Editor.Selection oldSelection = MonoDevelop.Ide.Editor.Selection.Empty;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
