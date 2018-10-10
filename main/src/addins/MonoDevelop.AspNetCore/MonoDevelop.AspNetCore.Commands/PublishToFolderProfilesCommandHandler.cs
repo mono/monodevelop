@@ -1,4 +1,5 @@
-﻿using MonoDevelop.Components.Commands;
+﻿using System.Linq;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -17,14 +18,14 @@ namespace MonoDevelop.AspNetCore.Commands
 				return;
 			}
 
-
 			var profiles = project.GetPublishProfiles ();
-			if (profiles.Length > 0) {
+			if (profiles != null) {
 				info.AddSeparator ();
 			}
 
-			foreach (var profile in profiles) {
-				info.Add (GettextCatalog.GetString ("Publish to {0} - Folder", profile.Name), new PublishCommandItem (project, profile));
+			//TODO: ordering is not correct (IComparer required)
+			foreach (var profile in profiles.OrderBy (x => x.Name)) {
+				info.Add (GettextCatalog.GetString ("Publish to {0} - {1}", profile.Name, profile.WebPublishMethod), new PublishCommandItem (project, profile));
 			}
 		}
 	}
