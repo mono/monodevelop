@@ -70,6 +70,7 @@ namespace MonoDevelop.AspNetCore.Commands
 
 		public async Task Publish (PublishCommandItem item)
 		{
+			Counters.UsersPublishToFolder++;
 			using (var progressMonitor = CreateProgressMonitor ()) {
 				try {
 					if (!DotNetCoreRuntime.IsInstalled) {
@@ -90,6 +91,7 @@ namespace MonoDevelop.AspNetCore.Commands
 
 					if (!progressMonitor.CancellationToken.IsCancellationRequested) {
 						if (process.ExitCode != 0) {
+							Counters.UsersPublishToFolderFailed++;
 							progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
 							LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {process.ExitCode}");
 						} else {
@@ -100,11 +102,14 @@ namespace MonoDevelop.AspNetCore.Commands
 					}
 					CloseDialog ();
 					progressMonitor.EndTask ();
+					Counters.UsersPublishToFolderSuccess++;
 				} catch (OperationCanceledException) {
+					Counters.UsersPublishToFolderFailed++;
 					throw;
 				} catch (Exception ex) {
 					progressMonitor.Log.WriteLine (ex.Message);
 					LoggingService.LogError ("Failed to exexute dotnet publish.", ex);
+					Counters.UsersPublishToFolderFailed++;
 				}
 			}
 		}
@@ -145,7 +150,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			return mon;
 		}
 
-		protected static bool ProjectSupportsAzurePublishing (DotNetProject project)
+		protected static bool ProjectSupportsFolderPublishing (DotNetProject project)
 		{
 			return project != null && project.GetProjectCapabilities ().Any (i => i == "Web" || i == "AzureFunctions");
 		}

@@ -53,7 +53,14 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
 	</Condition>
 	<SeparatorItem id = "RunSectionEnd" />
-
+	
+	<!-- Publish section -->
+		
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
+	</Extension>
+		
 	<!-- Add section -->
 					
 	<SeparatorItem id = "AddSectionStart" />
