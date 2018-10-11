@@ -38,38 +38,40 @@ namespace MonoDevelop.DesignerSupport
 {
 	public class ToolboxPad : PadContent
 	{
-		Toolbox.MacToolbox toolbox;
 		Gtk.Widget widget;
 
-		public ToolboxPad ()
-		{
-		}
-		
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 
-			Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac).Invoke (() => {
-				toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
-			});
-
-			var wd = Xwt.Toolkit.CurrentEngine.WrapWidget (toolbox, NativeWidgetSizing.DefaultPreferredSize);
-			widget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (wd);
-
-			toolbox.DragSourceUnset += (s, e) => {	
-				Gtk.Drag.SourceUnset (widget);
-			};
-
-			toolbox.DragSourceSet += (s, e) => {
-				Gtk.Drag.SourceSet (widget, Gdk.ModifierType.Button1Mask, e, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-			};
-
-			toolbox.DragBegin += (object sender, EventArgs e) => {
-				Gtk.Application.Invoke ((s,ev) => {
-					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
+			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_TOOLBAR")?.ToLower () == "true";
+			if (nativeEnabled) {
+				Toolbox.MacToolbox toolbox = null;
+				Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac).Invoke (() => {
+					toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
 				});
 
-			};
+				var wd = Xwt.Toolkit.CurrentEngine.WrapWidget (toolbox, NativeWidgetSizing.DefaultPreferredSize);
+				widget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (wd);
+
+				toolbox.DragSourceUnset += (s, e) => {
+					Gtk.Drag.SourceUnset (widget);
+				};
+
+				toolbox.DragSourceSet += (s, e) => {
+					Gtk.Drag.SourceSet (widget, Gdk.ModifierType.Button1Mask, e, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+				};
+
+				toolbox.DragBegin += (object sender, EventArgs e) => {
+					Gtk.Application.Invoke ((s, ev) => {
+						DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
+					});
+
+				};
+			} else {
+				widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
+			}
+
 		}
 		
 		#region AbstractPadContent implementations
