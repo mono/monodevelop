@@ -1,9 +1,8 @@
-﻿using MonoDevelop.Core.Serialization;
-using MonoDevelop.Core;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Serialization;
 using System;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -77,7 +76,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		}
 
 		//https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-		[ItemProperty (Name = nameof (RuntimeIdentifier))]
+		[XmlElement (ElementName = nameof (RuntimeIdentifier))]
 		public string RuntimeIdentifier { get; set; }
 
 	}
