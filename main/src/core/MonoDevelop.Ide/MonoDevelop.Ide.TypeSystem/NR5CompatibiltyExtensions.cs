@@ -142,6 +142,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </summary>
 		public static string GetFullName (this INamespaceSymbol ns)
 		{
+			if (ns == null)
+				throw new ArgumentNullException (nameof (ns));
 			return ns.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 		}
 
@@ -152,6 +154,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </summary>
 		public static string GetFullName (this ITypeSymbol type)
 		{
+			if (type == null)
+				throw new ArgumentNullException (nameof (type));
 			return type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 		}
 
