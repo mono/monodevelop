@@ -502,11 +502,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectFirstSubTemplateCategory ()
 		{
-			if (!templateCategoriesTreeStore.GetIterFirst (out TreeIter first)) {
-				return;
-			}
-
-			var iters = WalkTree (templateCategoriesTreeStore, first);
+			var iters = WalkTree (templateCategoriesTreeStore, TreeIter.Zero);
 
 			foreach (var iter in iters) {
 				var currentCategory = templateCategoriesTreeStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
@@ -521,11 +517,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectTemplateCategory (TemplateCategory category)
 		{
-			if (!templateCategoriesTreeStore.GetIterFirst (out TreeIter first)) {
-				return;
-			}
-
-			var iters = WalkTree (templateCategoriesTreeStore, first);
+			var iters = WalkTree (templateCategoriesTreeStore, TreeIter.Zero);
 
 			foreach (var iter in iters) {
 				var currentCategory = templateCategoriesTreeStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
@@ -540,6 +532,13 @@ namespace MonoDevelop.Ide.Projects
 
 		IEnumerable<TreeIter> WalkTree (TreeStore model, TreeIter iter)
 		{
+			if (iter.Equals(TreeIter.Zero)) {
+				if (!templatesTreeStore.GetIterFirst (out TreeIter first)) {
+					yield break;
+				}
+				iter = first;
+			}
+
 			do {
 				yield return iter;
 				if (model.IterHasChild (iter)) {
@@ -553,11 +552,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectTemplate (SolutionTemplate template)
 		{
-			if (!templatesTreeStore.GetIterFirst (out TreeIter first)) {
-				return;
-			}
-
-			var iters = WalkTree (templatesTreeStore, first);
+			var iters = WalkTree (templatesTreeStore, TreeIter.Zero);
 
 			foreach (var iter in iters) {
 				var currentTemplate = templatesTreeStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
