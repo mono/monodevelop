@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CodeFixes.Suppression;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Host.Mef;
@@ -162,17 +163,41 @@ namespace MonoDevelop.CodeActions
 			var provider = fixState?.FixAllProvider;
 			if (provider == null)
 				return null;
-			
-			var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
+
+			var doc = editor.DocumentContext;
+			var workspace = doc?.RoslynWorkspace;
+			if (workspace == null)
+				return null;
 
 			var title = fixState.GetDefaultFixAllTitle ();
 			var label = mnemonic < 0 ? title : CreateLabel (title, ref mnemonic);
 
 			var item = new CodeFixMenuEntry (label, async delegate {
-				// Task.Run here so we don't end up binding the whole document on popping the menu, also there is no cancellation token support
-				var fix = Task.Run (() => provider.GetFixAsync (context));
 
-				await new ContextActionRunner (editor, await fix).Run ();
+				// Task.Run here so we don't end up binding the whole document on popping the menu, also there is no cancellation token support
+				var fix = await Task.Run (() => {
+					var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
+					return provider.GetFixAsync (context);
+				});
+				Microsoft.CodeAnalysis.Text.TextChange[] result = await Task.Run (async () => {
+					var previewOperations = await fix.GetPreviewOperationsAsync (token);
+					return await Runtime.RunInMainThread (() => {
+						var engine = Xwt.Toolkit.CurrentEngine; // NativeEngine
+						return engine.Invoke (async () => {
+							using (var dialog = new FixAllPreviewDialog (string.Join (", ", fixState.DiagnosticIds), doc.Name, fixState.Scope, previewOperations, editor)) {
+								await dialog.InitializeEditor ();
+								var parent = Xwt.Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+								var changes = dialog.Run (parent) == Xwt.Command.Apply ? dialog.GetApplicableChanges ().ToArray () : Array.Empty<Microsoft.CodeAnalysis.Text.TextChange> ();
+								return changes;
+							}
+						});
+					});
+				});
+
+				if (result.Length == 0)
+					return;
+
+				editor.ApplyTextChanges (result);
 			});
 
 			return item;
