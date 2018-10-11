@@ -527,6 +527,10 @@ namespace MonoDevelop.Xml.Editor
 				//and is used to show </Element> completion, user can either confirm(Return/Tab keys) this completion
 				//or just start typing inner content of element, in which case we want current completion to be aborted
 				//so we always want to CloseWindow action in PostProcess.
+				if (descriptor.SpecialKey == SpecialKey.Up || descriptor.SpecialKey == SpecialKey.Down) {
+					keyAction = KeyActions.None;
+					return false;
+				}
 				keyAction = KeyActions.CloseWindow;
 				return true;
 			}

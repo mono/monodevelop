@@ -138,7 +138,9 @@ namespace MonoDevelop.CSharp.Completion
 			if (semanticModel != null) {
 				if (expression is IdentifierNameSyntax) {
 					if (expression.Parent is ObjectCreationExpressionSyntax) {
-						textOpt = ((INamedTypeSymbol)semanticModel.GetSymbolInfo (expression).Symbol).GetFullName ();
+						var type = (INamedTypeSymbol)semanticModel.GetSymbolInfo (expression).Symbol;
+						if (type != null)
+							textOpt = type.GetFullName ();
 					} else if (expression.Parent is AssignmentExpressionSyntax && expression.Parent.Parent is InitializerExpressionSyntax) {
 						var variable = expression.GetAncestor<VariableDeclaratorSyntax> ();
 						if (variable != null) {

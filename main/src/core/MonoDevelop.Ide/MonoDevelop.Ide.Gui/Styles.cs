@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseIconColor { get; internal set; }
 		public static Color LinkForegroundColor { get; internal set; }
 		public static Color BorderColor { get; internal set; }
+		public static Color FrameBoxBorderColor { get; internal set; }
 		public static Color SecondaryTextColor { get; internal set; }
 		public static string SecondaryTextColorHexString { get; internal set; }
 		public static Color SecondarySelectionTextColor { get; internal set; }
@@ -466,6 +467,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			BaseIconColor = Color.FromName ("#575757");
 			BorderColor = Color.FromName ("#eeeeee");
+			FrameBoxBorderColor = Color.FromName ("#a3a3a3");
 			ThinSplitterColor = Color.FromName ("#dadada");
 			SeparatorColor = Color.FromName ("#f2f2f4");
 			PrimaryBackgroundColor = BaseBackgroundColor;
@@ -589,6 +591,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			BaseIconColor = Color.FromName ("#bfbfbf");
 			BorderColor = Color.FromName ("#2e2e2e");
+			FrameBoxBorderColor = BorderColor;
 			ThinSplitterColor = BorderColor;
 			SeparatorColor = Color.FromName ("#4b4b4b");
 			PrimaryBackgroundColor = BaseBackgroundColor;

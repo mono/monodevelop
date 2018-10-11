@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (scopeStack.IsEmpty)
 					return mismatch;
 				var top = scopeStack.Peek ();
-				bool found = top == scope || top.Length > scope.Length && top.StartsWith (scope, StringComparison.Ordinal) && top[scope.Length] == '.';
+				bool found = top == scope || top.Length > scope.Length && top[scope.Length] == '.' && top.StartsWith (scope, StringComparison.Ordinal);
 				if (found) {
 					matchExpr = scope;
 					return (found, scopeStack.Pop ());
