@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!(workspace.GetMonoProject (projectId) is DotNetProject monoProject))
 					return null;
 
-				string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, monoProject.TargetFramework);
+				string assemblyFile = monoProject.AssemblyContext.GetAssemblyLocation (assemblyName, monoProject.TargetFramework);
 				if (assemblyFile != null) {
 					//if (string.IsNullOrEmpty(fullyQualifiedName) || CanResolveType(ResolveAssembly (projectId, assemblyName), fullyQualifiedName))
 					return assemblyFile;
