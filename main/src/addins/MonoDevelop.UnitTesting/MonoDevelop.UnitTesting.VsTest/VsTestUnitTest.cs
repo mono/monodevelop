@@ -44,6 +44,9 @@ namespace MonoDevelop.UnitTesting.VsTest
 		string name;
 		SourceCodeLocation sourceCodeLocation;
 
+		protected VsTestUnitTest(string displayName) : base (displayName)
+		{ }
+
 		public VsTestUnitTest (IVsTestTestRunner testRunner, TestCase test, Project project)
 			: base (test.DisplayName)
 		{
