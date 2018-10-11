@@ -27,6 +27,7 @@
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.UnitTesting.VsTest;
 using NUnit.Framework;
+using System;
 
 namespace MonoDevelop.UnitTesting.Tests
 {
@@ -71,5 +72,25 @@ namespace MonoDevelop.UnitTesting.Tests
 			Assert.AreEqual (expectedFixtureTypeName, test.FixtureTypeName);
 			Assert.AreEqual (expectedName, test.Name);
 		}
+
+		/// <summary>
+		/// Bug 701330: DTS: When adding Unit Test into the application, the application will crash with a stack trace that seems to try to recursively add unit test over 85,000 times
+		/// </summary>
+		[Test]
+		public void TestVSTS701330 ()
+		{
+			var grp = new VsTestNamespaceTestGroup (null, null, null, "Test");
+			var uri = new Uri ("/test/Test.cs");
+			grp.AddTest (new MyVsTestUnitTest ("Test", "Test", "TestCase1"));
+			grp.AddTest (new MyVsTestUnitTest ("Test", "Test.Test", "TestCase1"));
+		}
+		class MyVsTestUnitTest : VsTestUnitTest
+		{
+			public MyVsTestUnitTest (string displayName, string fixtureTypeNamespace, string fixtureTypeName) : base(displayName)
+			{
+				FixtureTypeNamespace = fixtureTypeNamespace;
+				FixtureTypeName = fixtureTypeName;
+		}
+	}
 	}
 }
