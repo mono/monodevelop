@@ -10,7 +10,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		{
 			project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 
-			if (!ProjectSupportsAzurePublishing (project)) {
+			if (!ProjectSupportsFolderPublishing (project)) {
 				return;
 			}
 

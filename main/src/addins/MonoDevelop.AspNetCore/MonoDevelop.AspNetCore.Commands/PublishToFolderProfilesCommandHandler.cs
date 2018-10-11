@@ -14,15 +14,11 @@ namespace MonoDevelop.AspNetCore.Commands
 
 			project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 
-			if (!ProjectSupportsAzurePublishing (project)) {
+			if (!ProjectSupportsFolderPublishing (project)) {
 				return;
 			}
 
 			var profiles = project.GetPublishProfiles ();
-			if (profiles != null) {
-				info.AddSeparator ();
-			}
-
 			foreach (var profile in profiles.OrderBy (x => x.Name)) {
 				if (profile.WebPublishMethod == "FileSystem")
 					info.Add (GettextCatalog.GetString ("Publish to {0} - {1}", profile.Name, profile.WebPublishMethod), new PublishCommandItem (project, profile));
