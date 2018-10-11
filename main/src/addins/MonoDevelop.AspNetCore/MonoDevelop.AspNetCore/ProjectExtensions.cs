@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 using MonoDevelop.AspNetCore.Commands;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide;
@@ -41,25 +42,16 @@ namespace MonoDevelop.AspNetCore
 		public static bool CreatePublishProfileFile (this DotNetProject project, ProjectPublishProfile profile)
 		{
 			string profileFileContents = null;
+			var ns = new XmlSerializerNamespaces ();
+			ns.Add ("", "http://schemas.microsoft.com/developer/msbuild/2003");
+			var xmlSerializer = new XmlSerializer (profile.GetType ());
 			using (var stream = new MemoryStream ()) {
 				using (var xmlWriter = new XmlTextWriter (stream, Encoding.UTF8) { Formatting = Formatting.Indented }) {
 					xmlWriter.WriteStartDocument ();
 					xmlWriter.WriteStartElement ("Project");
 					xmlWriter.WriteAttributeString ("ToolsVersion", "4.0");
 					xmlWriter.WriteAttributeString ("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
-					xmlWriter.WriteStartElement ("PropertyGroup");
-					var propertyInfo = profile.GetType ().GetProperties ()
-							.Where (prop => prop.PropertyType == typeof (string) || prop.PropertyType == typeof (bool))
-							.OrderBy (p => p.GetCustomAttributes (typeof (XmlElement), true)
-							.Cast<XmlElement> ()
-							.Select (a => a.Name)
-							.FirstOrDefault ());
-					foreach (var pi in propertyInfo) {
-						if (pi.GetValue (profile, null) != null) {
-							xmlWriter.WriteElementString (pi.Name, pi.GetValue (profile, null).ToString ());
-						}
-					}
-					xmlWriter.WriteEndElement ();
+					xmlSerializer.Serialize (xmlWriter, profile, ns); 
 					xmlWriter.WriteEndElement ();
 					xmlWriter.WriteEndDocument ();
 					xmlWriter.Flush ();
