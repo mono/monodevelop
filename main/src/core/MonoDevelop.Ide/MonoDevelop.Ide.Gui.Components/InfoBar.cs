@@ -38,10 +38,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		static Image closeImageInactive = Image.FromResource ("pad-close-9.png").WithAlpha (0.5);
 
 		readonly Label descriptionLabel;
+		Action onDispose;
 		Size minTextSize = Size.Zero;
 
-		public XwtInfoBar (string description, params InfoBarItem[] items)
+		public XwtInfoBar (string description, Action onDispose, params InfoBarItem[] items)
 		{
+			this.onDispose = onDispose;
+
 			var mainBox = new HBox {
 				BackgroundColor = Styles.NotificationBar.BarBackgroundColor,
 			};
@@ -108,6 +111,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			} else {
 				Content = mainBox;
 			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			onDispose?.Invoke ();
+			onDispose = null;
+
+			base.Dispose (disposing);
 		}
 
 		protected override void OnBoundsChanged ()
