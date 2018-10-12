@@ -25,7 +25,7 @@ namespace MonoDevelop.Core.Execution
 		List<MessageListener> listeners = new List<MessageListener> ();
 		object listenersLock = new object ();
 
-		string exePath;
+		string exePath, workingDirectory;
 
 		// This class will ping the remote process every PingPeriod milliseconds
 		// If the remote process doesn't get a message in PingPeriod*2 it assumes
@@ -69,6 +69,12 @@ namespace MonoDevelop.Core.Execution
 			this.syncContext = syncContext;
 			this.console = console;
 			mainCancelSource = new CancellationTokenSource ();
+		}
+
+		public RemoteProcessConnection (string exePath, string workingDirectory, IExecutionHandler executionHandler = null, OperationConsole console = null, SynchronizationContext syncContext = null)
+			: this (exePath, executionHandler, console, syncContext)
+		{
+			this.workingDirectory = workingDirectory;
 		}
 
 		public ConnectionStatus Status {
@@ -284,6 +290,8 @@ namespace MonoDevelop.Core.Execution
 			return Task.Run (() => {
 				var cmd = Runtime.ProcessService.CreateCommand (exePath);
 				cmd.Arguments = ((IPEndPoint)listener.LocalEndpoint).Port + " " + DebugMode;
+				if (!string.IsNullOrEmpty (workingDirectory))
+					cmd.WorkingDirectory = workingDirectory;
 
 				// Explicitly propagate the PATH var to the process. It ensures that tools required
 				// to run XS are also in the PATH for remote processes.
