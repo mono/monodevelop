@@ -533,7 +533,7 @@ namespace MonoDevelop.Ide.Projects
 		IEnumerable<TreeIter> WalkTree (TreeStore model, TreeIter iter)
 		{
 			if (iter.Equals(TreeIter.Zero)) {
-				if (!templatesTreeStore.GetIterFirst (out TreeIter first)) {
+				if (!model.GetIterFirst (out TreeIter first)) {
 					yield break;
 				}
 				iter = first;
