@@ -212,6 +212,10 @@ namespace MonoDevelop.UnitTesting.NUnit
 		protected override async Task<IEnumerable<string>> GetSupportAssembliesAsync ()
 		{
 			if (project != null) {
+				// Check to see if the project doesn't want to have support assemblies loaded (e.g. if it ensures every dependency is available in the output folder)
+				if (project.ProjectProperties.GetValue ("NUnitDisableSupportAssemblies", false))
+					return Enumerable.Empty<string> ();
+
 				var references = await project.GetReferences (IdeApp.Workspace.ActiveConfiguration).ConfigureAwait (false);
 				// Referenced assemblies which are not in the gac and which are not localy copied have to be preloaded
 				var supportAssemblies = new HashSet<string> ();
