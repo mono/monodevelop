@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Set up the list store so the test framework can work out the correct columns
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateCategoriesListStore__Name", "templateCategoriesListStore__Icon", "templateCategoriesListStore__Category");
-			TypeDescriptor.AddAttributes (templateCategoriesListStore, modelAttr);
+			TypeDescriptor.AddAttributes (templateCategoriesTreeStore, modelAttr);
 			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Icon", "templateListStore__Template");
 			TypeDescriptor.AddAttributes (templatesTreeStore, modelAttr);
 
@@ -312,7 +313,7 @@ namespace MonoDevelop.Ide.Projects
 			Xwt.Drawing.Image icon = GetIcon ("md-recent", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
-			templateCategoriesListStore.AppendValues (
+			templateCategoriesTreeStore.AppendValues (
 				Core.GettextCatalog.GetString ("Recently used"),
 				icon,
 				null);
@@ -323,7 +324,7 @@ namespace MonoDevelop.Ide.Projects
 			Xwt.Drawing.Image icon = GetIcon (category.IconId ?? "md-platform-other", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
-			var iter = templateCategoriesListStore.AppendValues (
+			var iter = templateCategoriesTreeStore.AppendValues (
 				MarkupTopLevelCategoryName (category.Name),
 				icon,
 				category);
@@ -336,7 +337,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddSubTemplateCategory (TreeIter iter, TemplateCategory category)
 		{
-			templateCategoriesListStore.AppendValues (
+			templateCategoriesTreeStore.AppendValues (
 				iter,
 				GLib.Markup.EscapeText (category.Name),
 				null,
@@ -376,7 +377,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			TreeIter item;
 			if (templateCategoriesTreeView.Selection.GetSelected (out item)) {
-				return templateCategoriesListStore.GetValue (item, TemplateCategoryColumn) as TemplateCategory;
+				return templateCategoriesTreeStore.GetValue (item, TemplateCategoryColumn) as TemplateCategory;
 			}
 			return null;
 		}
@@ -492,26 +493,22 @@ namespace MonoDevelop.Ide.Projects
 		{
 			TreeIter iter = TreeIter.Zero;
 			// recent templates entry is always the first one and has no category assigned to it
-			if (templateCategoriesListStore.GetIterFirst (out iter) && templateCategoriesListStore.GetValue (iter, TemplateCategoryColumn) == null) {
+			if (templateCategoriesTreeStore.GetIterFirst (out iter) && templateCategoriesTreeStore.GetValue (iter, TemplateCategoryColumn) == null) {
 				templateCategoriesTreeView.Selection.SelectIter (iter);
-				TreePath path = templateCategoriesListStore.GetPath (iter);
+				TreePath path = templateCategoriesTreeStore.GetPath (iter);
 				templateCategoriesTreeView.ScrollToCell (path, null, true, 1, 0);
 			}
 		}
 
 		void SelectFirstSubTemplateCategory ()
 		{
-			TreeIter iter = TreeIter.Zero;
-			if (!templateCategoriesListStore.GetIterFirst (out iter)) {
-				return;
-			}
+			var iters = WalkTree (templateCategoriesTreeStore, TreeIter.Zero);
 
-			// select the first second level (IsTopLevel == false) category
-			while (templateCategoriesListStore.IterNext (ref iter)) {
-				var currentCategory = templateCategoriesListStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
+			foreach (var iter in iters) {
+				var currentCategory = templateCategoriesTreeStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
 				if (currentCategory?.IsTopLevel == false) {
 					templateCategoriesTreeView.Selection.SelectIter (iter);
-					TreePath path = templateCategoriesListStore.GetPath (iter);
+					TreePath path = templateCategoriesTreeStore.GetPath (iter);
 					templateCategoriesTreeView.ScrollToCell (path, null, true, 1, 0);
 					break;
 				}
@@ -520,30 +517,44 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectTemplateCategory (TemplateCategory category)
 		{
-			TreeIter iter = TreeIter.Zero;
-			if (!templateCategoriesListStore.GetIterFirst (out iter)) {
-				return;
-			}
+			var iters = WalkTree (templateCategoriesTreeStore, TreeIter.Zero);
 
-			while (templateCategoriesListStore.IterNext (ref iter)) {
-				var currentCategory = templateCategoriesListStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
+			foreach (var iter in iters) {
+				var currentCategory = templateCategoriesTreeStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
 				if (currentCategory == category) {
 					templateCategoriesTreeView.Selection.SelectIter (iter);
-					TreePath path = templateCategoriesListStore.GetPath (iter);
+					TreePath path = templateCategoriesTreeStore.GetPath (iter);
 					templateCategoriesTreeView.ScrollToCell (path, null, true, 1, 0);
 					break;
 				}
 			}
 		}
 
-		void SelectTemplate (SolutionTemplate template)
+		IEnumerable<TreeIter> WalkTree (TreeStore model, TreeIter iter)
 		{
-			TreeIter iter = TreeIter.Zero;
-			if (!templatesTreeStore.GetIterFirst (out iter)) {
-				return;
+			if (iter.Equals(TreeIter.Zero)) {
+				if (!model.GetIterFirst (out TreeIter first)) {
+					yield break;
+				}
+				iter = first;
 			}
 
-			while (templatesTreeStore.IterNext (ref iter)) {
+			do {
+				yield return iter;
+				if (model.IterHasChild (iter)) {
+					if (model.IterChildren (out TreeIter childIter, iter))
+						foreach (var node in WalkTree (model, childIter))
+							yield return node;
+				}
+
+			} while (model.IterNext (ref iter));
+		}
+
+		void SelectTemplate (SolutionTemplate template)
+		{
+			var iters = WalkTree (templatesTreeStore, TreeIter.Zero);
+
+			foreach (var iter in iters) {
 				var currentTemplate = templatesTreeStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
 				if (currentTemplate == template) {
 					templatesTreeView.Selection.SelectIter (iter);
@@ -556,8 +567,8 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectFirstTemplate ()
 		{
-			TreeIter iter = TreeIter.Zero;
-			if (templatesTreeStore.IterNthChild (out iter, 1)) {
+			// first child of first iter
+			if (templatesTreeStore.GetIterFromString (out TreeIter iter, "0:0")) {
 				templatesTreeView.Selection.SelectIter (iter);
 			}
 		}

@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Projects
 		const int TemplateCategoryNameColumn = 0;
 		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
-		TreeStore templateCategoriesListStore =
+		TreeStore templateCategoriesTreeStore =
 			new TreeStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.Accessible.Description = GettextCatalog.GetString ("Select the project category to see all possible project templates");
 			templateCategoriesTreeView.BorderWidth = 0;
 			templateCategoriesTreeView.HeadersVisible = false;
-			templateCategoriesTreeView.Model = templateCategoriesListStore;
+			templateCategoriesTreeView.Model = templateCategoriesTreeStore;
 			templateCategoriesTreeView.SearchColumn = -1; // disable the interactive search
 			templateCategoriesTreeView.ShowExpanders = false;
 
