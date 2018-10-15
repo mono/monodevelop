@@ -136,32 +136,24 @@ namespace MonoDevelop.CSharp.Project
 
 			var options = new CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
-				reportSuppressedDiagnostics: false,
-				moduleName: null,
 				mainTypeName: project.MainClass,
 				scriptClassName: "Script",
-				usings: null,
-				optimizationLevel: OptimizationLevel.Debug,
+				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
 				checkOverflow: GenerateOverflowChecks,
 				allowUnsafe: UnsafeCode,
-				cryptoKeyContainer: null,
 				cryptoKeyFile: ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
 				cryptoPublicKey: ImmutableArray<byte>.Empty,
-				delaySign: null,
-				platform: Microsoft.CodeAnalysis.Platform.AnyCpu,
-				generalDiagnosticOption: ReportDiagnostic.Default,
+				platform: GetPlatform (),
+				generalDiagnosticOption: TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default,
 				warningLevel: WarningLevel,
-				specificDiagnosticOptions: null,
+				specificDiagnosticOptions: GetSpecificDiagnosticOptions (),
 				concurrentBuild: false,
 				metadataReferenceResolver: metadataReferenceResolver,
 				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
 				strongNameProvider: new DesktopStrongNameProvider ()
 			);
 
-			return options.WithPlatform (GetPlatform ())
-				.WithGeneralDiagnosticOption (TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default)
-				.WithOptimizationLevel (Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug)
-				.WithSpecificDiagnosticOptions (GetSpecificDiagnosticOptions());
+			return options;
 		}
 
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
