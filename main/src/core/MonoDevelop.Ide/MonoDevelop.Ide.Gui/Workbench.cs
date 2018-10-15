@@ -1068,12 +1068,18 @@ namespace MonoDevelop.Ide.Gui
 			
 			IDisplayBinding binding = null;
 			IViewDisplayBinding viewBinding = null;
+			Project project = null;
 			if (openFileInfo.Project == null) {
 				// Set the project if one can be found. The project on the FileOpenInformation
 				// is used to add project metadata to the OpenDocumentTimer counter.
-				openFileInfo.Project = GetProjectContainingFile (fileName);
+				project = GetProjectContainingFile (fileName);
+
+				// In some cases, the file may be a symlinked file. We cannot find the resolved symlink path
+				// in the project, so we should try looking up the original file.
+				if (project == null)
+					project = GetProjectContainingFile (openFileInfo.OriginalFileName);
+				openFileInfo.Project = project;
 			}
-			Project project = openFileInfo.Project;
 			
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
@@ -1194,8 +1200,10 @@ namespace MonoDevelop.Ide.Gui
 
 		static DocumentUserPrefs CreateDocumentPrefs (UserPreferencesEventArgs args, Document document)
 		{
+			string path = (string)document.OriginalFileName ?? document.FileName;
+
 			var dp = new DocumentUserPrefs ();
-			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, path);
 			if (document.Editor != null) {
 				dp.Line = document.Editor.CaretLine;
 				dp.Column = document.Editor.CaretColumn;
@@ -1449,6 +1457,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		internal FilePath OriginalFileName { get; set; }
+
 		public OpenDocumentOptions Options { get; set; }
 
 		int offset = -1;
@@ -1477,6 +1487,7 @@ namespace MonoDevelop.Ide.Gui
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
 		public FileOpenInformation (string fileName, int line, int column, OpenDocumentOptions options) 
 		{
+			this.OriginalFileName = fileName;
 			this.FileName = fileName;
 			this.Line = line;
 			this.Column = column;
@@ -1486,6 +1497,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public FileOpenInformation (FilePath filePath, Project project = null)
 		{
+			this.OriginalFileName = filePath;
 			this.FileName = filePath;
 			this.Project = project;
 			this.Options = OpenDocumentOptions.Default;
@@ -1493,6 +1505,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options) 
 		{
+			this.OriginalFileName = filePath;
 			this.FileName = filePath;
 			this.Project = project;
 			this.Line = line;
@@ -1502,6 +1515,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public FileOpenInformation (FilePath filePath, Project project, bool bringToFront)
 		{
+			this.OriginalFileName = filePath;
 			this.FileName = filePath;
 			this.Project = project;
 			this.Options = OpenDocumentOptions.Default;
@@ -1597,6 +1611,7 @@ namespace MonoDevelop.Ide.Gui
 
 				try {
 					await newContent.Load (fileInfo);
+					newContent.OriginalContentName = fileInfo.OriginalFileName;
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 					return false;

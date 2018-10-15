@@ -207,6 +207,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		internal FilePath OriginalFileName {
+			get {
+				if (Window == null || !Window.ViewContent.IsFile)
+					return null;
+				return Window.ViewContent.OriginalContentName;
+			}
+		}
+
 		internal event EventHandler FileNameChanged;
 
 		void OnFileNameChanged ()
@@ -264,7 +272,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 
-				var pf = project.GetProjectFile (FileName);
+				var pf = project.GetProjectFile ((string)OriginalFileName ?? FileName);
 				return pf != null && pf.BuildAction != BuildAction.None;
 			}
 		}
@@ -1179,7 +1187,7 @@ namespace MonoDevelop.Ide.Gui
 			var parser = TypeSystemService.GetParser (Editor.MimeType);
 			if (parser == null)
 				return null;
-			var projectFile = Project.GetProjectFile (Editor.FileName);
+			var projectFile = Project.GetProjectFile ((string)OriginalFileName ?? Editor.FileName);
 			if (projectFile == null)
 				return null;
 			if (!parser.CanGenerateProjection (Editor.MimeType, projectFile.BuildAction, Project.SupportedLanguages))
