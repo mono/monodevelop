@@ -1234,6 +1234,10 @@ namespace MonoDevelop.Ide
 		
 		void CheckFileRename(object sender, FileCopyEventArgs args)
 		{
+			// Do not rename the file or directory in the project for changes made outside the IDE.
+			if (args.IsExternal)
+				return;
+
 			foreach (Solution sol in GetAllSolutions ()) {
 				foreach (FileCopyEventInfo e in args)
 					sol.RootFolder.RenameFileInProjects (e.SourceFile, e.TargetFile);
