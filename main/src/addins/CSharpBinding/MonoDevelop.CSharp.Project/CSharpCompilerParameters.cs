@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharp.Project
 				generalDiagnosticOption: TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default,
 				warningLevel: WarningLevel,
 				specificDiagnosticOptions: GetSpecificDiagnosticOptions (),
-				concurrentBuild: false,
+				concurrentBuild: true,
 				metadataReferenceResolver: metadataReferenceResolver,
 				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
 				strongNameProvider: new DesktopStrongNameProvider ()
