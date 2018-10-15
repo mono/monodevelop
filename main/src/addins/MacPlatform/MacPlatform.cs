@@ -1259,11 +1259,12 @@ namespace MonoDevelop.MacIntegration
 			return new MacThermalMonitor ();
 		}
 
-		class MacThermalMonitor : ThermalMonitor
+		internal class MacThermalMonitor : ThermalMonitor, IDisposable
 		{
+			NSObject observer;
 			public MacThermalMonitor ()
 			{
-				NSProcessInfo.Notifications.ObserveThermalStateDidChange ((o, args) => {
+				observer = NSProcessInfo.Notifications.ObserveThermalStateDidChange ((o, args) => {
 					var metadata = new PlatformThermalMetadata {
 						ThermalStatus = ToPlatform (NSProcessInfo.ProcessInfo.ThermalState),
 					};
@@ -1288,6 +1289,14 @@ namespace MonoDevelop.MacIntegration
 				default:
 					LoggingService.LogError ("Unknown NSProcessInfoThermalState value {0}", status.ToString ());
 					return PlatformThermalStatus.Normal;
+				}
+			}
+
+			public void Dispose ()
+			{
+				if (observer != null) {
+					NSNotificationCenter.DefaultCenter.RemoveObserver (observer);
+					observer = null;
 				}
 			}
 		}
