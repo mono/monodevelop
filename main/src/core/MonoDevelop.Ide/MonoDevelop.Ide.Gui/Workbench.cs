@@ -117,32 +117,35 @@ namespace MonoDevelop.Ide.Gui
 				monitor.EndTask ();
 			}
 		}
-		
-		internal void Show (string workbenchMemento)
+
+		internal void Realize (string workbenchMemento)
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
+
 			Counters.Initialization.Trace ("Loading memento");
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
 			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
 
-			// Very important: see https://github.com/mono/monodevelop/pull/6064
-			// Otherwise the editor may not be focused on IDE startup and can't be
-			// focused even by clicking with the mouse.
-			RootWindow.Visible = true;
 			Counters.Initialization.Trace ("Setting layout");
 			workbench.CurrentLayout = "Solution";
-			
+
 			// now we have an layout set notify it
 			Counters.Initialization.Trace ("Setting layout");
 			if (LayoutChanged != null)
 				LayoutChanged (this, EventArgs.Empty);
-			
+
 			Counters.Initialization.Trace ("Initializing monitors");
 			monitors.Initialize ();
+		}
 
-			Counters.Initialization.Trace ("Making visible");
+		internal void Show ()
+		{
+			// Very important: see https://github.com/mono/monodevelop/pull/6064
+			// Otherwise the editor may not be focused on IDE startup and can't be
+			// focused even by clicking with the mouse.
+			RootWindow.Visible = true;
 			Present ();
 		}
 		
