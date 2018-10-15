@@ -4359,28 +4359,39 @@ namespace MonoDevelop.Projects
 			if (!Directory.Exists (BaseDirectory))
 				return;
 
-			// Use FileWatcherService for file created event since this does not run on the UI thread.
-			FileWatcherService.Created += OnFileCreated;
-			// Use FileWatcherService for file deleted events to be consistent. Without this a deletion event
+			// Use FileService.AsyncEvents for file created event since this does not run on the UI thread. This
+			// avoids blocking the UI thread when many files are created.
+			FileService.AsyncEvents.FileCreated += OnFileCreated;
+			// Use FileService.AsyncEvents for file deleted events to be consistent. Without this a deletion event
 			// would not update the Solution window until the IDE gets focus again.
-			FileWatcherService.Deleted += OnFileDeleted;
-			// Use FileWatcherService for file renamed since generating the FileService.FileRenamed event
+			FileService.AsyncEvents.FileRemoved += OnFileDeleted;
+			// Use FileService.AsyncEvents for file renamed events since generating the FileService.FileRenamed event
 			// would result in non SDK style projects renaming files in the project if changed externally.
-			FileWatcherService.Renamed += OnFileRenamed;
+			FileService.AsyncEvents.FileRenamed += OnFileRenamed;
 		}
 
 		void DisposeFileWatcher ()
 		{
-			FileWatcherService.Created -= OnFileCreated;
-			FileWatcherService.Deleted -= OnFileDeleted;
-			FileWatcherService.Renamed -= OnFileRenamed;
+			FileService.AsyncEvents.FileCreated -= OnFileCreated;
+			FileService.AsyncEvents.FileRemoved -= OnFileDeleted;
+			FileService.AsyncEvents.FileRenamed -= OnFileRenamed;
 		}
 
-		void OnFileRenamed (object sender, RenamedEventArgs e)
+		void OnFileRenamed (object sender, FileCopyEventArgs e)
 		{
+			foreach (FileCopyEventInfo info in e) {
+				OnFileRenamed (info.SourceFile, info.TargetFile);
+			}
+		}
+
+		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
+		{
+			if (Runtime.IsMainThread)
+				return;
+
 			try {
-				if (Directory.Exists (e.FullPath)) {
-					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
+				if (Directory.Exists (targetFile)) {
+					OnDirectoryRenamedExternally (sourceFile, targetFile);
 					return;
 				}
 			} catch (Exception ex) {
@@ -4388,18 +4399,30 @@ namespace MonoDevelop.Projects
 			}
 
 			Runtime.RunInMainThread (() => {
-				OnFileCreatedExternally (e.FullPath);
-				OnFileDeletedExternally (e.OldFullPath);
+				OnFileCreatedExternally (targetFile);
+				OnFileDeletedExternally (sourceFile);
 			});
 		}
 
-		void OnFileCreated (object sender, FileSystemEventArgs e)
+		void OnFileCreated (object sender, FileEventArgs e)
 		{
+			if (Runtime.IsMainThread)
+				return;
+
+			foreach (FileEventInfo info in e) {
+				OnFileCreated (info.FileName);
+			}
+		}
+
+		void OnFileCreated (FilePath filePath)
+		{
+			if (Runtime.IsMainThread)
+				return;
+
 			try {
-				if (Directory.Exists (e.FullPath))
+				if (Directory.Exists (filePath))
 					return;
 
-				FilePath filePath = e.FullPath;
 				if (filePath.FileName == ".DS_Store")
 					return;
 
@@ -4407,16 +4430,21 @@ namespace MonoDevelop.Projects
 				if (filePath.FileName.StartsWith (".#", StringComparison.OrdinalIgnoreCase))
 					return;
 
-				OnFileCreatedExternally (e.FullPath);
+				OnFileCreatedExternally (filePath);
 			} catch (Exception ex) {
 				LoggingService.LogError ("OnFileCreated error.", ex);
 			}
 		}
 
-		void OnFileDeleted (object sender, FileSystemEventArgs e)
+		void OnFileDeleted (object sender, FileEventArgs e)
 		{
+			if (Runtime.IsMainThread)
+				return;
+
 			Runtime.RunInMainThread (() => {
-				OnFileDeletedExternally (e.FullPath);
+				foreach (FileEventInfo info in e) {
+					OnFileDeletedExternally (info.FileName);
+				}
 			});
 		}
 
@@ -4468,12 +4496,11 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		void OnFileCreatedExternally (string fileName)
+		void OnFileCreatedExternally (FilePath fileName)
 		{
 			// Check file is inside the project directory. The file globs would exclude the file anyway
 			// if the relative path starts with "..\" but checking here avoids checking the file globs.
-			FilePath filePath = fileName;
-			if (!filePath.IsChildPathOf (BaseDirectory))
+			if (!fileName.IsChildPathOf (BaseDirectory))
 				return;
 
 			if (Files.Any (file => file.FilePath == fileName)) {
