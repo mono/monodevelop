@@ -8,7 +8,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	class MacToolboxWidgetFlowLayout : NSCollectionViewFlowLayout
 	{
-	
+		//public override CGSize HeaderReferenceSize => new CGSize (this.CollectionView.Bounds.Width, 40);
 	}
 
 	class MacToolboxWidgetFlowLayoutDelegate : NSCollectionViewDelegateFlowLayout
@@ -51,10 +51,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return new NSEdgeInsets (0, 0, 0, 0);
 		}
 
-		public override CGSize ReferenceSizeForHeader (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, nint section)
-		{
-			return new CGSize (0, 1);
-		}
+		//public override CGSize ReferenceSizeForHeader (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, nint section)
+		//{
+		//	return new CGSize (0, 40);
+		//}
 
 		public override CGSize ReferenceSizeForFooter (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, nint section)
 		{
