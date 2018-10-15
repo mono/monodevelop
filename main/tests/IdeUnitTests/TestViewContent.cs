@@ -204,10 +204,10 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public List<object> Contents = new List<object> ();
-		
+
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.OnGetContents(type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
+			return base.OnGetContents (type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
 		}
 
 		public IDisposable OpenUndoGroup ()
