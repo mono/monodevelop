@@ -240,10 +240,10 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpGtkProject``()= test "FSharpGtkProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp LibraryProject``()= test "MonoDevelop.FSharp.LibraryProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
-    [<Test;AsyncStateMachine(typeof<Task>)>]
+    [<Ignore("Currently not testable");AsyncStateMachine(typeof<Task>)>]
     member x.``Xamarin Forms FSharp FormsApp Shared``() =
         testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp.Shared" "SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared;CreateSharedAssetsProject=True;CreatePortableDotNetProject=False"
 
-    [<Test;AsyncStateMachine(typeof<Task>)>]
+    [<Ignore("Currently not testable");AsyncStateMachine(typeof<Task>)>]
     member x.``Xamarin Forms FSharp FormsApp Shared with XAML``() =
         testWithParameters "Xamarin.Forms.FSharp.FormsApp" "Xamarin.Forms.FSharp.FormsApp.Shared.XAML" "CreateXamlProject=True;SafeUserDefinedProjectName=Xamarin_Forms_FSharp_FormsApp_Shared_XAML;CreateSharedAssetsProject=True;CreatePortableDotNetProject=False"
