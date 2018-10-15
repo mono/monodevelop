@@ -26,25 +26,10 @@
 
 using System;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	enum ShowWhitespaces
-	{
-		Never,
-		Selection,
-		Always
-	}
-
-	[Flags]
-	enum IncludeWhitespaces
-	{
-		None = 0,
-		Space = 1,
-		Tab = 2,
-		LineEndings = 4,
-		All = Space | Tab | LineEndings
-	}
 
 	interface ITextEditorOptions : IDisposable
 	{
