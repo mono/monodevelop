@@ -229,6 +229,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				solutionCrawler.Register (this);
 			else
 				solutionCrawler.Unregister (this);
+
+			var diagnosticAnalyzer = CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.Diagnostics.IDiagnosticAnalyzerService> ();
+			diagnosticAnalyzer.Reanalyze (this);
 		}
 
 		void OnEnableFullSourceAnalysisChanged (object sender, EventArgs args)
