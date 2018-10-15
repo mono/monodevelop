@@ -135,26 +135,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		//internal void ResizeViews ()
-		//{
-		//	//InvokeOnMainThread(ReloadData);
-		//	//ReloadData();
-
-		//	//if (EnclosingScrollView != null)
-		//	//{
-		//	//	EnclosingScrollView.NeedsDisplay = NeedsDisplay = true;
-		//	//	EnclosingScrollView.LayoutSubtreeIfNeeded();
-		//	//	SetFrameSize(CollectionViewLayout.CollectionViewContentSize);
-		//	//}
-		//}
-
 		public bool IsListMode {
 			get => collectionViewDelegate.IsOnlyImage;
 			set {
 				collectionViewDelegate.IsOnlyImage = dataSource.IsOnlyImage = !value;
-
-				this.QueueResize ();
-				this.ScrollToSelectedItem ();
+				QueueDraw ();
 			}
 		}
 
