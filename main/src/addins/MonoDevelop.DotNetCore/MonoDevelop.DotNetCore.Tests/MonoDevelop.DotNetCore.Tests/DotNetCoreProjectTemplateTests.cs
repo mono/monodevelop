@@ -206,6 +206,11 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
 		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore22=true")]
+
+		// NUnit3 templates come with .NET Core 2.2, but they only support .NET Core 2.1 framework
+		[TestCase ("NUnit3.DotNetNew.Template.CSharp", "UseNetCore21=true")]
+		[TestCase ("NUnit3.DotNetNew.Template.FSharp", "UseNetCore21=true")]
+		[TestCase ("NUnit3.DotNetNew.Template.VisualBasic", "UseNetCore21=true")]
 		public async Task NetCore22 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk22Installed ()) {
