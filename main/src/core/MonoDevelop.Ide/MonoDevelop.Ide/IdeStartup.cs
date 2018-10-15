@@ -367,6 +367,9 @@ namespace MonoDevelop.Ide
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
 
+			DispatchService.RunPendingEvents ();
+
+			sectionTimings ["PumpEventLoop"] = startupSectionTimer.ElapsedMilliseconds;
 			startupTimer.Stop ();
 			startupSectionTimer.Stop ();
 

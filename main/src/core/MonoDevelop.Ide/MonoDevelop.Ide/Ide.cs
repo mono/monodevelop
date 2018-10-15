@@ -258,10 +258,6 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Realizing Workbench Window");
 			workbench.Realize ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
-			
-			Counters.Initialization.Trace ("Flushing GUI events");
-			DispatchService.RunPendingEvents ();
-			Counters.Initialization.Trace ("Flushed GUI events");
 
 			MessageService.RootWindow = workbench.RootWindow;
 			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (workbench.RootWindow);
