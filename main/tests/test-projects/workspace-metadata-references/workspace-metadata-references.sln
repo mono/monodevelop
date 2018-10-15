@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "workspace-metadata-references", "workspace-metadata-references\workspace-metadata-references.csproj", "{8348024A-4F94-47A1-B03B-5864E8E6E4B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library-project", "library-project\library-project.csproj", "{8696FE11-7528-4063-B9AF-16608A10D970}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library-project-net461", "library-project-net461\library-project-net461.csproj", "{856F59FF-8672-4AC1-8C3E-F08BF5486276}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8348024A-4F94-47A1-B03B-5864E8E6E4B9}.Debug|x86.ActiveCfg = Debug|x86
+		{8348024A-4F94-47A1-B03B-5864E8E6E4B9}.Debug|x86.Build.0 = Debug|x86
+		{8348024A-4F94-47A1-B03B-5864E8E6E4B9}.Release|x86.ActiveCfg = Release|x86
+		{8348024A-4F94-47A1-B03B-5864E8E6E4B9}.Release|x86.Build.0 = Release|x86
+		{8696FE11-7528-4063-B9AF-16608A10D970}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8696FE11-7528-4063-B9AF-16608A10D970}.Debug|x86.Build.0 = Debug|Any CPU
+		{8696FE11-7528-4063-B9AF-16608A10D970}.Release|x86.ActiveCfg = Release|Any CPU
+		{8696FE11-7528-4063-B9AF-16608A10D970}.Release|x86.Build.0 = Release|Any CPU
+		{856F59FF-8672-4AC1-8C3E-F08BF5486276}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{856F59FF-8672-4AC1-8C3E-F08BF5486276}.Debug|x86.Build.0 = Debug|Any CPU
+		{856F59FF-8672-4AC1-8C3E-F08BF5486276}.Release|x86.ActiveCfg = Release|Any CPU
+		{856F59FF-8672-4AC1-8C3E-F08BF5486276}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

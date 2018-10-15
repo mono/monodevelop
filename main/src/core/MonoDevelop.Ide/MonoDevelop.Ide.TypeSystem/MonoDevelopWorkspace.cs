@@ -720,6 +720,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
 		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
 
+		/// <summary>
+		/// Used by tests to validate that project has been saved.
+		/// </summary>
+		/// <value>The task that can be awaited to validate saving has finished.</value>
+		internal Task ProjectSaveTask { get; private set; } = Task.FromResult<object> (null);
+
 		internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
 		{
 			// this is supported on the main thread only
@@ -750,7 +756,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 					if (tryApplyState_changedProjects.Count > 0) {
-						IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
+						ProjectSaveTask = IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
 					}
 
 					return ret;
