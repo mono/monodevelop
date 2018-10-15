@@ -409,6 +409,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		public static bool AccessibilityKeyboardFocusInUse {
+			get {
+				return PlatformService.AccessibilityKeyboardFocusInUse;
+			}
+		}
+
 		internal static string GetNativeRuntimeDescription () => PlatformService.GetNativeRuntimeDescription ();
 
 		public static MemoryMonitor MemoryMonitor { get; private set; }
