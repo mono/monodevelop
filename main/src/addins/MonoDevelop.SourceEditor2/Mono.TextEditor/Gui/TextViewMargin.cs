@@ -515,23 +515,22 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		static Cursor xtermCursor = new Cursor(CursorType.Xterm);
-		static Cursor xtermCursorInverted;
-		static Cursor textLinkCursor = new Cursor (CursorType.Hand1);
-
-		static TextViewMargin()
-		{
+		Lazy<Cursor> xtermCursor = new Lazy<Cursor> (() => new Cursor (CursorType.Xterm));
+		Lazy<Cursor> xtermCursorInverted = new Lazy<Cursor> (() => {
 #if MAC
 			var img = OSXEditor.IBeamCursorImage;
 			if (img != null) {
-				xtermCursorInverted = new Cursor(xtermCursor.Display, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
+				return new Cursor(Display.Default, (InvertCursorPixbuf (img.ToPixbuf())), (int)img.Width / 2, (int)img.Height / 2);
 			} else {
-				xtermCursorInverted = xtermCursor;
+				return new Cursor (CursorType.Xterm);
 			}
 #else
-			xtermCursorInverted = xtermCursor;
+			return new Cursor (CursorType.Xterm);
 #endif
-		}
+		});
+
+		Lazy<Cursor> textLinkCursor = new Lazy<Cursor> (() => new Cursor (CursorType.Hand1));
+
 
 		unsafe static Pixbuf InvertCursorPixbuf(Pixbuf src)
 		{
@@ -717,6 +716,12 @@ namespace Mono.TextEditor
 			tabArray?.Dispose ();
 			accessible?.Dispose ();
 			accessible = null;
+			if (xtermCursor.IsValueCreated)
+				xtermCursor.Value.Dispose ();
+			if (xtermCursorInverted.IsValueCreated)
+				xtermCursorInverted.Value.Dispose ();
+			if (textLinkCursor.IsValueCreated)
+				textLinkCursor.Value.Dispose ();
 			base.Dispose ();
 		}
 
@@ -2661,7 +2666,7 @@ namespace Mono.TextEditor
 		Cursor GetDefaultTextCursor()
 		{
 			var baseColor = textEditor.Style.Background(StateType.Normal);
-			return  HslColor.Brightness(baseColor) < 0.5 ? xtermCursorInverted : xtermCursor;
+			return  HslColor.Brightness(baseColor) < 0.5 ? xtermCursorInverted.Value : xtermCursor.Value;
 		}
 
 		protected internal override void MouseHover (MarginMouseEventArgs args)
@@ -2724,7 +2729,7 @@ namespace Mono.TextEditor
 				string link = GetLink != null ? GetLink (args) : null;
 
 				if (!String.IsNullOrEmpty (link)) {
-					base.cursor = textLinkCursor;
+					base.cursor = textLinkCursor.Value;
 				} else {
 					base.cursor = hoverResult.HasCursor ? hoverResult.Cursor : GetDefaultTextCursor ();
 				}
