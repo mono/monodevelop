@@ -48,7 +48,11 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		IRemoteEventListener listener;
 		readonly string assemblyDirectory;
 
-		public ExternalTestRunner (string assemblyDirectory = null)
+		public ExternalTestRunner ()
+		{
+		}
+
+		public ExternalTestRunner (string assemblyDirectory)
 		{
 			this.assemblyDirectory = assemblyDirectory;
 		}
