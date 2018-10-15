@@ -189,7 +189,7 @@ namespace Mono.TextEditor
 				PercentDrawMargin = totalTimeMarginDrawing.TotalMilliseconds / totalMillis * 100,
 				PercentExtensionKeypress = totalTimeExtensionKeyPress.TotalMilliseconds / totalMillis * 100,
 				SessionKeypressCount = count,
-				SessionLength = openTime.TotalMilliseconds - GetCurrentTime ().TotalMilliseconds,
+				SessionLength = GetCurrentTime ().TotalMilliseconds - openTime.TotalMilliseconds,
 				LengthAtStart = lengthAtStart,
 				LengthDelta = lengthAtEnd - lengthAtStart,
 				LineCountAtStart = lineCountAtStart,

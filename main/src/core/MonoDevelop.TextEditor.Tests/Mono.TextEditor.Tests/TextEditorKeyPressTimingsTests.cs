@@ -50,6 +50,7 @@ namespace Mono.TextEditor.Tests
 			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
 			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
 			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
+			Assert.That (metadata.SessionLength, Is.GreaterThanOrEqualTo (0));
 		}
 	}
 }
