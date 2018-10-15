@@ -477,8 +477,8 @@ namespace Mono.TextEditor
 			}
 		}
 
-		ShowWhitespaces showWhitespaces = ShowWhitespaces.Never;
-		public virtual ShowWhitespaces ShowWhitespaces {
+		MonoDevelop.Ide.Editor.ShowWhitespaces showWhitespaces = MonoDevelop.Ide.Editor.ShowWhitespaces.Never;
+		public virtual MonoDevelop.Ide.Editor.ShowWhitespaces ShowWhitespaces {
 			get {
 				return showWhitespaces;
 			}
@@ -490,8 +490,8 @@ namespace Mono.TextEditor
 			}
 		}
 
-		IncludeWhitespaces includeWhitespaces = IncludeWhitespaces.All;
-		public virtual IncludeWhitespaces IncludeWhitespaces {
+		MonoDevelop.Ide.Editor.IncludeWhitespaces includeWhitespaces = MonoDevelop.Ide.Editor.IncludeWhitespaces.All;
+		public virtual MonoDevelop.Ide.Editor.IncludeWhitespaces IncludeWhitespaces {
 			get {
 				return includeWhitespaces;
 			}
