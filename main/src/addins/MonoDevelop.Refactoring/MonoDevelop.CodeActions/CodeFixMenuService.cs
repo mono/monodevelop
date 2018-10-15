@@ -125,7 +125,18 @@ namespace MonoDevelop.CodeActions
 			AddMenuWithSeparatorIfNeeded (suppressMenu, menu, ref first);
 			AddMenuWithSeparatorIfNeeded (configureMenu, menu, ref first);
 
+			if (!AnalysisOptions.AnalysisEnabled) {
+				if (first)
+					menu.Add (CodeFixMenuEntry.Separator);
+
+				var enableLabel = GettextCatalog.GetString ("Enable Source Analysis");
+				menu.Add (new CodeFixMenuEntry (enableLabel, enableAction));
+				first = false;
+			}
+
 			return menu;
+
+			void enableAction () => AnalysisOptions.AnalysisEnabled.Value = true;
 		}
 
 		static void AddMenuWithSeparatorIfNeeded (CodeFixMenu toAdd, CodeFixMenu into, ref bool first)
