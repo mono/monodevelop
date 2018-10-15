@@ -54,6 +54,7 @@ using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.RoslynServices;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -891,13 +892,56 @@ namespace MonoDevelop.Ide.TypeSystem
 			return path;
 		}
 
+		bool TryGetMetadataReferenceMapping (ProjectId projectId, MetadataReference metadataReference, out MonoDevelop.Projects.DotNetProject mdProject, out string path, out SystemAssembly systemAssemblyOpt)
+		{
+			mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
+			path = GetMetadataPath (metadataReference);
+			systemAssemblyOpt = null;
+			if (mdProject == null || path == null)
+				return false;
+
+			// PERF: Maybe break IAssemblyContext API and add GetAssemblyFromPath.
+			// GetPackageFromPath could be implemented by querying the SystemAssembly's package.
+			var package = mdProject.AssemblyContext.GetPackageFromPath (path);
+			if (package != null) {
+				foreach (var asm in package.Assemblies) {
+					if (asm.Location == path)
+						systemAssemblyOpt = asm;
+				}
+			}
+
+			// This code would handle assemblies like glib-sharp.
+			// Enabling this causes a NRE, as there's no package associated with the SystemAssembly.
+			//if (systemAssemblyOpt == null) {
+			//	try {
+			//		var aName = AssemblyName.GetAssemblyName (path).FullName;
+			//		var isGac = mdProject.AssemblyContext.AssemblyIsInGac (aName);
+			//		if (isGac) {
+			//			systemAssemblyOpt = new SystemAssembly (path, aName);
+			//		}
+			//	} catch {
+			//	}
+			//}
+
+			return true;
+		}
+
 		protected override void ApplyMetadataReferenceAdded (ProjectId projectId, MetadataReference metadataReference)
 		{
-			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
-			var path = GetMetadataPath (metadataReference);
-			if (mdProject == null || path == null)
+			if (!TryGetMetadataReferenceMapping (projectId, metadataReference, out var mdProject, out string path, out var systemAssemblyOpt))
 				return;
+
 			foreach (var r in mdProject.References) {
+				if (systemAssemblyOpt != null) {
+					if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Package) {
+						var nameToCheck = r.SpecificVersion ? systemAssemblyOpt.FullName : systemAssemblyOpt.Name;
+						if (r.Reference == nameToCheck) {
+							LoggingService.LogWarning ("Warning duplicate reference is added " + path);
+							return;
+						}
+					}
+				}
+
 				if (r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path) {
 					LoggingService.LogWarning ("Warning duplicate reference is added " + path);
 					return;
@@ -913,18 +957,36 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			mdProject.AddReference (path);
+			if (systemAssemblyOpt != null) {
+				mdProject.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference (systemAssemblyOpt));
+			}  else {
+				mdProject.AddReference (path);
+			}
+
 			tryApplyState_changedProjects.Add (mdProject);
 			this.OnMetadataReferenceAdded (projectId, metadataReference);
 		}
 
 		protected override void ApplyMetadataReferenceRemoved (ProjectId projectId, MetadataReference metadataReference)
 		{
-			var mdProject = GetMonoProject (projectId) as MonoDevelop.Projects.DotNetProject;
-			var path = GetMetadataPath (metadataReference);
-			if (mdProject == null || path == null)
+			if (!TryGetMetadataReferenceMapping (projectId, metadataReference, out var mdProject, out string path, out var systemAssemblyOpt))
 				return;
-			var item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
+
+			MonoDevelop.Projects.ProjectReference item;
+			// if we're trying to remove a system package, try removing a system package first
+			if (systemAssemblyOpt != null) {
+				item = mdProject.References.FirstOrDefault (r => {
+					if (r.ReferenceType != MonoDevelop.Projects.ReferenceType.Package)
+						return false;
+
+					var nameToCheck = r.SpecificVersion ? systemAssemblyOpt.FullName : systemAssemblyOpt.Name;
+					return r.ReferenceType == MonoDevelop.Projects.ReferenceType.Package && r.Reference == nameToCheck;
+				});
+			} else {
+				// Remove a normal assembly reference.
+				item = mdProject.References.FirstOrDefault (r => r.ReferenceType == MonoDevelop.Projects.ReferenceType.Assembly && r.Reference == path);
+			}
+
 			if (item == null)
 				return;
 			mdProject.References.Remove (item);
