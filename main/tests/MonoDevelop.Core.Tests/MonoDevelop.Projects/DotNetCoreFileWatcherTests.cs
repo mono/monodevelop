@@ -220,6 +220,9 @@ namespace MonoDevelop.Projects
 
 		void FileServiceOnFileRenamed (object sender, FileCopyEventArgs e)
 		{
+			if (!e.IsExternal)
+				return;
+
 			FileService.FileRenamed -= FileServiceOnFileRenamed;
 
 			try {
@@ -234,8 +237,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		Task<FileEventArgs> WaitForSingleDirectoryCreated ()
+		FilePath directoryToBeCreated = FilePath.Null;
+
+		Task<FileEventArgs> WaitForSingleDirectoryCreated (FilePath directory)
 		{
+			directoryToBeCreated = directory;
+
 			directoryCreatedCompletionSource = new TaskCompletionSource<FileEventArgs> ();
 
 			FileService.FileCreated += FileServiceOnFileCreated;
@@ -245,6 +252,11 @@ namespace MonoDevelop.Projects
 
 		void FileServiceOnFileCreated (object sender, FileEventArgs e)
 		{
+			if (directoryToBeCreated.IsNotNull) {
+				if (!e.Any (file => file.FileName == directoryToBeCreated))
+					return;
+			}
+
 			FileService.FileCreated -= FileServiceOnFileCreated;
 
 			try {
@@ -375,12 +387,12 @@ namespace MonoDevelop.Projects
 			await AssertFileAddedToProject (fileAdded, newCSharpFilePath, "Compile");
 
 			// Move directory
+			var renamedDirectory = project.BaseDirectory.Combine ("Files");
 			var directoryRenamed = WaitForSingleDirectoryRenamed ();
-			var directoryCreated = WaitForSingleDirectoryCreated ();
+			var directoryCreated = WaitForSingleDirectoryCreated (renamedDirectory);
 			var directoryRemoved = WaitForSingleDirectoryRemoved ();
 			var combinedDirectoryTask = Task.WhenAll (directoryRenamed, directoryCreated, directoryRemoved);
 
-			var renamedDirectory = project.BaseDirectory.Combine ("Files");
 			var renamedCSharpFileName = renamedDirectory.Combine ("NewCSharpFile.cs");
 			Directory.Move (directory, renamedDirectory);
 
