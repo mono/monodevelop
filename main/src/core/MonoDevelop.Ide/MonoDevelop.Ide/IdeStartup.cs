@@ -455,12 +455,14 @@ namespace MonoDevelop.Ide
 		static bool OnIdle ()
 		{
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
+
 			// OpenDocuments appears when the app is idle.
-			LoggingService.LogWarning ("Showing welcome page");
 			if (!hideWelcomePage) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
 			}
+
+			IdeApp.Workbench.Show ();
 			return false;
 		}
 

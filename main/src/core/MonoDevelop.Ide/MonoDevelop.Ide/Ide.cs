@@ -255,8 +255,8 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
 			monitor.Step (1);
 
-			Counters.Initialization.Trace ("Restoring Workbench State");
-			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
+			Counters.Initialization.Trace ("Realizing Workbench Window");
+			workbench.Realize ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
 			
 			Counters.Initialization.Trace ("Flushing GUI events");
