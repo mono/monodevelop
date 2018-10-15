@@ -207,12 +207,7 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			foreach (var item in base.OnGetContents (type).Concat (Contents.Where (c => type.IsInstanceOfType (c)))) {
-				yield return item;
-			}
-
-			foreach (var r in data.GetViewContent ().GetContents (type))
-				yield return r;
+			return base.OnGetContents (type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
 		}
 
 		public IDisposable OpenUndoGroup ()
