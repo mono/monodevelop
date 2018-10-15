@@ -367,6 +367,10 @@ namespace MonoDevelop.Ide
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
 
+			// This call is important so the current event loop is run before we run the main loop.
+			// On Mac, the OpenDocuments event gets handled here, so we need to get the timeout
+			// it queues before the OnIdle event so we can start opening a solution before
+			// we show the main window.
 			DispatchService.RunPendingEvents ();
 
 			sectionTimings ["PumpEventLoop"] = startupSectionTimer.ElapsedMilliseconds;
