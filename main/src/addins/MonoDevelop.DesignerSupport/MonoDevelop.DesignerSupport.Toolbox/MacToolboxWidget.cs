@@ -90,7 +90,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Initialize ()
 		{
 			flowLayout = new MacToolboxWidgetFlowLayout ();
-			flowLayout.SectionHeadersPinToVisibleBounds = true;
+			flowLayout.SectionHeadersPinToVisibleBounds = false;
 			flowLayout.MinimumInteritemSpacing = 0;
 			flowLayout.MinimumLineSpacing = 0;
 			flowLayout.SectionFootersPinToVisibleBounds = false;
@@ -162,18 +162,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get => collectionViewDelegate.IsShowCategories;
 			set {
 				collectionViewDelegate.IsShowCategories = value;
-				//if (isShowCategories)
-				//{
-				//	flowLayout.HeaderReferenceSize = new CGSize(Frame.Width - 10, 20);
-				//}
-				//else
-				//{
-				//flowLayout.HeaderReferenceSize = CGSize.Empty;
-				//}
-				//ReloadData ();
-				QueueResize ();
-				ScrollToSelectedItem ();
-				//ReloadData ();
+				QueueDraw ();
 			}
 		}
 
@@ -229,7 +218,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public void QueueDraw ()
 		{
-			//NeedsDisplay = true;
 			ReloadData ();
 		}
 
@@ -269,7 +257,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				ToggleSectionCollapse (item.View);
 				item.IsCollapsed = flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
 				toolboxWidgetCategory.IsExpanded = !item.IsCollapsed;
-				ReloadData ();
 			};
 
 			return item.View;
