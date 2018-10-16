@@ -65,31 +65,39 @@ namespace MonoDevelop.Ide.Editor.Extension
 			src = new CancellationTokenSource ();
 		}
 
-		async void DocumentContext_DocumentParsed (object sender, EventArgs e)
+		void DocumentContext_DocumentParsed (object sender, EventArgs e)
 		{
 			CancelDocumentParsedUpdate ();
 			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null || !Editor.Options.ShowFoldMargin)
+			var editor = Editor;
+			if (analysisDocument == null || !editor.Options.ShowFoldMargin)
 				return;
-			var caretLocation = Editor.CaretOffset;
 
 			var outliningService = BlockStructureService.GetService (analysisDocument);
 			if (outliningService == null)
 				return;
+
+			var snapshot = editor.CreateDocumentSnapshot ();
+			var caretLocation = editor.CaretOffset;
 			var token = src.Token;
-			var blockStructure = await outliningService.GetBlockStructureAsync (analysisDocument, token).ConfigureAwait (false);
-			UpdateFoldings (Editor, blockStructure.Spans, caretLocation, token);
+
+			Task.Run (async () => {
+				var blockStructure = await outliningService.GetBlockStructureAsync (analysisDocument, token).ConfigureAwait (false);
+				return UpdateFoldings (snapshot, blockStructure.Spans, caretLocation, (start, length) => editor.CreateFoldSegment (start, length), token);
+			}).ContinueWith (t => {
+				if (!token.IsCancellationRequested)
+					editor.SetFoldings (t.Result);
+			}, Runtime.MainTaskScheduler);
 		}
 
-		static void UpdateFoldings (TextEditor editor, ImmutableArray<BlockSpan> spans, int caretOffset, CancellationToken token = default (CancellationToken))
+		static List<IFoldSegment> UpdateFoldings (IReadonlyTextDocument document, ImmutableArray<BlockSpan> spans, int caretOffset, Func<int, int, IFoldSegment> createFoldSegment, CancellationToken token = default (CancellationToken))
 		{
+			var foldSegments = new List<IFoldSegment> (spans.Length);
 			try {
-				var foldSegments = new List<IFoldSegment> ();
-
 				foreach (var blockSpan in spans) {
 					if (token.IsCancellationRequested)
-						return;
-					if (!blockSpan.IsCollapsible || IsSingleLine (editor, blockSpan))
+						return foldSegments;
+					if (!blockSpan.IsCollapsible || IsSingleLine (document, blockSpan))
 						continue;
 					var type = FoldingType.Unknown;
 					switch (blockSpan.Type) {
@@ -108,7 +116,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					}
 					var start = blockSpan.TextSpan.Start;
 					var end = blockSpan.TextSpan.End;
-					var marker = editor.CreateFoldSegment (start, end - start);
+					var marker = createFoldSegment (start, end - start);
 					if (marker == null)
 						continue;
 					foldSegments.Add (marker);
@@ -117,17 +125,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 					if (blockSpan.TextSpan.Contains (caretOffset))
 						marker.IsCollapsed = false;
 				}
-				Application.Invoke ((o, args) => {
-					if (!token.IsCancellationRequested)
-						editor.SetFoldings (foldSegments);
-				});
 			} catch (OperationCanceledException) {
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
+			return foldSegments;
 		}
 
-		static bool IsSingleLine (TextEditor editor, BlockSpan blockSpan)
+		static bool IsSingleLine (IReadonlyTextDocument editor, BlockSpan blockSpan)
 		{
 			var startLine = editor.GetLineByOffset (blockSpan.TextSpan.Start);
 			return blockSpan.TextSpan.End <= startLine.EndOffsetIncludingDelimiter;
