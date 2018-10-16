@@ -1,6 +1,6 @@
 {
 	"name": "Solarized Dark",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"description": "An artful, dark scheme that's easy on the eyes",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -63,7 +63,7 @@
 		{ "name": "Quick Diff(Dirty)", "color": "yellow" },
 		{ "name": "Quick Diff(Changed)", "color": "green" },
 
-		{ "name": "Brace Matching(Rectangle)", "color": "#0e5465", "secondcolor": "#0e5465" },
+		{ "name": "Brace Matching(Rectangle)", "color": "#134760", "secondcolor": "#134760" },
 		{ "name": "Usages(Rectangle)", "color": "#527F99", "secondcolor": "#527F99", "bordercolor": "#527F99" },
 		{ "name": "Changing usages(Rectangle)", "color": "#996E75", "secondcolor": "#996E75", "bordercolor": "#996E75" },
 
