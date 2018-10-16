@@ -1,6 +1,6 @@
 ﻿﻿{
     "name": "High Contrast Dark",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "High Contrast Dark Style",
     "originator": "Microsoft (http://microsoft.com)",
 
@@ -44,7 +44,7 @@
 
     "colors": [
         { "name": "Bookmarks", "color": "aluminium1", "secondcolor": "aluminium4" },
-        { "name": "Brace Matching(Rectangle)", "color": "aluminium4", "secondcolor": "aluminium4" },
+        { "name": "Brace Matching(Rectangle)", "color": "#305684", "secondcolor": "#305684" },
         { "name": "Breakpoint Marker", "color": "#6f3535", "bordercolor": "#6f3535" },
         { "name": "Breakpoint Marker(Disabled)", "color": "#4d4d4d", "bordercolor": "#4d4d4d" },
         { "name": "Breakpoint Marker(Invalid)", "color": "#604343", "bordercolor": "#604343" },

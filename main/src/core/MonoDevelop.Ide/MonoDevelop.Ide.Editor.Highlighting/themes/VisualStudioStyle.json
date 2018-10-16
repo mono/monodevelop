@@ -1,6 +1,6 @@
 {
 	"name": "Visual Studio",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
@@ -23,7 +23,9 @@
 		{ "name": "Indicator Margin", "color": "#f6f6f6" },
 		{ "name": "Indicator Margin(Separator)", "color": "#f6f6f6" },
 
-		{ "name": "Message Bubble Warning IconMargin", "color": "#e68100", "bordercolor": "#e68100" }
+		{ "name": "Message Bubble Warning IconMargin", "color": "#e68100", "bordercolor": "#e68100" },
+
+		{ "name": "Brace Matching(Rectangle)", "color": "#e2e6d6", "secondcolor": "#e2e6d6" }
 	],
 
 	"text": [
