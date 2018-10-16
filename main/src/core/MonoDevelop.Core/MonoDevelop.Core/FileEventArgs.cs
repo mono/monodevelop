@@ -104,6 +104,11 @@ namespace MonoDevelop.Core
 		public FileCopyEventArgs ()
 		{
 		}
+
+		/// <summary>
+		/// Indicates whether or not user made this change in the IDE as opposed to externally.
+		/// </summary>
+		public bool IsExternal { get; set; }
 	}
 	
 	public class FileCopyEventInfo : System.EventArgs
