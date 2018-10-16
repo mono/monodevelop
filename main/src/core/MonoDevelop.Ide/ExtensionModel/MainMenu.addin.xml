@@ -221,7 +221,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
-		<Separator id = "Separator2" />
+		<SeparatorItem id = "Separator2" />
 		<ItemSet id = "Publish" _label = "Publish" autohide="True" />
 	</ItemSet>
 
