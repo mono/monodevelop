@@ -237,7 +237,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			int ypos = -vadjustment;
 			ToolboxWidgetCategory lastCategory = null;
 			int lastCategoryYpos = 0;
-
 			cr.LineWidth = 1;
 
 			Iterate (ref xpos, ref ypos, (category, itemDimension) => {
