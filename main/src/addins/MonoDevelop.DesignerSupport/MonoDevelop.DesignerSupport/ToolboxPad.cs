@@ -39,6 +39,8 @@ namespace MonoDevelop.DesignerSupport
 	public class ToolboxPad : PadContent
 	{
 		Gtk.Widget widget;
+		Widget xWidget;
+		Toolbox.MacToolbox toolbox;
 
 		protected override void Initialize (IPadWindow container)
 		{
@@ -46,34 +48,39 @@ namespace MonoDevelop.DesignerSupport
 
 			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_TOOLBAR")?.ToLower () == "true";
 			if (nativeEnabled) {
-				Toolbox.MacToolbox toolbox = null;
+
 				Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac).Invoke (() => {
 					toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
 				});
 
-				var wd = Xwt.Toolkit.CurrentEngine.WrapWidget (toolbox, NativeWidgetSizing.DefaultPreferredSize);
-				widget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (wd);
+				xWidget = Xwt.Toolkit.CurrentEngine.WrapWidget (toolbox, NativeWidgetSizing.DefaultPreferredSize);
+				widget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (xWidget);
 
-				toolbox.DragSourceUnset += (s, e) => {
-					Gtk.Drag.SourceUnset (widget);
+				xWidget.CanGetFocus = true;
+				xWidget.Sensitive = true;
+				xWidget.KeyPressed += toolbox.OnKeyPressed;
+				xWidget.KeyReleased += toolbox.KeyReleased;
+
+				xWidget.GotFocus += (s, e) => {
+					toolbox.FocusSelectedView ();
 				};
 
-				toolbox.DragSourceSet += (s, e) => {
-					Gtk.Drag.SourceSet (widget, Gdk.ModifierType.Button1Mask, e, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-				};
 
-				toolbox.DragBegin += (object sender, EventArgs e) => {
-					Gtk.Application.Invoke ((s, ev) => {
-						DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
-					});
-
-				};
+				toolbox.ContentFocused += (s, e) => xWidget.SetFocus ();
 			} else {
 				widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
 			}
-
 		}
-		
+
+		public override void Dispose ()
+		{
+			if (xWidget != null) {
+				xWidget.KeyPressed += toolbox.OnKeyPressed;
+				xWidget.KeyReleased += toolbox.KeyReleased;
+			}
+			base.Dispose ();
+		}
+
 		#region AbstractPadContent implementations
 		
 		public override Control Control {
