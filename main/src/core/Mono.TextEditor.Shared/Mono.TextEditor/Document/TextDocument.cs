@@ -246,6 +246,7 @@ namespace Mono.TextEditor
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
 			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
+			this.VsTextDocument.Dispose ();
 			SyntaxMode = null;
 		}
 
