@@ -46,15 +46,21 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 	{
 		RemoteProcessConnection connection;
 		IRemoteEventListener listener;
+		readonly string assemblyDirectory;
 
 		public ExternalTestRunner ()
 		{
 		}
 
+		public ExternalTestRunner (string assemblyDirectory)
+		{
+			this.assemblyDirectory = assemblyDirectory;
+		}
+
 		public Task Connect (NUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
 		{
 			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), version.ToString (), "NUnitRunner.exe");
-			connection = new RemoteProcessConnection (exePath, executionHandler, console, Runtime.MainSynchronizationContext);
+			connection = new RemoteProcessConnection (exePath, assemblyDirectory, executionHandler, console, Runtime.MainSynchronizationContext);
 			connection.AddListener (this);
 			return connection.Connect ();
 		}
