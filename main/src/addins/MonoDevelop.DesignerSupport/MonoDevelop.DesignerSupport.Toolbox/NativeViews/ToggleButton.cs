@@ -1,12 +1,16 @@
 using System;
 using AppKit;
 using CoreGraphics;
+using Xwt;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	public class ToggleButton : NSButton
+	public class ToggleButton : NSButton, INativeChildView
 	{
-	
+		public event EventHandler Focused;
+		public event EventHandler RequestFocusPreviousItem;
+		public event EventHandler RequestFocusNextItem;
+
 		public ToggleButton () 
 		{
 			BezelStyle = NSBezelStyle.TexturedSquare;
@@ -51,6 +55,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			isFirstResponder = true;
 			NeedsDisplay = true;
+			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}
 
@@ -108,5 +113,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 				context.RestoreGraphicsState ();
 			}
 		}
+
+		#region IEncapsuledView
+
+		public void OnKeyPressed (object s, KeyEventArgs e)
+		{
+
+		}
+
+		public void OnKeyReleased (object s, KeyEventArgs e)
+		{
+
+		}
+
+		#endregion
 	}
 }

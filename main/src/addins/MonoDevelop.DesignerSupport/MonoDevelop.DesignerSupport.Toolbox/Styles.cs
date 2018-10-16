@@ -18,11 +18,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public static NSColor CellBorderSelectedColor { get; private set; }
 		public static NSColor CellBackgroundColor { get; private set; }
 
-
 		public static int SearchTextFieldLineBorderWidth { get; private set; }
 		public static NSColor SearchTextFieldLineBorderColor { get; private set; }
 		public static NSColor SearchTextFieldLineBackgroundColor { get; private set; }
 
+		public static NSColor ClickedButtonFocusedBackgroundColor { get; private set; }
+		public static NSColor ClickedButtonFocusedBorderColor { get; private set; }
+
+		public static NSColor ToggleButtonFocusedBackgroundColor { get; private set; }
 		public static NSColor ToggleButtonHoverBorderColor { get; private set; }
 		public static NSColor ToggleButtonHoverClickedBackgroundColor { get; private set; }
 		public static NSColor ToggleButtonHoverBackgroundColor { get; private set; }
@@ -40,13 +43,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				ToggleButtonHoverClickedBackgroundColor = NSColor.FromRgba (red: 0.22f, green: 0.22f, blue: 0.22f, alpha: 1.0f);
 				ToggleButtonHoverBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
 
+				ToggleButtonFocusedBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
+
 				CellBackgroundSelectedColor = NSColor.FromRgba (red: 0.33f, green: 0.55f, blue: 0.92f, alpha: 1.0f);
 				CellBorderSelectedColor = NSColor.Black;
 				CellBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
 
 				HeaderCellBackgroundSelectedColor = NSColor.FromRgb (0.29f, green: 0.29f, blue: 0.29f);
-
 				HeaderForegroundColor = NSColor.White;
+
+				ClickedButtonFocusedBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
+				ClickedButtonFocusedBorderColor = NSColor.FromRgba (red: 0.21f, green: 0.21f, blue: 0.21f, alpha: 1.0f);
+
 			} else {
 				SearchTextFieldLineBorderColor = NSColor.Black;
 				SearchTextFieldLineBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
@@ -54,6 +62,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				ToggleButtonHoverBorderColor = NSColor.Black;
 				ToggleButtonHoverClickedBackgroundColor = NSColor.FromRgba (red: 0.22f, green: 0.22f, blue: 0.22f, alpha: 1.0f);
 				ToggleButtonHoverBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
+				ToggleButtonFocusedBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
 
 				CellBackgroundSelectedColor = NSColor.FromRgba (red: 0.33f, green: 0.55f, blue: 0.92f, alpha: 1.0f);
 				CellBorderSelectedColor = NSColor.Black;
@@ -61,6 +70,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 				HeaderCellBackgroundSelectedColor = NSColor.FromRgb (0.29f, green: 0.29f, blue: 0.29f);
 				HeaderForegroundColor = NSColor.White;
+
+				ClickedButtonFocusedBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
+				ClickedButtonFocusedBorderColor = NSColor.FromRgba (red: 0.21f, green: 0.21f, blue: 0.21f, alpha: 1.0f);
+
 			}
 		}
 	}

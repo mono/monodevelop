@@ -1,14 +1,24 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using Xwt;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	public class ExpanderButton : NSButton
+	public class ExpanderButton : NSButton, INativeChildView
 	{
 		const int Margin = 5;
 		static CGPoint textPoint = new CGPoint (7, 5);
+
+		public event EventHandler Focused;
+
+		public override bool BecomeFirstResponder ()
+		{
+			Focused?.Invoke (this, EventArgs.Empty);
+			return base.BecomeFirstResponder ();
+		}
 
 		public ExpanderButton ()
 		{
@@ -42,6 +52,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 				context.RestoreGraphicsState ();
 			}
 		}
+
+		#region IEncapsuledView
+
+
+		public void OnKeyPressed (object s, KeyEventArgs e)
+		{
+
+		}
+
+		public void OnKeyReleased (object s, KeyEventArgs e)
+		{
+
+		}
+
+		#endregion
 
 		public bool Visible {
 			get { return !Hidden; }
