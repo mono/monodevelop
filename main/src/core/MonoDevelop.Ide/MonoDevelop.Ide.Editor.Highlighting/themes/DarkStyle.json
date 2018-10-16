@@ -1,6 +1,6 @@
 ﻿{
 	"name": "Dark",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "A dark scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -69,7 +69,7 @@
 		{ "name": "Quick Diff(Dirty)", "color": "butter2" },
 		{ "name": "Quick Diff(Changed)", "color": "chameleon2" },
 
-		{ "name": "Brace Matching(Rectangle)", "color": "aluminium4", "secondcolor": "aluminium4" },
+		{ "name": "Brace Matching(Rectangle)", "color": "#476a93", "secondcolor": "#476a93" },
 		{ "name": "Usages(Rectangle)", "color": "skyblue3", "secondcolor": "skyblue3", "bordercolor": "skyblue2" },
 		{ "name": "Changing usages(Rectangle)", "color": "chameleon4", "secondcolor": "chameleon4", "bordercolor": "chameleon3" },
 

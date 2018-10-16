@@ -1,6 +1,6 @@
 {
 	"name": "Nightshade",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"description": "An inky scheme with vibrant highlights",
 	"originator": "Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -77,7 +77,7 @@
 		{ "name": "Quick Diff(Dirty)", "color": "butter2" },
 		{ "name": "Quick Diff(Changed)", "color": "StringVim" },
 
-		{ "name": "Brace Matching(Rectangle)", "color": "#517297", "secondcolor": "#517297" },
+		{ "name": "Brace Matching(Rectangle)", "color": "#305684", "secondcolor": "#305684" },
 		{ "name": "Usages(Rectangle)", "color": "#527F99", "secondcolor": "#527F99", "bordercolor": "#527F99" },
 		{ "name": "Changing usages(Rectangle)", "color": "#996E75", "secondcolor": "#996E75", "bordercolor": "#996E75" },
 

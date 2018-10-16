@@ -1,6 +1,6 @@
 {
 	"name": "Monokai",
-	"version": "1.3.4",
+	"version": "1.3.5",
 	"description": "A smooth, dusky scheme",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -65,7 +65,7 @@
 		{ "name": "Quick Diff(Dirty)", "color": "monokai-string" },
 		{ "name": "Quick Diff(Changed)", "color": "#A4E22E" },
 
-		{ "name": "Brace Matching(Rectangle)", "color": "#517297", "secondcolor": "#517297" },
+		{ "name": "Brace Matching(Rectangle)", "color": "#517295", "secondcolor": "#517295" },
 		{ "name": "Usages(Rectangle)", "color": "#527F99", "secondcolor": "#527F99", "bordercolor": "#527F99" },
 		{ "name": "Changing usages(Rectangle)", "color": "#996E75", "secondcolor": "#996E75", "bordercolor": "#996E75" },
 
