@@ -136,32 +136,24 @@ namespace MonoDevelop.CSharp.Project
 
 			var options = new CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
-				false,
-				null,
-				project.MainClass,
-				"Script",
-				null,
-				OptimizationLevel.Debug,
-				GenerateOverflowChecks,
-				UnsafeCode,
-				null,
-				ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
-				ImmutableArray<byte>.Empty,
-				null,
-				Microsoft.CodeAnalysis.Platform.AnyCpu,
-				ReportDiagnostic.Default,
-				WarningLevel,
-				null,
-				false,
+				mainTypeName: project.MainClass,
+				scriptClassName: "Script",
+				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
+				checkOverflow: GenerateOverflowChecks,
+				allowUnsafe: UnsafeCode,
+				cryptoKeyFile: ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
+				cryptoPublicKey: ImmutableArray<byte>.Empty,
+				platform: GetPlatform (),
+				generalDiagnosticOption: TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default,
+				warningLevel: WarningLevel,
+				specificDiagnosticOptions: GetSpecificDiagnosticOptions (),
+				concurrentBuild: true,
 				metadataReferenceResolver: metadataReferenceResolver,
 				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
 				strongNameProvider: new DesktopStrongNameProvider ()
 			);
 
-			return options.WithPlatform (GetPlatform ())
-				.WithGeneralDiagnosticOption (TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default)
-				.WithOptimizationLevel (Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug)
-				.WithSpecificDiagnosticOptions (GetSpecificDiagnosticOptions());
+			return options;
 		}
 
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
