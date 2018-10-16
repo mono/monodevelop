@@ -56,10 +56,7 @@
 	
 	<!-- Publish section -->
 		
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
-	</Extension>
+	<ItemSet id = "Publish" _label = "Publish" autohide="True" />
 		
 	<!-- Add section -->
 					
