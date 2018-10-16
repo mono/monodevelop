@@ -842,7 +842,7 @@
 				_label="Runtime Options"
 				class="MonoDevelop.DotNetCore.DotNetCoreRuntimeOptionsPanel" />
 			<Panel
-				id="DotNetCoreRuntimeOptionsPanel"
+				id="DotNetCoreMSBuildOptionsPanel"
 				replaces="MSBuildOptionsPanel"
 				_label="Build"
 				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
