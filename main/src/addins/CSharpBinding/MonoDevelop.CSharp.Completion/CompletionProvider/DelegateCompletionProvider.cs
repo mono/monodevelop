@@ -272,8 +272,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					);
 					//item.CompletionCategory = category;
 					if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
-						context.AddItem (item);
-						context.SuggestionModeItem = item;
+						context.AddItem (item.WithRules (item.Rules.WithMatchPriority (int.MaxValue)));
 					}
 
 					//if (LanguageVersion.Major >= 5) {
@@ -296,8 +295,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			item = CreateNewMethodCreationItem (parent, semanticModel, delegateType, position, optDelegateName, delegateMethod, cancellationToken);
 			// item.CompletionCategory = category;
 			if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
-				context.AddItem (item);
-				context.SuggestionModeItem = item;
+				context.AddItem (item.WithRules (item.Rules.WithMatchPriority (int.MaxValue)));
 			}
 		}
 
