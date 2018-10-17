@@ -10,18 +10,18 @@ namespace MonoDevelop.AspNetCore.Dialogs
 {
 	class PublishToFolderDialog : Dialog
 	{
-		VBox MainVBox;
-		Label PublishYourAppLabel;
-		VBox BrowseVBox;
-		Label ChooseLabel;
-		HBox BrowseEntryHBox;
-		TextEntry PathEntry;
-		Button BrowseButton;
-		DialogButton PublishButton;
-		DialogButton CancelButton;
-		HBox MessageBox;
-		Label MessageLabel;
-		ImageView MessageIcon;
+		VBox mainVBox;
+		Label publishYourAppLabel;
+		VBox browseVBox;
+		Label chooseLabel;
+		HBox browseEntryHBox;
+		TextEntry pathEntry;
+		Button browseButton;
+		DialogButton publishButton;
+		DialogButton cancelButton;
+		HBox messageBox;
+		Label messageLabel;
+		ImageView messageIcon;
 		Uri BinBaseUri => new Uri (Path.Combine (publishCommandItem.Project.BaseDirectory, "bin"));
 
 		readonly PublishCommandItem publishCommandItem;
@@ -41,28 +41,28 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			Name = "MainWindow";
 			Title = GettextCatalog.GetString ("Publish to Folder");
 			Resizable = false;
-			MainVBox = new VBox {
-				Name = "MainVBox",
+			mainVBox = new VBox {
+				Name = "mainVBox",
 				Spacing = 6
 			};
 
-			PublishYourAppLabel = new Label {
+			publishYourAppLabel = new Label {
 				Name = "publishYourAppLabel",
 				Text = GettextCatalog.GetString ("Publish your app to a folder or a file share")
 			};
-			MainVBox.PackStart (PublishYourAppLabel);
-			BrowseVBox = new VBox {
-				Name = "BrowseVBox",
+			mainVBox.PackStart (publishYourAppLabel);
+			browseVBox = new VBox {
+				Name = "browseVBox",
 				Spacing = 6
 			};
-			BrowseVBox.MarginTop = 20;
-			ChooseLabel = new Label {
-				Name = "ChooseLabel",
+			browseVBox.MarginTop = 20;
+			chooseLabel = new Label {
+				Name = "chooseLabel",
 				Text = GettextCatalog.GetString ("Choose a folder:")
 			};
-			BrowseVBox.PackStart (ChooseLabel);
-			BrowseEntryHBox = new HBox {
-				Name = "BrowseEntryHBox",
+			browseVBox.PackStart (chooseLabel);
+			browseEntryHBox = new HBox {
+				Name = "browseEntryHBox",
 				Spacing = 4
 			};
 			var defaultDirectory = publishCommandItem.Project.GetActiveConfiguration () == null
@@ -72,47 +72,47 @@ namespace MonoDevelop.AspNetCore.Dialogs
 								publishCommandItem.Project.GetActiveConfiguration ());
 			//make it relative by default
 			defaultDirectory = BinBaseUri.MakeRelativeUri (new Uri (defaultDirectory)).ToString ();
-			PathEntry = new TextEntry {
-				Name = "PathEntry",
+			pathEntry = new TextEntry {
+				Name = "pathEntry",
 				Text = defaultDirectory
 			};
-			PathEntry.Changed += PathEntry_Changed;
-			PathEntry.LostFocus += (sender, e) => {
-				PublishButton.Sensitive = !string.IsNullOrEmpty (PathEntry.Text) && !MessageBox.Visible;
+			pathEntry.Changed += pathEntry_Changed;
+			pathEntry.LostFocus += (sender, e) => {
+				publishButton.Sensitive = !string.IsNullOrEmpty (pathEntry.Text) && !messageBox.Visible;
 			};
-			BrowseEntryHBox.PackStart (PathEntry, expand: true);
-			BrowseButton = new Button {
-				Name = "BrowseButton",
+			browseEntryHBox.PackStart (pathEntry, expand: true);
+			browseButton = new Button {
+				Name = "browseButton",
 				Label = GettextCatalog.GetString ("Browse")
 			};
-			BrowseButton.Clicked += BrowseButton_Clicked;
-			BrowseEntryHBox.PackEnd (BrowseButton);
-			BrowseVBox.PackStart (BrowseEntryHBox);
+			browseButton.Clicked += browseButton_Clicked;
+			browseEntryHBox.PackEnd (browseButton);
+			browseVBox.PackStart (browseEntryHBox);
 
-			MessageBox = new HBox ();
-			MessageBox.Hide ();
-			MessageLabel = new Label ();
-			MessageIcon = new ImageView ();
-			MessageLabel.Text = GettextCatalog.GetString ("The path provided is not a valid folder path.");
-			MessageIcon.Image = ImageService.GetIcon (Gtk.Stock.Cancel, Gtk.IconSize.Menu);//.WithStyles (sensitive ? "" : "disabled");
-			MessageBox.PackStart (MessageIcon);
-			MessageBox.PackStart (MessageLabel);
-			MainVBox.PackStart (BrowseVBox);
-			MainVBox.PackEnd (MessageBox);
+			messageBox = new HBox ();
+			messageBox.Hide ();
+			messageLabel = new Label ();
+			messageIcon = new ImageView ();
+			messageLabel.Text = GettextCatalog.GetString ("The path provided is not a valid folder path.");
+			messageIcon.Image = ImageService.GetIcon (Gtk.Stock.Cancel, Gtk.IconSize.Menu);//.WithStyles (sensitive ? "" : "disabled");
+			messageBox.PackStart (messageIcon);
+			messageBox.PackStart (messageLabel);
+			mainVBox.PackStart (browseVBox);
+			mainVBox.PackEnd (messageBox);
 
-			PublishButton = new DialogButton (GettextCatalog.GetString ("Publish"), Command.Ok);
-			CancelButton = new DialogButton (GettextCatalog.GetString ("Cancel"), Command.Close);
-			Content = MainVBox;
-			Buttons.Add (PublishButton);
-			Buttons.Add (CancelButton);
+			publishButton = new DialogButton (GettextCatalog.GetString ("Publish"), Command.Ok);
+			cancelButton = new DialogButton (GettextCatalog.GetString ("Cancel"), Command.Close);
+			Content = mainVBox;
+			Buttons.Add (publishButton);
+			Buttons.Add (cancelButton);
 		}
 
-		void PathEntry_Changed (object sender, EventArgs e)
+		void pathEntry_Changed (object sender, EventArgs e)
 		{
-			if (Uri.IsWellFormedUriString (PathEntry.Text, UriKind.RelativeOrAbsolute))
-				MessageBox.Hide ();
+			if (Uri.IsWellFormedUriString (pathEntry.Text, UriKind.RelativeOrAbsolute))
+				messageBox.Hide ();
 			else
-				MessageBox.Show ();
+				messageBox.Show ();
 		}
 
 
@@ -120,33 +120,33 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		{
 			if (cmd == Command.Ok) {
 				publishCommandItem.Profile = new ProjectPublishProfile {
-					PublishUrl = PathEntry.Text,
+					PublishUrl = pathEntry.Text,
 					TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
 					LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration (),
 					LastUsedPlatform = publishCommandItem.Project.GetActivePlatform ()
 				};
 
 				PublishToFolderRequested?.Invoke (this, publishCommandItem);
-				PublishButton.Sensitive = false;
+				publishButton.Sensitive = false;
 				return;
 			}
 
 			base.OnCommandActivated (cmd);
 		}
 
-		void BrowseButton_Clicked (object sender, EventArgs e)
+		void browseButton_Clicked (object sender, EventArgs e)
 		{
 			var fileDialog = new Components.SelectFolderDialog (GettextCatalog.GetString ("Publish to Folder"), Components.FileChooserAction.SelectFolder) {
 				SelectMultiple = false,
-				CurrentFolder = PathEntry.Text
+				CurrentFolder = pathEntry.Text
 			};
 			fileDialog.Run ();
-			PathEntry.Text = BinBaseUri.MakeRelativeUri (new Uri (fileDialog.SelectedFile)).ToString ();
+			pathEntry.Text = BinBaseUri.MakeRelativeUri (new Uri (fileDialog.SelectedFile)).ToString ();
 		}
 
 		protected override void Dispose (bool disposing)
 		{
-			BrowseButton.Clicked -= BrowseButton_Clicked;
+			browseButton.Clicked -= browseButton_Clicked;
 
 			base.Dispose (disposing);
 		}
