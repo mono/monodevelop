@@ -142,6 +142,11 @@ namespace MonoDevelop.Debugger
 		{
 			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			info.Enabled = target != null && !(target is Workspace) && IdeApp.ProjectOperations.CanDebug (target);
+
+			if (target is Solution)
+				info.Text = GettextCatalog.GetString ("Start Debugging Solution");
+			else if (target is Project)
+				info.Text = GettextCatalog.GetString ("Start Debugging Project");
 		}
 	}
 	
