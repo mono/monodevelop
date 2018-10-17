@@ -39,7 +39,6 @@
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderCommandHandler.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderProfilesCommandHandler.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderBaseCommandHandler.cs" />
-    <Compile Include="MonoDevelop.AspNetCore\Counters.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
