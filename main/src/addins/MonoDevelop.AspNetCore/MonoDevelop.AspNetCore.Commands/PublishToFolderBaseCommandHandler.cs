@@ -12,6 +12,7 @@ using MonoDevelop.AspNetCore.Dialogs;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Core.ProgressMonitoring;
 using Xwt;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -73,41 +74,53 @@ namespace MonoDevelop.AspNetCore.Commands
 		public async Task Publish (PublishCommandItem item)
 		{
 			using (var progressMonitor = CreateProgressMonitor ()) {
-				try {
-					IdeApp.Workbench.SaveAll ();
-					if (!DotNetCoreRuntime.IsInstalled) {
-						progressMonitor.ReportError (GettextCatalog.GetString (".NET Core Runtime not installed"));
-						return;
-					}
-					var dotnetPath = DotNetCoreRuntime.FileName;
-					progressMonitor.BeginTask ("dotnet publish", 1);
-					var process = Runtime.ProcessService.StartConsoleProcess (
-						dotnetPath,
-						BuildArgs (item),
-						item.Project.BaseDirectory,
-						consoleMonitor.Console);
+				var counterMetadata = new AspNetCoreCounterMetadata ();
 
-					using (progressMonitor.CancellationToken.Register (process.Cancel)) {
-						await process.Task;
-					}
+				using (Counters.PublishToFolder.BeginTiming (counterMetadata)) {
+					try {
 
-					if (!progressMonitor.CancellationToken.IsCancellationRequested) {
-						if (process.ExitCode != 0) {
-							progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
-							LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {process.ExitCode}");
-						} else {
-							OpenFolder (item.Profile.PublishUrl);
-							if (!item.IsReentrant)
-								item.Project.CreatePublishProfileFile (item.Profile);
+						IdeApp.Workbench.SaveAll ();
+						if (!DotNetCoreRuntime.IsInstalled) {
+							progressMonitor.ReportError (GettextCatalog.GetString (".NET Core Runtime not installed"));
+							counterMetadata.SetFailure ();
+							return;
 						}
+						var dotnetPath = DotNetCoreRuntime.FileName;
+						progressMonitor.BeginTask ("dotnet publish", 1);
+						var process = Runtime.ProcessService.StartConsoleProcess (
+							dotnetPath,
+							BuildArgs (item),
+							item.Project.BaseDirectory,
+							consoleMonitor.Console);
+
+						using (progressMonitor.CancellationToken.Register (process.Cancel)) {
+							await process.Task;
+						}
+
+						if (!progressMonitor.CancellationToken.IsCancellationRequested) {
+							if (process.ExitCode != 0) {
+								counterMetadata.SetFailure ();
+								progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
+								LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {process.ExitCode}");
+							} else {
+								counterMetadata.SetSuccess ();
+								OpenFolder (item.Profile.PublishUrl);
+								if (!item.IsReentrant)
+									item.Project.CreatePublishProfileFile (item.Profile);
+							}
+						} else {
+							counterMetadata.SetUserCancel ();
+						}
+
+						CloseDialog ();
+						progressMonitor.EndTask ();
+					} catch (OperationCanceledException) {
+						throw;
+					} catch (Exception ex) {
+						counterMetadata.SetUserFault ();
+						progressMonitor.Log.WriteLine (ex.Message);
+						LoggingService.LogError ("Failed to exexute dotnet publish.", ex);
 					}
-					CloseDialog ();
-					progressMonitor.EndTask ();
-				} catch (OperationCanceledException) {
-					throw;
-				} catch (Exception ex) {
-					progressMonitor.Log.WriteLine (ex.Message);
-					LoggingService.LogError ("Failed to exexute dotnet publish.", ex);
 				}
 			}
 		}
