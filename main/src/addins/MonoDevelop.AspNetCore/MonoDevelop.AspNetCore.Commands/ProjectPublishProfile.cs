@@ -3,6 +3,7 @@ using System.Xml.Serialization;
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using System.Text;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -113,6 +114,33 @@ namespace MonoDevelop.AspNetCore.Commands
 				LoggingService.LogError ("Failed to load {0}.", file, ex);
 				return null;
 			}
+		}
+
+		public static string WriteModel (ProjectPublishProfile profile)
+		{
+			string profileFileContents = null;
+			var ns = new XmlSerializerNamespaces ();
+			ns.Add ("", "http://schemas.microsoft.com/developer/msbuild/2003");
+			var xmlSerializer = new XmlSerializer (profile.GetType ());
+			using (var stream = new MemoryStream ()) {
+				using (var xmlWriter = new XmlTextWriter (stream, Encoding.UTF8) { Formatting = Formatting.Indented }) {
+					xmlWriter.WriteStartDocument ();
+					xmlWriter.WriteStartElement ("Project");
+					xmlWriter.WriteAttributeString ("ToolsVersion", "4.0");
+					xmlWriter.WriteAttributeString ("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
+					xmlSerializer.Serialize (xmlWriter, profile, ns);
+					xmlWriter.WriteEndElement ();
+					xmlWriter.WriteEndDocument ();
+					xmlWriter.Flush ();
+					stream.Position = 0;
+
+					using (var reader = new StreamReader (stream)) {
+						profileFileContents = reader.ReadToEnd ();
+					}
+				}
+			}
+
+			return profileFileContents;
 		}
 	}
 }
