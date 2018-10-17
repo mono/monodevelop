@@ -508,6 +508,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (triggerInfo.TriggerCharacter == '_' && triggerWordLength == 1)
 				result.AutoSelect = false;
+			if (triggerInfo.TriggerCharacter == ' ')
+				result.AutoCompleteEmptyMatch = true;
 
 			return result;
 		}
