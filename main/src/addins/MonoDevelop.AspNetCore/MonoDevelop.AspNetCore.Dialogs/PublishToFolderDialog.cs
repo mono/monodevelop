@@ -78,9 +78,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Text = defaultDirectory
 			};
 			pathEntry.Changed += pathEntry_Changed;
-			pathEntry.LostFocus += (sender, e) => {
-				publishButton.Sensitive = !string.IsNullOrEmpty (pathEntry.Text) && !messageBox.Visible;
-			};
+			pathEntry.LostFocus += PathEntry_LostFocus;
 			browseEntryHBox.PackStart (pathEntry, expand: true);
 			browseButton = new Button {
 				Name = "browseButton",
@@ -110,12 +108,16 @@ namespace MonoDevelop.AspNetCore.Dialogs
 
 		void pathEntry_Changed (object sender, EventArgs e)
 		{
-			if (Uri.IsWellFormedUriString (pathEntry.Text, UriKind.RelativeOrAbsolute))
+			if (Uri.IsWellFormedUriString (pathEntry.Text, UriKind.RelativeOrAbsolute) && !string.IsNullOrEmpty (pathEntry.Text))
 				messageBox.Hide ();
 			else
 				messageBox.Show ();
 		}
 
+		void PathEntry_LostFocus (object sender, EventArgs e)
+		{
+			publishButton.Sensitive = !messageBox.Visible;
+		}
 
 		protected override void OnCommandActivated (Command cmd)
 		{
@@ -147,6 +149,8 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		protected override void Dispose (bool disposing)
 		{
 			browseButton.Clicked -= browseButton_Clicked;
+			pathEntry.Changed -= pathEntry_Changed;
+			pathEntry.LostFocus -= PathEntry_LostFocus;
 
 			base.Dispose (disposing);
 		}
