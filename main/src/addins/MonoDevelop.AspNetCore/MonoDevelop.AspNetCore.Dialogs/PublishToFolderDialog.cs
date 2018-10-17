@@ -129,7 +129,6 @@ namespace MonoDevelop.AspNetCore.Dialogs
 
 				PublishToFolderRequested?.Invoke (this, publishCommandItem);
 				publishButton.Sensitive = false;
-				return;
 			}
 
 			base.OnCommandActivated (cmd);

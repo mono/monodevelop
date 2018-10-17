@@ -24,19 +24,19 @@ namespace MonoDevelop.AspNetCore.Commands
 		protected override async void Run (object dataItem)
 		{
 			try {
+
 				if (!(dataItem is PublishCommandItem publishCommandItem)) {
 					dialog = new PublishToFolderDialog (new PublishCommandItem (project, null));
 					dialog.PublishToFolderRequested += Dialog_PublishToFolderRequested;
 					var parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
-					if (dialog.Run (parent) == Xwt.Command.Close) {
-						CloseDialog ();
-					}
+					var result = dialog.Run (parent);
+					CloseDialog ();
 				} else {
 					await Publish (publishCommandItem);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Failed to publish project", ex);
-			}
+			} 
 		}
 
 		void CloseDialog ()
