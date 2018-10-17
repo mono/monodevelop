@@ -65,7 +65,8 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "browseEntryHBox",
 				Spacing = 4
 			};
-			var defaultDirectory = publishCommandItem.Project.GetActiveConfiguration () == null
+			var activeConfiguration = publishCommandItem.Project.GetActiveConfiguration ();
+			var defaultDirectory = activeConfiguration == null
 				? BinBaseUri.ToString ()
 				: Path.Combine (BinBaseUri.ToString (),
 								publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),

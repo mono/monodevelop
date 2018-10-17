@@ -11,6 +11,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.AspNetCore.Dialogs;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Core.ProgressMonitoring;
+using Xwt;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -26,7 +27,8 @@ namespace MonoDevelop.AspNetCore.Commands
 				if (!(dataItem is PublishCommandItem publishCommandItem)) {
 					dialog = new PublishToFolderDialog (new PublishCommandItem (project, null));
 					dialog.PublishToFolderRequested += Dialog_PublishToFolderRequested;
-					if (dialog.Run () == Xwt.Command.Close) {
+					var parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+					if (dialog.Run (parent) == Xwt.Command.Close) {
 						CloseDialog ();
 					}
 				} else {
