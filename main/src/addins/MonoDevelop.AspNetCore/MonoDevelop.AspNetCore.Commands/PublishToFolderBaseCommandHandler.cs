@@ -141,7 +141,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		ProgressMonitor CreateProgressMonitor ()
 		{
 			consoleMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				"dotnet publish",
+				"MonoDevelop.Publish",
 				GettextCatalog.GetString ("Publishing to folder..."),
 				Stock.Console,
 				bringToFront: false,
