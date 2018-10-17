@@ -11,9 +11,9 @@ namespace MonoDevelop.AspNetCore.Commands
 			this.Profile = profile;
 		}
 
-		public bool IsReentrant { get; private set; }
+		public bool IsReentrant { get; }
 
-		public DotNetProject Project { get; private set; }
+		public DotNetProject Project { get;  }
 
 		public ProjectPublishProfile Profile { get; set; }
 	}
