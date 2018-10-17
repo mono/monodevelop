@@ -446,11 +446,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public void Insert (TextEditor editor, DocumentContext context)
 		{
 			var handler = context.GetContent<ICodeTemplateHandler> ();
-			if (handler != null) {
-				handler.InsertTemplate (this, editor, context);
-			} else {
-				InsertTemplateContents (editor, context);
-			}	
+			using (var undo = editor.OpenUndoGroup ()) {
+				editor.EnsureCaretIsNotVirtual ();
+				if (handler != null) {
+					handler.InsertTemplate (this, editor, context);
+				} else {
+					InsertTemplateContents (editor, context);
+				}
+			}
 		}
 		
 		/// <summary>
@@ -459,7 +462,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public TemplateResult InsertTemplateContents (TextEditor editor, DocumentContext context)
 		{
 			var data = editor;
-			
 			int offset = data.CaretOffset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
