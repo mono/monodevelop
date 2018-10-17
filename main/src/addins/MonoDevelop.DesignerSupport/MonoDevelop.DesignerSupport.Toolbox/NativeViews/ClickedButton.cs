@@ -9,7 +9,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
-		public override CGSize IntrinsicContentSize => new CGSize (26, 26);
+		public override CGSize IntrinsicContentSize => new CGSize (25, 25);
 
 		bool isFirstResponder;
 
@@ -20,8 +20,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			SetButtonType (NSButtonType.OnOff);
 			Bordered = false;
 			Title = "";
-			WantsLayer = true;
-			Layer.BackgroundColor = NSColor.Clear.CGColor;
 		}
 
 		NSTrackingArea trackingArea;
@@ -68,24 +66,43 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			NeedsDisplay = true;
 		}
 
+		//focused -> #505050 - Line ->#494949
+		//focus encima + mouse over ##565656 - #424242
+		//mouse over -> #595959 - #333133
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
 
-			if (isMouseHover) {
-				var path = NSBezierPath.FromRoundedRect (dirtyRect,Styles.ToggleButtonCornerRadius, Styles.ToggleButtonCornerRadius);
-				path.ClosePath ();
-				path.LineWidth = Styles.ToggleButtonLineWidth;
-				Styles.ToggleButtonHoverBorderColor.Set ();
-				path.Stroke ();
-				return;
+			NSColor backgroundColor = null;
+			NSColor borderColor = null;
+			if (isFirstResponder && isMouseHover) {
+				backgroundColor = Styles.ClickedButtonHoverFocusedBackgroundColor;
+				borderColor = Styles.ClickedButtonHoverFocusedBorderColor;
+			} else if (isFirstResponder) {
+				backgroundColor = Styles.ClickedButtonFocusedBackgroundColor;
+				borderColor = Styles.ClickedButtonFocusedBorderColor;
+			} else if (isMouseHover) {
+				backgroundColor = Styles.ClickedButtonHoverBackgroundColor;
+				borderColor = Styles.ClickedButtonHoverBorderColor;
 			}
-			if (isFirstResponder) {
+
+			if (backgroundColor != null) {
 				var path = NSBezierPath.FromRoundedRect (dirtyRect, Styles.ToggleButtonCornerRadius, Styles.ToggleButtonCornerRadius);
 				path.ClosePath ();
+				backgroundColor.Set ();
+				path.Fill ();
 				path.LineWidth = Styles.ToggleButtonLineWidth;
-				Styles.ToggleButtonHoverBorderColor.Set ();
+				borderColor.Set ();
 				path.Stroke ();
+			}
+
+			if (Image != null) {
+				var startX = (Frame.Width - Image.Size.Width) / 2;
+				var startY = (Frame.Width - Image.Size.Width) / 2;
+				var context = NSGraphicsContext.CurrentContext;
+				context.SaveGraphicsState ();
+				Image.Draw (new CGRect (startX, startY, Image.Size.Width, Image.Size.Height));
+				context.RestoreGraphicsState ();
 			}
 		}
 

@@ -69,7 +69,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			AddArrangedSubview (horizontalStackView);
 
-			horizontalStackView.EdgeInsets = new NSEdgeInsets (7, 7, 7, 2);
+			horizontalStackView.EdgeInsets = new NSEdgeInsets (7, 7, 7, 7);
 
 			//Horizontal container
 			filterEntry = new NativeViews.SearchTextField ();

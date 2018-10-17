@@ -8,18 +8,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	public class ToggleButton : NSButton, INativeChildView
 	{
 		public event EventHandler Focused;
-		public event EventHandler RequestFocusPreviousItem;
-		public event EventHandler RequestFocusNextItem;
 
 		public ToggleButton () 
 		{
+			Title = "";
 			BezelStyle = NSBezelStyle.TexturedSquare;
 			SetButtonType (NSButtonType.OnOff);
-			Bordered = false;
-			Title = "";
-			WantsLayer = true;
-			Layer.BackgroundColor = NSColor.Clear.CGColor;
 			FocusRingType = NSFocusRingType.None;
+			Bordered = false;
 		}
 
 		NSTrackingArea trackingArea;
@@ -66,7 +62,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			return base.ResignFirstResponder ();
 		}
 
-		public override CGSize IntrinsicContentSize => new CGSize (26, 26);
+		public override CGSize IntrinsicContentSize => new CGSize (25, 25);
 
 		public bool Visible {
 			get { return !Hidden; }
@@ -82,26 +78,45 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			}
 		}
 
+		//Over #3F3F3F - #212121
+		//Focused #494949 - #282828
+		//Over+Focused #393939 - #191919
+		//On #323232 -  #1D1D1D
+		//OnHover #363636 - #222222
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
 
-			if (isMouseHover || isFirstResponder || State == NSCellStateValue.On) {
+			NSColor backgroundColor = null;
+			NSColor borderColor = null;
+
+			if (State == NSCellStateValue.On && isFirstResponder) {
+				backgroundColor = Styles.ToggleButtonOnFocusedBackgroundColor;
+				borderColor = Styles.ToggleButtonOnFocusedBorderColor;
+			} else if (State == NSCellStateValue.On) {
+				backgroundColor = Styles.ToggleButtonOnBackgroundColor;
+				borderColor = Styles.ToggleButtonOnBorderColor;
+			} else if (isFirstResponder && isMouseHover) {
+				backgroundColor = Styles.ToggleButtonHoverFocusedBackgroundColor;
+				borderColor = Styles.ToggleButtonHoverFocusedBorderColor;
+			} else if (isFirstResponder) {
+				backgroundColor = Styles.ToggleButtonFocusedBackgroundColor;
+				borderColor = Styles.ToggleButtonFocusedBorderColor;
+			} else if (isMouseHover) {
+				backgroundColor = Styles.ToggleButtonHoverBackgroundColor;
+				borderColor = Styles.ToggleButtonHoverBorderColor;
+			}
+
+			if (backgroundColor != null) {
 				var path = NSBezierPath.FromRoundedRect (dirtyRect, Styles.ToggleButtonCornerRadius, Styles.ToggleButtonCornerRadius);
 				path.ClosePath ();
-				path.LineWidth = Styles.ToggleButtonLineWidth;
-				if (State == NSCellStateValue.On) {
-					Styles.ToggleButtonHoverClickedBackgroundColor.Set ();
-				} else {
-					Styles.ToggleButtonHoverBackgroundColor.Set ();
-				}
 
+				backgroundColor.Set ();
 				path.Fill ();
-				Styles.ToggleButtonHoverBorderColor.Set ();
+			
+				path.LineWidth = Styles.ToggleButtonLineWidth;
+				borderColor.Set ();
 				path.Stroke ();
-			} else {
-				NSColor.Clear.Set ();
-				NSBezierPath.FillRect (Bounds);
 			}
 
 			if (Image != null) {
