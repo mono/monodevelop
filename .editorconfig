@@ -95,4 +95,4 @@ csharp_style_throw_expression = true:suggestion
 csharp_style_conditional_delegate_call = true:suggestion
 
 # Avoid redundant accessibility modifiers when they're default
-dotnet_style_require_accessibility_modifiers = true:
+dotnet_style_require_accessibility_modifiers = omit_if_default:info
