@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using MonoDevelop.AspNetCore.Commands;
-using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -17,7 +14,7 @@ namespace MonoDevelop.AspNetCore
 	{
 		public static IEnumerable<ProjectPublishProfile> GetPublishProfiles (this DotNetProject project)
 		{
-			var profileFiles = Directory.GetFiles (project.BaseDirectory.Combine ("Properties", "PublishProfiles"), "*.pubxml");
+			var profileFiles = Directory.EnumerateFiles (project.BaseDirectory.Combine ("Properties", "PublishProfiles"), "*.pubxml");
 
 			foreach (var file in profileFiles) {
 				var profile = ProjectPublishProfile.ReadModel (file);
@@ -66,9 +63,8 @@ namespace MonoDevelop.AspNetCore
 			var profileFileName = project.BaseDirectory.Combine ("Properties", "PublishProfiles", project.GetNextPubXmlFileName ());
 
 			string publishProfilesDirectory = Path.GetDirectoryName (profileFileName);
-			if (!Directory.Exists (publishProfilesDirectory)) {
-				Directory.CreateDirectory (publishProfilesDirectory);
-			}
+
+			Directory.CreateDirectory (publishProfilesDirectory);
 
 			File.WriteAllText (profileFileName, profileFileContents);
 
@@ -82,12 +78,14 @@ namespace MonoDevelop.AspNetCore
 			var baseDirectory = project.BaseDirectory.Combine ("Properties", "PublishProfiles");
 			var identifier = string.Empty;
 			var count = default (int);
+			var file = $"{ProjectPublishProfile.ProjectPublishProfileKey}{identifier}.pubxml";
 
-			while (File.Exists (Path.Combine (baseDirectory, $"{ProjectPublishProfile.ProjectPublishProfileKey}{identifier}.pubxml"))) {
+			while (File.Exists (Path.Combine (baseDirectory, file))) {
 				identifier = $" {++count}";
+				file = $"{ProjectPublishProfile.ProjectPublishProfileKey}{identifier}.pubxml";
 			}
 
-			return Path.Combine (baseDirectory, $"{ProjectPublishProfile.ProjectPublishProfileKey}{identifier}.pubxml");
+			return Path.Combine (baseDirectory, file);
 		}
 	}
 }
