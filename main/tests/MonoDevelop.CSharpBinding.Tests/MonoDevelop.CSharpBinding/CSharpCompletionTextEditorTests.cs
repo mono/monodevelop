@@ -391,5 +391,14 @@ namespace MyLibrary
 ", (doc, list) => Assert.AreEqual (0, list.Count), new CompletionTriggerInfo (CompletionTriggerReason.CharTyped, '{'));
 		}
 
+		/// <summary>
+		/// Bug 705110: Code suggestion does wrong thing when enter is pressed by default
+		/// </summary>
+		[Test]
+		public async Task TestVSTSBug705110 ()
+		{
+			await TestCompletion (@"new $", (doc, list) => Assert.IsTrue (list.AutoCompleteEmptyMatch));
+		}
+
 	}
 }
