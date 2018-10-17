@@ -82,7 +82,7 @@ namespace MonoDevelop.AspNetCore.Commands
 	}
 
 	[XmlRoot ("PropertyGroup", Namespace = "http://schemas.microsoft.com/developer/msbuild/2003")]
-	sealed class ProjectPublishProfile : PublishProfile
+	public class ProjectPublishProfile : PublishProfile
 	{
 		public const string ProjectPublishProfileKey = "FolderProfile";
 
