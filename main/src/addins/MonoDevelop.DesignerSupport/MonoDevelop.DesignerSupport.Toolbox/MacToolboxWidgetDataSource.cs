@@ -63,7 +63,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public void OnReBinded ()
+		public void OnQueueDraw ()
 		{
 			Views.Clear ();
 		}
