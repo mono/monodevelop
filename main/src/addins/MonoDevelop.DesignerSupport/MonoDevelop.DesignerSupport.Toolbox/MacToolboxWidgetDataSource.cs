@@ -59,7 +59,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			 	var indexPath =	collectionView.GetIndexPath (selectedItem);
 				var elements = new NSSet (new NSObject [] { indexPath });
 				collectionView.DeselectAll (null);
-				collectionView.SelectItems (elements, NSCollectionViewScrollPosition.Top);
+				collectionView.SelectItems (elements, NSCollectionViewScrollPosition.None);
 			}
 		}
 
