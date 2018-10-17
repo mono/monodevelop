@@ -10,6 +10,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 {
 	class PublishToFolderDialog : Dialog
 	{
+		const string DefaultConfiguration = "Release";
 		VBox mainVBox;
 		Label publishYourAppLabel;
 		VBox browseVBox;
@@ -65,12 +66,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "browseEntryHBox",
 				Spacing = 4
 			};
-			var activeConfiguration = publishCommandItem.Project.GetActiveConfiguration ();
-			var defaultDirectory = activeConfiguration == null
-				? BinBaseUri.ToString ()
-				: Path.Combine (BinBaseUri.ToString (),
+			var defaultDirectory = Path.Combine (BinBaseUri.ToString (),
 								publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
-								publishCommandItem.Project.GetActiveConfiguration ());
+								DefaultConfiguration);
 			//make it relative by default
 			defaultDirectory = BinBaseUri.MakeRelativeUri (new Uri (defaultDirectory)).ToString ();
 			pathEntry = new TextEntry {
