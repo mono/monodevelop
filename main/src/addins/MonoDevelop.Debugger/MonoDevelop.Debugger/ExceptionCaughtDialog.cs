@@ -621,7 +621,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			ExceptionMessageLabel.Text = exception.Message ?? string.Empty;
 			if (!string.IsNullOrEmpty (exception.HelpLink)) {
 				ExceptionHelpLinkLabel.Show ();
-				ExceptionHelpLinkLabel.Markup = GetHelpLinkMarkup(exception);
+				ExceptionHelpLinkLabel.Markup = GetHelpLinkMarkup (exception);
 			} else {
 				ExceptionHelpLinkLabel.Hide ();
 			}
@@ -742,15 +742,23 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		}
 	}
 
-	class StackFrameCellRenderer : CellRenderer
+	class StackFrameCellRenderer : CellRendererText
 	{
 		const int Padding = 6;
 
 		public readonly Pango.Context Context;
-		public ExceptionStackFrame Frame;
+		ExceptionStackFrame frame;
 		public bool IsUserCode;
-		public string Markup;
+		public new string Markup;
 		Pango.FontDescription font = Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11");
+
+		public ExceptionStackFrame Frame {
+			get { return frame; }
+			set {
+				frame = value;
+				Text = value.DisplayText;
+			}
+		}
 
 		public StackFrameCellRenderer (Pango.Context ctx)
 		{
@@ -870,7 +878,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				dialog.TransientFor = IdeApp.Workbench.RootWindow;
 				dialog.Show ();
 				MessageService.PlaceDialog (dialog, IdeApp.Workbench.RootWindow);
-				dialog.Destroyed += Dialog_Destroyed;;
+				dialog.Destroyed += Dialog_Destroyed;
 			}
 		}
 
