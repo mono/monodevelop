@@ -301,6 +301,11 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			info.Enabled = ((buildTarget != null) && (!(buildTarget is Workspace)) && IdeApp.ProjectOperations.CanExecute (buildTarget));
+
+			if (buildTarget is Solution)
+				info.Text = GettextCatalog.GetString ("Run Solution");
+			else if (buildTarget is Project)
+				info.Text = GettextCatalog.GetString ("Run Project");
 		}
 
 		protected override void Run ()
