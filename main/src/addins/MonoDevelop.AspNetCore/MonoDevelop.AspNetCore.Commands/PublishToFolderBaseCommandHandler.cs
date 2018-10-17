@@ -74,6 +74,7 @@ namespace MonoDevelop.AspNetCore.Commands
 		{
 			using (var progressMonitor = CreateProgressMonitor ()) {
 				try {
+					IdeApp.Workbench.SaveAll ();
 					if (!DotNetCoreRuntime.IsInstalled) {
 						progressMonitor.ReportError (GettextCatalog.GetString (".NET Core Runtime not installed"));
 						return;
