@@ -324,6 +324,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public void QueueDraw ()
 		{
+			dataSource.OnQueueDraw ();
 			ReloadData ();
 		}
 
