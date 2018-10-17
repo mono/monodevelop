@@ -2,6 +2,7 @@ using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MonoDevelop.Ide;
 using Xwt;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
@@ -10,12 +11,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
-		public override bool BecomeFirstResponder ()
-		{
-			NeedsDisplay = true;
-			Focused?.Invoke (this, EventArgs.Empty);
-			return base.BecomeFirstResponder ();
-		}
+		static NSImage searchImage = ImageService.GetIcon("md-searchbox-search", Gtk.IconSize.Menu).ToNative ();
 
 		public string Text {
 			get { return StringValue; }
@@ -26,17 +22,29 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public SearchTextField ()
 		{
-			WantsLayer = true;
-			Layer.BackgroundColor = NSColor.Clear.CGColor;
-			Layer.BorderWidth = Styles.SearchTextFieldLineBorderWidth;
-			Layer.BackgroundColor = Styles.SearchTextFieldLineBackgroundColor.CGColor;
+		}
+
+		public override bool BecomeFirstResponder ()
+		{
+			NeedsDisplay = true;
+			Focused?.Invoke (this, EventArgs.Empty);
+			return base.BecomeFirstResponder ();
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
-			NSColor.Clear.Set ();
+			Styles.SearchTextFieldLineBackgroundColor.Set ();
 			NSBezierPath.FillRect (Bounds);
+			Styles.SearchTextFieldLineBorderColor.Set ();
+			NSBezierPath.DefaultLineWidth = 1.5f;
+			NSBezierPath.StrokeRect (Bounds);
+
+			var startY = (Frame.Height - searchImage.Size.Height) / 2;
+			var context = NSGraphicsContext.CurrentContext;
+			context.SaveGraphicsState ();
+			searchImage.Draw (new CGRect (3, startY, searchImage.Size.Width, searchImage.Size.Height));
+			context.RestoreGraphicsState ();
 		}
 
 		#region IEncapsuledView
