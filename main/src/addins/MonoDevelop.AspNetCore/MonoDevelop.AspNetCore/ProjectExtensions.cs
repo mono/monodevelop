@@ -38,27 +38,7 @@ namespace MonoDevelop.AspNetCore
 
 		public static bool CreatePublishProfileFile (this DotNetProject project, ProjectPublishProfile profile)
 		{
-			string profileFileContents = null;
-			var ns = new XmlSerializerNamespaces ();
-			ns.Add ("", "http://schemas.microsoft.com/developer/msbuild/2003");
-			var xmlSerializer = new XmlSerializer (profile.GetType ());
-			using (var stream = new MemoryStream ()) {
-				using (var xmlWriter = new XmlTextWriter (stream, Encoding.UTF8) { Formatting = Formatting.Indented }) {
-					xmlWriter.WriteStartDocument ();
-					xmlWriter.WriteStartElement ("Project");
-					xmlWriter.WriteAttributeString ("ToolsVersion", "4.0");
-					xmlWriter.WriteAttributeString ("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
-					xmlSerializer.Serialize (xmlWriter, profile, ns); 
-					xmlWriter.WriteEndElement ();
-					xmlWriter.WriteEndDocument ();
-					xmlWriter.Flush ();
-					stream.Position = 0;
-
-					using (var reader = new StreamReader (stream)) {
-						profileFileContents = reader.ReadToEnd ();
-					}
-				}
-			}
+			string profileFileContents = ProjectPublishProfile.WriteModel (profile);
 
 			var profileFileName = project.BaseDirectory.Combine ("Properties", "PublishProfiles", project.GetNextPubXmlFileName ());
 
