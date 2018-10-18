@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Microsoft.Build.Framework;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
@@ -106,21 +107,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var resolvers = new List<SdkResolver> { new MonoDevelop.Projects.MSBuild.Resolver (MSBuildProjectService.FindRegisteredSdks), new DefaultSdkResolver { TargetRuntime = runtime } };
 			var binDir = MSBuildProjectService.GetMSBuildBinPath (runtime);
-			var potentialResolvers = FindPotentialSdkResolvers (Path.Combine (binDir, "SdkResolvers"));
+			var potentialResolvers = FindPotentialSdkResolvers (Path.Combine (binDir, "SdkResolvers"), logger);
 
 			if (potentialResolvers.Count == 0) return resolvers;
 
 			foreach (var potentialResolver in potentialResolvers)
-				try {
-					var assembly = Assembly.LoadFrom (potentialResolver);
-
-					resolvers.AddRange (assembly.ExportedTypes
-						.Select (type => new { type, info = type.GetTypeInfo () })
-						.Where (t => t.info.IsClass && t.info.IsPublic && !t.info.IsAbstract && typeof (SdkResolver).IsAssignableFrom (t.type))
-						.Select (t => (SdkResolver)Activator.CreateInstance (t.type)));
-				} catch (Exception e) {
-					logger.LogWarning (e.Message);
-				}
+				LoadResolvers (potentialResolver, logger, resolvers);
 
 			return resolvers.OrderBy (t => t.Priority).ToList ();
 		}
@@ -131,15 +123,111 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		/// <param name="rootFolder"></param>
 		/// <returns></returns>
-		IList<string> FindPotentialSdkResolvers (string rootFolder)
+		IList<string> FindPotentialSdkResolvers (string rootFolder, ILoggingService logger)
 		{
-			if (string.IsNullOrEmpty (rootFolder) || !System.IO.Directory.Exists (rootFolder))
-				return new List<string> ();
+			// Note: MSBuild throws exceptions here which would prevent other SDK resolvers from being loaded.
+			// Exceptions and errors are being logged as warnings instead for MonoDevelop.
+			var assembliesList = new List<string> ();
 
-			return new DirectoryInfo (rootFolder).GetDirectories ()
-				.Select (subfolder => Path.Combine (subfolder.FullName, $"{subfolder.Name}.dll"))
-				.Where (System.IO.File.Exists)
-				.ToList ();
+			if (string.IsNullOrEmpty (rootFolder) || !System.IO.Directory.Exists (rootFolder))
+				return assembliesList;
+
+			foreach (var subfolder in new DirectoryInfo (rootFolder).GetDirectories ()) {
+				var assembly = Path.Combine (subfolder.FullName, $"{subfolder.Name}.dll");
+				var manifest = Path.Combine (subfolder.FullName, $"{subfolder.Name}.xml");
+
+				var assemblyAdded = TryAddAssembly (assembly, assembliesList);
+				if (!assemblyAdded) {
+					assemblyAdded = TryAddAssemblyFromManifest (manifest, subfolder.FullName, assembliesList, logger);
+				}
+
+				if (!assemblyAdded) {
+					logger.LogWarning ("SDK Resolver folder exists but without an SDK Resolver DLL or manifest file. This may indicate a corrupt or invalid installation of MSBuild. SDK resolver path: " + subfolder.FullName);
+				}
+			}
+
+			return assembliesList;
+		}
+
+		bool TryAddAssemblyFromManifest (string pathToManifest, string manifestFolder, List<string> assembliesList, ILoggingService logger)
+		{
+			if (!string.IsNullOrEmpty (pathToManifest) && !File.Exists (pathToManifest))
+				return false;
+
+			string path = null;
+
+			try {
+				// <SdkResolver>
+				//   <Path>...</Path>
+				// </SdkResolver>
+				var manifest = SdkResolverManifest.Load (pathToManifest);
+
+				if (manifest == null || string.IsNullOrEmpty (manifest.Path)) {
+					logger.LogWarning ("Could not load SDK Resolver. A manifest file exists, but the path to the SDK Resolver DLL file could not be found. Manifest file path " + pathToManifest);
+					return false;
+				}
+
+				path = FixFilePath (manifest.Path);
+			} catch (SerializationException e) {
+				// Note: Not logging e.ToString() as most of the information is not useful, the Message will contain what is wrong with the XML file.
+				logger.LogWarning (string.Format ("SDK Resolver manifest file is invalid. This may indicate a corrupt or invalid installation of MSBuild. Manifest file path '{0}'. Message: {1}", pathToManifest, e.Message));
+				return false;
+			}
+
+			if (!Path.IsPathRooted (path)) {
+				path = Path.Combine (manifestFolder, path);
+				path = Path.GetFullPath (path);
+			}
+
+			if (!TryAddAssembly (path, assembliesList)) {
+				logger.LogWarning (string.Format (" Could not load SDK Resolver. A manifest file exists, but the path to the SDK Resolver DLL file could not be found. Manifest file path '{0}'. SDK resolver path: {1}", pathToManifest, path));
+				return false;
+			}
+
+			return true;
+		}
+
+		bool TryAddAssembly (string assemblyPath, List<string> assembliesList)
+		{
+			if (string.IsNullOrEmpty (assemblyPath) || !File.Exists (assemblyPath))
+				return false;
+
+			assembliesList.Add (assemblyPath);
+			return true;
+		}
+
+		IEnumerable<Type> GetResolverTypes (Assembly assembly)
+		{
+			return assembly.ExportedTypes
+				.Select (type => new { type, info = type.GetTypeInfo () })
+				.Where (t => t.info.IsClass && t.info.IsPublic && !t.info.IsAbstract && typeof (SdkResolver).IsAssignableFrom (t.type))
+				.Select (t => t.type);
+		}
+
+		void LoadResolvers (string resolverPath, ILoggingService logger, List<SdkResolver> resolvers)
+		{
+			Assembly assembly;
+			try {
+				assembly = Assembly.LoadFrom (resolverPath);
+			} catch (Exception e) {
+				logger.LogWarning (string.Format ("The SDK resolver assembly \"{0}\" could not be loaded. {1}", resolverPath, e.Message));
+				return;
+			}
+
+			foreach (Type type in GetResolverTypes (assembly)) {
+				try {
+					resolvers.Add ((SdkResolver)Activator.CreateInstance (type));
+				} catch (TargetInvocationException e) {
+					// .NET wraps the original exception inside of a TargetInvocationException which masks the original message
+					// Attempt to get the inner exception in this case, but fall back to the top exception message
+					string message = e.InnerException?.Message ?? e.Message;
+					logger.LogWarning (string.Format ("The SDK resolver type \"{0}\" failed to load. {1}", type.Name, message));
+					return;
+				} catch (Exception e) {
+					logger.LogWarning (string.Format ("The SDK resolver type \"{0}\" failed to load. {1}", type.Name, e.Message));
+					return;
+				}
+			}
 		}
 
 		static void LogWarnings (ILoggingService logger, MSBuildContext bec, string projectFile,
@@ -149,6 +237,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 			foreach (var warning in result.Warnings)
 				logger.LogWarningFromText (bec, null, null, null, projectFile, warning);
+		}
+
+		static string FixFilePath (string path)
+		{
+			return string.IsNullOrEmpty (path) || Path.DirectorySeparatorChar == '\\' ? path : path.Replace ('\\', '/');
 		}
 
 		class SdkLoggerImpl : SdkLogger
