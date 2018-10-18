@@ -237,23 +237,26 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			e.Handled = true;
 
-			if (((int) e.Key == TabKey || e.Key == Key.Tab) && e.Modifiers == ModifierKeys.Shift) {
-				FocusPreviousItem (e);
-				return;
-			}
-			if (((int)e.Key == TabKey || e.Key == Key.Tab) && e.Modifiers == ModifierKeys.None) {
-				FocusNextItem (e);
-				return;
-			}
-
-			if (FocusedView is NSButton) {
-				if (e.Key == Key.Right && e.Modifiers == ModifierKeys.None) {
-					FocusNextItem (e);
-					return;
-				}
-				if (e.Key == Key.Left && e.Modifiers == ModifierKeys.None) {
+			if ((int) e.Key == TabKey || e.Key == Key.Tab) {
+				if (e.Modifiers == ModifierKeys.Shift) {
 					FocusPreviousItem (e);
 					return;
+				}
+				if (e.Modifiers == ModifierKeys.None) {
+					FocusNextItem (e);
+				}
+			}
+
+			if (FocusedView is NSButton btn) {
+				if (e.Modifiers == ModifierKeys.None) {
+					if (e.Key == Key.Right) {
+						FocusNextItem (e);
+						return;
+					}
+					if (e.Key == Key.Left) {
+						FocusPreviousItem (e);
+						return;
+					}
 				}
 			}
 
