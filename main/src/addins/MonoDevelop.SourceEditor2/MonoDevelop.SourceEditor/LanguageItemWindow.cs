@@ -40,7 +40,8 @@ namespace MonoDevelop.SourceEditor
 	class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
 		public bool IsEmpty { get; set; }
-		
+		public object Tag { get; set; }
+
 		public LanguageItemWindow (ExtensibleTextEditor ed, Xwt.ModifierKeys modifierState, object result, string errorInformations, object unit)
 		{
 			string tooltip = errorInformations;
