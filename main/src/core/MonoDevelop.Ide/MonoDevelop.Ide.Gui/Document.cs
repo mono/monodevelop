@@ -626,7 +626,7 @@ namespace MonoDevelop.Ide.Gui
 			parsedDocument = null;
 			views = null;
 			viewsRO = null;
-			base.Dispose ();
+			base.OnDispose (disposing);
 		}
 
 		void UnsubscribeAnalysisDocument ()
