@@ -595,12 +595,14 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.RemoveFileDom (FileName);
 				dom = null;
 			}*/
-			
+
 			Counters.OpenDocuments--;
 		}
 
-		internal void DisposeDocument ()
+		protected override void OnDispose (bool disposing)
 		{
+			if (IsDisposed)
+				return;
 			DocumentRegistry.Remove (this);
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
@@ -624,6 +626,7 @@ namespace MonoDevelop.Ide.Gui
 			parsedDocument = null;
 			views = null;
 			viewsRO = null;
+			base.OnDispose (disposing);
 		}
 
 		void UnsubscribeAnalysisDocument ()
