@@ -194,9 +194,6 @@
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
-    </Reference>
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
@@ -220,6 +217,9 @@
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\..\..\packages\YamlDotNet.Signed.5.2.1\lib\net45\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
