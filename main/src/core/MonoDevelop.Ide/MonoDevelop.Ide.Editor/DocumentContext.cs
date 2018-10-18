@@ -191,9 +191,14 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool IsDisposed { get; private set; }
 
-		public virtual void Dispose ()
+		public void Dispose ()
 		{
+			OnDispose (true);
 			IsDisposed = true;
+		}
+
+		protected virtual void OnDispose (bool disposing)
+		{
 		}
 		#endregion
 	}
