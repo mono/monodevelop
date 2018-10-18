@@ -38,10 +38,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			ImageView = new NSImageView ();
 			contentCollectionView.AddArrangedSubview (ImageView);
-
 			TextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Left, NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize));
-
 			contentCollectionView.AddArrangedSubview (TextField);
+			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 7, 0, 0);
 		}
 
 		public LabelCollectionViewItem (IntPtr handle) : base (handle)
@@ -162,33 +161,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		NSTrackingArea trackingArea;
-		public override void UpdateTrackingAreas ()
-		{
-			base.UpdateTrackingAreas ();
-			if (trackingArea != null) {
-				RemoveTrackingArea (trackingArea);
-				trackingArea.Dispose ();
+		bool isMouseOver;
+		public bool IsMouseOver {
+			get => isMouseOver;
+			set {
+				if (isMouseOver == value) {
+					return;
+				}
+				isMouseOver = value;
+				NeedsDisplay = true;
 			}
-			var viewBounds = Bounds;
-			var options = NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.MouseEnteredAndExited;
-			trackingArea = new NSTrackingArea (viewBounds, options, this, null);
-			AddTrackingArea (trackingArea);
-		}
-
-		bool isMouseHover;
-		public override void MouseEntered (NSEvent theEvent)
-		{
-			base.MouseEntered (theEvent);
-			isMouseHover = true;
-			NeedsDisplay = true;
-		}
-
-		public override void MouseExited (NSEvent theEvent)
-		{
-			base.MouseExited (theEvent);
-			isMouseHover = false;
-			NeedsDisplay = true;
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
@@ -211,10 +193,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				context.RestoreGraphicsState ();
 			}
 
-			if (!IsSelected && isMouseHover && BorderSelectedColor != null) {
+			if (isMouseOver && BorderSelectedColor != null) {
 				BorderSelectedColor.Set ();
-				var rect = NSBezierPath.FromRect (new CGRect (dirtyRect.X + 2, dirtyRect.Y + 2, dirtyRect.Width - 4, dirtyRect.Height - 4));
-				rect.LineWidth = 0.5f;
+				var rect = NSBezierPath.FromRect (new CGRect (dirtyRect.X, dirtyRect.Y, dirtyRect.Width, dirtyRect.Height));
+				rect.LineWidth = 1.5f;
 				rect.ClosePath ();
 				rect.Stroke ();
 			}

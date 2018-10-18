@@ -57,9 +57,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			ToggleButtonHoverFocusedBackgroundColor = NSColor.FromRgba (red: 0.22f, green: 0.22f, blue: 0.22f, alpha: 1.0f);
 
 			ToggleButtonOnFocusedBorderColor = NSColor.FromRgba (red: 0.11f, green: 0.11f, blue: 0.11f, alpha: 1.0f);
-			ToggleButtonOnFocusedBackgroundColor = NSColor.FromRgba (red: 0.20f, green: 0.20f, blue: 0.20f, alpha: 1.0f);
+			ToggleButtonOnFocusedBackgroundColor = NSColor.FromRgba (red: 0.23f, green: 0.23f, blue: 0.23f, alpha: 1.0f);
 			ToggleButtonOnBorderColor = NSColor.FromRgba (red: 0.10f, green: 0.10f, blue: 0.10f, alpha: 1.0f);
-			ToggleButtonOnBackgroundColor = NSColor.FromRgba (red: 0.13f, green: 0.13f, blue: 0.13f, alpha: 1.0f);
+			ToggleButtonOnBackgroundColor = NSColor.FromRgba (red: 0.25f, green: 0.25f, blue: 0.25f, alpha: 1.0f);
 
 			ClickedButtonFocusedBorderColor = NSColor.FromRgba (red: 0.29f, green: 0.29f, blue: 0.29f, alpha: 1.0f);
 			ClickedButtonFocusedBackgroundColor = NSColor.FromRgba (red: 0.31f, green: 0.31f, blue: 0.31f, alpha: 1.0f);
