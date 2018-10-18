@@ -165,8 +165,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal void FocusSelectedView ()
 		{
-			if (FocusedView is NSView focusView && focusView.AcceptsFirstResponder ()) {
-				Window?.MakeFirstResponder (focusView);
+			if (Window == null) {
+				return;
+			}
+			if (FocusedView is NSView focusView && Window.FirstResponder != focusView && focusView.AcceptsFirstResponder ()) {
+				Window.MakeFirstResponder (focusView);
 			}
 		}
 

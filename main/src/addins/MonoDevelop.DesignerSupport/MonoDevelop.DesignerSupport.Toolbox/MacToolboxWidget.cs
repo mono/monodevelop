@@ -56,7 +56,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			ActivateSelectedItem?.Invoke (this, args);
 		}
-
+	
 		ToolboxWidgetItem selectedItem;
 		public ToolboxWidgetItem SelectedItem {
 			get {
@@ -65,9 +65,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set {
 				if (selectedItem != value) {
 					selectedItem = value;
-					dataSource.SelectItem (this, selectedItem);
-
-					ScrollToSelectedItem ();
 					OnSelectedItemChanged (EventArgs.Empty);
 				}
 			}
@@ -163,6 +160,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#region IEncapsuledView
 
+		void SelectItem (ToolboxWidgetItem item)
+		{
+			dataSource.SelectItem (this, item);
+			SelectedItem = item;
+		}
+
 		public void OnKeyPressed (object s, KeyEventArgs e)
 		{
 			ToolboxWidgetItem nextItem;
@@ -176,16 +179,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			case Key.NumPadUp:
 			case Key.Up:
 				if (this.listMode || this.SelectedItem is ToolboxWidgetCategory) {
-					this.SelectedItem = GetPrevItem (this.SelectedItem);
+					SelectItem (GetPrevItem (SelectedItem));
 				} else {
 					nextItem = GetItemAbove (this.SelectedItem);
-					this.SelectedItem = nextItem != this.SelectedItem ? nextItem : GetCategory (this.SelectedItem);
+					if (nextItem != this.SelectedItem) {
+						SelectItem (nextItem);
+					}
 				}
 				return;
 			case Key.NumPadDown:
 			case Key.Down:
 				if (this.listMode || this.SelectedItem is ToolboxWidgetCategory) {
-					this.SelectedItem = GetNextItem (this.SelectedItem);
+					SelectItem (GetNextItem (this.SelectedItem));
 				} else {
 					nextItem = GetItemBelow (this.SelectedItem);
 					if (nextItem == this.SelectedItem) {
@@ -194,7 +199,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						if (nextItem == category)
 							nextItem = this.SelectedItem;
 					}
-					this.SelectedItem = nextItem;
+					SelectItem (nextItem);
 				}
 				return;
 			case Key.NumPadLeft:
@@ -203,9 +208,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					SetCategoryExpanded ((ToolboxWidgetCategory)this.SelectedItem, false);
 				} else {
 					if (this.listMode) {
-						this.SelectedItem = GetCategory (this.SelectedItem);
+						SelectItem (GetCategory (this.SelectedItem));
 					} else {
-						this.SelectedItem = GetItemLeft (this.SelectedItem);
+						SelectItem (GetItemLeft (this.SelectedItem));
 					}
 				}
 				return;
@@ -222,7 +227,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					if (this.listMode) {
 						// nothing
 					} else {
-						this.SelectedItem = GetItemRight (this.SelectedItem);
+						SelectItem (GetItemRight (this.SelectedItem));
 					}
 				}
 				break;
