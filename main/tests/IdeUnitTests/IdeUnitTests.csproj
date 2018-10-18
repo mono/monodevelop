@@ -26,6 +26,7 @@
     <Compile Include="TestWorkbenchWindow.cs" />
     <Compile Include="RoslynTestBase.cs" />
     <Compile Include="CompositionManagerTestHelpers.cs" />
+    <Compile Include="ProjectTemplateTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
