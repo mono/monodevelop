@@ -33,7 +33,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public interface IToolboxWidget
 	{
-		Action<Gdk.EventButton> DoPopupMenu { get; set; }
 
 		bool IsListMode { get; set; }
 		bool CanIconizeToolboxCategories { get; }

@@ -155,7 +155,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				toolboxService.UseSelectedItem ();
 			};
 
-			toolboxWidget.DoPopupMenu = ShowPopup;
+			toolboxWidget.MenuOpened += ToolboxWidget_MenuOpened;
 
 			//set initial state
 			toolboxWidget.ShowCategories = catToggleButton.Active = true;
@@ -317,17 +317,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			await toolboxService.AddUserItems ();
 		}
-		
-		void ShowPopup (Gdk.EventButton evt)
+
+		void ToolboxWidget_MenuOpened (object sender, CGPoint e)
 		{
 			if (!AllowEditingComponents)
 				return;
-			CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
-			if (evt != null) {
-				IdeApp.CommandService.ShowContextMenu ((NSView)toolboxWidget, evt, eset, this);
-			} else {
-				//IdeApp.CommandService.ShowContextMenu (toolboxWidget, (int) Frame.Left, (int)Frame.Top, eset, this);
-			}
+
+			var eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
+			IdeApp.CommandService.ShowContextMenu (toolboxWidget, (int)e.X, (int)e.Y, eset, this);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]

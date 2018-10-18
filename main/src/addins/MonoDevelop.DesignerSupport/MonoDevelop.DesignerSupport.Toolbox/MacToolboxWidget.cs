@@ -13,7 +13,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
 	{
 		public Action<NSEvent> MouseDownActivated { get; set; }
-		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
+		//public Action<Gdk.EventButton> DoPopupMenu { get; set; }
 		public event EventHandler DragBegin;
 
 		bool showCategories = true;
@@ -142,6 +142,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			MouseDownActivated?.Invoke (theEvent);
 		}
+
+		public override void RightMouseUp (NSEvent theEvent)
+		{
+			base.RightMouseUp (theEvent);
+			var point = ConvertPointFromView (theEvent.LocationInWindow, null);
+			var indexPath = base.GetIndexPath (point);
+			if (indexPath != null) {
+				SelectedItem = categories [(int)indexPath.Section].Items [(int)indexPath.Item];
+				MenuOpened?.Invoke (this, point);
+			}
+		}
+
+		public EventHandler<CGPoint> MenuOpened;
 
 		public override void KeyDown (NSEvent theEvent)
 		{
