@@ -956,7 +956,7 @@ namespace MonoDevelop.Ide.Gui
 			UnwatchDocument (doc);
 
 			OnDocumentClosed (doc);
-			doc.DisposeDocument ();
+			doc.Dispose ();
 		}
 
 		void WatchDocument (Document doc)
