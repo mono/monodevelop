@@ -595,11 +595,11 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.RemoveFileDom (FileName);
 				dom = null;
 			}*/
-			
+
 			Counters.OpenDocuments--;
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
 			if (IsDisposed)
 				return;
