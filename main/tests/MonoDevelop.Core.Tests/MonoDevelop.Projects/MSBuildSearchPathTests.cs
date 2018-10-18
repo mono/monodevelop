@@ -226,15 +226,5 @@ namespace MonoDevelop.Projects
 				MonoDevelop.Projects.MSBuild.MSBuildProjectService.UnregisterProjectImportSearchPath ("MSBuildSDKsPath", sdkPath);
 			}
 		}
-
-		[Test]
-		public async Task ProjectUsingMSBuildSdkFromNuGet ()
-		{
-			string projectFile = Util.GetSampleProject ("msbuild-search-paths", "NuGetSdk.csproj");
-			using (var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject) {
-				Assert.AreEqual ("true", p.MSBuildProject.EvaluatedProperties.GetValue ("UsingXamTestSdkProps"));
-				Assert.AreEqual ("true", p.MSBuildProject.EvaluatedProperties.GetValue ("UsingXamTestSdkTargets"));
-			}
-		}
 	}
 }
