@@ -82,7 +82,7 @@ namespace MonoDevelop.SourceEditor
 			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
 			//var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
 			const double xAdditionalSpace = tagMarkerWidth;
-			if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
+			if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom &&
 				args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
 				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom*/) {
 				result.Cursor = null;
@@ -102,15 +102,15 @@ namespace MonoDevelop.SourceEditor
 			var lin2 = editor.GetLine (loc.Line);
 			var x2 = editor.ColumnToX (lin2, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
 			var y2 = editor.LineToY (loc.Line + 1) - editor.VAdjustment.Value;
-			return x - x2 >= 0 * editor.Options.Zoom && 
-				x - x2 < tagMarkerWidth * editor.Options.Zoom && 
+			return x - x2 >= 0 * editor.Options.Zoom &&
+				x - x2 < tagMarkerWidth * editor.Options.Zoom &&
 				y - y2 < (editor.LineHeight / 2) * editor.Options.Zoom;
 		}
 
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
-		#pragma warning disable 0067
+#pragma warning disable 0067
 		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
-		#pragma warning restore 0067
+#pragma warning restore 0067
 		public event EventHandler ShowPopup;
 		public event EventHandler CancelPopup;
 
