@@ -110,7 +110,10 @@ namespace MonoDevelop.Xml.Editor
 
 		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
 		{
-			if (e.Any (f => f.ProjectFile.FilePath == DocumentContext.Name))
+			if (DocumentContext.IsDisposed)
+				return;
+			var documentName = DocumentContext.Name;
+			if (e.Any (f => f.ProjectFile.FilePath == documentName))
 				UpdateOwnerProjects ();
 		}
 
