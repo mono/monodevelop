@@ -208,6 +208,7 @@
       <HintPath>..\..\..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -737,6 +738,7 @@
     <Compile Include="MonoDevelop.FSW\PathTreeNode.cs" />
     <Compile Include="MemoryExtensions.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimings.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\SdkResolverManifest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
