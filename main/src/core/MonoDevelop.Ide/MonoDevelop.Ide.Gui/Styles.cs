@@ -475,7 +475,7 @@ namespace MonoDevelop.Ide.Gui
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
 			SecondaryTextColorHexString = "#888888";
 			SecondaryTextColor = Color.FromName (SecondaryTextColorHexString);
-			SecondarySelectionTextColor = Color.FromName ("#93cbff");
+			SecondarySelectionTextColor = Color.FromName ("#ffffff");
 			PadBackground = Color.FromName ("#fafafa");
 			InactivePadBackground = Color.FromName ("#e8e8e8");
 			InactivePadLabelColor = Color.FromName ("#777777");
@@ -491,13 +491,13 @@ namespace MonoDevelop.Ide.Gui
 			InformationForegroundColor = Color.FromName ("#5785bd");
 
 			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
-			StatusWarningTextColor = BaseBackgroundColor;
+			StatusWarningTextColor = Color.FromName ("#000000");
 			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
 			WarningBoxForegroundColor = Color.FromName ("#000000");
 			WarningForegroundColor = Color.FromName ("#986923");
 
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
-			StatusErrorTextColor = BaseBackgroundColor;
+			StatusErrorTextColor = Color.FromName ("#000000");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
 			ErrorBoxForegroundColor = Color.FromName ("#000000");
 			ErrorForegroundColor = Color.FromName ("#db6246");
@@ -599,7 +599,7 @@ namespace MonoDevelop.Ide.Gui
 			SecondaryBackgroundLighterColor = SeparatorColor;
 			SecondaryTextColorHexString = "#777777";
 			SecondaryTextColor = Color.FromName (SecondaryTextColorHexString);
-			SecondarySelectionTextColor = Color.FromName ("#93cbff");
+			SecondarySelectionTextColor = Color.FromName ("#ffffff");
 			PadBackground = Color.FromName ("#525252");
 			InactivePadBackground = Color.FromName ("#474747");
 			InactivePadLabelColor = Color.FromName ("#999999");
@@ -615,13 +615,13 @@ namespace MonoDevelop.Ide.Gui
 			InformationForegroundColor = Color.FromName ("#9cc8ff");
 
 			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");
-			StatusWarningTextColor = Color.FromName ("#665206");
+			StatusWarningTextColor = Color.FromName ("#000000");
 			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
 			WarningBoxForegroundColor = Color.FromName ("#000000");
 			WarningForegroundColor = Color.FromName ("#ffd21c");
 
 			StatusErrorBackgroundColor = Color.FromName ("#ff7152");
-			StatusErrorTextColor = Color.FromName ("#662d20");
+			StatusErrorTextColor = Color.FromName ("#000000");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
 			ErrorBoxForegroundColor = Color.FromName ("#000000");
 			ErrorForegroundColor = Color.FromName ("#ff866b");
