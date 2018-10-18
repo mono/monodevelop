@@ -110,7 +110,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public void OnKeyPressed (object s, KeyEventArgs e)
 		{
-
+			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.NumPadEnter || e.Key == Key.Return || e.Key == Key.Space)) {
+				PerformClick (this);
+				return;
+			}
 		}
 
 		public void OnKeyReleased (object s, KeyEventArgs e)
