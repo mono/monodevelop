@@ -422,7 +422,6 @@ namespace Mono.TextEditor
 					offset = version.MoveOffsetTo (data.Document.Version, offset);
 					inserted = data.PasteText (offset, text, copyData, ref undo);
 				}
-				data.FixVirtualIndentation (startLine);
 			} finally {
 				undo.Dispose ();
 			}

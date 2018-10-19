@@ -38,6 +38,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading.Tasks;
+using Gtk;
 
 namespace ICSharpCode.NRefactory6.IndentationTests
 {
@@ -233,6 +234,39 @@ $		""foo"",
 			}
 		}
 
+		/// <summary>
+		/// Bug 709557: [Feedback] Copy and paste sometimes fails on VS for mac
+		/// </summary>
+		[Test]
+		public async Task TestVSTS709557 ()
+		{
+			using (var testCase = await CreateEngine (@"
+class Foo
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine();
+        Console.WriteLine();
+$
+    }
+}")) {
+				var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+				clipboard.Text = @"
+        Console.WriteLine();";
+				testCase.Document.Editor.EditorOperations.Paste ();
+				Assert.AreEqual (@"
+class Foo
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine();
+        Console.WriteLine();
+
+        Console.WriteLine();
+    }
+}", testCase.Document.Editor.Text);
+			}
+		}
 
 		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
 		{
