@@ -24,6 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if WIN32
+// Mono.Cairo.dll on Windows doesn't have Context.SetSourceColor() so we have to emulate it
+// using an extension method so that MonoDevelop can build on Windows.
+using MonoDevelop.Components;
+#endif
+
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 
