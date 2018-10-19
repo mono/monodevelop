@@ -56,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var field = (FieldDefinition)dataObject;
-			nodeInfo.Label = field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field);
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field));
 
 			if (!field.IsPublic)
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
