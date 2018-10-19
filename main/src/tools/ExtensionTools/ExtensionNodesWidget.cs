@@ -64,33 +64,34 @@ namespace MonoDevelop.ExtensionTools
 				.SelectMany (x => x.Description.AllModules)
 				.SelectMany (x => x.Extensions)
 				.Where (x => x.Path == path)
-				.Select (x => x.ExtensionNodes)
-				.ToArray ();
+				.Select (x => x.ExtensionNodes);
 
 			var nav = treeStore.AddNode ();
 
 			int maxDepth = 0;
+			int count = 0;
 			foreach (var node in allNodes) {
-				int depth = BuildTree (nav, node, 1);
+				int depth = BuildTree (nav, node, 1, ref count);
 				maxDepth = Math.Max (maxDepth, depth);
 			}
 
-			summary.Text = $"'{path}' Count: {allNodes.Length} Depth: {maxDepth}";
+			summary.Text = $"'{path}' Count: {count} Depth: {maxDepth}";
 		}
 
-		int BuildTree (TreeNavigator currentPosition, ExtensionNodeDescriptionCollection nodes, int currentDepth)
+		int BuildTree (TreeNavigator currentPosition, ExtensionNodeDescriptionCollection nodes, int currentDepth, ref int count)
 		{
 			int maxDepth = currentDepth;
 
 			// TODO: insertbefore/after
 
 			foreach (ExtensionNodeDescription node in nodes) {
+				count++;
 				var pos = currentPosition.Clone ().AddChild ();
 
 				var label = GetLabelForNode (node);
 				pos.SetValue (labelField, label);
 
-				var childDepth = BuildTree (pos, node.ChildNodes, currentDepth + 1);
+				var childDepth = BuildTree (pos, node.ChildNodes, currentDepth + 1, ref count);
 				maxDepth = Math.Max (maxDepth, childDepth);
 			}
 
