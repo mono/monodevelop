@@ -1354,7 +1354,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void CloseClicked (object o, TabEventArgs e)
 		{
-			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true).Ignore();
+			if (e.Tab.Content != null && e.Tab.Content is SdiWorkspaceWindow sdiWorkspace) {
+				sdiWorkspace.CloseWindow (false, true).Ignore ();
+			}
 		}
 
 		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)
