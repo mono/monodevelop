@@ -183,6 +183,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\RestoreTestBase.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageAssetSourceFilesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetAwareProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetSdkResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
