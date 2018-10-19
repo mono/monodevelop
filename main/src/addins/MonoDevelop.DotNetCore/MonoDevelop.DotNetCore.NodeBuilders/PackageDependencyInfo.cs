@@ -33,7 +33,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 	class PackageDependencyInfo
 	{
 		ImmutableArray<PackageDependencyInfo> dependencies = ImmutableArray<PackageDependencyInfo>.Empty;
-		PackageDependency dependency;
+		readonly PackageDependency dependency;
 
 		public PackageDependencyInfo (PackageDependency dependency)
 		{
@@ -56,11 +56,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return dependencies; }
 		}
 
-		public void AddChild (PackageDependencyInfo dependency)
+		public void AddChild (PackageDependencyInfo childDependency)
 		{
-			dependencies = dependencies.Add (dependency);
+			dependencies = dependencies.Add (childDependency);
 
-			if (dependency.HasChildDiagnostic || dependency.IsDiagnostic)
+			if (childDependency.HasChildDiagnostic || childDependency.IsDiagnostic)
 				HasChildDiagnostic = true;
 		}
 
