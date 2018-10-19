@@ -60,6 +60,7 @@ namespace MonoDevelop.ExtensionTools
 
 		void FillData (string path, Addin[] addins)
 		{
+			// TODO: add group by addin support.
 			var allNodes = addins
 				.SelectMany (x => x.Description.AllModules)
 				.SelectMany (x => x.Extensions)
