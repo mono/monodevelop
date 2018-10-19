@@ -83,6 +83,7 @@ namespace MonoDevelop.CodeActions
 			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
 			Editor.TextChanged -= Editor_TextChanged;
+			Editor.BeginAtomicUndoOperation -= Editor_BeginAtomicUndoOperation;
 			Editor.EndAtomicUndoOperation -= Editor_EndAtomicUndoOperation;
 			RemoveWidget ();
 			base.Dispose ();
