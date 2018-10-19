@@ -112,5 +112,7 @@ namespace MonoDevelop.ExtensionTools
 
 			return node.Id;
 		}
+
+		// TODO: add full attribute visualization
 	}
 }
