@@ -172,7 +172,7 @@ style "dialog-button" = "button" {
     GtkButton::inner-border = { 7, 7, 3, 4 }
 
     engine "xamarin" {
-        default_button_color = "#51ADF3"
+        default_button_color = "#397cae"
     }
 }
 
