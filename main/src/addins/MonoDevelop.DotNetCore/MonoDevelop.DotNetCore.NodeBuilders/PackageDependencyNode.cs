@@ -135,6 +135,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public IconId GetIconId ()
 		{
+			if (IsDiagnostic)
+				return new IconId ("md-nuget-warning");
 			return new IconId ("md-package-dependency");
 		}
 
