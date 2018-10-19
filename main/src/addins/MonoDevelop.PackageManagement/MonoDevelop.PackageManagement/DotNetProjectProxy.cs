@@ -166,12 +166,24 @@ namespace MonoDevelop.PackageManagement
 		public IEnumerable<ProjectPackageReference> GetPackageReferences ()
 		{
 			foreach (var item in DotNetProject.Items.OfType<ProjectPackageReference> ()) {
+				OnModifyPackageReference (item);
 				yield return item;
 			}
 			foreach (var item in DotNetProject.MSBuildProject.GetImportedPackageReferences (DotNetProject)) {
+				OnModifyPackageReference (item);
 				yield return item;
 			}
 		}
+
+		void OnModifyPackageReference (ProjectPackageReference item)
+		{
+			if (!string.IsNullOrEmpty (item.Version))
+				return;
+
+			ModifyImplicitPackageReferenceVersion?.Invoke (item, DotNetProject);
+		}
+
+		public static Action<ProjectPackageReference, DotNetProject> ModifyImplicitPackageReferenceVersion;
 	}
 }
 
