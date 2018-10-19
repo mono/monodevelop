@@ -60,8 +60,13 @@ namespace MonoDevelop.ExtensionTools
 		void ListView_RowActivated (object sender, ListViewRowEventArgs e)
 		{
 			var value = listStore.GetValue (e.RowIndex, labelField);
-			Application.MainNotebook.Add (new ExtensionNodesWidget (value), "Nodes");
-			Application.MainNotebook.CurrentTabIndex = Application.MainNotebook.Tabs.Count - 1;
+
+			var window = new Window {
+				Content = new ExtensionNodesWidget (value),
+				Height = 800,
+				Width = 600,
+			};
+			window.Show ();
 		}
 
 		void FillData (Addin[] addins)

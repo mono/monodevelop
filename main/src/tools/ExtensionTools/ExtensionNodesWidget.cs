@@ -39,15 +39,17 @@ namespace MonoDevelop.ExtensionTools
 		readonly DataField<string> labelField = new DataField<string> ();
 		readonly Label summary = new Label ();
 
-		public ExtensionNodesWidget (string path)
+		public ExtensionNodesWidget (string path, Addin[] addins = null)
 		{
+			addins = addins ?? AddinManager.Registry.GetAllAddins ();
+
 			treeStore = new TreeStore (labelField);
 			treeView = new TreeView (treeStore);
 
 			var col = treeView.Columns.Add ("Name", labelField);
 			col.Expands = true;
 
-			FillData (path);
+			FillData (path, addins);
 			treeView.ExpandAll ();
 
 			var vbox = new VBox ();
@@ -56,29 +58,59 @@ namespace MonoDevelop.ExtensionTools
 			Content = vbox;
 		}
 
-		void FillData (string path)
+		void FillData (string path, Addin[] addins)
 		{
-			var nodes = AddinManager.GetExtensionNodes (path);
+			var allNodes = addins
+				.SelectMany (x => x.Description.AllModules)
+				.SelectMany (x => x.Extensions)
+				.Where (x => x.Path == path)
+				.Select (x => x.ExtensionNodes)
+				.ToArray ();
 
 			var nav = treeStore.AddNode ();
-			int depth = BuildTree (nav, nodes, 1);
 
-			summary.Text = $"'{path}' Count: {nodes.Count} Depth: {depth}";
+			int maxDepth = 0;
+			foreach (var node in allNodes) {
+				int depth = BuildTree (nav, node, 1);
+				maxDepth = Math.Max (maxDepth, depth);
+			}
+
+			summary.Text = $"'{path}' Count: {allNodes.Length} Depth: {maxDepth}";
 		}
 
-		int BuildTree (TreeNavigator currentPosition, ExtensionNodeList nodes, int currentDepth)
+		int BuildTree (TreeNavigator currentPosition, ExtensionNodeDescriptionCollection nodes, int currentDepth)
 		{
 			int maxDepth = currentDepth;
 
-			foreach (ExtensionNode node in nodes) {
+			// TODO: insertbefore/after
+
+			foreach (ExtensionNodeDescription node in nodes) {
 				var pos = currentPosition.Clone ().AddChild ();
-				pos.SetValue (labelField, node.Id);
+
+				var label = GetLabelForNode (node);
+				pos.SetValue (labelField, label);
 
 				var childDepth = BuildTree (pos, node.ChildNodes, currentDepth + 1);
 				maxDepth = Math.Max (maxDepth, childDepth);
 			}
 
 			return maxDepth;
+		}
+
+		string GetLabelForNode (ExtensionNodeDescription node)
+		{
+			if (node.IsCondition) {
+				var value = node.GetAttribute ("value");
+				if (!string.IsNullOrEmpty (value))
+					return $"Condition: {node.Id} == {value}";
+				return $"Condition: {node.Id}";
+			}
+
+			var type = node.GetAttribute ("class");
+			if (!string.IsNullOrEmpty (type))
+				return type;
+
+			return node.Id;
 		}
 	}
 }
