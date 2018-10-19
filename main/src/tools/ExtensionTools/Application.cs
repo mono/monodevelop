@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -74,13 +75,20 @@ namespace MonoDevelop.ExtensionTools
 
 		static Widget CreateWindowContent ()
 		{
-			var nb = new Notebook ();
+			var nb = new LazyNotebook ();
 
-			nb.Add (new AddinListWidget (), "List");
-			nb.Add (new AddinDependencyTreeWidget (), "Dependency Tree");
-			nb.Add (new ExtensionPointsWidget (), "Extension Points");
+			foreach (var (widgetFunc, title) in GetTabs ()) {
+				nb.Add (widgetFunc, title);
+			}
 
 			return nb;
+		}
+
+		static IEnumerable<(Func<Widget> widgetFunc, string title)> GetTabs ()
+		{
+			yield return (() => new AddinListWidget (), "List");
+			yield return (() => new AddinDependencyTreeWidget (), "Dependency Tree");
+			yield return (() => new ExtensionPointsWidget (), "Extension Points");
 		}
 	}
 }
