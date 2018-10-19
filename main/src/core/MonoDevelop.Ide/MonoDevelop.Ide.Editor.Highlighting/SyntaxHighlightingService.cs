@@ -306,7 +306,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 									if (stream.CanDecompressEntry) {
 										byte[] data = new byte[entry.Size];
 										stream.Read (data, 0, (int)entry.Size);
-										LoadFile (newBundle, entry.Name, () => new MemoryStream (data), () => new MemoryStreamProvider (data, entry.Name));
+										var provider = new MemoryStreamProvider (data, entry.Name);
+										LoadFile (newBundle, entry.Name, provider.Open, () => provider);
 									}
 								}
 							} catch (Exception e) {
