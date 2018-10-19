@@ -35,10 +35,11 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using MonoDevelop.Ide.Templates;
+using System;
 
 namespace IdeUnitTests
 {
-	public class ProjectTemplateTest
+	public class ProjectTemplateTest : IDisposable
 	{
 		static TemplatingService templatingService;
 		string templateId;
@@ -103,13 +104,6 @@ namespace IdeUnitTests
 			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
 		}
 
-		[TearDown]
-		public void TearDown ()
-		{
-			Solution?.Dispose ();
-			Solution = null;
-		}
-
 		static void CreateNuGetConfigFile (FilePath directory)
 		{
 			var fileName = directory.Combine ("NuGet.Config");
@@ -161,6 +155,12 @@ namespace IdeUnitTests
 			string language = GetLanguage (templateId);
 
 			return template.GetTemplate (language, Config.Parameters);
+		}
+
+		public void Dispose ()
+		{
+			Solution?.Dispose ();
+			Solution = null;
 		}
 	}
 }

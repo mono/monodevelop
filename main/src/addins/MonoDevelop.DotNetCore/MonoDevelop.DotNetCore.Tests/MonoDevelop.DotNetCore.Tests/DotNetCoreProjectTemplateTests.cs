@@ -273,15 +273,16 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters)
 		{
-			var ptt = new ProjectTemplateTest (basename, templateId);
+			using (var ptt = new ProjectTemplateTest (basename, templateId)) {
 
-			foreach (var templateParameter in TemplateParameter.CreateParameters (parameters)) {
-				ptt.Config.Parameters [templateParameter.Name] = templateParameter.Value;
+				foreach (var templateParameter in TemplateParameter.CreateParameters (parameters)) {
+					ptt.Config.Parameters [templateParameter.Name] = templateParameter.Value;
+				}
+
+				var template = await ptt.CreateAndBuild ();
+
+				CheckProjectTypeGuids (ptt.Solution, GetProjectTypeGuid (template));
 			}
-
-			var template = await ptt.CreateAndBuild ();
-
-			CheckProjectTypeGuids (ptt.Solution, GetProjectTypeGuid (template));
 		}
 
 		static void CheckProjectTypeGuids (Solution solution, string expectedProjectTypeGuid)
