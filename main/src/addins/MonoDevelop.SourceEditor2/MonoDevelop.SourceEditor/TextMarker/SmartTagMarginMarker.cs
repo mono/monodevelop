@@ -81,6 +81,8 @@ namespace MonoDevelop.SourceEditor
 
 		public override void InformMousePress (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
+			if (!(margin is QuickFixMargin))
+				return;
 			ShowPopup?.Invoke (this, EventArgs.Empty);
 		}
 
