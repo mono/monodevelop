@@ -12,6 +12,10 @@ MONOSTUB_DEFINES=-DXM_REGISTRAR
 MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a
 EXTERN_C_XM_REGISTRAR_DEFINE=$(shell ./check-xm-extern.sh)
 
+if !RELEASE_BUILDS
+HYBRID_SUSPEND_ABORT=-DHYBRID_SUSPEND_ABORT
+endif
+
 #SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
 
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
@@ -39,10 +43,10 @@ libsystemnative.dylib: System_Native.o
 	cp $@ ../bin
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
-	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
-	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) -DNOGUI -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
