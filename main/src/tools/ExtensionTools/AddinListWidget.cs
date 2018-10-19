@@ -43,7 +43,9 @@ namespace MonoDevelop.ExtensionTools
 			listStore = new ListStore (labelField);
 			listView = new ListView (listStore);
 
-			listView.Columns.Add ("Name", labelField);
+			var col = listView.Columns.Add ("Name", labelField);
+			col.Expands = true;
+
 			FillData (addins);
 
 			var vbox = new VBox ();

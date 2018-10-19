@@ -37,6 +37,9 @@ namespace MonoDevelop.ExtensionTools
 {
 	public class Application: IApplication
 	{
+		// HACK: Make this proper
+		internal static LazyNotebook MainNotebook;
+
 		public Task<int> Run (string[] arguments)
 		{
 			Xwt.Application.Initialize (ToolkitType.Gtk);
@@ -75,7 +78,7 @@ namespace MonoDevelop.ExtensionTools
 
 		static Widget CreateWindowContent ()
 		{
-			var nb = new LazyNotebook ();
+			var nb = MainNotebook = new LazyNotebook ();
 
 			foreach (var (widgetFunc, title) in GetTabs ()) {
 				nb.Add (widgetFunc, title);

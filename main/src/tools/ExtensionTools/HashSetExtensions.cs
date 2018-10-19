@@ -1,5 +1,5 @@
 //
-// LazyNotebook.cs
+// HashSetExtensions.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -24,48 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Xwt;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.ExtensionTools
 {
-	class LazyNotebook : Notebook
+	static class HashSetExtensions
 	{
-		public void Add (Func<Widget> createWidget, string label)
+		public static T[] ToSortedArray<T> (this HashSet<T> set)
 		{
-			var createWidgetChain = OnAdd (createWidget);
-			var widget = new LazyWidget (createWidgetChain);
-			Add (widget, label);
-		}
-
-		protected override void OnCurrentTabChanged (EventArgs e)
-		{
-			base.OnCurrentTabChanged (e);
-			Xwt.Application.TimeoutInvoke (0, () => {
-				Toolkit.NativeEngine.Invoke (() => {
-					var tab = Tabs [CurrentTabIndex];
-					if (tab.Child is LazyWidget lazy)
-						lazy.CreateContent ();
-				});
-				return false;
-			});
-		}
-
-		protected virtual Func<Widget> OnAdd (Func<Widget> createWidget) => createWidget;
-
-		class LazyWidget : Widget
-		{
-			readonly Func<Widget> createWidget;
-
-			public LazyWidget (Func<Widget> createWidget)
-			{
-				this.createWidget = createWidget;
-			}
-
-			public void CreateContent ()
-			{
-				if (Content == null)
-					Content = createWidget ();
-			}
+			var arr = set.ToArray ();
+			Array.Sort (arr);
+			return arr;
 		}
 	}
 }

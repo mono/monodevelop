@@ -1,5 +1,5 @@
 //
-// ExtensionPointsWidget.cs
+// ExtensionNodesWidget.cs
 //
 // Author:
 //       Marius Ungureanu <maungu@microsoft.com>
@@ -29,64 +29,56 @@ using System.Linq;
 using Mono.Addins;
 using Mono.Addins.Description;
 using Xwt;
+
 namespace MonoDevelop.ExtensionTools
 {
-	class ExtensionPointsWidget : Widget
+	class ExtensionNodesWidget : Widget
 	{
-		readonly ListStore listStore;
-		readonly ListView listView;
+		readonly TreeStore treeStore;
+		readonly TreeView treeView;
 		readonly DataField<string> labelField = new DataField<string> ();
 		readonly Label summary = new Label ();
 
-		public ExtensionPointsWidget (Addin[] addins = null)
+		public ExtensionNodesWidget (string path)
 		{
-			addins = addins ?? AddinManager.Registry.GetAllAddins ();
+			treeStore = new TreeStore (labelField);
+			treeView = new TreeView (treeStore);
 
-			listStore = new ListStore (labelField);
-			listView = new ListView (listStore);
-			listView.RowActivated += ListView_RowActivated;
-
-			var col = listView.Columns.Add ("Name", labelField);
+			var col = treeView.Columns.Add ("Name", labelField);
 			col.Expands = true;
 
-			FillData (addins);
+			FillData (path);
+			treeView.ExpandAll ();
 
 			var vbox = new VBox ();
 			vbox.PackStart (summary, false);
-			vbox.PackStart (listView, true);
+			vbox.PackStart (treeView, true);
 			Content = vbox;
 		}
 
-		void ListView_RowActivated (object sender, ListViewRowEventArgs e)
+		void FillData (string path)
 		{
-			var value = listStore.GetValue (e.RowIndex, labelField);
-			Application.MainNotebook.Add (new ExtensionNodesWidget (value), "Nodes");
-			Application.MainNotebook.CurrentTabIndex = Application.MainNotebook.Tabs.Count - 1;
+			var nodes = AddinManager.GetExtensionNodes (path);
+
+			var nav = treeStore.AddNode ();
+			int depth = BuildTree (nav, nodes, 1);
+
+			summary.Text = $"'{path}' Count: {nodes.Count} Depth: {depth}";
 		}
 
-		void FillData (Addin[] addins)
+		int BuildTree (TreeNavigator currentPosition, ExtensionNodeList nodes, int currentDepth)
 		{
-			var points = GatherExtensionPoints (addins);
+			int maxDepth = currentDepth;
 
-			summary.Text = $"Count: {points.Length}";
+			foreach (ExtensionNode node in nodes) {
+				var pos = currentPosition.Clone ().AddChild ();
+				pos.SetValue (labelField, node.Id);
 
-			foreach (var point in points) {
-				int row = listStore.AddRow ();
-				listStore.SetValue (row, labelField, point);
-			}
-		}
-
-		string[] GatherExtensionPoints (Addin[] addins)
-		{
-			var points = new HashSet<string> ();
-
-			foreach (var addin in addins) {
-				foreach (ExtensionPoint extensionPoint in addin.Description.ExtensionPoints) {
-					points.Add (extensionPoint.Path);
-				}
+				var childDepth = BuildTree (pos, node.ChildNodes, currentDepth + 1);
+				maxDepth = Math.Max (maxDepth, childDepth);
 			}
 
-			return points.ToSortedArray ();
+			return maxDepth;
 		}
 	}
 }

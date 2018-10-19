@@ -29,6 +29,8 @@
     <Compile Include="AddinRegistryExtensions.cs" />
     <Compile Include="ExtensionPointsWidget.cs" />
     <Compile Include="LazyNotebook.cs" />
+    <Compile Include="ExtensionNodesWidget.cs" />
+    <Compile Include="HashSetExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
