@@ -38,13 +38,15 @@ namespace MonoDevelop.ExtensionTools
 		readonly DataField<string> labelField = new DataField<string> ();
 		readonly Label summary = new Label ();
 
-		public ExtensionPointsWidget ()
+		public ExtensionPointsWidget (Addin[] addins = null)
 		{
+			addins = addins ?? AddinManager.Registry.GetAllAddins ();
+
 			listStore = new ListStore (labelField);
 			listView = new ListView (listStore);
 
 			listView.Columns.Add ("Name", labelField);
-			FillData ();
+			FillData (addins);
 
 			var vbox = new VBox ();
 			vbox.PackStart (summary, false);
@@ -52,9 +54,9 @@ namespace MonoDevelop.ExtensionTools
 			Content = vbox;
 		}
 
-		void FillData ()
+		void FillData (Addin[] addins)
 		{
-			var points = GatherExtensionPoints ();
+			var points = GatherExtensionPoints (addins);
 
 			summary.Text = $"Count: {points.Length}";
 
@@ -65,10 +67,9 @@ namespace MonoDevelop.ExtensionTools
 			// TODO: clicking a node should open extension objects
 		}
 
-		string[] GatherExtensionPoints ()
+		string[] GatherExtensionPoints (Addin[] addins)
 		{
 			var points = new HashSet<string> ();
-			var addins = AddinManager.Registry.GetAllAddins ();
 
 			foreach (var addin in addins) {
 				foreach (ExtensionPoint extensionPoint in addin.Description.ExtensionPoints) {

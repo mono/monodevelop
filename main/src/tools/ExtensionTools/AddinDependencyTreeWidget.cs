@@ -37,15 +37,17 @@ namespace MonoDevelop.ExtensionTools
 		readonly DataField<string> labelField = new DataField<string> ();
 		readonly Label summary = new Label ();
 
-		public AddinDependencyTreeWidget ()
+		public AddinDependencyTreeWidget (Addin[] addins = null)
 		{
+			addins = addins ?? AddinManager.Registry.GetAllAddins ();
+
 			treeStore = new TreeStore (labelField);
 			treeView = new TreeView (treeStore);
 
 			var col = treeView.Columns.Add ("Name", labelField);
 			col.Expands = true;
 
-			FillData ();
+			FillData (addins);
 			treeView.ExpandAll ();
 
 			var vbox = new VBox ();
@@ -54,9 +56,9 @@ namespace MonoDevelop.ExtensionTools
 			Content = vbox;
 		}
 
-		void FillData()
+		void FillData(Addin[] addins)
 		{
-			var roots = MakeDependencyTree ();
+			var roots = MakeDependencyTree (addins);
 			var node = treeStore.AddNode ();
 
 			node.SetValue (labelField, "Root");
@@ -83,12 +85,12 @@ namespace MonoDevelop.ExtensionTools
 			return maxDepth;
 		}
 
-		List<AddinNode> MakeDependencyTree ()
+		List<AddinNode> MakeDependencyTree (Addin[] addins)
 		{
 			var cache = new Dictionary<Addin, AddinNode> ();
 			var roots = new List<AddinNode> ();
 
-			foreach (var addin in AddinManager.Registry.GetAllAddins ()) {
+			foreach (var addin in addins) {
 				var addinNode = GetOrCreateNode (addin);
 
 				if (addin.Description.IsRoot)

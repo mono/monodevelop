@@ -36,13 +36,15 @@ namespace MonoDevelop.ExtensionTools
 		readonly DataField<string> labelField = new DataField<string> ();
 		readonly Label summary = new Label ();
 
-		public AddinListWidget ()
+		public AddinListWidget (Addin[] addins = null)
 		{
+			addins = addins ?? AddinManager.Registry.GetAllAddins (x => x.Name);
+
 			listStore = new ListStore (labelField);
 			listView = new ListView (listStore);
 
 			listView.Columns.Add ("Name", labelField);
-			FillData ();
+			FillData (addins);
 
 			var vbox = new VBox ();
 			vbox.PackStart (summary, false);
@@ -50,10 +52,8 @@ namespace MonoDevelop.ExtensionTools
 			Content = vbox;
 		}
 
-		void FillData ()
+		void FillData (Addin[] addins)
 		{
-			var addins = AddinManager.Registry.GetAllAddins (x => x.Name);
-
 			summary.Text = $"Count: {addins.Length}";
 
 			foreach (var addin in addins) {
