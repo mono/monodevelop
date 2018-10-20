@@ -107,7 +107,9 @@ namespace MonoDevelop.Ide.Projects
 			Name = "wizard_dialog";
 			Title = GettextCatalog.GetString ("New Project");
 			WindowPosition = WindowPosition.CenterOnParent;
-			TransientFor = IdeApp.Workbench.RootWindow;
+			if (IdeApp.Workbench.RootWindow.Visible) {
+				TransientFor = IdeApp.Workbench.RootWindow;
+			}
 
 			projectConfigurationWidget = new GtkProjectConfigurationWidget ();
 			projectConfigurationWidget.Name = "projectConfigurationWidget";

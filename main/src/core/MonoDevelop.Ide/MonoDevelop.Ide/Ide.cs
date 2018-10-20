@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide
 			commandService.EnableIdleUpdate = true;
 
 			if (Customizer != null)
-				Customizer.OnIdeInitialized ();
+				Customizer.OnIdeInitialized (hideWelcomePage);
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
@@ -465,16 +465,20 @@ namespace MonoDevelop.Ide
 			get { return isMainRunning; }
 		}
 
+		public static bool IsExiting { get; private set; }
+
 		/// <summary>
 		/// Exits MonoDevelop. Returns false if the user cancels exiting.
 		/// </summary>
 		public static async Task<bool> Exit ()
 		{
+			IsExiting = true;
 			if (await workbench.Close ()) {
 				Gtk.Application.Quit ();
 				isMainRunning = false;
 				return true;
 			}
+			IsExiting = false;
 			return false;
 		}
 

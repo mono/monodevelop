@@ -465,12 +465,12 @@ namespace MonoDevelop.Ide
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
 
 			// OpenDocuments appears when the app is idle.
-			if (!hideWelcomePage) {
+			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
+				IdeApp.Workbench.Show ();
 			}
 
-			IdeApp.Workbench.Show ();
 			return false;
 		}
 

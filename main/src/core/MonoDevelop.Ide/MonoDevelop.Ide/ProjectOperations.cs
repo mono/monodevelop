@@ -692,27 +692,27 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
-		public void NewSolution ()
+
+		public Task<bool> NewSolution ()
 		{
-			NewSolution (null);
-		}
-		
-		public void NewSolution (string defaultTemplate)
-		{
-			NewSolution (defaultTemplate, true);
+			return NewSolution (null);
 		}
 
-		public async void NewSolution (string defaultTemplate, bool showTemplateSelection)
+		public Task<bool> NewSolution (string defaultTemplate)
+		{
+			return NewSolution (defaultTemplate, true);
+		}
+
+		public async Task<bool> NewSolution (string defaultTemplate, bool showTemplateSelection)
 		{
 			if (!await IdeApp.Workbench.SaveAllDirtyFiles ())
-				return;
+				return false;
 
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
 			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
-			newProjectDialog.Show ();
+			return newProjectDialog.Show ();
 		}
 		
 		public Task<WorkspaceItem> AddNewWorkspaceItem (Workspace parentWorkspace)
