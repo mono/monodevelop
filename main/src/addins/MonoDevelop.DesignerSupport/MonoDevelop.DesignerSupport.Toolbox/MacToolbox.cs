@@ -1,3 +1,4 @@
+#if MAC
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -476,3 +477,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 	}
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if MAC
+using System;
 using AppKit;
 using CoreGraphics;
 using Xwt;
@@ -131,3 +132,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		}
 	}
 }
+#endif

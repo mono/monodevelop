@@ -1,4 +1,5 @@
-﻿using AppKit;
+﻿#if MAC
+using AppKit;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
@@ -12,3 +13,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		}
 	}
 }
+#endif

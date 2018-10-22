@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if MAC
+using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
@@ -69,3 +70,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 	}
 }
+#endif
