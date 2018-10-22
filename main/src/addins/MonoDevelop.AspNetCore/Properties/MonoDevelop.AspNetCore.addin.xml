@@ -27,8 +27,6 @@
 		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
 		<Import file = "Templates/AppSettingsFile.xft.xml" />
 		<Import file = "Templates/AppSettingsFile.json" />
-		<Import file = "Templates/npmConfigurationFile.xft.xml" />
-		<Import file = "Templates/npmConfigurationFile.json" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -59,8 +57,6 @@
 		
 		<FileTemplate id   = "AspNetCoreAppSettingsFile"
 		              file = "Templates/AppSettingsFile.xft.xml"/>
-		<FileTemplate id   = "AspNetCorenpmConfigurationFile"
-		              file = "Templates/npmConfigurationFile.xft.xml"/>
 		
 	</Extension>
 	

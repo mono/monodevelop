@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>npm Configuration File</_Name>
 		<Icon>md-file-source</Icon>
-		<_Category>ASP.NET Core</_Category>
+		<_Category>Web</_Category>
 		<_Description>npm Configuration File for package.json</_Description>
 		<DefaultFilename>package</DefaultFilename>
 	</TemplateConfiguration>
