@@ -1,4 +1,5 @@
-﻿using AppKit;
+﻿#if MAC
+using AppKit;
 using CoreGraphics;
 using Foundation;
 using System.Linq;
@@ -147,3 +148,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 }
+#endif

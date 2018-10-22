@@ -8,9 +8,16 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.DesignerSupport</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'ReleaseMac' OR '$(Configuration)' == 'DebugMac' ">
+      <Reference Include="Xamarin.Mac">
+        <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+      </Reference>
+  </ItemGroup>
+   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Design" />
@@ -45,9 +52,6 @@
     <Reference Include="Mono.Cecil.Rocks">
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Xamarin.Mac">
-      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
