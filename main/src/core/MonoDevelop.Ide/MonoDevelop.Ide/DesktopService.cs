@@ -188,8 +188,7 @@ namespace MonoDevelop.Ide
 			if (mimeType == null) {
 				mimeType = GetMimeTypeForUri (file);
 			}
-
-			if (mimeType != "application/octet-stream") {
+			if (mimeType != "application/octet-stream" && mimeType != "application/x-msdownload") {
 				return GetMimeTypeIsText (mimeType);
 			}
 
