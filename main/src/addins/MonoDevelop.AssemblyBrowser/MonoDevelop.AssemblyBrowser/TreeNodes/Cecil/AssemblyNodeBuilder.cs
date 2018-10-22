@@ -69,12 +69,16 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
+			if (compilationUnit.Error != null) {
+				treeBuilder.AddChild (compilationUnit.Error);
+				return;
+			}
 			if (compilationUnit.Assembly == null)
 				return;
 			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
 			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
 				treeBuilder.AddChild (references);
-			
+
 			var resources = new AssemblyResourceFolder (compilationUnit.Assembly);
 			if (resources.Resources.Any ())
 				treeBuilder.AddChild (resources);
@@ -104,7 +108,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			return compilationUnit?.Assembly?.MainModule.HasTypes == true;
+			return compilationUnit.Assembly?.MainModule.HasTypes == true || compilationUnit.Error != null;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
