@@ -1,3 +1,4 @@
+#if MAC
 using System;
 using AppKit;
 using CoreGraphics;
@@ -147,3 +148,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		#endregion
 	}
 }
+#endif

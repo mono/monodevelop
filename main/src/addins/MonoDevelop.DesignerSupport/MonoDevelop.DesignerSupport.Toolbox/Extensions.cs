@@ -1,5 +1,5 @@
-﻿using AppKit;
-
+﻿#if MAC
+using AppKit;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -12,3 +12,4 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 }
+#endif

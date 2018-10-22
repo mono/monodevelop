@@ -28,7 +28,6 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
 using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
@@ -39,13 +38,15 @@ namespace MonoDevelop.DesignerSupport
 	public class ToolboxPad : PadContent
 	{
 		Gtk.Widget widget;
-		Widget xWidget;
-		Toolbox.MacToolbox toolbox;
 
+#if MAC
+		Toolbox.MacToolbox toolbox;
+		Widget xWidget;
+#endif
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
-
+#if MAC
 			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_TOOLBAR")?.ToLower () == "true";
 			if (nativeEnabled) {
 
@@ -71,10 +72,13 @@ namespace MonoDevelop.DesignerSupport
 					}
 				};
 			} else {
+#endif
 				widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
+#if MAC
 			}
+#endif
 		}
-
+#if MAC
 		public override void Dispose ()
 		{
 			if (xWidget != null) {
@@ -83,6 +87,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 			base.Dispose ();
 		}
+#endif
 
 		#region AbstractPadContent implementations
 		
