@@ -11,6 +11,7 @@ using MonoDevelop.Ide;
 using AppKit;
 using Xwt;
 using CoreGraphics;
+using Foundation;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -132,8 +133,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			//update view when toolbox service updated
 			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
 			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
-			Refresh ();
-
+		
 			filterEntry.Changed += (s, e) => { refilter (); };
 		
 			toolboxWidget.SelectedItemChanged += delegate {
@@ -162,6 +162,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.ShowCategories = catToggleButton.Active = true;
 			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
+
+			Refresh ();
 		}
 
 		internal void FocusSelectedView ()
@@ -267,18 +269,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			FocusedView?.OnKeyPressed (s, e);
 		}
 
-		public override void SetFrameSize (CGSize newSize)
-		{
-			toolboxWidget.QueueResize ();
-			base.SetFrameSize (newSize);
-		}
-
 		#region Toolbar event handlers
 
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-
+			toolboxWidget.RedrawItems (true, true);
 			PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 
 			if (compactModeToggleButton.Active) {
@@ -293,6 +289,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void toggleCategorisation (object sender, EventArgs e)
 		{
 			this.toolboxWidget.ShowCategories = catToggleButton.Active;
+			toolboxWidget.RedrawItems (true, false);
 			if (catToggleButton.Active) {
 				catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Hide Categories");
 				catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to hide toolbox categories");
@@ -317,7 +314,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				cat.IsVisible = hasVisibleChild;
 			}
-			toolboxWidget.QueueDraw ();
+			toolboxWidget.RedrawItems (true, true);
 		}
 		
 		async void toolboxAddButton_Clicked (object sender, EventArgs e)
@@ -377,7 +374,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-
 		public void Refresh ()
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
@@ -406,7 +402,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				category.IsExpanded = true;
 				toolboxWidget.AddCategory (category);
 			}
-			toolboxWidget.QueueResize ();
 			Gtk.TargetEntry [] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
 				DragSourceSet?.Invoke (this, targetTable); // Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);

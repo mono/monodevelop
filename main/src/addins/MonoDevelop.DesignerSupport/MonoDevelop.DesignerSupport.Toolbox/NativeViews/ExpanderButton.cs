@@ -21,7 +21,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			return base.BecomeFirstResponder ();
 		}
 
-		public ExpanderButton ()
+		public ExpanderButton (IntPtr handle) : base (handle)
 		{
 			BezelStyle = NSBezelStyle.TexturedSquare;
 			SetButtonType (NSButtonType.OnOff);

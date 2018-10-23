@@ -14,7 +14,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
 	{
 		public Action<NSEvent> MouseDownActivated { get; set; }
-		//public Action<Gdk.EventButton> DoPopupMenu { get; set; }
 		public event EventHandler DragBegin;
 
 		bool showCategories = true;
@@ -23,21 +22,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		readonly List<ToolboxWidgetCategory> categories = new List<ToolboxWidgetCategory> ();
 
 		MacToolboxWidgetDataSource dataSource;
-		MacToolboxWidgetFlowLayoutDelegate collectionViewDelegate;
-		MacToolboxWidgetFlowLayout flowLayout;
+		internal MacToolboxWidgetFlowLayoutDelegate collectionViewDelegate;
+		internal MacToolboxWidgetFlowLayout flowLayout;
 
 		public IEnumerable<ToolboxWidgetCategory> Categories {
 			get { return categories; }
 		}
 	
-		public override void SetFrameSize (CGSize newSize)
-		{
-			if (Frame.Size != newSize) {
-				flowLayout.InvalidateLayout ();
-			}
-			base.SetFrameSize (newSize);
-		}
-
 		public void HideTooltipWindow ()
 		{
 			//To implement
@@ -104,10 +95,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Initialize ()
 		{
 			flowLayout = new MacToolboxWidgetFlowLayout ();
-			flowLayout.SectionHeadersPinToVisibleBounds = false;
-			flowLayout.MinimumInteritemSpacing = 0;
-			flowLayout.MinimumLineSpacing = 0;
-			flowLayout.SectionFootersPinToVisibleBounds = false;
+			flowLayout.SectionHeadersPinToVisibleBounds = true;
+			flowLayout.MinimumInteritemSpacing = 1;
+			flowLayout.MinimumLineSpacing = 1;
 			CollectionViewLayout = flowLayout;
 		
 			Delegate = collectionViewDelegate = new MacToolboxWidgetFlowLayoutDelegate ();
@@ -139,6 +129,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 
 			MouseDownActivated?.Invoke (theEvent);
+		}
+
+		const int IconMargin = 5;
+
+		public void RedrawItems (bool invalidates, bool reloads)
+		{
+			if (IsListMode) {
+				flowLayout.ItemSize = new CGSize (Frame.Width - IconMargin, LabelCollectionViewItem.ItemHeight);
+			} else {
+				flowLayout.ItemSize = new CGSize (ImageCollectionViewItem.Size.Width, ImageCollectionViewItem.Size.Height);
+			}
+			if (ShowCategories) {
+				collectionViewDelegate.Width = Frame.Width - IconMargin;
+				collectionViewDelegate.Height = HeaderCollectionViewItem.SectionHeight;
+			} else {
+				collectionViewDelegate.Width = 0;
+				collectionViewDelegate.Height = 0;
+			}
+
+			if (invalidates) {
+				CollectionViewLayout.InvalidateLayout ();
+			}
+			if (reloads) {
+				ReloadData ();
+			}
 		}
 
 		public override void RightMouseUp (NSEvent theEvent)
@@ -279,7 +294,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set {
 				listMode = value;
 				collectionViewDelegate.IsOnlyImage = dataSource.IsOnlyImage = !value;
-				QueueDraw ();
 			}
 		}
 
@@ -287,7 +301,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get => showCategories;
 			set {
 				showCategories = collectionViewDelegate.IsShowCategories = value;
-				QueueDraw ();
 			}
 		}
 
@@ -306,12 +319,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		Xwt.Size iconSize = new Xwt.Size (24, 24);
-
 		public void ClearCategories ()
 		{
 			categories.Clear ();
-			iconSize = new Xwt.Size (24, 24);
 		}
 
 		public string CustomMessage { get; set; }
@@ -326,11 +336,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
+
 		internal void OnContainerIsShown (object sender, EventArgs e)
 		{
 			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderCollectionViewItem.Name);
 			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelCollectionViewItem.Name);
 			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageCollectionViewItem.Name);
+
+			NSNotificationCenter.DefaultCenter.AddObserver (FrameChangedNotification, (s => {
+				if (s.Object == this) {
+					RedrawItems (true, false);
+				}
+			}));
 		}
 
 		protected override void Dispose (bool disposing)
@@ -341,53 +358,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			base.Dispose (disposing);
 		}
 
-		public void QueueDraw ()
-		{
-			dataSource.OnQueueDraw ();
-			ReloadData ();
-		}
-
-		public void QueueResize ()
-		{
-			flowLayout.InvalidateLayout ();
-		}
-
 		public void AddCategory (ToolboxWidgetCategory category)
 		{
 			categories.Add (category);
 			foreach (ToolboxWidgetItem item in category.Items) {
 				if (item.Icon == null)
 					continue;
-
-				this.iconSize.Width = Math.Max (this.iconSize.Width, (int)item.Icon.Width);
-				this.iconSize.Height = Math.Max (this.iconSize.Height, (int)item.Icon.Height);
 			}
 		}
-
-		public override NSView MakeSupplementaryView (NSString elementKind, string identifier, NSIndexPath indexPath)
-		{
-			var item = MakeItem (identifier, indexPath) as HeaderCollectionViewItem;
-			if (item == null) {
-				return null;
-			}
-
-			var toolboxWidgetCategory = categories[(int)indexPath.Section];
-			item.ExpandButton.AccessibilityTitle = toolboxWidgetCategory.Tooltip ?? "";
-			item.ExpandButton.SetCustomTitle (toolboxWidgetCategory.Text ?? "");
-			item.IsCollapsed = flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
-
-			//persisting the expanded value over our models (this is not necessary)
-			toolboxWidgetCategory.IsExpanded = !item.IsCollapsed;
-
-			item.ExpandButton.Activated += (sender, e) => {
-				ToggleSectionCollapse (item.View);
-				item.IsCollapsed = flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
-				toolboxWidgetCategory.IsExpanded = !item.IsCollapsed;
-			};
-
-			return item.View;
-		}
-
 	}
 }
 #endif
