@@ -50,7 +50,5 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void AddCategory (ToolboxWidgetCategory category);
 		void HideTooltipWindow ();
 
-		void QueueResize ();
-		void QueueDraw ();
 	}
 }
