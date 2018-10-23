@@ -37,6 +37,8 @@ using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -44,15 +46,22 @@ namespace MonoDevelop.DotNetCore
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
 		const string ShownDotNetCoreSdkInstalledExtendedPropertyName = "DotNetCore.ShownDotNetCoreSdkNotInstalledDialog";
+		int successfulBuildCount;
 
 		DotNetCoreMSBuildProject dotNetCoreMSBuildProject = new DotNetCoreMSBuildProject ();
 		DotNetCoreSdkPaths sdkPaths;
+
+		readonly Survey dotNetNsatHatsSurvey;
 
 		public DotNetCoreProjectExtension ()
 		{
 			DotNetCoreProjectReloadMonitor.Initialize ();
 			if (IsDotNetCoreSdk22Installed ())
 				DotNetProjectProxy.ModifyImplicitPackageReferenceVersion = ModifyImplicitPackageReference;
+
+			dotNetNsatHatsSurvey = new Survey ("DotNetCore.NSATHaTSSurvey",
+										"We'd love to hear about your .NET Core experience in Visual Studio for Mac",
+										"https://go.microsoft.com/fwlink/?linkid=2032986");
 		}
 
 		static bool IsDotNetCoreSdk22Installed ()
@@ -372,13 +381,34 @@ namespace MonoDevelop.DotNetCore
 			return base.OnClean (monitor, configuration, operationContext);
 		}
 
-		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			BuildResult result = CheckCanRunCleanOrBuild ();
-			if (result != null) {
-				return Task.FromResult (result);
+			var result = CheckCanRunCleanOrBuild ();
+
+			if (result == null) {
+				result = await base.OnBuild (monitor, configuration, operationContext);
+
+				if (dotNetNsatHatsSurvey.IsAvailable) {
+					CheckSurveyPrompt (result.Failed);
+				}
 			}
-			return base.OnBuild (monitor, configuration, operationContext);
+			return result;
+		}
+
+		void CheckSurveyPrompt (bool buildFailed)
+		{
+#if DEBUG
+			const int buildTimesForPrompt = 1;
+#else
+			const int buildTimesForPrompt = 5;
+#endif
+
+			if (!buildFailed) {
+				successfulBuildCount++;
+			}
+			if (successfulBuildCount == buildTimesForPrompt) {
+				Runtime.RunInMainThread (() => dotNetNsatHatsSurvey.Prompt ()).Ignore ();
+			}
 		}
 
 		BuildResult CheckCanRunCleanOrBuild ()
@@ -728,6 +758,108 @@ namespace MonoDevelop.DotNetCore
 				return globItems [0].Name;
 
 			return base.OnGetDefaultBuildAction (fileName);
+		}
+	}
+
+	//TODO: move to MonoDevelop.Core.Instrumentation??
+	class Survey
+	{
+		public bool IsAvailable => !IsDisabled && !IsDismissed;
+
+		public bool IsDismissed => DismissedSurveys.Value.Contains (Key);
+
+		public bool IsDisabled {
+		 	get; 
+		 	set; 
+		}
+
+		protected string Key {
+			get;
+		}
+
+		protected string Description {
+			get;
+		}
+
+		protected string Url {
+			get;
+		}
+
+		protected readonly ConfigurationProperty<List<string>> DismissedSurveys = 
+								ConfigurationProperty.Create ("DotNetCore.DismissedSurveysList", new List<string>());
+
+		Counter<CounterMetadata> recordClicked;
+		Counter<CounterMetadata> recordDismissed;
+
+		public event EventHandler Dismissed;
+		public event EventHandler Clicked;
+
+		public Survey (string surveyKey, string surveyDescription, string surveyUrl)
+		{
+			Key = surveyKey;
+			Url = surveyUrl;
+			Description = surveyDescription;
+
+			InitializeCounters ();
+		}
+
+		protected void InitializeCounters ()
+		{
+			recordClicked = InstrumentationService.CreateCounter<CounterMetadata> ($"{Key} survey clicked",
+																		"DotNetCore.Surveys", id: $"{Key}.Requested");
+			recordDismissed = InstrumentationService.CreateCounter<CounterMetadata> ($"{Key} survey dismissed",
+																					"DotNetCore.Surveys", id: $"{Key}.Dismissed");
+		}
+
+		public void Prompt ()
+		{
+			if (!IsAvailable)
+				return;
+				
+			var items = new List<InfoBarItem> ();
+			string msg = GettextCatalog.GetString (Description);
+
+			items.Add (new InfoBarItem (GettextCatalog.GetString ("Take a survey"), InfoBarItemKind.Button, TakeASurveyHandle, true));
+			items.Add (new InfoBarItem (GettextCatalog.GetString ("Don't show again"), InfoBarItemKind.Button, DismissHandle, true));
+
+			IdeApp.Workbench.ShowInfoBar (false, new InfoBarOptions (msg) {
+				Items = items.ToArray ()
+			});
+
+			//once we prompt it, it'll no longer prompted again during this session
+			IsDisabled = true;
+		}
+
+		void DismissHandle ()
+		{
+			OnDismissed ();
+			DisableSurvey ();
+		}
+
+		void TakeASurveyHandle ()
+		{
+			OnClicked ();
+			DesktopService.ShowUrl (Url);
+		}
+
+		protected void OnDismissed ()
+		{
+			Dismissed?.Invoke (this, EventArgs.Empty);
+			recordDismissed.Inc ();
+		}
+
+		protected void OnClicked ()
+		{
+			Clicked?.Invoke (this, EventArgs.Empty);
+			recordClicked.Inc ();
+		}
+
+		void DisableSurvey ()
+		{
+			if (DismissedSurveys.Value.Contains (Key))
+				return;
+
+			DismissedSurveys.Value.Add (Key);
 		}
 	}
 }
