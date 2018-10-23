@@ -143,8 +143,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal IMementoCapable GetMementoCapable ()
 		{
-			PadWindow pw = (PadWindow) window;
-			return pw.GetMementoCapable ();
+			return content?.PadContent as IMementoCapable;
 		}
 		
 		public void Destroy ()

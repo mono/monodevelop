@@ -277,12 +277,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal IMementoCapable GetMementoCapable ()
-		{
-			// Don't create the content if not already created
-			return content as IMementoCapable;
-		}
-		
 		internal void NotifyShown (VisibilityChangeEventArgs args)
 		{
 			PadShown?.Invoke (this, args);
