@@ -66,9 +66,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return mimeType == "application/x-ms-dos-executable"
-				|| mimeType == "application/x-executable"
-				|| mimeType == "application/x-msdownload";
+			return fileName.HasExtension (".dll") || fileName.HasExtension (".exe");
 		}
 		
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
