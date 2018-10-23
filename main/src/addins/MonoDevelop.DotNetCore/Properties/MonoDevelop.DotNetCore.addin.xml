@@ -661,6 +661,21 @@
 				_label="Build"
 				class="MonoDevelop.DotNetCore.DummyMSBuildOptionsPanel" />
 		</Condition>
+		<Condition id="ProjectTypeId" value="VisualStudioDotNetCoreCSharpProject">
+			<Panel
+				id="VisualStudioDotNetCoreCSharpCompilerOptionsPanel"
+				_label="C#"
+				class="MonoDevelop.CSharp.Project.CompilerOptionsPanel" />
+		</Condition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
+		<Condition id="ProjectTypeId" value="VisualStudioDotNetCoreCSharpProject">
+			<Panel
+				id="VisualStudioDotNetCoreCSharpCodeGenerationPanel"
+				_label="Compiler"
+				class="MonoDevelop.CSharp.Project.CodeGenerationPanel" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
