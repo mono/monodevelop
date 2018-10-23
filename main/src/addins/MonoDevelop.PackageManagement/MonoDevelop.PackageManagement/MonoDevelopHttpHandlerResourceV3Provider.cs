@@ -41,7 +41,7 @@ namespace MonoDevelop.PackageManagement
 
 		static HttpHandlerResourceV3 CreateResource (PackageSource packageSource)
 		{
-			return CreateResource (packageSource, HttpHandlerResourceV3.CredentialService);
+			return CreateResource (packageSource, HttpHandlerResourceV3.CredentialService.Value);
 		}
 
 		internal static HttpHandlerResourceV3 CreateResource (PackageSource packageSource, ICredentialService credentialService, bool nonInteractive = false)
