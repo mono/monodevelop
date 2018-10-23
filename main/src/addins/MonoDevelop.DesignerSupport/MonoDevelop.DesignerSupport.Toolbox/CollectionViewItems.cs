@@ -6,13 +6,15 @@ using Foundation;
 using MonoDevelop.Ide;
 using Xwt;
 using System.Linq;
+using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[Register ("LabelCollectionViewItem")]
-	public class LabelCollectionViewItem : NSCollectionViewItem
+	class LabelCollectionViewItem : NSCollectionViewItem
 	{
-		public const int ItemHeight = 32;
+		//60
+		public const int ItemHeight = 30;
 		internal const string Name = "LabelViewItem";
 
 		public override string Description => TextField.StringValue;
@@ -51,12 +53,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	}
 
 	[Register ("HeaderCollectionViewItem")]
-	public class HeaderCollectionViewItem : NSCollectionViewItem
+	class HeaderCollectionViewItem : ExpanderButton, INSCollectionViewSectionHeaderView
 	{
 		public static NSImage CollapsedImage = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu).ToNative ();
 		public static NSImage ExpandedImage = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu).ToNative ();
 
-		public const int ExpandButtonSize = 20;
 		public const int SectionHeight = 25;
 
 		internal const string Name = "HeaderViewItem";
@@ -66,19 +67,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get => isCollapsed;
 			internal set {
 				isCollapsed = value;
-				ExpandButton.Image = value ? CollapsedImage : ExpandedImage;
+				Image = value ? CollapsedImage : ExpandedImage;
 			}
 		}
 
-		public NativeViews.ExpanderButton ExpandButton { get; private set; }
-
-		public override void LoadView ()
-		{
-			View = ExpandButton = new NativeViews.ExpanderButton {
-				Image = ExpandedImage,
-			};
-			ExpandButton.Identifier = Name;
-		}
+		public MacToolboxWidget CollectionView { get; internal set; }
+		public NSIndexPath IndexPath { get; internal set; }
 
 		public HeaderCollectionViewItem (IntPtr handle) : base (handle)
 		{
@@ -87,9 +81,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	}
 
 	[Register ("ImageCollectionViewItem")]
-	public class ImageCollectionViewItem : NSCollectionViewItem
+	class ImageCollectionViewItem : NSCollectionViewItem
 	{
-		public static CGSize Size = new CGSize (25, 25);
+		//47
+		public static CGSize Size = new CGSize (23, 23);
 
 		internal const string Name = "ImageViewItem";
 		const int margin = 5;

@@ -71,7 +71,36 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override NSView GetView (NSCollectionView collectionView, NSString kind, NSIndexPath indexPath)
 		{
-			return collectionView.MakeSupplementaryView (kind, HeaderCollectionViewItem.Name, indexPath);
+			var toolboxWidget = (MacToolboxWidget)collectionView;
+			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
+				var section = items [(int)indexPath.Section];
+				button.SetCustomTitle (section.Text);
+				button.IndexPath = indexPath;
+				button.CollectionView = toolboxWidget;
+				button.Activated -= Button_Activated;
+				button.Activated += Button_Activated;
+				button.IsCollapsed = toolboxWidget.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
+				return button;
+			}
+			return null;
+		}
+
+		void Button_Activated (object sender, EventArgs e)
+		{
+			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
+			var collectionView = headerCollectionViewItem.CollectionView;
+			var indexPath = headerCollectionViewItem.IndexPath;
+			var isCollapsed = collectionView.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
+
+			collectionView.ToggleSectionCollapse (headerCollectionViewItem);
+
+			headerCollectionViewItem.IsCollapsed = items [(int)indexPath.Section].IsExpanded = collectionView.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
+			//if (isCollapsed) {
+			//	collectionView.flowLayout.ItemSize = new CGSize (0, 0);
+			//} else {
+			//	collectionView.flowLayout.ItemSize = new CGSize (collectionView.Frame.Width-30, HeaderCollectionViewItem.SectionHeight);
+			//}
+			collectionView.CollectionViewLayout.InvalidateLayout ();
 		}
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)

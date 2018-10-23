@@ -9,13 +9,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	class MacToolboxWidgetFlowLayout : NSCollectionViewFlowLayout
 	{
-		public override CGSize HeaderReferenceSize => new CGSize (this.CollectionView.Bounds.Width, 40);
+
 	}
 
 	class MacToolboxWidgetFlowLayoutDelegate : NSCollectionViewDelegateFlowLayout
 	{
 		public bool IsOnlyImage { get; set; }
 		public bool IsShowCategories { get; set; }
+		public nfloat Width { get; internal set; }
+		public nfloat Height { get; internal set; }
 
 		public event EventHandler<NSSet> SelectionChanged;
 		public event EventHandler<NSIndexSet> DragBegin;
@@ -30,23 +32,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return false;
 		}
 
-		public override CGSize SizeForItem (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, NSIndexPath indexPath)
-		{
-			var categories = ((MacToolboxWidget)collectionView).Categories;
-			var category = categories.ElementAt ((int)indexPath.Section);
-			var selectedItem = category.Items[(int)indexPath.Item];
-			if (!category.IsExpanded || !selectedItem.IsVisible) {
-				return new CGSize (0, 0);
-			}
-
-			if (IsOnlyImage) {
-				return ImageCollectionViewItem.Size;
-			}
-			var delegateFlowLayout = (MacToolboxWidgetFlowLayout)collectionViewLayout;
-			var sectionInset = delegateFlowLayout.SectionInset;
-			return new CGSize (collectionView.Frame.Width - sectionInset.Right - sectionInset.Left, LabelCollectionViewItem.ItemHeight);
-		}
-
 		public override NSEdgeInsets InsetForSection (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, nint section)
 		{
 			return new NSEdgeInsets (0, 0, 0, 0);
@@ -54,22 +39,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override CGSize ReferenceSizeForHeader (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, nint section)
 		{
-			return new CGSize (collectionView.Bounds.Width, 40);
-		}
-
-		public override CGSize ReferenceSizeForFooter (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, nint section)
-		{
-			return CGSize.Empty;
-		}
-
-		public override NSSet ShouldDeselectItems (NSCollectionView collectionView, NSSet indexPaths)
-		{
-			return indexPaths;
-		}
-
-		public override NSSet ShouldSelectItems (NSCollectionView collectionView, NSSet indexPaths)
-		{
-			return indexPaths;
+			return new CGSize (Width - 1, Height);
 		}
 	}
 }
