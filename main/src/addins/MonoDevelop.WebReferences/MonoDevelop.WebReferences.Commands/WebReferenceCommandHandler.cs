@@ -17,6 +17,15 @@ namespace MonoDevelop.WebReferences.Commands
 	{
 		bool updatingReferences;
 
+		[CommandUpdateHandler (WebReferenceCommands.Add)]
+		void CanAddWebReference (CommandInfo ci)
+		{
+			var project = CurrentNode.GetParentDataItem (typeof (DotNetProject), true) as DotNetProject;
+
+			ci.Enabled = ci.Visible = project.TargetFramework.Id.Identifier != ".NETStandard" &&
+				project.TargetFramework.Id.Identifier != ".NETCoreApp";
+		}
+
 		/// <summary>Execute the command for adding a new web reference to a project.</summary>
 		[CommandHandler (WebReferenceCommands.Add)]
 		public async void NewWebReference()
