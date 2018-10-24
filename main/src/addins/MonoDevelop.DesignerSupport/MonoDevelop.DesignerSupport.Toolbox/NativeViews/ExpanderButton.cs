@@ -31,7 +31,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			Title = "";
 			WantsLayer = true;
 			Layer.BackgroundColor = NSColor.Clear.CGColor;
-
 		}
 
 		public void SetCustomTitle (string title)

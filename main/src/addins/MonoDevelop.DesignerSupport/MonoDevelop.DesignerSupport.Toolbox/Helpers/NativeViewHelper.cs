@@ -13,6 +13,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Alignment = NSLayoutAttribute.CenterY,
 			Spacing = spacing,
 			Distribution = NSStackViewDistribution.Fill,
+			TranslatesAutoresizingMaskIntoConstraints = false
 		};
 
 		public static NSAttributedString GetAttributedString (string text, NSColor foregroundColor, NSFont font)
@@ -34,7 +35,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Bezeled = false,
 				DrawsBackground = false,
 				Selectable = false,
-				Alignment = alignment
+				Alignment = alignment,
+				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 		}
 
@@ -80,7 +82,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Bezeled = false,
 				DrawsBackground = false,
 				Selectable = false,
-				Alignment = alignment
+				Alignment = alignment,
+				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 			return label;
 		}
@@ -90,6 +93,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Alignment = NSLayoutAttribute.Leading,
 			Spacing = spacing,
 			Distribution = NSStackViewDistribution.Fill,
+			TranslatesAutoresizingMaskIntoConstraints = false
 		};
 
 		public static NSFont GetSmallSystemFont (bool bold)
@@ -106,7 +110,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Bordered = bordered,
 				ControlSize = controlSize,
 				Font = font ?? GetSystemFont (false),
-				Title = text
+				Title = text, TranslatesAutoresizingMaskIntoConstraints = false
 			};
 			if (image != null) {
 				button.Image = image;
@@ -119,7 +123,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return new NSTextField () {
 				StringValue = text ?? "",
 				Font = font ?? GetSystemFont (false),
-				Alignment = alignment
+				Alignment = alignment,
+				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 		}
 
@@ -133,7 +138,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Bezeled = false,
 				DrawsBackground = false,
 				Selectable = false,
-				Alignment = alignment
+				Alignment = alignment,
+				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 		}
 

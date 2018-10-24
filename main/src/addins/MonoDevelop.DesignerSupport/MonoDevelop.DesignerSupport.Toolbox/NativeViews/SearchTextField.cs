@@ -12,56 +12,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
-		static NSImage searchImage = ImageService.GetIcon("md-searchbox-search", Gtk.IconSize.Menu).ToNative ();
-
-		public string Text {
-			get { return StringValue; }
-			set {
-				StringValue = value;
-			}
-		}
-
 		public SearchTextField ()
 		{
+			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
 		public override bool BecomeFirstResponder ()
 		{
-			NeedsDisplay = true;
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}
 
-		public override void DrawRect (CGRect dirtyRect)
-		{
-			base.DrawRect (dirtyRect);
-			Styles.SearchTextFieldLineBackgroundColor.Set ();
-			NSBezierPath.FillRect (Bounds);
-			Styles.SearchTextFieldLineBorderColor.Set ();
-			NSBezierPath.DefaultLineWidth = 1.5f;
-			NSBezierPath.StrokeRect (Bounds);
-
-			var startY = (Frame.Height - searchImage.Size.Height) / 2;
-			var context = NSGraphicsContext.CurrentContext;
-			context.SaveGraphicsState ();
-			searchImage.Draw (new CGRect (3, startY, searchImage.Size.Width, searchImage.Size.Height));
-			context.RestoreGraphicsState ();
-		}
-
 		#region IEncapsuledView
-
-		public override bool ResignFirstResponder ()
-		{
-			NeedsDisplay = true;
-			return base.ResignFirstResponder ();
-		}
-
 
 		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
 
 		}
-
 
 		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
