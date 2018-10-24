@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Security.Cryptography;
 using System.Threading;
 using MonoDevelop.Ide;
 using NUnit.Framework;
@@ -33,8 +34,9 @@ namespace Mono.TextEditor.Tests
 	[TestFixture]
 	class TextEditorKeyPressTimingsTests : TextEditorTestBase
 	{
-		[Test]
-		public void TestSimpleTimer ()
+		const double TicksPerMillisecond = 1e4;
+
+		static TypingTimingMetadata TimeAction (Action action)
 		{
 			var timings = new TextEditorKeyPressTimings (null);
 
@@ -44,13 +46,41 @@ namespace Mono.TextEditor.Tests
 
 			var time = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
 			timings.StartTimer (time);
-			Thread.Sleep (800);
+			action ();
 			timings.EndTimer ();
 
-			var metadata = timings.GetTypingTimingMetadata (null, null, 0, 0);
-			Assert.That (metadata.First, Is.GreaterThanOrEqualTo (800.0));
-			Assert.That (metadata.First, Is.LessThanOrEqualTo (1600));
+			return timings.GetTypingTimingMetadata (null, null, 0, 0);
+		}
+
+		[Test]
+		public void TestSimpleTimer ()
+		{
+			var metadata = TimeAction (() => Thread.Sleep (800));
+			Assert.That (metadata.First, Is.InRange (800, 1600));
 			Assert.That (metadata.SessionLength, Is.GreaterThanOrEqualTo (0));
+		}
+
+		[Test]
+		public void TestHighPrecision ()
+		{
+			const int rounds = 200;
+			int assertPasses = 0;
+
+			for (int i = 0; i < rounds; i++) {
+				var metadata = TimeAction (() => {
+					// just do a bunch of CPU busy work so each iteration has very different timings
+					for (int j = 0; j < 100; j++) {
+						var buffer = new byte [new Random ().Next (1, 4096)];
+						RandomNumberGenerator.Create ().GetBytes (buffer);
+					}
+				});
+
+				if (metadata.First - Math.Truncate (metadata.First) > 0)
+					assertPasses++;
+			}
+
+			// at least 80% of action timings should have precision better than one millisecond
+			Assert.That (assertPasses / (double)rounds, Is.GreaterThan (0.80));
 		}
 	}
 }
