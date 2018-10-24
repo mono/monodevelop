@@ -50,7 +50,7 @@ namespace MonoDevelop.WebReferences
 		protected DiscoveryClientProtocol DiscoResolve (string url)
 		{
 			// Checks the availablity of any services
-			var protocol = new DiscoveryClientProtocol ();
+			var protocol = new MonoDevelopDiscoveryClientProtocol ();
 			var creds = new AskCredentials ();
 			protocol.Credentials = creds;
 			bool unauthorized;
