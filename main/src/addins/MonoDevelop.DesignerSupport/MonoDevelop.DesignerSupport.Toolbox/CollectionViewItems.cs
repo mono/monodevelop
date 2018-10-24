@@ -201,6 +201,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public ContentCollectionViewItem ()
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
+			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 	}
 }

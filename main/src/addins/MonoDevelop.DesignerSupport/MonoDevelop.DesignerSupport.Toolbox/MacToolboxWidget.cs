@@ -133,6 +133,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			};
 
 			BackgroundColors = new NSColor[] { Styles.SearchTextFieldLineBackgroundColor };
+
+			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
 		public override void MouseDown (NSEvent theEvent)

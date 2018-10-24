@@ -10,17 +10,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
-		public override CGSize IntrinsicContentSize => new CGSize (25, 25);
+		//public override CGSize IntrinsicContentSize => new CGSize (25, 25);
 
 		bool isFirstResponder;
 
 		public ClickedButton ()
 		{
-			BezelStyle = NSBezelStyle.TexturedSquare;
-			FocusRingType = NSFocusRingType.None;
-			SetButtonType (NSButtonType.OnOff);
+			BezelStyle = NSBezelStyle.RoundRect;
+			FocusRingType = NSFocusRingType.Default;
+			SetButtonType (NSButtonType.MomentaryChange);
 			Bordered = false;
 			Title = "";
+			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
 		NSTrackingArea trackingArea;
@@ -42,13 +43,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			base.MouseEntered (theEvent);
 			isMouseHover = true;
-			NeedsDisplay = true;
 		}
 
 		public override bool ResignFirstResponder ()
 		{
 			isFirstResponder = false;
-			NeedsDisplay = true;
 			return base.ResignFirstResponder ();
 		}
 
@@ -56,7 +55,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			isFirstResponder = true;
 			Focused?.Invoke (this, EventArgs.Empty);
-			NeedsDisplay = true;
 			return base.BecomeFirstResponder ();
 		}
 
@@ -64,47 +62,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			base.MouseExited (theEvent);
 			isMouseHover = false;
-			NeedsDisplay = true;
-		}
-
-		//focused -> #505050 - Line ->#494949
-		//focus encima + mouse over ##565656 - #424242
-		//mouse over -> #595959 - #333133
-		public override void DrawRect (CGRect dirtyRect)
-		{
-			base.DrawRect (dirtyRect);
-
-			NSColor backgroundColor = null;
-			NSColor borderColor = null;
-			if (isFirstResponder && isMouseHover) {
-				backgroundColor = Styles.ClickedButtonHoverFocusedBackgroundColor;
-				borderColor = Styles.ClickedButtonHoverFocusedBorderColor;
-			} else if (isFirstResponder) {
-				backgroundColor = Styles.ClickedButtonFocusedBackgroundColor;
-				borderColor = Styles.ClickedButtonFocusedBorderColor;
-			} else if (isMouseHover) {
-				backgroundColor = Styles.ClickedButtonHoverBackgroundColor;
-				borderColor = Styles.ClickedButtonHoverBorderColor;
-			}
-
-			if (backgroundColor != null) {
-				var path = NSBezierPath.FromRoundedRect (dirtyRect, Styles.ToggleButtonCornerRadius, Styles.ToggleButtonCornerRadius);
-				path.ClosePath ();
-				backgroundColor.Set ();
-				path.Fill ();
-				path.LineWidth = Styles.ToggleButtonLineWidth;
-				borderColor.Set ();
-				path.Stroke ();
-			}
-
-			if (Image != null) {
-				var startX = (Frame.Width - Image.Size.Width) / 2;
-				var startY = (Frame.Width - Image.Size.Width) / 2;
-				var context = NSGraphicsContext.CurrentContext;
-				context.SaveGraphicsState ();
-				Image.Draw (new CGRect (startX, startY, Image.Size.Width, Image.Size.Height));
-				context.RestoreGraphicsState ();
-			}
 		}
 
 		#region IEncapsuledView

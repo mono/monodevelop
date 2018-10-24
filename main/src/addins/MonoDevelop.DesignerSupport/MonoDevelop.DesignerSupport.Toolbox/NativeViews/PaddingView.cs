@@ -22,6 +22,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			}
 		}
 
+		public PaddingView ()
+		{
+			TranslatesAutoresizingMaskIntoConstraints = false;
+		}
+
 		NSView content;
 		public NSView Content {
 			get => content;
