@@ -14,7 +14,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		readonly List<ToolboxWidgetCategory> items;
 
-		Dictionary<ToolboxWidgetItem, NSCollectionViewItem> Views = new Dictionary<ToolboxWidgetItem, NSCollectionViewItem> ();
+		Dictionary<ToolboxWidgetItem, NSIndexPath> Views = new Dictionary<ToolboxWidgetItem, NSIndexPath> ();
 
 		public MacToolboxWidgetDataSource (List<ToolboxWidgetCategory> items)
 		{
@@ -48,7 +48,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 
 			if (!Views.ContainsKey (selectedItem)) {
-				Views.Add (selectedItem, item);
+				Views.Add (selectedItem, indexPath);
 			}
 
 			return item;
@@ -56,8 +56,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal void SelectItem (NSCollectionView collectionView, ToolboxWidgetItem item)
 		{
-			if (Views.TryGetValue (item, out var selectedItem)) {
-			 	var indexPath =	collectionView.GetIndexPath (selectedItem);
+			if (Views.TryGetValue (item, out var indexPath)) {
 				var elements = new NSSet (new NSObject [] { indexPath });
 				collectionView.DeselectAll (null);
 				collectionView.SelectItems (elements, NSCollectionViewScrollPosition.None);
@@ -116,8 +115,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal ToolboxWidgetItem GetItemRight (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
 		{
-			if (Views.TryGetValue (currentItem, out var collectionViewItem)) {
-				var expectedPoint = new CGPoint  (collectionViewItem.View.Frame.Right + collectionViewItem.View.Frame.Height, collectionViewItem.View.Frame.Y);
+			if (Views.TryGetValue (currentItem, out var indexPath)) {
+				var collectionViewItem = GetItem (collectionView, indexPath);
+				var expectedPoint = new CGPoint  (collectionViewItem.View.Frame.GetMidX () + collectionViewItem.View.Frame.Width, collectionViewItem.View.Frame.Y);
 				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
 				if (expectedIndexPath != null) {
 					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
@@ -129,8 +129,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal ToolboxWidgetItem GetItemLeft (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
 		{
-			if (Views.TryGetValue (currentItem, out var collectionViewItem)) {
-				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.Left - collectionViewItem.View.Frame.Height, collectionViewItem.View.Frame.Y);
+			if (Views.TryGetValue (currentItem, out var indexPath)) {
+				var collectionViewItem = GetItem (collectionView, indexPath);
+				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.GetMidX () - collectionViewItem.View.Frame.Width, collectionViewItem.View.Frame.Y);
 				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
 				if (expectedIndexPath != null) {
 					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
@@ -142,8 +143,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal ToolboxWidgetItem GetItemAbove (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
 		{
-			if (Views.TryGetValue (currentItem, out var collectionViewItem)) {
-				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.X, collectionViewItem.View.Frame.Top - collectionViewItem.View.Frame.Height);
+			if (Views.TryGetValue (currentItem, out var indexPath)) {
+				var collectionViewItem = GetItem (collectionView, indexPath);
+				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.X, collectionViewItem.View.Frame.GetMidY () - collectionViewItem.View.Frame.Height);
 				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
 				if (expectedIndexPath != null) {
 					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
@@ -155,8 +157,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal ToolboxWidgetItem GetItemBelow (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
 		{
-			if (Views.TryGetValue (currentItem, out var collectionViewItem)) {
-				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.X, collectionViewItem.View.Frame.Top + collectionViewItem.View.Frame.Height);
+			if (Views.TryGetValue (currentItem, out var indexPath)) {
+				var collectionViewItem = GetItem (collectionView, indexPath);
+				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.X, collectionViewItem.View.Frame.GetMidY () + collectionViewItem.View.Frame.Height);
 				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
 				if (expectedIndexPath != null) {
 					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
