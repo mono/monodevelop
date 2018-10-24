@@ -42,7 +42,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public static NSColor ToggleButtonOnBorderColor { get; internal set; }
 
 		public static int ToggleButtonCornerRadius = 5;
-		public static float ToggleButtonLineWidth = 1;
+		public static float ToggleButtonLineWidth = 0.3f;
 
 		public static void LoadStyles ()
 		{
