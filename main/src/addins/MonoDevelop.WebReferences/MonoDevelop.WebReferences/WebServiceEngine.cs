@@ -27,8 +27,6 @@
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.Web.Services.Discovery;
-using MonoDevelop.WebReferences.Dialogs;
-using System.Net;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.WebReferences
@@ -51,35 +49,13 @@ namespace MonoDevelop.WebReferences
 		{
 			// Checks the availablity of any services
 			var protocol = new MonoDevelopDiscoveryClientProtocol ();
-			var creds = new AskCredentials ();
-			protocol.Credentials = creds;
-			bool unauthorized;
-			
-			do {
-				unauthorized = false;
-				creds.Reset ();
-				
-				try {
-					protocol.DiscoverAny (url);
-				} catch (WebException wex) {
-					var wr = wex.Response as HttpWebResponse;
-					if (!creds.Canceled && wr != null && wr.StatusCode == HttpStatusCode.Unauthorized) {
-						unauthorized = true;
-						continue;
-					}
-					throw;
-				}
-			} while (unauthorized);
-			
-			if (protocol != null) {
-				creds.Store ();
-				if (protocol.References.Count == 0)
-					return null;
-			}
+			protocol.DiscoverAny (url);
+
+			if (protocol.References.Count == 0)
+				return null;
+
 			return protocol;
 		}
 	}
-	
-	
 }
 
