@@ -72,9 +72,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Initialize ();
 		}
 
+		ToolboxWidgetItem GetFirstSelectableElement ()
+		{
+			foreach (var category in Categories) {
+				foreach (var item in category.Items) {
+					return item;
+				}
+			}
+			return null;
+		}
+
 		public override bool BecomeFirstResponder ()
 		{
 			Focused?.Invoke (this, EventArgs.Empty);
+
+			if (selectedItem == null) {
+				SelectedItem = GetFirstSelectableElement ();
+			}
 			return base.BecomeFirstResponder ();
 		}
 
@@ -182,77 +196,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			SelectedItem = item;
 		}
 
-		public void OnKeyPressed (object s, KeyEventArgs e)
+		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
-			ToolboxWidgetItem nextItem;
 
-			switch (e.Key) {
-			case Key.NumPadEnter:
-			case Key.Return:
-				if (this.SelectedItem != null)
-					this.OnActivateSelectedItem (EventArgs.Empty);
-				return;
-			case Key.NumPadUp:
-			case Key.Up:
-				if (this.listMode || this.SelectedItem is ToolboxWidgetCategory) {
-					SelectItem (GetPrevItem (SelectedItem));
-				} else {
-					nextItem = GetItemAbove (this.SelectedItem);
-					if (nextItem != this.SelectedItem) {
-						SelectItem (nextItem);
-					}
-				}
-				return;
-			case Key.NumPadDown:
-			case Key.Down:
-				if (this.listMode || this.SelectedItem is ToolboxWidgetCategory) {
-					SelectItem (GetNextItem (this.SelectedItem));
-				} else {
-					nextItem = GetItemBelow (this.SelectedItem);
-					if (nextItem == this.SelectedItem) {
-						ToolboxWidgetCategory category = GetCategory (this.SelectedItem);
-						nextItem = GetNextCategory (category);
-						if (nextItem == category)
-							nextItem = this.SelectedItem;
-					}
-					SelectItem (nextItem);
-				}
-				return;
-			case Key.NumPadLeft:
-			case Key.Left:
-				if (this.SelectedItem is ToolboxWidgetCategory) {
-					SetCategoryExpanded ((ToolboxWidgetCategory)this.SelectedItem, false);
-				} else {
-					if (this.listMode) {
-						SelectItem (GetCategory (this.SelectedItem));
-					} else {
-						SelectItem (GetItemLeft (this.SelectedItem));
-					}
-				}
-				return;
-			case Key.NumPadRight:
-			case Key.Right:
-				if (this.SelectedItem is ToolboxWidgetCategory selectedCategory) {
-					if (selectedCategory.IsExpanded) {
-						if (selectedCategory.ItemCount > 0)
-							this.SelectedItem = selectedCategory.Items [0];
-					} else {
-						SetCategoryExpanded (selectedCategory, true);
-					}
-				} else {
-					if (this.listMode) {
-						// nothing
-					} else {
-						SelectItem (GetItemRight (this.SelectedItem));
-					}
-				}
-				break;
-			}
 		}
 
-		public void OnKeyReleased (object s, KeyEventArgs e)
+		public void OnKeyReleased (object s, Gtk.KeyReleaseEventArgs ev)
 		{
-			e.Handled = false;
+
 		}
 
 		#endregion
@@ -271,18 +222,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			return null;
 		}
-
-		ToolboxWidgetItem GetNextItem (ToolboxWidgetItem item) => dataSource.GetNextItem (this, item);
-
-		ToolboxWidgetItem GetPrevItem (ToolboxWidgetItem item) => dataSource.GetPrevItem (this, item);
-
-		ToolboxWidgetItem GetItemLeft (ToolboxWidgetItem item) => dataSource.GetItemLeft (this, item);
-
-		ToolboxWidgetItem GetItemRight (ToolboxWidgetItem item) => dataSource.GetItemRight (this, item);
-
-		ToolboxWidgetItem GetItemAbove (ToolboxWidgetItem item) => dataSource.GetItemAbove (this, item);
-
-		ToolboxWidgetItem GetItemBelow (ToolboxWidgetItem item) => dataSource.GetItemBelow (this, item);
 
 		ToolboxWidgetItem GetNextCategory (ToolboxWidgetCategory category)
 		{
