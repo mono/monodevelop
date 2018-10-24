@@ -6,6 +6,7 @@ using Xwt;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
+
 	public class ToggleButton : NSButton, INativeChildView
 	{
 		public event EventHandler Focused;
@@ -130,17 +131,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			}
 		}
 
-		#region IEncapsuledView
-
-		public void OnKeyPressed (object s, KeyEventArgs e)
+		public override void KeyDown (NSEvent theEvent)
 		{
-			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.NumPadEnter || e.Key == Key.Return || e.Key == Key.Space)) {
+			base.KeyDown (theEvent);
+			if ((int)theEvent.ModifierFlags == 256 && (theEvent.KeyCode == 49 || theEvent.KeyCode == 36)) {
 				PerformClick (this);
-				return;
 			}
 		}
 
-		public void OnKeyReleased (object s, KeyEventArgs e)
+		#region IEncapsuledView
+
+		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
+		{
+			if (ev.Event.State == Gdk.ModifierType.None && (ev.Event.Key == Gdk.Key.KP_Enter || ev.Event.Key == Gdk.Key.KP_Space)) {
+				PerformClick (this);
+			}
+		}
+
+		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
 
 		}

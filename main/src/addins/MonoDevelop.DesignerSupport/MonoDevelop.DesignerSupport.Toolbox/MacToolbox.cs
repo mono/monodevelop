@@ -18,8 +18,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	public interface INativeChildView
 	{
 		event EventHandler Focused;
-		void OnKeyPressed (object s, KeyEventArgs e);
-		void OnKeyReleased (object s, KeyEventArgs e);
+		void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev);
+		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev);
 	}
 
 	public class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
@@ -50,6 +50,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
 		NSStackView horizontalStackView;
 
+		public override bool BecomeFirstResponder ()
+		{
+			return false;
+		}
+
 		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
@@ -59,6 +64,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			this.toolboxService = toolboxService;
 			this.container = container;
+
 
 			#region Toolbar
 
@@ -202,14 +208,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		void FocusPreviousItem (KeyEventArgs keyEventArgs = null)
+		void FocusPreviousItem (GLib.SignalArgs ev)
 		{
 			if (focusedViewIndex <= 0) {
 				//leave element
-				//((NSView)focusedView).ResignFirstResponder ();
 				Window.ResignFirstResponder ();
-				if (keyEventArgs != null) {
-					keyEventArgs.Handled = false;
+				if (ev != null) {
+					ev.RetVal = true;
 				}
 			} else {
 				focusedViewIndex--;
@@ -217,13 +222,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		void FocusNextItem (KeyEventArgs keyEventArgs = null)
+		void FocusNextItem (GLib.SignalArgs ev)
 		{
 			if (focusedViewIndex >= nativeChildViews.Count - 1) {
 				//leave element
 				Window.ResignFirstResponder ();
-				if (keyEventArgs != null) {
-					keyEventArgs.Handled = false;
+				if (ev != null) {
+					ev.RetVal = true;
 				}
 			} else {
 				focusedViewIndex++;
@@ -233,40 +238,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#endregion
 
-		internal void KeyReleased (object s, KeyEventArgs e)
+		internal void KeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
-			e.Handled = true;
-			FocusedView?.OnKeyReleased (s, e);
+			ev.RetVal = true;
 		}
 
-		internal void OnKeyPressed (object s, KeyEventArgs e)
+		internal void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
-			e.Handled = true;
-
-			if ((int) e.Key == TabKey || e.Key == Key.Tab) {
-				if (e.Modifiers == ModifierKeys.Shift) {
-					FocusPreviousItem (e);
-					return;
+			ev.RetVal = true;
+			if (ev.Event.Key == Gdk.Key.Tab || ev.Event.Key == Gdk.Key.ISO_Left_Tab) {
+				if (ev.Event.State == Gdk.ModifierType.ShiftMask) {
+					FocusPreviousItem (ev);
+				} else {
+					FocusNextItem (ev);
 				}
-				if (e.Modifiers == ModifierKeys.None) {
-					FocusNextItem (e);
-				}
+				return;
 			}
 
-			if (FocusedView is NSButton btn) {
-				if (e.Modifiers == ModifierKeys.None) {
-					if (e.Key == Key.Right) {
-						FocusNextItem (e);
-						return;
-					}
-					if (e.Key == Key.Left) {
-						FocusPreviousItem (e);
-						return;
-					}
-				}
-			}
-
-			FocusedView?.OnKeyPressed (s, e);
+			FocusedView?.OnKeyPressed (o, ev);
 		}
 
 		#region Toolbar event handlers

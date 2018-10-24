@@ -15,6 +15,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		readonly List<ToolboxWidgetCategory> items;
 
 		Dictionary<ToolboxWidgetItem, NSIndexPath> Views = new Dictionary<ToolboxWidgetItem, NSIndexPath> ();
+		List<HeaderInfo> Categories = new List<HeaderInfo> ();
+
+		class HeaderInfo
+		{
+			public ToolboxWidgetCategory category { get; set; }
+			public NSIndexPath index { get; set; }
+			public HeaderCollectionViewItem view { get; set; }
+		}
 
 		public MacToolboxWidgetDataSource (List<ToolboxWidgetCategory> items)
 		{
@@ -56,16 +64,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal void SelectItem (NSCollectionView collectionView, ToolboxWidgetItem item)
 		{
-			if (Views.TryGetValue (item, out var indexPath)) {
-				var elements = new NSSet (new NSObject [] { indexPath });
-				collectionView.DeselectAll (null);
-				collectionView.SelectItems (elements, NSCollectionViewScrollPosition.None);
+			if (item is ToolboxWidgetCategory cat) {
+				var info = Categories.FirstOrDefault (s => s.category == cat);
+				if (info != null) {
+					var window = collectionView.Window;
+					window.MakeFirstResponder (info.view);
+				}
+			} else {
+				if (Views.TryGetValue (item, out var indexPath)) {
+					var elements = new NSSet (new NSObject [] { indexPath });
+					collectionView.DeselectAll (null);
+					collectionView.SelectItems (elements, NSCollectionViewScrollPosition.None);
+				}
 			}
 		}
 
-		public void OnQueueDraw ()
+		public void Clear ()
 		{
 			Views.Clear ();
+			Categories.Clear ();
 		}
 
 		public override NSView GetView (NSCollectionView collectionView, NSString kind, NSIndexPath indexPath)
@@ -79,6 +96,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				button.Activated -= Button_Activated;
 				button.Activated += Button_Activated;
 				button.IsCollapsed = toolboxWidget.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
+
+
+				if (!Categories.Any (s => s.category == section)) {
+					Categories.Add (new HeaderInfo () { category = section, index = indexPath, view = button });
+				}
 				return button;
 			}
 			return null;
@@ -113,80 +135,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return items.Count;
 		}
 
-		internal ToolboxWidgetItem GetItemRight (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
+		int GetCategoryIndex (ToolboxWidgetCategory category)
 		{
-			if (Views.TryGetValue (currentItem, out var indexPath)) {
-				var collectionViewItem = GetItem (collectionView, indexPath);
-				var expectedPoint = new CGPoint  (collectionViewItem.View.Frame.GetMidX () + collectionViewItem.View.Frame.Width, collectionViewItem.View.Frame.Y);
-				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
-				if (expectedIndexPath != null) {
-					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
-					return nextItem;
+			for (int i = 0; i < Categories.Count; i++) {
+				if (Categories [i].category == category) {
+					return i;
 				}
 			}
-			return currentItem;
+			return -1;
 		}
 
-		internal ToolboxWidgetItem GetItemLeft (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
+		int GetCategoryIndex (ToolboxWidgetItem currentItem)
 		{
-			if (Views.TryGetValue (currentItem, out var indexPath)) {
-				var collectionViewItem = GetItem (collectionView, indexPath);
-				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.GetMidX () - collectionViewItem.View.Frame.Width, collectionViewItem.View.Frame.Y);
-				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
-				if (expectedIndexPath != null) {
-					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
-					return nextItem;
+			for (int i = 0; i < Categories.Count; i++) {
+				if (Categories [i].category.Items.Contains (currentItem)) {
+					return i;
 				}
 			}
-			return currentItem;
-		}
-
-		internal ToolboxWidgetItem GetItemAbove (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
-		{
-			if (Views.TryGetValue (currentItem, out var indexPath)) {
-				var collectionViewItem = GetItem (collectionView, indexPath);
-				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.X, collectionViewItem.View.Frame.GetMidY () - collectionViewItem.View.Frame.Height);
-				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
-				if (expectedIndexPath != null) {
-					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
-					return nextItem;
-				}
-			}
-			return currentItem;
-		}
-
-		internal ToolboxWidgetItem GetItemBelow (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
-		{
-			if (Views.TryGetValue (currentItem, out var indexPath)) {
-				var collectionViewItem = GetItem (collectionView, indexPath);
-				var expectedPoint = new CGPoint (collectionViewItem.View.Frame.X, collectionViewItem.View.Frame.GetMidY () + collectionViewItem.View.Frame.Height);
-				var expectedIndexPath = collectionView.GetIndexPath (expectedPoint);
-				if (expectedIndexPath != null) {
-					var nextItem = items [(int)expectedIndexPath.Section].Items [(int)expectedIndexPath.Item];
-					return nextItem;
-				}
-			}
-			return currentItem;
-		}
-
-		internal ToolboxWidgetItem GetNextItem (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
-		{
-			for (int i = 0; i < Views.Count; i++) {
-				if (Views.ElementAt (i).Key == currentItem) {
-					return Views.ElementAt (i + 1).Key;
-				}
-			}
-			return currentItem;
-		}
-
-		internal ToolboxWidgetItem GetPrevItem (NSCollectionView collectionView, ToolboxWidgetItem currentItem)
-		{
-			for (int i = 0; i < Views.Count; i++) {
-				if (Views.ElementAt (i).Key == currentItem) {
-					return Views.ElementAt (i - 1).Key;
-				}
-			}
-			return currentItem;
+			return -1;
 		}
 	}
 }

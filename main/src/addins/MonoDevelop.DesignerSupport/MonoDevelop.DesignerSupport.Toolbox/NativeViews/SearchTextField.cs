@@ -57,14 +57,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		}
 
 
-		public void OnKeyPressed (object s, KeyEventArgs e)
+		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
-			//we want the native handling here
-			e.Handled = false;
+
 		}
 
 
-		public void OnKeyReleased (object s, KeyEventArgs e)
+		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
 
 		}

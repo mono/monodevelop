@@ -15,6 +15,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public event EventHandler Focused;
 
+		public override bool CanBecomeKeyView => true;
+
 		public override bool BecomeFirstResponder ()
 		{
 			Focused?.Invoke (this, EventArgs.Empty);
@@ -29,6 +31,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			Title = "";
 			WantsLayer = true;
 			Layer.BackgroundColor = NSColor.Clear.CGColor;
+
 		}
 
 		public void SetCustomTitle (string title)
@@ -57,12 +60,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		#region IEncapsuledView
 
 
-		public void OnKeyPressed (object s, KeyEventArgs e)
+		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
 
 		}
 
-		public void OnKeyReleased (object s, KeyEventArgs e)
+		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
 
 		}

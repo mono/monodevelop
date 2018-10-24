@@ -109,17 +109,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		#region IEncapsuledView
 
-		public void OnKeyPressed (object s, KeyEventArgs e)
+		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
-			if (e.Modifiers == ModifierKeys.None && (e.Key == Key.NumPadEnter || e.Key == Key.Return || e.Key == Key.Space)) {
+			if (ev.Event.State == Gdk.ModifierType.None && (ev.Event.Key == Gdk.Key.KP_Enter || ev.Event.Key == Gdk.Key.KP_Space)) {
 				PerformClick (this);
-				return;
 			}
 		}
 
-		public void OnKeyReleased (object s, KeyEventArgs e)
+		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
 
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			base.KeyDown (theEvent);
+			if ((int)theEvent.ModifierFlags == 256 && (theEvent.KeyCode == 49 || theEvent.KeyCode == 36)) {
+				PerformClick (this);
+			}
 		}
 
 		#endregion
