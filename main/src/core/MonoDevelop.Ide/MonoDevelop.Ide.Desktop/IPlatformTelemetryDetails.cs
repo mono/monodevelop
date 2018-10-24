@@ -51,5 +51,7 @@ namespace MonoDevelop.Ide.Desktop
 		PlatformHardDriveMediaType HardDriveOsMediaType { get; }
 
 		bool TrySampleHostCpuLoad (out double value);
+
+		TimeSpan GetEventTime (Gdk.EventKey eventKey);
 	}
 }
