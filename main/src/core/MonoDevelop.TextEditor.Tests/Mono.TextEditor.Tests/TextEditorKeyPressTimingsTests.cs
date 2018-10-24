@@ -44,8 +44,7 @@ namespace Mono.TextEditor.Tests
 			if (telemetry == null)
 				Assert.Ignore ("Platform does not implement telemetry details");
 
-			var time = (long)telemetry.TimeSinceMachineStart.TotalMilliseconds;
-			timings.StartTimer (time);
+			timings.StartTimer (telemetry.TimeSinceMachineStart);
 			action ();
 			timings.EndTimer ();
 
