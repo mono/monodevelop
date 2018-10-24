@@ -55,6 +55,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return false;
 		}
 
+		const int buttonSizeWidth = 25;
+		const int buttonSizeHeight = buttonSizeWidth;
+
 		public MacToolbox (ToolboxService toolboxService, IPadWindow container)
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
@@ -65,7 +68,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.toolboxService = toolboxService;
 			this.container = container;
 
-
 			#region Toolbar
 
 			//DockItemToolbar toolbar = container.GetToolbar (DockPositionType.Top);
@@ -74,9 +76,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var addImage = ImageService.GetIcon (Ide.Gui.Stock.Add, Gtk.IconSize.Menu);
 
 			horizontalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
-
 			AddArrangedSubview (horizontalStackView);
 
+			horizontalStackView.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 0).Active = true;
+			horizontalStackView.RightAnchor.ConstraintEqualToAnchor (RightAnchor, 0).Active = true;
+		
 			horizontalStackView.EdgeInsets = new NSEdgeInsets (7, 7, 7, 7);
 
 			//Horizontal container
@@ -97,6 +101,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.Activated += toggleCategorisation;
 			catToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
+			catToggleButton.WidthAnchor.ConstraintEqualToConstant (buttonSizeWidth).Active = true;
+			catToggleButton.HeightAnchor.ConstraintEqualToConstant (buttonSizeHeight).Active = true;
+
 			horizontalStackView.AddArrangedSubview (catToggleButton);
 			AddWidgetToFocusChain (catToggleButton);
 
@@ -108,6 +115,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.Activated += ToggleCompactMode;
 			compactModeToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
+			compactModeToggleButton.WidthAnchor.ConstraintEqualToConstant (buttonSizeWidth).Active = true;
+			compactModeToggleButton.HeightAnchor.ConstraintEqualToConstant (buttonSizeHeight).Active = true;
+
 			horizontalStackView.AddArrangedSubview (compactModeToggleButton);
 			AddWidgetToFocusChain (compactModeToggleButton);
 
@@ -118,6 +128,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Activated += toolboxAddButton_Clicked;
 			toolboxAddButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
+
+			toolboxAddButton.WidthAnchor.ConstraintEqualToConstant (buttonSizeWidth).Active = true;
+			toolboxAddButton.HeightAnchor.ConstraintEqualToConstant (buttonSizeHeight).Active = true;
 
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
 			AddWidgetToFocusChain (toolboxAddButton);
@@ -298,7 +311,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (ToolboxWidgetCategory cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
 				foreach (ToolboxWidgetItem child in cat.Items) {
-					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.Text);
+					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue);
 					hasVisibleChild |= child.IsVisible;
 				}
 				cat.IsVisible = hasVisibleChild;

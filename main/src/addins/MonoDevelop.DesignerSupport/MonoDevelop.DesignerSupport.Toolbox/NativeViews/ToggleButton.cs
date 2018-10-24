@@ -6,7 +6,6 @@ using Xwt;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-
 	public class ToggleButton : NSButton, INativeChildView
 	{
 		public event EventHandler Focused;
@@ -14,10 +13,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		public ToggleButton () 
 		{
 			Title = "";
-			BezelStyle = NSBezelStyle.TexturedSquare;
+			BezelStyle = NSBezelStyle.RoundRect;
 			SetButtonType (NSButtonType.OnOff);
-			FocusRingType = NSFocusRingType.None;
-			Bordered = false;
+			FocusRingType = NSFocusRingType.Default;
+			TranslatesAutoresizingMaskIntoConstraints = false;
+			WantsLayer = true;
 		}
 
 		NSTrackingArea trackingArea;
@@ -39,20 +39,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			base.MouseEntered (theEvent);
 			isMouseHover = true;
-			NeedsDisplay = true;
 		}
 
 		public override void MouseExited (NSEvent theEvent)
 		{
 			base.MouseExited (theEvent);
 			isMouseHover = false;
-			NeedsDisplay = true;
 		}
 
 		public override bool BecomeFirstResponder ()
 		{
 			isFirstResponder = true;
-			NeedsDisplay = true;
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}
@@ -60,11 +57,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		public override bool ResignFirstResponder ()
 		{
 			isFirstResponder = false;
-			NeedsDisplay = true;
 			return base.ResignFirstResponder ();
 		}
-
-		public override CGSize IntrinsicContentSize => new CGSize (25, 25);
 
 		public bool Visible {
 			get { return !Hidden; }
@@ -80,55 +74,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			}
 		}
 
-		//Over #3F3F3F - #212121
-		//Focused #494949 - #282828
-		//Over+Focused #393939 - #191919
-		//On #323232 -  #1D1D1D
-		//OnHover #363636 - #222222
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
-
-			NSColor backgroundColor = null;
-			NSColor borderColor = null;
-
-			if (State == NSCellStateValue.On && isFirstResponder) {
-				backgroundColor = Styles.ToggleButtonOnFocusedBackgroundColor;
-				borderColor = Styles.ToggleButtonOnFocusedBorderColor;
-			} else if (State == NSCellStateValue.On) {
-				backgroundColor = Styles.ToggleButtonOnBackgroundColor;
-				borderColor = Styles.ToggleButtonOnBorderColor;
-			} else if (isFirstResponder && isMouseHover) {
-				backgroundColor = Styles.ToggleButtonHoverFocusedBackgroundColor;
-				borderColor = Styles.ToggleButtonHoverFocusedBorderColor;
-			} else if (isFirstResponder) {
-				backgroundColor = Styles.ToggleButtonFocusedBackgroundColor;
-				borderColor = Styles.ToggleButtonFocusedBorderColor;
-			} else if (isMouseHover) {
-				backgroundColor = Styles.ToggleButtonHoverBackgroundColor;
-				borderColor = Styles.ToggleButtonHoverBorderColor;
-			}
-
-			if (backgroundColor != null) {
-				var path = NSBezierPath.FromRoundedRect (dirtyRect, Styles.ToggleButtonCornerRadius, Styles.ToggleButtonCornerRadius);
-				path.ClosePath ();
-
-				backgroundColor.Set ();
-				path.Fill ();
-			
-				path.LineWidth = Styles.ToggleButtonLineWidth;
-				borderColor.Set ();
-				path.Stroke ();
-			}
-
-			if (Image != null) {
-				var startX = (Frame.Width - Image.Size.Width) / 2;
-				var startY = (Frame.Width - Image.Size.Width) / 2;
-				var context = NSGraphicsContext.CurrentContext;
-				context.SaveGraphicsState ();
-				Image.Draw (new CGRect (startX, startY, Image.Size.Width, Image.Size.Height));
-				context.RestoreGraphicsState ();
-			}
 		}
 
 		public override void KeyDown (NSEvent theEvent)
