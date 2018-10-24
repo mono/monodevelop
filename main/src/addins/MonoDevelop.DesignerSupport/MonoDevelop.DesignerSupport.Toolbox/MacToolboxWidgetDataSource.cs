@@ -12,7 +12,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		public bool IsOnlyImage { get; set; }
 
-		readonly List<ToolboxWidgetCategory> items;
+		internal readonly List<ToolboxWidgetCategory> Items;
 
 		Dictionary<ToolboxWidgetItem, NSIndexPath> Views = new Dictionary<ToolboxWidgetItem, NSIndexPath> ();
 		List<HeaderInfo> Categories = new List<HeaderInfo> ();
@@ -26,7 +26,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public MacToolboxWidgetDataSource (List<ToolboxWidgetCategory> items)
 		{
-			this.items = items;
+			this.Items = items;
 		}
 
 		public override NSCollectionViewItem GetItem (NSCollectionView collectionView, NSIndexPath indexPath)
@@ -34,7 +34,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var item = collectionView.MakeItem (IsOnlyImage ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
 			ToolboxWidgetItem selectedItem = null;
 			if (item is LabelCollectionViewItem itmView) {
-				selectedItem = items [(int)indexPath.Section].Items [(int)indexPath.Item];
+				selectedItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
 
 				itmView.View.ToolTip = selectedItem.Tooltip ?? "";
 				itmView.TextField.StringValue = selectedItem.Text;
@@ -47,7 +47,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				itmView.Selected = false;
 
 			} else if (item is ImageCollectionViewItem imgView) {
-				selectedItem = items [(int)indexPath.Section].Items [(int)indexPath.Item];
+				selectedItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
 				imgView.View.ToolTip = selectedItem.Tooltip ?? "";
 				imgView.Image = selectedItem.Icon.ToNative ();
 				imgView.AccessibilityTitle = selectedItem.Text ?? "";
@@ -89,7 +89,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
-				var section = items [(int)indexPath.Section];
+				var section = Items [(int)indexPath.Section];
 				button.SetCustomTitle (section.Text);
 				button.IndexPath = indexPath;
 				button.CollectionView = toolboxWidget;
@@ -111,28 +111,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
 			var collectionView = headerCollectionViewItem.CollectionView;
 			var indexPath = headerCollectionViewItem.IndexPath;
-			var isCollapsed = collectionView.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
 
-			collectionView.ToggleSectionCollapse (headerCollectionViewItem);
-
-			headerCollectionViewItem.IsCollapsed = items [(int)indexPath.Section].IsExpanded = collectionView.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
-			//if (isCollapsed) {
-			//	collectionView.flowLayout.ItemSize = new CGSize (0, 0);
-			//} else {
-			//	collectionView.flowLayout.ItemSize = new CGSize (collectionView.Frame.Width-30, HeaderCollectionViewItem.SectionHeight);
-			//}
+			var section = Items [(int)indexPath.Section];
+			section.IsExpanded = !section.IsExpanded;
+			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
 			collectionView.CollectionViewLayout.InvalidateLayout ();
 		}
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
 
-			return items [(int)section].Items.Count;
+			return Items [(int)section].Items.Count;
 		}
 
 		public override nint GetNumberOfSections (NSCollectionView collectionView)
 		{
-			return items.Count;
+			return Items.Count;
 		}
 
 		int GetCategoryIndex (ToolboxWidgetCategory category)
