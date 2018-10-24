@@ -1447,6 +1447,8 @@ namespace Mono.TextEditor
 			}
 			if (TextPasteHandler != null) {
 				TextPasteHandler.PostFomatPastedText (offset, insertedChars);
+			} else {
+				FixVirtualIndentation (OffsetToLineNumber (offset));
 			}
 			return insertedChars;
 		}
