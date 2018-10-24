@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Jose Miguel Torres"
+	language="JSON"
+	created="2018/10/22"
+	lastModified="2018/10/22">
+
+	<TemplateConfiguration>
+		<_Name>npm Configuration File</_Name>
+		<Icon>md-file-source</Icon>
+		<_Category>Web</_Category>
+		<_Description>npm Configuration File for package.json</_Description>
+		<DefaultFilename>package</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".json" src="npmConfigurationFile.json" />
+	</TemplateFiles>
+</Template>
