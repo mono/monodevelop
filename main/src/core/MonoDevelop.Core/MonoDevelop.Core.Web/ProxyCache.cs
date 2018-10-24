@@ -66,6 +66,22 @@ namespace MonoDevelop.Core.Web
 
 		public NetworkCredential GetCredential (Uri proxyAddress, string authType)
 		{
+			var credential = GetCredentialInternal (proxyAddress, authType);
+			if (credential != null)
+				return credential;
+
+			// Add workaround for Mono using the request url not the proxy address for non-secure http requests
+			// when getting the proxy credentials.
+			// https://github.com/mono/mono/issues/10622
+			var correctedProxyAddress = originalSystemProxy.GetProxy (proxyAddress);
+			if (!string.Equals (correctedProxyAddress.AbsoluteUri, proxyAddress.AbsoluteUri))
+				return GetCredentialInternal (correctedProxyAddress, authType);
+
+			return null;
+		}
+
+		NetworkCredential GetCredentialInternal (Uri proxyAddress, string authType)
+		{
 			ICredentials cachedCredentials;
 			if (cache.TryGetValue (proxyAddress, out cachedCredentials)) {
 				return cachedCredentials.GetCredential (proxyAddress, authType);
