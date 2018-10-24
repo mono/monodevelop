@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Net;
 using System.Web.Services.Discovery;
 using MonoDevelop.Core;
@@ -37,12 +38,26 @@ namespace MonoDevelop.WebReferences
 	{
 		protected override WebResponse GetWebResponse (WebRequest request)
 		{
+			return WebRequestHelper.GetResponse (() => CreateWebRequest (request.RequestUri));
+		}
+
+		/// <summary>
+		/// Need to create a new web request just in case the request is not authorized and the
+		/// WebRequestHelper is retrying. Otherwise the second attempt will fail since the request
+		/// has already been started and will throw an System.InvalidOperationException: request started
+		/// when properties such as the Proxy are changed by the WebRequestHelper. The only method used
+		/// is the DiscoveryClientProtocol's Download method which creates the web request and then gets
+		/// the response immediately afterwards.
+		/// </summary>
+		HttpWebRequest CreateWebRequest (Uri uri)
+		{
+			var request = (HttpWebRequest)base.GetWebRequest (uri);
+			// Method is set in base.Download so set it here.
+			request.Method = "GET";
 			// Allow redirects. This allows the Web Reference dialog to show information about the
 			// the https://www.w3schools.com/xml/tempconvert.asmx web service.
-			var httpWebRequest = (HttpWebRequest)request;
-			httpWebRequest.AllowAutoRedirect = true;
-
-			return WebRequestHelper.GetResponse (() => httpWebRequest);
+			request.AllowAutoRedirect = true;
+			return request;
 		}
 	}
 }
