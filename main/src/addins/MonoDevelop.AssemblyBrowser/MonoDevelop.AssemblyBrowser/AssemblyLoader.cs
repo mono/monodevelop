@@ -89,6 +89,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
+		public Error Error { get; internal set; }
+
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
 			if (widget == null)
@@ -111,6 +113,8 @@ namespace MonoDevelop.AssemblyBrowser
 					return assemblyDefinition;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
+					Error = new Error(e.Message);
+					assemblyDefinitionTaskSource.SetResult (null);
 					return null;
 				}
 			});
