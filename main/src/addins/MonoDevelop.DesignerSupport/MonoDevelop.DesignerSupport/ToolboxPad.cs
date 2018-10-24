@@ -32,6 +32,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Xwt;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -41,7 +42,6 @@ namespace MonoDevelop.DesignerSupport
 
 #if MAC
 		Toolbox.MacToolbox toolbox;
-		Widget xWidget;
 #endif
 		protected override void Initialize (IPadWindow container)
 		{
@@ -50,25 +50,23 @@ namespace MonoDevelop.DesignerSupport
 			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_TOOLBAR")?.ToLower () == "true";
 			if (nativeEnabled) {
 
-				Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac).Invoke (() => {
-					toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
-				});
+				toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
+				widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
+				widget.CanFocus = true;
+				widget.Sensitive = true;
 
-				xWidget = Xwt.Toolkit.CurrentEngine.WrapWidget (toolbox, NativeWidgetSizing.DefaultPreferredSize);
-				widget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (xWidget);
+				widget.Show ();
 
-				xWidget.CanGetFocus = true;
-				xWidget.Sensitive = true;
-				xWidget.KeyPressed += toolbox.OnKeyPressed;
-				xWidget.KeyReleased += toolbox.KeyReleased;
+				widget.KeyPressEvent += toolbox.OnKeyPressed;
+				widget.KeyReleaseEvent += toolbox.KeyReleased;
 
-				xWidget.GotFocus += (s, e) => {
+				widget.Focused += (s, e) => {
 					toolbox.FocusSelectedView ();
 				};
 
 				toolbox.ContentFocused += (s, e) => {
-					if (!xWidget.HasFocus) {
-						xWidget.SetFocus ();
+					if (!widget.HasFocus) {
+						widget.HasFocus = true;
 					}
 				};
 			} else {
@@ -81,10 +79,6 @@ namespace MonoDevelop.DesignerSupport
 #if MAC
 		public override void Dispose ()
 		{
-			if (xWidget != null) {
-				xWidget.KeyPressed += toolbox.OnKeyPressed;
-				xWidget.KeyReleased += toolbox.KeyReleased;
-			}
 			base.Dispose ();
 		}
 #endif
