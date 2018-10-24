@@ -9,7 +9,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	class MacToolboxWidgetFlowLayout : NSCollectionViewFlowLayout
 	{
-
 	}
 
 	class MacToolboxWidgetFlowLayoutDelegate : NSCollectionViewDelegateFlowLayout
@@ -24,6 +23,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override void ItemsSelected (NSCollectionView collectionView, NSSet indexPaths)
 		{
 			SelectionChanged?.Invoke (this, indexPaths);
+		}
+
+		public override CGSize SizeForItem (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, NSIndexPath indexPath)
+		{
+			var dataSource = (MacToolboxWidgetDataSource)collectionView.DataSource;
+			var flowLayout = (MacToolboxWidgetFlowLayout)collectionViewLayout;
+			var section = dataSource.Items [(int)indexPath.Section];
+			if (!section.IsExpanded) {
+				return CGSize.Empty;
+			}
+			return flowLayout.ItemSize;
 		}
 
 		public override bool CanDragItems (NSCollectionView collectionView, NSSet indexPaths, NSEvent theEvent)
