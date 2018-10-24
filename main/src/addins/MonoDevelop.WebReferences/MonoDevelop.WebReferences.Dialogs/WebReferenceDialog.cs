@@ -150,7 +150,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		#region Member Variables
-		const string homeUrl = "https://www.w3schools.com/xml/tempconvert.asmx?WSDL";
+		const string homeUrl = "https://www.w3schools.com/xml/tempconvert.asmx";
 		WebServiceDiscoveryResult selectedService;
 //		protected Gtk.Alignment frmBrowserAlign;
 		#endregion

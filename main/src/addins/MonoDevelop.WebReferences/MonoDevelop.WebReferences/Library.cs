@@ -23,9 +23,8 @@ namespace MonoDevelop.WebReferences
 			var desc = new ServiceDescription();
 			try 
 			{
-				var request = (HttpWebRequest)WebRequest.Create(uri);
-				WebResponse response  = request.GetResponse();
-			
+				WebResponse response = WebRequestHelper.GetResponse (() => (HttpWebRequest)WebRequest.Create (uri));
+
 				desc = ServiceDescription.Read(response.GetResponseStream());
 				response.Close();
 				desc.RetrievalUrl = uri;
