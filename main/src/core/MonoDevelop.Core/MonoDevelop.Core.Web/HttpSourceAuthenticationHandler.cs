@@ -54,7 +54,8 @@ namespace MonoDevelop.Core.Web
 			this.credentialsHandler = credentialsHandler ?? throw new ArgumentNullException (nameof (credentialsHandler));
 
 			credentialService = HttpClientProvider.CredentialService;
-			credentialsHandler.Credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+			credentialsHandler.Credentials = credentials;
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync (HttpRequestMessage request, CancellationToken cancellationToken)
