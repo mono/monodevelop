@@ -934,7 +934,7 @@ namespace MonoDevelop.Ide
 		public void RemoveSolutionItem (SolutionFolderItem item)
 		{
 			string question = GettextCatalog.GetString ("Do you really want to remove project '{0}' from '{1}'?", item.Name, item.ParentFolder.Name);
-			string secondaryText = GettextCatalog.GetString ("The Remove option remove the project from the solution, but it will not physically delete any file from disk.");
+			string secondaryText = GettextCatalog.GetString ("The Remove option will remove the project from the solution, but it will not physically delete any file from disk.");
 			
 			SolutionItem prj = item as SolutionItem;
 			if (prj == null) {
