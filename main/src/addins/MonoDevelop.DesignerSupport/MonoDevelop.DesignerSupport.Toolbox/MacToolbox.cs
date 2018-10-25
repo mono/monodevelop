@@ -251,7 +251,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//leave element
 				Window.ResignFirstResponder ();
 				if (ev != null) {
-					ev.RetVal = true;
+					ev.RetVal = false;
 				}
 			} else {
 				focusedViewIndex--;
@@ -269,7 +269,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//leave element
 				Window.ResignFirstResponder ();
 				if (ev != null) {
-					ev.RetVal = true;
+					ev.RetVal = false;
 				}
 			} else {
 				focusedViewIndex++;
