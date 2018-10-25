@@ -53,7 +53,11 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
 	</Condition>
 	<SeparatorItem id = "RunSectionEnd" />
-
+	
+	<!-- Publish section -->
+		
+	<ItemSet id = "Publish" _label = "Publish" autohide="True" />
+		
 	<!-- Add section -->
 					
 	<SeparatorItem id = "AddSectionStart" />

@@ -301,6 +301,8 @@
     <Compile Include="MonoDevelop.SourceEditor.Braces\IBraceCompletionStack.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ClipboardRingService.cs" />
     <Compile Include="Mono.TextEditor\Gui\CodePreviewWindow.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarginMarker.cs" />
+    <Compile Include="Mono.TextEditor\Gui\QuickFixMargin.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml" />

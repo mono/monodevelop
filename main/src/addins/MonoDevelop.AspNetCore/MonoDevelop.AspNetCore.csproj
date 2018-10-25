@@ -32,6 +32,14 @@
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreCertificateManager.cs" />
     <Compile Include="MonoDevelop.AspNetCore\DotNetCoreDevCertsTool.cs" />
     <Compile Include="MonoDevelop.AspNetCore\CertificateCheckResult.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\PublishCommandItem.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\ProjectPublishProfile.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Dialogs\PublishToFolderDialog.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\ProjectExtensions.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderCommandHandler.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderProfilesCommandHandler.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\PublishToFolderBaseCommandHandler.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\Counters.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
@@ -107,6 +115,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Templates\AppSettingsFile.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\AppSettingsFile.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -137,6 +151,10 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.AspNetCore.Commands\" />
+    <Folder Include="MonoDevelop.AspNetCore.Dialogs\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">

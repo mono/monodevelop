@@ -35,6 +35,9 @@
     <Reference Include="System.Composition.TypedParts">
       <HintPath>..\..\build\bin\System.Composition.TypedParts.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI">
+      <HintPath>..\..\build\bin\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\ParameterHinting\ParameterHintingTests.cs" />

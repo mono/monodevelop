@@ -121,8 +121,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					var pDict = ImmutableDictionary<string, string>.Empty;
 					var displayString = CSharpAmbience.SafeMinimalDisplayString (type, model, context.Position, SymbolDisplayFormat.CSharpErrorMessageFormat);
 					var item = CompletionItem.Create (displayString, properties: pDict, tags: tags);
-					context.AddItem (item);
-					context.SuggestionModeItem = item;
+					context.AddItem (item.WithRules (item.Rules.WithMatchPriority (int.MaxValue)));
 				}
 
 				foreach (IFieldSymbol field in type.GetMembers ().OfType<IFieldSymbol> ()) {

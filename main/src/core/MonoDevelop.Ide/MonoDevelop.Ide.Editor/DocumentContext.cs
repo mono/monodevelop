@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor
 	/// A document context puts a textual document in a semantic context inside a project and gives access
 	/// to the parse information of the textual document.
 	/// </summary>
-	public abstract class DocumentContext
+	public abstract class DocumentContext : IDisposable
 	{
 		/// <summary>
 		/// The name of the document. It's the file name for files on disc. 
@@ -186,5 +186,20 @@ namespace MonoDevelop.Ide.Editor
 		internal virtual void UpdateDocumentId (Microsoft.CodeAnalysis.DocumentId newId)
 		{
 		}
+
+		#region IDisposable Support
+
+		public bool IsDisposed { get; private set; }
+
+		public void Dispose ()
+		{
+			OnDispose (true);
+			IsDisposed = true;
+		}
+
+		protected virtual void OnDispose (bool disposing)
+		{
+		}
+		#endregion
 	}
 }

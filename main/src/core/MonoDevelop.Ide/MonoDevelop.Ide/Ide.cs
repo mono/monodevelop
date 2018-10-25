@@ -205,7 +205,9 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static void Initialize (ProgressMonitor monitor)
+		public static void Initialize (ProgressMonitor monitor) => Initialize (monitor, false);
+
+		internal static void Initialize (ProgressMonitor monitor, bool hideWelcomePage)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
@@ -233,8 +235,8 @@ namespace MonoDevelop.Ide
 			};
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
-		
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
+
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
 			Counters.Initialization.Trace ("Loading Commands");
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
@@ -248,20 +250,15 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Workbench");
 			workbench.Initialize (monitor);
 			monitor.Step (1);
-			
+
+			Counters.Initialization.Trace ("Initializing WelcomePage service");
 			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
-			MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
-
 			monitor.Step (1);
 
-			Counters.Initialization.Trace ("Restoring Workbench State");
-			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
+			Counters.Initialization.Trace ("Realizing Workbench Window");
+			workbench.Realize ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
-			
-			Counters.Initialization.Trace ("Flushing GUI events");
-			DispatchService.RunPendingEvents ();
-			Counters.Initialization.Trace ("Flushed GUI events");
-			
+
 			MessageService.RootWindow = workbench.RootWindow;
 			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (workbench.RootWindow);
 		

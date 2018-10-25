@@ -335,6 +335,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui", "ui", "{D0469BC0-3DF4-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UserInterfaceTesting", "tests\ui\MonoDevelop.UserInterfaceTesting\MonoDevelop.UserInterfaceTesting.csproj", "{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNetCore.Tests", "src\addins\MonoDevelop.AspNetCore\MonoDevelop.AspNetCore.Tests\MonoDevelop.AspNetCore.Tests.csproj", "{44FFFDDA-156F-49F9-AE6A-BA640C198B33}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
@@ -2089,6 +2091,26 @@ Global
 		{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}.Debug|x86.Build.0 = Debug|Any CPU
 		{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}.Release|x86.ActiveCfg = Release|Any CPU
 		{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}.Release|x86.Build.0 = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Debug|x86.Build.0 = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Release|x86.ActiveCfg = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE;
@@ -2239,6 +2261,7 @@ Global
 		{5DC29B94-D9AF-4795-AFDD-A468ECA21A10} = {0D75E82C-39E2-4AAB-A4DA-A85D9ABE339F}
 		{D0469BC0-3DF4-4CE9-A9E3-3268359BAC2E} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{82B9A5C5-5713-49B5-93D1-BE29B00FF35A} = {D0469BC0-3DF4-4CE9-A9E3-3268359BAC2E}
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33} = {1DEFDD53-2677-439D-906E-141ED2AEC19B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}

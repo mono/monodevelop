@@ -600,7 +600,7 @@ namespace MonoDevelop.MacIntegration
 
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
-					GLib.Timeout.Add (10, delegate {
+					GLib.Timeout.Add (0, delegate {
 						IdeApp.ReportTimeToCode = true;
 						IdeApp.OpenFiles (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
@@ -611,7 +611,7 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
-					GLib.Timeout.Add (10, delegate {
+					GLib.Timeout.Add (0, delegate {
 						IdeApp.ReportTimeToCode = true;
 						// Open files via the monodevelop:// URI scheme, compatible with the
 						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
@@ -1247,6 +1247,56 @@ namespace MonoDevelop.MacIntegration
 				public ulong ApplicationVirtualMemory {
 					get => GetProperty<ulong> ();
 					set => SetProperty (value);
+				}
+			}
+		}
+
+		internal override ThermalMonitor CreateThermalMonitor ()
+		{
+			if (MacSystemInformation.OsVersion < new Version (10, 10, 3))
+				return base.CreateThermalMonitor ();
+
+			return new MacThermalMonitor ();
+		}
+
+		internal class MacThermalMonitor : ThermalMonitor, IDisposable
+		{
+			NSObject observer;
+			public MacThermalMonitor ()
+			{
+				observer = NSProcessInfo.Notifications.ObserveThermalStateDidChange ((o, args) => {
+					var metadata = new PlatformThermalMetadata {
+						ThermalStatus = ToPlatform (NSProcessInfo.ProcessInfo.ThermalState),
+					};
+
+					var thermalArgs = new PlatformThermalStatusEventArgs (metadata);
+					OnStatusChanged (thermalArgs);
+				});
+			}
+
+			static PlatformThermalStatus ToPlatform (NSProcessInfoThermalState status)
+			{
+				switch (status)
+				{
+				case NSProcessInfoThermalState.Nominal:
+					return PlatformThermalStatus.Normal;
+				case NSProcessInfoThermalState.Fair:
+					return PlatformThermalStatus.Fair;
+				case NSProcessInfoThermalState.Critical:
+					return PlatformThermalStatus.Critical;
+				case NSProcessInfoThermalState.Serious:
+					return PlatformThermalStatus.Serious;
+				default:
+					LoggingService.LogError ("Unknown NSProcessInfoThermalState value {0}", status.ToString ());
+					return PlatformThermalStatus.Normal;
+				}
+			}
+
+			public void Dispose ()
+			{
+				if (observer != null) {
+					NSNotificationCenter.DefaultCenter.RemoveObserver (observer);
+					observer = null;
 				}
 			}
 		}

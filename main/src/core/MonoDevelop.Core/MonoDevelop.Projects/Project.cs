@@ -4352,8 +4352,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		FSW.FileSystemWatcher watcher;
-
 		void CreateFileWatcher ()
 		{
 			DisposeFileWatcher ();
@@ -4361,48 +4359,70 @@ namespace MonoDevelop.Projects
 			if (!Directory.Exists (BaseDirectory))
 				return;
 
-			watcher = new FSW.FileSystemWatcher (BaseDirectory);
-			watcher.IncludeSubdirectories = true;
-			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
-			watcher.Created += OnFileCreated;
-			watcher.Deleted += OnFileDeleted;
-			watcher.Renamed += OnFileRenamed;
-			watcher.Error += OnFileWatcherError;
-			watcher.EnableRaisingEvents = true;
+			// Use FileService.AsyncEvents for file created event since this does not run on the UI thread. This
+			// avoids blocking the UI thread when many files are created.
+			FileService.AsyncEvents.FileCreated += OnFileCreated;
+			// Use FileService.AsyncEvents for file deleted events to be consistent. Without this a deletion event
+			// would not update the Solution window until the IDE gets focus again.
+			FileService.AsyncEvents.FileRemoved += OnFileDeleted;
+			// Use FileService.AsyncEvents for file renamed events since generating the FileService.FileRenamed event
+			// would result in non SDK style projects renaming files in the project if changed externally.
+			FileService.AsyncEvents.FileRenamed += OnFileRenamed;
 		}
 
 		void DisposeFileWatcher ()
 		{
-			if (watcher != null) {
-				watcher.Dispose ();
-				watcher = null;
+			FileService.AsyncEvents.FileCreated -= OnFileCreated;
+			FileService.AsyncEvents.FileRemoved -= OnFileDeleted;
+			FileService.AsyncEvents.FileRenamed -= OnFileRenamed;
+		}
+
+		void OnFileRenamed (object sender, FileCopyEventArgs e)
+		{
+			foreach (FileCopyEventInfo info in e) {
+				OnFileRenamed (info.SourceFile, info.TargetFile);
 			}
 		}
 
-		void OnFileWatcherError (object sender, ErrorEventArgs e)
+		void OnFileRenamed (FilePath sourceFile, FilePath targetFile)
 		{
-			LoggingService.LogError ("FileWatcher error", e.GetException ());
-		}
+			if (Runtime.IsMainThread)
+				return;
 
-		void OnFileRenamed (object sender, RenamedEventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				if (Directory.Exists (e.FullPath)) {
-					OnDirectoryRenamedExternally (e.OldFullPath, e.FullPath);
-				} else {
-					OnFileCreatedExternally (e.FullPath);
-					OnFileDeletedExternally (e.OldFullPath);
+			try {
+				if (Directory.Exists (targetFile)) {
+					OnDirectoryRenamedExternally (sourceFile, targetFile);
+					return;
 				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("OnFileRenamed error.", ex);
+			}
+
+			Runtime.RunInMainThread (() => {
+				OnFileCreatedExternally (targetFile);
+				OnFileDeletedExternally (sourceFile);
 			});
 		}
 
-		void OnFileCreated (object sender, FileSystemEventArgs e)
+		void OnFileCreated (object sender, FileEventArgs e)
 		{
+			if (Runtime.IsMainThread)
+				return;
+
+			foreach (FileEventInfo info in e) {
+				OnFileCreated (info.FileName);
+			}
+		}
+
+		void OnFileCreated (FilePath filePath)
+		{
+			if (Runtime.IsMainThread)
+				return;
+
 			try {
-				if (Directory.Exists (e.FullPath))
+				if (Directory.Exists (filePath))
 					return;
 
-				FilePath filePath = e.FullPath;
 				if (filePath.FileName == ".DS_Store")
 					return;
 
@@ -4410,29 +4430,79 @@ namespace MonoDevelop.Projects
 				if (filePath.FileName.StartsWith (".#", StringComparison.OrdinalIgnoreCase))
 					return;
 
-				OnFileCreatedExternally (e.FullPath);
+				OnFileCreatedExternally (filePath);
 			} catch (Exception ex) {
 				LoggingService.LogError ("OnFileCreated error.", ex);
 			}
 		}
 
-		void OnFileDeleted (object sender, FileSystemEventArgs e)
+		void OnFileDeleted (object sender, FileEventArgs e)
 		{
+			if (Runtime.IsMainThread)
+				return;
+
 			Runtime.RunInMainThread (() => {
-				OnFileDeletedExternally (e.FullPath);
+				foreach (FileEventInfo info in e) {
+					OnFileDeletedExternally (info.FileName);
+				}
 			});
 		}
 
 		/// <summary>
 		/// Move all project files in the old directory to the new directory.
 		/// </summary>
-		void OnDirectoryRenamedExternally (string oldDirectory, string newDirectory)
+		void OnDirectoryRenamedExternally (FilePath oldDirectory, FilePath newDirectory)
 		{
-			FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+			bool isOldDirectoryInsideProject = oldDirectory.IsChildPathOf (BaseDirectory);
+			bool isNewDirectoryInsideProject = newDirectory.IsChildPathOf (BaseDirectory);
+
+			if (!isOldDirectoryInsideProject && !isNewDirectoryInsideProject) {
+				// Ignore directories outside project directory.
+				return;
+			}
+
+			if (!isOldDirectoryInsideProject) {
+				OnDirectoryMovedIntoProject (newDirectory);
+				return;
+			}
+
+			if (isNewDirectoryInsideProject) {
+				Runtime.RunInMainThread (() => {
+					FileService.NotifyDirectoryRenamed (oldDirectory, newDirectory);
+				}).Ignore ();
+				return;
+			}
+
+			OnDirectoryMovedOutOfProject (oldDirectory);
 		}
 
-		void OnFileCreatedExternally (string fileName)
+		void OnDirectoryMovedIntoProject (FilePath newDirectory)
 		{
+			foreach (string file in Directory.EnumerateFiles (newDirectory, "*", SearchOption.AllDirectories)) {
+				OnFileCreatedExternally (file);
+			}
+		}
+
+		void OnDirectoryMovedOutOfProject (FilePath oldDirectory)
+		{
+			// Directory moved outside project directory. Remove files from project.
+			var projectFilesInDirectory = Files.GetFilesInPath (oldDirectory);
+			if (!projectFilesInDirectory.Any ())
+				return;
+
+			Runtime.RunInMainThread (() => {
+				foreach (ProjectFile file in projectFilesInDirectory)
+					Files.Remove (file);
+			});
+		}
+
+		void OnFileCreatedExternally (FilePath fileName)
+		{
+			// Check file is inside the project directory. The file globs would exclude the file anyway
+			// if the relative path starts with "..\" but checking here avoids checking the file globs.
+			if (!fileName.IsChildPathOf (BaseDirectory))
+				return;
+
 			if (Files.Any (file => file.FilePath == fileName)) {
 				// File exists in project. This can happen if the file was added
 				// in the IDE and not externally.

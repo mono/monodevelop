@@ -25,6 +25,8 @@
 		<Import file = "Templates/RazorPageWithPageModel.xft.xml" />
 		<Import file = "Templates/RazorPageWithPageModel.cshtml" />
 		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
+		<Import file = "Templates/AppSettingsFile.xft.xml" />
+		<Import file = "Templates/AppSettingsFile.json" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -52,6 +54,9 @@
 		              file = "Templates/RazorPage.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreRazorPageWithPageModel"
 		              file = "Templates/RazorPageWithPageModel.xft.xml"/>
+		
+		<FileTemplate id   = "AspNetCoreAppSettingsFile"
+		              file = "Templates/AppSettingsFile.xft.xml"/>
 		
 	</Extension>
 	
@@ -410,6 +415,30 @@
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
 		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNetCore.Templating.AspNetCoreFileTemplateCondition" />
+	</Extension>
+	
+	<!-- Publish commands -->
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" 
+				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderCommandHandler"
+				_label = "Publish to Folder..." />
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" 
+				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfilesCommandHandler"
+				type="array"
+				_label = "Publish" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+		<SeparatorItem id = "ProfilesSeparator" />
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+		<SeparatorItem id = "ProfilesSeparator" />
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
 	</Extension>
 
 </ExtensionModel>

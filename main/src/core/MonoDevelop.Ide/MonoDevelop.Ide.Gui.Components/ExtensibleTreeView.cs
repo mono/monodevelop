@@ -1528,7 +1528,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				globalOptions[opt.Id] = val;
 			}
 			globalOptions.Pad = this;
-			RefreshTree ();
+			RefreshRoots ();
 		}
 
 		TypeNodeBuilder GetTypeNodeBuilder (Type type)

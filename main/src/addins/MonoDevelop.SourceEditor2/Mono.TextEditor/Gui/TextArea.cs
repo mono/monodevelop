@@ -61,6 +61,7 @@ namespace Mono.TextEditor
 		TextEditorKeyPressTimings keyPressTimings;
 		
 		protected IconMargin       iconMargin;
+		protected QuickFixMargin   quickFixMargin;
 		protected ActionMargin     actionMargin;
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
@@ -211,7 +212,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void HAdjustmentValueChanged ()
 		{
-			HideTooltip (false);
+			HideTooltip ();
 			double value = this.textEditorData.HAdjustment.Value;
 			if (value != System.Math.Round (value)) {
 				value = System.Math.Round (value);
@@ -233,7 +234,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void VAdjustmentValueChanged ()
 		{
-			HideTooltip (false);
+			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			double value = this.textEditorData.VAdjustment.Value;
 			if (value != System.Math.Round (value)) {
@@ -364,6 +365,15 @@ namespace Mono.TextEditor
 				Accessible.AddAccessibleElement (iconMargin.Accessible);
 			}
 
+			quickFixMargin = new QuickFixMargin (editor);
+			if (quickFixMargin.Accessible != null) {
+				quickFixMargin.Accessible.Label = GettextCatalog.GetString ("Quick Fix Margin");
+				quickFixMargin.Accessible.Help = GettextCatalog.GetString ("Quick fix margin contains the context menu popup for code actions and fixes");
+				quickFixMargin.Accessible.Identifier = "TextArea.QuickFixMargin";
+				quickFixMargin.Accessible.GtkParent = this;
+				Accessible.AddAccessibleElement (quickFixMargin.Accessible);
+			}
+
 			gutterMargin = new GutterMargin (editor);
 			if (gutterMargin.Accessible != null) {
 				gutterMargin.Accessible.Label = GettextCatalog.GetString ("Line Numbers");
@@ -400,6 +410,7 @@ namespace Mono.TextEditor
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
+			margins.Add (quickFixMargin);
 			margins.Add (actionMargin);
 			margins.Add (foldMarkerMargin);
 
@@ -848,7 +859,7 @@ namespace Mono.TextEditor
 
 				if (tipWindow != null && currentTooltipProvider != null) {
 					if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-						DelayedHideTooltip ();
+						DelayedHideTooltip (TooltipCloseReason.TextAreaLeft);
 				} else {
 					HideTooltip ();
 				}
@@ -1044,6 +1055,7 @@ namespace Mono.TextEditor
 			iconMargin = null;
 			actionMargin = null;
 			foldMarkerMargin = null;
+			quickFixMargin = null;
 			gutterMargin = null;
 			textViewMargin = null;
 			margins = null;
@@ -1251,14 +1263,7 @@ namespace Mono.TextEditor
 		{
 			try {
 				if (currentFocus == FocusMargin.TextView) {
-					long time;
-#if MAC
-					time = (long)TimeSpan.FromSeconds (AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp).TotalMilliseconds;
-#else
-					// Warning, Gdk returns uint32 as time value, so this might overflow.
-					time = evt.Time;
-#endif
-					keyPressTimings.StartTimer (time);
+					keyPressTimings.StartTimer (evt);
 					return HandleTextKey (evt);
 				} else if (currentFocus != FocusMargin.None) {
 					return HandleMarginKeyCommand (evt);
@@ -1380,11 +1385,11 @@ namespace Mono.TextEditor
 		{
 			if (overChildWidget)
 				return true;
+			var result = base.OnButtonPressEvent (e);
 
 			pressPositionX = e.X;
 			pressPositionY = e.Y;
 			base.IsFocus = true;
-
 			// If there is anything in the preedit buffer, commit it otherwise text
 			// selection may have the wrong offsets.
 			CommitPreedit ();
@@ -1412,7 +1417,7 @@ namespace Mono.TextEditor
 				if (margin != null) 
 					margin.MousePressed (new MarginMouseEventArgs (textEditorData.Parent, e, e.Button, e.X - startPos, e.Y, e.State));
 			}
-			return base.OnButtonPressEvent (e);
+			return result;
 		}
 		
 		bool DoClickedPopupMenu (Gdk.EventButton e)
@@ -1792,7 +1797,7 @@ namespace Mono.TextEditor
 			IsMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider != null) {
 				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow)) {
-					DelayedHideTooltip ();
+					DelayedHideTooltip (TooltipCloseReason.TextAreaLeft);
 				} else {
 					currentTooltipProvider.TakeMouseControl (textEditorData.Parent, tipWindow);
 				}
@@ -1831,9 +1836,13 @@ namespace Mono.TextEditor
 				return gutterMargin;
 			}
 		}
-		
+
 		public Margin IconMargin {
 			get { return iconMargin; }
+		}
+
+		public QuickFixMargin QuickFixMargin {
+			get { return quickFixMargin; }
 		}
 
 		public ActionMargin ActionMargin {
@@ -3167,12 +3176,12 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState, DocumentLocation location)
 		{
 			if (mx < TextViewMargin.TextStartPosition) {
-				HideTooltip ();
+				HideTooltip (TooltipCloseReason.MouseMove);
 				return;
 			}
 
 			if (location.IsEmpty) {
-				HideTooltip ();
+				HideTooltip (TooltipCloseReason.MouseMove);
 				return;
 			}
 
@@ -3218,7 +3227,7 @@ namespace Mono.TextEditor
 					return;
 			}
 			if (tipItem != null && !tipItem.IsInvalid () && !tipItem.Contains (offset)) 
-				HideTooltip ();
+				HideTooltip (TooltipCloseReason.MouseMove);
 			nextTipX = xloc;
 			nextTipY = yloc;
 			nextTipOffset = offset;
@@ -3305,32 +3314,34 @@ namespace Mono.TextEditor
 			tipWindow = tooltipWindow;
 		}
 		
-		public void HideTooltip (bool checkMouseOver = true)
+		public void HideTooltip (TooltipCloseReason reason = TooltipCloseReason.Force)
 		{
 			CancelScheduledHide ();
 			CancelScheduledShow ();
 			
 			if (tipWindow != null) {
-//				if (checkMouseOver && tipWindow.GdkWindow != null) {
-//					// Don't hide the tooltip window if the mouse pointer is inside it.
-//					int x, y, w, h;
-//					Gdk.ModifierType m;
-//					tipWindow.GdkWindow.GetPointer (out x, out y, out m);
-//					tipWindow.GdkWindow.GetSize (out w, out h);
-//					if (x >= 0 && y >= 0 && x < w && y < h)
-//						return;
-//				}
-				tipWindow.Dispose ();
-				tipWindow = null;
-				tipItem = null;
+				//				if (checkMouseOver && tipWindow.GdkWindow != null) {
+				//					// Don't hide the tooltip window if the mouse pointer is inside it.
+				//					int x, y, w, h;
+				//					Gdk.ModifierType m;
+				//					tipWindow.GdkWindow.GetPointer (out x, out y, out m);
+				//					tipWindow.GdkWindow.GetSize (out w, out h);
+				//					if (x >= 0 && y >= 0 && x < w && y < h)
+				//						return;
+				//				}
+
+				if (currentTooltipProvider.TryCloseTooltipWindow (tipWindow, reason)) {
+					tipWindow = null;
+					tipItem = null;
+				}
 			}
 		}
 		
-		void DelayedHideTooltip ()
+		void DelayedHideTooltip (TooltipCloseReason reason)
 		{
 			CancelScheduledHide ();
 			tipHideTimeoutId = GLib.Timeout.Add (300, delegate {
-				HideTooltip ();
+				HideTooltip (reason);
 				tipHideTimeoutId = 0;
 				return false;
 			});

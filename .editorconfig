@@ -93,3 +93,6 @@ csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_inlined_variable_declaration = true:suggestion
 csharp_style_throw_expression = true:suggestion
 csharp_style_conditional_delegate_call = true:suggestion
+
+# Avoid redundant accessibility modifiers when they're default
+dotnet_style_require_accessibility_modifiers = omit_if_default:suggestion

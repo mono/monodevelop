@@ -28,6 +28,8 @@ using System;
 using MonoDevelop.Ide;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Desktop;
 
 namespace Mono.TextEditor
 {
@@ -58,13 +60,14 @@ namespace Mono.TextEditor
 		//
 
 		const int numberOfCountSpaces = 100;
-		long[] activeCounts = new long[numberOfCountSpaces];
+		readonly TimeSpan [] activeCounts = new TimeSpan [numberOfCountSpaces];
 		int activeCountIndex = 0;
 		int droppedEvents = 0;
 
+		readonly IPlatformTelemetryDetails telemetry;
+
 		public TimeSpan GetCurrentTime ()
 		{
-			var telemetry = DesktopService.PlatformTelemetry;
 			if (telemetry == null) {
 				return TimeSpan.Zero;
 			}
@@ -73,6 +76,8 @@ namespace Mono.TextEditor
 
 		public TextEditorKeyPressTimings (TextDocument document)
 		{
+			telemetry = DesktopService.PlatformTelemetry;
+
 			openTime = GetCurrentTime ();
 
 			if (document != null) {
@@ -101,7 +106,15 @@ namespace Mono.TextEditor
 			totalTimeCaretDrawing += duration;
 		}
 
-		public void StartTimer (long eventTime)
+		public void StartTimer (Gdk.EventKey eventKey)
+		{
+			if (telemetry == null)
+				StartTimer (TimeSpan.FromMilliseconds (eventKey.Time));
+			else
+				StartTimer (telemetry.GetEventTime (eventKey));
+		}
+
+		public void StartTimer (TimeSpan eventTime)
 		{
 			if (activeCountIndex == numberOfCountSpaces) {
 				// just drop these events now
@@ -151,26 +164,15 @@ namespace Mono.TextEditor
 				return;
 			}
 
-			// Gdk key events are wrapped to uint32, so if we use longs here, we will get keypresses that
-			// seemingly last for days.
-			var sinceStartup = (long)currentTime.TotalMilliseconds;
-
 			if (complete) {
-				for (int i = 0; i < activeCountIndex; i++) {
-					var ts = activeCounts[i];
-					var durationMs = sinceStartup - ts;
-
-					AddTime (new TimeSpan (durationMs * TimeSpan.TicksPerMillisecond));
-				}
+				for (int i = 0; i < activeCountIndex; i++)
+					AddTime (currentTime - activeCounts[i]);
 
 				activeCountIndex = 0;
 			} else {
 				// Some keypresses do not trigger a draw event, so we process them once
 				// they are finished and remove them from the activeCounts list
-				var ts = activeCounts[--activeCountIndex];
-				var durationMs = sinceStartup - ts;
-
-				AddTime (new TimeSpan (durationMs * TimeSpan.TicksPerMillisecond));
+				AddTime (currentTime - activeCounts[--activeCountIndex]);
 			}
 		}
 
@@ -189,7 +191,7 @@ namespace Mono.TextEditor
 				PercentDrawMargin = totalTimeMarginDrawing.TotalMilliseconds / totalMillis * 100,
 				PercentExtensionKeypress = totalTimeExtensionKeyPress.TotalMilliseconds / totalMillis * 100,
 				SessionKeypressCount = count,
-				SessionLength = openTime.TotalMilliseconds - GetCurrentTime ().TotalMilliseconds,
+				SessionLength = GetCurrentTime ().TotalMilliseconds - openTime.TotalMilliseconds,
 				LengthAtStart = lengthAtStart,
 				LengthDelta = lengthAtEnd - lengthAtStart,
 				LineCountAtStart = lineCountAtStart,

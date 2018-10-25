@@ -12,6 +12,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
+  <PropertyGroup Condition=" $(OS) == 'Windows_NT'">
+    <DefineConstants>WIN32</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -178,6 +181,8 @@
     <Compile Include="MonoDevelop.Refactoring.Options\Util.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeRulePanel.cs" />
     <Compile Include="MonoDevelop.CodeActions\FixAllPreviewDialog.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.FloatingQuickFixIconWidget.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.RectangleMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

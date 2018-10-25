@@ -29,6 +29,7 @@
     <Compile Include="CarbonTests.cs" />
     <Compile Include="MimeMapLoaderTests.cs" />
     <Compile Include="MemoryMonitorTests.cs" />
+    <Compile Include="ThermalMonitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\MacPlatform\MacPlatform.csproj">

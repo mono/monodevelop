@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide
 				TypeSystemService.Unload (solution);
 			Window.CloseWindowSync ();
 			if (!Wrap)
-				Document.DisposeDocument ();
+				Document.Dispose ();
 		}
 
 		public T GetContent<T> () where T:class => Content.GetContent<T> ();

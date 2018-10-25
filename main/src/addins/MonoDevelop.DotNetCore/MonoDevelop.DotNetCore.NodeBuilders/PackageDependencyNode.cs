@@ -26,8 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Tasks;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet.Versioning;
@@ -37,24 +39,29 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 	class PackageDependencyNode
 	{
 		DependenciesNode dependenciesNode;
-		PackageDependency dependency;
+		PackageDependencyInfo dependency;
 		string name;
 		string version;
 
 		PackageDependencyNode (
 			DependenciesNode dependenciesNode,
-			PackageDependency dependency,
+			PackageDependencyInfo dependency,
 			bool topLevel)
 		{
 			this.dependenciesNode = dependenciesNode;
 			this.dependency = dependency;
 			IsTopLevel = topLevel;
 
-			name = dependency.Name;
-			version = dependency.Version;
+			if (dependency.IsDiagnostic) {
+				name = dependency.DiagnosticCode;
+			} else {
+				name = dependency.Name;
+				version = dependency.Version;
 
-			if (IsTopLevel)
-				IsReadOnly = !PackageReferenceExistsInProject ();
+				if (IsTopLevel) {
+					IsReadOnly = !PackageReferenceExistsInProject ();
+				}
+			}
 		}
 
 		PackageDependencyNode (DependenciesNode dependenciesNode, ProjectPackageReference packageReference)
@@ -80,16 +87,13 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public static PackageDependencyNode Create (
 			DependenciesNode dependenciesNode,
-			string dependencyName,
+			PackageDependencyInfo dependency,
 			bool sdkDependencies,
 			bool topLevel)
 		{
-			PackageDependency dependency = dependenciesNode.PackageDependencyCache.GetDependency (dependencyName);
-			if (dependency != null) {
-				var node = new PackageDependencyNode (dependenciesNode, dependency, topLevel);
-				if (node.IsSupported (sdkDependencies)) {
-					return node;
-				}
+			var node = new PackageDependencyNode (dependenciesNode, dependency, topLevel);
+			if (node.IsSupported (sdkDependencies)) {
+				return node;
 			}
 
 			return null;
@@ -131,7 +135,27 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public IconId GetIconId ()
 		{
+			if (IsDiagnostic)
+				return new IconId ("md-nuget-warning");
 			return new IconId ("md-package-dependency");
+		}
+
+		public TaskSeverity? GetStatusSeverity ()
+		{
+			if (IsDiagnostic || HasChildDiagnostic)
+				return TaskSeverity.Warning;
+			return null;
+		}
+
+		public string GetStatusMessage ()
+		{
+			if (IsDiagnostic)
+				return dependency.DiagnosticMessage;
+
+			if (HasChildDiagnostic)
+				return GetChildDiagnosticStatusMessage ();
+
+			return null;
 		}
 
 		public DotNetProject Project {
@@ -143,6 +167,14 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public bool CanBeRemoved {
 			get { return IsTopLevel && !IsReadOnly; }
+		}
+
+		public bool IsDiagnostic {
+			get { return dependency?.IsDiagnostic == true; }
+		}
+
+		public bool HasChildDiagnostic {
+			get { return dependency?.HasChildDiagnostic == true; }
 		}
 
 		public bool IsReleaseVersion ()
@@ -174,7 +206,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public static IEnumerable<PackageDependencyNode> GetDependencyNodes (
 			DependenciesNode dependenciesNode,
-			PackageDependency dependency,
+			PackageDependencyInfo dependency,
 			bool sdkDependencies = false,
 			bool topLevel = false)
 		{
@@ -191,6 +223,25 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		bool IsMatch (ProjectPackageReference packageReference)
 		{
 			return StringComparer.OrdinalIgnoreCase.Equals (packageReference.Include, name);
+		}
+
+		/// <summary>
+		/// Use the diagnostic message if there is only one direct diagnostic child. Otherwise
+		/// return a message indicating the diagnostic message can be seen by expanding
+		/// the package.
+		/// </summary>
+		string GetChildDiagnosticStatusMessage ()
+		{
+			string message = null;
+			foreach (PackageDependencyInfo childDependency in dependency.Dependencies) {
+				if (childDependency.IsDiagnostic && message == null) {
+					message = childDependency.DiagnosticMessage;
+				} else if (childDependency.HasChildDiagnostic || childDependency.IsDiagnostic) {
+					// Multiple diagnostics or child diagnostic so change the status message.
+					return GettextCatalog.GetString ("Package restored with warnings. Expand the package to see the warnings.");
+				}
+			}
+			return message;
 		}
 	}
 }

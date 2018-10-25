@@ -1,6 +1,6 @@
 ﻿﻿{
     "name": "High Contrast Light",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "High Contrast Light Style",
     "originator": "Microsoft (http://microsoft.com)",
 
@@ -40,7 +40,9 @@
         { "name": "Message Bubble Warning Tooltip", "color": "text" },
 
         { "name": "Search result background (highlighted)", "color": "search-result" },
-        { "name": "Search result background", "color": "search-result" }
+        { "name": "Search result background", "color": "search-result" },
+
+        { "name": "Brace Matching(Rectangle)", "color": "#e2e6d6", "secondcolor": "#e2e6d6" }
     ],
 
     "text": [

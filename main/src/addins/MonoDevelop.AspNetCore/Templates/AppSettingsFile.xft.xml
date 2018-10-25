@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template
+	originator="Jose Miguel Torres"
+	language="JSON"
+	created="2018/10/22"
+	lastModified="2018/10/22">
+
+	<TemplateConfiguration>
+		<_Name>App Settings File</_Name>
+		<Icon>md-file-source</Icon>
+		<_Category>ASP.NET Core</_Category>
+		<_Description>An appsettings.json file used to configure Web Applications.</_Description>
+		<DefaultFilename>appsettings</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".json" src="AppSettingsFile.json" />
+	</TemplateFiles>
+</Template>

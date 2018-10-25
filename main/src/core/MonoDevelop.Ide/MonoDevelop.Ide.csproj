@@ -108,9 +108,6 @@
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\..\..\packages\YamlDotNet.Signed.4.0.1-pre291\lib\net35\YamlDotNet.dll</HintPath>
-    </Reference>
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
@@ -134,6 +131,9 @@
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\..\..\packages\YamlDotNet.Signed.5.2.1\lib\net45\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -3041,6 +3041,30 @@
     <EmbeddedResource Include="icons\tree-chevron-open%402x.png" />
     <EmbeddedResource Include="icons\tree-chevron-open~dark.png" />
     <EmbeddedResource Include="icons\tree-chevron-open~dark%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16~dark.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16~dark%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16~dark~sel.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16~sel.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-16~sel%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16~dark.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16~dark%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16~dark~sel.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16~sel.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-error-16~sel%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~dark.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~dark%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~dark~sel.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~sel.png" />
+    <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~sel%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -4195,6 +4219,9 @@
     <Compile Include="MonoDevelop.Ide\ProductInformationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\RuntimeVersionInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.Desktop\ThermalMonitor.cs" />
+    <Compile Include="MonoDevelop.Ide\PlatformThermalStatusEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopFrameworkAssemblyPathResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
@@ -4289,6 +4316,9 @@
     <InternalsVisibleTo Include="Xamarin.iOSDesigner.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.FormsPreviewer.MonoDevelop" />
     <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="icons\code-actions\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
