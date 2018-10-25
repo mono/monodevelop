@@ -109,7 +109,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Initialize ()
 		{
 			flowLayout = new MacToolboxWidgetFlowLayout ();
-			flowLayout.SectionHeadersPinToVisibleBounds = true;
+			flowLayout.SectionHeadersPinToVisibleBounds = false;
 			flowLayout.MinimumInteritemSpacing = 1;
 			flowLayout.MinimumLineSpacing = 1;
 			CollectionViewLayout = flowLayout;
@@ -132,8 +132,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			};
 
-			BackgroundColors = new NSColor[] { Styles.SearchTextFieldLineBackgroundColor };
-
 			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
@@ -147,7 +145,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			MouseDownActivated?.Invoke (theEvent);
 		}
 
-		const int IconMargin = 5;
+		const int IconMargin = 1;
 
 		public void RedrawItems (bool invalidates, bool reloads)
 		{

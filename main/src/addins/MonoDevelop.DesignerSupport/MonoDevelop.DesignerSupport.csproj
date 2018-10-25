@@ -141,7 +141,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ClickedButton.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\NativeViewHelper.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ScrollContainerView.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\PaddingView.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ExpanderButton.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\CollectionViewItems.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidget.cs" />
