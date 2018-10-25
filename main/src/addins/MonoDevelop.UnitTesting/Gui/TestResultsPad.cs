@@ -738,8 +738,38 @@ namespace MonoDevelop.UnitTesting
 				TreeIter testRow = failuresStore.AppendValues (TestStatusIcon.Failure, Escape (test.FullName), test, file);
 				bool hasMessage = !string.IsNullOrEmpty (result.Message);
 
-				if (hasMessage)
-					failuresStore.AppendValues (testRow, null, "<span font='" + FontService.MonospaceFontName + "'>"+Escape (result.Message) + "</span>", test, null, 0, ErrorMessage);
+				if (hasMessage) {
+					var sb = StringBuilderCache.Allocate ();
+					string curLineText;
+					int curLine = 1;
+					const int maxLineLength = 255;
+					const int maxLineNumber = 255;
+					sb.Append ("<span font='");
+					sb.Append (FontService.MonospaceFontName);
+					sb.Append ("'>");
+					using (var sr = new StringReader (result.Message)) {
+						while (null != (curLineText = sr.ReadLine ())) {
+							if (curLineText == null) continue;
+							if (curLine < maxLineNumber) {
+								if (curLineText.Length > maxLineLength) {
+									sb.Append (curLineText, 0, maxLineLength);
+									sb.AppendLine ("…");
+								} else {
+									sb.AppendLine (curLineText);
+								}
+							}
+							curLine++;
+						}
+					}
+					if (curLine > maxLineNumber) {
+						sb.Append ("<span foreground='darkgrey'>");
+						sb.Append (GettextCatalog.GetString ("(+{0} lines not shown - see output view for full result message)", curLine - maxLineNumber));
+						sb.Append ("</span>");
+					}
+					sb.Append ("</span>");
+					failuresStore.AppendValues (testRow, null,StringBuilderCache.ReturnAndFree (sb), test, null, 0, ErrorMessage);
+				}
+
 				if (!string.IsNullOrEmpty (result.StackTrace)) {
 					TreeIter row = testRow;
 					if (hasMessage)
@@ -774,6 +804,11 @@ namespace MonoDevelop.UnitTesting
 				outputView.Buffer.Insert (ref it, result.ConsoleOutput);
 			if (result.ConsoleError != null)
 				outputView.Buffer.Insert (ref it, result.ConsoleError);
+			if (!string.IsNullOrEmpty (result.Message)) {
+				outputView.Buffer.Insert (ref it, GettextCatalog.GetString ("Result message:"));
+				outputView.Buffer.Insert (ref it, "\n");
+				outputView.Buffer.Insert (ref it, result.Message);
+			}
 			outputView.ScrollMarkOnscreen (outputView.Buffer.InsertMark);
 		}
 
