@@ -67,6 +67,7 @@ namespace MonoDevelop.DesignerSupport
 				toolbox.ContentFocused += (s, e) => {
 					if (!widget.HasFocus) {
 						widget.HasFocus = true;
+						toolbox.FocusSelectedView ();
 					}
 				};
 			} else {

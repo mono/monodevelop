@@ -1,12 +1,37 @@
-﻿#if MAC
+﻿/* 
+ * NativeViewHelper.cs - helper with static methods to create view related things
+ * 
+ * Author:
+ *   Jose Medrano <josmed@microsoft.com>
+ *
+ * Copyright (C) 2018 Microsoft, Corp
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the
+ * following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+ * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+#if MAC
 using AppKit;
-using CoreGraphics;
 using Foundation;
-using System.Linq;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public static class NativeViewHelper
+	static class NativeViewHelper
 	{
 		public static NSStackView CreateHorizontalStackView (int spacing = 10) => new NSStackView () {
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal,
@@ -28,94 +53,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public static NSTextField CreateLabel (string text, NSTextAlignment alignment = NSTextAlignment.Left, NSFont font = null)
 		{
 			return new NSTextField () {
-				StringValue = text ?? "",
-				Font = font ?? GetSystemFont (false),
-				Editable = false,
-				Bordered = false,
-				Bezeled = false,
-				DrawsBackground = false,
-				Selectable = false,
-				Alignment = alignment,
-				TranslatesAutoresizingMaskIntoConstraints = false
-			};
-		}
-
-		public static ProgressIndicator GetProgressIndicator (this NSView view)
-		{
-			return view.Subviews.FirstOrDefault (v => v is ProgressIndicator) as ProgressIndicator;
-		}
-
-		public static void ShowProgressIndicator (this NSView view, string title = null)
-		{
-			if (!(view.GetProgressIndicator () is ProgressIndicator indicator)) {
-				view.PostsFrameChangedNotifications = true;
-				indicator = new ProgressIndicator () {
-					Indeterminate = true,
-					Style = NSProgressIndicatorStyle.Spinning,
-					UsesThreadedAnimation = false
-				};
-				view.AddSubview (indicator);
-			} else {
-				indicator.Frame = view.Frame;
-			}
-
-			indicator.Hidden = false;
-			indicator.Title = title ?? string.Empty;
-			indicator.StartAnimation (view);
-		}
-
-		public static void HideProgressIndicator (this NSView tableView)
-		{
-			var indicator = tableView.GetProgressIndicator ();
-			if (indicator != null) {
-				indicator.StopAnimation (tableView);
-				indicator.Hidden = true;
-			}
-		}
-
-		public static NSStackView CreateVerticalStackView (int spacing = 10) => new NSStackView () {
-			Orientation = NSUserInterfaceLayoutOrientation.Vertical,
-			Alignment = NSLayoutAttribute.Leading,
-			Spacing = spacing,
-			Distribution = NSStackViewDistribution.Fill,
-			TranslatesAutoresizingMaskIntoConstraints = false
-		};
-
-		public static NSFont GetSmallSystemFont (bool bold)
-		{
-			if (bold)
-				return NSFont.BoldSystemFontOfSize (NSFont.SmallSystemFontSize);
-			return NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize);
-		}
-
-		public static NSButton CreateButton (NSBezelStyle bezelStyle, NSFont font, string text, NSControlSize controlSize = NSControlSize.Regular, NSImage image = null, bool bordered = true)
-		{
-			var button = new NSButton {
-				BezelStyle = bezelStyle,
-				Bordered = bordered,
-				ControlSize = controlSize,
-				Font = font ?? GetSystemFont (false),
-				Title = text, TranslatesAutoresizingMaskIntoConstraints = false
-			};
-			if (image != null) {
-				button.Image = image;
-			}
-			return button;
-		}
-
-		public static NSTextField CreateTextField (string text, NSFont font = null, NSTextAlignment alignment = NSTextAlignment.Left)
-		{
-			return new NSTextField () {
-				StringValue = text ?? "",
-				Font = font ?? GetSystemFont (false),
-				Alignment = alignment,
-				TranslatesAutoresizingMaskIntoConstraints = false
-			};
-		}
-
-		public static NSTextField CreateLabel (CGRect rect, NSFont font, string text, NSTextAlignment alignment = NSTextAlignment.Left)
-		{
-			return new NSTextField (rect) {
 				StringValue = text ?? "",
 				Font = font ?? GetSystemFont (false),
 				Editable = false,

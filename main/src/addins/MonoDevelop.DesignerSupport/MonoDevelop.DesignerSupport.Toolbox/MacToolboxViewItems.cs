@@ -1,11 +1,36 @@
-﻿#if MAC
+﻿//
+// MacToolboxViewItems.cs - Native views (NSCollectionItems) required to use with MacToolboxWidget (NSCollectionView)
+//
+// Author:
+//   Jose Medrano <josmed@microsoft.com>
+//
+// Copyright (C) 2018 Microsoft, Corp
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+#if MAC
 using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
-using Xwt;
-using System.Linq;
 using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -13,8 +38,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("LabelCollectionViewItem")]
 	class LabelCollectionViewItem : NSCollectionViewItem
 	{
-		//60
-		public const int ItemHeight = 30;
+		internal const int ItemHeight = 30;
 		internal const string Name = "LabelViewItem";
 
 		public override string Description => TextField.StringValue;
@@ -35,9 +59,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			View = contentCollectionView = new ContentCollectionViewItem ();
 			View.Identifier = Name;
 			View.AccessibilityElement = false;
-			contentCollectionView.BackgroundSelectedColor = Styles.CellBackgroundSelectedColor;
-			contentCollectionView.BorderSelectedColor = Styles.CellBorderSelectedColor;
-			contentCollectionView.BackgroundColor = Styles.CellBackgroundColor;
 
 			ImageView = new NSImageView ();
 			contentCollectionView.AddArrangedSubview (ImageView);
@@ -55,11 +76,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("HeaderCollectionViewItem")]
 	class HeaderCollectionViewItem : ExpanderButton, INSCollectionViewSectionHeaderView
 	{
-		public static NSImage CollapsedImage = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu).ToNative ();
-		public static NSImage ExpandedImage = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu).ToNative ();
+		static readonly NSImage CollapsedImage = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu).ToNative ();
+		static readonly NSImage ExpandedImage = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu).ToNative ();
 
-		public const int SectionHeight = 25;
-
+		internal const int SectionHeight = 25;
 		internal const string Name = "HeaderViewItem";
 
 		bool isCollapsed;
@@ -83,8 +103,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("ImageCollectionViewItem")]
 	class ImageCollectionViewItem : NSCollectionViewItem
 	{
-		//47
-		public static CGSize Size = new CGSize (23, 23);
+		internal static CGSize Size = new CGSize (23, 23);
 
 		internal const string Name = "ImageViewItem";
 		const int margin = 5;
@@ -125,9 +144,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			View = contentCollectionView = new ContentCollectionViewItem ();
 			contentCollectionView.Identifier = Name;
-			contentCollectionView.BackgroundSelectedColor = Styles.CellBackgroundSelectedColor;
-			contentCollectionView.BorderSelectedColor = Styles.CellBorderSelectedColor;
-			contentCollectionView.BackgroundColor = Styles.CellBackgroundColor;
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 0, 0, 0);
 		}
 
@@ -140,9 +156,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	class ContentCollectionViewItem : NSStackView
 	{
 		public NSColor BackgroundColor { get; set; } = NSColor.Control;
-		public NSColor BackgroundSelectedColor { get; set; } = NSColor.SelectedTextBackground;
-		public NSColor BorderSelectedColor { get; internal set; }
-
+		public NSColor BackgroundSelectedColor { get; set; } = NSColor.SelectedControl;
 		public NSImage BackgroundImage { get; internal set; }
 
 		bool isSelected;
@@ -153,18 +167,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return;
 				}
 				isSelected = value;
-				NeedsDisplay = true;
-			}
-		}
-
-		bool isMouseOver;
-		public bool IsMouseOver {
-			get => isMouseOver;
-			set {
-				if (isMouseOver == value) {
-					return;
-				}
-				isMouseOver = value;
+				Layer.BackgroundColor = value ? BackgroundSelectedColor.CGColor : NSColor.Clear.CGColor;
 				NeedsDisplay = true;
 			}
 		}
@@ -173,26 +176,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			base.DrawRect (dirtyRect);
 
-			if (IsSelected) {
-				BackgroundSelectedColor.Set ();
-				NSBezierPath.FillRect (dirtyRect);
-			} 
-
 			if (BackgroundImage != null) {
 				var context = NSGraphicsContext.CurrentContext;
 				context.SaveGraphicsState ();
 
-				var point = (Frame.Width - BackgroundImage.Size.Width) / 2;
-				BackgroundImage.Draw (new CGRect (point, point, BackgroundImage.Size.Width, BackgroundImage.Size.Height));
+				var center = (Frame.Width - BackgroundImage.Size.Width) / 2;
+				BackgroundImage.Draw (new CGRect (center, center, BackgroundImage.Size.Width, BackgroundImage.Size.Height));
 				context.RestoreGraphicsState ();
-			}
-
-			if (isMouseOver && BorderSelectedColor != null) {
-				BorderSelectedColor.Set ();
-				var rect = NSBezierPath.FromRect (new CGRect (dirtyRect.X, dirtyRect.Y, dirtyRect.Width, dirtyRect.Height));
-				rect.LineWidth = 1.5f;
-				rect.ClosePath ();
-				rect.Stroke ();
 			}
 		}
 
@@ -200,6 +190,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
 			TranslatesAutoresizingMaskIntoConstraints = false;
+			WantsLayer = true;
+			Layer.BackgroundColor = NSColor.Clear.CGColor;
 		}
 	}
 }

@@ -1,11 +1,38 @@
-﻿#if MAC
+﻿/* 
+ * MacToolboxWidget.cs - A toolbox widget
+ * 
+ * Author:
+ *   Jose Medrano <josmed@microsoft.com>
+ *
+ * Copyright (C) 2018 Microsoft, Corp
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the
+ * following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+ * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#if MAC
 using System;
 using System.Collections.Generic;
 using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide.Gui;
-using Xwt;
 using System.Linq;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -13,51 +40,42 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("CollectionView")]
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
 	{
-		public string CustomMessage {
-			get => MessageTextField.StringValue;
-			set {
-				if (string.IsNullOrEmpty (value)) {
-					MessageTextField.StringValue = "";
-					MessageTextField.Hidden = true;
-				} else {
-					MessageTextField.StringValue = value;
-					MessageTextField.Hidden = false;
-				}
-			}
-		}
+		const int IconMargin = 1;
 
-		NSTextField MessageTextField;
-		public Action<NSEvent> MouseDownActivated { get; set; }
+		internal MacToolboxWidgetFlowLayoutDelegate collectionViewDelegate;
+		internal NSCollectionViewFlowLayout flowLayout;
+
+		public event EventHandler Focused;
 		public event EventHandler DragBegin;
-
-		bool showCategories = true;
-		bool listMode = false;
+		public event EventHandler<CGPoint> MenuOpened;
+		public event EventHandler SelectedItemChanged;
+		public event EventHandler ActivateSelectedItem;
+		public Action<NSEvent> MouseDownActivated { get; set; }
 
 		readonly List<ToolboxWidgetCategory> categories = new List<ToolboxWidgetCategory> ();
 
+		IPadWindow container;
+		NSTextField messageTextField;
+		ToolboxWidgetItem selectedItem;
 		MacToolboxWidgetDataSource dataSource;
-		internal MacToolboxWidgetFlowLayoutDelegate collectionViewDelegate;
-		internal MacToolboxWidgetFlowLayout flowLayout;
+
+		bool listMode;
+		bool showCategories = true;
 
 		public IEnumerable<ToolboxWidgetCategory> Categories {
 			get { return categories; }
 		}
 	
-		public event EventHandler SelectedItemChanged;
+		protected virtual void OnActivateSelectedItem (EventArgs args)
+		{
+			ActivateSelectedItem?.Invoke (this, args);
+		}
+
 		protected virtual void OnSelectedItemChanged (EventArgs args)
 		{
 			SelectedItemChanged?.Invoke (this, args);
 		}
 
-		public event EventHandler ActivateSelectedItem;
-		public event EventHandler Focused;
-
-		protected virtual void OnActivateSelectedItem (EventArgs args)
-		{
-			ActivateSelectedItem?.Invoke (this, args);
-		}
-	
-		ToolboxWidgetItem selectedItem;
 		public ToolboxWidgetItem SelectedItem {
 			get {
 				return selectedItem;
@@ -70,7 +88,53 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		IPadWindow container;
+		public string CustomMessage {
+			get => messageTextField.StringValue;
+			set {
+				if (string.IsNullOrEmpty (value)) {
+					messageTextField.StringValue = "";
+					messageTextField.Hidden = true;
+				} else {
+					messageTextField.StringValue = value;
+					messageTextField.Hidden = false;
+				}
+			}
+		}
+
+		public bool IsListMode {
+			get => listMode;
+			set {
+				listMode = value;
+				collectionViewDelegate.ShowsOnlyImages = dataSource.ShowsOnlyImages = !value;
+			}
+		}
+
+		public bool ShowCategories {
+			get => showCategories;
+			set {
+				showCategories = collectionViewDelegate.ShowsCategories = value;
+			}
+		}
+
+		public IEnumerable<ToolboxWidgetItem> AllItems {
+			get {
+				foreach (var category in this.categories) {
+					foreach (var item in category.Items) {
+						yield return item;
+					}
+				}
+			}
+		}
+
+		public bool CanIconizeToolboxCategories {
+			get {
+				foreach (var category in categories) {
+					if (category.CanIconizeItems)
+						return true;
+				}
+				return false;
+			}
+		}
 
 		public MacToolboxWidget (IPadWindow container) : base ()
 		{
@@ -78,26 +142,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			container.PadContentShown += OnContainerIsShown;
 
 			Initialize ();
-		}
-
-		ToolboxWidgetItem GetFirstSelectableElement ()
-		{
-			foreach (var category in Categories) {
-				foreach (var item in category.Items) {
-					return item;
-				}
-			}
-			return null;
-		}
-
-		public override bool BecomeFirstResponder ()
-		{
-			Focused?.Invoke (this, EventArgs.Empty);
-
-			if (selectedItem == null) {
-				SelectedItem = GetFirstSelectableElement ();
-			}
-			return base.BecomeFirstResponder ();
 		}
 
 		// Called when created from unmanaged code
@@ -118,10 +162,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			TranslatesAutoresizingMaskIntoConstraints = false;
 
-			flowLayout = new MacToolboxWidgetFlowLayout ();
-			flowLayout.SectionHeadersPinToVisibleBounds = false;
-			flowLayout.MinimumInteritemSpacing = 1;
-			flowLayout.MinimumLineSpacing = 1;
+			flowLayout = new NSCollectionViewFlowLayout {
+				SectionHeadersPinToVisibleBounds = false,
+				MinimumInteritemSpacing = 1,
+				MinimumLineSpacing = 1
+			};
 			CollectionViewLayout = flowLayout;
 		
 			Delegate = collectionViewDelegate = new MacToolboxWidgetFlowLayoutDelegate ();
@@ -142,32 +187,29 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			};
 
-			MessageTextField = NativeViewHelper.CreateLabel ("");
-			MessageTextField.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-			MessageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
-			AddSubview (MessageTextField);
+			var fontSmall = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
+			messageTextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Center, fontSmall);
+			messageTextField.LineBreakMode = NSLineBreakMode.ByWordWrapping;
+			messageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
+			AddSubview (messageTextField);
 		}
 
 		public override void SetFrameSize (CGSize newSize)
 		{
 			base.SetFrameSize (newSize);
-			var frame = MessageTextField.Frame;
-			MessageTextField.Frame = new CGRect (frame.Location, newSize);
+			var frame = messageTextField.Frame;
+			messageTextField.Frame = new CGRect (frame.Location, newSize);
 		}
-
-		NSTextField loadingLabel;
 
 		public override void MouseDown (NSEvent theEvent)
 		{
 			base.MouseDown (theEvent);
-			if (this.SelectedItem != null && theEvent.ClickCount > 1) {
+			if (SelectedItem != null && theEvent.ClickCount > 1) {
 				OnActivateSelectedItem (EventArgs.Empty);
 			}
 
 			MouseDownActivated?.Invoke (theEvent);
 		}
-
-		const int IconMargin = 1;
 
 		public void RedrawItems (bool invalidates, bool reloads)
 		{
@@ -203,11 +245,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public EventHandler<CGPoint> MenuOpened;
-
-		public override void KeyDown (NSEvent theEvent)
+		public override bool BecomeFirstResponder ()
 		{
-			base.KeyDown (theEvent);
+			Focused?.Invoke (this, EventArgs.Empty);
+			return base.BecomeFirstResponder ();
 		}
 
 		#region IEncapsuledView
@@ -230,11 +271,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#endregion
 
-		void SetCategoryExpanded (ToolboxWidgetCategory item, bool v)
-		{
-
-		}
-
 		ToolboxWidgetCategory GetCategory (ToolboxWidgetItem item)
 		{
 			foreach (var category in Categories) {
@@ -250,45 +286,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return category;
 		}
 
-		public bool IsListMode {
-			get => listMode;
-			set {
-				listMode = value;
-				collectionViewDelegate.IsOnlyImage = dataSource.IsOnlyImage = !value;
-			}
-		}
-
-		public bool ShowCategories {
-			get => showCategories;
-			set {
-				showCategories = collectionViewDelegate.IsShowCategories = value;
-			}
-		}
-
-		public IEnumerable<ToolboxWidgetItem> AllItems {
-			get {
-				foreach (ToolboxWidgetCategory category in this.categories) {
-					foreach (ToolboxWidgetItem item in category.Items) {
-						yield return item;
-					}
-				}
-			}
-		}
-
-		public void ClearData ()
+		internal void ClearData ()
 		{
 			categories.Clear ();
 			dataSource.Clear ();
-		}
-
-		public bool CanIconizeToolboxCategories {
-			get {
-				foreach (ToolboxWidgetCategory category in categories) {
-					if (category.CanIconizeItems)
-						return true;
-				}
-				return false;
-			}
 		}
 
 		internal void OnContainerIsShown (object sender, EventArgs e)
@@ -315,7 +316,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void AddCategory (ToolboxWidgetCategory category)
 		{
 			categories.Add (category);
-			foreach (ToolboxWidgetItem item in category.Items) {
+			foreach (var item in category.Items) {
 				if (item.Icon == null)
 					continue;
 			}

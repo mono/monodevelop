@@ -134,7 +134,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Extensions.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ProgressIndicator.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxWidget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\SearchTextField.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ToggleButton.cs" />
@@ -142,7 +141,7 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\NativeViewHelper.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ScrollContainerView.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ExpanderButton.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\CollectionViewItems.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxViewItems.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetDataSource.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetFlowLayoutDelegate.cs" />
