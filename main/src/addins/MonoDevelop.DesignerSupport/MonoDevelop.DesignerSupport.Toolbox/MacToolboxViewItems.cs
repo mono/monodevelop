@@ -166,14 +166,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					return;
 				}
 				isSelected = value;
-				Layer.BackgroundColor = value ? BackgroundSelectedColor.CGColor : NSColor.Clear.CGColor;
 				NeedsDisplay = true;
 			}
+		}
+
+		public ContentCollectionViewItem ()
+		{
+			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
+			TranslatesAutoresizingMaskIntoConstraints = false;
+			NeedsDisplay = true;
+		}
+
+		public override void ScrollWheel (NSEvent theEvent)
+		{
+			base.ScrollWheel (theEvent);
+			NeedsDisplay = true;
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
+
+			if (isSelected) {
+				BackgroundSelectedColor.Set ();
+				NSBezierPath.FillRect (dirtyRect);
+			}
 
 			if (BackgroundImage != null) {
 				var context = NSGraphicsContext.CurrentContext;
@@ -185,13 +202,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public ContentCollectionViewItem ()
-		{
-			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
-			TranslatesAutoresizingMaskIntoConstraints = false;
-			WantsLayer = true;
-			Layer.BackgroundColor = NSColor.Clear.CGColor;
-		}
 	}
 }
 #endif

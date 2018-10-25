@@ -30,34 +30,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override NSCollectionViewItem GetItem (NSCollectionView collectionView, NSIndexPath indexPath)
 		{
-			var item = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
-			ToolboxWidgetItem selectedItem = null;
-			if (item is LabelCollectionViewItem itmView) {
-				selectedItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
+			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
+			var widgetItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
 
-				itmView.View.ToolTip = selectedItem.Tooltip ?? "";
-				itmView.TextField.StringValue = selectedItem.Text;
-				itmView.TextField.AccessibilityTitle = selectedItem.Text ?? "";
-				itmView.ImageView.Image = selectedItem.Icon.ToNative ();
+			if (collectionViewItem is LabelCollectionViewItem itmView) {
+				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
+				itmView.TextField.StringValue = widgetItem.Text;
+				itmView.TextField.AccessibilityTitle = widgetItem.Text ?? "";
+				itmView.ImageView.Image = widgetItem.Icon.ToNative ();
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
-				itmView.Selected = false;
-
-			} else if (item is ImageCollectionViewItem imgView) {
-				selectedItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
-				imgView.View.ToolTip = selectedItem.Tooltip ?? "";
-				imgView.Image = selectedItem.Icon.ToNative ();
-				imgView.AccessibilityTitle = selectedItem.Text ?? "";
+				itmView.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
+			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
+				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
+				imgView.Image = widgetItem.Icon.ToNative ();
+				imgView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.AccessibilityElement = true;
-				imgView.Selected = false;
+				imgView.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
 			}
 
-			if (!Views.ContainsKey (selectedItem)) {
-				Views.Add (selectedItem, indexPath);
+			if (!Views.ContainsKey (widgetItem)) {
+				Views.Add (widgetItem, indexPath);
 			}
 
-			return item;
+			return collectionViewItem;
 		}
 
 		internal void SelectItem (NSCollectionView collectionView, ToolboxWidgetItem item)
