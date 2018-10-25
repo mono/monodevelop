@@ -87,6 +87,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override NSView GetView (NSCollectionView collectionView, NSString kind, NSIndexPath indexPath)
 		{
+			if (indexPath.Section >= Items.Count) {
+				return null;
+			}
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
 				var section = Items [(int)indexPath.Section];
@@ -96,7 +99,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				button.Activated -= Button_Activated;
 				button.Activated += Button_Activated;
 				button.IsCollapsed = toolboxWidget.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
-
 
 				if (!Categories.Any (s => s.category == section)) {
 					Categories.Add (new HeaderInfo () { category = section, index = indexPath, view = button });
@@ -120,7 +122,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
-
+			if (section >= Items.Count) {
+				return 0;
+			}
 			return Items [(int)section].Items.Count;
 		}
 

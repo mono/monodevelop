@@ -13,6 +13,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("CollectionView")]
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
 	{
+		public string CustomMessage {
+			get => MessageTextField.StringValue;
+			set {
+				if (string.IsNullOrEmpty (value)) {
+					MessageTextField.StringValue = "";
+					MessageTextField.Hidden = true;
+				} else {
+					MessageTextField.StringValue = value;
+					MessageTextField.Hidden = false;
+				}
+			}
+		}
+
+		NSTextField MessageTextField;
 		public Action<NSEvent> MouseDownActivated { get; set; }
 		public event EventHandler DragBegin;
 
@@ -29,15 +43,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return categories; }
 		}
 	
-		public void HideTooltipWindow ()
-		{
-			//To implement
-		}
-
 		public event EventHandler SelectedItemChanged;
 		protected virtual void OnSelectedItemChanged (EventArgs args)
 		{
-			HideTooltipWindow ();
 			SelectedItemChanged?.Invoke (this, args);
 		}
 
@@ -108,6 +116,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		// Shared initialization code
 		public void Initialize ()
 		{
+			TranslatesAutoresizingMaskIntoConstraints = false;
+
 			flowLayout = new MacToolboxWidgetFlowLayout ();
 			flowLayout.SectionHeadersPinToVisibleBounds = false;
 			flowLayout.MinimumInteritemSpacing = 1;
@@ -132,8 +142,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			};
 
-			TranslatesAutoresizingMaskIntoConstraints = false;
+			MessageTextField = NativeViewHelper.CreateLabel ("");
+			MessageTextField.LineBreakMode = NSLineBreakMode.ByWordWrapping;
+			MessageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
+			AddSubview (MessageTextField);
 		}
+
+		public override void SetFrameSize (CGSize newSize)
+		{
+			base.SetFrameSize (newSize);
+			var frame = MessageTextField.Frame;
+			MessageTextField.Frame = new CGRect (frame.Location, newSize);
+		}
+
+		NSTextField loadingLabel;
 
 		public override void MouseDown (NSEvent theEvent)
 		{
@@ -243,11 +265,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public void ScrollToSelectedItem ()
-		{
-			//to implement
-		}
-
 		public IEnumerable<ToolboxWidgetItem> AllItems {
 			get {
 				foreach (ToolboxWidgetCategory category in this.categories) {
@@ -258,12 +275,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public void ClearCategories ()
+		public void ClearData ()
 		{
 			categories.Clear ();
+			dataSource.Clear ();
 		}
-
-		public string CustomMessage { get; set; }
 
 		public bool CanIconizeToolboxCategories {
 			get {
@@ -274,7 +290,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return false;
 			}
 		}
-
 
 		internal void OnContainerIsShown (object sender, EventArgs e)
 		{

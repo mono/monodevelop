@@ -72,21 +72,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				indicator.Hidden = true;
 			}
 		}
-		public static NSTextField CreateLabel (string text, NSFont font = null, NSTextAlignment alignment = NSTextAlignment.Left)
-		{
-			var label = new NSTextField () {
-				StringValue = text ?? "",
-				Font = font ?? GetSystemFont (false),
-				Editable = false,
-				Bordered = false,
-				Bezeled = false,
-				DrawsBackground = false,
-				Selectable = false,
-				Alignment = alignment,
-				TranslatesAutoresizingMaskIntoConstraints = false
-			};
-			return label;
-		}
 
 		public static NSStackView CreateVerticalStackView (int spacing = 10) => new NSStackView () {
 			Orientation = NSUserInterfaceLayoutOrientation.Vertical,

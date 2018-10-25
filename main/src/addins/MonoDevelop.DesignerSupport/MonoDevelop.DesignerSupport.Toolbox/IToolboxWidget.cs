@@ -33,12 +33,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public interface IToolboxWidget
 	{
-
 		bool IsListMode { get; set; }
 		bool CanIconizeToolboxCategories { get; }
 		bool ShowCategories { get; set; }
 		string CustomMessage { get; set; }
-
 		IEnumerable<ToolboxWidgetCategory> Categories { get; }
 		IEnumerable<ToolboxWidgetItem> AllItems { get; }
 		ToolboxWidgetItem SelectedItem { get; }
@@ -46,9 +44,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		event EventHandler SelectedItemChanged;
 		event EventHandler ActivateSelectedItem;
 
-		void ClearCategories ();
+		void ClearData ();
 		void AddCategory (ToolboxWidgetCategory category);
-		void HideTooltipWindow ();
 
 	}
 }
