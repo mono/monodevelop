@@ -67,7 +67,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get => isCollapsed;
 			internal set {
 				isCollapsed = value;
-				Image = value ? CollapsedImage : ExpandedImage;
+				ExpanderImage = value ? CollapsedImage : ExpandedImage;
 			}
 		}
 
@@ -175,10 +175,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			if (IsSelected) {
 				BackgroundSelectedColor.Set ();
-			} else {
-				BackgroundColor.Set ();
-			}
-			NSBezierPath.FillRect (dirtyRect);
+				NSBezierPath.FillRect (dirtyRect);
+			} 
 
 			if (BackgroundImage != null) {
 				var context = NSGraphicsContext.CurrentContext;

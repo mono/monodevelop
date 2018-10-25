@@ -10,8 +10,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
-		//public override CGSize IntrinsicContentSize => new CGSize (25, 25);
-
 		bool isFirstResponder;
 
 		public ClickedButton ()
