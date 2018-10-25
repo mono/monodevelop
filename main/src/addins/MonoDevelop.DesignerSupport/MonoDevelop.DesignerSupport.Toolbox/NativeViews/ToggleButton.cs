@@ -17,7 +17,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			SetButtonType (NSButtonType.OnOff);
 			FocusRingType = NSFocusRingType.Default;
 			TranslatesAutoresizingMaskIntoConstraints = false;
-			WantsLayer = true;
 		}
 
 		NSTrackingArea trackingArea;
