@@ -164,8 +164,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			flowLayout = new NSCollectionViewFlowLayout {
 				SectionHeadersPinToVisibleBounds = false,
-				MinimumInteritemSpacing = 1,
-				MinimumLineSpacing = 1
+				MinimumInteritemSpacing = 0,
+				MinimumLineSpacing = 0
 			};
 			CollectionViewLayout = flowLayout;
 		

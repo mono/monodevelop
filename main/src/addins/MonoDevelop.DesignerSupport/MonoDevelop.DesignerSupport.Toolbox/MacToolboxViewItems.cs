@@ -155,8 +155,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 	class ContentCollectionViewItem : NSStackView
 	{
-		public NSColor BackgroundColor { get; set; } = NSColor.Control;
-		public NSColor BackgroundSelectedColor { get; set; } = NSColor.SelectedControl;
+		public NSColor BackgroundSelectedColor { get; set; } = NSColor.SecondarySelectedControl;
 		public NSImage BackgroundImage { get; internal set; }
 
 		bool isSelected;
