@@ -24,9 +24,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 	public class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
-		const int IconsSpacing = 4;
 
+		const int IconsSpacing = 4;
 		ToolboxService toolboxService;
+
 		MacToolboxWidget toolboxWidget;
 
 		public event EventHandler DragBegin;
@@ -70,7 +71,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			#region Toolbar
 
-			//DockItemToolbar toolbar = container.GetToolbar (DockPositionType.Top);
 			groupByCategoryImage = ImageService.GetIcon (Ide.Gui.Stock.GroupByCategory, Gtk.IconSize.Menu);
 			var compactImage = ImageService.GetIcon ("md-compact-display", Gtk.IconSize.Menu);
 			var addImage = ImageService.GetIcon (Ide.Gui.Stock.Add, Gtk.IconSize.Menu);
@@ -93,6 +93,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			horizontalStackView.AddArrangedSubview (filterEntry);
 			AddWidgetToFocusChain (filterEntry);
 
+			filterEntry.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
+			filterEntry.SetContentHuggingPriorityForOrientation (250, NSLayoutConstraintOrientation.Horizontal);
+
 			catToggleButton = new NativeViews.ToggleButton ();
 			catToggleButton.Image = groupByCategoryImage.ToNative ();
 			catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Show categories");
@@ -101,11 +104,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.Activated += toggleCategorisation;
 			catToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
-			catToggleButton.WidthAnchor.ConstraintEqualToConstant (buttonSizeWidth).Active = true;
-			catToggleButton.HeightAnchor.ConstraintEqualToConstant (buttonSizeHeight).Active = true;
-
 			horizontalStackView.AddArrangedSubview (catToggleButton);
 			AddWidgetToFocusChain (catToggleButton);
+
+			catToggleButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
+			catToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
 			compactModeToggleButton = new NativeViews.ToggleButton ();
 			compactModeToggleButton.Image = compactImage.ToNative ();
@@ -115,11 +118,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.Activated += ToggleCompactMode;
 			compactModeToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
-			compactModeToggleButton.WidthAnchor.ConstraintEqualToConstant (buttonSizeWidth).Active = true;
-			compactModeToggleButton.HeightAnchor.ConstraintEqualToConstant (buttonSizeHeight).Active = true;
-
 			horizontalStackView.AddArrangedSubview (compactModeToggleButton);
 			AddWidgetToFocusChain (compactModeToggleButton);
+
+			compactModeToggleButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
+			compactModeToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
 			toolboxAddButton = new NativeViews.ClickedButton ();
 			toolboxAddButton.Image = addImage.ToNative ();
@@ -129,11 +132,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxAddButton.Activated += toolboxAddButton_Clicked;
 			toolboxAddButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
-			toolboxAddButton.WidthAnchor.ConstraintEqualToConstant (buttonSizeWidth).Active = true;
-			toolboxAddButton.HeightAnchor.ConstraintEqualToConstant (buttonSizeHeight).Active = true;
-
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
 			AddWidgetToFocusChain (toolboxAddButton);
+
+			toolboxAddButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
+			toolboxAddButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
 			#endregion
 
@@ -162,7 +165,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			toolboxWidget.DragBegin += (object sender, EventArgs e) => {
 				if (this.toolboxWidget.SelectedItem != null) {
-					this.toolboxWidget.HideTooltipWindow ();
 					DragBegin?.Invoke (this, e);
 				}
 			};
@@ -184,7 +186,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			Refresh ();
 		}
-
+		NSLayoutConstraint textConstraint;
 		internal void FocusSelectedView ()
 		{
 			if (Window == null) {
@@ -231,7 +233,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			} else {
 				focusedViewIndex--;
-				Window.MakeFirstResponder ((NSView)FocusedView);
+				if (((NSView)FocusedView).Hidden) {
+					FocusPreviousItem (ev);
+				} else {
+					Window.MakeFirstResponder ((NSView)FocusedView);
+				}
 			}
 		}
 
@@ -245,7 +251,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			} else {
 				focusedViewIndex++;
-				Window.MakeFirstResponder ((NSView)FocusedView);
+				if (((NSView)FocusedView).Hidden) {
+					FocusNextItem (ev);
+				} else {
+					Window.MakeFirstResponder ((NSView)FocusedView);
+				}
 			}
 		}
 
@@ -357,6 +367,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#region GUI population
 
 		Dictionary<string, ToolboxWidgetCategory> categories = new Dictionary<string, ToolboxWidgetCategory> ();
+	
 		void AddItems (IEnumerable<ItemToolboxNode> nodes)
 		{
 			foreach (var itbn in nodes) {
@@ -387,15 +398,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			
 			ConfigureToolbar ();
-			
+
 			toolboxWidget.CustomMessage = null;
 			
 			categories.Clear ();
+			toolboxWidget.ClearData ();
 
 			AddItems (toolboxService.GetCurrentToolboxItems ());
 
 			DragSourceUnset?.Invoke (this, EventArgs.Empty);
-			toolboxWidget.ClearCategories ();
 
 			var cats = categories.Values.ToList ();
 			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
@@ -406,16 +417,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			Gtk.TargetEntry [] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
-				DragSourceSet?.Invoke (this, targetTable); // Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
+				DragSourceSet?.Invoke (this, targetTable); 
+
+			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
+			compactModeToggleButton.InvalidateIntrinsicContentSize ();
 			refilter ();
+
+			if (categories.Count == 0) {
+				toolboxWidget.CustomMessage = GettextCatalog.GetString ("There are no tools available for the current document.");
+			}
+
+			//we need recalculate new visible elements
+			RecalculateKeyViewLoop ();
 		}
 			
 		void ConfigureToolbar ()
 		{
 			// Default configuration
 			categoryPriorities.Clear ();
-			toolboxAddButton.Visible = true;
+			toolboxAddButton.Hidden = false;
 			
 			toolboxService.Customize (container, this);
 		}
@@ -465,10 +485,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public bool AllowEditingComponents {
 			get {
-				return toolboxAddButton.Visible;
+				return !toolboxAddButton.Hidden;
 			}
 			set {
-				toolboxAddButton.Visible = value;
+				toolboxAddButton.Hidden = !value;
 			}
 		}
 		#endregion

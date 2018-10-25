@@ -10,6 +10,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
+		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
+
 		bool isFirstResponder;
 
 		public ClickedButton ()
@@ -85,13 +87,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		}
 
 		#endregion
-
-		public bool Visible {
-			get { return !Hidden; }
-			set {
-				Hidden = !value;
-			}
-		}
 	}
 }
 #endif
