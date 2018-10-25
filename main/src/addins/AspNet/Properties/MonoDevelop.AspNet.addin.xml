@@ -76,6 +76,10 @@
 		<Import file = "CodeTemplates/CSharp/AddView/Razor/Empty.tt" />
 
 		<Import file = "Razor/Razor-templates.xml" />
+		
+		<Import file = "Templates/npmConfigurationFile.xft.xml" />
+		<Import file = "Templates/npmConfigurationFile.json" />
+
 	</Runtime>
 
 	<ExtensionPoint path = "/MonoDevelop/Html/DocTypes">
@@ -174,6 +178,9 @@
 		              file = "Templates/EmptyJsonFile.xft.xml"/>
 		<FileTemplate id   = "EmptyTypeScriptFile"
 		              file = "Templates/EmptyTypeScriptFile.xft.xml"/>
+		
+		<FileTemplate id   = "npmConfigurationFile"
+		              file = "Templates/npmConfigurationFile.xft.xml"/>		
 		
 	</Extension>
 
