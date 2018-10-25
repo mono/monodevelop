@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -191,6 +192,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			EnableFancyFeatures.Changed -= HandleChanged;
+
+			if (updateAccessibilityId != 0) {
+				GLib.Source.Remove (updateAccessibilityId);
+				updateAccessibilityId = 0;
+			}
+
 			base.OnDestroyed ();
 		}
 
@@ -200,15 +207,35 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			this.ScrollBarMode = newMode;
 		}
 
+
+		uint updateAccessibilityId = 0;
 		void UpdateAccessibility ()
 		{
+			if (!IdeTheme.AccessibilityEnabled) {
+				return;
+			}
+
+			// If a timer is already scheduled then ignore this update
+			if (updateAccessibilityId != 0) {
+				return;
+			}
+
+			updateAccessibilityId = GLib.Timeout.Add (5000, UpdateAccessibilityTimer);
+		}
+
+
+		bool UpdateAccessibilityTimer ()
+		{
 			AccessibilityElementProxy [] children = null;
+			updateAccessibilityId = 0;
 
 			if (overviewMode != null && AccessibilityElementProxy.Enabled) {
 				children = overviewMode.UpdateAccessibility ();
 			}
 
 			Accessible.SetAccessibleChildren (children);
+
+			return false;
 		}
 
 		public void Update (IQuickTaskProvider provider)
