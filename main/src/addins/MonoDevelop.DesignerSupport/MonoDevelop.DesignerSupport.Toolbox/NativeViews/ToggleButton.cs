@@ -10,6 +10,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 	{
 		public event EventHandler Focused;
 
+		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
+
 		public ToggleButton () 
 		{
 			Title = "";
@@ -57,13 +59,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		{
 			isFirstResponder = false;
 			return base.ResignFirstResponder ();
-		}
-
-		public bool Visible {
-			get { return !Hidden; }
-			set {
-				Hidden = !value;
-			}
 		}
 
 		public bool Active {

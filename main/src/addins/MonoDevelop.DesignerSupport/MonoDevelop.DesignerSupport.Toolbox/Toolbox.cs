@@ -295,6 +295,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 			refilter ();
+
 		}
 		
 		void ConfigureToolbar ()
