@@ -55,10 +55,8 @@
 	<SeparatorItem id = "RunSectionEnd" />
 	
 	<!-- Publish section -->
-	
-	<Condition id="ItemType" value="Project">
-		<ItemSet id = "Publish" _label = "Publish" autohide="True" />
-	</Condition>
+		
+	<ItemSet id = "Publish" _label = "Publish" autohide="True" />
 		
 	<!-- Add section -->
 					
