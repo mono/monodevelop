@@ -10,28 +10,27 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	class MacToolboxWidgetDataSource : NSCollectionViewDataSource
 	{
-		public bool IsOnlyImage { get; set; }
+		class HeaderInfo
+		{
+			public ToolboxWidgetCategory Category { get; set; }
+			public NSIndexPath Index { get; set; }
+			public HeaderCollectionViewItem View { get; set; }
+		}
 
+		internal bool ShowsOnlyImages { get; set; }
 		internal readonly List<ToolboxWidgetCategory> Items;
 
 		Dictionary<ToolboxWidgetItem, NSIndexPath> Views = new Dictionary<ToolboxWidgetItem, NSIndexPath> ();
 		List<HeaderInfo> Categories = new List<HeaderInfo> ();
 
-		class HeaderInfo
-		{
-			public ToolboxWidgetCategory category { get; set; }
-			public NSIndexPath index { get; set; }
-			public HeaderCollectionViewItem view { get; set; }
-		}
-
 		public MacToolboxWidgetDataSource (List<ToolboxWidgetCategory> items)
 		{
-			this.Items = items;
+			Items = items;
 		}
 
 		public override NSCollectionViewItem GetItem (NSCollectionView collectionView, NSIndexPath indexPath)
 		{
-			var item = collectionView.MakeItem (IsOnlyImage ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
+			var item = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
 			ToolboxWidgetItem selectedItem = null;
 			if (item is LabelCollectionViewItem itmView) {
 				selectedItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
@@ -39,7 +38,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				itmView.View.ToolTip = selectedItem.Tooltip ?? "";
 				itmView.TextField.StringValue = selectedItem.Text;
 				itmView.TextField.AccessibilityTitle = selectedItem.Text ?? "";
-				//itmView.TextField.AccessibilityHelp = selectedItem.AccessibilityHelp ?? "";
 				itmView.ImageView.Image = selectedItem.Icon.ToNative ();
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
@@ -65,10 +63,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		internal void SelectItem (NSCollectionView collectionView, ToolboxWidgetItem item)
 		{
 			if (item is ToolboxWidgetCategory cat) {
-				var info = Categories.FirstOrDefault (s => s.category == cat);
+				var info = Categories.FirstOrDefault (s => s.Category == cat);
 				if (info != null) {
 					var window = collectionView.Window;
-					window.MakeFirstResponder (info.view);
+					window.MakeFirstResponder (info.View);
 				}
 			} else {
 				if (Views.TryGetValue (item, out var indexPath)) {
@@ -79,7 +77,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public void Clear ()
+		internal void Clear ()
 		{
 			Views.Clear ();
 			Categories.Clear ();
@@ -99,9 +97,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				button.Activated -= Button_Activated;
 				button.Activated += Button_Activated;
 				button.IsCollapsed = toolboxWidget.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
-
-				if (!Categories.Any (s => s.category == section)) {
-					Categories.Add (new HeaderInfo () { category = section, index = indexPath, view = button });
+				if (!Categories.Any (s => s.Category == section)) {
+					Categories.Add (new HeaderInfo () { Category = section, Index = indexPath, View = button });
 				}
 				return button;
 			}
@@ -136,7 +133,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		int GetCategoryIndex (ToolboxWidgetCategory category)
 		{
 			for (int i = 0; i < Categories.Count; i++) {
-				if (Categories [i].category == category) {
+				if (Categories [i].Category == category) {
 					return i;
 				}
 			}
@@ -146,7 +143,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		int GetCategoryIndex (ToolboxWidgetItem currentItem)
 		{
 			for (int i = 0; i < Categories.Count; i++) {
-				if (Categories [i].category.Items.Contains (currentItem)) {
+				if (Categories [i].Category.Items.Contains (currentItem)) {
 					return i;
 				}
 			}

@@ -3,7 +3,7 @@ using AppKit;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
-	public class ScrollContainerView : NSScrollView
+	class ScrollContainerView : NSScrollView
 	{
 		public ScrollContainerView ()
 		{

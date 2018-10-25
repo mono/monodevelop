@@ -1,17 +1,41 @@
+/* 
+ * MacToolbox.cs - A toolbox widget
+ * 
+ * Author:
+ *   Jose Medrano <josmed@microsoft.com>
+ *
+ * Copyright (C) 2018 Microsoft, Corp
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the
+ * following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+ * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 #if MAC
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Drawing.Design;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using AppKit;
-using Xwt;
 using CoreGraphics;
-using Foundation;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -24,7 +48,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 	public class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
-
 		const int IconsSpacing = 4;
 		ToolboxService toolboxService;
 
@@ -50,11 +73,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
 		NSStackView horizontalStackView;
-
-		public override bool BecomeFirstResponder ()
-		{
-			return false;
-		}
 
 		const int buttonSizeWidth = 25;
 		const int buttonSizeHeight = buttonSizeWidth;
@@ -87,7 +105,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry = new NativeViews.SearchTextField ();
 			filterEntry.AccessibilityTitle = GettextCatalog.GetString ("Search Toolbox");
 			filterEntry.AccessibilityHelp = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
-			filterEntry.Activated += filterTextChanged;
+			filterEntry.Activated += FilterTextChanged;
 			filterEntry.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
 			horizontalStackView.AddArrangedSubview (filterEntry);
@@ -101,7 +119,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Show categories");
 			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
 			catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show categories");
-			catToggleButton.Activated += toggleCategorisation;
+			catToggleButton.Activated += ToggleCategorisation;
 			catToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
 			horizontalStackView.AddArrangedSubview (catToggleButton);
@@ -129,7 +147,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxAddButton.AccessibilityTitle = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
-			toolboxAddButton.Activated += toolboxAddButton_Clicked;
+			toolboxAddButton.Activated += ToolboxAddButton_Clicked;
 			toolboxAddButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
@@ -156,7 +174,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
 			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
 		
-			filterEntry.Changed += (s, e) => { refilter (); };
+			filterEntry.Changed += (s, e) => { Refilter (); };
 		
 			toolboxWidget.SelectedItemChanged += delegate {
 				selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
@@ -186,7 +204,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			Refresh ();
 		}
-		NSLayoutConstraint textConstraint;
+
 		internal void FocusSelectedView ()
 		{
 			if (Window == null) {
@@ -197,10 +215,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
+		public override bool BecomeFirstResponder ()
+		{
+			return false;
+		}
+
 		#region Focus Chain
 
 		int focusedViewIndex = -1;
-		internal const int TabKey = 65056;
 		INativeChildView FocusedView => focusedViewIndex == -1 ? null : nativeChildViews [focusedViewIndex];
 		List<INativeChildView> nativeChildViews = new List<INativeChildView> ();
 	
@@ -298,7 +320,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		void toggleCategorisation (object sender, EventArgs e)
+		void ToggleCategorisation (object sender, EventArgs e)
 		{
 			this.toolboxWidget.ShowCategories = catToggleButton.Active;
 			toolboxWidget.RedrawItems (true, false);
@@ -310,13 +332,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show toolbox categories");
 			}
 		}
-		
-		void filterTextChanged (object sender, EventArgs e)
+
+		void FilterTextChanged (object sender, EventArgs e)
 		{
-			refilter ();
+			Refilter ();
 		}
 
-		void refilter ()
+		void Refilter ()
 		{
 			foreach (ToolboxWidgetCategory cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
@@ -329,9 +351,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.RedrawItems (true, true);
 		}
 		
-		async void toolboxAddButton_Clicked (object sender, EventArgs e)
+		async void ToolboxAddButton_Clicked (object sender, EventArgs e)
 		{
+			catToggleButton.Enabled = compactModeToggleButton.Enabled = toolboxAddButton.Enabled = false;
 			await toolboxService.AddUserItems ();
+			catToggleButton.Enabled = compactModeToggleButton.Enabled = toolboxAddButton.Enabled = true;
 		}
 
 		void ToolboxWidget_MenuOpened (object sender, CGPoint e)
@@ -421,14 +445,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
-			refilter ();
+			Refilter ();
 
 			if (categories.Count == 0) {
 				toolboxWidget.CustomMessage = GettextCatalog.GetString ("There are no tools available for the current document.");
 			}
-
-			//we need recalculate new visible elements
-			RecalculateKeyViewLoop ();
 		}
 			
 		void ConfigureToolbar ()
@@ -442,9 +463,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		protected override void Dispose (bool disposing)
 		{
-			catToggleButton.Activated -= toggleCategorisation;
+			catToggleButton.Activated -= ToggleCategorisation;
 			compactModeToggleButton.Activated -= ToggleCompactMode;
-			toolboxAddButton.Activated -= toolboxAddButton_Clicked;
+			toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
 
 			if (fontChanger != null) {
 				fontChanger.Dispose ();
@@ -478,6 +499,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 
 		#region IToolboxConfiguration implementation
+
 		public void SetCategoryPriority (string category, int priority)
 		{
 			categoryPriorities [category] = priority;
@@ -491,6 +513,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				toolboxAddButton.Hidden = !value;
 			}
 		}
+
 		#endregion
 	}
 }

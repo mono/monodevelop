@@ -3,23 +3,19 @@ using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
-using System.Linq;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	class MacToolboxWidgetFlowLayout : NSCollectionViewFlowLayout
-	{
-	}
-
 	class MacToolboxWidgetFlowLayoutDelegate : NSCollectionViewDelegateFlowLayout
 	{
-		public bool IsOnlyImage { get; set; }
-		public bool IsShowCategories { get; set; }
+		internal bool ShowsOnlyImages { get; set; }
+		internal bool ShowsCategories { get; set; }
 		public nfloat Width { get; internal set; }
 		public nfloat Height { get; internal set; }
 
 		public event EventHandler<NSSet> SelectionChanged;
 		public event EventHandler<NSIndexSet> DragBegin;
+
 		public override void ItemsSelected (NSCollectionView collectionView, NSSet indexPaths)
 		{
 			SelectionChanged?.Invoke (this, indexPaths);
@@ -28,7 +24,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override CGSize SizeForItem (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, NSIndexPath indexPath)
 		{
 			var dataSource = (MacToolboxWidgetDataSource)collectionView.DataSource;
-			var flowLayout = (MacToolboxWidgetFlowLayout)collectionViewLayout;
+			var flowLayout = (NSCollectionViewFlowLayout)collectionViewLayout;
 			var section = dataSource.Items [(int)indexPath.Section];
 			var item = section.Items [(int)indexPath.Item];
 			if (!section.IsExpanded || !item.IsVisible) {
