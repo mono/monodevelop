@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -17,6 +18,9 @@ namespace MonoDevelop.AspNetCore.Commands
 			if (!ProjectSupportsFolderPublishing (project)) {
 				return;
 			}
+
+			if (!Directory.Exists (project.BaseDirectory.Combine ("Properties", "PublishProfiles")))
+				return;
 
 			var profiles = project.GetPublishProfiles ();
 			foreach (var profile in profiles.OrderBy (x => x.Name)) {
