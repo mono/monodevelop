@@ -30,7 +30,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var dataSource = (MacToolboxWidgetDataSource)collectionView.DataSource;
 			var flowLayout = (MacToolboxWidgetFlowLayout)collectionViewLayout;
 			var section = dataSource.Items [(int)indexPath.Section];
-			if (!section.IsExpanded) {
+			var item = section.Items [(int)indexPath.Item];
+			if (!section.IsExpanded || !item.IsVisible) {
 				return CGSize.Empty;
 			}
 			return flowLayout.ItemSize;
