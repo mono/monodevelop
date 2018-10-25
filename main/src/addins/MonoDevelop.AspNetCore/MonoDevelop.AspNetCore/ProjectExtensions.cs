@@ -11,10 +11,10 @@ namespace MonoDevelop.AspNetCore
 	{
 		public static IEnumerable<ProjectPublishProfile> GetPublishProfiles (this DotNetProject project)
 		{
-			var profileFiles = Directory.EnumerateFiles (project.BaseDirectory.Combine ("Properties", "PublishProfiles"), "*.pubxml");
+			var profileFiles = project.GetPublishProfilesDirectory ().EnumerateFiles ("*.pubxml");
 
 			foreach (var file in profileFiles) {
-				var profile = ProjectPublishProfile.ReadModel (file);
+				var profile = ProjectPublishProfile.ReadModel (file.FullName);
 				if (profile != null)
 					yield return profile;
 			}
@@ -52,7 +52,7 @@ namespace MonoDevelop.AspNetCore
 
 		static string GetNextPubXmlFileName (this DotNetProject project)
 		{
-			var baseDirectory = project.BaseDirectory.Combine ("Properties", "PublishProfiles");
+			var baseDirectory = project.GetPublishProfilesDirectory ().FullName;
 			var identifier = string.Empty;
 			var count = default (int);
 			var file = $"{ProjectPublishProfile.ProjectPublishProfileKey}{identifier}.pubxml";
@@ -64,5 +64,8 @@ namespace MonoDevelop.AspNetCore
 
 			return Path.Combine (baseDirectory, file);
 		}
+
+		public static DirectoryInfo GetPublishProfilesDirectory (this DotNetProject project)
+			=> new DirectoryInfo (project.BaseDirectory.Combine ("Properties", "PublishProfiles"));
 	}
 }

@@ -19,7 +19,7 @@ namespace MonoDevelop.AspNetCore.Commands
 				return;
 			}
 
-			if (!Directory.Exists (project.BaseDirectory.Combine ("Properties", "PublishProfiles")))
+			if (!project.GetPublishProfilesDirectory ().Exists)
 				return;
 
 			var profiles = project.GetPublishProfiles ();
