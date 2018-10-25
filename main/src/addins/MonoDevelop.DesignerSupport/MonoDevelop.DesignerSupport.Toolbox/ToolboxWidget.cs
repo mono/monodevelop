@@ -1011,7 +1011,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion
 	}
 
-	public class ToolboxWidgetCategory : ToolboxWidgetItem
+	class ToolboxWidgetCategory : ToolboxWidgetItem
 	{
 		public bool IsExpanded { get; set; }
 
@@ -1061,7 +1061,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 
- 	public class ToolboxWidgetItem : IComparable<ToolboxWidgetItem>
+ 	class ToolboxWidgetItem : IComparable<ToolboxWidgetItem>
 	{
 		static Xwt.Drawing.Image defaultIcon;
 		readonly Xwt.Drawing.Image icon;

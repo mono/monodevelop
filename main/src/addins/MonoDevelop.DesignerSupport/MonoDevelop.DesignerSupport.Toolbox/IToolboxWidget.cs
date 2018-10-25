@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public interface IToolboxWidget
+	interface IToolboxWidget
 	{
 		bool IsListMode { get; set; }
 		bool CanIconizeToolboxCategories { get; }
@@ -44,8 +44,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		event EventHandler SelectedItemChanged;
 		event EventHandler ActivateSelectedItem;
 
-		void ClearData ();
 		void AddCategory (ToolboxWidgetCategory category);
-
 	}
 }

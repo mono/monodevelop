@@ -10,7 +10,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public static NSColor SectionBackgroundColor { get; private set; } = NSColor.ControlLightHighlight;
 
 		public static NSColor CellBackgroundSelectedColor { get; private set; } = NSColor.SelectedTextBackground;
-		public static NSColor CellBorderSelectedColor { get; private set; } = NSColor.AlternateSelectedControl;
 		public static NSColor CellBackgroundColor { get; private set; } = NSColor.ControlBackground;
 	}
 }
