@@ -77,7 +77,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			}
 		}
 
-		#region IEncapsuledView
+		#region INativeChildView
 
 		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
