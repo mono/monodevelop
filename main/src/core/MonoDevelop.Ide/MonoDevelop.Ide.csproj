@@ -4321,6 +4321,7 @@
     <InternalsVisibleTo Include="Xamarin.AndroidDesigner.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.iOSDesigner.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.FormsPreviewer.MonoDevelop" />
+    <InternalsVisibleTo Include="MonoDevelop.Xml.Tests" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\code-actions\" />
