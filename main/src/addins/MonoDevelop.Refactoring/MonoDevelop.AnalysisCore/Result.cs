@@ -67,5 +67,18 @@ namespace MonoDevelop.AnalysisCore
 		public TextSpan Region { get; private set; }
 		
 		public bool Underline { get; private set; }
+
+		public bool Equals (Result other)
+		{
+			if (ReferenceEquals (this, other))
+				return true;
+			if (other == null)
+				return false;
+			return Level == other.Level &&
+				InspectionMark == other.InspectionMark &&
+				Region.Equals (other.Region) &&
+				Message == other.Message;
+		}
+
 	}
 }

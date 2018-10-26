@@ -93,8 +93,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			CancelUpdateTimout ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			foreach (var queue in markers) {
-				while (queue.Value.Count > 0)
-					Editor.RemoveMarker (queue.Value.Dequeue ());
+				foreach (var marker in queue.Value)
+					Editor.RemoveMarker (marker);
 			}
 			disposed = true;
 			base.Dispose ();
@@ -212,13 +212,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 			
 			if (e.DocumentId != cad.Id || e.ProjectId != cad.Project.Id)
 				return;
-
 			var token = CancelUpdateTimeout (e.Id);
 			var ad = new AnalysisDocument (Editor, DocumentContext);
 			try {
 				var result = await CodeDiagnosticRunner.Check (ad, token, e.Diagnostics).ConfigureAwait (false);
-				var updater = new ResultsUpdater (this, result, e.Id, token);
-				updater.Update ();
+				if (result is IReadOnlyList<Result> resultList) {
+					var updater = new ResultsUpdater (this, resultList, e.Id, token);
+					updater.Update ();
+				}
 			} catch (Exception) {
 			}
 		}
@@ -253,12 +254,34 @@ namespace MonoDevelop.AnalysisCore.Gui
 			readonly CancellationToken cancellationToken;
 			
 			//the number of markers at the head of the queue that need tp be removed
-			int oldMarkers;
-			IEnumerator<Result> enumerator;
+			int oldMarkerIndex;
+			readonly List<IGenericTextSegmentMarker> oldMarkers;
+
+			int curResult = 0;
+			IReadOnlyList<Result> results;
+
+			private List<IGenericTextSegmentMarker> newMarkers;
 			ImmutableArray<QuickTask>.Builder builder;
 			object id;
-			
-			public ResultsUpdater (ResultsEditorExtension ext, IEnumerable<Result> results, object resultsId, CancellationToken cancellationToken)
+
+			const int MaxCacheSize = 200;
+			readonly static Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
+
+			static List<IGenericTextSegmentMarker> GetCachedList ()
+			{
+				if (listCache.Count == 0)
+					return new List<IGenericTextSegmentMarker> ();
+				return listCache.Dequeue ();
+			}
+
+			static void PutBackCachedList (List<IGenericTextSegmentMarker> list)
+			{
+				list.Clear ();
+				if (listCache.Count < MaxCacheSize)
+					listCache.Enqueue (list);
+			}
+
+			public ResultsUpdater (ResultsEditorExtension ext, IReadOnlyList<Result> results, object resultsId, CancellationToken cancellationToken)
 			{
 				if (ext == null)
 					throw new ArgumentNullException ("ext");
@@ -268,17 +291,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 				id = resultsId;
 				this.cancellationToken = cancellationToken;
 
-				Queue<IGenericTextSegmentMarker> oldMarkers;
 				if (resultsId != null) {
 					if (!ext.markers.TryGetValue (id, out oldMarkers))
-						ext.markers [id] = oldMarkers = new Queue<IGenericTextSegmentMarker> ();
-					this.oldMarkers = oldMarkers.Count;
+						ext.markers [id] = oldMarkers = GetCachedList ();
 				}
 				
 				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
-				enumerator = results.GetEnumerator ();
+				this.results = results;
+				newMarkers = GetCachedList ();
 			}
-			
+
 			public void Update ()
 			{
 				if (cancellationToken.IsCancellationRequested)
@@ -324,13 +346,17 @@ namespace MonoDevelop.AnalysisCore.Gui
 				var editor = ext.Editor;
 				if (editor == null)
 					return false;
-
 				if (id == null) {
 					foreach (var markerQueue in ext.markers) {
-						while (markerQueue.Value.Count != 0)
-							editor.RemoveMarker (markerQueue.Value.Dequeue ());
+						foreach (var marker in markerQueue.Value) {
+							editor.RemoveMarker (marker);
+						}
+						PutBackCachedList (markerQueue.Value);
 					}
 					ext.markers.Clear ();
+				}
+
+				if (id == null) {
 					lock (ext.tasks)
 						ext.tasks.Clear ();
 					ext.OnTasksUpdated (EventArgs.Empty);
@@ -338,30 +364,42 @@ namespace MonoDevelop.AnalysisCore.Gui
 				}
 
 				//clear the old results out at the same rate we add in the new ones
-				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
+				for (int i = 0; oldMarkerIndex < oldMarkers.Count && i < UPDATE_COUNT; i++) {
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					editor.RemoveMarker (ext.markers [id].Dequeue ());
-					oldMarkers--;
+					var oldMarker = oldMarkers [oldMarkerIndex++];
+
+					if (results [curResult].Equals((Result)oldMarker.Tag)) {
+						oldMarker.Tag = results [curResult];
+						newMarkers.Add (oldMarker);
+						curResult++;
+						continue;
+					}
+
+					editor.RemoveMarker (oldMarker);
 				}
 
 				//add in the new markers
 				for (int i = 0; i < UPDATE_COUNT; i++) {
-					if (!enumerator.MoveNext ()) {
+					if (curResult >= results.Count) {
 						lock (ext.tasks)
 							ext.tasks [id] = builder.ToImmutable ();
 						ext.OnTasksUpdated (EventArgs.Empty);
 						// remove remaining old markers
-						while (oldMarkers > 0) {
-							editor.RemoveMarker (ext.markers [id].Dequeue ());
-							oldMarkers--;
+						while (oldMarkerIndex < oldMarkers.Count) {
+							editor.RemoveMarker (oldMarkers[oldMarkerIndex]);
+							oldMarkerIndex++;
 						}
+
+						PutBackCachedList (ext.markers [id]);
+						ext.markers [id] = newMarkers;
 
 						return false;
 					}
+
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					var currentResult = (Result)enumerator.Current;
+					var currentResult = results [curResult++];
 					if (currentResult.InspectionMark != IssueMarker.None) {
 						int start = currentResult.Region.Start;
 						int end = currentResult.Region.End;
@@ -381,18 +419,17 @@ namespace MonoDevelop.AnalysisCore.Gui
 							marker.IsVisible &= currentResult.Level != DiagnosticSeverity.Hidden;
 						}
 						editor.AddMarker (marker);
-						ext.markers [id].Enqueue (marker);
+						newMarkers.Add (marker);
 					}
 					builder.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
 				}
-				
 				return true;
 			}
 		}
-		
+
 		//all markers known to be in the editor
 		// Roslyn groups diagnostics by their provider. In this case, we rely on the id passed in to group markers by their id.
-		Dictionary<object, Queue<IGenericTextSegmentMarker>> markers = new Dictionary<object, Queue<IGenericTextSegmentMarker>> ();
+		Dictionary<object, List<IGenericTextSegmentMarker>> markers = new Dictionary<object, List<IGenericTextSegmentMarker>> ();
 		Dictionary<object, CancellationTokenSource> cancellations = new Dictionary<object, CancellationTokenSource> ();
 		
 		const int UPDATE_COUNT = 20;
