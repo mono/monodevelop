@@ -251,7 +251,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return base.BecomeFirstResponder ();
 		}
 
-		#region IEncapsuledView
+		#region INativeChildView
 
 		void SelectItem (ToolboxWidgetItem item)
 		{
