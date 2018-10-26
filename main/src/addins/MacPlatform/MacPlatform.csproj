@@ -120,6 +120,7 @@
     <Compile Include="MacPlatformSettings.cs" />
     <Compile Include="MacHttpMessageHandlerProvider.cs" />
     <Compile Include="NSUrlSessionCredentialsHandler.cs" />
+    <Compile Include="BasicAuthenticationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

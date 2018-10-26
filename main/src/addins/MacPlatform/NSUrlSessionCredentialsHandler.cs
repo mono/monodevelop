@@ -24,7 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Foundation;
+using MacPlatform;
 using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.MacIntegration
@@ -40,5 +45,26 @@ namespace MonoDevelop.MacIntegration
 		/// Not supported.
 		/// </summary>
 		public bool UseDefaultCredentials { get; set; }
+
+		/// <summary>
+		/// Not all WWW-Authenticate basic auth responses are handled by the NSUrlSessionHandler, such as those
+		/// from VSTS NuGet package sources, so an Authorization header is added to the request and re-sent
+		/// if basic auth credentials can be found.
+		/// </summary>
+		protected override async Task<HttpResponseMessage> SendAsync (HttpRequestMessage request, CancellationToken cancellationToken)
+		{
+			bool retry = false;
+			while (true) {
+				var response = await base.SendAsync (request, cancellationToken);
+
+				if (retry || response.StatusCode != HttpStatusCode.Unauthorized)
+					return response;
+
+				if (!BasicAuthenticationHandler.Authenticate (request, response, Credentials))
+					return response;
+
+				retry = true;
+			}
+		}
 	}
 }
