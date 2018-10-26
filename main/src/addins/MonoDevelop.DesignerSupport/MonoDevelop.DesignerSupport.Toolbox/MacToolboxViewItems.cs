@@ -31,6 +31,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -76,8 +77,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("HeaderCollectionViewItem")]
 	class HeaderCollectionViewItem : ExpanderButton, INSCollectionViewSectionHeaderView
 	{
-		static readonly NSImage CollapsedImage = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu).ToNative ();
-		static readonly NSImage ExpandedImage = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu).ToNative ();
+		static readonly NSImage CollapsedImage = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu).ToNSImage ();
+		static readonly NSImage ExpandedImage = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu).ToNSImage ();
 
 		internal const int SectionHeight = 25;
 		internal const string Name = "HeaderViewItem";
