@@ -165,9 +165,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			};
 			AddWidgetToFocusChain (toolboxWidget);
 
-			var scrollView = new NativeViews.ScrollContainerView ();
-			scrollView.DocumentView = (NSView)toolboxWidget;
-
+			var scrollView = new NSScrollView () {
+				HasVerticalScroller = true,
+				HasHorizontalScroller = false,
+				ScrollerStyle = NSScrollerStyle.Overlay,
+				TranslatesAutoresizingMaskIntoConstraints = false
+			};
+			scrollView.DocumentView = toolboxWidget;
 			AddArrangedSubview (scrollView);
 			//Initialise self
 
