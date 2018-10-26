@@ -227,12 +227,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#region Focus Chain
 
 		int focusedViewIndex = -1;
-		INativeChildView FocusedView => focusedViewIndex == -1 ? null : nativeChildViews [focusedViewIndex];
-		List<INativeChildView> nativeChildViews = new List<INativeChildView> ();
+		INativeChildView FocusedView => focusedViewIndex == -1 ? null : responderViewChain [focusedViewIndex];
+		List<INativeChildView> responderViewChain = new List<INativeChildView> ();
 	
 		void AddWidgetToFocusChain (INativeChildView view)
 		{
-			nativeChildViews.Add (view);
+			if (responderViewChain.Contains (view)) {
+				return;
+			}
+			responderViewChain.Add (view);
 			view.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
 
 			if (focusedViewIndex == -1) {
@@ -242,8 +245,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void ChangeFocusedView (INativeChildView view)
 		{
-			for (int i = 0; i < nativeChildViews.Count; i++) {
-				if (nativeChildViews [i] == view) {
+			for (int i = 0; i < responderViewChain.Count; i++) {
+				if (responderViewChain [i] == view) {
 					focusedViewIndex = i;
 				}
 			}
@@ -269,7 +272,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void FocusNextItem (GLib.SignalArgs ev)
 		{
-			if (focusedViewIndex >= nativeChildViews.Count - 1) {
+			if (focusedViewIndex >= responderViewChain.Count - 1) {
 				//leave element
 				Window.ResignFirstResponder ();
 				if (ev != null) {
