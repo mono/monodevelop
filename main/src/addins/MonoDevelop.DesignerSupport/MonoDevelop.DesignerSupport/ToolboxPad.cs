@@ -54,11 +54,12 @@ namespace MonoDevelop.DesignerSupport
 				widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
 				widget.CanFocus = true;
 				widget.Sensitive = true;
-
-				widget.Show ();
-
 				widget.KeyPressEvent += toolbox.OnKeyPressed;
 				widget.KeyReleaseEvent += toolbox.KeyReleased;
+
+				widget.DragEnd += (o, args) => {
+					isDragging = false;
+				};
 
 				widget.Focused += (s, e) => {
 					toolbox.FocusSelectedView ();
@@ -70,6 +71,20 @@ namespace MonoDevelop.DesignerSupport
 						toolbox.FocusSelectedView ();
 					}
 				};
+				toolbox.DragSourceSet += (s, e) => {
+					Gtk.Drag.SourceUnset (widget);
+					targets = new Gtk.TargetList ();
+					targets.AddTable (e);
+				};
+				toolbox.DragBegin += (object sender, EventArgs e) => {
+					if (!isDragging) {
+						isDragging = true;
+						Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, Gtk.Global.CurrentEvent ?? new Gdk.Event (IntPtr.Zero));
+						DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
+					}
+				};
+
+				widget.ShowAll ();
 			} else {
 #endif
 				widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
@@ -78,6 +93,8 @@ namespace MonoDevelop.DesignerSupport
 #endif
 		}
 #if MAC
+		Gtk.TargetList targets = new Gtk.TargetList ();
+		bool isDragging = false;
 		public override void Dispose ()
 		{
 			base.Dispose ();
