@@ -173,13 +173,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			};
 			scrollView.DocumentView = toolboxWidget;
 			AddArrangedSubview (scrollView);
-			//Initialise self
 
 			//update view when toolbox service updated
-			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
-			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
+			toolboxService.ToolboxContentsChanged += (s,e) => Refresh ();
+			toolboxService.ToolboxConsumerChanged += (s,e) => Refresh ();
 		
-			filterEntry.Changed += (s, e) => { Refilter (); };
+			filterEntry.Changed += (s, e) => Refilter ();
 		
 			toolboxWidget.SelectedItemChanged += delegate {
 				selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
@@ -468,6 +467,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		protected override void Dispose (bool disposing)
 		{
+			toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
+
 			catToggleButton.Activated -= ToggleCategorisation;
 			compactModeToggleButton.Activated -= ToggleCompactMode;
 			toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
