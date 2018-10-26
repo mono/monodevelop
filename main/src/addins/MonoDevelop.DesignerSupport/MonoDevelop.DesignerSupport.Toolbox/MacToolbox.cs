@@ -36,6 +36,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using AppKit;
 using CoreGraphics;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -115,7 +116,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.SetContentHuggingPriorityForOrientation (250, NSLayoutConstraintOrientation.Horizontal);
 
 			catToggleButton = new NativeViews.ToggleButton ();
-			catToggleButton.Image = groupByCategoryImage.ToNative ();
+			catToggleButton.Image = groupByCategoryImage.ToNSImage ();
 			catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Show categories");
 			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
 			catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show categories");
@@ -129,7 +130,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
 			compactModeToggleButton = new NativeViews.ToggleButton ();
-			compactModeToggleButton.Image = compactImage.ToNative ();
+			compactModeToggleButton.Image = compactImage.ToNSImage();
 			compactModeToggleButton.ToolTip = GettextCatalog.GetString ("Use compact display");
 			compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout");
 			compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
@@ -143,7 +144,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
 			toolboxAddButton = new NativeViews.ClickedButton ();
-			toolboxAddButton.Image = addImage.ToNative ();
+			toolboxAddButton.Image = addImage.ToNSImage ();
 			toolboxAddButton.AccessibilityTitle = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
