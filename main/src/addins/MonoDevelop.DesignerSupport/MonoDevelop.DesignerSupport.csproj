@@ -133,7 +133,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ImplicitFrameworkAssemblyReferenceDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Extensions.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxWidget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\SearchTextField.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ToggleButton.cs" />
