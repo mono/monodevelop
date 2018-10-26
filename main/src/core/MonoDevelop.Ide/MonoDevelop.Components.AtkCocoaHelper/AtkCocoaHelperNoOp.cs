@@ -90,6 +90,10 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		{
 		}
 
+		public static void SetFocused (this Atk.Object o, bool focused)
+		{
+		}
+
 		public static void SetTitleUIElement (this Atk.Object o, Atk.Object title)
 		{
 		}
@@ -241,6 +245,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public bool Selected { get; set; }
+		public bool Focused { get; set; }
 		public Gtk.Widget GtkParent { get; set; }
 		public Gdk.Rectangle FrameInGtkParent { get; set; }
 		public Gdk.Rectangle FrameInParent { get; set; }

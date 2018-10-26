@@ -62,7 +62,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public CompletionListWindow ()
 		{
-			window = new CompletionListWindowGtk ();
+			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("VSMAC_USE_OLD_COMPLETION"))) {
+				window = new CompletionListWindowGtk ();
+			} else {
+				Console.WriteLine ("Creating new completion window");
+				window = new CompletionListWindowCocoa ();
+			}
 			controller = new CompletionController (this, window);
 		}
 
@@ -74,10 +79,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal static CompletionListWindow CreateAsDialog ()
 		{
-			var gtkWindow = new CompletionListWindowGtk (Gtk.WindowType.Toplevel);
-			gtkWindow.TypeHint = Gdk.WindowTypeHint.Dialog;
-			gtkWindow.Decorated = false;
-			return new CompletionListWindow (gtkWindow);
+			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("VSMAC_USE_OLD_COMPLETION"))) {
+				var gtkWindow = new CompletionListWindowGtk (Gtk.WindowType.Toplevel);
+				gtkWindow.TypeHint = Gdk.WindowTypeHint.Dialog;
+				gtkWindow.Decorated = false;
+				return new CompletionListWindow (gtkWindow);
+			} else {
+				return new CompletionListWindow ();
+			}
 		}
 
 		public Xwt.Rectangle Allocation {
@@ -205,6 +214,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void Show ()
 		{
+			Console.WriteLine ("Showing constroller");
 			controller.ShowWindow ();
 		}
 

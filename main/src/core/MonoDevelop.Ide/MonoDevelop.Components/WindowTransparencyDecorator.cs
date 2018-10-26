@@ -35,6 +35,11 @@ using System.Runtime.InteropServices;
 using Gtk;
 using Gdk;
 
+#if MAC
+using AppKit;
+using Foundation;
+#endif
+
 namespace MonoDevelop.Components
 {
 	public class WindowTransparencyDecorator
@@ -54,6 +59,23 @@ namespace MonoDevelop.Components
 			window.Destroyed += DestroyedHandler;
 		}
 
+#if MAC
+		NSWindow macWindow;
+		NSObject windowObserver;
+		internal WindowTransparencyDecorator (NSWindow window)
+		{
+			macWindow = window;
+
+			if (!snooperInstalled)
+				snooperID = Gtk.Key.SnooperInstall (TransparencyKeySnooper);
+			snooperInstalled = true;
+
+			//NOTE: we unset transparency when showing, instead of when hiding
+			//because the latter case triggers a metacity+compositing bug that shows the window again
+			SemiTransparent = false;
+		}
+#endif
+
 		public static WindowTransparencyDecorator Attach (Gtk.Window window)
 		{
 			return new WindowTransparencyDecorator (window);
@@ -70,17 +92,30 @@ namespace MonoDevelop.Components
 
 		public void Detach ()
 		{
+#if MAC
+			if (window == null && macWindow == null) {
+				return;
+			}
+#else
 			if (window == null)
 				return;
+#endif
 
 			//remove the snooper
 			HiddenHandler (null,  null);
 
-			//annul allreferences between this and the window
-			window.Shown -= ShownHandler;
-			window.Hidden -= HiddenHandler;
-			window.Destroyed -= DestroyedHandler;
-			window = null;
+			if (window != null) {
+				//annul allreferences between this and the window
+				window.Shown -= ShownHandler;
+				window.Hidden -= HiddenHandler;
+				window.Destroyed -= DestroyedHandler;
+				window = null;
+			}
+#if MAC
+			if (macWindow != null) {
+				macWindow = null;
+			}
+#endif
 		}
 
 		void ShownHandler (object sender, EventArgs args)
@@ -117,7 +152,14 @@ namespace MonoDevelop.Components
 			set {
 				if (semiTransparent != value) {
 					semiTransparent = value;
-					window.Opacity = semiTransparent? opacity : 1.0;
+					if (window != null) {
+						window.Opacity = semiTransparent ? opacity : 1.0;
+					}
+#if MAC
+					if (macWindow != null) {
+						macWindow.AlphaValue = (nfloat)(semiTransparent ? opacity : 1.0);
+					}
+#endif
 				}
 			}
 		}

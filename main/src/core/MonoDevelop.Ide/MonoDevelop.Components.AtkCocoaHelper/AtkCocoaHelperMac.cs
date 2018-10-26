@@ -259,6 +259,19 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilitySubrole = subrole;
 		}
 
+		public static void SetFocused (this Atk.Object o, bool focused)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			nsa.AccessibilityFocused = focused;
+			if (focused) {
+				NSApplication.SharedApplication.AccessibilityApplicationFocusedUIElement = (NSObject)nsa;
+			}
+		}
+
 		public static void SetTitleUIElement (this Atk.Object o, Atk.Object title)
 		{
 			var nsa = GetNSAccessibilityElement (o);
@@ -677,6 +690,30 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 			set {
 				realProxyElement.AccessibilityHidden = value;
+			}
+		}
+
+		public bool Selected {
+			get {
+				return realProxyElement.AccessibilitySelected;
+			}
+
+			set {
+				realProxyElement.AccessibilitySelected = value;
+			}
+		}
+
+		public bool Focused {
+			get {
+				return realProxyElement.AccessibilityFocused;
+			}
+
+			set {
+				realProxyElement.AccessibilityFocused = value;
+
+				if (value) {
+					NSApplication.SharedApplication.AccessibilityApplicationFocusedUIElement = realProxyElement;
+				}
 			}
 		}
 
