@@ -740,6 +740,7 @@
     <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimings.cs" />
     <Compile Include="MonoDevelop.Utilities\RaceChecker.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkResolverManifest.cs" />
+    <Compile Include="MonoDevelop.Core\FeatureSwitchService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
