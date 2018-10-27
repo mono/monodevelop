@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Core
 {
@@ -79,7 +79,8 @@ namespace MonoDevelop.Core
 		internal override bool Evaluate ()
 		{
 			if (!string.IsNullOrEmpty (nameToCheck)) {
-				return string.IsNullOrEmpty (valueToCheck) ? Environment.GetEnvironmentVariables ().Contains (nameToCheck) : Environment.GetEnvironmentVariable (nameToCheck) == valueToCheck;
+				var v = Environment.GetEnvironmentVariable (nameToCheck);
+				return string.IsNullOrEmpty (valueToCheck) ? !string.IsNullOrEmpty (v) : v == valueToCheck;
 			}
 
 			return true;
@@ -91,12 +92,12 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public class AggregatedFeatureSwitchCondition : FeatureSwitchCondition
 	{
-		readonly List<FeatureSwitchCondition> conditions = new List<FeatureSwitchCondition> ();
+		readonly ImmutableArray<FeatureSwitchCondition> conditions;
 		readonly bool allMustPass;
 
 		public AggregatedFeatureSwitchCondition (bool allMustPass, params FeatureSwitchCondition[] conditions)
 		{
-			this.conditions.AddRange (conditions);
+			this.conditions = conditions.ToImmutableArray ();
 			this.allMustPass = allMustPass;
 		}
 
@@ -127,23 +128,9 @@ namespace MonoDevelop.Core
 
 	public static class FeatureSwitchService
 	{
-		static Dictionary<string, FeatureSwitch> features = new Dictionary<string, FeatureSwitch> ();
-
 		public static FeatureSwitch RegisterFeature (string name, FeatureSwitchCondition condition)
 		{
-			var result = features [name] = new FeatureSwitch { Name = name, Condition = condition };
-			return result;
+			return new FeatureSwitch { Name = name, Condition = condition };
 		}
-
-		public static bool IsEnabled (string name)
-		{
-			if (features.TryGetValue (name, out FeatureSwitch fs)) {
-				return fs.IsEnabled;
-			}
-
-			return true; // FIXME: or should we assume feature is disabled if we don't know about it?
-		}
-
-		public static bool IsEnabled (FeatureSwitch fs) => fs?.IsEnabled ?? true;
 	}
 }
