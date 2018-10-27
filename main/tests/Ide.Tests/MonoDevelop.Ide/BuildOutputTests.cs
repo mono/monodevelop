@@ -185,5 +185,19 @@ namespace MonoDevelop.Ide
 			targetNode.AddChild (alertNode);
 			return result;
 		}
+
+		[Test]
+		public void FeatureTogglesAsExpected ()
+		{
+			if (Version.Parse (BuildInfo.FullVersion) >= Version.Parse ("8.0")) {
+				Assert.True (BuildOutput.FeatureToggle.IsEnabled);
+			} else {
+				Assert.False (BuildOutput.FeatureToggle.IsEnabled);
+
+				Environment.SetEnvironmentVariable ("MD_FEATURE_BUILD_OUTPUT_ENABLED", "True");
+				Assert.True (BuildOutput.FeatureToggle.IsEnabled);
+				Environment.SetEnvironmentVariable ("MD_FEATURE_BUILD_OUTPUT_ENABLED", null);
+			}
+		}
 	}
 }
