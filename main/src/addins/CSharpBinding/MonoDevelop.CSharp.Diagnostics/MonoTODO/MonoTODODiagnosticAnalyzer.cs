@@ -59,24 +59,13 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 			}
 		}
 
-		static IEnumerable<IAssemblySymbol> GetSearchAssemblies(Compilation compilation)
-		{
-			yield return compilation.Assembly;
-			foreach (var reference in compilation.References) {
-				var symbol = compilation.GetAssemblyOrModuleSymbol (reference);
-				if (symbol is IAssemblySymbol assemblySymbol)
-					yield return assemblySymbol;
-			}
-		}
-
 		const string MonoTODOAttributeName = "System.MonoTODOAttribute";
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution ();
 			context.RegisterCompilationStartAction (compilationContext => {
 				var compilation = compilationContext.Compilation;
-				var monoTodoAttributeExists = GetSearchAssemblies (compilation)
-				                                   .Any (assemblySymbol => assemblySymbol.GetTypeByMetadataName (MonoTODOAttributeName) != null);
+				var monoTodoAttributeExists = compilation.GetTypeByMetadataName (MonoTODOAttributeName) != null;
 				if (!monoTodoAttributeExists)
 					return;
 
