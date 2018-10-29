@@ -40,14 +40,14 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public interface INativeChildView
+	interface INativeChildView
 	{
 		event EventHandler Focused;
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev);
 		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev);
 	}
 
-	public class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
+	class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
 		const int IconsSpacing = 4;
 		ToolboxService toolboxService;
@@ -160,8 +160,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			#endregion
 
 			toolboxWidget = new MacToolboxWidget (container) {
-				AccessibilityTitle = GettextCatalog.GetString ("Toolbar items"),
-				AccessibilityHelp = GettextCatalog.GetString ("Here are all the toolbox items to select")
+				AccessibilityTitle = GettextCatalog.GetString ("Toolbox Toolbar"),
 			};
 			AddWidgetToFocusChain (toolboxWidget);
 

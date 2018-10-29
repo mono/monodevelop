@@ -161,7 +161,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Initialize ()
 		{
 			TranslatesAutoresizingMaskIntoConstraints = false;
-
+			AccessibilityRole = NSAccessibilityRoles.ToolbarRole;
 			flowLayout = new NSCollectionViewFlowLayout {
 				SectionHeadersPinToVisibleBounds = false,
 				MinimumInteritemSpacing = 0,
