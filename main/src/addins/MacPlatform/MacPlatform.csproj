@@ -111,6 +111,12 @@
     <Compile Include="Interop.cs" />
     <Compile Include="KernelInterop.cs" />
     <Compile Include="MacInterop\KeyCodes.cs" />
+    <Compile Include="Toolbox\ClickedButton.cs" />
+    <Compile Include="Toolbox\ExpanderButton.cs" />
+    <Compile Include="Toolbox\SearchTextField.cs" />
+    <Compile Include="Toolbox\ToggleButton.cs" />
+    <Compile Include="Helpers\NativeViewHelper.cs" />
+    <Compile Include="INativeChildView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -154,6 +160,10 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <LibXammac Include="..\..\..\external\libxammac.dylib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Toolbox\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(LibXammac)" DestinationFiles="$(OutputPath)\libxammac.dylib" SkipUnchangedFiles="true" />

@@ -37,17 +37,13 @@ using MonoDevelop.Ide;
 using AppKit;
 using CoreGraphics;
 using MonoDevelop.Components;
+using MonoDevelop.MacIntegration.Toolbox;
+using MonoDevelop.MacIntegration;
+using MonoDevelop.MacIntegration.Helpers;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public interface INativeChildView
-	{
-		event EventHandler Focused;
-		void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev);
-		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev);
-	}
-
-	public class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
+	class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
 		const int IconsSpacing = 4;
 		ToolboxService toolboxService;
@@ -61,15 +57,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public ItemToolboxNode selectedNode;
 
-		NativeViews.ToggleButton catToggleButton;
-		NativeViews.ToggleButton compactModeToggleButton;
-		NativeViews.SearchTextField filterEntry;
+		ToggleButton catToggleButton;
+		ToggleButton compactModeToggleButton;
+		SearchTextField filterEntry;
 
 		IPadWindow container;
 		PadFontChanger fontChanger;
 		Dictionary<string, int> categoryPriorities = new Dictionary<string, int> ();
 
-		NativeViews.ClickedButton toolboxAddButton;
+		ClickedButton toolboxAddButton;
 		Xwt.Drawing.Image groupByCategoryImage;
 
 		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
@@ -103,7 +99,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			horizontalStackView.EdgeInsets = new NSEdgeInsets (7, 7, 7, 7);
 
 			//Horizontal container
-			filterEntry = new NativeViews.SearchTextField ();
+			filterEntry = new SearchTextField ();
 			filterEntry.AccessibilityTitle = GettextCatalog.GetString ("Search Toolbox");
 			filterEntry.AccessibilityHelp = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
 			filterEntry.Activated += FilterTextChanged;
@@ -115,7 +111,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
 			filterEntry.SetContentHuggingPriorityForOrientation (250, NSLayoutConstraintOrientation.Horizontal);
 
-			catToggleButton = new NativeViews.ToggleButton ();
+			catToggleButton = new ToggleButton ();
 			catToggleButton.Image = groupByCategoryImage.ToNSImage ();
 			catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Show categories");
 			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
@@ -129,7 +125,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
 			catToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
-			compactModeToggleButton = new NativeViews.ToggleButton ();
+			compactModeToggleButton = new ToggleButton ();
 			compactModeToggleButton.Image = compactImage.ToNSImage();
 			compactModeToggleButton.ToolTip = GettextCatalog.GetString ("Use compact display");
 			compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout");
@@ -143,7 +139,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
 			compactModeToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
 
-			toolboxAddButton = new NativeViews.ClickedButton ();
+			toolboxAddButton = new ClickedButton ();
 			toolboxAddButton.Image = addImage.ToNSImage ();
 			toolboxAddButton.AccessibilityTitle = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");

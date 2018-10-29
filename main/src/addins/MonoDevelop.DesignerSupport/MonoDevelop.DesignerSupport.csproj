@@ -76,6 +76,11 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MacPlatform\MacPlatform.csproj">
+      <Project>{50D6768C-C072-4E79-AFC5-C1C40767EF45}</Project>
+      <Name>MacPlatform</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />
@@ -135,11 +140,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxWidget.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\SearchTextField.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ToggleButton.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ClickedButton.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\NativeViewHelper.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ExpanderButton.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxViewItems.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetDataSource.cs" />
@@ -181,10 +181,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
-    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

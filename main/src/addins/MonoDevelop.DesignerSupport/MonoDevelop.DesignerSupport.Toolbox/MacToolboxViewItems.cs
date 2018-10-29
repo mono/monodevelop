@@ -32,7 +32,8 @@ using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
-using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
+using MonoDevelop.MacIntegration.Helpers;
+using MonoDevelop.MacIntegration.Toolbox;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {

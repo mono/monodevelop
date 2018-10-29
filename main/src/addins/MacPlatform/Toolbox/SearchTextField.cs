@@ -1,5 +1,5 @@
 /* 
- * ToggleButton.cs - A basic toogle button implementing INativeChildView
+ * SearchTextField.cs - Native search field implementing INativeChildView
  * 
  * Author:
  *   Jose Medrano <josmed@microsoft.com>
@@ -26,64 +26,31 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#if MAC
 using System;
 using AppKit;
-using CoreGraphics;
 
-namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
+namespace MonoDevelop.MacIntegration.Toolbox
 {
-	class ToggleButton : NSButton, INativeChildView
+	class SearchTextField : NSSearchField, INativeChildView
 	{
-		bool isFirstResponder;
 		public event EventHandler Focused;
 
-		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
-
-		public ToggleButton () 
+		public SearchTextField ()
 		{
-			Title = "";
-			BezelStyle = NSBezelStyle.RoundRect;
-			SetButtonType (NSButtonType.OnOff);
-			FocusRingType = NSFocusRingType.Default;
 			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
 		public override bool BecomeFirstResponder ()
 		{
-			isFirstResponder = true;
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
-		}
-
-		public override bool ResignFirstResponder ()
-		{
-			isFirstResponder = false;
-			return base.ResignFirstResponder ();
-		}
-
-		public bool Active {
-			get => State == NSCellStateValue.On;
-			set {
-				State = value ? NSCellStateValue.On : NSCellStateValue.Off;
-			}
-		}
-
-		public override void KeyDown (NSEvent theEvent)
-		{
-			base.KeyDown (theEvent);
-			if ((int)theEvent.ModifierFlags == 256 && (theEvent.KeyCode == 49 || theEvent.KeyCode == 36)) {
-				PerformClick (this);
-			}
 		}
 
 		#region INativeChildView
 
 		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
-			if (ev.Event.State == Gdk.ModifierType.None && (ev.Event.Key == Gdk.Key.KP_Enter || ev.Event.Key == Gdk.Key.KP_Space)) {
-				PerformClick (this);
-			}
+
 		}
 
 		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
@@ -94,4 +61,3 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		#endregion
 	}
 }
-#endif

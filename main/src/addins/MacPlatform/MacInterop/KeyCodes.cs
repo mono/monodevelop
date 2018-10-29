@@ -36,4 +36,9 @@ namespace MonoDevelop.MacInterop
 		internal const ushort Tab = 0x30;
 		internal const ushort Space = 0x31;
 	}
+
+	internal static class ModifierMask
+	{
+		internal const ushort None = 0x100;
+	}
 }

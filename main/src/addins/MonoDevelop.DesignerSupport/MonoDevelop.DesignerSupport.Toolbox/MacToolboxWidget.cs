@@ -34,6 +34,8 @@ using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using MonoDevelop.MacIntegration;
+using MonoDevelop.MacIntegration.Helpers;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {

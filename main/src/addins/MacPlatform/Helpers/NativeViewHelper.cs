@@ -25,13 +25,12 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#if MAC
 using AppKit;
 using Foundation;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.MacIntegration.Helpers
 {
-	static class NativeViewHelper
+	internal static class NativeViewHelper
 	{
 		public static NSStackView CreateHorizontalStackView (int spacing = 10) => new NSStackView () {
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal,
@@ -76,4 +75,3 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 }
-#endif

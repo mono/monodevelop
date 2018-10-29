@@ -1,5 +1,6 @@
 ﻿/* 
- * ExpanderButton.cs - A expander button implementing INativeChildView
+/* 
+ * ExpanderButton.cs - A click button implementing INativeChildView
  * 
  * Author:
  *   Jose Medrano <josmed@microsoft.com>
@@ -26,21 +27,21 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#if MAC
 using System;
-using System.Drawing;
 using AppKit;
 using CoreGraphics;
-using Foundation;
+using MonoDevelop.MacIntegration.Helpers;
 
-namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
+namespace MonoDevelop.MacIntegration.Toolbox
 {
-	class ExpanderButton : NSButton, INativeChildView
+	class ExpanderButton : NSButton
 	{
 		const int Margin = 5;
 		static CGPoint textPoint = new CGPoint (7, 5);
 
 		public event EventHandler Focused;
+
+		public NSColor ForegroundColor { get; set; } = NSColor.ControlText;
 
 		public NSImage ExpanderImage { get; set; }
 
@@ -63,7 +64,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		public void SetCustomTitle (string title)
 		{
 			var font = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
-			AttributedTitle = NativeViewHelper.GetAttributedString (title, Styles.SectionForegroundColor, font);
+			AttributedTitle = NativeViewHelper.GetAttributedString (title, ForegroundColor, font);
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
@@ -77,21 +78,5 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 				context.RestoreGraphicsState ();
 			}
 		}
-
-		#region INativeChildView
-
-
-		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-
-		}
-
-		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
-		{
-
-		}
-
-		#endregion
 	}
 }
-#endif

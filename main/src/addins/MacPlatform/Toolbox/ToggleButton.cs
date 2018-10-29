@@ -1,5 +1,5 @@
 /* 
- * SearchTextField.cs - Native search field implementing INativeChildView
+ * ToggleButton.cs - A basic toogle button implementing INativeChildView
  * 
  * Author:
  *   Jose Medrano <josmed@microsoft.com>
@@ -26,18 +26,24 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#if MAC
 using System;
 using AppKit;
+using CoreGraphics;
 
-namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
+namespace MonoDevelop.MacIntegration.Toolbox
 {
-	class SearchTextField : NSSearchField, INativeChildView
+	class ToggleButton : NSButton, INativeChildView
 	{
 		public event EventHandler Focused;
 
-		public SearchTextField ()
+		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
+
+		public ToggleButton () 
 		{
+			Title = "";
+			BezelStyle = NSBezelStyle.RoundRect;
+			SetButtonType (NSButtonType.OnOff);
+			FocusRingType = NSFocusRingType.Default;
 			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
@@ -47,11 +53,26 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			return base.BecomeFirstResponder ();
 		}
 
+		public bool Active {
+			get => State == NSCellStateValue.On;
+			set {
+				State = value ? NSCellStateValue.On : NSCellStateValue.Off;
+			}
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			base.KeyDown (theEvent);
+			if ((int)theEvent.ModifierFlags == MacInterop.ModifierMask.None && (theEvent.KeyCode == MacInterop.KeyCodes.Enter || theEvent.KeyCode == MacInterop.KeyCodes.Space)) {
+				PerformClick (this);
+			}
+		}
+
 		#region INativeChildView
 
 		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
-
+		
 		}
 
 		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
@@ -62,4 +83,3 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		#endregion
 	}
 }
-#endif

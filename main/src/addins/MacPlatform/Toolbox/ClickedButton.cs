@@ -25,20 +25,18 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#if MAC
+
 using System;
 using AppKit;
 using CoreGraphics;
 
-namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
+namespace MonoDevelop.MacIntegration.Toolbox
 {
 	class ClickedButton : NSButton, INativeChildView
 	{
 		public event EventHandler Focused;
 
 		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
-
-		bool isFirstResponder;
 
 		public ClickedButton ()
 		{
@@ -50,15 +48,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
-		public override bool ResignFirstResponder ()
-		{
-			isFirstResponder = false;
-			return base.ResignFirstResponder ();
-		}
-
 		public override bool BecomeFirstResponder ()
 		{
-			isFirstResponder = true;
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}
@@ -80,7 +71,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		public override void KeyDown (NSEvent theEvent)
 		{
 			base.KeyDown (theEvent);
-			if ((int)theEvent.ModifierFlags == 256 && (theEvent.KeyCode == 49 || theEvent.KeyCode == 36)) {
+			if ((int)theEvent.ModifierFlags == MacInterop.ModifierMask.None && (theEvent.KeyCode == MacInterop.KeyCodes.Enter || theEvent.KeyCode == MacInterop.KeyCodes.Space)) {
 				PerformClick (this);
 			}
 		}
@@ -88,4 +79,3 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		#endregion
 	}
 }
-#endif
