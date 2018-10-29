@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core.FeatureConfiguration;
 using NUnit.Framework;
 
 namespace MonoDevelop.Core

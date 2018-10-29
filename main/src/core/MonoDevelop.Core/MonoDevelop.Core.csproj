@@ -740,7 +740,8 @@
     <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimings.cs" />
     <Compile Include="MonoDevelop.Utilities\RaceChecker.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkResolverManifest.cs" />
-    <Compile Include="MonoDevelop.Core\FeatureSwitchService.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchService.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
@@ -780,6 +781,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Utilities\" />
+    <Folder Include="MonoDevelop.Core.FeatureConfiguration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">

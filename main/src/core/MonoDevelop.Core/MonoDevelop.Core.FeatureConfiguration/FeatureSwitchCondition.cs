@@ -1,10 +1,10 @@
 //
-// FeatureSwitchService.cs
+// FeatureSwitchCondition.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft Inc (http://microsoft.com)
+// Copyright (c) 2018 Microsoft, Inc (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace MonoDevelop.Core
+namespace MonoDevelop.Core.FeatureConfiguration
 {
 	/// <summary>
 	/// Base class for feature switch conditions.
@@ -95,7 +95,7 @@ namespace MonoDevelop.Core
 		readonly ImmutableArray<FeatureSwitchCondition> conditions;
 		readonly bool allMustPass;
 
-		public AggregatedFeatureSwitchCondition (bool allMustPass, params FeatureSwitchCondition[] conditions)
+		public AggregatedFeatureSwitchCondition (bool allMustPass, params FeatureSwitchCondition [] conditions)
 		{
 			this.conditions = conditions.ToImmutableArray ();
 			this.allMustPass = allMustPass;
@@ -114,23 +114,6 @@ namespace MonoDevelop.Core
 			}
 
 			return result;
-		}
-	}
-
-	public class FeatureSwitch
-	{
-		public string Name { get; set; }
-
-		public FeatureSwitchCondition Condition { get; set; }
-
-		public bool IsEnabled => Condition?.Evaluate () ?? true;
-	}
-
-	public static class FeatureSwitchService
-	{
-		public static FeatureSwitch RegisterFeature (string name, FeatureSwitchCondition condition)
-		{
-			return new FeatureSwitch { Name = name, Condition = condition };
 		}
 	}
 }

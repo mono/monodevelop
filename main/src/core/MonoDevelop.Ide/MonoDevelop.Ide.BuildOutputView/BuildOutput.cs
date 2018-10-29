@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Projects;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Framework;
