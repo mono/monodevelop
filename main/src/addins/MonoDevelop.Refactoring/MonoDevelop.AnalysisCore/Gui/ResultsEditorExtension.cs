@@ -369,13 +369,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 						return false;
 					var oldMarker = oldMarkers [oldMarkerIndex++];
 
-					if (results [curResult].Equals((Result)oldMarker.Tag)) {
+					if (results [curResult].Equals ((Result)oldMarker.Tag, oldMarker.Offset)) {
 						oldMarker.Tag = results [curResult];
 						newMarkers.Add (oldMarker);
 						curResult++;
 						continue;
 					}
-
 					editor.RemoveMarker (oldMarker);
 				}
 

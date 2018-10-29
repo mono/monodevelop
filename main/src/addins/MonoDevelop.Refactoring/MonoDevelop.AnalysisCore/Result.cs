@@ -68,7 +68,7 @@ namespace MonoDevelop.AnalysisCore
 		
 		public bool Underline { get; private set; }
 
-		public bool Equals (Result other)
+		internal bool Equals (Result other, int correctedOffset)
 		{
 			if (ReferenceEquals (this, other))
 				return true;
@@ -76,7 +76,8 @@ namespace MonoDevelop.AnalysisCore
 				return false;
 			return Level == other.Level &&
 				InspectionMark == other.InspectionMark &&
-				Region.Equals (other.Region) &&
+				Region.Start == correctedOffset &&
+				Region.Length == other.Region.Length &&
 				Message == other.Message;
 		}
 
