@@ -32,17 +32,20 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	sealed class MonoTODODiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		static readonly ImmutableArray<SyntaxKind> syntaxKindsOfInterest = ImmutableArray.Create(
-			SyntaxKind.IdentifierName,                // foo
-			SyntaxKind.SimpleMemberAccessExpression,  // foo.bar
-			SyntaxKind.PointerMemberAccessExpression, // foo->bar
-			SyntaxKind.ConditionalAccessExpression    // foo?.bar
+		static readonly ImmutableArray<OperationKind> operationKindsOfInterest = ImmutableArray.Create(
+			OperationKind.EventReference,
+			OperationKind.FieldReference,
+			OperationKind.Invocation,
+			OperationKind.MethodReference,
+			OperationKind.PropertyReference,
+			OperationKind.ObjectCreation
 		);
 
 		static readonly DiagnosticDescriptor descriptor = new DiagnosticDescriptor(
@@ -59,65 +62,67 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 			}
 		}
 
-		static IEnumerable<IAssemblySymbol> GetSearchAssemblies(Compilation compilation)
-		{
-			yield return compilation.Assembly;
-			foreach (var reference in compilation.References) {
-				var symbol = compilation.GetAssemblyOrModuleSymbol (reference);
-				if (symbol is IAssemblySymbol assemblySymbol)
-					yield return assemblySymbol;
-			}
-		}
-
 		const string MonoTODOAttributeName = "System.MonoTODOAttribute";
+		const string MonoNotSupportedAttributeName = "MonoNotSupportedAttribute";
+		const string MonoLimitationAttributeName = "MonoLimitationAttribute";
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution ();
 			context.RegisterCompilationStartAction (compilationContext => {
 				var compilation = compilationContext.Compilation;
-				var monoTodoAttributeExists = GetSearchAssemblies (compilation)
-				                                   .Any (assemblySymbol => assemblySymbol.GetTypeByMetadataName (MonoTODOAttributeName) != null);
-				if (!monoTodoAttributeExists)
+				var monoToDoAttribute = compilation.GetTypeByMetadataName (MonoTODOAttributeName);
+				var monoNotSupportedAttribute = compilation.GetTypeByMetadataName (MonoNotSupportedAttributeName);
+				var monoLimitationAttribute = compilation.GetTypeByMetadataName (MonoLimitationAttributeName);
+				if (monoToDoAttribute == null && monoNotSupportedAttribute == null && monoLimitationAttribute == null)
 					return;
 
-				compilationContext.RegisterSyntaxNodeAction(
+				compilationContext.RegisterOperationAction(
 					(nodeContext) => {
+						IOperation operation = nodeContext.Operation;
+						ISymbol symbol;
+						if (operation is IMemberReferenceOperation memberReference) {
+							symbol = memberReference.Member;
+						} else if (operation is IInvocationOperation invocation) {
+							symbol = invocation.TargetMethod;
+						} else if (operation is IObjectCreationOperation creation) {
+							symbol = creation.Constructor;
+						} else {
+							return;
+						}
+
 						Diagnostic diagnostic;
-						if (TryFindMonoTODO(nodeContext.SemanticModel, nodeContext.Node, out diagnostic, nodeContext.CancellationToken))
+						if (TryFindMonoTODO(operation, symbol, monoToDoAttribute, monoNotSupportedAttribute, monoLimitationAttribute, out diagnostic))
 							nodeContext.ReportDiagnostic (diagnostic);
-					},
-					syntaxKindsOfInterest);
+					}, operationKindsOfInterest
+					);
 			});
 		}
 
-		static readonly Dictionary<string, string> attributes = new Dictionary<string, string> {
-			{ "MonoTODOAttribute", "Mono TODO" },
-			{ "MonoNotSupportedAttribute", "Mono NOT SUPPORTED" },
-			{ "MonoLimitationAttribute", "Mono LIMITATION" }
-		};
-
-		bool TryFindMonoTODO (SemanticModel semanticModel, SyntaxNode node, out Diagnostic diagnostic, CancellationToken cancellationToken)
+		bool TryFindMonoTODO (IOperation operation, ISymbol symbol, ISymbol monoToDoAttribute, ISymbol monoNotSupportedAttribute, ISymbol monoLimitationAttribute, out Diagnostic diagnostic)
 		{
-			var info = semanticModel.GetSymbolInfo (node, cancellationToken);
 			diagnostic = default(Diagnostic);
-			if (info.Symbol == null)
-				return false;
 
-			foreach (var attr in info.Symbol.GetAttributes ()) {
-				if (attr.AttributeClass.ContainingNamespace.GetFullName () != "System")
-					continue;
+			foreach (var attr in symbol.GetAttributes ()) {
 				string val;
-				if (attributes.TryGetValue (attr.AttributeClass.Name, out val)) {
-					string msg = null;
-					if (attr.ConstructorArguments.Length > 0) {
-						var arg = attr.ConstructorArguments [0];
-						msg = arg.Value != null ? arg.Value.ToString () : null;
-					}
-					var tree = semanticModel.SyntaxTree;
-					diagnostic = Diagnostic.Create(descriptor, tree.GetLocation(node.Span), string.IsNullOrEmpty (msg) ? val : val + ": " + msg);
-					return true;
+				if (attr.AttributeClass == monoToDoAttribute)
+					val = "Mono TODO";
+				else if (attr.AttributeClass == monoNotSupportedAttribute)
+					val = "Mono NOT SUPPORTED";
+				else if (attr.AttributeClass == monoLimitationAttribute)
+					val = "Mono LIMITATION";
+				else
+					continue;
+
+				string msg = null;
+				if (attr.ConstructorArguments.Length > 0) {
+					var arg = attr.ConstructorArguments [0];
+					msg = arg.Value?.ToString ();
 				}
+				diagnostic = Diagnostic.Create (descriptor, operation.Syntax.GetLocation (), string.IsNullOrEmpty (msg) ? val : val + ": " + msg);
+				return true;
 			}
+
 			return false;
 		}
 	}
