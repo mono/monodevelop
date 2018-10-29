@@ -15,6 +15,7 @@
   <ItemGroup Condition=" '$(Configuration)' == 'ReleaseMac' OR '$(Configuration)' == 'DebugMac' ">
       <Reference Include="Xamarin.Mac">
         <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+        <Private>False</Private>
       </Reference>
   </ItemGroup>
    <ItemGroup>
