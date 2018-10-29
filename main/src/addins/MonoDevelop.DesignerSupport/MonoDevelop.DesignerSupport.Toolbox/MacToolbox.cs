@@ -160,8 +160,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			#endregion
 
 			toolboxWidget = new MacToolboxWidget (container) {
-				AccessibilityTitle = GettextCatalog.GetString ("Toolbar items"),
-				AccessibilityHelp = GettextCatalog.GetString ("Here are all the toolbox items to select")
+				AccessibilityTitle = GettextCatalog.GetString ("Toolbox Toolbars"),
 			};
 			AddWidgetToFocusChain (toolboxWidget);
 
