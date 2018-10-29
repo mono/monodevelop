@@ -38,8 +38,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
 
-		bool isFirstResponder;
-
 		public ClickedButton ()
 		{
 			BezelStyle = NSBezelStyle.RoundRect;
@@ -50,15 +48,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 
-		public override bool ResignFirstResponder ()
-		{
-			isFirstResponder = false;
-			return base.ResignFirstResponder ();
-		}
-
 		public override bool BecomeFirstResponder ()
 		{
-			isFirstResponder = true;
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}

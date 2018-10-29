@@ -35,7 +35,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
 	class ToggleButton : NSButton, INativeChildView
 	{
-		bool isFirstResponder;
 		public event EventHandler Focused;
 
 		public override CGSize IntrinsicContentSize => Hidden ? CGSize.Empty : new CGSize (25, 25);
@@ -51,15 +50,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public override bool BecomeFirstResponder ()
 		{
-			isFirstResponder = true;
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
-		}
-
-		public override bool ResignFirstResponder ()
-		{
-			isFirstResponder = false;
-			return base.ResignFirstResponder ();
 		}
 
 		public bool Active {
