@@ -97,6 +97,10 @@ namespace MonoDevelop.Refactoring
 		{
 			if (IdeApp.Workbench == null)
 				return null;
+			foreach (var editor in textEditorDatas) {
+				if (editor.FileName.Equals (fileName))
+					return editor;
+			}
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == fileName) {
 					var result = doc.Editor;
