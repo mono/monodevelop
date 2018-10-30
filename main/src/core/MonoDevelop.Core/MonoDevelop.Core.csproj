@@ -793,6 +793,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Utilities\" />

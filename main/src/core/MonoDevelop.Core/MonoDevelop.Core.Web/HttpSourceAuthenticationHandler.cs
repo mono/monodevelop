@@ -29,33 +29,34 @@ namespace MonoDevelop.Core.Web
 			Uri source,
 			DefaultHttpClientHandler clientHandler,
 			ICredentialService credentialService)
-			: base (clientHandler)
+			: this (source, clientHandler, clientHandler, credentialService)
 		{
-			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			credentialsHandler = clientHandler ?? throw new ArgumentNullException (nameof (clientHandler));
-
-			// credential service is optional
-			this.credentialService = credentialService;
-
-			// Create a new wrapper for ICredentials that can be modified
-
-			// This is used to match the value of HttpClientHandler.UseDefaultCredentials = true
-			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
-
-			clientHandler.Credentials = credentials;
-			// Always take the credentials from the helper.
-			clientHandler.UseDefaultCredentials = false;
 		}
 
-		public HttpSourceAuthenticationHandler (Uri source, IHttpCredentialsHandler credentialsHandler, HttpMessageHandler innerHandler)
+		HttpSourceAuthenticationHandler (
+			Uri source,
+			IHttpCredentialsHandler credentialsHandler,
+			HttpMessageHandler innerHandler,
+			ICredentialService credentialService)
 			: base (innerHandler)
 		{
 			this.source = source ?? throw new ArgumentNullException (nameof (source));
-			this.credentialsHandler = credentialsHandler ?? throw new ArgumentNullException (nameof (credentialsHandler));
+			credentialsHandler = credentialsHandler ?? throw new ArgumentNullException (nameof (credentialsHandler));
 
-			credentialService = HttpClientProvider.CredentialService;
+			this.credentialService = credentialService;
+
+			// Create a new wrapper for ICredentials that can be modified
+			// This is used to match the value of HttpClientHandler.UseDefaultCredentials = true
 			credentials = new HttpSourceCredentials (CredentialCache.DefaultNetworkCredentials);
+
 			credentialsHandler.Credentials = credentials;
+			// Always take the credentials from the helper.
+			credentialsHandler.UseDefaultCredentials = false;
+		}
+
+		public HttpSourceAuthenticationHandler (Uri source, IHttpCredentialsHandler credentialsHandler, HttpMessageHandler innerHandler)
+			: this (source, credentialsHandler, innerHandler, HttpClientProvider.CredentialService)
+		{
 		}
 
 		protected override async Task<HttpResponseMessage> SendAsync (HttpRequestMessage request, CancellationToken cancellationToken)
