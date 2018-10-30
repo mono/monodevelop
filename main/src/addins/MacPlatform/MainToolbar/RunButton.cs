@@ -168,7 +168,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void KeyDown (NSEvent theEvent)
 		{
 			// 0x30 is Tab
-			if (theEvent.KeyCode == KeyCodes.Tab) {
+			if (theEvent.KeyCode == ((ushort)Components.Mac.KeyCodes.Tab)) {
 				if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
 					UnfocusToolbar?.Invoke (this, EventArgs.Empty);
 					return;

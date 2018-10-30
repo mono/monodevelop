@@ -110,7 +110,6 @@
     <Compile Include="MacTelemetryDetails.cs" />
     <Compile Include="Interop.cs" />
     <Compile Include="KernelInterop.cs" />
-    <Compile Include="MacInterop\KeyCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
