@@ -112,8 +112,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			horizontalStackView.AddArrangedSubview (filterEntry);
 			AddWidgetToFocusChain (filterEntry);
 
-			filterEntry.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
-			filterEntry.SetContentHuggingPriorityForOrientation (250, NSLayoutConstraintOrientation.Horizontal);
+			filterEntry.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultLow, NSLayoutConstraintOrientation.Horizontal);
+			filterEntry.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultLow, NSLayoutConstraintOrientation.Horizontal);
 
 			catToggleButton = new NativeViews.ToggleButton ();
 			catToggleButton.Image = groupByCategoryImage.ToNSImage ();
@@ -126,8 +126,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			horizontalStackView.AddArrangedSubview (catToggleButton);
 			AddWidgetToFocusChain (catToggleButton);
 
-			catToggleButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
-			catToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
+			catToggleButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
+			catToggleButton.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
 
 			compactModeToggleButton = new NativeViews.ToggleButton ();
 			compactModeToggleButton.Image = compactImage.ToNSImage();
@@ -140,8 +140,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			horizontalStackView.AddArrangedSubview (compactModeToggleButton);
 			AddWidgetToFocusChain (compactModeToggleButton);
 
-			compactModeToggleButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
-			compactModeToggleButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
+			compactModeToggleButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
+			compactModeToggleButton.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
 
 			toolboxAddButton = new NativeViews.ClickedButton ();
 			toolboxAddButton.Image = addImage.ToNSImage ();
@@ -154,8 +154,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
 			AddWidgetToFocusChain (toolboxAddButton);
 
-			toolboxAddButton.SetContentCompressionResistancePriority (750, NSLayoutConstraintOrientation.Horizontal);
-			toolboxAddButton.SetContentHuggingPriorityForOrientation (750, NSLayoutConstraintOrientation.Horizontal);
+			toolboxAddButton.SetContentCompressionResistancePriority ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
+			toolboxAddButton.SetContentHuggingPriorityForOrientation ((int)NSLayoutPriority.DefaultHigh, NSLayoutConstraintOrientation.Horizontal);
 
 			#endregion
 
