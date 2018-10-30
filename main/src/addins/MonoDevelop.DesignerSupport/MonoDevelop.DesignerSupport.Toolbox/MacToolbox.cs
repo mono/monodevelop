@@ -355,7 +355,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 				cat.IsVisible = hasVisibleChild;
 			}
-			toolboxWidget.RedrawItems (true, true);
+			toolboxWidget.RedrawItems (false, true);
 		}
 		
 		async void ToolboxAddButton_Clicked (object sender, EventArgs e)
