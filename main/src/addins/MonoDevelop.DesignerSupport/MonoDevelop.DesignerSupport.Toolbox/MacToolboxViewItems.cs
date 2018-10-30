@@ -44,6 +44,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override string Description => TextField.StringValue;
 
+		public NSImage SelectedImage { get; set; }
+		public NSImage Image { get; set; }
+
 		public override bool Selected {
 			get => base.Selected;
 			set {
@@ -51,10 +54,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (contentCollectionView != null) {
 					contentCollectionView.IsSelected = value;
 				}
+				RefreshImage ();
 			}
 		}
 
 		ContentCollectionViewItem contentCollectionView;
+		void RefreshImage ()
+		{
+			ImageView.Image = Selected ? SelectedImage : Image; 
+		}
 		public override void LoadView ()
 		{
 			View = contentCollectionView = new ContentCollectionViewItem ();
