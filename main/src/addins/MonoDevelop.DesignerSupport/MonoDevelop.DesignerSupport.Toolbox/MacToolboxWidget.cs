@@ -321,6 +321,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			collectionViewDelegate.DragBegin -= CollectionViewDelegate_DragBegin;
 			collectionViewDelegate.SelectionChanged -= CollectionViewDelegate_SelectionChanged;
 
+			DataSource = null;
+			Delegate = null;
+
 			base.Dispose (disposing);
 		}
 
