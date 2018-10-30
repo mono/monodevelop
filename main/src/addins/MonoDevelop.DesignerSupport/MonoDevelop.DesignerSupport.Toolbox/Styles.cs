@@ -16,6 +16,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public static NSColor HeaderBackgroundColor { get; private set; }
 		public static NSColor HeaderBorderBackgroundColor { get; private set; }
 
+		public static NSColor ToolbarBackgroundColor { get; private set; }
+
 		static Styles ()
 		{
 			LoadStyles ();
@@ -28,10 +30,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				HeaderBackgroundColor = NSColor.FromRgb (0.98f, 0.98f, 0.98f);
 				HeaderBorderBackgroundColor = NSColor.FromRgb (0.96f, 0.96f, 0.96f);
 				LabelSelectedForegroundColor = NSColor.Highlight;
+				ToolbarBackgroundColor = NSColor.White;
 			} else {
 				HeaderBackgroundColor = NSColor.FromRgb (0.29f, 0.29f, 0.29f);
 				HeaderBorderBackgroundColor = NSColor.FromRgb (0.29f, 0.29f, 0.29f);
 				LabelSelectedForegroundColor = NSColor.SelectedText;
+				ToolbarBackgroundColor = NSColor.FromRgb (0.25f, 0.25f, 0.25f);
 			}
 		}
 	}
