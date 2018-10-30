@@ -539,9 +539,7 @@ namespace MonoDevelop.Projects
 			var evaluatedCompileItems = coreCompileResult.SourceFiles;
 
 			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
-			foreach (var item in evaluatedCompileItems) {
-				results.Add (item);
-			}
+			results.UnionWith (evaluatedCompileItems);
 
 			return results.ToArray ();
 		}
