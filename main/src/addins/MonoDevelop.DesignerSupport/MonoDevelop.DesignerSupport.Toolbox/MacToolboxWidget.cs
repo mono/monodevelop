@@ -182,6 +182,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			messageTextField.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 			messageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
 			AddSubview (messageTextField);
+
+			BackgroundColors = new NSColor [] { Styles.ToolbarBackgroundColor };
 		}
 
 		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e)
