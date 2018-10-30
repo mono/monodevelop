@@ -37,7 +37,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
 				itmView.TextField.StringValue = widgetItem.Text;
 				itmView.TextField.AccessibilityTitle = widgetItem.Text ?? "";
-				itmView.ImageView.Image = widgetItem.Icon.ToNSImage ();
+				itmView.Image = widgetItem.Icon.ToNSImage ();
+				itmView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
@@ -45,6 +46,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
 				imgView.Image = widgetItem.Icon.ToNSImage ();
+				imgView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();
 				imgView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.AccessibilityElement = true;
 				imgView.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
