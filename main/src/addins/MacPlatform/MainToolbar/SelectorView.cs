@@ -576,14 +576,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override void KeyDown (NSEvent theEvent)
 			{
-				if (theEvent.KeyCode == KeyCodes.Space) {
+				if (theEvent.KeyCode == (ushort) KeyCodes.Space) {
 					var item = Cells [focusedCellIndex].Cell;
 					PopupMenuForCell (item);
 					return;
 				}
 
 				// 0x30 is Tab
-				if (theEvent.KeyCode == KeyCodes.Tab) {
+				if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
 					if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
 						focusedCellIndex--;
 						if (focusedCellIndex < 0) {
@@ -637,7 +637,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// Check if the currentEvent that caused us to become first responder is a Tab or a Reverse Tab
 				if (currentEvent.Type == NSEventType.KeyDown) {
-					if (currentEvent.KeyCode == KeyCodes.Tab) {
+					if (currentEvent.KeyCode == (ushort) KeyCodes.Tab) {
 						if ((currentEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
 							focusedCellIndex = Cells.Length - 1;
 						} else {

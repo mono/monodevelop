@@ -30,6 +30,7 @@
 using System;
 using AppKit;
 using CoreGraphics;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
@@ -64,7 +65,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 		public override void KeyDown (NSEvent theEvent)
 		{
 			base.KeyDown (theEvent);
-			if ((int)theEvent.ModifierFlags == 256 && (theEvent.KeyCode == 49 || theEvent.KeyCode == 36)) {
+			if ((int)theEvent.ModifierFlags == (int) KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter || theEvent.KeyCode == (int)KeyCodes.Space)) {
 				PerformClick (this);
 			}
 		}
