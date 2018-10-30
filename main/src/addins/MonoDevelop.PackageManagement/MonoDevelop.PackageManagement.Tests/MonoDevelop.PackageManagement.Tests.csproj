@@ -70,6 +70,14 @@
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\..\packages\NuGet.Commands.4.7.0\lib\net46\NuGet.Commands.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\..\..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="Moq">
+      <HintPath>..\..\..\..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -184,6 +192,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageAssetSourceFilesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetAwareProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetSdkResolverTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetHttpSourceAuthenticationHandlerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\LambdaMessageHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
