@@ -314,7 +314,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-			toolboxWidget.RedrawItems (true, true);
+			toolboxWidget.RedrawItems (true, false);
+
 			PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 
 			if (compactModeToggleButton.Active) {

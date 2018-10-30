@@ -253,12 +253,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#region INativeChildView
 
-		void SelectItem (ToolboxWidgetItem item)
-		{
-			dataSource.SelectItem (this, item);
-			SelectedItem = item;
-		}
-
 		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
 		{
 

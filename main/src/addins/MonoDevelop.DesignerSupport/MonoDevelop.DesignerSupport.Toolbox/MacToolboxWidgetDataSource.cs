@@ -42,38 +42,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
-				itmView.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
 				imgView.Image = widgetItem.Icon.ToNSImage ();
 				imgView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();
 				imgView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.AccessibilityElement = true;
-				imgView.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
 			}
+
+			 collectionViewItem.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
 
 			if (!Views.ContainsKey (widgetItem)) {
 				Views.Add (widgetItem, indexPath);
 			}
 
 			return collectionViewItem;
-		}
-
-		internal void SelectItem (NSCollectionView collectionView, ToolboxWidgetItem item)
-		{
-			if (item is ToolboxWidgetCategory cat) {
-				var info = Categories.FirstOrDefault (s => s.Category == cat);
-				if (info != null) {
-					var window = collectionView.Window;
-					window.MakeFirstResponder (info.View);
-				}
-			} else {
-				if (Views.TryGetValue (item, out var indexPath)) {
-					var elements = new NSSet (new NSObject [] { indexPath });
-					collectionView.DeselectAll (null);
-					collectionView.SelectItems (elements, NSCollectionViewScrollPosition.None);
-				}
-			}
 		}
 
 		internal void Clear ()
