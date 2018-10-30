@@ -54,26 +54,35 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (contentCollectionView != null) {
 					contentCollectionView.IsSelected = value;
 				}
-				RefreshImage ();
+				Refresh ();
 			}
 		}
 
 		ContentCollectionViewItem contentCollectionView;
-		void RefreshImage ()
+
+		void Refresh ()
 		{
-			ImageView.Image = Selected ? SelectedImage : Image; 
+			if (Selected) {
+				ImageView.Image = SelectedImage;
+				TextField.TextColor = Styles.LabelSelectedForegroundColor;
+			} else {
+				ImageView.Image = Image;
+				TextField.TextColor = NSColor.LabelColor;
+			}
 		}
+
 		public override void LoadView ()
 		{
 			View = contentCollectionView = new ContentCollectionViewItem ();
 			View.Identifier = Name;
 			View.AccessibilityElement = false;
 
-			ImageView = new NSImageView ();
+			ImageView = new NSImageView () { TranslatesAutoresizingMaskIntoConstraints = false };
 			contentCollectionView.AddArrangedSubview (ImageView);
 			TextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Left, NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize));
 			contentCollectionView.AddArrangedSubview (TextField);
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 7, 0, 0);
+			Refresh ();
 		}
 
 		public LabelCollectionViewItem (IntPtr handle) : base (handle)
@@ -83,10 +92,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	}
 
 	[Register ("HeaderCollectionViewItem")]
-	class HeaderCollectionViewItem : ExpanderButton, INSCollectionViewSectionHeaderView
+	class HeaderCollectionViewItem : NSButton, INSCollectionViewSectionHeaderView, INativeChildView
 	{
+	
 		static readonly NSImage CollapsedImage = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu).ToNSImage ();
 		static readonly NSImage ExpandedImage = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu).ToNSImage ();
+
+		public NSTextField TitleTextField { get; private set; }
+		public NSImage ExpanderImage { get; private set; }
+		public MacToolboxWidget CollectionView { get; internal set; }
+		public NSIndexPath IndexPath { get; internal set; }
 
 		internal const int SectionHeight = 25;
 		internal const string Name = "HeaderViewItem";
@@ -97,16 +112,66 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			internal set {
 				isCollapsed = value;
 				ExpanderImage = value ? CollapsedImage : ExpandedImage;
+				NeedsDisplay = true;
 			}
 		}
 
-		public MacToolboxWidget CollectionView { get; internal set; }
-		public NSIndexPath IndexPath { get; internal set; }
+		public event EventHandler Focused;
+
+		public override bool CanBecomeKeyView => true;
+
+		public override bool BecomeFirstResponder ()
+		{
+			Focused?.Invoke (this, EventArgs.Empty);
+			return base.BecomeFirstResponder ();
+		}
 
 		public HeaderCollectionViewItem (IntPtr handle) : base (handle)
 		{
+			BezelStyle = NSBezelStyle.RegularSquare;
+			SetButtonType (NSButtonType.OnOff);
+			Bordered = false;
+
+			Font = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
+			Title = "";
+
+			TitleTextField = NativeViewHelper.CreateLabel ("", font: Font);
+			AddSubview (TitleTextField);
+			TitleTextField.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 10).Active = true;
+			TitleTextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor, 0).Active = true;
+
+			WantsLayer = true;
+			Layer.BackgroundColor = Styles.HeaderBackgroundColor.CGColor;
+			Layer.BorderColor = Styles.HeaderBorderBackgroundColor.CGColor;
+			Layer.BorderWidth = 1;
+		}
+
+		public override void DrawRect (CGRect dirtyRect)
+		{
+			base.DrawRect (dirtyRect);
+
+			if (ExpanderImage != null) {
+				var context = NSGraphicsContext.CurrentContext;
+				context.SaveGraphicsState ();
+				ExpanderImage.Draw (new CGRect (Frame.Width - ExpanderImage.Size.Height - 5, 4, ExpanderImage.Size.Width, ExpanderImage.Size.Height));
+				context.RestoreGraphicsState ();
+			}
+		}
+
+		#region INativeChildView
+
+
+		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
+		{
 
 		}
+
+		public void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
+		{
+
+		}
+
+		#endregion
 	}
 
 	[Register ("ImageCollectionViewItem")]
@@ -124,13 +189,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (contentCollectionView != null) {
 					contentCollectionView.IsSelected = value;
 				}
+				Refresh ();
 			}
 		}
 
-		public  NSImage Image {
-			get => contentCollectionView.BackgroundImage;
-			set {
-				contentCollectionView.BackgroundImage = value;
+		public NSImage SelectedImage { get; set; }
+		public NSImage Image { get; set; }
+
+		void Refresh ()
+		{
+			if (Selected) {
+				contentCollectionView.BackgroundImage = SelectedImage ;
+			} else {
+				contentCollectionView.BackgroundImage = Image;
 			}
 		}
 
@@ -154,6 +225,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			View = contentCollectionView = new ContentCollectionViewItem ();
 			contentCollectionView.Identifier = Name;
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 0, 0, 0);
+			Refresh ();
 		}
 
 		public ImageCollectionViewItem (IntPtr handle) : base (handle)
@@ -164,7 +236,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 	class ContentCollectionViewItem : NSStackView
 	{
-		public NSColor BackgroundSelectedColor { get; set; } = NSColor.SecondarySelectedControl;
+		public NSColor BackgroundSelectedColor { get; set; } = NSColor.KeyboardFocusIndicator;
 		public NSImage BackgroundImage { get; internal set; }
 
 		bool isSelected;
@@ -183,6 +255,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
 			TranslatesAutoresizingMaskIntoConstraints = false;
+
 			NeedsDisplay = true;
 		}
 
