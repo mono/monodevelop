@@ -60,7 +60,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		ContentCollectionViewItem contentCollectionView;
 
-		void Refresh ()
+		public void Refresh ()
 		{
 			if (Selected) {
 				ImageView.Image = SelectedImage;
@@ -82,7 +82,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			TextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Left, NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize));
 			contentCollectionView.AddArrangedSubview (TextField);
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 7, 0, 0);
-			Refresh ();
 		}
 
 		public LabelCollectionViewItem (IntPtr handle) : base (handle)
@@ -196,7 +195,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public NSImage SelectedImage { get; set; }
 		public NSImage Image { get; set; }
 
-		void Refresh ()
+	 	public void Refresh ()
 		{
 			if (Selected) {
 				contentCollectionView.BackgroundImage = SelectedImage ;
@@ -225,7 +224,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			View = contentCollectionView = new ContentCollectionViewItem ();
 			contentCollectionView.Identifier = Name;
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 0, 0, 0);
-			Refresh ();
 		}
 
 		public ImageCollectionViewItem (IntPtr handle) : base (handle)

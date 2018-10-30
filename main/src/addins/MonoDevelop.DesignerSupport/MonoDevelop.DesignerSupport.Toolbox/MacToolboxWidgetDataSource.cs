@@ -42,14 +42,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
+				itmView.Refresh ();
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
 				imgView.Image = widgetItem.Icon.ToNSImage ();
 				imgView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();
 				imgView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.AccessibilityElement = true;
+				imgView.Refresh ();
 			}
-
 
 			if (!Views.ContainsKey (widgetItem)) {
 				Views.Add (widgetItem, indexPath);
