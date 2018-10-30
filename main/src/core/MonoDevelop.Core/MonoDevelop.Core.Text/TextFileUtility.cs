@@ -226,11 +226,28 @@ namespace MonoDevelop.Core.Text
 				throw new ArgumentNullException ("encoding");
 		}
 
-		static string WriteTextInit (string fileName)
+		static FilePath WriteTextInit (string fileName)
 		{
 			// atomic rename only works in the same directory on linux. The tmp files may be on another partition -> breaks save.
-			string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
-			return tmpPath;
+			var directory = Path.GetDirectoryName (fileName);
+			EnsureDirectoryExists (directory);
+			FilePath tmpPath = Path.Combine (directory, ".#" + Path.GetFileName (fileName));
+			int i = 0;
+			while (i < 1000) {
+				var curName = CombineFileName (tmpPath, i);
+				if (!File.Exists (curName)) {
+					return curName;
+				}
+				i++;
+			}
+			throw new IOException (GettextCatalog.GetString("Can't create temporary file {0} for writing.", fileName));
+		}
+
+		static string CombineFileName (FilePath path, int i)
+		{
+			if (i <= 0)
+				return path;
+			return path.ChangeName (path.FileNameWithoutExtension + "~" + i);
 		}
 
 		static void WriteTextFinal (string tmpPath, string fileName)
@@ -251,24 +268,40 @@ namespace MonoDevelop.Core.Text
 		{
 			ArgumentCheck (fileName);
 			var tmpPath = WriteTextInit (fileName);
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+			using (var stream = CreateStream (tmpPath)) {
 				using (var sw = new StreamWriter (stream, source.Encoding)) {
 					source.WriteTextTo (sw);
 				}
 			}
+
 			WriteTextFinal (tmpPath, fileName);
+		}
+
+		static Stream CreateStream (FilePath tmpPath)
+		{
+			if (!Platform.IsWindows)
+				return new Mono.Unix.StdioFileStream (tmpPath, FileMode.CreateNew, FileAccess.Write);
+			return new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write);
 		}
 
 		public static void WriteText (string fileName, string text, Encoding encoding)
 		{
 			ArgumentCheck (fileName, text, encoding);
 			var tmpPath = WriteTextInit (fileName);
-			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+			using (var stream = CreateStream (tmpPath)) {
 				using (var sw = new StreamWriter (stream, encoding)) {
 					sw.Write (text);
 				}
 			}
 			WriteTextFinal (tmpPath, fileName);
+		}
+
+		static void EnsureDirectoryExists (FilePath directoryName)
+		{
+			if (directoryName.IsNullOrEmpty)
+				return;
+			if (!Directory.Exists (directoryName))
+				Directory.CreateDirectory (directoryName);
 		}
 
 		const int DefaultBufferSize = 4096;

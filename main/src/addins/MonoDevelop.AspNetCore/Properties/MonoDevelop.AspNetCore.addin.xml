@@ -430,9 +430,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
-		<SeparatorItem id = "ProfilesSeparator" />
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
+		<Condition id="ItemType" value="Project">
+			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+			<SeparatorItem id = "ProfilesSeparator" />
+			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">
