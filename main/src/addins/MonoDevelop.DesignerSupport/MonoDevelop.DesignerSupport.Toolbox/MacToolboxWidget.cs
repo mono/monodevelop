@@ -174,24 +174,29 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AllowsEmptySelection = true;
 			DataSource = dataSource = new MacToolboxWidgetDataSource (categories);
 
-			collectionViewDelegate.DragBegin += (s, e) => {
-				DragBegin?.Invoke (this, EventArgs.Empty);
-			};
-
-			collectionViewDelegate.SelectionChanged += (s, e) => {
-				if (e.Count == 0) {
-					return;
-				}
-				if (e.AnyObject is NSIndexPath indexPath) {
-					SelectedItem = categories[(int)indexPath.Section].Items[(int)indexPath.Item];
-				}
-			};
+			collectionViewDelegate.DragBegin += CollectionViewDelegate_DragBegin;
+			collectionViewDelegate.SelectionChanged += CollectionViewDelegate_SelectionChanged;
 
 			var fontSmall = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
 			messageTextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Center, fontSmall);
 			messageTextField.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 			messageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
 			AddSubview (messageTextField);
+		}
+
+		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e)
+		{
+			DragBegin?.Invoke (this, EventArgs.Empty);
+		}
+
+		void CollectionViewDelegate_SelectionChanged (object sender, NSSet e)
+		{
+			 if (e.Count == 0) {
+				 return;
+			 }
+			 if (e.AnyObject is NSIndexPath indexPath) {
+				 SelectedItem = categories [(int)indexPath.Section].Items [(int)indexPath.Item];
+			 }
 		}
 
 		public override void SetFrameSize (CGSize newSize)
@@ -312,6 +317,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (container != null) {
 				container.PadContentShown -= OnContainerIsShown;
 			}
+
+			collectionViewDelegate.DragBegin -= CollectionViewDelegate_DragBegin;
+			collectionViewDelegate.SelectionChanged -= CollectionViewDelegate_SelectionChanged;
+
 			base.Dispose (disposing);
 		}
 

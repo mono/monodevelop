@@ -107,7 +107,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterEntry.AccessibilityTitle = GettextCatalog.GetString ("Search Toolbox");
 			filterEntry.AccessibilityHelp = GettextCatalog.GetString ("Enter a term to search for it in the toolbox");
 			filterEntry.Activated += FilterTextChanged;
-			filterEntry.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
+			filterEntry.Focused += FilterEntry_Focused;
 
 			horizontalStackView.AddArrangedSubview (filterEntry);
 			AddWidgetToFocusChain (filterEntry);
@@ -121,7 +121,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.ToolTip = GettextCatalog.GetString ("Show categories");
 			catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to show categories");
 			catToggleButton.Activated += ToggleCategorisation;
-			catToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
+			catToggleButton.Focused += CatToggleButton_Focused;
 
 			horizontalStackView.AddArrangedSubview (catToggleButton);
 			AddWidgetToFocusChain (catToggleButton);
@@ -135,7 +135,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Compact Layout");
 			compactModeToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle for toolbox to use compact layout");
 			compactModeToggleButton.Activated += ToggleCompactMode;
-			compactModeToggleButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
+			compactModeToggleButton.Focused += CompactModeToggleButton_Focused;
 
 			horizontalStackView.AddArrangedSubview (compactModeToggleButton);
 			AddWidgetToFocusChain (compactModeToggleButton);
@@ -149,7 +149,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxAddButton.AccessibilityHelp = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.ToolTip = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Activated += ToolboxAddButton_Clicked;
-			toolboxAddButton.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
+			toolboxAddButton.Focused += ToolboxAddButton_Focused;
 
 			horizontalStackView.AddArrangedSubview (toolboxAddButton);
 			AddWidgetToFocusChain (toolboxAddButton);
@@ -174,30 +174,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AddArrangedSubview (scrollView);
 
 			//update view when toolbox service updated
-			toolboxService.ToolboxContentsChanged += (s,e) => Refresh ();
-			toolboxService.ToolboxConsumerChanged += (s,e) => Refresh ();
-		
-			filterEntry.Changed += (s, e) => Refilter ();
-		
-			toolboxWidget.SelectedItemChanged += delegate {
-				selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
-				toolboxService.SelectItem (selectedNode);
-			};
+			toolboxService.ToolboxContentsChanged += ToolboxService_ToolboxContentsChanged;
+			toolboxService.ToolboxConsumerChanged += ToolboxService_ToolboxConsumerChanged;
 
-			toolboxWidget.DragBegin += (object sender, EventArgs e) => {
-				if (this.toolboxWidget.SelectedItem != null) {
-					DragBegin?.Invoke (this, e);
-				}
-			};
+			filterEntry.Changed += FilterEntry_Changed;
 
-			toolboxWidget.MouseDownActivated += (NSEvent obj) => {
-				ContentFocused?.Invoke (this, EventArgs.Empty);
-			};
-
-			toolboxWidget.ActivateSelectedItem += delegate {
-				toolboxService.UseSelectedItem ();
-			};
-
+			toolboxWidget.SelectedItemChanged += ToolboxWidget_SelectedItemChanged;
+			toolboxWidget.DragBegin += ToolboxWidget_DragBegin;
+			toolboxWidget.MouseDownActivated += ToolboxWidget_MouseDownActivated;
+			toolboxWidget.ActivateSelectedItem += ToolboxWidget_ActivateSelectedItem;
 			toolboxWidget.MenuOpened += ToolboxWidget_MenuOpened;
 
 			//set initial state
@@ -206,6 +191,64 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
 
 			Refresh ();
+		}
+
+		void ToolboxService_ToolboxConsumerChanged (object sender, ToolboxConsumerChangedEventArgs e)
+		{
+			Refresh ();
+		}
+
+		void ToolboxService_ToolboxContentsChanged (object sender, EventArgs e)
+		{
+			Refresh ();
+		}
+
+		void ToolboxWidget_SelectedItemChanged (object sender, EventArgs e)
+		{
+			selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
+			toolboxService.SelectItem (selectedNode);
+		}
+
+		void ToolboxWidget_ActivateSelectedItem (object sender, EventArgs e)
+		{
+			toolboxService.UseSelectedItem ();
+		}
+
+		void FilterEntry_Changed (object sender, EventArgs e)
+		{
+			Refilter ();
+		}
+
+		void ToolboxAddButton_Focused (object sender, EventArgs e)
+		{
+			ChangeFocusedView (sender as INativeChildView);
+		}
+
+		void CompactModeToggleButton_Focused (object sender, EventArgs e)
+		{
+			ChangeFocusedView (sender as INativeChildView);
+		}
+
+		void CatToggleButton_Focused (object sender, EventArgs e)
+		{
+			ChangeFocusedView (sender as INativeChildView);
+		}
+
+		void FilterEntry_Focused (object sender, EventArgs e)
+		{
+			ChangeFocusedView (sender as INativeChildView);
+		}
+
+		void ToolboxWidget_DragBegin (object sender, EventArgs e)
+		{
+			if (this.toolboxWidget.SelectedItem != null) {
+				DragBegin?.Invoke (this, e);
+			}
+		}
+
+		void ToolboxWidget_MouseDownActivated (NSEvent obj)
+		{
+			ContentFocused?.Invoke (this, EventArgs.Empty);
 		}
 
 		internal void FocusSelectedView ()
@@ -235,11 +278,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return;
 			}
 			responderViewChain.Add (view);
-			view.Focused += (s, e) => ChangeFocusedView (s as INativeChildView);
+			view.Focused -= View_Focused;
+			view.Focused += View_Focused;
 
 			if (focusedViewIndex == -1) {
 				focusedViewIndex = 0;
 			}
+		}
+
+		void View_Focused (object sender, EventArgs e)
+		{
+			ChangeFocusedView (sender as INativeChildView);
 		}
 
 		void ChangeFocusedView (INativeChildView view)
@@ -470,11 +519,26 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		protected override void Dispose (bool disposing)
 		{
-			toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
+			filterEntry.Activated -= FilterTextChanged;
+			filterEntry.Focused -= FilterEntry_Focused;
 
 			catToggleButton.Activated -= ToggleCategorisation;
+			catToggleButton.Focused -= CatToggleButton_Focused;
+
 			compactModeToggleButton.Activated -= ToggleCompactMode;
+			compactModeToggleButton.Focused -= CompactModeToggleButton_Focused;
+
 			toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
+			toolboxAddButton.Focused -= ToolboxAddButton_Focused;
+
+			toolboxWidget.SelectedItemChanged -= ToolboxWidget_SelectedItemChanged;
+			toolboxWidget.ActivateSelectedItem -= ToolboxWidget_ActivateSelectedItem;
+			toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
+			toolboxWidget.MouseDownActivated -= ToolboxWidget_MouseDownActivated;
+			toolboxWidget.DragBegin -= ToolboxWidget_DragBegin;
+
+			toolboxService.ToolboxContentsChanged -= ToolboxService_ToolboxContentsChanged;
+			toolboxService.ToolboxConsumerChanged -= ToolboxService_ToolboxConsumerChanged;
 
 			if (fontChanger != null) {
 				fontChanger.Dispose ();
