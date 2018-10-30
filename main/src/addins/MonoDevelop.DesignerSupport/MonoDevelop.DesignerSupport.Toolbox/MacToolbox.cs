@@ -314,7 +314,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-			toolboxWidget.RedrawItems (true, false);
+			toolboxWidget.RedrawItems (true, true);
 
 			PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 
@@ -347,9 +347,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void Refilter ()
 		{
-			foreach (ToolboxWidgetCategory cat in toolboxWidget.Categories) {
+			foreach (var cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
-				foreach (ToolboxWidgetItem child in cat.Items) {
+				foreach (var child in cat.Items) {
 					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue);
 					hasVisibleChild |= child.IsVisible;
 				}

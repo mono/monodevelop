@@ -213,6 +213,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public void RedrawItems (bool invalidates, bool reloads)
 		{
+			NSIndexPath selected = null;
+			if (SelectionIndexPaths.Count > 0) {
+				selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
+			}
 			if (IsListMode) {
 				flowLayout.ItemSize = new CGSize (Frame.Width - IconMargin, LabelCollectionViewItem.ItemHeight);
 			} else {
@@ -231,6 +235,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			if (reloads) {
 				ReloadData ();
+			}
+
+			if (selected != null) {
+				SelectionIndexPaths = new NSSet (selected);
 			}
 		}
 

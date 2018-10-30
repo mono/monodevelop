@@ -50,7 +50,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				imgView.AccessibilityElement = true;
 			}
 
-			 collectionViewItem.Selected = ((MacToolboxWidget)collectionView).SelectedItem == widgetItem;
 
 			if (!Views.ContainsKey (widgetItem)) {
 				Views.Add (widgetItem, indexPath);
@@ -78,7 +77,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				button.CollectionView = toolboxWidget;
 				button.Activated -= Button_Activated;
 				button.Activated += Button_Activated;
-				button.IsCollapsed = toolboxWidget.flowLayout.SectionAtIndexIsCollapsed ((nuint)indexPath.Section);
+				button.IsCollapsed = !section.IsExpanded;
 				if (!Categories.Any (s => s.Category == section)) {
 					Categories.Add (new HeaderInfo () { Category = section, Index = indexPath, View = button });
 				}
@@ -96,7 +95,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var section = Items [(int)indexPath.Section];
 			section.IsExpanded = !section.IsExpanded;
 			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
-			collectionView.CollectionViewLayout.InvalidateLayout ();
+
+			var sectionIndex = NSIndexSet.FromIndex (indexPath.Section);
+			collectionView.ReloadSections (sectionIndex);
 		}
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
