@@ -38,7 +38,9 @@ namespace MonoDevelop.WebReferences
 	{
 		protected override WebResponse GetWebResponse (WebRequest request)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete. Have to use WebRequest with the DiscoveryClientProtocol
 			return WebRequestHelper.GetResponse (() => CreateWebRequest (request.RequestUri));
+#pragma warning restore CS0618 // Type or member is obsolete.
 		}
 
 		/// <summary>

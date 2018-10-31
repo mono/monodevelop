@@ -18,6 +18,7 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Read the service description for a specified uri.</summary>
 		/// <param name="uri">A string containing the unique reference identifier for the service.</param>
 		/// <returns>A ServiceDescription for the specified uri.</returns>
+		[Obsolete]
 		public static ServiceDescription ReadServiceDescription(string uri) 
 		{
 			var desc = new ServiceDescription();
