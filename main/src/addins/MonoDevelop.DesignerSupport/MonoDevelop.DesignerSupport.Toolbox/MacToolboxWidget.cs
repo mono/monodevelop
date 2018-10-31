@@ -170,7 +170,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			if (SelectionIndexPaths.Count > 0) {
 				var collectionViewItem = GetItem ((NSIndexPath)SelectionIndexPaths.ElementAt (0));
-				collectionViewItem.View.NeedsDisplay = true;
+				if (collectionViewItem != null && collectionViewItem.View != null) {
+					collectionViewItem.View.NeedsDisplay = true;
+				}
 			}
 		}
 
