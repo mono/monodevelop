@@ -37,9 +37,6 @@ namespace MonoDevelop.AspNetCore.Dialogs
 
 		protected void Initialize ()
 		{
-			Width = 400;
-			Height = 120;
-			Name = "MainWindow";
 			Title = GettextCatalog.GetString ("Publish to Folder");
 			Resizable = false;
 			mainVBox = new VBox {
@@ -80,7 +77,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			browseEntryHBox.PackStart (pathEntry, expand: true);
 			browseButton = new Button {
 				Name = "browseButton",
-				Label = GettextCatalog.GetString ("Browse")
+				Label = GettextCatalog.GetString ("Browse...")
 			};
 			browseButton.Clicked += browseButton_Clicked;
 			browseEntryHBox.PackEnd (browseButton);
@@ -91,7 +88,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			messageLabel = new Label ();
 			messageIcon = new ImageView ();
 			messageLabel.Text = GettextCatalog.GetString ("The path provided is not a valid folder path.");
-			messageIcon.Image = ImageService.GetIcon (Gtk.Stock.Cancel, Gtk.IconSize.Menu);//.WithStyles (sensitive ? "" : "disabled");
+			messageIcon.Image = ImageService.GetIcon (Gtk.Stock.Cancel, Gtk.IconSize.Menu);
 			messageBox.PackStart (messageIcon);
 			messageBox.PackStart (messageLabel);
 			mainVBox.PackStart (browseVBox);
@@ -99,9 +96,17 @@ namespace MonoDevelop.AspNetCore.Dialogs
 
 			publishButton = new DialogButton (GettextCatalog.GetString ("Publish"), Command.Ok);
 			cancelButton = new DialogButton (GettextCatalog.GetString ("Cancel"), Command.Close);
+
 			Content = mainVBox;
-			Buttons.Add (publishButton);
 			Buttons.Add (cancelButton);
+			Buttons.Add (publishButton);
+			this.DefaultCommand = publishButton.Command;
+
+			Width = 400;
+			Height = 120;
+			Name = "MainWindow";
+			FullScreen = false;
+			Resizable = false;
 		}
 
 		void pathEntry_Changed (object sender, EventArgs e)
@@ -136,7 +141,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 
 		void browseButton_Clicked (object sender, EventArgs e)
 		{
-			var fileDialog = new Components.SelectFolderDialog (GettextCatalog.GetString ("Publish to Folder"), Components.FileChooserAction.SelectFolder) {
+			var fileDialog = new Components.SelectFolderDialog (GettextCatalog.GetString ("Publish to Folder"), Components.FileChooserAction.CreateFolder) {
 				SelectMultiple = false,
 				CurrentFolder = pathEntry.Text
 			};
