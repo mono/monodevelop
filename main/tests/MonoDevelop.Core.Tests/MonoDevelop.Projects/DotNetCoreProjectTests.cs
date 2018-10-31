@@ -479,6 +479,43 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Verifes that the DependentUpon property is correct for .xaml.cs files in a subdirectory.
+		/// </summary>
+		[Test]
+		public async Task DependsOn_FilesInProjectSubDirectory_XamarinFormsVersion24PackageReference ()
+		{
+			FilePath solFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms.sln");
+			FilePath viewsSubDirectory = solFile.ParentDirectory.Combine ("NetStandardXamarinForms", "Views");
+			Directory.CreateDirectory (viewsSubDirectory);
+
+			// Add new xaml files.
+			var xamlFileName = viewsSubDirectory.Combine ("MyView.xaml");
+			File.WriteAllText (xamlFileName, "xaml1");
+			var xamlCSharpFileName = viewsSubDirectory.Combine ("MyView.xaml.cs");
+			File.WriteAllText (xamlCSharpFileName, "csharpxaml");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+
+				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
+				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+				Assert.AreEqual (0, process.ExitCode);
+
+				await p.ReevaluateProject (Util.GetMonitor ());
+
+				var xamlCSharpFile = p.Files.Single (fi => fi.FilePath.FileName == "MyView.xaml.cs");
+				var xamlFile = p.Files.Single (fi => fi.FilePath.FileName == "MyView.xaml");
+
+				Assert.IsNotNull (xamlCSharpFile);
+				Assert.IsNotNull (xamlFile);
+				Assert.AreEqual ("MSBuild:UpdateDesignTimeXaml", xamlFile.Generator);
+				Assert.AreEqual (xamlFile, xamlCSharpFile.DependsOnFile);
+				Assert.AreEqual ("MyView.xaml", xamlCSharpFile.Metadata.GetValue ("DependentUpon"));
+				Assert.AreEqual (xamlFileName.ToString (), xamlCSharpFile.DependsOn);
+			}
+		}
+
 		[Test]
 		public async Task DotNetCoreNoMainPropertyGroup ()
 		{
