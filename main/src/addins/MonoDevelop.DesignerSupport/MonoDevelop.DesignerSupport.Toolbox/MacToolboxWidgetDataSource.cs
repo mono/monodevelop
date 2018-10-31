@@ -75,7 +75,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
 				var section = Items [(int)indexPath.Section];
-				button.TitleTextField.StringValue = section.Text;
+				button.TitleTextField.StringValue = section.Text.Replace ("&amp;", "&");
 				button.IndexPath = indexPath;
 				button.CollectionView = toolboxWidget;
 				button.Activated -= Button_Activated;
