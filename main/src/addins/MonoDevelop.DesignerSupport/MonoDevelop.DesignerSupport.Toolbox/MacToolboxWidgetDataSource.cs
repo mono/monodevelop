@@ -99,8 +99,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			section.IsExpanded = !section.IsExpanded;
 			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
 
-			var sectionIndex = NSIndexSet.FromIndex (indexPath.Section);
-			collectionView.ReloadSections (sectionIndex);
+			for (int i = (int)indexPath.Section; i < Items.Count; i++) {
+				var sectionIndex = NSIndexSet.FromIndex (i);
+				collectionView.ReloadSections (sectionIndex);
+			}
 		}
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
