@@ -157,6 +157,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Initialize ();
 		}
 
+		public bool IsFocused { get; private set; }
+
+		public override bool ResignFirstResponder ()
+		{
+			IsFocused = false;
+			RedrawSelectedItem ();
+			return base.ResignFirstResponder ();
+		}
+
+		void RedrawSelectedItem ()
+		{
+			if (SelectionIndexPaths.Count > 0) {
+				var collectionViewItem = GetItem ((NSIndexPath)SelectionIndexPaths.ElementAt (0));
+				collectionViewItem.View.NeedsDisplay = true;
+			}
+		}
+
 		// Shared initialization code
 		public void Initialize ()
 		{
@@ -262,6 +279,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override bool BecomeFirstResponder ()
 		{
+			IsFocused = true;
+			RedrawSelectedItem ();
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
 		}

@@ -34,6 +34,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var widgetItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
 
 			if (collectionViewItem is LabelCollectionViewItem itmView) {
+				itmView.SetCollectionView (collectionView);
 				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
 				itmView.TextField.StringValue = widgetItem.Text;
 				itmView.TextField.AccessibilityTitle = widgetItem.Text ?? "";
@@ -44,6 +45,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				itmView.ImageView.Cell.AccessibilityElement = false;
 				itmView.Refresh ();
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
+				imgView.SetCollectionView (collectionView);
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
 				imgView.Image = widgetItem.Icon.ToNSImage ();
 				imgView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();

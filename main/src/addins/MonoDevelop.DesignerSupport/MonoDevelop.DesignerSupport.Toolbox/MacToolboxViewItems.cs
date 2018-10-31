@@ -84,6 +84,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 7, 0, 0);
 		}
 
+		internal void SetCollectionView (NSCollectionView collectionView) => contentCollectionView.SetCollectionView (collectionView);
+
 		public LabelCollectionViewItem (IntPtr handle) : base (handle)
 		{
 
@@ -226,6 +228,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 0, 0, 0);
 		}
 
+		internal void SetCollectionView (NSCollectionView collectionView) => contentCollectionView.SetCollectionView (collectionView);
+
 		public ImageCollectionViewItem (IntPtr handle) : base (handle)
 		{
 
@@ -234,7 +238,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 	class ContentCollectionViewItem : NSStackView
 	{
-		public NSColor BackgroundSelectedColor { get; set; } = NSColor.KeyboardFocusIndicator;
+		public NSColor BackgroundSelectedColor { get; set; } = Styles.CellBackgroundSelectedColor;
 		public NSImage BackgroundImage { get; internal set; }
 
 		bool isSelected;
@@ -249,6 +253,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
+		MacToolboxWidget collectionView;
 		public ContentCollectionViewItem ()
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
@@ -268,7 +273,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			base.DrawRect (dirtyRect);
 
 			if (isSelected) {
-				BackgroundSelectedColor.Set ();
+				if (collectionView.IsFocused || collectionView == null) {
+					Styles.CellBackgroundSelectedColor.Set ();
+				} else {
+					Styles.CellBackgroundUnfocusedSelectedColor.Set ();
+				}
 				NSBezierPath.FillRect (dirtyRect);
 			}
 
@@ -282,6 +291,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
+		internal void SetCollectionView (NSCollectionView value)
+		{
+			collectionView = value as MacToolboxWidget;
+		}
 	}
 }
 #endif
