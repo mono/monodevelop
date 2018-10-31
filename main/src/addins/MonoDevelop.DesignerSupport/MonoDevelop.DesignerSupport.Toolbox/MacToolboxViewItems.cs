@@ -140,16 +140,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AddSubview (TitleTextField);
 			TitleTextField.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 10).Active = true;
 			TitleTextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor, 0).Active = true;
-
-			WantsLayer = true;
-			Layer.BackgroundColor = Styles.HeaderBackgroundColor.CGColor;
-			Layer.BorderColor = Styles.HeaderBorderBackgroundColor.CGColor;
-			Layer.BorderWidth = 1;
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			base.DrawRect (dirtyRect);
+
+			Styles.HeaderBackgroundColor.Set ();
+			NSBezierPath.FillRect (dirtyRect);
+			Styles.HeaderBorderBackgroundColor.Set ();
+			NSBezierPath.DefaultLineWidth = 1;
+			NSBezierPath.StrokeRect (dirtyRect);
 
 			if (ExpanderImage != null) {
 				var context = NSGraphicsContext.CurrentContext;
