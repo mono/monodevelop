@@ -21,6 +21,7 @@ namespace MonoDevelop.Ide.Text
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;
 			this.widget = new Label ("Test");
+			ContentName = fileName;
 		}
 
 		public override Widget Widget => widget;
