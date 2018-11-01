@@ -486,6 +486,12 @@ namespace MonoDevelop.Ide.Editor
 				StartCaretPulseAnimation ();
 		}
 
+		public void InformLoadComplete ()
+		{
+			Runtime.AssertMainThread ();
+			textEditorImpl.InformLoadComplete ();
+		}
+
 		public void ClearSelection ()
 		{
 			Runtime.AssertMainThread ();
