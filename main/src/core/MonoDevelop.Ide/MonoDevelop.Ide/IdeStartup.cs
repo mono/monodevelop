@@ -473,9 +473,9 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
-		async void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
+		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
 		{
-			var result = await Task.Run (() => DesktopService.PlatformTelemetry);
+			var result = DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
