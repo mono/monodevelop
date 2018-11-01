@@ -272,7 +272,10 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 
-				var pf = project.GetProjectFile ((string)OriginalFileName ?? FileName);
+				ProjectFile pf = project.GetProjectFile (OriginalFileName);
+				if (pf == null)
+					pf = project.GetProjectFile (FileName);
+
 				return pf != null && pf.BuildAction != BuildAction.None;
 			}
 		}
@@ -1187,9 +1190,12 @@ namespace MonoDevelop.Ide.Gui
 			var parser = TypeSystemService.GetParser (Editor.MimeType);
 			if (parser == null)
 				return null;
-			var projectFile = Project.GetProjectFile ((string)OriginalFileName ?? Editor.FileName);
-			if (projectFile == null)
-				return null;
+			var projectFile = Project.GetProjectFile (OriginalFileName);
+			if (projectFile == null) {
+				projectFile = Project.GetProjectFile (Editor.FileName);
+				if (projectFile == null)
+					return null;
+			}
 			if (!parser.CanGenerateProjection (Editor.MimeType, projectFile.BuildAction, Project.SupportedLanguages))
 				return null;
 			try {
