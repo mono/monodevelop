@@ -68,9 +68,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					var item = manager.GetOrCreateMetadataReference (tempPath, MetadataReferenceProperties.Assembly);
 					Assert.IsNotNull (item);
 
-					await FileWatcherService.Update ();
-
 					var initialId = item.CurrentSnapshot.GetMetadataId ();
+
+					await FileWatcherService.Update ();
 
 					var taskForNewAsm = WaitForSnapshotChange (item);
 

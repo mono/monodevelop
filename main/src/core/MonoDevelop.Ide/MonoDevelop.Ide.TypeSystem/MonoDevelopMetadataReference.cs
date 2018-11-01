@@ -15,6 +15,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		readonly MonoDevelopMetadataReferenceManager _provider;
 		readonly MetadataReferenceProperties _properties;
+		readonly FileChangeTracker _fileChangeTracker;
 
 		Snapshot _currentSnapshot;
 		public FilePath FilePath { get; }
@@ -31,9 +32,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			FilePath = filePath;
 			_provider = provider;
 			_properties = properties;
-
-			FileWatcherService.WatchDirectories (this, new [] { FilePath.ParentDirectory });
-			FileService.FileChanged += OnUpdatedOnDisk;
+			_fileChangeTracker = new FileChangeTracker (FilePath.ParentDirectory);
+			_fileChangeTracker.UpdatedOnDisk += OnUpdatedOnDisk;
 		}
 
 		public MetadataReferenceProperties Properties => _properties;
@@ -61,11 +61,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public void Dispose ()
 		{
-			FileService.FileChanged -= OnUpdatedOnDisk;
-			FileWatcherService.WatchDirectories (this, null);
+			_fileChangeTracker.UpdatedOnDisk -= OnUpdatedOnDisk;
+			_fileChangeTracker.Dispose ();
 		}
 
-		internal void UpdateSnapshot () => _currentSnapshot = new Snapshot (_provider, Properties, FilePath);
+		internal void UpdateSnapshot () => _currentSnapshot = new Snapshot (_provider, Properties, FilePath, _fileChangeTracker);
 
 		string GetDebuggerDisplay () => Path.GetFileName (FilePath);
 	}

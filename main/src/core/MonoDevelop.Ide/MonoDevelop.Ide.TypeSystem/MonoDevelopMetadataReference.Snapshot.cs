@@ -58,15 +58,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly MonoDevelopMetadataReferenceManager _provider;
 			readonly Lazy<DateTime> _timestamp;
 			Exception _error;
+			readonly FileChangeTracker _fileChangeTrackerOpt;
 
-			internal Snapshot (MonoDevelopMetadataReferenceManager provider, MetadataReferenceProperties properties, string fullPath)
+			internal Snapshot (MonoDevelopMetadataReferenceManager provider, MetadataReferenceProperties properties, string fullPath, FileChangeTracker fileChangeTrackerOpt)
 				: base (properties, fullPath)
 			{
 				Contract.Requires (Properties.Kind == MetadataImageKind.Assembly);
 				_provider = provider;
+				_fileChangeTrackerOpt = fileChangeTrackerOpt;
 
 				_timestamp = new Lazy<DateTime> (() => {
 					try {
+						_fileChangeTrackerOpt?.EnsureSubscription ();
+
 						return Roslyn.Utilities.FileUtilities.GetFileTimeStamp (this.FilePath);
 					} catch (IOException e) {
 						// Reading timestamp of a file might fail. 
@@ -126,7 +130,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			protected override PortableExecutableReference WithPropertiesImpl (MetadataReferenceProperties properties)
 			{
-				return new Snapshot (_provider, properties, FilePath);
+				return new Snapshot (_provider, properties, FilePath, _fileChangeTrackerOpt);
 			}
 
 			string GetDebuggerDisplay ()
