@@ -1079,7 +1079,8 @@ namespace MonoDevelop.Ide.Gui
 				if (project == null)
 					project = GetProjectContainingFile (openFileInfo.OriginalFileName);
 				openFileInfo.Project = project;
-			}
+			} else
+				project = openFileInfo.Project;
 			
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
