@@ -153,22 +153,33 @@ namespace MonoDevelop.Projects
 		public static Task WatchDirectories (object id, IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
-				if (RegisterDirectoriesInTree_NoLock (id, directories))
+				HashSet<FilePath> set = null; 
+				if (directories != null)
+					set = new HashSet<FilePath> (directories.Where (x => !x.IsNullOrEmpty));
+
+				if (RegisterDirectoriesInTree_NoLock (id, set))
 					return UpdateWatchersAsync ();
 				return Task.CompletedTask;
 			}
 		}
 
-		static bool RegisterDirectoriesInTree_NoLock (object id, IEnumerable<FilePath> directories)
+		static bool RegisterDirectoriesInTree_NoLock (object id, HashSet<FilePath> set)
 		{
 			Debug.Assert (Monitor.IsEntered (watchers));
 
 			// Remove paths subscribed for this id.
-			// TODO: Only modify those which need to be modified, don't register/unregister with no reason.
 
 			bool modified = false;
 
 			if (monitoredDirectories.TryGetValue (id, out var oldDirectories)) {
+				if (set != null) {
+					var copy = new HashSet<FilePath> (oldDirectories);
+					// Remove the old ones which are not in the new set.
+					oldDirectories.ExceptWith (set);
+					// Only add those which are not in the old set.
+					set.ExceptWith (copy);
+				}
+
 				foreach (var dir in oldDirectories) {
 					var node = tree.RemoveNode (dir, id);
 
@@ -179,20 +190,18 @@ namespace MonoDevelop.Projects
 
 			// Remove the current registered directories
 			monitoredDirectories.Remove (id);
-			if (directories == null)
+			if (set == null)
 				return modified;
 
 			// Apply new ones if we have any
-			var set = new HashSet<FilePath> (directories.Where(x => !x.IsNullOrEmpty));
-
 			if (set.Count > 0) {
 				monitoredDirectories [id] = set;
 				foreach (var path in set) {
-					tree.AddNode (path, id);
-				}
+					tree.AddNode (path, id, out bool isNew);
 
-				// If we reached here, we have added at least 1 node, and the tree has changed.
-				modified = true;
+					// We have only modified the tree if there is any new pathtree node item added
+					modified |= isNew;
+				}
 			}
 			return modified;
 		}
