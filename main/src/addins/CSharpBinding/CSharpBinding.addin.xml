@@ -59,17 +59,8 @@
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.CurrentRefactoryOperationsHandler"
 			type="array"
 			_label = "Refactory Operations" />
-		<Command id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"
-			defaultHandler = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommandHandler"
-			_label = "_Sort Usings"
-		/>
-		<Command id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"
-			defaultHandler = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommandHandler"
-			_label = "_Remove Unused Usings"
-		/>
-		<Command id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"
-			defaultHandler = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommandHandler"
-			_label = "R_emove and Sort"
+		<Command id = "MonoDevelop.CSharp.Refactoring.Commands.SortAndRemoveImports"
+			_label = "R_emove and Sort Usings"
 			_displayName = "Remove Unused and Sort (Usings)"
 		/>
 	</Extension>
@@ -308,13 +299,6 @@
 				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"/>
 				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
 			</ItemSet>
-
-				<!--
-			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
-				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
-				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
-				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
-			</ItemSet> -->
 		</Condition>
 	</Extension>
 
