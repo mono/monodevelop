@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.labelTop = new global::Gtk.Label ();
 			this.labelTop.Name = "labelTop";
 			this.labelTop.Xalign = 0F;
-			this.labelTop.LabelProp = global::Mono.Unix.Catalog.GetString ("Credentials required for the repository: {0}");
+			this.labelTop.LabelProp = global::Mono.Unix.Catalog.GetString ("Credentials required for the repository:");
 			this.vbox.Add (this.labelTop);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox [this.labelTop]));
 			w2.Position = 0;
