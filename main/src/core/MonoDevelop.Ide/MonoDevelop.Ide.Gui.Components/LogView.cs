@@ -497,10 +497,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public void Clear ()
 		{
-			unchecked {
-				Cookie++;
-			}
-
 			lock (updates) {
 				updates.Clear ();
 				lastTextWrite = null;
@@ -869,8 +865,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			Indent = new IndentTracker ();
 
-			if (clearConsole)
+			if (clearConsole) {
+				unchecked {
+					outputPad.Cookie++;
+				}
 				outputPad.Clear ();
+			}
 
 			padCookie = pad.Cookie;
 			internalLogger.TextWritten += WriteConsoleLogText;
