@@ -62,8 +62,21 @@ namespace MonoDevelop.CodeIssues
 					if (data.IsSuppressed)
 						continue;
 
-					if (DataHasTag (data, WellKnownDiagnosticTags.EditAndContinue))
+					bool skip = false;
+					foreach (var customTag in data.CustomTags) {
+						if (customTag == WellKnownDiagnosticTags.AnalyzerException) {
+							LoggingService.LogError (data.Description);
+							skip = true;
+							break;
+						}
+						if (customTag == WellKnownDiagnosticTags.EditAndContinue) {
+							skip = true;
+							break;
+						}
+					}
+					if (skip)
 						continue;
+
 					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
 					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !data.IsEnabledByDefault)
 						continue;
@@ -125,11 +138,6 @@ namespace MonoDevelop.CodeIssues
 				data.Id, data.Category, data.Message, severity, data.DefaultSeverity,
 				data.IsEnabledByDefault, GetWarningLevel (severity), data.IsSuppressed, data.Title, data.Description, data.HelpLink,
 				location, additionalLocations, customTags: data.CustomTags, properties: data.Properties);
-		}
-
-		static bool DataHasTag (DiagnosticData desc, string tag)
-		{
-			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
 		static int GetWarningLevel (DiagnosticSeverity severity)
