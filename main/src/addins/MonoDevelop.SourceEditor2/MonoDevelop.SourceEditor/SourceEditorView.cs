@@ -2356,8 +2356,9 @@ namespace MonoDevelop.SourceEditor
 
 		void CorrectIndenting ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument?.Editor;
-			if (doc == null)
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var editor = doc?.Editor;
+			if (editor == null)
 				return;
 			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 			if (formatter == null || !formatter.SupportsCorrectingIndent)
@@ -2371,13 +2372,11 @@ namespace MonoDevelop.SourceEditor
 					var lead = selection.GetLeadOffset (editorData);
 					var version = TextEditor.Document.Version;
 					int max = selection.MaxLine;
-					for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
-						formatter.CorrectIndenting (policies, doc, i);
-					}
+					formatter.CorrectIndentingAsync (editor, doc, TextEditor.MainSelection.MinLine, max);
 					editorData.SetSelection (version.MoveOffsetTo (editorData.Document.Version, anchor), version.MoveOffsetTo (editorData.Document.Version, lead));
 				}
 			} else {
-				formatter.CorrectIndenting (policies, doc, TextEditor.Caret.Line);
+				formatter.CorrectIndenting (policies, editor, TextEditor.Caret.Line);
 			}
 		}
 
