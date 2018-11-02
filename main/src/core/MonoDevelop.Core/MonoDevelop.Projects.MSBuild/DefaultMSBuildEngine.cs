@@ -399,7 +399,7 @@ namespace MonoDevelop.Projects.MSBuild
 				AddUpdateToGlobInclude (project, item, update, regex);
 				var rootProject = project.GetRootMSBuildProject ();
 				foreach (var f in GetIncludesForWildcardFilePath (rootProject, update)) {
-					var fileName = rootProject.BaseDirectory.Combine (f);
+					var fileName = rootProject.BaseDirectory.Combine (f.Replace ('\\', '/'));
 					context.SetItemContext (update, fileName, null);
 					UpdateEvaluatedItemInAllProjects (project, context, item, f, trueCond, it);
 				}
