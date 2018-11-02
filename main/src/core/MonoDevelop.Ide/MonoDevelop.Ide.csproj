@@ -3168,7 +3168,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\IMonoDevelopHostDocument.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectOperations.SolutionItemBuildBatch.cs" />
-    <Compile Include="MonoDevelop.Ide\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />
@@ -4222,6 +4221,8 @@
     <Compile Include="MonoDevelop.Ide.Desktop\ThermalMonitor.cs" />
     <Compile Include="MonoDevelop.Ide\PlatformThermalStatusEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopFrameworkAssemblyPathResolver.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
