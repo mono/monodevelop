@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			if (widget is Container c) {
-				foreach (var f in c.FocusChain.SelectMany (GetFocusableWidgets).Where (y => y != null)) {
+				foreach (var f in c.FocusChain.SelectMany (x => GetFocusableWidgets (x))) {
 					yield return f;
 				}
 
