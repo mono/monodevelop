@@ -374,6 +374,8 @@
     <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProjectReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IHasProjectReferenceMaintainer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MSBuildPackageSpecCreator.cs" />
+    <Compile Include="NuGet.ProjectManagement\TempFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

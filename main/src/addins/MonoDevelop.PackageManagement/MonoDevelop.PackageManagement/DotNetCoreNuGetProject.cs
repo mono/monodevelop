@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -246,14 +247,11 @@ namespace MonoDevelop.PackageManagement
 
 		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
 		{
-			PackageSpec packageSpec = await Runtime.RunInMainThread (() => CreateProjectPackageSpec (project, context));
-			return packageSpec;
-		}
+			PackageSpec spec = await MSBuildPackageSpecCreator.CreatePackageSpec (project, context.Logger);
+			if (spec != null)
+				return spec;
 
-		static PackageSpec CreateProjectPackageSpec (DotNetProject project, DependencyGraphCacheContext context)
-		{
-			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context);
-			return packageSpec;
+			throw new InvalidOperationException (GettextCatalog.GetString ("Unable to create package spec for project. '{0}'", project.FileName));
 		}
 
 		void AddToCache (DependencyGraphCacheContext context, PackageSpec projectPackageSpec)
