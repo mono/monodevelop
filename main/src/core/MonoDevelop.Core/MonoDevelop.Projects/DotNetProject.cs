@@ -268,6 +268,9 @@ namespace MonoDevelop.Projects
 
 		public bool SupportsRoslyn { get; protected set; }
 
+		// TODO: slightly differs from LanguageName we should unify those at some point.
+		public string RoslynLanguageName { get; protected set; }
+
 		protected virtual DotNetProjectFlags OnGetDotNetProjectFlags ()
 		{
 			return DotNetProjectFlags.GeneratesDebugInfoFile;
