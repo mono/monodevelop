@@ -648,8 +648,16 @@ namespace MonoDevelop.Projects.MSBuild
 				int pid;
 				if (int.TryParse (Path.GetFileName (spid), out pid)) {
 					try {
+						if (Platform.IsWindows) {
+							// Avoid a common first-chance ArgumentException on Windows.
+							// It's better to take a small perf hit on Windows then to 
+							// hit this exception every time during debugging.
+							if (Process.GetProcesses().Any(p => p.Id == pid)) {
+								continue;
+							}
+						}
 						// If there is a process running with this id it means the builder is still being used
-						if (Process.GetProcessById (pid) != null)
+						else if (Process.GetProcessById (pid) != null)
 							continue;
 					} catch {
 						// Ignore
