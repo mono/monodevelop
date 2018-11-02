@@ -172,15 +172,15 @@ namespace MonoDevelop.Projects
 			bool modified = false;
 
 			if (monitoredDirectories.TryGetValue (id, out var oldDirectories)) {
+				HashSet<FilePath> toRemove = null;
 				if (set != null) {
-					var copy = new HashSet<FilePath> (oldDirectories);
+					toRemove = new HashSet<FilePath> (oldDirectories);
 					// Remove the old ones which are not in the new set.
-					oldDirectories.ExceptWith (set);
-					// Only add those which are not in the old set.
-					set.ExceptWith (copy);
-				}
+					toRemove.ExceptWith (set);
+				} else
+					toRemove = oldDirectories;
 
-				foreach (var dir in oldDirectories) {
+				foreach (var dir in toRemove) {
 					var node = tree.RemoveNode (dir, id);
 
 					bool wasRemoved = node != null && !node.IsLive;
@@ -193,10 +193,17 @@ namespace MonoDevelop.Projects
 			if (set == null)
 				return modified;
 
+			HashSet<FilePath> toAdd = null;
+			if (oldDirectories != null) {
+				toAdd = new HashSet<FilePath> (set);
+				toAdd.ExceptWith (oldDirectories);
+			} else
+				toAdd = set;
+
 			// Apply new ones if we have any
 			if (set.Count > 0) {
 				monitoredDirectories [id] = set;
-				foreach (var path in set) {
+				foreach (var path in toAdd) {
 					tree.AddNode (path, id, out bool isNew);
 
 					// We have only modified the tree if there is any new pathtree node item added
