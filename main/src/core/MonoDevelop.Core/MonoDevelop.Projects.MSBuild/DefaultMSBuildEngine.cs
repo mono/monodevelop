@@ -35,6 +35,7 @@ using MonoDevelop.Projects.MSBuild.Conditions;
 using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.BackEnd;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -1248,7 +1249,7 @@ namespace MonoDevelop.Projects.MSBuild
 				project.Targets.Add (newTarget);
 		}
 
-		System.Collections.Immutable.ImmutableDictionary<string, ConditionExpression> conditionCache = System.Collections.Immutable.ImmutableDictionary<string, ConditionExpression>.Empty;
+		ImmutableDictionary<string, ConditionExpression> conditionCache = ImmutableDictionary<string, ConditionExpression>.Empty;
 		bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false, string customEvalBasePath = null)
 		{
 			try {
@@ -1258,11 +1259,7 @@ namespace MonoDevelop.Projects.MSBuild
 				context.CustomFullDirectoryName = customEvalBasePath;
 
 				try {
-					ConditionExpression ce;
-					if (!conditionCache.TryGetValue (condition, out ce)) {
-						ce = ConditionParser.ParseCondition (condition);
-						conditionCache = conditionCache.SetItem (condition, ce);
-					}
+					ConditionExpression ce = ImmutableInterlocked.GetOrAdd (ref conditionCache, condition, key => ConditionParser.ParseCondition (key));
 
 					if (collectConditionedProperties)
 						ce.CollectConditionProperties (project.ConditionedProperties);
