@@ -39,6 +39,7 @@ using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using Microsoft.CodeAnalysis.SolutionSize;
 using System.IO;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide
 {
@@ -368,7 +369,7 @@ namespace MonoDevelop.Ide
 				throw new NotImplementedException ();
 			}
 
-			protected override async Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				var files = await base.OnGetSourceFiles (monitor, configuration);
 				if (!notifiedReferencesChanged) {
