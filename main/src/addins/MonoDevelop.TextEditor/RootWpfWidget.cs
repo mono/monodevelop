@@ -8,5 +8,11 @@ namespace MonoDevelop.Ide.Text
 		public RootWpfWidget (Control control) : base(control)
 		{
 		}
+
+		protected override void RepositionWpfWindow ()
+		{
+			var scale = MonoDevelop.Components.GtkWorkarounds.GetScaleFactor (this);
+			RepositionWpfWindow (scale, scale);
+		}
 	}
 }
