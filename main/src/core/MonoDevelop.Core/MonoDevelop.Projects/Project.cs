@@ -622,15 +622,15 @@ namespace MonoDevelop.Projects
 
 		readonly struct CoreCompileEvaluationResult
 		{
-			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (Array.Empty<ProjectFile> (), ImmutableArray<FilePath>.Empty);
+			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (ImmutableArray<ProjectFile>.Empty, ImmutableArray<FilePath>.Empty);
 
-			public CoreCompileEvaluationResult (ProjectFile[] sourceFiles, ImmutableArray<FilePath> analyzerFiles)
+			public CoreCompileEvaluationResult (ImmutableArray<ProjectFile> sourceFiles, ImmutableArray<FilePath> analyzerFiles)
 			{
 				SourceFiles = sourceFiles;
 				AnalyzerFiles = analyzerFiles;
 			}
 
-			public readonly ProjectFile[] SourceFiles;
+			public readonly ImmutableArray<ProjectFile> SourceFiles;
 			public readonly ImmutableArray<FilePath> AnalyzerFiles;
 		}
 
@@ -737,7 +737,7 @@ namespace MonoDevelop.Projects
 						analyzerList.Add (msbuildPath);
 				}
 
-				return new CoreCompileEvaluationResult (sourceFilesList.ToArray (), analyzerList.ToImmutableArray ());
+				return new CoreCompileEvaluationResult (sourceFilesList.ToImmutableArray (), analyzerList.ToImmutableArray ());
 			}
 		}
 
