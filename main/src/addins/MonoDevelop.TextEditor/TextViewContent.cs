@@ -1,3 +1,5 @@
+using System;
+using System.Windows.Controls;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -12,7 +14,8 @@ namespace MonoDevelop.Ide.Text
 		FilePath fileName;
 		string mimeType;
 		Project ownerProject;
-		Label widget;
+		RootWpfWidget widget;
+		Xwt.Widget xwtWidget;
 
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
@@ -20,10 +23,23 @@ namespace MonoDevelop.Ide.Text
 			this.fileName = fileName;
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;
-			this.widget = new Label ("Test");
+
+			var control = CreateControl (imports);
+			this.widget = new RootWpfWidget (control);
+			this.xwtWidget = GetXwtWidget (widget);
 			ContentName = fileName;
 		}
 
-		public override Widget Widget => widget;
+		private Widget GetXwtWidget (RootWpfWidget widget)
+		{
+			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget);
+		}
+
+		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
+		{
+			return new System.Windows.Controls.Button () { Content = "FOO" };
+		}
+
+		public override Widget Widget => xwtWidget;
 	}
 }

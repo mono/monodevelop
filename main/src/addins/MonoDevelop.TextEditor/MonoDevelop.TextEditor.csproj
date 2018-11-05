@@ -66,6 +66,8 @@
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Text.Implementation.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -78,12 +80,16 @@
       <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ValueTuple">
       <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="WindowsFormsIntegration" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
@@ -96,6 +102,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="RootWpfWidget.cs" />
     <Compile Include="TextViewContent.cs" />
     <Compile Include="TextViewDisplayBinding.cs" />
     <Compile Include="TextViewImports.cs" />
