@@ -52,7 +52,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 			{
 				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
+#pragma warning disable EPS06 // Hidden struct copy operation
 					var inset = cellFrame.Inset (0.25f, 0.25f);
+#pragma warning restore EPS06 // Hidden struct copy operation
 					if (!ShowsFirstResponder) {
 						var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 						path.LineWidth = 0.5f;
