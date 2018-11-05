@@ -31,6 +31,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Core;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -106,6 +108,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 			throw new NotSupportedException ("Indent correction not supported");
 		}
 
+		protected virtual Task CorrectIndentingImplementationAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
+		{
+			for (int i = startLine; i <= endLine; i++) {
+				CorrectIndentingImplementation (context.Project.Policies, editor, i);
+			}
+			return Task.CompletedTask;
+		}
+
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 			if (policyParent == null)
@@ -115,6 +125,19 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (line < 1 || line > editor.LineCount)
 				throw new ArgumentOutOfRangeException (nameof (line), "should be >= 1 && <= " + editor.LineCount + " was:" + line);
 			CorrectIndentingImplementation (policyParent, editor, line);
+		}
+
+		public Task CorrectIndentingAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken = default)
+		{
+			if (editor == null)
+				throw new ArgumentNullException (nameof (editor));
+			if (startLine < 1 || startLine > editor.LineCount)
+				throw new ArgumentOutOfRangeException (nameof (startLine), "should be >= 1 && <= " + editor.LineCount + " was:" + startLine);
+			if (endLine < 1 || endLine > editor.LineCount)
+				throw new ArgumentOutOfRangeException (nameof (endLine), "should be >= 1 && <= " + editor.LineCount + " was:" + endLine);
+			if (startLine > endLine)
+				throw new ArgumentOutOfRangeException (nameof (endLine), "startLine > endLine");
+			return CorrectIndentingImplementationAsync (editor, context, startLine, endLine, cancellationToken);
 		}
 	}
 }

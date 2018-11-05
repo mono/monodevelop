@@ -369,6 +369,11 @@ namespace Mono.TextEditor
 			foldings = null;
 			drawer = null;
 
+			if (updateAccessibilityId > 0) {
+				GLib.Source.Remove (updateAccessibilityId);
+				updateAccessibilityId = 0;
+			}
+
 			if (accessibles != null) {
 				foreach (var a in accessibles.Values) {
 					Accessible.RemoveAccessibleChild (a.Accessible);

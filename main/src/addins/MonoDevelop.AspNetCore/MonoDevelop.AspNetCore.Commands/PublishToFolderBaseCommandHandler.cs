@@ -152,7 +152,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			var mon = new AggregatedProgressMonitor (consoleMonitor);
 			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				GettextCatalog.GetString ("Publishing to folder..."),
-				Stock.CopyIcon,
+				Stock.StatusDownload,
 				showErrorDialogs: true,
 				showTaskTitle: false,
 				lockGui: false,

@@ -247,6 +247,9 @@ namespace Mono.TextEditor
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
 			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
 			SyntaxMode = null;
+
+			// Dispose this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
+			this.VsTextDocument.Dispose ();
 		}
 
 		private void OnTextBufferChangedImmediate (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)

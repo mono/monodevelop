@@ -532,18 +532,25 @@ namespace MonoDevelop.Projects
 		protected virtual async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
-			var results = new List<ProjectFile> ();
-
 			var evaluatedItems = await GetEvaluatedSourceFiles (configuration);
-			results.AddRange (evaluatedItems);
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
 			var evaluatedCompileItems = coreCompileResult.SourceFiles;
-			var addedItems = evaluatedCompileItems.Where (i => results.All (pi => pi.FilePath != i.FilePath)).ToList ();
-			results.AddRange (addedItems);
+
+			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
+			results.UnionWith (evaluatedCompileItems);
 
 			return results.ToArray ();
+		}
+
+		class ProjectFileFilePathComparer : IEqualityComparer<ProjectFile>
+		{
+			public readonly static ProjectFileFilePathComparer Instance = new ProjectFileFilePathComparer ();
+
+			public bool Equals (ProjectFile x, ProjectFile y) => x.FilePath == y.FilePath;
+
+			public int GetHashCode (ProjectFile obj) => obj.FilePath.GetHashCode ();
 		}
 
 		object evaluatedSourceFilesLock = new object ();
