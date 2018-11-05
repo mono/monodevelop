@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Windows
 		{
 			wpfWidgetHost = new System.Windows.Forms.Integration.ElementHost
 			{
-				BackColor = System.Drawing.Color.Transparent,
+				BackColor = System.Drawing.Color.SeaGreen,
 				Child = wpfControl,
 			};
 

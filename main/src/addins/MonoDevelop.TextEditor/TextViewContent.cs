@@ -26,13 +26,17 @@ namespace MonoDevelop.Ide.Text
 
 			var control = CreateControl (imports);
 			this.widget = new RootWpfWidget (control);
+			widget.HeightRequest = 50;
+			widget.WidthRequest = 100;
+			//this.xwtWidget = new Xwt.Label ("FOO");
 			this.xwtWidget = GetXwtWidget (widget);
+			xwtWidget.Show ();
 			ContentName = fileName;
 		}
 
 		private Widget GetXwtWidget (RootWpfWidget widget)
 		{
-			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget);
+			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, NativeWidgetSizing.External);
 		}
 
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
