@@ -160,6 +160,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId MessageLog = "md-message-log";
 		public static readonly IconId SortAlphabetically = "md-sort-alphabetically";
 		public static readonly IconId GroupByCategory = "md-group-by-category";
+		public static readonly IconId CompactDisplay = "md-compact-display";
 		public static readonly IconId Help = "md-help";
 		public static readonly IconId Add = "md-add";
 		public static readonly IconId Clear = "md-clear";
