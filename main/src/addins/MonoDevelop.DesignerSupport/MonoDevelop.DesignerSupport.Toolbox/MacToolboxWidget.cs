@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	[Register ("CollectionView")]
+	[Register ("MacToolboxWidget")]
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
 	{
 		const int IconMargin = 1;
@@ -327,12 +327,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderCollectionViewItem.Name);
 			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelCollectionViewItem.Name);
 			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageCollectionViewItem.Name);
-
-			NSNotificationCenter.DefaultCenter.AddObserver (FrameChangedNotification, (s => {
-				if (s.Object == this) {
-					RedrawItems (true, false);
-				}
-			}));
 		}
 
 		protected override void Dispose (bool disposing)
