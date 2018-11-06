@@ -190,8 +190,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void CaretPositionChanged (object sender, EventArgs e)
 		{
 			if (drawnCaretLine != TextEditor.Caret.Line) {
-				int caretY = (int)GetYPosition (TextEditor.Caret.Line);
-				QueueDrawArea (0, Math.Min (caretY, drawnCaretY) - 1, Allocation.Width, Math.Abs (caretY - drawnCaretY) + 2);
+				QueueDraw ();
 			}
 		}
 
@@ -567,7 +566,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		internal virtual double IndicatorHeight {
 			get {
-				return MonoDevelop.Core.Platform.IsWindows ? Allocation.Width : 3 + 8 + 3;
+				return errorImage.Height;
 			}
 		}
 
@@ -701,7 +700,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height)
 				+ TextEditor.Allocation.Height
 				- TextEditor.LineHeight;
-
 			return IndicatorHeight + h * p / q;
 		}
 
@@ -712,16 +710,16 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 		int drawnCaretLine, drawnCaretY;
-		protected void DrawCaret (Cairo.Context cr)
+		protected void DrawCaret (Cairo.Context cr, double displayScale)
 		{
 			if (TextEditor.EditorTheme == null)
 				return;
 			drawnCaretLine = TextEditor.Caret.Line;
-			drawnCaretY = (int)GetYPosition (drawnCaretLine);
+			drawnCaretY = (int)((GetYPosition (drawnCaretLine) - 1) * displayScale);
 
 			cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground));
 			var w = Math.Floor (Allocation.Width * 0.618);
-			cr.Rectangle (Allocation.Width - w, drawnCaretY - 1, w, 2);
+			cr.Rectangle (Allocation.Width - w, drawnCaretY, w, 2);
 			cr.Fill ();
 		}
 
@@ -960,7 +958,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (TextEditor == null)
 					return true;
 
-				DrawCaret (cr);
+				DrawCaret (cr, displayScale);
 				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
 					DrawBar (cr);
 
