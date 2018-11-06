@@ -73,11 +73,13 @@ namespace MonoDevelop.CodeActions
 		{
 			var result = SourceEditor.SmartTagSeverity.OnlyActions;
 			foreach (var fix in CodeFixActions) {
-				if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Error) {
-					return SourceEditor.SmartTagSeverity.ErrorFixes;
-				}
-				if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Warning)
+				foreach (var codeFix in fix.Fixes) {
+					var severity = codeFix.PrimaryDiagnostic.Severity;
+					if (severity == DiagnosticSeverity.Error) {
+						return SourceEditor.SmartTagSeverity.ErrorFixes;
+					}
 					result = SourceEditor.SmartTagSeverity.Fixes;
+				}
 			}
 
 			return result;
