@@ -104,6 +104,7 @@ namespace MonoDevelop.CodeActions
 			if (Editor.IsInAtomicUndo)
 				return;
 			CancelQuickFixTimer ();
+			var token = quickFixCancellationTokenSource.Token;
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null) {
 				if (HasCurrentFixes) {
 					var curOffset = Editor.CaretOffset;
@@ -115,7 +116,7 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				smartTagTask = GetCurrentFixesAsync (quickFixCancellationTokenSource.Token);
+				smartTagTask = GetCurrentFixesAsync (token);
 			} else {
 				RemoveWidget ();
 			}
