@@ -350,8 +350,9 @@ namespace MonoDevelop.CodeActions
 
 		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)
 		{
-			if (beginVersion.CompareAge (Editor.Version) != 0)
+			if (beginVersion != null && beginVersion.CompareAge (Editor.Version) != 0)
 				RemoveWidget ();
+			beginVersion = null;
 		}
 
 		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
