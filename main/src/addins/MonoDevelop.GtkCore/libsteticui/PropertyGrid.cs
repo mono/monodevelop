@@ -26,7 +26,7 @@ namespace Stetic {
 			PackStart (header, false, false, 0);
 			
 			Label lab = new Label ();
-			lab.Markup = "<i>No selection</i>";
+			lab.Markup = Mono.Unix.Catalog.GetString ("<i>No selection</i>");
 			PackStart (lab, false, false, 0);
 			noSelection = lab;
 			

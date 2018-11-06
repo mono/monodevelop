@@ -10,6 +10,7 @@
     <NuGetVersionVSEditor>15.8.519</NuGetVersionVSEditor>
     <NuGetVersionAllocationAnalyzer>1.0.0.9</NuGetVersionAllocationAnalyzer>
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
+    <NuGetVersionMonoDevelopAnalyzers>0.1.0</NuGetVersionMonoDevelopAnalyzers>
   </PropertyGroup>
 
 </Project>

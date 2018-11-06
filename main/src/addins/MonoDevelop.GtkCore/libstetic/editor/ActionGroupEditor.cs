@@ -41,7 +41,7 @@ namespace Stetic.Editor
 			Gtk.VBox vbox = new Gtk.VBox ();
 			Gtk.Label grpLabel = new Gtk.Label ();
 			grpLabel.Xalign = 0;
-			grpLabel.Markup = "<small><i>Action Group</i></small>";
+			grpLabel.Markup = string.Format ("<small><i>{0}</i></small>", Catalog.GetString ("Action Group"));
 //			vbox.PackStart (grpLabel, false, false, 0);
 			vbox.PackStart (headerLabel, false, false, 3);
 			vbox.BorderWidth = 12;

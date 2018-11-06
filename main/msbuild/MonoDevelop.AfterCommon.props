@@ -43,4 +43,7 @@
 		<Analyzer Include="$(PackagesDirectory)\ClrHeapAllocationAnalyzer.$(NuGetVersionAllocationAnalyzer)\analyzers\dotnet\cs\ClrHeapAllocationAnalyzer.dll" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Analyzer Include="$(PackagesDirectory)\MonoDevelopDev.Analyzers.$(NugetVersionMonoDevelopAnalyzers)\analyzers\dotnet\cs\MonoDevelop.Analyzers.dll" />
+	</ItemGroup>
 </Project>
