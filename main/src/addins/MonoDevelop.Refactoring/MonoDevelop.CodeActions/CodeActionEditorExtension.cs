@@ -71,6 +71,7 @@ namespace MonoDevelop.CodeActions
 		{
 			if (smartTagMarginMarker != null) {
 				Editor.RemoveMarker (smartTagMarginMarker);
+				smartTagMarginMarker.ShowPopup -= SmartTagMarginMarker_ShowPopup;
 				smartTagMarginMarker = null;
 			}
 			CancelSmartTagPopupTimeout ();
