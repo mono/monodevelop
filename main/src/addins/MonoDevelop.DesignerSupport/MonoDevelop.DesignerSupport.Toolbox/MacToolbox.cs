@@ -90,9 +90,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			#region Toolbar
 
-			groupByCategoryImage = ImageService.GetIcon (Ide.Gui.Stock.GroupByCategory, Gtk.IconSize.Menu);
-			var compactImage = ImageService.GetIcon ("md-compact-display", Gtk.IconSize.Menu);
-			var addImage = ImageService.GetIcon (Ide.Gui.Stock.Add, Gtk.IconSize.Menu);
+			groupByCategoryImage = ImageService.GetIcon (Stock.GroupByCategory, Gtk.IconSize.Menu);
+			var compactImage = ImageService.GetIcon (Stock.CompactDisplay, Gtk.IconSize.Menu);
+			var addImage = ImageService.GetIcon (Stock.Add, Gtk.IconSize.Menu);
 
 			horizontalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
 			AddArrangedSubview (horizontalStackView);
