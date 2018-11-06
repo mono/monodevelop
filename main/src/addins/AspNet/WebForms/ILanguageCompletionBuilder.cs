@@ -26,9 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.TextEditor;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;

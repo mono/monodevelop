@@ -32,7 +32,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using System.Web.Razor.Parser.SyntaxTree;
-using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;

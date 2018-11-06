@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Mono.TextEditor;
 
 namespace MonoDevelop.VersionControl
 {

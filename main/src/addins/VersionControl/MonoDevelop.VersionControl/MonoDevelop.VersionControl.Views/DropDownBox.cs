@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using MonoDevelop.Ide;
 using Gtk;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views

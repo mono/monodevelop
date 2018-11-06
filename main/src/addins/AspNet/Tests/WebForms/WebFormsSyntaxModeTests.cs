@@ -26,9 +26,6 @@
 
 using System.Linq;
 using NUnit.Framework;
-using Mono.TextEditor;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.AspNet.WebForms;
 
 namespace MonoDevelop.AspNet.Tests.WebForms
 {

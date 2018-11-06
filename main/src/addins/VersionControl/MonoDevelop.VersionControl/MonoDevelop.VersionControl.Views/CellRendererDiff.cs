@@ -6,7 +6,6 @@ using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Text;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.VersionControl.Views
