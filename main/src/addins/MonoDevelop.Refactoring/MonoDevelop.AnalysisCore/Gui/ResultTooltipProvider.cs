@@ -30,7 +30,6 @@ using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.SourceEditor;
 using System.Linq;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
@@ -153,22 +152,25 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var result = item.Item as TooltipInformation;
 			if (result == null)
 				return null;
-			var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, result.SignatureMarkup, null);
-			window.Destroyed += delegate {
-				if (window.Tag is FloatingQuickFixIconWidget widget) {
-					widget.QueueDestroy ();
-				}
-			};
-			if (window.IsEmpty)
-				return null;
-			return window;
+			return null;
+			//var window = new LanguageItemWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), modifierState, null, result.SignatureMarkup, null);
+			//window.Destroyed += delegate {
+			//	if (window.Tag is FloatingQuickFixIconWidget widget) {
+			//		widget.QueueDestroy ();
+			//	}
+			//};
+			//if (window.IsEmpty)
+			//	return null;
+			//return window;
 		}
 
 		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			var win = (LanguageItemWindow) tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
-			xalign = 0.5;
+			requiredWidth = 0;
+			xalign = 0;
+			//var win = (LanguageItemWindow) tipWindow;
+			//requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
+			//xalign = 0.5;
 		}
 
 		const int yPadding = 4;
@@ -186,9 +188,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var info = (TaggedTooltipInformation<CodeActions.CodeActionContainer>)item.Item;
 			var loc = editor.OffsetToLocation (info.Tag.Span.Start);
 			var p = editor.LocationToPoint (loc);
-			var view = editor.GetContent<SourceEditorView> ();
+			//var view = editor.GetContent<SourceEditorView> ();
 			int x = (int)(p.X +  origin.X + allocation.X + xPadding);
-			int y = (int)(p.Y + view.TextEditor.GetLineHeight (loc.Line) + origin.Y + allocation.Y + yPadding);
+			//int y = (int)(p.Y + view.TextEditor.GetLineHeight (loc.Line) + origin.Y + allocation.Y + yPadding);
+			int y = 0;
 
 			Gtk.Widget widget = editor;
 			var geometry = widget.Screen.GetUsableMonitorGeometry (widget.Screen.GetMonitorAtPoint (x, y));
@@ -214,43 +217,43 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override void ShowTooltipWindow (TextEditor editor, Components.Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			base.ShowTooltipWindow (editor, tipWindow, item, modifierState, mouseX, mouseY);
-			var info = (TaggedTooltipInformation<CodeActions.CodeActionContainer>)item.Item;
-			var sourceEditorView = editor.GetContent<SourceEditorView> ();
-			var codeActionEditorExtension = editor.GetContent<CodeActionEditorExtension> ();
-			var loc = editor.OffsetToLocation (info.Tag.Span.Start);
-			if (info.Tag?.FloatingWidgetShown == true) {
-				var point = sourceEditorView.TextEditor.TextArea.LocationToPoint (loc.Line, loc.Column);
-				point.Y += (int)editor.GetLineHeight (loc.Line);
-				var window = (LanguageItemWindow)tipWindow;
-				if (floatingWidget != null) {
-					floatingWidget.Destroy ();
-					floatingWidget = null;
-				}
-				floatingWidget = new FloatingQuickFixIconWidget (codeActionEditorExtension, window, sourceEditorView, SmartTagSeverity.ErrorFixes, info.Tag, point);
-				sourceEditorView.TextEditor.GdkWindow.GetOrigin (out int ox, out int oy);
-				floatingWidget.Move (ox + (int)point.X, oy + (int)(point.Y + 4));
-				window.Tag = floatingWidget;
-				window.EnterNotifyEvent += delegate {
-					floatingWidget.CancelDestroy ();
-				};
-				window.LeaveNotifyEvent += delegate {
-					floatingWidget.QueueDestroy ();
-				};
-			}
+			//var info = (TaggedTooltipInformation<CodeActions.CodeActionContainer>)item.Item;
+			//var sourceEditorView = editor.GetContent<SourceEditorView> ();
+			//var codeActionEditorExtension = editor.GetContent<CodeActionEditorExtension> ();
+			//var loc = editor.OffsetToLocation (info.Tag.Span.Start);
+			//if (info.Tag?.FloatingWidgetShown == true) {
+			//	var point = sourceEditorView.TextEditor.TextArea.LocationToPoint (loc.Line, loc.Column);
+			//	point.Y += (int)editor.GetLineHeight (loc.Line);
+			//	var window = (LanguageItemWindow)tipWindow;
+			//	if (floatingWidget != null) {
+			//		floatingWidget.Destroy ();
+			//		floatingWidget = null;
+			//	}
+			//	floatingWidget = new FloatingQuickFixIconWidget (codeActionEditorExtension, window, sourceEditorView, SmartTagSeverity.ErrorFixes, info.Tag, point);
+			//	sourceEditorView.TextEditor.GdkWindow.GetOrigin (out int ox, out int oy);
+			//	floatingWidget.Move (ox + (int)point.X, oy + (int)(point.Y + 4));
+			//	window.Tag = floatingWidget;
+			//	window.EnterNotifyEvent += delegate {
+			//		floatingWidget.CancelDestroy ();
+			//	};
+			//	window.LeaveNotifyEvent += delegate {
+			//		floatingWidget.QueueDestroy ();
+			//	};
+			//}
 		}
 
 		static FloatingQuickFixIconWidget floatingWidget;
 		public override bool TryCloseTooltipWindow (Window tipWindow, TooltipCloseReason reason)
 		{
-			var window = (LanguageItemWindow)tipWindow;
-			if (window.Tag is FloatingQuickFixIconWidget iconWidget) {
-				if (reason != TooltipCloseReason.Force && iconWidget.IsMouseNear ()) {
-					return false;
-				}
-				iconWidget.QueueDestroy (reason == TooltipCloseReason.Force ? 0u : 500);
-			} else {
-				window.Destroy ();
-			}
+			//var window = (LanguageItemWindow)tipWindow;
+			//if (window.Tag is FloatingQuickFixIconWidget iconWidget) {
+			//	if (reason != TooltipCloseReason.Force && iconWidget.IsMouseNear ()) {
+			//		return false;
+			//	}
+			//	iconWidget.QueueDestroy (reason == TooltipCloseReason.Force ? 0u : 500);
+			//} else {
+			//	window.Destroy ();
+			//}
 			return true;
 		}
 

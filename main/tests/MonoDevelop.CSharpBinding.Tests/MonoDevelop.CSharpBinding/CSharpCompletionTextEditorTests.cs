@@ -340,11 +340,11 @@ namespace console61
 }
 ",
 								  (doc, list) => {
-									  var extEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
+									  //var extEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
 									  var compExt = doc.GetContent<CSharpCompletionTextEditorExtension> ();
 									  CompletionWindowManager.StartPrepareShowWindowSession ();
-									  extEditor.EditorExtension = compExt;
-									  extEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
+									  //extEditor.EditorExtension = compExt;
+									  //extEditor.OnIMProcessedKeyPressEvent (Gdk.Key.BackSpace, '\0', Gdk.ModifierType.None);
 									  var listWindow = new CompletionListWindow ();
 									  var widget = new NamedArgumentCompletionTests.TestCompletionWidget (doc.Editor, doc);
 									  listWindow.CompletionWidget = widget;

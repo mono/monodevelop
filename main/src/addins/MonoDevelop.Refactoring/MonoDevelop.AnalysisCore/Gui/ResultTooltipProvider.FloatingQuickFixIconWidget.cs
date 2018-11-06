@@ -27,7 +27,6 @@
 
 using System;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.SourceEditor;
 using MonoDevelop.Components;
 using MonoDevelop.CodeActions;
 using Gdk;
@@ -40,17 +39,23 @@ namespace MonoDevelop.AnalysisCore.Gui
 		partial class FloatingQuickFixIconWidget : Gtk.Window
 		{
 			readonly CodeActionEditorExtension ext;
-			readonly LanguageItemWindow window;
-			readonly SourceEditorView sourceEditorView;
+			//readonly LanguageItemWindow window;
+			//readonly SourceEditorView sourceEditorView;
 			readonly CodeActionContainer fixes;
 			readonly Cairo.Point point;
 			uint destroyTimeout;
 
-			public FloatingQuickFixIconWidget (CodeActionEditorExtension codeActionEditorExtension, LanguageItemWindow window, SourceEditorView sourceEditorView, SourceEditor.SmartTagSeverity severity, CodeActionContainer fixes, Cairo.Point point) : base (Gtk.WindowType.Popup)
+			public FloatingQuickFixIconWidget (
+				CodeActionEditorExtension codeActionEditorExtension, 
+				//LanguageItemWindow window, 
+				//SourceEditorView sourceEditorView, 
+				//SourceEditor.SmartTagSeverity severity, 
+				CodeActionContainer fixes, 
+				Cairo.Point point) : base (Gtk.WindowType.Popup)
 			{
 				this.ext = codeActionEditorExtension;
-				this.window = window;
-				this.sourceEditorView = sourceEditorView;
+				//this.window = window;
+				//this.sourceEditorView = sourceEditorView;
 				this.fixes = fixes;
 				this.point = point;
 				this.Decorated = false;
@@ -59,7 +64,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				var fr = new Gtk.HBox ();
 				fr.BorderWidth = 2;
 				var view = new Gtk.Image ();
-				view.Pixbuf = SmartTagMarginMarker.GetIcon (severity).ToPixbuf ();
+				//view.Pixbuf = SmartTagMarginMarker.GetIcon (severity).ToPixbuf ();
 				fr.PackStart (view, false, false, 0);
 				fr.PackEnd (new RectangleMarker (), false, false, 0);
 				Add (fr);
@@ -82,9 +87,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 			{
 				if (ext.smartTagPopupTimeoutId == 0) {
-					if (!this.IsMouseOver ()) {
-						QueueDestroy ();
-					}
+					//if (!this.IsMouseOver ()) {
+					//	QueueDestroy ();
+					//}
 				}
 				return base.OnLeaveNotifyEvent (evnt);
 			}
@@ -106,7 +111,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			{
 				ext.FixesMenuClosed -= Ext_FixesMenuClosed;
 				CancelDestroy ();
-				window.Destroy ();
+				//window.Destroy ();
 				base.OnDestroyed ();
 			}
 
