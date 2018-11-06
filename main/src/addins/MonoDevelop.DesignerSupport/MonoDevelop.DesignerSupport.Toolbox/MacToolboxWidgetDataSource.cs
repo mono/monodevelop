@@ -20,7 +20,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		internal bool ShowsOnlyImages { get; set; }
 		internal readonly List<ToolboxWidgetCategory> Items;
 
-		Dictionary<ToolboxWidgetItem, NSIndexPath> Views = new Dictionary<ToolboxWidgetItem, NSIndexPath> ();
 		List<HeaderInfo> Categories = new List<HeaderInfo> ();
 
 		public MacToolboxWidgetDataSource (List<ToolboxWidgetCategory> items)
@@ -44,6 +43,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
 				itmView.Refresh ();
+			
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
 				imgView.SetCollectionView (collectionView);
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
@@ -54,24 +54,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				imgView.Refresh ();
 			}
 
-			if (!Views.ContainsKey (widgetItem)) {
-				Views.Add (widgetItem, indexPath);
-			}
-
 			return collectionViewItem;
 		}
 
 		internal void Clear ()
 		{
-			Views.Clear ();
 			Categories.Clear ();
 		}
 
 		public override NSView GetView (NSCollectionView collectionView, NSString kind, NSIndexPath indexPath)
 		{
-			if (indexPath.Section >= Items.Count) {
-				return null;
-			}
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
 				var section = Items [(int)indexPath.Section];
@@ -92,17 +84,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void Button_Activated (object sender, EventArgs e)
 		{
 			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
-			var collectionView = headerCollectionViewItem.CollectionView;
+			var collectionView = (MacToolboxWidget) headerCollectionViewItem.CollectionView;
 			var indexPath = headerCollectionViewItem.IndexPath;
 
 			var section = Items [(int)indexPath.Section];
 			section.IsExpanded = !section.IsExpanded;
 			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
 
-			for (int i = (int)indexPath.Section; i < Items.Count; i++) {
-				var sectionIndex = NSIndexSet.FromIndex (i);
-				collectionView.ReloadSections (sectionIndex);
-			}
+			collectionView.ToggleSectionCollapse (sender as NSButton);
 		}
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
