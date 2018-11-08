@@ -97,7 +97,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return "md-" + GetAccess (method.Attributes) + global + "method";
 		}
 
-		static string GetAccess (MethodAttributes attributes)
+		internal static string GetAccess (MethodAttributes attributes)
 		{
 			switch (attributes & MethodAttributes.MemberAccessMask) {
 			case MethodAttributes.Private:
