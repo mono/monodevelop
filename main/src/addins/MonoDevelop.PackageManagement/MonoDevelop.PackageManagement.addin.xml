@@ -83,7 +83,7 @@
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
+				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add NuGet _Packages..." />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject" />
 			<CommandItem
