@@ -429,11 +429,22 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
 		public ImmutableArray<QuickTask> QuickTasks {
 			get {
-				lock (tasks)
-					return tasks.SelectMany(x => x.Value).AsImmutable ();
+				Runtime.AssertMainThread ();
+
+				lock (tasks) {
+					int capacity = 0;
+					foreach (var task in tasks) {
+						capacity += task.Value.Length;
+					}
+					var builder = ArrayBuilder<QuickTask>.GetInstance (capacity);
+					foreach (var task in tasks) {
+						builder.AddRange (task.Value);
+					}
+					return builder.ToImmutableAndFree ();
+				}
 			}
 		}
 		
