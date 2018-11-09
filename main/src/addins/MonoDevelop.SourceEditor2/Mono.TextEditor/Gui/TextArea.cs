@@ -3368,6 +3368,11 @@ namespace Mono.TextEditor
 		void OnDocumentStateChanged (object s, TextChangeEventArgs args)
 		{
 			HideTooltip ();
+			if (editor.Document.SyntaxMode is ISyntaxHighlighting2 sh2) {
+				if (sh2.IsUpdatingOnTextChange)
+					return;
+			}
+
 			for (int i = 0; i < args.TextChanges.Count; ++i) {
 				var change = args.TextChanges[i];
 				var start = editor.Document.OffsetToLineNumber (change.NewOffset);
