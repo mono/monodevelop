@@ -32,31 +32,52 @@ using MonoDevelop.Projects;
 using NuGet.Common;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
+using System;
 
 namespace MonoDevelop.PackageManagement
 {
 	static class MSBuildPackageSpecCreator
 	{
+		static readonly bool verboseLogging;
+
+		static MSBuildPackageSpecCreator ()
+		{
+			string value = Environment.GetEnvironmentVariable ("MONODEVELOP_NUGET_RESTORE_VERBOSE");
+			verboseLogging = !string.IsNullOrEmpty (value);
+		}
+
 		public static async Task<PackageSpec> CreatePackageSpec (DotNetProject project, ILogger logger)
 		{
+			logger.Log (LogLevel.Information, GettextCatalog.GetString ("Getting restore information for project {0}", project.FileName));
+
 			using (var resultsPath = new TempFile (".output.dg")) {
 				var context = new TargetEvaluationContext ();
 				context.GlobalProperties.SetValue ("RestoreGraphOutputPath", resultsPath);
 
 				ConfigurationSelector config = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
 
-				var result = await project.RunTarget (new ProgressMonitor (), "GenerateRestoreGraphFile", config, context);
-				if (result != null) {
-					foreach (BuildError error in result.BuildResult.Errors) {
-						if (error.IsWarning)
-							logger.LogWarning (error.ToString ());
-						else
-							logger.LogError (error.ToString ());
+				using (var monitor = CreateProgressMonitor ()) {
+					var result = await project.RunTarget (monitor, "GenerateRestoreGraphFile", config, context);
+					if (result != null) {
+						foreach (BuildError error in result.BuildResult.Errors) {
+							if (error.IsWarning)
+								logger.LogWarning (error.ToString ());
+							else
+								logger.LogError (error.ToString ());
+						}
 					}
 				}
 				var spec = GetDependencyGraph (resultsPath);
 				return spec.GetProjectSpec (project.FileName);
 			}
+		}
+
+		static ProgressMonitor CreateProgressMonitor ()
+		{
+			if (verboseLogging)
+				return new LoggingProgressMonitor ();
+
+			return new ProgressMonitor ();
 		}
 
 		static DependencyGraphSpec GetDependencyGraph (string resultsPath)
