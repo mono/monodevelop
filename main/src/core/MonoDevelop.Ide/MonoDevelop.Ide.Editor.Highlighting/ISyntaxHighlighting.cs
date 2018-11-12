@@ -80,6 +80,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		event EventHandler<LineEventArgs> HighlightingStateChanged;
 	}
 
+	interface ISyntaxHighlighting2 : ISyntaxHighlighting
+	{
+		bool IsUpdatingOnTextChange { get; }
+	}
+
 	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
 	{
 		public static readonly DefaultSyntaxHighlighting Instance = new DefaultSyntaxHighlighting ();
