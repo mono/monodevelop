@@ -89,6 +89,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
+			if (section >= toolboxWidget.CategoryVisibilities.Count) {
+				//because multitask our control sections could be unsync when our current document changes
+				return 0;
+			}
 			return toolboxWidget.CategoryVisibilities [(int)section].Items.Count;
 		}
 
