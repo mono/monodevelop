@@ -363,11 +363,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var cat = new CategoryVisibility () { Category = category };
 			cat.Items = category.Items.Where (s => s.IsVisible).ToList ();
 			categoryVisibilities.Add (cat);
-
-			foreach (var item in category.Items) {
-				if (item.Icon == null)
-					continue;
-			}
 		}
 	}
 

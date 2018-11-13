@@ -49,6 +49,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 	class MacToolbox : NSStackView, IPropertyPadProvider, IToolboxConfiguration
 	{
+		const string ToolboxItemContextMenuCommand = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu";
+
 		const int IconsSpacing = 4;
 		ToolboxService toolboxService;
 
@@ -293,11 +295,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void ChangeFocusedView (INativeChildView view)
 		{
-			for (int i = 0; i < responderViewChain.Count; i++) {
-				if (responderViewChain [i] == view) {
-					focusedViewIndex = i;
-				}
-			}
+			var index = responderViewChain.IndexOf (view);
+			if (index != -1)
+				focusedViewIndex = index;
 		}
 
 		void FocusPreviousItem (GLib.SignalArgs ev)
@@ -432,7 +432,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (!AllowEditingComponents)
 				return;
 
-			var eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
+			var eset = IdeApp.CommandService.CreateCommandEntrySet (ToolboxItemContextMenuCommand);
 			IdeApp.CommandService.ShowContextMenu (toolboxWidget, (int)e.X, (int)e.Y, eset, this);
 		}
 
