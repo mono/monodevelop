@@ -87,7 +87,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
 			var indexPath = headerCollectionViewItem.IndexPath;
 
-			var section = Items [(int)indexPath.Section];
+			var section = Items [(int)indexPath.Section].Category;
 			section.IsExpanded = !section.IsExpanded;
 			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
 

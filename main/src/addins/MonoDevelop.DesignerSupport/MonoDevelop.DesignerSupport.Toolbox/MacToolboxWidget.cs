@@ -376,10 +376,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public ToolboxWidgetCategory Category { get; set; }
 
 		public List<ToolboxWidgetItem> Items { get; set; }
-		public bool IsExpanded { 
-			get => Category.IsExpanded;
-			set => Category.IsExpanded = value;
-		}
 	}
 }
 #endif
