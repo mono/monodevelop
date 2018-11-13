@@ -103,26 +103,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			return Items.Count;
 		}
-
-		int GetCategoryIndex (ToolboxWidgetCategory category)
-		{
-			for (int i = 0; i < Categories.Count; i++) {
-				if (Categories [i].Category == category) {
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		int GetCategoryIndex (ToolboxWidgetItem currentItem)
-		{
-			for (int i = 0; i < Categories.Count; i++) {
-				if (Categories [i].Category.Items.Contains (currentItem)) {
-					return i;
-				}
-			}
-			return -1;
-		}
 	}
 }
 #endif
