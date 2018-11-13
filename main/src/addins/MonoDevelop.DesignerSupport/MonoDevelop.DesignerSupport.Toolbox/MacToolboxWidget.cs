@@ -309,21 +309,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#endregion
 
-		ToolboxWidgetCategory GetCategory (ToolboxWidgetItem item)
-		{
-			foreach (var categoryVisibility in CategoryVisibilities) {
-				if (categoryVisibility.Category.Items.Any (s => s == item)) {
-					return categoryVisibility.Category;
-				}
-			}
-			return null;
-		}
-
-		ToolboxWidgetItem GetNextCategory (ToolboxWidgetCategory category)
-		{
-			return category;
-		}
-
 		internal void ClearImageCache ()
 		{
 			dataSource.Clear ();

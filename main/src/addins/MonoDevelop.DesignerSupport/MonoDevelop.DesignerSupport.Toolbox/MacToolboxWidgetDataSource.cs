@@ -17,21 +17,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			public HeaderCollectionViewItem View { get; set; }
 		}
 
-		class CachedImage
-		{
-			public CachedImage (ToolboxWidgetItem item)
-			{
-				Item = item;
-				Image = item.Icon.ToNSImage ();
-				SelectedImage = item.Icon.WithStyles ("sel").ToNSImage ();
-			}
-
-			public ToolboxWidgetItem Item { get; private set; }
-			public NSImage Image { get; private set; }
-			public NSImage SelectedImage { get; private set; }
-		}
-
-		readonly List<CachedImage> cachedImages = new List<CachedImage> ();
+	 	readonly Dictionary<ToolboxWidgetItem, (NSImage Image, NSImage SelectedImage)> cachedImages = new Dictionary<ToolboxWidgetItem, (NSImage Image, NSImage SelectedImage)> ();
 
 		internal event EventHandler<NSIndexPath> RegionCollapsed;
 		internal bool ShowsOnlyImages { get; set; }
@@ -42,19 +28,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
 			var widgetItem = widget.CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 
-			var cachedImage = cachedImages.FirstOrDefault (s => s.Item == widgetItem);
-			if (cachedImage == null) {
-				cachedImage = new CachedImage (widgetItem);
-				cachedImages.Add (cachedImage);
-			};
+			if (!cachedImages.TryGetValue (widgetItem, out var catchedImages)) {
+				catchedImages = (widgetItem.Icon.ToNSImage (), widgetItem.Icon.WithStyles ("sel").ToNSImage ());
+				cachedImages.Add (widgetItem, catchedImages);
+			}
 
 			if (collectionViewItem is LabelCollectionViewItem itmView) {
 				itmView.SetCollectionView (collectionView);
 				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
 				itmView.TextField.StringValue = widgetItem.Text;
 				itmView.TextField.AccessibilityTitle = widgetItem.Text ?? "";
-				itmView.Image = cachedImage.Image;
-				itmView.SelectedImage = cachedImage.SelectedImage;
+				itmView.Image = catchedImages.Image;
+				itmView.SelectedImage = catchedImages.SelectedImage;
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
@@ -63,8 +48,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
 				imgView.SetCollectionView (collectionView);
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
-				imgView.Image = cachedImage.Image;
-				imgView.SelectedImage = cachedImage.SelectedImage;
+				imgView.Image = catchedImages.Image;
+				imgView.SelectedImage = catchedImages.SelectedImage;
 				imgView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.AccessibilityElement = true;
 				imgView.Refresh ();
