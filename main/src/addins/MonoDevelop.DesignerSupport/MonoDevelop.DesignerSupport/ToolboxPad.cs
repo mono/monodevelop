@@ -47,49 +47,43 @@ namespace MonoDevelop.DesignerSupport
 		{
 			base.Initialize (container);
 #if MAC
-			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_TOOLBAR")?.ToLower () == "true";
-			if (nativeEnabled) {
+			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
+			widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
+			widget.CanFocus = true;
+			widget.Sensitive = true;
+			widget.KeyPressEvent += toolbox.OnKeyPressed;
+			widget.KeyReleaseEvent += toolbox.KeyReleased;
 
-				toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
-				widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
-				widget.CanFocus = true;
-				widget.Sensitive = true;
-				widget.KeyPressEvent += toolbox.OnKeyPressed;
-				widget.KeyReleaseEvent += toolbox.KeyReleased;
+			widget.DragEnd += (o, args) => {
+				isDragging = false;
+			};
 
-				widget.DragEnd += (o, args) => {
-					isDragging = false;
-				};
+			widget.Focused += (s, e) => {
+				toolbox.FocusSelectedView ();
+			};
 
-				widget.Focused += (s, e) => {
+			toolbox.ContentFocused += (s, e) => {
+				if (!widget.HasFocus) {
+					widget.HasFocus = true;
 					toolbox.FocusSelectedView ();
-				};
+				}
+			};
+			toolbox.DragSourceSet += (s, e) => {
+				Gtk.Drag.SourceUnset (widget);
+				targets = new Gtk.TargetList ();
+				targets.AddTable (e);
+			};
+			toolbox.DragBegin += (object sender, EventArgs e) => {
+				if (!isDragging) {
+					isDragging = true;
+					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, Gtk.Global.CurrentEvent ?? new Gdk.Event (IntPtr.Zero));
+					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
+				}
+			};
 
-				toolbox.ContentFocused += (s, e) => {
-					if (!widget.HasFocus) {
-						widget.HasFocus = true;
-						toolbox.FocusSelectedView ();
-					}
-				};
-				toolbox.DragSourceSet += (s, e) => {
-					Gtk.Drag.SourceUnset (widget);
-					targets = new Gtk.TargetList ();
-					targets.AddTable (e);
-				};
-				toolbox.DragBegin += (object sender, EventArgs e) => {
-					if (!isDragging) {
-						isDragging = true;
-						Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, Gtk.Global.CurrentEvent ?? new Gdk.Event (IntPtr.Zero));
-						DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
-					}
-				};
-
-				widget.ShowAll ();
-			} else {
-#endif
-				widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
-#if MAC
-			}
+			widget.ShowAll ();
+#else
+			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
 #endif
 		}
 #if MAC
@@ -103,12 +97,12 @@ namespace MonoDevelop.DesignerSupport
 		}
 #endif
 
-		#region AbstractPadContent implementations
+#region AbstractPadContent implementations
 		
 		public override Control Control {
 			get { return widget; }
 		}
 		
-		#endregion
+#endregion
 	}
 }
