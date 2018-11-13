@@ -238,6 +238,11 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
+			watcher.Changed -= OnFileChanged;
+			watcher.Created -= OnFileCreated;
+			watcher.Deleted -= OnFileDeleted;
+			watcher.Renamed -= OnFileRenamed;
+			watcher.Error -= OnFileWatcherError;
 			watcher.Dispose ();
 		}
 

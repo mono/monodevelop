@@ -249,6 +249,7 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.ShowMessageBubbles.Changed += HandleIdeAppPreferencesShowMessageBubblesChanged;
 			TaskService.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
+			widget.TextEditor.Options.ZoomChanged += HandleWidgetTextEditorOptionsZoomChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			// Document.AddAnnotation (this);
 
@@ -566,6 +567,11 @@ namespace MonoDevelop.SourceEditor
 		void HandleWidgetTextEditorOptionsChanged (object sender, EventArgs e)
 		{
 			currentErrorMarkers.ForEach (marker => marker.DisposeLayout ());
+		}
+
+		void HandleWidgetTextEditorOptionsZoomChanged (object sender, EventArgs e)
+		{
+			zoomLevelChanged?.Invoke (this, e);
 		}
 
 		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
@@ -1061,6 +1067,7 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
+			widget.TextEditor.Options.ZoomChanged -= HandleWidgetTextEditorOptionsZoomChanged;
 			widget.TextEditor.TextViewMargin.LineShowing -= TextViewMargin_LineShowing;
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
@@ -3191,12 +3198,14 @@ namespace MonoDevelop.SourceEditor
 			get { return TextEditor != null && TextEditor.Options != null ? TextEditor.Options.Zoom : 1d; }
 			set { if (TextEditor != null && TextEditor.Options != null) TextEditor.Options.Zoom = value; }
 		}
+
+		event EventHandler zoomLevelChanged;
 		event EventHandler ITextEditorImpl.ZoomLevelChanged {
 			add {
-				TextEditor.Options.ZoomChanged += value;
+				zoomLevelChanged += value;
 			}
 			remove {
-				TextEditor.Options.ZoomChanged -= value;
+				zoomLevelChanged -= value;
 			}
 		}
 
