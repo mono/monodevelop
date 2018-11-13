@@ -324,9 +324,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return category;
 		}
 
-		internal void ClearData ()
+		internal void ClearImageCache ()
 		{
-			CategoryVisibilities.Clear ();
+			dataSource.Clear ();
 		}
 
 		internal void OnContainerIsShown (object sender, EventArgs e)

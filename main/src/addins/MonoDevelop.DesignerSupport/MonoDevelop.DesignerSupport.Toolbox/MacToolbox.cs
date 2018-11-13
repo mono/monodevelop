@@ -400,7 +400,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
 			cats.Reverse ();
 
-			toolboxWidget.ClearData ();
+			toolboxWidget.CategoryVisibilities.Clear ();
 			foreach (var category in cats) {
 				bool hasVisibleChild = false;
 
@@ -495,7 +495,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			ConfigureToolbar ();
 
 			toolboxWidget.CustomMessage = null;
-			
+
+			toolboxWidget.ClearImageCache ();
+
 			categories.Clear ();
 
 			AddItems (toolboxService.GetCurrentToolboxItems ());

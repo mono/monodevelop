@@ -17,6 +17,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			public HeaderCollectionViewItem View { get; set; }
 		}
 
+		class CachedImage
+		{
+			public CachedImage (ToolboxWidgetItem item)
+			{
+				Item = item;
+				Image = item.Icon.ToNSImage ();
+				SelectedImage = item.Icon.WithStyles ("sel").ToNSImage ();
+			}
+
+			public ToolboxWidgetItem Item { get; private set; }
+			public NSImage Image { get; private set; }
+			public NSImage SelectedImage { get; private set; }
+		}
+
+		readonly List<CachedImage> cachedImages = new List<CachedImage> ();
+
 		internal event EventHandler<NSIndexPath> RegionCollapsed;
 		internal bool ShowsOnlyImages { get; set; }
 
@@ -26,13 +42,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
 			var widgetItem = widget.CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 
+			var cachedImage = cachedImages.FirstOrDefault (s => s.Item == widgetItem);
+			if (cachedImage == null) {
+				cachedImage = new CachedImage (widgetItem);
+				cachedImages.Add (cachedImage);
+			};
+
 			if (collectionViewItem is LabelCollectionViewItem itmView) {
 				itmView.SetCollectionView (collectionView);
 				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
 				itmView.TextField.StringValue = widgetItem.Text;
 				itmView.TextField.AccessibilityTitle = widgetItem.Text ?? "";
-				itmView.Image = widgetItem.Icon.ToNSImage ();
-				itmView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();
+				itmView.Image = cachedImage.Image;
+				itmView.SelectedImage = cachedImage.SelectedImage;
 				//TODO: carefull wih this deprecation (we need a better fix)
 				//ImageView needs modify the AccessibilityElement from it's cell, doesn't work from main view
 				itmView.ImageView.Cell.AccessibilityElement = false;
@@ -41,8 +63,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			} else if (collectionViewItem is ImageCollectionViewItem imgView) {
 				imgView.SetCollectionView (collectionView);
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
-				imgView.Image = widgetItem.Icon.ToNSImage ();
-				imgView.SelectedImage = widgetItem.Icon.WithStyles ("sel").ToNSImage ();
+				imgView.Image = cachedImage.Image;
+				imgView.SelectedImage = cachedImage.SelectedImage;
 				imgView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.AccessibilityElement = true;
 				imgView.Refresh ();
@@ -70,13 +92,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void Button_Activated (object sender, EventArgs e)
 		{
 			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
+
 			var collectionView = headerCollectionViewItem.CollectionView;
 			var indexPath = headerCollectionViewItem.IndexPath;
-			var section = collectionView.CategoryVisibilities [(int)indexPath.Section].Category;
+			var category = collectionView.CategoryVisibilities [(int)indexPath.Section].Category;
 
-			section.IsExpanded = !section.IsExpanded;
-			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
-
+			category.IsExpanded = !category.IsExpanded;
 			RegionCollapsed?.Invoke (this, indexPath);
 		}
 
@@ -90,6 +111,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			return toolboxWidget.CategoryVisibilities.Count;
+		}
+
+		internal void Clear ()
+		{
+			cachedImages.Clear ();
 		}
 	}
 }
