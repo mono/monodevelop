@@ -274,7 +274,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			base.DrawRect (dirtyRect);
 
 			if (isSelected) {
-				if (collectionView.IsFocused || collectionView == null) {
+				if (collectionView == null || collectionView.IsFocused) {
 					Styles.CellBackgroundSelectedColor.Set ();
 				} else {
 					Styles.CellBackgroundUnfocusedSelectedColor.Set ();
