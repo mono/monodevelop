@@ -363,7 +363,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ToggleCompactMode (object sender, EventArgs e)
 		{
 			toolboxWidget.IsListMode = !compactModeToggleButton.Active;
-			toolboxWidget.RedrawItems (true, true);
+			Refilter ();
 
 			PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 
@@ -379,7 +379,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void ToggleCategorisation (object sender, EventArgs e)
 		{
 			this.toolboxWidget.ShowCategories = catToggleButton.Active;
-			toolboxWidget.RedrawItems (true, false);
+			Refilter ();
 			if (catToggleButton.Active) {
 				catToggleButton.AccessibilityTitle = GettextCatalog.GetString ("Hide Categories");
 				catToggleButton.AccessibilityHelp = GettextCatalog.GetString ("Toggle to hide toolbox categories");
@@ -405,7 +405,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				bool hasVisibleChild = false;
 
 				foreach (var child in category.Items) {
-					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue) && category.IsExpanded;
+					if (toolboxWidget.ShowCategories) {
+						child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue) && category.IsExpanded;
+					} else {
+						child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue);
+					}
 					hasVisibleChild |= child.IsVisible;
 				}
 
