@@ -19,19 +19,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal event EventHandler<NSIndexPath> RegionCollapsed;
 		internal bool ShowsOnlyImages { get; set; }
-		internal readonly List<CategoryVisibility> Items;
-
-		List<HeaderInfo> Categories = new List<HeaderInfo> ();
-
-		public MacToolboxWidgetDataSource (List<CategoryVisibility> items)
-		{
-			Items = items;
-		}
 
 		public override NSCollectionViewItem GetItem (NSCollectionView collectionView, NSIndexPath indexPath)
 		{
+			var widget = (MacToolboxWidget)collectionView;
 			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
-			var widgetItem = Items [(int)indexPath.Section].Items [(int)indexPath.Item];
+			var widgetItem = widget.CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 
 			if (collectionViewItem is LabelCollectionViewItem itmView) {
 				itmView.SetCollectionView (collectionView);
@@ -58,25 +51,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return collectionViewItem;
 		}
 
-		internal void Clear ()
-		{
-			Categories.Clear ();
-		}
-
 		public override NSView GetView (NSCollectionView collectionView, NSString kind, NSIndexPath indexPath)
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
-				var section = Items [(int)indexPath.Section].Category;
+				var section = toolboxWidget.CategoryVisibilities [(int)indexPath.Section].Category;
 				button.TitleTextField.StringValue = section.Text.Replace ("&amp;", "&");
 				button.IndexPath = indexPath;
 				button.CollectionView = toolboxWidget;
 				button.Activated -= Button_Activated;
 				button.Activated += Button_Activated;
 				button.IsCollapsed = !section.IsExpanded;
-				if (!Categories.Any (s => s.Category == section)) {
-					Categories.Add (new HeaderInfo () { Category = section, Index = indexPath, View = button });
-				}
 				return button;
 			}
 			return null;
@@ -85,9 +70,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void Button_Activated (object sender, EventArgs e)
 		{
 			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
+			var collectionView = headerCollectionViewItem.CollectionView;
 			var indexPath = headerCollectionViewItem.IndexPath;
+			var section = collectionView.CategoryVisibilities [(int)indexPath.Section].Category;
 
-			var section = Items [(int)indexPath.Section].Category;
 			section.IsExpanded = !section.IsExpanded;
 			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
 
@@ -96,12 +82,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
-			return Items [(int)section].Items.Count;
+			var toolboxWidget = (MacToolboxWidget)collectionView;
+			return toolboxWidget.CategoryVisibilities [(int)section].Items.Count;
 		}
 
 		public override nint GetNumberOfSections (NSCollectionView collectionView)
 		{
-			return Items.Count;
+			var toolboxWidget = (MacToolboxWidget)collectionView;
+			return toolboxWidget.CategoryVisibilities.Count;
 		}
 	}
 }
