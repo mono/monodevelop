@@ -977,7 +977,7 @@ namespace MonoDevelop.Ide.Editor
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
-			ZoomLevelChanged -= TextEditor_ZoomLevelChanged;
+			textEditorImpl.ZoomLevelChanged -= TextEditor_ZoomLevelChanged;
 			foreach (var provider in textEditorImpl.TooltipProvider)
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
@@ -1048,7 +1048,7 @@ namespace MonoDevelop.Ide.Editor
 			ExtensionContext = AddinManager.CreateExtensionContext ();
 			ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
 
-			ZoomLevelChanged += TextEditor_ZoomLevelChanged;
+			textEditorImpl.ZoomLevelChanged += TextEditor_ZoomLevelChanged;
 			FileNameChanged += TextEditor_FileNameChanged;
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
 
