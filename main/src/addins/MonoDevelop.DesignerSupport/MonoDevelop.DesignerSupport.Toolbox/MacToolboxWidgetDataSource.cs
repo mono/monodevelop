@@ -17,12 +17,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			public HeaderCollectionViewItem View { get; set; }
 		}
 
+		internal event EventHandler<NSIndexPath> RegionCollapsed;
 		internal bool ShowsOnlyImages { get; set; }
-		internal readonly List<ToolboxWidgetCategory> Items;
+		internal readonly List<CategoryVisibility> Items;
 
 		List<HeaderInfo> Categories = new List<HeaderInfo> ();
 
-		public MacToolboxWidgetDataSource (List<ToolboxWidgetCategory> items)
+		public MacToolboxWidgetDataSource (List<CategoryVisibility> items)
 		{
 			Items = items;
 		}
@@ -66,7 +67,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
-				var section = Items [(int)indexPath.Section];
+				var section = Items [(int)indexPath.Section].Category;
 				button.TitleTextField.StringValue = section.Text.Replace ("&amp;", "&");
 				button.IndexPath = indexPath;
 				button.CollectionView = toolboxWidget;
@@ -84,22 +85,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void Button_Activated (object sender, EventArgs e)
 		{
 			var headerCollectionViewItem = (HeaderCollectionViewItem)sender;
-			var collectionView = (MacToolboxWidget) headerCollectionViewItem.CollectionView;
 			var indexPath = headerCollectionViewItem.IndexPath;
 
 			var section = Items [(int)indexPath.Section];
 			section.IsExpanded = !section.IsExpanded;
 			headerCollectionViewItem.IsCollapsed = !section.IsExpanded;
 
-			collectionView.ToggleSectionCollapse (sender as NSButton);
+			RegionCollapsed?.Invoke (this, indexPath);
 		}
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
-			if (section >= Items.Count) {
-				return 0;
-			}
-			return Items [(int)section].Items.Count;
+			return Items [(int)section].Items.Count (s => s.IsVisible);
 		}
 
 		public override nint GetNumberOfSections (NSCollectionView collectionView)

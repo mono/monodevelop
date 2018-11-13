@@ -45,6 +45,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		internal MacToolboxWidgetFlowLayoutDelegate collectionViewDelegate;
 		internal NSCollectionViewFlowLayout flowLayout;
 
+		public event EventHandler RegionCollapsed;
 		public event EventHandler Focused;
 		public event EventHandler DragBegin;
 		public event EventHandler<CGPoint> MenuOpened;
@@ -52,7 +53,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler ActivateSelectedItem;
 		public Action<NSEvent> MouseDownActivated { get; set; }
 
-		readonly List<ToolboxWidgetCategory> categories = new List<ToolboxWidgetCategory> ();
+		readonly List<CategoryVisibility> categories = new List<CategoryVisibility> ();
 
 		IPadWindow container;
 		NSTextField messageTextField;
@@ -63,7 +64,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool showCategories = true;
 
 		public IEnumerable<ToolboxWidgetCategory> Categories {
-			get { return categories; }
+			get { return categories.Select (s => s.Category); }
 		}
 	
 		protected virtual void OnActivateSelectedItem (EventArgs args)
@@ -118,7 +119,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public IEnumerable<ToolboxWidgetItem> AllItems {
 			get {
-				foreach (var category in this.categories) {
+				foreach (var category in Categories) {
 					foreach (var item in category.Items) {
 						yield return item;
 					}
@@ -128,7 +129,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public bool CanIconizeToolboxCategories {
 			get {
-				foreach (var category in categories) {
+				foreach (var category in Categories) {
 					if (category.CanIconizeItems)
 						return true;
 				}
@@ -193,6 +194,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AllowsEmptySelection = true;
 			DataSource = dataSource = new MacToolboxWidgetDataSource (categories);
 
+			dataSource.RegionCollapsed += DataSource_RegionCollapsed;
+
 			collectionViewDelegate.DragBegin += CollectionViewDelegate_DragBegin;
 			collectionViewDelegate.SelectionChanged += CollectionViewDelegate_SelectionChanged;
 
@@ -203,6 +206,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AddSubview (messageTextField);
 
 			BackgroundColors = new NSColor [] { Styles.ToolbarBackgroundColor };
+		}
+
+		void DataSource_RegionCollapsed (object sender, NSIndexPath e)
+		{
+			RegionCollapsed?.Invoke (this, EventArgs.Empty);
 		}
 
 		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e)
@@ -346,12 +354,27 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public void AddCategory (ToolboxWidgetCategory category)
 		{
-			categories.Add (category);
+			var cat = new CategoryVisibility () { Category = category };
+			cat.Items = category.Items.Where (s => s.IsVisible).ToList ();
+			categories.Add (cat);
+
 			foreach (var item in category.Items) {
 				if (item.Icon == null)
 					continue;
 			}
 		}
 	}
+
+	class CategoryVisibility
+	{
+		public ToolboxWidgetCategory Category { get; set; }
+
+		public List<ToolboxWidgetItem> Items { get; set; }
+		public bool IsExpanded { 
+			get => Category.IsExpanded;
+			set => Category.IsExpanded = value;
+		}
+	}
+
 }
 #endif
