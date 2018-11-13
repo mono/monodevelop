@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Templates
 					identifier = string.Join (".", suffixes);
 				}
 				else {
-					identifier = CreateIdentifierName (identifier); ;
+					identifier = CreateIdentifierName (identifier);
 				}
 
 				tags ["Name"] = identifier;
