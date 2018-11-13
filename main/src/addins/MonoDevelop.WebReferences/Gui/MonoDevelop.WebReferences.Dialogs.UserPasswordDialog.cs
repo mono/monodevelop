@@ -34,7 +34,6 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.labelServer = new global::Gtk.Label ();
 			this.labelServer.Name = "labelServer";
 			this.labelServer.Xalign = 0F;
-			this.labelServer.LabelProp = "Server info";
 			this.vbox2.Add (this.labelServer);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelServer]));
 			w2.Position = 0;

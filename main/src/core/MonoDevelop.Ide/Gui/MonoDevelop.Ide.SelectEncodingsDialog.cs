@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Components.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.SelectEncodingsDialog
 			this.Name = "MonoDevelop.Ide.SelectEncodingsDialog";
-			this.Title = "Select Text Encodings";
+			this.Title = global::Mono.Unix.Catalog.GetString ("Select Text Encodings");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.Modal = true;
 			this.BorderWidth = ((uint)(6));

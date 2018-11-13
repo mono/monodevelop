@@ -233,15 +233,15 @@ namespace Stetic.Wrapper
 			this.node = node;
 			Spacing = 3;
 			if (node.Type == Gtk.UIManagerItemType.Menu) {
-				PackStart (new Gtk.Label ("Menu"), true, true, 0);
+				PackStart (new Gtk.Label (Mono.Unix.Catalog.GetString ("Menu")), true, true, 0);
 			} else if (node.Action != null && node.Action.GtkAction != null) {
 				if (node.Action.GtkAction.StockId != null)
 					PackStart (node.Action.CreateIcon (Gtk.IconSize.Menu), true, true, 0);
 				PackStart (new Gtk.Label (node.Action.GtkAction.Label), true, true, 0);
 			} else if (node.Type == Gtk.UIManagerItemType.Separator) {
-				PackStart (new Gtk.Label ("Separator"), true, true, 0);
+				PackStart (new Gtk.Label (Mono.Unix.Catalog.GetString ("Separator")), true, true, 0);
 			} else {
-				PackStart (new Gtk.Label ("Empty Action"), true, true, 0);
+				PackStart (new Gtk.Label (Mono.Unix.Catalog.GetString ("Empty Action")), true, true, 0);
 			}
 			ShowAll ();
 		}

@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.hbox3.Spacing = 6;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.toggleFindInFiles = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Find in Files"));
-			this.toggleFindInFiles.TooltipMarkup = "Switch to Find in Files";
+			this.toggleFindInFiles.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("Switch to Find in Files");
 			this.toggleFindInFiles.CanFocus = true;
 			this.toggleFindInFiles.Name = "toggleFindInFiles";
 			this.toggleFindInFiles.Active = true;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			w3.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.toggleReplaceInFiles = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Replace in Files"));
-			this.toggleReplaceInFiles.TooltipMarkup = "Switch to Replace in Files";
+			this.toggleReplaceInFiles.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("Switch to Replace in Files");
 			this.toggleReplaceInFiles.CanFocus = true;
 			this.toggleReplaceInFiles.Name = "toggleReplaceInFiles";
 			this.toggleReplaceInFiles.DrawIndicator = false;

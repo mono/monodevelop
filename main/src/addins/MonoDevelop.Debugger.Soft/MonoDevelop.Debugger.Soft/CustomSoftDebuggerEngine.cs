@@ -218,11 +218,11 @@ namespace MonoDevelop.Debugger.Soft
 				table.BorderWidth = 6;
 				VBox.PackStart (table, true, true, 0);
 				
-				table.Attach (new Gtk.Label ("Command:") { Xalign = 0 },   0, 1, 0, 1);
-				table.Attach (new Gtk.Label ("Arguments:") { Xalign = 0 }, 0, 1, 1, 2);
-				table.Attach (new Gtk.Label ("IP:") { Xalign = 0 },        0, 1, 2, 3);
-				table.Attach (new Gtk.Label ("Port:") { Xalign = 0 },      0, 1, 3, 4);
-				table.Attach (new Gtk.Label ("Output:") { Xalign = 0 },    0, 1, 4, 5);
+				table.Attach (new Gtk.Label (GettextCatalog.GetString ("Command:")) { Xalign = 0 },   0, 1, 0, 1);
+				table.Attach (new Gtk.Label (GettextCatalog.GetString ("Arguments:")) { Xalign = 0 }, 0, 1, 1, 2);
+				table.Attach (new Gtk.Label (GettextCatalog.GetString ("IP:")) { Xalign = 0 },        0, 1, 2, 3);
+				table.Attach (new Gtk.Label (GettextCatalog.GetString ("Port:")) { Xalign = 0 },      0, 1, 3, 4);
+				table.Attach (new Gtk.Label (GettextCatalog.GetString ("Output:")) { Xalign = 0 },    0, 1, 4, 5);
 				
 				table.Attach (commandEntry,     1, 2, 0, 1);
 				table.Attach (argsEntry,        1, 2, 1, 2);

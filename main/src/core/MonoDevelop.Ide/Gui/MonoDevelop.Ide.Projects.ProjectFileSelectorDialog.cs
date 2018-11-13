@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Projects
 			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.AddFileButton = new global::Gtk.Button ();
-			this.AddFileButton.TooltipMarkup = "Add existing files to the project";
+			this.AddFileButton.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("Add existing files to the project");
 			this.AddFileButton.CanFocus = true;
 			this.AddFileButton.Name = "AddFileButton";
 			this.AddFileButton.Relief = ((global::Gtk.ReliefStyle)(2));
