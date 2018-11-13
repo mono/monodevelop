@@ -72,7 +72,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		NativeViews.ClickedButton toolboxAddButton;
 		Xwt.Drawing.Image groupByCategoryImage;
 
-		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
 		NSStackView horizontalStackView;
 
 		const int buttonSizeWidth = 25;
@@ -184,6 +183,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.MouseDownActivated += ToolboxWidget_MouseDownActivated;
 			toolboxWidget.ActivateSelectedItem += ToolboxWidget_ActivateSelectedItem;
 			toolboxWidget.MenuOpened += ToolboxWidget_MenuOpened;
+			toolboxWidget.RegionCollapsed += FilterTextChanged;
 
 			//set initial state
 			toolboxWidget.ShowCategories = catToggleButton.Active = true;
@@ -396,15 +396,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		void Refilter ()
 		{
-			foreach (var cat in toolboxWidget.Categories) {
+			var cats = categories.Values.ToList ();
+			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
+			cats.Reverse ();
+
+			toolboxWidget.ClearData ();
+			foreach (var category in cats) {
 				bool hasVisibleChild = false;
-				foreach (var child in cat.Items) {
-					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue);
+
+				foreach (var child in category.Items) {
+					child.IsVisible = ((ItemToolboxNode)child.Tag).Filter (filterEntry.StringValue) && category.IsExpanded;
 					hasVisibleChild |= child.IsVisible;
 				}
-				cat.IsVisible = hasVisibleChild;
+
+				category.IsVisible = hasVisibleChild;
+				toolboxWidget.AddCategory (category);
 			}
-			toolboxWidget.RedrawItems (false, true);
+
+			toolboxWidget.RedrawItems (true, true);
 		}
 		
 		async void ToolboxAddButton_Clicked (object sender, EventArgs e)
@@ -446,6 +455,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#region GUI population
 
+		readonly List<ToolboxWidgetCategory> items = new List<ToolboxWidgetCategory> ();
 		Dictionary<string, ToolboxWidgetCategory> categories = new Dictionary<string, ToolboxWidgetCategory> ();
 	
 		void AddItems (IEnumerable<ItemToolboxNode> nodes)
@@ -460,6 +470,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					if (!categoryPriorities.TryGetValue (itbn.Category, out prio))
 						prio = -1;
 					cat.Priority = prio;
+					cat.IsExpanded = true;
 					categories [itbn.Category] = cat;
 				}
 				if (newItem.Text != null)
@@ -482,27 +493,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.CustomMessage = null;
 			
 			categories.Clear ();
-			toolboxWidget.ClearData ();
 
 			AddItems (toolboxService.GetCurrentToolboxItems ());
 
 			DragSourceUnset?.Invoke (this, EventArgs.Empty);
 
-			var cats = categories.Values.ToList ();
-			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
-			cats.Reverse ();
-			foreach (ToolboxWidgetCategory category in cats) {
-				category.IsExpanded = true;
-				toolboxWidget.AddCategory (category);
-			}
 			Gtk.TargetEntry [] targetTable = toolboxService.GetCurrentDragTargetTable ();
 			if (targetTable != null)
-				DragSourceSet?.Invoke (this, targetTable); 
+				DragSourceSet?.Invoke (this, targetTable);
+
+			Refilter ();
 
 			compactModeToggleButton.Hidden = !toolboxWidget.CanIconizeToolboxCategories;
 			compactModeToggleButton.InvalidateIntrinsicContentSize ();
-			Refilter ();
-
+		
 			if (categories.Count == 0) {
 				toolboxWidget.CustomMessage = GettextCatalog.GetString ("There are no tools available for the current document.");
 			}
@@ -536,6 +540,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
 			toolboxWidget.MouseDownActivated -= ToolboxWidget_MouseDownActivated;
 			toolboxWidget.DragBegin -= ToolboxWidget_DragBegin;
+			toolboxWidget.RegionCollapsed -= FilterTextChanged;
 
 			toolboxService.ToolboxContentsChanged -= ToolboxService_ToolboxContentsChanged;
 			toolboxService.ToolboxConsumerChanged -= ToolboxService_ToolboxConsumerChanged;
