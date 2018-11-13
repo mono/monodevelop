@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			mainBox.PackStart (new ImageView (ImageService.GetIcon (Stock.Information, Gtk.IconSize.Menu)), marginLeft: 11);
 			mainBox.PackStart (descriptionLabel = new Label (description));
 
-			if (items.Length > 0) {
+			if (items.Length > 0 && items[0].Kind == InfoBarItemKind.Hyperlink) {
 				mainBox.PackStart (new Label ("–"));
 			}
 
