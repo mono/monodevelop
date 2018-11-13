@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using Microsoft.CodeAnalysis.Internal.Log;
-using Microsoft.CodeAnalysis.ErrorReporting;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Ide.RoslynServices
 {
 	class RoslynLogger : ILogger
 	{
-		static RoslynLogger ()
-		{
-			// Maybe we should crash here?
-			FatalError.Handler = exception => LoggingService.LogInternalError ("Roslyn fatal exception", exception);
-			FatalError.NonFatalHandler = exception => LoggingService.LogInternalError ("Roslyn non-fatal exception", exception);
-		}
-
 		public bool IsEnabled (FunctionId functionId)
 		{
 			// ? Maybe log more than these exceptions? http://source.roslyn.io/#Microsoft.CodeAnalysis.Workspaces/Log/FunctionId.cs,8
