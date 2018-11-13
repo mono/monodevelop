@@ -57,13 +57,19 @@ namespace MonoDevelop.Ide.Templates
 			//need an 'identifier' for tag substitution, e.g. class name or page name
 			//if not given an identifier, use fileName
 			if ((identifier == null) && (fileName != null))
-				identifier = Path.GetFileName (fileName);
+				identifier = Path.GetFileNameWithoutExtension (fileName);
 
 			if (identifier != null) {
-				//remove all extensions
-				while (Path.GetExtension (identifier).Length > 0)
-					identifier = Path.GetFileNameWithoutExtension (identifier);
-				identifier = CreateIdentifierName (identifier);
+				//check if there any suffix (like: Resources.xx.resx)
+				if (identifier.Contains (".")) {
+					var suffixes = identifier.Split ('.');
+					suffixes [0] = CreateIdentifierName (suffixes [0]);
+					identifier = string.Join (".", suffixes);
+				}
+				else {
+					identifier = CreateIdentifierName (identifier); ;
+				}
+
 				tags ["Name"] = identifier;
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
 

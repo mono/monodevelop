@@ -362,7 +362,10 @@ namespace MonoDevelop.Ide.Templates
 			
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
-				var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, entryName ?? name, null);
+				//checks if the entryName contains the extension (i.e. added explicitly with the name)
+				if (entryName.EndsWith (Path.GetExtension (name), StringComparison.OrdinalIgnoreCase))
+					entryName = Path.GetFileNameWithoutExtension (entryName);
+				var model = CombinedTagModel.GetTagModel (ProjectTagModel, policyParent, project, language, entryName ?? name, fileName);
 				fileName = StringParserService.Parse (name, model);
 			}
 			
