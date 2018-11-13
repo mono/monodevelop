@@ -96,7 +96,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
-			return Items [(int)section].Items.Count (s => s.IsVisible);
+			return Items [(int)section].Items.Count;
 		}
 
 		public override nint GetNumberOfSections (NSCollectionView collectionView)
