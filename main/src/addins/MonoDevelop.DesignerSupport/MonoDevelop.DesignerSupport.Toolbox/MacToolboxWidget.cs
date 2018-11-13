@@ -53,7 +53,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler ActivateSelectedItem;
 		public Action<NSEvent> MouseDownActivated { get; set; }
 
-		readonly List<CategoryVisibility> categories = new List<CategoryVisibility> ();
+		readonly List<CategoryVisibility> categoryVisibilities = new List<CategoryVisibility> ();
 
 		IPadWindow container;
 		NSTextField messageTextField;
@@ -64,7 +64,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool showCategories = true;
 
 		public IEnumerable<ToolboxWidgetCategory> Categories {
-			get { return categories.Select (s => s.Category); }
+			get { return categoryVisibilities.Select (s => s.Category); }
 		}
 	
 		protected virtual void OnActivateSelectedItem (EventArgs args)
@@ -119,8 +119,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public IEnumerable<ToolboxWidgetItem> AllItems {
 			get {
-				foreach (var category in Categories) {
-					foreach (var item in category.Items) {
+				foreach (var categoryVisibility in categoryVisibilities) {
+					foreach (var item in categoryVisibility.Category.Items) {
 						yield return item;
 					}
 				}
@@ -129,8 +129,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public bool CanIconizeToolboxCategories {
 			get {
-				foreach (var category in Categories) {
-					if (category.CanIconizeItems)
+				foreach (var categoryVisibility in categoryVisibilities) {
+					if (categoryVisibility.Category.CanIconizeItems)
 						return true;
 				}
 				return false;
@@ -192,7 +192,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Delegate = collectionViewDelegate = new MacToolboxWidgetFlowLayoutDelegate ();
 			Selectable = true;
 			AllowsEmptySelection = true;
-			DataSource = dataSource = new MacToolboxWidgetDataSource (categories);
+			DataSource = dataSource = new MacToolboxWidgetDataSource (categoryVisibilities);
 
 			dataSource.RegionCollapsed += DataSource_RegionCollapsed;
 
@@ -224,7 +224,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				 return;
 			 }
 			 if (e.AnyObject is NSIndexPath indexPath) {
-				 SelectedItem = categories [(int)indexPath.Section].Items [(int)indexPath.Item];
+				 SelectedItem = categoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 			 }
 		}
 
@@ -282,7 +282,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var point = ConvertPointFromView (theEvent.LocationInWindow, null);
 			var indexPath = base.GetIndexPath (point);
 			if (indexPath != null) {
-				SelectedItem = categories [(int)indexPath.Section].Items [(int)indexPath.Item];
+				SelectedItem = categoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 				MenuOpened?.Invoke (this, point);
 			}
 		}
@@ -311,9 +311,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		ToolboxWidgetCategory GetCategory (ToolboxWidgetItem item)
 		{
-			foreach (var category in Categories) {
-				if (category.Items.Any (s => s == item)) {
-					return category;
+			foreach (var categoryVisibility in categoryVisibilities) {
+				if (categoryVisibility.Category.Items.Any (s => s == item)) {
+					return categoryVisibility.Category;
 				}
 			}
 			return null;
@@ -326,7 +326,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal void ClearData ()
 		{
-			categories.Clear ();
+			categoryVisibilities.Clear ();
 			dataSource.Clear ();
 		}
 
@@ -356,7 +356,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			var cat = new CategoryVisibility () { Category = category };
 			cat.Items = category.Items.Where (s => s.IsVisible).ToList ();
-			categories.Add (cat);
+			categoryVisibilities.Add (cat);
 
 			foreach (var item in category.Items) {
 				if (item.Icon == null)
@@ -375,6 +375,5 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set => Category.IsExpanded = value;
 		}
 	}
-
 }
 #endif
