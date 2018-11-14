@@ -53,6 +53,10 @@
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.14.3.26930\lib\net20\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll</HintPath>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </Reference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -3081,6 +3085,7 @@
     <Compile Include="MonoDevelop.Ide.Composition\EditorExperimentationServiceInternal.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\PeekResultFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
