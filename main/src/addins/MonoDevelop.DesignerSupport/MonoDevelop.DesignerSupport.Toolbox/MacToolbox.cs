@@ -68,7 +68,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		NativeViews.SearchTextField filterEntry;
 
 		IPadWindow container;
-		PadFontChanger fontChanger;
 		Dictionary<string, int> categoryPriorities = new Dictionary<string, int> ();
 
 		NativeViews.ClickedButton toolboxAddButton;
@@ -529,32 +528,30 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		protected override void Dispose (bool disposing)
 		{
-			filterEntry.Activated -= FilterTextChanged;
-			filterEntry.Focused -= FilterEntry_Focused;
+			if (disposing) {
+				filterEntry.Activated -= FilterTextChanged;
+				filterEntry.Focused -= FilterEntry_Focused;
 
-			catToggleButton.Activated -= ToggleCategorisation;
-			catToggleButton.Focused -= CatToggleButton_Focused;
+				catToggleButton.Activated -= ToggleCategorisation;
+				catToggleButton.Focused -= CatToggleButton_Focused;
 
-			compactModeToggleButton.Activated -= ToggleCompactMode;
-			compactModeToggleButton.Focused -= CompactModeToggleButton_Focused;
+				compactModeToggleButton.Activated -= ToggleCompactMode;
+				compactModeToggleButton.Focused -= CompactModeToggleButton_Focused;
 
-			toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
-			toolboxAddButton.Focused -= ToolboxAddButton_Focused;
+				toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
+				toolboxAddButton.Focused -= ToolboxAddButton_Focused;
 
-			toolboxWidget.SelectedItemChanged -= ToolboxWidget_SelectedItemChanged;
-			toolboxWidget.ActivateSelectedItem -= ToolboxWidget_ActivateSelectedItem;
-			toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
-			toolboxWidget.MouseDownActivated -= ToolboxWidget_MouseDownActivated;
-			toolboxWidget.DragBegin -= ToolboxWidget_DragBegin;
-			toolboxWidget.RegionCollapsed -= FilterTextChanged;
+				toolboxWidget.SelectedItemChanged -= ToolboxWidget_SelectedItemChanged;
+				toolboxWidget.ActivateSelectedItem -= ToolboxWidget_ActivateSelectedItem;
+				toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
+				toolboxWidget.MouseDownActivated -= ToolboxWidget_MouseDownActivated;
+				toolboxWidget.DragBegin -= ToolboxWidget_DragBegin;
+				toolboxWidget.RegionCollapsed -= FilterTextChanged;
 
-			toolboxService.ToolboxContentsChanged -= ToolboxService_ToolboxContentsChanged;
-			toolboxService.ToolboxConsumerChanged -= ToolboxService_ToolboxConsumerChanged;
-
-			if (fontChanger != null) {
-				fontChanger.Dispose ();
-				fontChanger = null;
+				toolboxService.ToolboxContentsChanged -= ToolboxService_ToolboxContentsChanged;
+				toolboxService.ToolboxConsumerChanged -= ToolboxService_ToolboxConsumerChanged;
 			}
+
 			base.Dispose (disposing);
 		}
 

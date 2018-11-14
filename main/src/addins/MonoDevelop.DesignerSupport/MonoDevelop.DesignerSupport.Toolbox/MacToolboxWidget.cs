@@ -329,15 +329,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		protected override void Dispose (bool disposing)
 		{
-			if (container != null) {
-				container.PadContentShown -= OnContainerIsShown;
+			if (disposing) {
+				if (container != null) {
+					container.PadContentShown -= OnContainerIsShown;
+				}
+
+				collectionViewDelegate.DragBegin -= CollectionViewDelegate_DragBegin;
+				collectionViewDelegate.SelectionChanged -= CollectionViewDelegate_SelectionChanged;
+
+				DataSource = null;
+				Delegate = null;
 			}
-
-			collectionViewDelegate.DragBegin -= CollectionViewDelegate_DragBegin;
-			collectionViewDelegate.SelectionChanged -= CollectionViewDelegate_SelectionChanged;
-
-			DataSource = null;
-			Delegate = null;
 
 			base.Dispose (disposing);
 		}
