@@ -474,7 +474,7 @@ namespace MonoDevelop.Projects
 		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration, bool topologicalSort, bool includeExternalReferences)
 		{
 			var list = new List<SolutionItem> ();
-			if (ParentSolution != null)
+			if (ParentSolution == null)
 				return list.AsReadOnly ();
 
 			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
