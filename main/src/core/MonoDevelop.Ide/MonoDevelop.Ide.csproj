@@ -3083,8 +3083,11 @@
     <Compile Include="MonoDevelop.Ide.Composition\CommonEditorAssetServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\EditorExperimentationServiceInternal.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\EditorWaitIndicator.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\LoggingServiceInternal.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\ObscuringTipManager.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PeekResultFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
