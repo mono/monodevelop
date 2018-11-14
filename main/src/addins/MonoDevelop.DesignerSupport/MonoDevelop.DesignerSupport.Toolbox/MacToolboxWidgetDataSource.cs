@@ -24,9 +24,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override NSCollectionViewItem GetItem (NSCollectionView collectionView, NSIndexPath indexPath)
 		{
-			var widget = (MacToolboxWidget)collectionView;
+			var toolboxWidget = (MacToolboxWidget)collectionView;
+			if (IsIndexOutOfSync (indexPath, toolboxWidget.CategoryVisibilities)) {
+				return null;
+			}
+		
 			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
-			var widgetItem = widget.CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
+			var widgetItem = toolboxWidget.CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 
 			if (!cachedImages.TryGetValue (widgetItem, out var catchedImages)) {
 				catchedImages = (widgetItem.Icon.ToNSImage (), widgetItem.Icon.WithStyles ("sel").ToNSImage ());
@@ -58,9 +62,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return collectionViewItem;
 		}
 
+		bool IsIndexOutOfSync (NSIndexPath indexPath, List<CategoryVisibility> categoryVisibilities)
+		{
+			//because multitask our control sections could be unsync when our current document changes
+			return IsIndexOutOfSync (indexPath.Section, categoryVisibilities) || indexPath.Item >= categoryVisibilities [(int)indexPath.Section].Items.Count;
+		}
+
+		bool IsIndexOutOfSync (nint section, List<CategoryVisibility> categoryVisibilities)
+		{
+			//because multitask our control sections could be unsync when our current document changes
+			return section >= categoryVisibilities.Count;
+		}
+
 		public override NSView GetView (NSCollectionView collectionView, NSString kind, NSIndexPath indexPath)
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
+			if (IsIndexOutOfSync (indexPath.Section, toolboxWidget.CategoryVisibilities)) {
+				return null;
+			}
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
 				var section = toolboxWidget.CategoryVisibilities [(int)indexPath.Section].Category;
 				button.TitleTextField.StringValue = section.Text.Replace ("&amp;", "&");
@@ -89,8 +108,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override nint GetNumberofItems (NSCollectionView collectionView, nint section)
 		{
 			var toolboxWidget = (MacToolboxWidget)collectionView;
-			if (section >= toolboxWidget.CategoryVisibilities.Count) {
-				//because multitask our control sections could be unsync when our current document changes
+			if (IsIndexOutOfSync (section, toolboxWidget.CategoryVisibilities)) {
 				return 0;
 			}
 			return toolboxWidget.CategoryVisibilities [(int)section].Items.Count;
