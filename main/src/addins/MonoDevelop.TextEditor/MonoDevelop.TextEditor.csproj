@@ -102,6 +102,11 @@
     <Compile Include="TextViewContent.cs" />
     <Compile Include="TextViewDisplayBinding.cs" />
     <Compile Include="TextViewImports.cs" />
+    <Compile Include="Undo\UndoHistory.cs" />
+    <Compile Include="Undo\UndoHistoryRegistry.cs" />
+    <Compile Include="Undo\UndoTransaction.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
