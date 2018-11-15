@@ -41,7 +41,10 @@ namespace MonoDevelop.Ide.Text
 
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
 		{
-			return new System.Windows.Controls.Button () { Content = "FOO" };
+			var textBuffer = imports.TextBufferFactoryService.CreateTextBuffer (@"WPF RUleZ", imports.TextBufferFactoryService.PlaintextContentType);
+			var textView = imports.TextEditorFactoryService.CreateTextView (textBuffer);
+			var textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (textView, setFocus: true);
+			return textViewHost.HostControl;
 		}
 
 		public override Widget Widget => xwtWidget;
