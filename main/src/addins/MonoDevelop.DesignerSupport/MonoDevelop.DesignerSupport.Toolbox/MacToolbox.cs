@@ -169,6 +169,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				HasHorizontalScroller = false,
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
+			scrollView.WantsLayer = true;
 			scrollView.DocumentView = toolboxWidget;
 			AddArrangedSubview (scrollView);
 
