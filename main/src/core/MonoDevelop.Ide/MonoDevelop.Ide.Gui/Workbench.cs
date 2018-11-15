@@ -302,6 +302,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		OptionsDialog globalPreferencesDialog;
+		public OptionsDialog GlobalPreferencesDialog {
+			get {
+				return globalPreferencesDialog;
+			}
+		}
+
 		public void ShowCommandBar (string barId)
 		{
 			workbench.Toolbar.ShowCommandBar (barId);
@@ -766,6 +773,7 @@ namespace MonoDevelop.Ide.Gui
 				properties,
 				"/MonoDevelop/Ide/GlobalOptionsDialog");
 
+			globalPreferencesDialog = ops;
 			ops.Title = Platform.IsWindows
 				? GettextCatalog.GetString ("Options")
 				: GettextCatalog.GetString ("Preferences");
