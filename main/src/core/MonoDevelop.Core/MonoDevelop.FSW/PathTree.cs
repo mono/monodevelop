@@ -148,15 +148,16 @@ namespace MonoDevelop.FSW
 			return false;
 		}
 
-		public PathTreeNode AddNode (string path, object id, out bool isNew)
+		public PathTreeNode AddNode (string path, object id, out bool isModified)
 		{
-			isNew = !TryFind (path, out var result, out var parent, out var previousNode, out var lastIndex);
-			if (!isNew) {
+			if (TryFind (path, out var result, out var parent, out var previousNode, out var lastIndex)) {
+				isModified = !result.IsLive;
 				result.RegisterId (id);
 				return result;
 			}
 
 			// At this point, we need to create a new node.
+			isModified = true;
 			var (first, leaf) = PathTreeNode.CreateSubTree (path, lastIndex);
 			if (id != null)
 				leaf.RegisterId (id);
