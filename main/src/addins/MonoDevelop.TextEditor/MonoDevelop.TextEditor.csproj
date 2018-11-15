@@ -98,6 +98,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="KeyProcessor\DefaultKeyProcessor.cs" />
+    <Compile Include="KeyProcessor\DefaultKeyProcessorProvider.cs" />
     <Compile Include="RootWpfWidget.cs" />
     <Compile Include="TextViewContent.cs" />
     <Compile Include="TextViewDisplayBinding.cs" />
