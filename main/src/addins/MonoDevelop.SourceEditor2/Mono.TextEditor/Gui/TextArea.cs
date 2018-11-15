@@ -1263,14 +1263,7 @@ namespace Mono.TextEditor
 		{
 			try {
 				if (currentFocus == FocusMargin.TextView) {
-					long time;
-#if MAC
-					time = (long)TimeSpan.FromSeconds (AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp).TotalMilliseconds;
-#else
-					// Warning, Gdk returns uint32 as time value, so this might overflow.
-					time = evt.Time;
-#endif
-					keyPressTimings.StartTimer (time);
+					keyPressTimings.StartTimer (evt);
 					return HandleTextKey (evt);
 				} else if (currentFocus != FocusMargin.None) {
 					return HandleMarginKeyCommand (evt);
@@ -3375,6 +3368,11 @@ namespace Mono.TextEditor
 		void OnDocumentStateChanged (object s, TextChangeEventArgs args)
 		{
 			HideTooltip ();
+			if (editor.Document.SyntaxMode is ISyntaxHighlighting2 sh2) {
+				if (sh2.IsUpdatingOnTextChange)
+					return;
+			}
+
 			for (int i = 0; i < args.TextChanges.Count; ++i) {
 				var change = args.TextChanges[i];
 				var start = editor.Document.OffsetToLineNumber (change.NewOffset);

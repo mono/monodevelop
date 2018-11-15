@@ -177,8 +177,12 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		//	}
 		//}
 
-		static CompletionItemRules DelegateRules = CompletionItemRules.Create (matchPriority: 9999);
-		static CompletionItemRules NewMethodRules = CompletionItemRules.Create (matchPriority: 10000);
+		static CompletionItemRules DelegateRules = CompletionItemRules.Create (matchPriority: 9999).WithCommitCharacterRule (
+			CharacterSetModificationRule.Create (CharacterSetModificationKind.Remove, '(', ')')
+		);
+		static CompletionItemRules NewMethodRules = CompletionItemRules.Create (matchPriority: 10000).WithCommitCharacterRule (
+			CharacterSetModificationRule.Create (CharacterSetModificationKind.Remove, '(', ')')
+		);
 
 		const string thisLineIndentMarker = "$thisLineIndent$";
 		const string oneIndentMarker = "$oneIndent$";
@@ -272,8 +276,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					);
 					//item.CompletionCategory = category;
 					if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
-						context.AddItem (item);
-						context.SuggestionModeItem = item;
+						context.AddItem (item.WithRules (item.Rules.WithMatchPriority (int.MaxValue)));
 					}
 
 					//if (LanguageVersion.Major >= 5) {
@@ -296,8 +299,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			item = CreateNewMethodCreationItem (parent, semanticModel, delegateType, position, optDelegateName, delegateMethod, cancellationToken);
 			// item.CompletionCategory = category;
 			if (!context.Items.Any (i => i.DisplayText == item.DisplayText)) {
-				context.AddItem (item);
-				context.SuggestionModeItem = item;
+				context.AddItem (item.WithRules (item.Rules.WithMatchPriority (int.MaxValue)));
 			}
 		}
 

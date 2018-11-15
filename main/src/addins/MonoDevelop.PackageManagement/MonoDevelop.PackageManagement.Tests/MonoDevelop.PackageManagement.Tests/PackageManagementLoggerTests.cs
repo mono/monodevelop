@@ -75,6 +75,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			AssertOnPackageOperationMessageLoggedCalled (MessageLevel.Info, "Test C");
 		}
+
+		[Test]
+		public void Log_ErrorMessageLogged_CaptureErrorsForSummary ()
+		{
+			CreateLogger ();
+			logger.SaveErrors = true;
+
+			logger.Log (MessageLevel.Error, "test");
+			messagesLoggedEventArgs.Clear ();
+
+			logger.LogSavedErrors ();
+
+			AssertOnPackageOperationMessageLoggedCalled (MessageLevel.Info, "test");
+		}
 	}
 }
 

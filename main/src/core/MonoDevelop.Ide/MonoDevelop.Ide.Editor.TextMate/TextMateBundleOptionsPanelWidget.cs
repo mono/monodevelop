@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 					}
 					FillBundles ();
 				} else {
-					MessageService.ShowError (GettextCatalog.GetString ("Invalid bundle: " + dialog.SelectedFile.FileName));
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid bundle: {0}", dialog.SelectedFile.FileName));
 					try {
 						File.Delete (newFileName);
 					} catch (Exception) {}

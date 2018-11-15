@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 
 namespace MonoDevelop.CSharp
 {
@@ -155,18 +156,46 @@ namespace MonoDevelop.CSharp
 
 			static void AddArgument(TypedConstant arg, StringBuilder sb)
 			{
-				if (arg.Kind == TypedConstantKind.Array) {
+				switch (arg.Kind) {
+				case TypedConstantKind.Array:
 					sb.Append ("[");
-					for (int i = 0; i < arg.Values.Length; i++)
-					{
+					for (int i = 0; i < arg.Values.Length; i++) {
 						if (i > 0)
 							sb.Append (", ");
-						
+
 						AddArgument (arg.Values [i], sb);
 					}
 					sb.Append ("]");
-				} else
+					break;
+				case TypedConstantKind.Enum:
+					ulong constant;
+					try {
+						constant = Convert.ToUInt64 (arg.Value);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while converting enum constant to uint: " + arg.Value, e);
+						goto default;
+					}
+					int num = 0;
+					foreach (var member in arg.Type.GetMembers ()) {
+						if (member is IFieldSymbol field && field.HasConstantValue) {
+							try {
+								var fieldValue = Convert.ToUInt64 (field.ConstantValue);
+								var IsDefaultEnum = constant == 0 && fieldValue == 0;
+								if (IsDefaultEnum || fieldValue != 0 && (constant & fieldValue) == fieldValue) {
+									if (num++ > 0)
+										sb.Append (", ");
+									sb.Append (field.Name);
+								}
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while converting enum field constant to uint: " + field.ConstantValue + " enum type:" + arg.Type.ToDisplayString (), e);
+							}
+						}
+					}
+					break;
+				default:
 					AppendConstant (sb, arg.Value);
+					break;
+				}
 			}
 
 			public override void VisitMethodDeclaration (MethodDeclarationSyntax node)

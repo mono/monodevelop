@@ -57,6 +57,8 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			nodeInfo.Label = node.GetLabel ();
 			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
 			nodeInfo.Icon = Context.GetIcon (node.GetIconId ());
+			nodeInfo.StatusSeverity = node.GetStatusSeverity ();
+			nodeInfo.StatusMessage = node.GetStatusMessage ();
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -74,6 +76,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		{
 			var node = (PackageDependencyNode)dataObject;
 			return node.GetDependencyNodes ();
+		}
+
+		/// <summary>
+		/// Ensure diagnostics appear first before NuGet package dependencies.
+		/// </summary>
+		public override int GetSortIndex (ITreeNavigator node)
+		{
+			var dependency = (PackageDependencyNode)node.DataItem;
+			if (dependency.IsDiagnostic)
+				return -500;
+
+			return base.GetSortIndex (node);
 		}
 	}
 }

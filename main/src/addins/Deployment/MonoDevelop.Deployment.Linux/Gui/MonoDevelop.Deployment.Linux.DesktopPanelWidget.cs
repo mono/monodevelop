@@ -26,7 +26,6 @@ namespace MonoDevelop.Deployment.Linux
 			this.label6 = new global::Gtk.Label ();
 			this.label6.CanFocus = true;
 			this.label6.Name = "label6";
-			this.label6.LabelProp = "page1";
 			this.notebook2.SetTabLabel (w1, this.label6);
 			this.label6.ShowAll ();
 			this.Add (this.notebook2);

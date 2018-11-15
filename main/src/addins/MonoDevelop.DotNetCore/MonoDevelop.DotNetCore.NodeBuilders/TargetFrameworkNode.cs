@@ -34,12 +34,12 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 	class TargetFrameworkNode
 	{
 		DependenciesNode dependenciesNode;
-		PackageDependency dependency;
+		PackageDependencyInfo dependency;
 		bool sdkDependencies;
 
 		public TargetFrameworkNode (
 			DependenciesNode dependenciesNode,
-			PackageDependency dependency,
+			PackageDependencyInfo dependency,
 			bool sdkDependencies)
 		{
 			this.dependenciesNode = dependenciesNode;

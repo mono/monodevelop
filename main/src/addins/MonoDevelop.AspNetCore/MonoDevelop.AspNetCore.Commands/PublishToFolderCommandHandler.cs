@@ -11,6 +11,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 
 			if (!ProjectSupportsFolderPublishing (project)) {
+				info.Visible = false;			
 				return;
 			}
 

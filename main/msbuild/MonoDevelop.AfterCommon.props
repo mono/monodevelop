@@ -34,4 +34,20 @@
 			<LogicalName>%(Filename)%(Extension)</LogicalName>
 		</EmbeddedResource>
 	</ItemDefinitionGroup>
+
+	<ItemGroup Condition=" '$(MD_PERF_ANALYZERS_ENABLED)' == 'true' ">
+		<!-- ErrorProne.NET.Structs -->
+		<Analyzer Include="$(PackagesDirectory)\ErrorProne.NET.Structs.$(NuGetVersionErrorProneNetStructs)\analyzers\dotnet\cs\ErrorProne.Net.StructAnalyzers.dll" />
+
+		<!-- ClrHeapAllocationAnalyzer -->
+		<Analyzer Include="$(PackagesDirectory)\ClrHeapAllocationAnalyzer.$(NuGetVersionAllocationAnalyzer)\analyzers\dotnet\cs\ClrHeapAllocationAnalyzer.dll" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<MonoDevelopDevAnalyzer>$(PackagesDirectory)\MonoDevelopDev.Analyzers.$(NugetVersionMonoDevelopAnalyzers)\analyzers\dotnet\cs\MonoDevelop.Analyzers.dll</MonoDevelopDevAnalyzer>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Analyzer Include="$(MonoDevelopDevAnalyzer)" Condition="Exists('$(MonoDevelopDevAnalyzer)')" />
+	</ItemGroup>
 </Project>

@@ -924,6 +924,43 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		/// <summary>
+		/// Simulate what happens when a user deletes a file from an SDK style project and whilst this is happening an
+		/// MSBuild target is run on the project before the file is deleted from disk.
+		/// </summary>
+		[Test]
+		public async Task DeleteFile_ProjectFileRemovedFromProjectMSBuildTargetRunBeforeFileDeleted_RemoveItemNotSaved ()
+		{
+			var fn = new CustomItemNode<SupportImportedProjectFilesProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string projFile = Util.GetSampleProject ("msbuild-glob-tests", "glob-import-test.csproj");
+				var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				p.UseAdvancedGlobSupport = true;
+				string expectedXml = File.ReadAllText (projFile);
+				Assert.AreEqual (3, p.Files.Count);
+
+				// Remove the file from the project but do not delete the file yet.
+				var f = p.Files.First (fi => fi.FilePath.FileName == "c2.cs");
+				p.Files.Remove (f);
+				Assert.AreEqual (2, p.Files.Count);
+				// Update MSBuild information in memory by getting the project builder when running an MSBuild target.
+				// Since the c2.cs file is not deleted a Remove item will be added to the MSBuildProject.
+				await p.RunTarget (Util.GetMonitor (), "ResolveAssemblyReferences", ConfigurationSelector.Default);
+				// Delete the .cs file and save the project.
+				File.Delete (f.FilePath);
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string projectXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (expectedXml, projectXml);
+
+				p.Dispose ();
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
 		[Test]
 		public async Task FilesImportedAreMarkedAsImported ()
 		{

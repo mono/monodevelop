@@ -324,6 +324,7 @@ namespace MonoDevelop.Ide
 			
 			if (error != null) {
 				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop failed to start"));
+				message = message + "\n\n" + error.Message;
 				MessageService.ShowFatalError (message, null, error);
 
 				return 1;
@@ -473,9 +474,9 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
-		async void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
+		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
 		{
-			var result = await Task.Run (() => DesktopService.PlatformTelemetry);
+			var result = DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}

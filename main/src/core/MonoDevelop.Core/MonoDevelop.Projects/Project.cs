@@ -532,18 +532,25 @@ namespace MonoDevelop.Projects
 		protected virtual async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
-			var results = new List<ProjectFile> ();
-
 			var evaluatedItems = await GetEvaluatedSourceFiles (configuration);
-			results.AddRange (evaluatedItems);
 
 			// add in any compile items that we discover from running the CoreCompile dependencies
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
 			var evaluatedCompileItems = coreCompileResult.SourceFiles;
-			var addedItems = evaluatedCompileItems.Where (i => results.All (pi => pi.FilePath != i.FilePath)).ToList ();
-			results.AddRange (addedItems);
+
+			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
+			results.UnionWith (evaluatedCompileItems);
 
 			return results.ToArray ();
+		}
+
+		class ProjectFileFilePathComparer : IEqualityComparer<ProjectFile>
+		{
+			public readonly static ProjectFileFilePathComparer Instance = new ProjectFileFilePathComparer ();
+
+			public bool Equals (ProjectFile x, ProjectFile y) => x.FilePath == y.FilePath;
+
+			public int GetHashCode (ProjectFile obj) => obj.FilePath.GetHashCode ();
 		}
 
 		object evaluatedSourceFilesLock = new object ();
@@ -1620,7 +1627,7 @@ namespace MonoDevelop.Projects
 
 			if (modifiedInMemory) {
 				modifiedInMemory = false;
-				string content = await WriteProjectAsync (new ProgressMonitor ());
+				string content = await WriteProjectAsync (new ProgressMonitor (), inMemoryOnly: true);
 				try {
 					await RemoteBuildEngineManager.RefreshProjectWithContent (FileName, content);
 				} catch {
@@ -2581,11 +2588,11 @@ namespace MonoDevelop.Projects
 
 		AsyncCriticalSection writeProjectLock = new AsyncCriticalSection ();
 
-		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor)
+		internal async Task<string> WriteProjectAsync (ProgressMonitor monitor, bool inMemoryOnly = false)
 		{
 			using (await writeProjectLock.EnterAsync ().ConfigureAwait (false)) {
 				return await Task.Run (() => {
-					WriteProject (monitor);
+					WriteProject (monitor, inMemoryOnly);
 					return sourceProject.SaveToString ();
 				}).ConfigureAwait (false);
 			}
@@ -2593,7 +2600,7 @@ namespace MonoDevelop.Projects
 
 		ITimeTracker writeTimer;
 
-		void WriteProject (ProgressMonitor monitor)
+		void WriteProject (ProgressMonitor monitor, bool inMemoryOnly)
 		{
 			if (saving) {
 				LoggingService.LogError ("WriteProject called while the project is already being written");
@@ -2630,6 +2637,10 @@ namespace MonoDevelop.Projects
 				}
 
 				sourceProject.IsNewProject = false;
+
+				// If saving to disk then clear any new remove items added in-memory.
+				if (!inMemoryOnly)
+					newMSBuildRemoveItems.Clear ();
 				writeTimer.Trace ("Project written");
 			} finally {
 				writeTimer.End ();
@@ -3588,6 +3599,7 @@ namespace MonoDevelop.Projects
 
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 		HashSet<ProjectItem> loadedProjectItems = new HashSet<ProjectItem> ();
+		HashSet<(MSBuildItem MSBuildItem, FilePath FilePath)> newMSBuildRemoveItems = new HashSet<(MSBuildItem MSBuildItem, FilePath FilePath)> ();
 
 		internal virtual void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
@@ -3612,6 +3624,8 @@ namespace MonoDevelop.Projects
 							if (file == null || File.Exists (file.FilePath)) {
 								var removeItem = new MSBuildItem (removed.ItemName) { Remove = removed.Include };
 								msproject.AddItem (removeItem);
+								if (file != null)
+									newMSBuildRemoveItems.Add ((removeItem, file.FilePath));
 							}
 							unusedItems.UnionWith (FindUpdateItemsForItem (globItem, removed.Include));
 						}
@@ -3679,6 +3693,14 @@ namespace MonoDevelop.Projects
 				}
 				loadedItems.Remove (it);
 			}
+
+			// Remove any unused MSBuild Remove items that were added in memory only. These may have been added
+			// when an MSBuild target was run whilst a file was being deleted from a project.
+			foreach (var removeItem in newMSBuildRemoveItems) {
+				if (!File.Exists (removeItem.FilePath))
+					msproject.RemoveItem (removeItem.MSBuildItem);
+			}
+
 			loadedProjectItems = new HashSet<ProjectItem> (Items);
 		}
 
@@ -4174,7 +4196,7 @@ namespace MonoDevelop.Projects
 				using (await writeProjectLock.EnterAsync ()) {
 
 					if (modifiedInMemory) {
-						await Task.Run (() => WriteProject (monitor));
+						await Task.Run (() => WriteProject (monitor, inMemoryOnly: true));
 						modifiedInMemory = false;
 					}
 

@@ -49,6 +49,9 @@ using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.CSharp.OptionProvider;
 using Microsoft.VisualStudio.CodingConventions;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Formatting.Rules;
+using MonoDevelop.Ide.Completion.Presentation;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -62,49 +65,51 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsPartialDocumentFormatting { get { return true; } }
 
-		protected override async void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
-			var lineSegment = editor.GetLine (line);
-			if (lineSegment == null)
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Wait ();
+		}
+
+		protected async override Task CorrectIndentingImplementationAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
+		{
+			if (editor.IndentationTracker == null)
+				return;
+			var startSegment = editor.GetLine (startLine);
+			if (startSegment == null)
+				return;
+			var endSegment = startLine != endLine ? editor.GetLine (endLine) : startSegment;
+			if (endSegment == null)
 				return;
 
 			try {
-				Microsoft.CodeAnalysis.Options.OptionSet options = null;
+				var document = context.AnalysisDocument;
 
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (doc.Editor == editor) {
-						options = await doc.GetOptionsAsync ();
-						break;
-					}
-				}
+				var formattingService = document.GetLanguageService<IEditorFormattingService> ();
+				if (formattingService == null || !formattingService.SupportsFormatSelection)
+					return;
 
-				if (options == null) {
-					var policy = policyParent.Get<CSharpFormattingPolicy> (MimeType);
-					var textpolicy = policyParent.Get<TextStylePolicy> (MimeType);
-					options = policy.CreateOptions (textpolicy);
-				}
+				var formattingRules = new List<IFormattingRule> ();
+				formattingRules.Add (ContainedDocumentPreserveFormattingRule.Instance);
+				formattingRules.AddRange (Formatter.GetDefaultFormattingRules (document));
 
-				var tracker = new CSharpIndentEngine (options);
+				var workspace = document.Project.Solution.Workspace;
+				var root = await document.GetSyntaxRootAsync (cancellationToken);
+				var options = await document.GetOptionsAsync (cancellationToken);
+				var changes = Formatter.GetFormattedTextChanges (
+					root, new TextSpan [] { new TextSpan (startSegment.Offset, endSegment.EndOffset - startSegment.Offset) },
+					workspace, options, formattingRules, cancellationToken);
 
-				tracker.Update (IdeApp.Workbench.ActiveDocument.Editor, lineSegment.Offset);
-				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-					tracker.Push (editor.GetCharAt (i));
-				}
-
-				string curIndent = lineSegment.GetIndentation (editor);
-
-				int nlwsp = curIndent.Length;
-				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && editor.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
-					// Possibly replace the indent
-					string newIndent = tracker.ThisLineIndent;
-					if (newIndent != curIndent)
-						editor.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
-				}
+				if (changes == null)
+					return;
+				editor.ApplyTextChanges (changes);
+				editor.FixVirtualIndentation ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);
 			}
 		}
-
 		protected override async void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
 			var doc = context.AnalysisDocument;

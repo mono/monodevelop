@@ -45,27 +45,27 @@ namespace Stetic.Editor {
 			
 			menu = new Gtk.Menu ();
 
-			markItem = new Gtk.CheckMenuItem ("Mark for Translation");
+			markItem = new Gtk.CheckMenuItem (Mono.Unix.Catalog.GetString ("Mark for Translation"));
 			markItem.Toggled += ToggleMark;
 			markItem.Show ();
 			menu.Add (markItem);
 			
-			addContextItem = new Gtk.MenuItem ("Add Translation Context Hint");
+			addContextItem = new Gtk.MenuItem (Mono.Unix.Catalog.GetString ("Add Translation Context Hint"));
 			addContextItem.Activated += AddContext;
 			menu.Add (addContextItem);
-			remContextItem = new Gtk.MenuItem ("Remove Translation Context Hint");
+			remContextItem = new Gtk.MenuItem (Mono.Unix.Catalog.GetString ("Remove Translation Context Hint"));
 			remContextItem.Activated += RemoveContext;
 			menu.Add (remContextItem);
 			
-			addCommentItem = new Gtk.MenuItem ("Add Comment for Translators");
+			addCommentItem = new Gtk.MenuItem (Mono.Unix.Catalog.GetString ("Add Comment for Translators"));
 			addCommentItem.Activated += AddComment;
 			menu.Add (addCommentItem);
-			remCommentItem = new Gtk.MenuItem ("Remove Comment for Translators");
+			remCommentItem = new Gtk.MenuItem (Mono.Unix.Catalog.GetString ("Remove Comment for Translators"));
 			remCommentItem.Activated += RemoveComment;
 			menu.Add (remCommentItem);
 			
 			contextBox = new Gtk.HBox (false, 6);
-			Gtk.Label contextLabel = new Gtk.Label ("Translation context");
+			Gtk.Label contextLabel = new Gtk.Label (Mono.Unix.Catalog.GetString ("Translation context"));
 			contextLabel.Xalign = 0.0f;
 			contextBox.PackStart (contextLabel, false, false, 0);
 			contextEntry = new Gtk.Entry ();
@@ -75,7 +75,7 @@ namespace Stetic.Editor {
 			contextEntry.Changed += ContextChanged;
 
 			commentBox = new Gtk.VBox (false, 3);
-			Gtk.Label commentLabel = new Gtk.Label ("Comment for Translators:");
+			Gtk.Label commentLabel = new Gtk.Label (Mono.Unix.Catalog.GetString ("Comment for Translators:"));
 			commentLabel.Xalign = 0.0f;
 			commentBox.PackStart (commentLabel, false, false, 0);
 			commentText = new TextBox (3);

@@ -43,11 +43,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Editor.Shared;
+using Microsoft.CodeAnalysis.Editor.Shared.Extensions;
 using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.OrganizeImports;
+using Microsoft.CodeAnalysis.RemoveUnnecessaryImports;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
+	enum Commands
+	{
+		SortAndRemoveImports,
+	}
+
 	sealed class CurrentRefactoryOperationsHandler : CommandHandler
 	{
 		protected override void Run (object dataItem)
@@ -60,9 +70,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected override async Task UpdateAsync (CommandArrayInfo ainfo, CancellationToken cancelToken)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.AnalysisDocument == null)
+			var analysisDocument = doc.AnalysisDocument;
+			if (doc == null || doc.FileName == FilePath.Null || analysisDocument == null)
 				return;
-			var semanticModel = await doc.AnalysisDocument.GetSemanticModelAsync (cancelToken);
+			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancelToken);
 			if (semanticModel == null)
 				return;
 			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
@@ -73,6 +84,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (canRename) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (async delegate {
 					await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
+				}));
+			}
+
+			bool isSortAndRemoveUsingsSupported = IsSortAndRemoveImportsSupported (analysisDocument);
+			if (isSortAndRemoveUsingsSupported) {
+				var sortAndRemoveImportsInfo = IdeApp.CommandService.GetCommandInfo (Commands.SortAndRemoveImports);
+				sortAndRemoveImportsInfo.Enabled = true;
+				ainfo.Add (sortAndRemoveImportsInfo, new Action (async delegate {
+					await SortAndRemoveUnusedImports (analysisDocument, cancelToken);
 				}));
 			}
 
@@ -105,7 +125,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
 
 					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-						FindReferencesHandler.FindRefs (new [] { SymbolAndProjectId.Create (sym, doc.AnalysisDocument.Project.Id) }, doc.AnalysisDocument.Project.Solution).Ignore ();
+						FindReferencesHandler.FindRefs (new [] { SymbolAndProjectId.Create (sym, analysisDocument.Project.Id) }, analysisDocument.Project.Solution).Ignore ();
 					} else {
 						RefactoringService.FindReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ()).Ignore ();
 					}
@@ -117,6 +137,40 @@ namespace MonoDevelop.CSharp.Refactoring
 				} catch (Exception) {
 					// silently ignore roslyn bug.
 				}
+			}
+		}
+
+		static bool IsSortAndRemoveImportsSupported (Document document)
+		{
+			var workspace = document.Project.Solution.Workspace;
+
+			if (!workspace.CanApplyChange (ApplyChangesKind.ChangeDocument)) {
+				return false;
+			}
+
+			if (workspace.Kind == WorkspaceKind.MiscellaneousFiles) {
+				return false;
+			}
+
+			return workspace.Services.GetService<IDocumentSupportsFeatureService> ().SupportsRefactorings (document);
+		}
+
+		static async Task SortAndRemoveUnusedImports (Document originalDocument, CancellationToken cancellationToken)
+		{
+			if (originalDocument == null)
+				return;
+
+			var workspace = originalDocument.Project.Solution.Workspace;
+
+			var unnecessaryImportsService = originalDocument.GetLanguageService<IRemoveUnnecessaryImportsService> ();
+
+			// Remove unnecessary imports and sort them
+			var removedImportsDocument = await unnecessaryImportsService.RemoveUnnecessaryImportsAsync (originalDocument, cancellationToken);
+			var resultDocument = await OrganizeImportsService.OrganizeImportsAsync (removedImportsDocument, cancellationToken);
+
+			// Apply the document change if needed
+			if (resultDocument != originalDocument) {
+				workspace.ApplyDocumentChanges (resultDocument, cancellationToken);
 			}
 		}
 

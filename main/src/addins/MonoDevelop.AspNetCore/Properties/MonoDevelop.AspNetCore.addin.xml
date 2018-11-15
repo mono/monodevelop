@@ -25,6 +25,8 @@
 		<Import file = "Templates/RazorPageWithPageModel.xft.xml" />
 		<Import file = "Templates/RazorPageWithPageModel.cshtml" />
 		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
+		<Import file = "Templates/AppSettingsFile.xft.xml" />
+		<Import file = "Templates/AppSettingsFile.json" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -52,6 +54,9 @@
 		              file = "Templates/RazorPage.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreRazorPageWithPageModel"
 		              file = "Templates/RazorPageWithPageModel.xft.xml"/>
+		
+		<FileTemplate id   = "AspNetCoreAppSettingsFile"
+		              file = "Templates/AppSettingsFile.xft.xml"/>
 		
 	</Extension>
 	
@@ -425,9 +430,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
-		<SeparatorItem id = "ProfilesSeparator" />
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
+		<Condition id="ItemType" value="Project">
+			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+			<SeparatorItem id = "ProfilesSeparator" />
+			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">
@@ -436,34 +443,4 @@
 		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
 	</Extension>
 
-	
-
-	
-	
-
-	
-
-	
-
-	
-
-	
-	
-	<!--
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">		
-		<Condition id="ItemType" value="Project">
-			<ItemSet id = "PublishToFolderProfiles" _label = "Publish" autohide="True" >
-				<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
-				<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
-			</ItemSet>
-		</Condition>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">		
-		<ItemSet id = "PublishToFolder" _label = "Publish" autohide="True" >
-			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />	
-			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
-		</ItemSet>
-	</Extension>
-	-->
 </ExtensionModel>

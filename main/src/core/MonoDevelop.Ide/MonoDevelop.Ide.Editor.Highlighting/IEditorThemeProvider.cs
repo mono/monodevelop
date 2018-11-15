@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return theme;
 			} catch (Exception e) {
 				if (faultedThemes.Add (Name)) {
-					MessageService.ShowError (GettextCatalog.GetString ("Error while loading theme :" + Name), e);
+					MessageService.ShowError (GettextCatalog.GetString ("Error while loading theme: {0}", Name), e);
 					LoggingService.LogError ("Error while loading theme :" + Name, e);
 				}
 				return null;

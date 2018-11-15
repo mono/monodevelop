@@ -217,16 +217,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtn.Toggled += HandleTextLogToggled;
 			toolbar.Add (logBtn);
 
-			buildLogBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
-			buildLogBtn.Accessible.Name = "ErrorPad.BuildLogButton";
-			buildLogBtn.TooltipText = GettextCatalog.GetString ("Structured Build Output");
-			buildLogBtn.Accessible.Description = GettextCatalog.GetString ("Structured Build Output");
+			if (BuildOutput.FeatureToggle.IsEnabled) {
+				buildLogBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
+				buildLogBtn.Accessible.Name = "ErrorPad.BuildLogButton";
+				buildLogBtn.TooltipText = GettextCatalog.GetString ("Structured Build Output");
+				buildLogBtn.Accessible.Description = GettextCatalog.GetString ("Structured Build Output");
 
-			logBtnLbl.Text = GettextCatalog.GetString ("Structured Build Output");
-			buildLogBtn.Accessible.SetTitle (logBtnLbl.Text);
+				logBtnLbl.Text = GettextCatalog.GetString ("Structured Build Output");
+				buildLogBtn.Accessible.SetTitle (logBtnLbl.Text);
 
-			buildLogBtn.Clicked += HandleBinLogClicked;
-			toolbar.Add (buildLogBtn);
+				buildLogBtn.Clicked += HandleBinLogClicked;
+				toolbar.Add (buildLogBtn);
+			}
 
 			buildOutput = new BuildOutput ();
 
@@ -338,7 +340,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.Toggled -= FilterChanged;
 			msgBtn.Toggled -= FilterChanged;
 			logBtn.Toggled -= HandleTextLogToggled;
-			buildLogBtn.Clicked -= HandleBinLogClicked;
+			if (BuildOutput.FeatureToggle.IsEnabled)
+				buildLogBtn.Clicked -= HandleBinLogClicked;
 			searchEntry.Entry.Changed -= searchPatternChanged;
 
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
@@ -458,9 +461,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			help.Clicked += OnShowReference;
 			menu.Add (help);
 
-			var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to _Log"));
-			goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
-			menu.Add (goBuild);
+			if (BuildOutput.FeatureToggle.IsEnabled) {
+				var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to _Log"));
+				goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
+				menu.Add (goBuild);
+			}
 
 			var jump = new ContextMenuItem (GettextCatalog.GetString ("_Go to Task"));
 			jump.Clicked += OnTaskJumpto;
@@ -1053,7 +1058,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Document buildOutputDoc;
 		void HandleBinLogClicked (object sender, EventArgs e)
 		{
-			OpenBuildOutputViewDocument ();
+			if (BuildOutput.FeatureToggle.IsEnabled) {
+				OpenBuildOutputViewDocument ();
+			}
 		}
 
 		void OpenBuildOutputViewDocument () 

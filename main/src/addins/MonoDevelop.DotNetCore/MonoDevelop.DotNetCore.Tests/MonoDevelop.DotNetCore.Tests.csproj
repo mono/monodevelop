@@ -15,6 +15,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.7.0\lib\net46\NuGet.Versioning.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -32,6 +35,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectSupportedTargetFrameworksTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateWizardTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateStringTagProviderTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DependencyNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
@@ -72,6 +76,10 @@
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

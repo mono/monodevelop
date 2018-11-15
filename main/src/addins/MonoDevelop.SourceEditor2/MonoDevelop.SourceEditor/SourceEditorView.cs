@@ -249,6 +249,7 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.ShowMessageBubbles.Changed += HandleIdeAppPreferencesShowMessageBubblesChanged;
 			TaskService.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
+			widget.TextEditor.Options.ZoomChanged += HandleWidgetTextEditorOptionsZoomChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			// Document.AddAnnotation (this);
 
@@ -568,6 +569,11 @@ namespace MonoDevelop.SourceEditor
 			currentErrorMarkers.ForEach (marker => marker.DisposeLayout ());
 		}
 
+		void HandleWidgetTextEditorOptionsZoomChanged (object sender, EventArgs e)
+		{
+			zoomLevelChanged?.Invoke (this, e);
+		}
+
 		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
 		{
 			var task = e.Tasks != null ? e.Tasks.FirstOrDefault () : null;
@@ -804,6 +810,11 @@ namespace MonoDevelop.SourceEditor
 			} catch (UnauthorizedAccessException e) {
 				LoggingService.LogError ("Error while saving file", e);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
+				return;
+			} catch (IOException e) {
+				LoggingService.LogError ("Error while saving file", e);
+				MessageService.ShowError (e.Message);
+				return;
 			}
 
 			//			if (encoding != null)
@@ -1056,6 +1067,7 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
+			widget.TextEditor.Options.ZoomChanged -= HandleWidgetTextEditorOptionsZoomChanged;
 			widget.TextEditor.TextViewMargin.LineShowing -= TextViewMargin_LineShowing;
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
@@ -2351,8 +2363,9 @@ namespace MonoDevelop.SourceEditor
 
 		void CorrectIndenting ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument?.Editor;
-			if (doc == null)
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var editor = doc?.Editor;
+			if (editor == null)
 				return;
 			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 			if (formatter == null || !formatter.SupportsCorrectingIndent)
@@ -2366,13 +2379,11 @@ namespace MonoDevelop.SourceEditor
 					var lead = selection.GetLeadOffset (editorData);
 					var version = TextEditor.Document.Version;
 					int max = selection.MaxLine;
-					for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
-						formatter.CorrectIndenting (policies, doc, i);
-					}
+					formatter.CorrectIndentingAsync (editor, doc, TextEditor.MainSelection.MinLine, max);
 					editorData.SetSelection (version.MoveOffsetTo (editorData.Document.Version, anchor), version.MoveOffsetTo (editorData.Document.Version, lead));
 				}
 			} else {
-				formatter.CorrectIndenting (policies, doc, TextEditor.Caret.Line);
+				formatter.CorrectIndenting (policies, editor, TextEditor.Caret.Line);
 			}
 		}
 
@@ -2382,6 +2393,8 @@ namespace MonoDevelop.SourceEditor
 				return TextEditor.GetTextEditorData ();
 			if (type.Equals (typeof (IDocumentReloadPresenter)))
 				return widget;
+			if (type.Equals (typeof (Microsoft.VisualStudio.Text.ITextDocument)))
+				return Document.VsTextDocument;
 			return base.OnGetContent (type);
 		}
 
@@ -3185,12 +3198,14 @@ namespace MonoDevelop.SourceEditor
 			get { return TextEditor != null && TextEditor.Options != null ? TextEditor.Options.Zoom : 1d; }
 			set { if (TextEditor != null && TextEditor.Options != null) TextEditor.Options.Zoom = value; }
 		}
+
+		event EventHandler zoomLevelChanged;
 		event EventHandler ITextEditorImpl.ZoomLevelChanged {
 			add {
-				TextEditor.Options.ZoomChanged += value;
+				zoomLevelChanged += value;
 			}
 			remove {
-				TextEditor.Options.ZoomChanged -= value;
+				zoomLevelChanged -= value;
 			}
 		}
 

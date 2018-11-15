@@ -661,8 +661,10 @@ namespace MonoDevelop.Core
 					throw new FileNotFoundException ();
 				case Errno.ENAMETOOLONG:
 					throw new PathTooLongException ();
+				case Errno.EXDEV:
+					throw new IOException (GettextCatalog.GetString("Invalid file move accross filesystem boundaries."));
 				default:
-					throw new IOException ();
+					throw new IOException ("Error:" + Stdlib.GetLastError ());
 				}
 			}
 		}

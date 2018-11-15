@@ -27,6 +27,7 @@
 using MonoDevelop.Core.Text;
 using Mono.Addins;
 using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -99,9 +100,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 			textEditor.ZoomLevel = zoomLevel;
 
-			textEditor.ZoomLevelChanged += delegate {
-				zoomLevel.Value = textEditor.ZoomLevel;
-			};
+			textEditor.ZoomLevelChanged += OnZoomChanged;
+		}
+
+		static void OnZoomChanged (object sender, EventArgs args)
+		{
+			var editor = (TextEditor)sender;
+			zoomLevel.Value = editor.ZoomLevel;
 		}
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
@@ -111,9 +116,7 @@ namespace MonoDevelop.Ide.Editor
 			var result = new TextEditor (currentFactory.CreateNewEditor (document, textEditorType), textEditorType) {
 				ZoomLevel = zoomLevel
 			};
-			result.ZoomLevelChanged += delegate {
-				zoomLevel.Value = result.ZoomLevel;
-			};
+			result.ZoomLevelChanged += OnZoomChanged;
 			return result;
 		}
 

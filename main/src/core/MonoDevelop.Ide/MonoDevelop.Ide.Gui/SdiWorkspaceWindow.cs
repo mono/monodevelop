@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Widget first = null;
 
-			foreach (var f in GetFocussableWidgets (widget)) {
+			foreach (var f in GetFocusableWidgets (widget)) {
 				if (f.HasFocus)
 					return;
 				
@@ -359,42 +359,38 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		static IEnumerable<Gtk.Widget> GetFocussableWidgets (Gtk.Widget widget)
+		static IEnumerable<Gtk.Widget> GetFocusableWidgets (Gtk.Widget widget)
 		{
-			var c = widget as Container;
-
 			if (widget.CanFocus) {
 				yield return widget;
 			}
 
-			if (c != null) {
-				foreach (var f in c.FocusChain.SelectMany (GetFocussableWidgets).Where (y => y != null)) {
+			if (widget is Container c) {
+				foreach (var f in c.FocusChain.SelectMany (x => GetFocusableWidgets (x))) {
 					yield return f;
 				}
-			}
 
-			if (c?.Children?.Length != 0) {
-				foreach (var f in c.Children) {
-					var container = f as Container;
-					if (container != null) {
-						foreach (var child in GetFocussableChildren (container)) {
-							yield return child;
+				if (c.Children is var children) {
+					foreach (var f in children) {
+						if (f is Container container) {
+							foreach (var child in GetFocusableChildren (container)) {
+								yield return child;
+							}
 						}
 					}
 				}
 			}
 		}
 
-		static IEnumerable<Gtk.Widget> GetFocussableChildren (Gtk.Container container)
+		static IEnumerable<Gtk.Widget> GetFocusableChildren (Gtk.Container container)
 		{
 			if (container.CanFocus) {
 				yield return container;
 			}
 
 			foreach (var f in container.Children) {
-				var c = f as Container;
-				if (c != null) {
-					foreach (var child in GetFocussableChildren (c)) {
+				if (f is Container c) {
+					foreach (var child in GetFocusableChildren (c)) {
 						yield return child;
 					}
 				}

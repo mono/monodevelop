@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NuGet.Common;
 using NuGet.ProjectManagement;
@@ -43,6 +44,9 @@ namespace MonoDevelop.PackageManagement
 		
 		public void Log(MessageLevel level, string message, params object[] args)
 		{
+			if (SaveErrors && (level == MessageLevel.Error)) {
+				AddError (string.Format (message, args));
+			}
 			packageManagementEvents.OnPackageOperationMessageLogged(level, message, args);
 		}
 
@@ -129,6 +133,27 @@ namespace MonoDevelop.PackageManagement
 			case LogLevel.Warning:
 				LogWarning (data);
 				break;
+			}
+		}
+
+		public bool SaveErrors { get; set; }
+
+		public void LogSavedErrors ()
+		{
+			foreach (string error in errors) {
+				LogInformation (error);
+			}
+		}
+
+		object locker = new object ();
+		List<string> errors;
+
+		void AddError (string error)
+		{
+			lock (locker) {
+				if (errors == null)
+					errors = new List<string> ();
+				errors.Add (error);
 			}
 		}
 	}

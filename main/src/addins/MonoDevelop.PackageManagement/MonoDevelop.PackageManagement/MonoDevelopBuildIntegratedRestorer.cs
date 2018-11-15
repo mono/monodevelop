@@ -51,6 +51,7 @@ namespace MonoDevelop.PackageManagement
 		ISettings settings;
 		IMonoDevelopSolutionManager solutionManager;
 		DependencyGraphCacheContext context;
+		PackageManagementLogger logger;
 
 		public MonoDevelopBuildIntegratedRestorer (IMonoDevelopSolutionManager solutionManager)
 			: this (
@@ -114,6 +115,8 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			if (restoreFailed) {
+				logger.LogInformation (string.Empty);
+				logger.LogSavedErrors ();
 				throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
 			}
 
@@ -211,7 +214,9 @@ namespace MonoDevelop.PackageManagement
 
 		ILogger CreateLogger ()
 		{
-			return new PackageManagementLogger (packageManagementEvents);
+			logger = new PackageManagementLogger (packageManagementEvents);
+			logger.SaveErrors = true;
+			return logger;
 		}
 
 		DependencyGraphCacheContext CreateRestoreContext ()
@@ -221,12 +226,15 @@ namespace MonoDevelop.PackageManagement
 
 		void ReportRestoreError (RestoreResult restoreResult)
 		{
+			logger.LogInformation (string.Empty);
+
 			foreach (LibraryRange libraryRange in restoreResult.GetAllUnresolved ()) {
 				packageManagementEvents.OnPackageOperationMessageLogged (
 					MessageLevel.Info,
 					GettextCatalog.GetString ("Restore failed for '{0}'."),
 					libraryRange.ToString ());
 			}
+			logger.LogSavedErrors ();
 			throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
 		}
 

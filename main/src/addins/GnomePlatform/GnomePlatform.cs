@@ -253,7 +253,7 @@ namespace MonoDevelop.Platform
 				? BashPause
 				: String.Empty;
 			
-			return String.Format (@" -T ""{4}"" --working-directory=""{3}"" -e bash -c ""'{0}' {1} ; {2}""",
+			return String.Format (@" -T ""{4}"" --working-directory=""{3}"" -x bash -c ""'{0}' {1} ; {2}""",
 				command,
 				EscapeArgs (args),
 				extra_commands,
