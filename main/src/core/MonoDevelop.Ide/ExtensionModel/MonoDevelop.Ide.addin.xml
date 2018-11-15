@@ -9,6 +9,7 @@
 		<Import assembly="Microsoft.VisualStudio.Text.Data.dll" />
 		<Import assembly="Microsoft.VisualStudio.Text.Logic.dll" />
 		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
+		<Import assembly="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
 		<Import assembly="Microsoft.VisualStudio.Threading.dll" />
 		<Import assembly="Microsoft.VisualStudio.Validation.dll" />
 	</Runtime>
@@ -421,6 +422,7 @@
 		<Assembly file="Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Text.UI.Wpf.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
 	</Extension>
