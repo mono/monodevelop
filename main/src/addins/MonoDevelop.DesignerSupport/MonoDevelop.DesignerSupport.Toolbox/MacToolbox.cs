@@ -84,7 +84,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Alignment = NSLayoutAttribute.Leading;
 			Spacing = 0;
 			Distribution = NSStackViewDistribution.Fill;
-
+			AccessibilityElement = false;
 			this.toolboxService = toolboxService;
 			this.container = container;
 
@@ -167,7 +167,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
-				ScrollerStyle = NSScrollerStyle.Overlay,
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
 			scrollView.DocumentView = toolboxWidget;

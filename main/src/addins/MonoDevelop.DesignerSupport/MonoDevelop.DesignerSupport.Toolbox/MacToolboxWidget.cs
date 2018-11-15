@@ -40,6 +40,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Register ("MacToolboxWidget")]
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget, INativeChildView
 	{
+		internal const string ImageViewItemName = "ImageViewItem";
+		internal const string LabelViewItemName = "LabelViewItem";
+		internal const string HeaderViewItemName = "HeaderViewItem";
+
 		const int IconMargin = 1;
 
 		internal MacToolboxWidgetFlowLayoutDelegate collectionViewDelegate;
@@ -316,9 +320,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		internal void OnContainerIsShown (object sender, EventArgs e)
 		{
-			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderCollectionViewItem.Name);
-			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelCollectionViewItem.Name);
-			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageCollectionViewItem.Name);
+			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
+			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
+			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
 
 			NSNotificationCenter.DefaultCenter.AddObserver (FrameChangedNotification, (s => {
 				if (s.Object == this) {

@@ -5,6 +5,7 @@ using AppKit;
 using MonoDevelop.Components;
 using Foundation;
 using System.Linq;
+using CoreGraphics;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -29,7 +30,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return null;
 			}
 		
-			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? ImageCollectionViewItem.Name : LabelCollectionViewItem.Name, indexPath);
+			var collectionViewItem = collectionView.MakeItem (ShowsOnlyImages ? MacToolboxWidget.ImageViewItemName : MacToolboxWidget.LabelViewItemName, indexPath);
 			var widgetItem = toolboxWidget.CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 
 			if (!cachedImages.TryGetValue (widgetItem, out var catchedImages)) {
@@ -41,7 +42,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				itmView.SetCollectionView (collectionView);
 				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
 				itmView.TextField.StringValue = widgetItem.Text;
-				itmView.TextField.AccessibilityTitle = widgetItem.Text ?? "";
 				itmView.Image = catchedImages.Image;
 				itmView.SelectedImage = catchedImages.SelectedImage;
 				//TODO: carefull wih this deprecation (we need a better fix)
@@ -54,8 +54,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				imgView.View.ToolTip = widgetItem.Tooltip ?? "";
 				imgView.Image = catchedImages.Image;
 				imgView.SelectedImage = catchedImages.SelectedImage;
-				imgView.AccessibilityTitle = widgetItem.Text ?? "";
-				imgView.AccessibilityElement = true;
+				imgView.ImageView.AccessibilityTitle = widgetItem.Text ?? "";
 				imgView.Refresh ();
 			}
 
@@ -83,6 +82,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
 				var section = toolboxWidget.CategoryVisibilities [(int)indexPath.Section].Category;
 				button.TitleTextField.StringValue = section.Text.Replace ("&amp;", "&");
+				button.AccessibilityTitle = button.TitleTextField.StringValue;
 				button.IndexPath = indexPath;
 				button.CollectionView = toolboxWidget;
 				button.Activated -= Button_Activated;
