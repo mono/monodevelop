@@ -1333,8 +1333,10 @@ namespace Mono.TextEditor
 		void RemoveFolding (FoldSegment folding)
 		{
 			folding.isAttached = false;
-			if (folding.isFolded)
+			if (folding.isFolded) {
 				foldedSegments.Remove (folding);
+				CommitUpdateAll ();
+			}
 			foldSegmentTree.Remove (folding);
 		}
 		
