@@ -77,7 +77,9 @@ namespace MonoDevelop.AssemblyBrowser
 		public static IconId GetStockIcon (PropertyDefinition property)
 		{
 			var accessor = property.GetMethod ?? property.SetMethod;
-			return MethodDefinitionNodeBuilder.GetStockIcon (accessor);
+			var isStatic = (accessor.Attributes & MethodAttributes.Static) != 0;
+			var global = isStatic ? "static-" : "";
+			return "md-" + MethodDefinitionNodeBuilder.GetAccess (accessor.Attributes) + global + "property";
 		}
 
 		static string GetText (PropertyDefinition property, bool? isIndexer = null)

@@ -3,7 +3,7 @@ using System;
 using Mono.Addins;
 using Mono.Addins.Description;
 
-[assembly:Addin ("Refactoring", 
+[assembly:Addin ("Refactoring",
         Namespace = "MonoDevelop",
         Version = MonoDevelop.BuildInfo.Version,
         Category = "IDE extensions")]
@@ -16,7 +16,3 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("RegexToolkit", MonoDevelop.BuildInfo.Version)]
-
-#if DEBUG
-[assembly: ImportAddinAssembly ("ClrHeapAllocationAnalyzer.dll", Scan = false)]
-#endif

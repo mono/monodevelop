@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.btnRestart.CanFocus = true;
 			this.btnRestart.Name = "btnRestart";
 			this.btnRestart.UseUnderline = true;
-			this.btnRestart.Label = "Restart {0}";
+			this.btnRestart.Label = global::Mono.Unix.Catalog.GetString ("Restart {0}:");
 			this.tableRestart.Add (this.btnRestart);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableRestart [this.btnRestart]));
 			w7.TopAttach = ((uint)(1));
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child tableRestart.Gtk.Table+TableChild
 			this.labelRestart = new global::Gtk.Label ();
 			this.labelRestart.Name = "labelRestart";
-			this.labelRestart.LabelProp = "These preferences will take effect next time you start {0}";
+			this.labelRestart.LabelProp = global::Mono.Unix.Catalog.GetString ("These preferences will take effect next time you start {0}");
 			this.tableRestart.Add (this.labelRestart);
 			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tableRestart [this.labelRestart]));
 			w9.LeftAttach = ((uint)(1));

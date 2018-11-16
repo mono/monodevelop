@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			var box = new Gtk.VBox ();
 			box.PackStart (new Gtk.Label () {
-				Markup = "<b>LoadedAssemblies</b>",
+				Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Loaded Assemblies")),
 				Xalign = 0
 			});
 			var table = new Gtk.Table (0, 0, false);

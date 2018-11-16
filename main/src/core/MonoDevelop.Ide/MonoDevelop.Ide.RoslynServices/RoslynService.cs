@@ -29,6 +29,7 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
+using Microsoft.CodeAnalysis.ErrorReporting;
 using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Utilities;
@@ -58,17 +59,40 @@ namespace MonoDevelop.Ide.RoslynServices
 			if (Interlocked.CompareExchange (ref initialized, 1, 0) == 1)
 				return;
 
+			// Maybe we should crash here?
+			FatalError.Handler = exception => LoggingService.LogInternalError ("Roslyn fatal exception", exception);
+			FatalError.NonFatalHandler = exception => LoggingService.LogInternalError ("Roslyn non-fatal exception", exception);
+
+			AttachLoggers ();
+
 			// Initialize Roslyn foreground thread data.
 			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
 				Runtime.MainThread,
 				Runtime.MainTaskScheduler,
 				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
 			);
+		}
 
-			Logger.SetLogger (AggregateLogger.Create (
-				new RoslynLogger (),
-				Logger.GetLogger ()
-			));
+		static void AttachLoggers ()
+		{
+			var fullRoslynEnvValue = Environment.GetEnvironmentVariable ("MONODEVELOP_FULL_ROSLYN_LOG");
+			var fullRoslynLogEnabled = bool.TryParse (fullRoslynEnvValue, out var value) && value;
+
+			ILogger[] loggers;
+			if (fullRoslynLogEnabled) {
+				loggers = new ILogger[] {
+					new RoslynLogger (),
+					new RoslynFileLogger (),
+					Logger.GetLogger ()
+				};
+			} else {
+				loggers = new ILogger[] {
+					new RoslynLogger (),
+					Logger.GetLogger ()
+				};
+			}
+
+			Logger.SetLogger (AggregateLogger.Create (loggers));
 		}
 	}
 }

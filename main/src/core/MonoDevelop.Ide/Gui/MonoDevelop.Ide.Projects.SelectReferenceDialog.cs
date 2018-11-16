@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Projects
 			w3.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.RemoveReferenceButton = new global::Gtk.Button ();
-			this.RemoveReferenceButton.TooltipMarkup = "Remove";
+			this.RemoveReferenceButton.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("Remove");
 			this.RemoveReferenceButton.Name = "RemoveReferenceButton";
 			this.RemoveReferenceButton.FocusOnClick = false;
 			this.RemoveReferenceButton.Relief = ((global::Gtk.ReliefStyle)(2));

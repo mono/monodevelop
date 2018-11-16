@@ -16,7 +16,7 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.7.0\lib\net46\NuGet.Versioning.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

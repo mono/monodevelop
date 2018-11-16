@@ -71,6 +71,7 @@ namespace MonoDevelop.CodeActions
 		{
 			if (smartTagMarginMarker != null) {
 				Editor.RemoveMarker (smartTagMarginMarker);
+				smartTagMarginMarker.ShowPopup -= SmartTagMarginMarker_ShowPopup;
 				smartTagMarginMarker = null;
 			}
 			CancelSmartTagPopupTimeout ();
@@ -103,6 +104,7 @@ namespace MonoDevelop.CodeActions
 			if (Editor.IsInAtomicUndo)
 				return;
 			CancelQuickFixTimer ();
+			var token = quickFixCancellationTokenSource.Token;
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null) {
 				if (HasCurrentFixes) {
 					var curOffset = Editor.CaretOffset;
@@ -114,7 +116,7 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				smartTagTask = GetCurrentFixesAsync (quickFixCancellationTokenSource.Token);
+				smartTagTask = GetCurrentFixesAsync (token);
 			} else {
 				RemoveWidget ();
 			}
@@ -350,8 +352,9 @@ namespace MonoDevelop.CodeActions
 
 		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)
 		{
-			if (beginVersion.CompareAge (Editor.Version) != 0)
+			if (beginVersion != null && beginVersion.CompareAge (Editor.Version) != 0)
 				RemoveWidget ();
+			beginVersion = null;
 		}
 
 		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)

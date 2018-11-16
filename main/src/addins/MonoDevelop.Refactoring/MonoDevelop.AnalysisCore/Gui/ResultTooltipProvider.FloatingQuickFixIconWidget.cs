@@ -46,7 +46,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			readonly Cairo.Point point;
 			uint destroyTimeout;
 
-			public FloatingQuickFixIconWidget (CodeActionEditorExtension codeActionEditorExtension, LanguageItemWindow window, SourceEditorView sourceEditorView, SourceEditor.SmartTagSeverity severity, CodeActionContainer fixes, Cairo.Point point) : base (Gtk.WindowType.Popup)
+			public FloatingQuickFixIconWidget (CodeActionEditorExtension codeActionEditorExtension, LanguageItemWindow window, SourceEditorView sourceEditorView, CodeActionContainer fixes, Cairo.Point point) : base (Gtk.WindowType.Popup)
 			{
 				this.ext = codeActionEditorExtension;
 				this.window = window;
@@ -59,7 +59,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				var fr = new Gtk.HBox ();
 				fr.BorderWidth = 2;
 				var view = new Gtk.Image ();
-				view.Pixbuf = SmartTagMarginMarker.GetIcon (severity).ToPixbuf ();
+				view.Pixbuf = SmartTagMarginMarker.GetIcon (fixes.GetSmartTagSeverity ()).ToPixbuf ();
 				fr.PackStart (view, false, false, 0);
 				fr.PackEnd (new RectangleMarker (), false, false, 0);
 				Add (fr);
