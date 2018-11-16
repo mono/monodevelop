@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			NSUserDefaults defaults = NSUserDefaults.StandardUserDefaults;
 
-			enabled = new CheckButton ("Enable Accessibility");
+			enabled = new CheckButton (GettextCatalog.GetString ("Enable Accessibility"));
 			enabled.Active = originalSetting = defaults.BoolForKey (EnabledKey);
 			enabled.Visible = true;
 

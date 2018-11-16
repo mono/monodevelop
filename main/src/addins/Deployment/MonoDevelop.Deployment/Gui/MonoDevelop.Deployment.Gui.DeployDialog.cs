@@ -203,7 +203,6 @@ namespace MonoDevelop.Deployment.Gui
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = "page5";
 			this.notebook.SetTabLabel (this.vbox3, this.label2);
 			this.label2.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
@@ -252,7 +251,6 @@ namespace MonoDevelop.Deployment.Gui
 			// Notebook tab
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = "page3";
 			this.notebook.SetTabLabel (this.pageSelectProject, this.label3);
 			this.label3.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
@@ -319,7 +317,6 @@ namespace MonoDevelop.Deployment.Gui
 			// Notebook tab
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.LabelProp = "page2";
 			this.notebook.SetTabLabel (this.vbox4, this.label6);
 			this.label6.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
@@ -556,7 +553,6 @@ namespace MonoDevelop.Deployment.Gui
 			// Notebook tab
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.LabelProp = "page4";
 			this.notebook.SetTabLabel (this.pageSave, this.label8);
 			this.label8.ShowAll ();
 			this.hbox1.Add (this.notebook);

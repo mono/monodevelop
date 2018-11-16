@@ -74,7 +74,7 @@ namespace MonoDevelop.FSharp.Gui
 			w2.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.advanceToNextLineCheckbox = new global::Gtk.CheckButton();
-			this.advanceToNextLineCheckbox.TooltipMarkup = "When sending a line or an empty selection to F# interactive this property automatically advances to the next line.";
+			this.advanceToNextLineCheckbox.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("When sending a line or an empty selection to F# interactive this property automatically advances to the next line.");
 			this.advanceToNextLineCheckbox.CanFocus = true;
 			this.advanceToNextLineCheckbox.Name = "advanceToNextLineCheckbox";
 			this.advanceToNextLineCheckbox.Label = global::Mono.Unix.Catalog.GetString("Advance to next line");
@@ -110,7 +110,7 @@ namespace MonoDevelop.FSharp.Gui
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label();
-			this.label2.TooltipMarkup = "This is only used when xbuild is not being used.";
+			this.label2.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("This is only used when xbuild is not being used.");
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString("<b>F# Default Compiler</b>");
 			this.label2.UseMarkup = true;

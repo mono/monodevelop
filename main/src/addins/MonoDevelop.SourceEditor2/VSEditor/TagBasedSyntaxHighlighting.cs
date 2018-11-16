@@ -388,8 +388,9 @@ namespace Microsoft.VisualStudio.Platform
 				[ClassificationTypeNames.Comment] = MakeScope (baseScopeStack, "comment." + scope),
 				[ClassificationTypeNames.ExcludedCode] = MakeScope (baseScopeStack, "comment.excluded." + scope),
 				[ClassificationTypeNames.Identifier] = MakeScope (baseScopeStack, scope),
-				[ClassificationTypeNames.Keyword] = MakeScope (baseScopeStack, "keyword." + scope),
-				[ClassificationTypeNames.NumericLiteral] = MakeScope (baseScopeStack, "constant.numeric." + scope),
+                [ClassificationTypeNames.Keyword] = MakeScope(baseScopeStack, "keyword." + scope),
+                ["identifier - keyword - (TRANSIENT)"] = MakeScope(baseScopeStack, "keyword." + scope), // required for highlighting of some context specific keywords like 'nameof'
+                [ClassificationTypeNames.NumericLiteral] = MakeScope (baseScopeStack, "constant.numeric." + scope),
 				[ClassificationTypeNames.Operator] = MakeScope (baseScopeStack, scope),
 				[ClassificationTypeNames.PreprocessorKeyword] = MakeScope (baseScopeStack, "meta.preprocessor." + scope),
 				[ClassificationTypeNames.StringLiteral] = MakeScope (baseScopeStack, "string." + scope),

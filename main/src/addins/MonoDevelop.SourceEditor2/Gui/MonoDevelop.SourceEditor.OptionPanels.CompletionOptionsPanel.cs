@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox5.Spacing = 6;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.autoCodeCompletionCheckbutton = new global::Gtk.CheckButton ();
-			this.autoCodeCompletionCheckbutton.TooltipMarkup = "Automatic Completion with Enter or Tab keys";
+			this.autoCodeCompletionCheckbutton.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("Automatic Completion with Enter or Tab keys");
 			this.autoCodeCompletionCheckbutton.CanFocus = true;
 			this.autoCodeCompletionCheckbutton.Name = "autoCodeCompletionCheckbutton";
 			this.autoCodeCompletionCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Show completion list after a character is typed");
@@ -92,7 +92,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w2.Padding = ((uint)(6));
 			// Container child hbox6.Gtk.Box+BoxChild
 			this.automaticCompletionModeCheckbutton = new global::Gtk.CheckButton ();
-			this.automaticCompletionModeCheckbutton.TooltipMarkup = "Enables automatic completion with the Space key or Punctuation";
+			this.automaticCompletionModeCheckbutton.TooltipMarkup = global::Mono.Unix.Catalog.GetString ("Enables automatic completion with the Space key or Punctuation");
 			this.automaticCompletionModeCheckbutton.CanFocus = true;
 			this.automaticCompletionModeCheckbutton.Name = "automaticCompletionModeCheckbutton";
 			this.automaticCompletionModeCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Complete with Space or Punctuation");

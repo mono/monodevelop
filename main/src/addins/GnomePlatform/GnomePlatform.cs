@@ -339,7 +339,7 @@ namespace MonoDevelop.Platform
 				preferred_runner = KdeTerminalRunner;
 				preferedOpenFolderRunner = KdeTerminalOpenFolderRunner;
 			}
-			else if (Environment.GetEnvironmentVariable ("XDG_CURRENT_DESKTOP").IndexOf("XFCE", StringComparison.OrdinalIgnoreCase) > -1) {
+			else if ((Environment.GetEnvironmentVariable ("XDG_CURRENT_DESKTOP") ?? string.Empty).IndexOf("XFCE", StringComparison.OrdinalIgnoreCase) > -1) {
 				preferred_terminal = "xfce4-terminal";
 				preferred_runner = Xfce4TerminalRunner;
 				preferedOpenFolderRunner = Xfce4TerminalOpenFolderRunner;

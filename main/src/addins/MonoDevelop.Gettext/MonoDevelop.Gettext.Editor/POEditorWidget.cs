@@ -525,7 +525,7 @@ namespace MonoDevelop.Gettext
 
 			Gtk.Menu result = new Gtk.Menu ();
 			
-			Gtk.MenuItem item = new Gtk.MenuItem ("Delete");
+			Gtk.MenuItem item = new Gtk.MenuItem (GettextCatalog.GetString ("Delete"));
 			item.Sensitive = entry.References.Length == 0;
 			item.Activated += delegate {
 				RemoveEntry (entry);

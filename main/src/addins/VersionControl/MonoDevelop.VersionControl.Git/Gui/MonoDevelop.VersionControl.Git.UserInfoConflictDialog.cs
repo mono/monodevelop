@@ -66,7 +66,6 @@ namespace MonoDevelop.VersionControl.Git
 			this.labelMD = new global::Gtk.Label ();
 			this.labelMD.Name = "labelMD";
 			this.labelMD.Xalign = 0F;
-			this.labelMD.LabelProp = "name <email>";
 			this.alignment1.Add (this.labelMD);
 			this.vbox2.Add (this.alignment1);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment1]));
@@ -108,7 +107,6 @@ namespace MonoDevelop.VersionControl.Git
 			this.labelGit = new global::Gtk.Label ();
 			this.labelGit.Name = "labelGit";
 			this.labelGit.Xalign = 0F;
-			this.labelGit.LabelProp = "name <email>";
 			this.alignment2.Add (this.labelGit);
 			this.vbox2.Add (this.alignment2);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment2]));
