@@ -170,6 +170,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return result;
 		}
+
+		const string commitChars = ".";
+
+		public override bool IsCommitCharacter (char keyChar, string partialWord)
+		{
+			return commitChars.IndexOf (keyChar) >= 0;
+		}
 		#endregion
 	}
 }
