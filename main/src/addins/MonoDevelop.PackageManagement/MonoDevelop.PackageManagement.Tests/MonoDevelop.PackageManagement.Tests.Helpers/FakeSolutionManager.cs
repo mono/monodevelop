@@ -86,6 +86,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			get { return FakeSettings; }
 		}
 
+		public Solution Solution { get; set; }
 		public string SolutionDirectory { get; set; }
 
 		#pragma warning disable 67

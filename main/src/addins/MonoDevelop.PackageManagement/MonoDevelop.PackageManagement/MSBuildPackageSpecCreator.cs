@@ -38,13 +38,13 @@ namespace MonoDevelop.PackageManagement
 {
 	static class MSBuildPackageSpecCreator
 	{
-		static readonly bool verboseLogging;
-
 		static MSBuildPackageSpecCreator ()
 		{
 			string value = Environment.GetEnvironmentVariable ("MONODEVELOP_NUGET_RESTORE_VERBOSE");
-			verboseLogging = !string.IsNullOrEmpty (value);
+			VerboseLogging = !string.IsNullOrEmpty (value);
 		}
+
+		public static bool VerboseLogging { get; private set; }
 
 		public static async Task<PackageSpec> CreatePackageSpec (DotNetProject project, ILogger logger)
 		{
@@ -74,13 +74,13 @@ namespace MonoDevelop.PackageManagement
 
 		static ProgressMonitor CreateProgressMonitor ()
 		{
-			if (verboseLogging)
+			if (VerboseLogging)
 				return new LoggingProgressMonitor ();
 
 			return new ProgressMonitor ();
 		}
 
-		static DependencyGraphSpec GetDependencyGraph (string resultsPath)
+		public static DependencyGraphSpec GetDependencyGraph (string resultsPath)
 		{
 			if (File.Exists (resultsPath) && new FileInfo (resultsPath).Length != 0) {
 				return DependencyGraphSpec.Load (resultsPath);
