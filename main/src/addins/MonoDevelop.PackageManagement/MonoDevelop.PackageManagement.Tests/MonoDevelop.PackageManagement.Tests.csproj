@@ -163,7 +163,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageFilesReader.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibility.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageCompatibilityNuGetProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSpecCreatorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMSBuildEvaluatedPropertyCollection.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackageReference.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackageReferenceTests.cs" />
