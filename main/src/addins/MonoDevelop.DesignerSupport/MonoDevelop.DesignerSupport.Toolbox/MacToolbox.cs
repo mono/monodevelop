@@ -396,8 +396,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void Refilter ()
 		{
 			var cats = categories.Values.ToList ();
-			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
-			cats.Reverse ();
+			cats.Sort ((a, b) => a.Priority != b.Priority ? a.Text.CompareTo (b.Text) : a.Priority.CompareTo (b.Priority));
 
 			toolboxWidget.CategoryVisibilities.Clear ();
 			foreach (var category in cats) {
