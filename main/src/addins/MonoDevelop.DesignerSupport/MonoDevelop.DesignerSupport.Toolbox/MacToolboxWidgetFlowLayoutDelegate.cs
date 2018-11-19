@@ -3,6 +3,7 @@ using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -13,12 +14,37 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public nfloat Width { get; internal set; }
 		public nfloat Height { get; internal set; }
 
+		public bool IsLastSelectionFromMouseDown { get; set; }
+
 		public event EventHandler<NSSet> SelectionChanged;
 		public event EventHandler<NSIndexSet> DragBegin;
 
 		public override void ItemsSelected (NSCollectionView collectionView, NSSet indexPaths)
 		{
 			SelectionChanged?.Invoke (this, indexPaths);
+		}
+
+		public override NSSet ShouldSelectItems (NSCollectionView collectionView, NSSet indexPaths)
+		{
+			//HACK: This allows handle the selection when using the keyboard.
+			//this is necessary to break the default behaviour of NSCollectionView while keypress UP between sections
+			//the hack allows select last item from next section instead the first one.
+			//we avoid to use this in mouse down events
+			if (!IsLastSelectionFromMouseDown) {
+				var toolboxWidget = (MacToolboxWidget)collectionView;
+				var lastSelectedItem = toolboxWidget.SelectedIndexPath;
+				var nextPath = indexPaths.ToArray<NSIndexPath> ()
+					.FirstOrDefault ();
+
+				if (nextPath != null && lastSelectedItem != null && lastSelectedItem.Section > nextPath.Section) {
+					var lastItemFromSection = toolboxWidget.GetNumberOfItems (nextPath.Section) - 1;
+					return new NSSet<NSIndexPath> (NSIndexPath.FromItemSection (lastItemFromSection, nextPath.Section));
+				}
+			} else {
+				IsLastSelectionFromMouseDown = false;
+			}
+
+			return indexPaths;
 		}
 
 		public override CGSize SizeForItem (NSCollectionView collectionView, NSCollectionViewLayout collectionViewLayout, NSIndexPath indexPath)

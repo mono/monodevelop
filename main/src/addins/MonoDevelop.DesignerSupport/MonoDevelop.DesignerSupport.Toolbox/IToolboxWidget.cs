@@ -39,7 +39,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		string CustomMessage { get; set; }
 		IEnumerable<ToolboxWidgetCategory> Categories { get; }
 		IEnumerable<ToolboxWidgetItem> AllItems { get; }
-		ToolboxWidgetItem SelectedItem { get; }
 
 		event EventHandler SelectedItemChanged;
 		event EventHandler ActivateSelectedItem;

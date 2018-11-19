@@ -61,13 +61,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return collectionViewItem;
 		}
 
-		bool IsIndexOutOfSync (NSIndexPath indexPath, List<CategoryVisibility> categoryVisibilities)
+		public static bool IsIndexOutOfSync (NSIndexPath indexPath, List<CategoryVisibility> categoryVisibilities)
 		{
 			//because multitask our control sections could be unsync when our current document changes
-			return IsIndexOutOfSync (indexPath.Section, categoryVisibilities) || indexPath.Item >= categoryVisibilities [(int)indexPath.Section].Items.Count;
+			return indexPath != null || IsIndexOutOfSync (indexPath.Section, categoryVisibilities) || indexPath.Item >= categoryVisibilities [(int)indexPath.Section].Items.Count;
 		}
 
-		bool IsIndexOutOfSync (nint section, List<CategoryVisibility> categoryVisibilities)
+		public static bool IsIndexOutOfSync (nint section, List<CategoryVisibility> categoryVisibilities)
 		{
 			//because multitask our control sections could be unsync when our current document changes
 			return section >= categoryVisibilities.Count;

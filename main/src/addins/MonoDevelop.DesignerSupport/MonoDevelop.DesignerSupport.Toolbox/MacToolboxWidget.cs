@@ -81,15 +81,25 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			SelectedItemChanged?.Invoke (this, args);
 		}
 
-		public ToolboxWidgetItem SelectedItem {
+		NSIndexPath selectedIndexPath;
+		public NSIndexPath SelectedIndexPath {
 			get {
-				return selectedItem;
+				return selectedIndexPath;
 			}
 			set {
-				if (selectedItem != value) {
-					selectedItem = value;
+				if (selectedIndexPath != value) {
+					selectedIndexPath = value;
 					OnSelectedItemChanged (EventArgs.Empty);
 				}
+			}
+		}
+
+		public ToolboxWidgetItem SelectedItem {
+			get {
+				if (MacToolboxWidgetDataSource.IsIndexOutOfSync (selectedIndexPath, CategoryVisibilities)) {
+					return null;
+				}
+				return CategoryVisibilities [(int)selectedIndexPath.Section].Items [(int)selectedIndexPath.Item];
 			}
 		}
 
@@ -228,7 +238,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				 return;
 			 }
 			 if (e.AnyObject is NSIndexPath indexPath) {
-				 SelectedItem = CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
+				SelectedIndexPath = indexPath;
 			 }
 		}
 
@@ -241,6 +251,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override void MouseDown (NSEvent theEvent)
 		{
+			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
 			base.MouseDown (theEvent);
 			if (SelectedItem != null && theEvent.ClickCount > 1) {
 				OnActivateSelectedItem (EventArgs.Empty);
@@ -278,15 +289,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (selected != null) {
 				SelectionIndexPaths = new NSSet (selected);
 			}
+
+			if (Window != null) {
+				Window?.RecalculateKeyViewLoop ();
+			}
 		}
+
 
 		public override void RightMouseUp (NSEvent theEvent)
 		{
+			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
 			base.RightMouseUp (theEvent);
 			var point = ConvertPointFromView (theEvent.LocationInWindow, null);
 			var indexPath = base.GetIndexPath (point);
 			if (indexPath != null) {
-				SelectedItem = CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
+				SelectedIndexPath = indexPath;
 				MenuOpened?.Invoke (this, point);
 			}
 		}
