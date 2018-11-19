@@ -54,6 +54,13 @@ namespace MonoDevelop.DesignerSupport
 			widget.KeyPressEvent += toolbox.OnKeyPressed;
 			widget.KeyReleaseEvent += toolbox.KeyReleased;
 
+			widget.DragBegin += (o, args) => {
+				if (!isDragging) {
+					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, args.Context);
+					isDragging = true;
+				}
+			};
+
 			widget.DragEnd += (o, args) => {
 				isDragging = false;
 			};
@@ -69,15 +76,15 @@ namespace MonoDevelop.DesignerSupport
 				}
 			};
 			toolbox.DragSourceSet += (s, e) => {
-				Gtk.Drag.SourceUnset (widget);
 				targets = new Gtk.TargetList ();
 				targets.AddTable (e);
 			};
 			toolbox.DragBegin += (object sender, EventArgs e) => {
 				if (!isDragging) {
-					isDragging = true;
+
+					Gtk.Drag.SourceUnset (widget);
 					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, Gtk.Global.CurrentEvent ?? new Gdk.Event (IntPtr.Zero));
-					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, null);
+
 				}
 			};
 
