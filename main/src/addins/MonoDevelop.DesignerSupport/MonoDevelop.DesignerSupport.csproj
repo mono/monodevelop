@@ -18,10 +18,20 @@
         <Private>False</Private>
       </Reference>
       <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj">
-      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
+        <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
         <Name>Xwt.XamMac</Name>
         <Private>False</Private>
-    </ProjectReference>
+        </ProjectReference>
+      <ProjectReference Include="..\..\..\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing.Mac\Xamarin.PropertyEditing.Mac.csproj">
+        <Project>{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}</Project>
+        <Name>Xamarin.PropertyEditing.Mac</Name>
+        <Private>False</Private>
+      </ProjectReference>
+      <ProjectReference Include="..\..\..\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing\Xamarin.PropertyEditing.csproj">
+        <Project>{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}</Project>
+        <Name>Xamarin.PropertyEditing</Name>
+        <Private>False</Private>
+      </ProjectReference>
   </ItemGroup>
    <ItemGroup>
     <Reference Include="System" />
