@@ -88,10 +88,9 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					new CodeActionData { Message = "Implement interface with Dispose pattern" },
 					new CodeActionData { Message = "Implement interface explicitly" },
 					new CodeActionData { Message = "Implement interface explicitly with Dispose pattern" },
+					new CodeActionData { Message = "Add accessibility modifiers" },
 				},
-				CodeRefactoringData = new CodeActionData [] {
-					new CodeActionData { Message = "To public" },
-				},
+				CodeRefactoringData = new CodeActionData [0],
 			};
 
 			await RunTest (2, IDisposableImplement, async (remainingUpdates, doc) => {
