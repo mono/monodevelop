@@ -33,12 +33,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (!IsLastSelectionFromMouseDown) {
 				var toolboxWidget = (MacToolboxWidget)collectionView;
 				var lastSelectedItem = toolboxWidget.SelectedIndexPath;
-				var nextPath = indexPaths.ToArray<NSIndexPath> ()
-					.FirstOrDefault ();
 
-				if (nextPath != null && lastSelectedItem != null && lastSelectedItem.Section > nextPath.Section) {
-					var lastItemFromSection = toolboxWidget.GetNumberOfItems (nextPath.Section) - 1;
-					return new NSSet<NSIndexPath> (NSIndexPath.FromItemSection (lastItemFromSection, nextPath.Section));
+				if (indexPaths.AnyObject is NSIndexPath indexPath) {
+					if (indexPath != null && lastSelectedItem != null && lastSelectedItem.Section > indexPath.Section) {
+						var lastItemFromSection = toolboxWidget.GetNumberOfItems (indexPath.Section) - 1;
+						return new NSSet<NSIndexPath> (NSIndexPath.FromItemSection (lastItemFromSection, indexPath.Section));
+					}
 				}
 			} else {
 				IsLastSelectionFromMouseDown = false;
