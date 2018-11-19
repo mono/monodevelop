@@ -289,10 +289,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (selected != null) {
 				SelectionIndexPaths = new NSSet (selected);
 			}
-
-			if (Window != null) {
-				Window?.RecalculateKeyViewLoop ();
-			}
 		}
 
 
