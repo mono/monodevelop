@@ -33,6 +33,9 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.VisualBasic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.VBNetBinding
 {
@@ -98,6 +101,9 @@ namespace MonoDevelop.VBNetBinding
 		
 		[ItemProperty ("RemoveIntegerChecks", DefaultValue=false)]
 		bool generateOverflowChecks = false;
+
+		[ItemProperty ("RootNamespace", DefaultValue="")]
+		string rootNamespace = String.Empty;
 
 		// MD-only properties
 		
@@ -193,6 +199,29 @@ namespace MonoDevelop.VBNetBinding
 		public string AdditionalParameters {
 			get { return additionalParameters; }
 			set { additionalParameters = value; }
+		}
+
+		public override CompilationOptions CreateCompilationOptions ()
+		{
+			var project = (VBProject)ParentProject;
+			var workspace = Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
+
+			var options = new VisualBasicCompilationOptions (
+				OutputKind.ConsoleApplication,
+				mainTypeName: project.StartupObject,
+				scriptClassName: "Script",
+				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
+				rootNamespace: rootNamespace,
+				checkOverflow: generateOverflowChecks,
+				cryptoKeyFile: ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
+				cryptoPublicKey: ImmutableArray<byte>.Empty,
+				generalDiagnosticOption: TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default,
+				concurrentBuild: true,
+				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
+				strongNameProvider: new DesktopStrongNameProvider ()
+			);
+
+			return options;
 		}
 	}
 }
