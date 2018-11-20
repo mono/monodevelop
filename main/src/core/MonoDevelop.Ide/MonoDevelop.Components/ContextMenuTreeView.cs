@@ -92,9 +92,7 @@ namespace MonoDevelop.Components
 			// SelectFunction to block selection then it doesn't seem to always get
 			// properly unset.
 			//   https://bugzilla.xamarin.com/show_bug.cgi?id=40469
-			this.Selection.SelectFunction = (s, m, p, b) => {
-				return true;
-			};
+			Selection.SelectFunction = DefaultTreeSelectFunction;
 			base.OnRowActivated (path, column);
 		}
 
@@ -122,9 +120,7 @@ namespace MonoDevelop.Components
 						return false;
 					};
 				} else {
-					this.Selection.SelectFunction = (s, m, p, b) => {
-						return true;
-					};
+					Selection.SelectFunction = DefaultTreeSelectFunction;
 				}
 				return base.OnButtonPressEvent (evnt);
 			}
@@ -145,9 +141,7 @@ namespace MonoDevelop.Components
 
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			this.Selection.SelectFunction = (s, m, p, b) => {
-				return true;
-			};
+			Selection.SelectFunction = DefaultTreeSelectFunction;
 			Gtk.TreePath buttonReleasePath;
 			//If OnButtonPressEvent attempted on making deselection and dragging was not started
 			//check if we are on same item as when we clicked(could be different if dragging is disabled)
