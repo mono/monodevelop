@@ -61,7 +61,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		IPadWindow container;
 		NSTextField messageTextField;
-		ToolboxWidgetItem selectedItem;
 		MacToolboxWidgetDataSource dataSource;
 
 		bool listMode;
@@ -70,16 +69,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public IEnumerable<ToolboxWidgetCategory> Categories {
 			get { return CategoryVisibilities.Select (s => s.Category); }
 		}
-	
-		protected virtual void OnActivateSelectedItem (EventArgs args)
-		{
-			ActivateSelectedItem?.Invoke (this, args);
-		}
 
-		protected virtual void OnSelectedItemChanged (EventArgs args)
-		{
-			SelectedItemChanged?.Invoke (this, args);
-		}
+		internal void PerformActivateSelectedItem () => OnActivateSelectedItem (EventArgs.Empty);
+
+		void OnActivateSelectedItem (EventArgs args) => ActivateSelectedItem?.Invoke (this, args);
+	
+		void OnSelectedItemChanged (EventArgs args) => SelectedItemChanged?.Invoke (this, args);
 
 		NSIndexPath selectedIndexPath;
 		public NSIndexPath SelectedIndexPath {

@@ -63,6 +63,31 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 
 		}
+
+		protected void OnLoadContentView ()
+		{
+			View = contentCollectionView = new ContentCollectionViewItem ();
+
+			contentCollectionView.PerformPress += ContentCollectionView_PerformPress;
+		}
+
+		void ContentCollectionView_PerformPress (object sender, EventArgs e)
+		{
+			var widget = ((MacToolboxWidget)CollectionView);
+			var currentIndex = widget.GetIndexPath (this);
+			if (currentIndex != null) {
+				CollectionView.SelectItems (new NSSet (currentIndex), NSCollectionViewScrollPosition.None);
+				widget.PerformActivateSelectedItem ();
+			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing) {
+				contentCollectionView.PerformPress -= ContentCollectionView_PerformPress;
+			}
+			base.Dispose (disposing);
+		}
 	}
 
 	[Register ("LabelCollectionViewItem")]
@@ -88,14 +113,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override void LoadView ()
 		{
-			View = contentCollectionView = new ContentCollectionViewItem ();
-			View.Identifier = MacToolboxWidget.LabelViewItemName;
-			View.AccessibilityElement = false;
+			OnLoadContentView ();
 
-			ImageView = new NSImageView () { TranslatesAutoresizingMaskIntoConstraints = false, AccessibilityElement = false };
+			View.Identifier = MacToolboxWidget.LabelViewItemName;
+
+			ImageView = new NSImageView () { TranslatesAutoresizingMaskIntoConstraints = false };
+			ImageView.AccessibilityElement = ImageView.Cell.AccessibilityElement = false;
 			contentCollectionView.AddArrangedSubview (ImageView);
+
 			TextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Left, NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize));
-			TextField.AccessibilityElement = false;
+			TextField.AccessibilityElement = TextField.Cell.AccessibilityElement = false;
 			contentCollectionView.AddArrangedSubview (TextField);
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 7, 0, 0);
 		}
@@ -117,16 +144,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public override void LoadView ()
 		{
-			View = contentCollectionView = new ContentCollectionViewItem ();
+			OnLoadContentView ();
+
 			View.Identifier = MacToolboxWidget.ImageViewItemName;
-			View.AccessibilityElement = false;
+
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 0, 0, 0);
-		
+
 			ImageView = new NSImageView () { TranslatesAutoresizingMaskIntoConstraints = false };
+			ImageView.AccessibilityElement = ImageView.Cell.AccessibilityElement = false;
+
 			contentCollectionView.AddArrangedSubview (ImageView);
 			ImageView.CenterXAnchor.ConstraintEqualToAnchor (contentCollectionView.CenterXAnchor, 0).Active = true;
 		}
-
+	
 		public ImageCollectionViewItem (IntPtr handle) : base (handle)
 		{
 
@@ -177,6 +207,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			TitleTextField = NativeViewHelper.CreateLabel ("", font: Font);
 			TitleTextField.AccessibilityElement = false;
+
 			AddSubview (TitleTextField);
 			TitleTextField.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 10).Active = true;
 			TitleTextField.CenterYAnchor.ConstraintEqualToAnchor (CenterYAnchor, 0).Active = true;
@@ -196,8 +227,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 
-	class ContentCollectionViewItem : NSStackView
+	class ContentCollectionViewItem : NSStackView, INSAccessibilityButton
 	{
+		public event EventHandler PerformPress;
+
 		public override bool WantsUpdateLayer => true;
 
 		bool isSelected;
@@ -221,9 +254,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
+		public override bool AccessibilityPerformPress ()
+		{
+			PerformPress?.Invoke (this, EventArgs.Empty);
+			return true;
+		}
+
 		MacToolboxWidget collectionView;
 		public ContentCollectionViewItem ()
 		{
+			AccessibilityElement = true;
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal;
 			TranslatesAutoresizingMaskIntoConstraints = false;
 			WantsLayer = true;
