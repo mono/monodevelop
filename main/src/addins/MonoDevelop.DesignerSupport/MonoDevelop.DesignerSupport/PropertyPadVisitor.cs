@@ -87,7 +87,7 @@ namespace MonoDevelop.DesignerSupport
 				found = true;
 				return true;
 			}
-			if (ob is PropertyPad) {
+			if (ob is IPropertyPad) {
 				// Don't change the property grid selection when the focus is inside the property grid itself
 				found = true;
 				return true;

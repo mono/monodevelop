@@ -51,16 +51,16 @@ namespace MonoDevelop.DesignerSupport
 
 		void OnFilePropertyChangedInProject (object sender, ProjectFileEventArgs args)
 		{
-			var pad = IdeApp.Workbench.GetPad <PropertyPad> ();
+			var pad = IdeApp.Workbench.GetPad <IPropertyPad> ();
 			if (pad == null)
 				return;
 
-			var grid = ((PropertyPad)pad.Content).PropertyGrid;
-			if (grid.IsEditing)
+			var propertyPad = (IPropertyPad)pad.Content;
+			if (propertyPad.IsPropertyGridEditing)
 				return;
 
 			if (args.Any (arg => arg.ProjectFile == file))
-				grid.Populate (saveEditSession: false);
+				propertyPad.PopulateGrid (saveEditSession: false);
 		}
 
 		void IDisposable.Dispose ()

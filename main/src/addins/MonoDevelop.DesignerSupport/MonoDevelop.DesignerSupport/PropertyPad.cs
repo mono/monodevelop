@@ -48,10 +48,13 @@ namespace MonoDevelop.DesignerSupport
 {
 	public interface IPropertyPad
 	{
+		bool IsPropertyGridEditing { get; }
+
 		event EventHandler PropertyGridChanged;
 
 		void SetCurrentObject (object lastComponent, object [] provs);
 		void BlankPad ();
+		void PopulateGrid (bool saveEditSession);
 	}
 
 	public class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
@@ -144,7 +147,9 @@ namespace MonoDevelop.DesignerSupport
 				return grid;
 			}
 		}
-		
+
+		public bool IsPropertyGridEditing => grid.IsEditing;
+
 		internal void UseCustomWidget (Gtk.Widget widget)
 		{
 			toolbarProvider.Attach (null);
@@ -168,8 +173,13 @@ namespace MonoDevelop.DesignerSupport
 		{
 			grid.SetCurrentObject (lastComponent, propertyProviders);
 		}
+
+		public void PopulateGrid (bool saveEditSession)
+		{
+			grid.Populate (saveEditSession);
+		}
 	}
-	
+
 	class DockToolbarProvider: pg.PropertyGrid.IToolbarProvider
 	{
 		DockItemToolbar tb;
