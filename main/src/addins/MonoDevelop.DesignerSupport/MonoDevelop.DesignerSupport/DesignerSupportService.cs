@@ -78,17 +78,10 @@ namespace MonoDevelop.DesignerSupport
 				}
 				else if (lastCustomProvider != null) {
 					if (propertyPad is PropertyPad ppad) {
-						try {
-							var currentCustomWidget = lastCustomProvider.GetCustomPropertyWidget ();
-							if (currentCustomWidget != null) {
-								ppad.UseCustomWidget (currentCustomWidget);
-								if (lastCustomProvider is IPropertyPadCustomizer customizer)
-									customizer.Customize (pad.PadWindow, null);
-							}
-						} catch (Exception ex) {
-							LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
-							ReSetPad ();
-						}
+						ppad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
+
+						if (lastCustomProvider is IPropertyPadCustomizer customizer)
+							customizer.Customize (ppad.PadWindow, null);
 					}
 				}
 			}
@@ -182,24 +175,14 @@ namespace MonoDevelop.DesignerSupport
 				DisposeCustomPropertyPadProvider ();
 
 				lastCustomProvider = provider;
-
-				if (propertyPad != null && propertyPad is PropertyPad ppad) {
-					try {
-						var customWidget = provider.GetCustomPropertyWidget ();
-						if (customWidget != null) {
-							ppad.UseCustomWidget (customWidget);
-							ppad.CommandRouteOrigin = commandRouteOrigin;
-							var customizer = provider as IPropertyPadCustomizer;
-							if (customizer != null)
-								customizer.Customize (ppad.PadWindow, null);
-						} else {
-							propertyPad?.BlankPad ();
-							return;
+				
+				if (propertyPad != null) {
+					if (propertyPad is PropertyPad ppad) {
+						ppad.UseCustomWidget (provider.GetCustomPropertyWidget ());
+						ppad.CommandRouteOrigin = commandRouteOrigin;
+						if (provider is IPropertyPadCustomizer customizer) {
+							customizer.Customize (ppad.PadWindow, null);
 						}
-					} catch (Exception ex) {
-						LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
-						propertyPad?.BlankPad ();
-						return;
 					}
 				}
 			}

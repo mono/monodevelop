@@ -67,6 +67,9 @@ namespace MonoDevelop.DesignerSupport
 
 		public PropertyPad ()
 		{
+			grid = new pg.PropertyGrid ();
+			grid.Changed += Grid_Changed;
+
 			frame = new InvisibleFrame ();
 
 #if MAC
@@ -133,18 +136,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Dispose()
 		{
-#if MAC
-			if (isNative) {
-				container.PadContentShown -= Window_PadContentShown;
-				nativeGrid.Focused -= PropertyGrid_Focused;
-				gtkWidget.Focused -= Widget_Focused;
-			} else {
-#endif
-				grid.Changed -= Grid_Changed;
-#if MAC
-			}
-#endif
-			propertyGrid.Dispose ();
+			grid.Changed -= Grid_Changed;
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
 		}
