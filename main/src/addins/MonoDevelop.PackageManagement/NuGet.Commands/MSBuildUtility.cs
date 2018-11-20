@@ -62,7 +62,7 @@ namespace NuGet.CommandLine
 						arguments,
 						solution.BaseDirectory,
 						monitor.Log,
-						monitor.Log,
+						monitor.ErrorLog,
 						null);
 					using (process) {
 						process.SetCancellationToken (cancellationToken);
