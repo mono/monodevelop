@@ -30,7 +30,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 
 using MonoDevelop.Ide.Gui;
 
@@ -42,12 +41,23 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
+using System;
+using Gtk;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
-	public class PropertyPad : PadContent, ICommandDelegator
+	public interface IPropertyPad
 	{
+		event EventHandler PropertyGridChanged;
+
+		void SetCurrentObject (object lastComponent, object [] provs);
+		void BlankPad ();
+	}
+
+	public class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
+	{
+		public event EventHandler PropertyGridChanged;
+
 		pg.PropertyGrid grid;
 		InvisibleFrame frame;
 		bool customWidget;
@@ -59,12 +69,19 @@ namespace MonoDevelop.DesignerSupport
 		public PropertyPad ()
 		{
 			grid = new pg.PropertyGrid ();
+			grid.Changed += Grid_Changed;
+
 			frame = new InvisibleFrame ();
 			frame.Add (grid);
 			
 			frame.ShowAll ();
 		}
-		
+
+		void Grid_Changed (object sender, EventArgs e)
+		{
+			PropertyGridChanged?.Invoke (this, e);
+		}
+
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
@@ -86,6 +103,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Dispose()
 		{
+			grid.Changed -= Grid_Changed;
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
 		}
@@ -144,6 +162,11 @@ namespace MonoDevelop.DesignerSupport
 				foreach (var w in toolbar.Children)
 					toolbar.Remove (w);
 			}
+		}
+
+		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
+		{
+			grid.SetCurrentObject (lastComponent, propertyProviders);
 		}
 	}
 	
