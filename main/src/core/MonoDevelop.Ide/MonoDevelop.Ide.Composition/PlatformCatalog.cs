@@ -52,9 +52,6 @@ namespace Microsoft.VisualStudio.Platform
         internal ITextDocumentFactoryService TextDocumentFactoryService { get; private set; }
 
         [Import]
-        internal ITextEditorFactoryService TextEditorFactoryService { get; private set; }
-
-        [Import]
         internal IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; private set; }
 
         [Import]

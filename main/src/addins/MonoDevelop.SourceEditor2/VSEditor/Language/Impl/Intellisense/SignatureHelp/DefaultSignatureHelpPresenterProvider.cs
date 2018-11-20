@@ -53,9 +53,6 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         internal ITextBufferFactoryService TextBufferFactoryService { get; set; }
 
         [Import]
-        internal ITextEditorFactoryService TextEditorFactoryService { get; set; }
-
-        [Import]
         internal IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
 
         [Import]

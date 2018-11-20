@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 
 		ConnectionManager connectionManager;
 
-		TextEditorFactoryService factoryService;
+		TextEditorInitializationService factoryService;
 		int queuedSpaceReservationStackRefresh = 0;    //int so that it can be set via Interlocked.CompareExchange()
 
 		//		IEditorFormatMap _editorFormatMap;
@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 		/// <param name="roles">Roles for this view.</param>
 		/// <param name="parentOptions">Parent options for this view.</param>
 		/// <param name="factoryService">Our handy text editor factory service.</param>
-		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorFactoryService factoryService, bool initialize = true)
+		internal void Initialize (ITextViewModel textViewModel, ITextViewRoleSet roles, IEditorOptions parentOptions, TextEditorInitializationService factoryService, bool initialize = true)
 		{
 			this.roles = roles;
 			this.factoryService = factoryService;
@@ -539,7 +539,7 @@ namespace Mono.TextEditor
 			return _spaceReservationStack.GetOrCreateManager (name);
 		}
 
-		internal TextEditorFactoryService ComponentContext {
+		internal TextEditorInitializationService ComponentContext {
 			get { return factoryService; }
 		}
 
