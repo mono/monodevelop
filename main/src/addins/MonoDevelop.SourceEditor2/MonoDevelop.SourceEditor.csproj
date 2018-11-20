@@ -193,6 +193,8 @@
     <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
+    <Compile Include="VSEditor\ExtensionSelector.cs" />
+    <Compile Include="VSEditor\TextEditorInitializationService.cs" />
     <Compile Include="VSEditor\UIExtensionSelector.cs" />
     <Compile Include="VSEditor\VacuousTextViewModel.cs" />
     <None Include="packages.config" />
@@ -206,7 +208,6 @@
     <Compile Include="VSEditor\MDUtils.cs" />
     <Compile Include="VSEditor\SmartIndentationService.cs" />
     <Compile Include="VSEditor\TagBasedSyntaxHighlighting.cs" />
-    <Compile Include="VSEditor\TextEditorFactoryService.cs" />
     <Compile Include="VSEditor\TextSelection.cs" />
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
     <Compile Include="VSEditor\VacuousTextDataModel.cs" />

@@ -36,6 +36,31 @@ namespace Microsoft.VisualStudio.Text.Utilities
         }
 
         /// <summary>
+        /// Given a list of extensions that provide text view roles and content types, filter the list and return that
+        /// subset which matches the content types and at least one of the roles in the provided set of roles.
+        /// </summary>
+        public static List<Lazy<TProvider, TMetadataView>> SelectMatchingExtensions<TProvider, TMetadataView>
+                    (IEnumerable<Lazy<TProvider, TMetadataView>> providerHandles,
+                     IContentType documentContentType,
+                     IContentType excludedContentType,
+                     ITextViewRoleSet viewRoles)
+            where TMetadataView : IContentTypeAndTextViewRoleMetadata          // both content type and text view role are required
+        {
+            var result = new List<Lazy<TProvider, TMetadataView>>();
+            foreach (var providerHandle in providerHandles)
+            {
+                // first, check content type match
+                if ((excludedContentType == null || !ExtensionSelector.ContentTypeMatch(excludedContentType, providerHandle.Metadata.ContentTypes)) &&
+                    ExtensionSelector.ContentTypeMatch(documentContentType, providerHandle.Metadata.ContentTypes) &&
+                    viewRoles.ContainsAny(providerHandle.Metadata.TextViewRoles))
+                {
+                    result.Add(providerHandle);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Given a list of extensions that provide text view roles and content types, return the
         /// instantiated extension which best matches the given content type and matches at least one of the roles.
         /// </summary>

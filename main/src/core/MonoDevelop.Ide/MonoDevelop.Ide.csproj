@@ -3101,7 +3101,7 @@
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />

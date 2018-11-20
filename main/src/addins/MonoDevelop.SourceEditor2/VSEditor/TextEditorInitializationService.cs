@@ -30,11 +30,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     /// <summary>
     /// Provides a VisualStudio Service that aids in creation of Editor Views
     /// </summary>
-    [Export(typeof(ITextEditorFactoryService))]
-    internal sealed class TextEditorFactoryService : ITextEditorFactoryService, IPartImportsSatisfiedNotification
+    [Export(typeof(ITextEditorInitializationService))]
+    internal sealed class TextEditorInitializationService : ITextEditorInitializationService, IPartImportsSatisfiedNotification
     {
         [Import]
-        internal GuardedOperations GuardedOperations { get; set; }
+        internal IGuardedOperations GuardedOperations { get; set; }
 
         [Import]
         internal IContentTypeRegistryService ContentTypeRegistryService { get; set; }
@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         [Import]
         internal ISmartIndentationService SmartIndentationService { get; set; }
 
-        [Import(AllowDefault=true)]
+        [Import(AllowDefault = true)]
         internal IOutliningManagerService OutliningManagerService { get; set; }
 
         [Import]
@@ -102,24 +102,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                                                                                      PredefinedTextViewRoles.Structured,
                                                                                      PredefinedTextViewRoles.Zoomable);
 
-        public ITextView CreateTextView (ITextBuffer textBuffer)
-        {
-            MonoDevelop.Ide.Editor.ITextDocument textDocument = textBuffer.GetTextEditor();
-            TextEditor textEditor = textDocument as TextEditor;
-
-            return CreateTextView(textEditor);
-        }
-
-        public ITextView CreateTextView (MonoDevelop.Ide.Editor.TextEditor textEditor, ITextViewRoleSet roles = null, IEditorOptions parentOptions = null)
+        public ITextView CreateTextView(MonoDevelop.Ide.Editor.TextEditor textEditor)
         {
             if (textEditor == null)
             {
                 throw new ArgumentNullException("textEditor");
             }
 
-            if (roles == null) {
-                roles = _defaultRoles;
-            }
+            var roles = _defaultRoles;
 
             ITextBuffer textBuffer = textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
             ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
@@ -134,7 +124,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                              this) ?? new VacuousTextViewModel(dataModel);
 
             var view = ((MonoDevelop.SourceEditor.SourceEditorView)textEditor.Implementation).TextEditor;
-            view.Initialize(viewModel, roles, parentOptions ?? this.EditorOptionsFactoryService.GlobalOptions, this);
+            view.Initialize(viewModel, roles, this.EditorOptionsFactoryService.GlobalOptions, this);
             view.Properties.AddProperty(typeof(MonoDevelop.Ide.Editor.TextEditor), textEditor);
 
             this.TextViewCreated?.Invoke(this, new TextViewCreatedEventArgs(view));
@@ -171,7 +161,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             return new TextViewRoleSet(roles);
         }
 
-        private static ITextViewRoleSet RolesFromParameters (params string[] roles)
+        private static ITextViewRoleSet RolesFromParameters(params string[] roles)
         {
             return new TextViewRoleSet(roles);
         }

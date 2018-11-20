@@ -22,9 +22,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         {
             private readonly Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo;
             private ITextViewConnectionListener listener;
-            private readonly GuardedOperations guardedOperations;
+            private readonly IGuardedOperations guardedOperations;
 
-            public Listener(Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo, GuardedOperations guardedOperations)
+            public Listener(Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata> importInfo, IGuardedOperations guardedOperations)
             {
                 this.importInfo = importInfo;
                 this.guardedOperations = guardedOperations;
@@ -50,11 +50,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         ITextView _textView;
         List<Listener> listeners = new List<Listener>();
-        GuardedOperations _guardedOperations;
+        IGuardedOperations _guardedOperations;
 
         public ConnectionManager(ITextView textView, 
                                  ICollection<Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> textViewConnectionListeners,
-                                 GuardedOperations guardedOperations)
+                                 IGuardedOperations guardedOperations)
         {
             if (textView == null)
             {
