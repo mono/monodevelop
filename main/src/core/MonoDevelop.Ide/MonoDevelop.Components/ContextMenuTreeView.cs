@@ -179,6 +179,22 @@ namespace MonoDevelop.Components
 			return res;
 		}
 
+		/// <summary>
+		/// Force the tree view's SelectFunction to be reset so nodes an be selected. Sometimes a OnButtonPressEvent
+		/// occurs without any corresponding OnButtonReleaseEvent which prevent a tree node from being selected
+		/// by the TreeNodeNavigator.
+		/// </summary>
+		internal void ClearSelectOnRelease ()
+		{
+			selectOnRelease = false;
+			Selection.SelectFunction = DefaultTreeSelectFunction;
+		}
+
+		static bool DefaultTreeSelectFunction (Gtk.TreeSelection selection, Gtk.TreeModel model, Gtk.TreePath path, bool selected)
+		{
+			return true;
+		}
+
 		void PerformShowMenu (object sender, EventArgs args)
 		{
 			OnPopupMenu ();
