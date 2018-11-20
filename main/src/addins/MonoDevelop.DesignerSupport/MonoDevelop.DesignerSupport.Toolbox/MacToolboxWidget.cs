@@ -34,6 +34,7 @@ using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -215,6 +216,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			AddSubview (messageTextField);
 
 			BackgroundColors = new NSColor [] { Styles.ToolbarBackgroundColor };
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			base.KeyDown (theEvent);
+			if ((int)theEvent.ModifierFlags == (int)KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter)) {
+				PerformActivateSelectedItem ();
+			}
 		}
 
 		void DataSource_RegionCollapsed (object sender, NSIndexPath e)
