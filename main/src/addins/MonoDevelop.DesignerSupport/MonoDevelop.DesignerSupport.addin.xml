@@ -47,7 +47,7 @@
 			defaultStatus="AutoHide"
 			/>
 		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad"
-			class = "MonoDevelop.DesignerSupport.PropertyPad"
+			class = "MonoDevelop.DesignerSupport.MacPropertyPad"
 			_label="Properties"
 			icon = "md-properties-pad"
 			group = "Designer"
