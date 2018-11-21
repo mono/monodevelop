@@ -75,6 +75,7 @@ namespace MonoDevelop.Projects
 		SystemPackage cachedPackage;
 		string customError;
 		FilePath hintPath;
+		bool hintPathChanged;
 		bool hasBeenRead;
 
 		string originalMSBuildReferenceHintPath;
@@ -326,6 +327,11 @@ namespace MonoDevelop.Projects
 			}
 
 			buildItem.Metadata.SetValue ("Private", LocalCopy, DefaultLocalCopy);
+
+			if (hintPathChanged) {
+				buildItem.Metadata.SetValue ("HintPath", HintPath);
+				hintPathChanged = false;
+			}
 		}
 
 		bool ReferenceStringHasVersion (string asmName)
@@ -529,6 +535,12 @@ namespace MonoDevelop.Projects
 
 		public FilePath HintPath {
 			get { return hintPath; }
+			set {
+				hintPath = value;
+				hintPathChanged = true;
+				if (ownerProject != null)
+					ownerProject.NotifyModified ("References");
+			}
 		}
 		
 		string GetVersionNum (string asmName)
