@@ -52,7 +52,7 @@ namespace MonoDevelop.DesignerSupport
 
 		event EventHandler PropertyGridChanged;
 
-		void SetCurrentObject (object lastComponent, object [] provs);
+		void SetCurrentObject (object lastComponent, object [] propertyProviders);
 		void BlankPad ();
 		void PopulateGrid (bool saveEditSession);
 	}
