@@ -2190,6 +2190,15 @@ namespace MonoDevelop.Ide.Gui.Components
 			return widget.Parent;
 		}
 
+		/// <summary>
+		/// Forces the select on release feature to be disabled since the ContextMenuTreeView
+		/// does not always reset the SelectFunction for the tree.
+		/// </summary>
+		internal void ClearSelectOnRelease ()
+		{
+			tree.ClearSelectOnRelease ();
+		}
+
 		internal class PadCheckMenuItem: Gtk.CheckMenuItem
 		{
 			internal string Id;
