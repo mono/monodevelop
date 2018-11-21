@@ -125,12 +125,16 @@ namespace MonoDevelop.PackageManagement
 
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {
 				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
-					await packageManager.ExecuteNuGetProjectActionsAsync (
-						project,
-						actions,
-						context,
-						resolutionContext.SourceCacheContext,
-						cancellationToken);
+					using (var maintainer = new ProjectReferenceMaintainer (project)) {
+						await packageManager.ExecuteNuGetProjectActionsAsync (
+							project,
+							actions,
+							context,
+							resolutionContext.SourceCacheContext,
+							cancellationToken);
+
+						await maintainer.ApplyChanges ();
+					}
 				}
 			}
 

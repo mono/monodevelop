@@ -1,10 +1,10 @@
-﻿//
-// MonoDevelopMSBuildNuGetProject.cs
+//
+// IProjectReferenceMaintainer.cs
 //
 // Author:
-//       Matt Ward <matt.ward@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2017 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using NuGet.ProjectManagement;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	class MonoDevelopMSBuildNuGetProject : MSBuildNuGetProject, IHasDotNetProject, IHasProjectReferenceMaintainer
+	interface IProjectReferenceMaintainer
 	{
-		MonoDevelopMSBuildNuGetProjectSystem projectSystem;
-
-		public MonoDevelopMSBuildNuGetProject (
-			MonoDevelopMSBuildNuGetProjectSystem projectSystem,
-			string folderNuGetProjectFullPath,
-			string packagesConfigFolderPath)
-			: base (projectSystem, folderNuGetProjectFullPath, packagesConfigFolderPath)
-		{
-			this.projectSystem = projectSystem;
-		}
-
-		public Task SaveProject ()
-		{
-			return projectSystem.SaveProject ();
-		}
-
-		public IDotNetProject Project {
-			get { return projectSystem.Project; }
-		}
-
-		public IProjectReferenceMaintainer ProjectReferenceMaintainer {
-			get { return projectSystem.ProjectReferenceMaintainer; }
-			set { projectSystem.ProjectReferenceMaintainer = value; }
-		}
+		IEnumerable<ProjectReference> GetReferences ();
+		Task AddReference (ProjectReference reference);
+		Task RemoveReference (ProjectReference reference);
 	}
 }
