@@ -130,8 +130,8 @@ namespace MonoDevelop.Core
 					mon.Log.Flush ();
 					Assert.AreEqual (9, ctx.CallCount);
 				}
-				// Once for completed, Dispose needs API break to be done on the right context.
-				Assert.AreEqual (10, ctx.CallCount);
+				// Once for completed, once for Dispose.
+				Assert.AreEqual (11, ctx.CallCount);
 			}
 		}
 	}
