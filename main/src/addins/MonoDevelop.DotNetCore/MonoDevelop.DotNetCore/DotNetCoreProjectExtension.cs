@@ -37,6 +37,7 @@ using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -469,20 +470,20 @@ namespace MonoDevelop.DotNetCore
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 		}
 
-		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
 			return AddMissingProjectFiles (sourceFiles);
 		}
 
-		ProjectFile[] AddMissingProjectFiles (ProjectFile[] files)
+		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files)
 		{
-			List<ProjectFile> missingFiles = null;
+			ImmutableArray<ProjectFile>.Builder missingFiles = null;
 			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
 				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
 					if (missingFiles == null)
-						missingFiles = new List<ProjectFile> ();
+						missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
 					missingFiles.Add (existingFile);
 				}
 			}
@@ -490,8 +491,9 @@ namespace MonoDevelop.DotNetCore
 			if (missingFiles == null)
 				return files;
 
+			missingFiles.Capacity = missingFiles.Count + files.Length;
 			missingFiles.AddRange (files);
-			return missingFiles.ToArray ();
+			return missingFiles.MoveToImmutable ();
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)

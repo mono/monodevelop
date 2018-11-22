@@ -62,6 +62,7 @@ using Microsoft.VisualStudio.Platform;
 using Counters = MonoDevelop.Ide.Counters;
 using Microsoft.CodeAnalysis.CSharp.Completion.Providers;
 using MonoDevelop.CSharp.Completion.Provider;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -698,13 +699,13 @@ namespace MonoDevelop.CSharp.Completion
 			return InternalHandleParameterCompletionCommand (completionContext, triggerInfo, token);
 		}
 
-		internal static Lazy<ISignatureHelpProvider []> signatureProviders = new Lazy<ISignatureHelpProvider []> (() => {
+		internal static Lazy<ImmutableArray<ISignatureHelpProvider>> signatureProviders = new Lazy<ImmutableArray<ISignatureHelpProvider>> (() => {
 			var workspace = TypeSystemService.Workspace;
 			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
 			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
 				.FilterToSpecificLanguage (LanguageNames.CSharp);
 
-			return helpProviders.ToArray ();
+			return helpProviders.ToImmutableArray ();
 		});
 		readonly static Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> emptyParameterHintingResultTask = Task.FromResult (ParameterHintingResult.Empty);
 
@@ -712,19 +713,19 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var data = Editor;
 			bool force = triggerInfo.TriggerReason != Ide.Editor.Extension.SignatureHelpTriggerReason.InvokeSignatureHelpCommand;
-			List<ISignatureHelpProvider> providers;
+			ImmutableArray<ISignatureHelpProvider> providers;
 			if (!force) {
 				if (triggerInfo.TriggerReason == Ide.Editor.Extension.SignatureHelpTriggerReason.TypeCharCommand) {
-					providers = signatureProviders.Value.Where (provider => provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value)).ToList ();
+					providers = signatureProviders.Value.WhereAsArray (provider => provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value));
 				} else if (triggerInfo.TriggerReason == Ide.Editor.Extension.SignatureHelpTriggerReason.RetriggerCommand) {
-					providers = signatureProviders.Value.Where (provider => provider.IsRetriggerCharacter (triggerInfo.TriggerCharacter.Value)).ToList ();
+					providers = signatureProviders.Value.WhereAsArray (provider => provider.IsRetriggerCharacter (triggerInfo.TriggerCharacter.Value));
 				} else {
-					providers = signatureProviders.Value.ToList ();
+					providers = signatureProviders.Value;
 				}
-				if (providers.Count == 0)
+				if (providers.Length == 0)
 					return emptyParameterHintingResultTask;
 			} else
-				providers = signatureProviders.Value.ToList ();
+				providers = signatureProviders.Value;
 
 			if (Editor.EditMode != EditMode.Edit)
 				return emptyParameterHintingResultTask;

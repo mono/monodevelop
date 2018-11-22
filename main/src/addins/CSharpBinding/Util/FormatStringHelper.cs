@@ -68,15 +68,15 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			//var argumentToParameterMap = invocationResolveResult.GetArgumentToParameterMap();
 			//var resolvedParameters = invocationResolveResult.Member.Parameters;
-			var allArguments = invocationExpression.ArgumentList.Arguments.ToArray();
-			for (int i = 0; i < allArguments.Length; i++) {
+			int i = -1;
+			foreach (var argument in invocationExpression.ArgumentList.Arguments) {
+				++i;
 				var parameterIndex = i; //argumentToParameterMap[i];
 				if (parameterIndex < 0 || parameterIndex >= method.Parameters.Length) {
 					// No valid mapping for this argument, skip it
 					continue;
 				}
 				var parameter = method.Parameters[parameterIndex];
-				var argument = allArguments[i];
 				if (i == 0 && parameter.Type.SpecialType == SpecialType.System_String && parameterNames.Contains(parameter.Name)) {
 					formatArgument = argument.Expression;
 				} /*else if (formatArgument != null && parameter.IsParams && !invocationResolveResult.IsExpandedForm) {
