@@ -127,6 +127,16 @@ namespace MonoDevelop.Refactoring
 							pos = PopupPosition.Right;
 						}
 					}
+
+					// Post process text with markup, as we need the UI thread here.
+					for (int i = 0; i < diff.LineResults.Count; ++i) {
+						var temp = diff.LineResults [i];
+						if (temp.LineKind == LineKind.Normal && temp.TextOrMarkup == null) {
+							var newText = editor.GetMarkup (temp.Offset, temp.Length, new MarkupOptions (MarkupFormat.Pango, false));
+							diff.LineResults [i] = new LineResult (newText, temp.Offset, temp.Length, temp.LineKind, temp.XNeedsMeasure);
+						}
+					}
+
 					ShowPopup (rect, pos);
 				}
 			}, Runtime.MainTaskScheduler);
@@ -139,11 +149,24 @@ namespace MonoDevelop.Refactoring
 			Added
 		}
 
-		struct LineResult
+
+
+		readonly struct LineResult
 		{
-			public bool XNeedsMeasure;
-			public string TextOrMarkup;
-			public LineKind LineKind;
+			public readonly string TextOrMarkup;
+			public readonly int Offset;
+			public readonly int Length;
+			public readonly LineKind LineKind;
+			public readonly bool XNeedsMeasure;
+
+			public LineResult (string textOrMarkup, int offset, int length, LineKind lineKind, bool xNeedsMeasure)
+			{
+				TextOrMarkup = textOrMarkup;
+				Offset = offset;
+				Length = length;
+				LineKind = lineKind;
+				XNeedsMeasure = xNeedsMeasure;
+			}
 		}
 
 		class ProcessResult
@@ -251,18 +274,13 @@ namespace MonoDevelop.Refactoring
 				var offset = line.Offset + Math.Min (correctedIndentLength, line.Length);
 				var length = Math.Max (0, line.Length - correctedIndentLength);
 
-				string text;
-				if (lineKind == LineKind.Normal && document is TextEditor editor) {
-					text = editor.GetMarkup (offset, length, new MarkupOptions (MarkupFormat.Pango, false));
-				} else {
+				string text = null;
+				if (lineKind != LineKind.Normal || !(document is TextEditor)) {
 					text = document.GetTextAt (offset, length);
-				}
+				} // Ignore markup items as the markup needs to be requested on the UI thread.
 
-				var lineResult = new LineResult {
-					XNeedsMeasure = line.Length != curLineIndent,
-					TextOrMarkup = text,
-					LineKind = lineKind,
-				};
+				bool xNeedsMeasure = line.Length != curLineIndent;
+				var lineResult = new LineResult (text, offset, length, lineKind, xNeedsMeasure);
 
 				result.LineResults.Add (lineResult);
 			}
