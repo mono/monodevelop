@@ -329,7 +329,12 @@ namespace MonoDevelop.Projects
 			buildItem.Metadata.SetValue ("Private", LocalCopy, DefaultLocalCopy);
 
 			if (hintPathChanged) {
-				buildItem.Metadata.SetValue ("HintPath", HintPath);
+				bool useFullPathForHintPath = false;
+				if (buildItem.Metadata.TryGetPathValue ("HintPath", out FilePath relativePath, relativeToProject: false) &&
+					buildItem.Metadata.TryGetPathValue ("HintPath", out FilePath fullPath, relativeToProject: true)) {
+					useFullPathForHintPath = relativePath == fullPath;
+				}
+				buildItem.Metadata.SetValue ("HintPath", HintPath, relativeToProject: !useFullPathForHintPath);
 				hintPathChanged = false;
 			}
 		}
