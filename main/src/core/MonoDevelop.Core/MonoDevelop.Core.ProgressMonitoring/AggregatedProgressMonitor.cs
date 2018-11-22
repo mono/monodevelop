@@ -192,9 +192,9 @@ namespace MonoDevelop.Core.ProgressMonitoring
 					info.Monitor.ReportError (message, exception);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
-			base.Dispose ();
+			base.OnDispose (disposing);
             foreach (MonitorInfo info in monitors) {
 				if ((info.ActionMask & MonitorAction.Dispose) != 0)
 					info.Monitor.Dispose ();

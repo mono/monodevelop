@@ -144,10 +144,10 @@ namespace MonoDevelop.Core
 			Log = underlyingLog = new CustomWriter (ctx);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
 			underlyingLog.Dispose ();
-			base.Dispose ();
+			base.OnDispose (disposing);
 		}
 
 		class CustomWriter : System.IO.TextWriter
