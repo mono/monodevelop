@@ -28,39 +28,88 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
 using System;
-
 using MonoDevelop.Ide.Gui;
-
-using MonoDevelop.DesignerSupport;
-using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Components;
+using Xwt;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
 	public class ToolboxPad : PadContent
 	{
-		Toolbox.Toolbox toolbox;
-		
-		public ToolboxPad ()
-		{
-		}
-		
+		Gtk.Widget widget;
+
+#if MAC
+		Toolbox.MacToolbox toolbox;
+#endif
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
-			toolbox = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
-		}
+#if MAC
+			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
+			widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
+			widget.CanFocus = true;
+			widget.Sensitive = true;
+			widget.KeyPressEvent += toolbox.OnKeyPressed;
+			widget.KeyReleaseEvent += toolbox.KeyReleased;
 
-		
-		#region AbstractPadContent implementations
+			widget.DragBegin += (o, args) => {
+				if (!isDragging) {
+					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, args.Context);
+					isDragging = true;
+				}
+			};
+
+			widget.DragEnd += (o, args) => {
+				isDragging = false;
+			};
+
+			widget.Focused += (s, e) => {
+				toolbox.FocusSelectedView ();
+			};
+
+			toolbox.ContentFocused += (s, e) => {
+				if (!widget.HasFocus) {
+					widget.HasFocus = true;
+					toolbox.FocusSelectedView ();
+				}
+			};
+			toolbox.DragSourceSet += (s, e) => {
+				targets = new Gtk.TargetList ();
+				targets.AddTable (e);
+			};
+			toolbox.DragBegin += (object sender, EventArgs e) => {
+				if (!isDragging) {
+
+					Gtk.Drag.SourceUnset (widget);
+					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, Gtk.Global.CurrentEvent ?? new Gdk.Event (IntPtr.Zero));
+
+				}
+			};
+
+			widget.ShowAll ();
+#else
+			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
+#endif
+		}
+#if MAC
+		Gtk.TargetList targets = new Gtk.TargetList ();
+		bool isDragging = false;
+		public override void Dispose ()
+		{
+			widget.KeyPressEvent -= toolbox.OnKeyPressed;
+			widget.KeyReleaseEvent -= toolbox.KeyReleased;
+			base.Dispose ();
+		}
+#endif
+
+#region AbstractPadContent implementations
 		
 		public override Control Control {
-			get { return toolbox; }
+			get { return widget; }
 		}
 		
-		#endregion
+#endregion
 	}
 }

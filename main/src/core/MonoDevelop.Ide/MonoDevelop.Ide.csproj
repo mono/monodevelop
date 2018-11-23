@@ -4223,6 +4223,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopFrameworkAssemblyPathResolver.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

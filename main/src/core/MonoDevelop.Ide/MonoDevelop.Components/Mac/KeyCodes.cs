@@ -1,4 +1,4 @@
-//
+﻿//
 // KeyCodes.cs
 //
 // Author:
@@ -23,17 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#if MAC
+
 using System;
 
-namespace MonoDevelop.MacInterop
+namespace MonoDevelop.Components.Mac
 {
-	// These are the keycodes values NSEvent.KeyCode
-	// To find the code for a key not here, you can use the Key Codes application
-	// available from https://manytricks.com/keycodes/
-	internal static class KeyCodes
+ 	internal enum KeyCodes
 	{
-		internal const ushort Enter = 0x24;
-		internal const ushort Tab = 0x30;
-		internal const ushort Space = 0x31;
+		Enter = 0x24,
+		Tab = 0x30,
+		Space = 0x31
+	}
+
+	[Flags]
+	internal enum KeyModifierFlag
+	{
+		None = 0x100
 	}
 }
+
+#endif
