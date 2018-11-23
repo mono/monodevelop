@@ -59,13 +59,6 @@ namespace MonoDevelop.Ide.Desktop
 
 		public abstract string Name { get; }
 
-		[Obsolete]
-		public virtual string DefaultControlLeftRightBehavior {
-			get {
-				return "MonoDevelop";
-			}
-		}
-
 		public virtual void Initialize ()
 		{
 		}
