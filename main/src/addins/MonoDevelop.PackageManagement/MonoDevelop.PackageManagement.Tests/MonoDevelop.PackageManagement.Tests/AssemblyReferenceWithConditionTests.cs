@@ -52,7 +52,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				// Update NuGet package
 				await UpdateNuGetPackage (project, "Test.Xam.NetStandard");
 
-				string expectedXml = File.ReadAllText (project.FileName.ChangeExtension (".csproj-saved"));
+				string expectedXml = Util.ToSystemEndings (File.ReadAllText (project.FileName.ChangeExtension (".csproj-saved")));
 				string actualXml = File.ReadAllText (project.FileName);
 				Assert.AreEqual (expectedXml, actualXml);
 			}
