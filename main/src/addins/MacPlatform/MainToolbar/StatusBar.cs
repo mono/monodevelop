@@ -1177,7 +1177,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		bool isFirstResponder;
 		public override void KeyDown (NSEvent theEvent)
 		{
-			if (isFirstResponder && (theEvent.KeyCode == KeyCodes.Enter || theEvent.KeyCode == KeyCodes.Space)) {
+			if (isFirstResponder && (theEvent.KeyCode == (ushort) KeyCodes.Enter || theEvent.KeyCode == (ushort)KeyCodes.Space)) {
 				sourcePad?.BringToFront (true);
 				return;
 			}
