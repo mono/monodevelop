@@ -108,6 +108,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (value != Selected) {
 						ExpandToNode ();
 						try {
+							pad.ClearSelectOnRelease ();
 							tree.Selection.SelectIter (currentIter);
 							tree.SetCursor (store.GetPath (currentIter), pad.CompleteColumn, false);
 						} catch (Exception) {}
