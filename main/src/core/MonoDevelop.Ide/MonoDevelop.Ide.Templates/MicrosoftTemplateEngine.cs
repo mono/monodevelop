@@ -52,16 +52,8 @@ namespace MonoDevelop.Ide.Templates
 	{
 		static EngineEnvironmentSettings environmentSettings = new EngineEnvironmentSettings (new MyTemplateEngineHost (), (env) => new SettingsLoader (env));
 		static TemplateCreator templateCreator = new TemplateCreator (environmentSettings);
-
+		static bool initialized;
 		static bool dontUpdateCache = true;
-
-		static MicrosoftTemplateEngine ()
-		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Templates", OnProjectTemplateExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ItemTemplates", OnItemTemplateExtensionChanged);
-			dontUpdateCache = false;
-			UpdateCache ();
-		}
 
 		static List<MicrosoftTemplateEngineSolutionTemplate> projectTemplates = new List<MicrosoftTemplateEngineSolutionTemplate> ();
 		static List<MicrosoftTemplateEngineItemTemplate> itemTemplates = new List<MicrosoftTemplateEngineItemTemplate> ();
@@ -139,12 +131,29 @@ namespace MonoDevelop.Ide.Templates
 
 		public static IEnumerable<SolutionTemplate> GetProjectTemplates ()
 		{
+			EnsureInitialized ();
 			return projectTemplates;
 		}
 
 		public static IEnumerable<ItemTemplate> GetItemTemplates ()
 		{
+			EnsureInitialized ();
 			return itemTemplates;
+		}
+
+		static void EnsureInitialized ()
+		{
+			if (initialized)
+				return;
+
+			Runtime.AssertMainThread ();
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Templates", OnProjectTemplateExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ItemTemplates", OnItemTemplateExtensionChanged);
+			dontUpdateCache = false;
+			UpdateCache ();
+
+			initialized = true;
 		}
 
 		/// <summary>
