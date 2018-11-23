@@ -36,6 +36,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.PropertyEditing.Reflection;
 using Xamarin.PropertyEditing;
+using System.Collections.Specialized;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -51,9 +52,16 @@ namespace MonoDevelop.DesignerSupport
 			});
 		}
 
+		public static ITypeInfo ToTypeInfo (Type type, bool isRelevant = true)
+		{
+			var asm = type.Assembly.GetName ().Name;
+			return new TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+		}
+
+
 		public Task<AssignableTypesResult> GetSourceTypesAsync (BindingSource source, object target)
 		{
-			return ReflectionObjectEditor.GetAssignableTypes (target.GetType ().ToTypeInfo (), childTypes: false);
+			return MockEditorProvider.GetAssignableTypes (ToTypeInfo (target.GetType ()), childTypes: false);
 		}
 
 		public Task<IReadOnlyList<object>> GetRootElementsAsync (BindingSource source, object target)

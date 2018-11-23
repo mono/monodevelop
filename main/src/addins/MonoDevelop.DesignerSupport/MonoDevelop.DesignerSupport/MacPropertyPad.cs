@@ -41,6 +41,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Theming;
 using AppKit;
+using CoreGraphics;
+using Foundation;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -50,44 +52,51 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool IsPropertyGridEditing => false;
 
-		PropertyEditorPanel propertyEditorPanel;
-
 		public event EventHandler PropertyGridChanged;
+
+		PropertyEditorPanel propertyEditorPanel;
 
 		MockEditorProvider editorProvider;
 		MockResourceProvider resourceProvider;
 		MockBindingProvider bindingProvider;
-
-		public MacPropertyPad ()
-		{
-		
-		}
 
 		protected override void Initialize (IPadWindow window)
 		{
 			base.Initialize (window);
 
 			var container = NativeViewHelper.CreateVerticalStackView ();
-
-			propertyEditorPanel = new PropertyEditorPanel ();
+			container.WantsLayer = true;
+			container.Layer.BackgroundColor = NSColor.Yellow.CGColor;
+			container.TranslatesAutoresizingMaskIntoConstraints = true;
 			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
 
+			propertyEditorPanel = new PropertyEditorPanel ();
 
 			var scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
-				TranslatesAutoresizingMaskIntoConstraints = false
 			};
-			scrollView.WantsLayer = true;
+			scrollView.BackgroundColor = NSColor.Red;
 			scrollView.DocumentView = propertyEditorPanel;
 
 			container.AddArrangedSubview (scrollView);
+
+			//scrollView.WidthAnchor.ConstraintEqualToAnchor (container.WidthAnchor, 0).Active = true;
+
 
 			widget = GtkMacInterop.NSViewToGtkWidget (container);
 
 			window.PadContentShown += Window_PadContentShown;
 
 			DesignerSupport.Service.SetPad (this);
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSView.FrameChangedNotification, (s => {
+				if (s.Object == container) {
+					scrollView.Frame = container.Frame;
+					var frame = (CGRect)propertyEditorPanel.Frame;
+					//propertyEditorPanel.SetContentSize (new CGSize (container.Frame.Width, frame.Size.Height)); 
+				}
+			}));
 
 			widget.ShowAll ();
 		}
@@ -104,7 +113,6 @@ namespace MonoDevelop.DesignerSupport
 					SupportsCustomExpressions = true,
 					SupportsMaterialDesign = true,
 				};
-
 			}
 		}
 
@@ -136,10 +144,15 @@ namespace MonoDevelop.DesignerSupport
 
 		}
 
+		public class TestApp
+		{
+			public string MyProperty { get; set; }
+		}
+
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				//propertyEditorPanel.Select (new object [] { lastComponent });
+				propertyEditorPanel.Select (new object [] { new TestApp () });
 			}
 		}
 
