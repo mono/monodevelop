@@ -189,24 +189,29 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (string.IsNullOrEmpty (text)) 
 				return;
-			ParsedDocument parsedDocument = null;
 
-			var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
-			if (foldingParser != null) {
-				parsedDocument = foldingParser.Parse (textEditor.FileName, text);
-			} else {
-				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
-				if (normalParser != null) {
-					parsedDocument = await normalParser.Parse(
-						new TypeSystem.ParseOptions {
-							FileName = textEditor.FileName,
-							Content = new StringTextSource(text),
-							Project = Project
-						});
+			try {
+				ParsedDocument parsedDocument = null;
+
+				var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
+				if (foldingParser != null) {
+					parsedDocument = foldingParser.Parse (textEditor.FileName, text);
+				} else {
+					var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
+					if (normalParser != null) {
+						parsedDocument = await normalParser.Parse(
+							new TypeSystem.ParseOptions {
+								FileName = textEditor.FileName,
+								Content = new StringTextSource(text),
+								Project = Project
+							});
+					}
 				}
-			}
-			if (parsedDocument != null) {
-				await FoldingTextEditorExtension.UpdateFoldings (textEditor, parsedDocument, textEditor.CaretLocation, true);
+				if (parsedDocument != null) {
+					await FoldingTextEditorExtension.UpdateFoldings (textEditor, parsedDocument, textEditor.CaretLocation, true);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error running first time fold update", e);
 			}
 		}
 
