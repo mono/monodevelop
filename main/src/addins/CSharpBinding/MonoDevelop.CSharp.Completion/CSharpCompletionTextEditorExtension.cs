@@ -349,13 +349,13 @@ namespace MonoDevelop.CSharp.Completion
 							}
 							if (extensionMethodImport) {
 								if (type.MightContainExtensionMethods)
-									AddImportExtensionMethodCompletionData (result, type, extensionMethodReceiverType, extMethodDict);
+									AddImportExtensionMethodCompletionData (result, ctx, type, extensionMethodReceiverType, extMethodDict);
 							} else {
 								if (!typeDict.TryGetValue (type.ContainingNamespace, out var existingTypeHashSet)) {
 									typeDict.Add (type.ContainingNamespace, existingTypeHashSet = new HashSet<string> ());
 								}
 								if (!existingTypeHashSet.Contains (type.Name)) {
-									result.Add (new ImportSymbolCompletionData (this, type, false));
+									result.Add (new ImportSymbolCompletionData (this, ctx, type, false));
 									existingTypeHashSet.Add (type.Name);
 								}
 							}
@@ -367,7 +367,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		void AddImportExtensionMethodCompletionData (CompletionDataList result, INamedTypeSymbol fromType, ITypeSymbol receiverType, Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> extMethodDict)
+		void AddImportExtensionMethodCompletionData (CompletionDataList result, CSharpSyntaxContext ctx, INamedTypeSymbol fromType, ITypeSymbol receiverType, Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> extMethodDict)
 		{
 			try {
 				foreach (var extMethod in fromType.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
@@ -376,7 +376,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (!extMethodDict.TryGetValue (fromType.ContainingNamespace, out var importSymbolList))
 							extMethodDict.Add (fromType.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
 
-						var newData = new ImportSymbolCompletionData (this, reducedMethod, false);
+						var newData = new ImportSymbolCompletionData (this, ctx, reducedMethod, false);
 						ImportSymbolCompletionData existingItem = null;
 						foreach (var data in importSymbolList) {
 							if (data.Symbol.Name == extMethod.Name) {
