@@ -26,6 +26,7 @@
 
 #if MAC
 
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -75,7 +76,32 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (type == KnownTypes [typeof (CommonValueConverter)])
 				return Task.FromResult (new AssignableTypesResult (new [] { type }));
-			return ReflectionObjectEditor.GetAssignableTypes (type, childTypes);
+			return GetAssignableTypes (type, childTypes);
+		}
+
+		internal static Task<AssignableTypesResult> GetAssignableTypes (ITypeInfo type, bool childTypes)
+		{
+			return Task.Run (() => {
+				var types = AppDomain.CurrentDomain.GetAssemblies ().SelectMany (a => a.GetTypes ()).AsParallel ()
+					.Where (t => t.Namespace != null && !t.IsAbstract && !t.IsInterface && t.IsPublic && t.GetConstructor (Type.EmptyTypes) != null);
+
+				Type realType = ReflectionEditorProvider.GetRealType (type);
+				if (childTypes) {
+					var generic = realType.GetInterface ("ICollection`1");
+					if (generic != null) {
+						realType = generic.GetGenericArguments () [0];
+					} else {
+						realType = typeof (object);
+					}
+				}
+
+				types = types.Where (t => realType.IsAssignableFrom (t));
+
+				return new AssignableTypesResult (types.Select (t => {
+					string asmName = t.Assembly.GetName ().Name;
+					return new TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
+				}).ToList ());
+			});
 		}
 
 		IObjectEditor ChooseEditor (object item)
