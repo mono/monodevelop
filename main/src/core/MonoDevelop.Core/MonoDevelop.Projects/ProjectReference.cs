@@ -76,6 +76,7 @@ namespace MonoDevelop.Projects
 		string customError;
 		FilePath hintPath;
 		bool hintPathChanged;
+		bool useFullPathForHintPath;
 		bool hasBeenRead;
 
 		string originalMSBuildReferenceHintPath;
@@ -250,6 +251,8 @@ namespace MonoDevelop.Projects
 				} else {
 					var type = File.Exists (path) ? ReferenceType.Assembly : ReferenceType.Package;
 					Init (type, buildItem.Include, path);
+					if (buildItem.Metadata.TryGetPathValue ("HintPath", out FilePath relativePath, relativeToProject: false))
+						useFullPathForHintPath = relativePath == path;
 				}
 			} else {
 				string asm = buildItem.Include;
@@ -328,15 +331,8 @@ namespace MonoDevelop.Projects
 
 			buildItem.Metadata.SetValue ("Private", LocalCopy, DefaultLocalCopy);
 
-			if (hintPathChanged) {
-				bool useFullPathForHintPath = false;
-				if (buildItem.Metadata.TryGetPathValue ("HintPath", out FilePath relativePath, relativeToProject: false) &&
-					buildItem.Metadata.TryGetPathValue ("HintPath", out FilePath fullPath, relativeToProject: true)) {
-					useFullPathForHintPath = relativePath == fullPath;
-				}
+			if (hintPathChanged)
 				buildItem.Metadata.SetValue ("HintPath", HintPath, relativeToProject: !useFullPathForHintPath);
-				hintPathChanged = false;
-			}
 		}
 
 		bool ReferenceStringHasVersion (string asmName)

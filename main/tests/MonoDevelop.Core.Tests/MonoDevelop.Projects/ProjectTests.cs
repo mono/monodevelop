@@ -682,6 +682,32 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task UpdateHintPath ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string projectFile = Util.GetSampleProject ("hintpath-tests", "ConsoleProject.csproj");
+			using (var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
+
+				var reference = p.References.Single (r => r.Reference == "Test");
+				reference.HintPath = reference.HintPath.ParentDirectory.Combine ("Test2.dll");
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var savedXml = File.ReadAllText (p.FileName.ChangeExtension (".csproj-saved"));
+				var refXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+
+				// Save again. Checks that old hint path is not put back again.
+				await p.SaveAsync (Util.GetMonitor ());
+				savedXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (refXml, savedXml);
+			}
+		}
+
+		[Test]
 		public async Task ChangeBuildAction ()
 		{
 			// Check that the in-memory project data is used when the builder is loaded for the first time.
