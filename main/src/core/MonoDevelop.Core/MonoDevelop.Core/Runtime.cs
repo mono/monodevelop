@@ -235,7 +235,7 @@ namespace MonoDevelop.Core
 			LoggingService.LogDebug ("Add-in assemblies loaded: {0}: {1}", args.AddinId, Environment.StackTrace);
 #endif
 		}
-		
+
 		public static bool Initialized {
 			get { return initialized; }
 		}

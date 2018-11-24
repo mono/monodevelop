@@ -261,25 +261,6 @@ namespace MonoDevelop.Core.Instrumentation
 			Inc (n, message, (IDictionary<string, object>)null);
 		}
 
-		[Obsolete ("Use Inc (int, string, IDictionary<string, object>) instead")]
-		public void Inc (string message, IDictionary<string, string> metadata)
-		{
-			Inc (1, message, metadata);
-		}
-
-		[Obsolete ("Use Inc (int, string, IDictionary<string, object>) instead")]
-		public void Inc (IDictionary<string, string> metadata)
-		{
-			Inc (1, null, metadata);
-		}
-
-		[Obsolete ("Use Inc (int, string, IDictionary<string, object>) instead")]
-		public void Inc (int n, string message, IDictionary<string, string> metadata)
-		{
-			var converted = metadata.ToDictionary (k => k.Key, k => (object)k.Value);
-			Inc (n, message, converted);
-		}
-
 		public void Inc (int n, string message, IDictionary<string, object> metadata)
 		{
 			if (enabled) {
@@ -313,13 +294,6 @@ namespace MonoDevelop.Core.Instrumentation
 			Dec (n, message, (IDictionary<string, object>)null); 
 		}
 
-		[Obsolete ("Use Dec (int, string, IDictionary<string, object>) instead")]
-		public void Dec (int n, string message, IDictionary<string, string> metadata)
-		{
-			var converted = metadata.ToDictionary (k => k.Key, k => (object)(k.Value));
-			Dec (n, message, converted);
-		}
-
 		public void Dec (int n, string message, IDictionary<string, object> metadata)
 		{
 			if (enabled) {
@@ -340,13 +314,6 @@ namespace MonoDevelop.Core.Instrumentation
 		public void SetValue (int value, string message)
 		{
 			SetValue (value, message, (IDictionary<string, object>)null);
-		}
-
-		[Obsolete ("Use SetValue (int, string, IDictionary<string, object>) instead")]
-		public void SetValue (int value, string message, IDictionary<string, string> metadata)
-		{
-			var converted = metadata.ToDictionary (k => k.Key, k => (object)(k.Value));
-			SetValue (value, message, converted);
 		}
 
 		public void SetValue (int value, string message, IDictionary<string, object> metadata)
