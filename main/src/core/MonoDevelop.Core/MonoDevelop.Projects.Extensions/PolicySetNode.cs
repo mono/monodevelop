@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.Extensions
 		public PolicySet Set {
 			get {
 				if (polSet == null) {
-					polSet = new PolicySet (Id, MonoDevelop.Core.GettextCatalog.GetString (name));
+					polSet = new PolicySet (Id, name);
 					polSet.Visible = visible;
 					polSet.AllowDiffSerialize = allowDiffSerialize;
 					foreach (PolicyResourceNode res in ChildNodes) {
