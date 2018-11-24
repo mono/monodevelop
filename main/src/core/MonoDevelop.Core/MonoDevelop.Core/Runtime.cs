@@ -215,7 +215,7 @@ namespace MonoDevelop.Core
 
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string, string> {
+			Counters.AddinsLoaded.Inc (1, "Add-in loaded: " + args.AddinId, new Dictionary<string, object> {
 				{ "AddinId", args.AddinId },
 				{ "LoadTrace", Environment.StackTrace },
 			});
