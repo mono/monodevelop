@@ -851,33 +851,9 @@ namespace MonoDevelop.Projects
 			inserted[index] = true;
 		}
 
-		[Obsolete ("Use CreateProjectEventMetadata")]
-		public IDictionary<string, string> GetProjectEventMetadata (ConfigurationSelector configurationSelector)
-		{
-			string id = null;
-			if (configurationSelector != null) {
-				var slnConfig = configurationSelector as SolutionConfigurationSelector;
-				if (slnConfig != null) {
-					id = slnConfig.Id;
-				}
-			}
-
-			// Due to API break restrictions, this may cause the work to be done twice
-			// For example: MonoDevelop.Projects.Project
-			var obsoleteMetadata = new Dictionary<string, string> ();
-			OnGetProjectEventMetadata (obsoleteMetadata);
-
-			return obsoleteMetadata;
-		}
-
 		public ProjectEventMetadata CreateProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
 			return ItemExtension.OnGetProjectEventMetadata (configurationSelector);
-		}
-
-		[Obsolete ("Use OnGetProjectEventMetadata (ProjectEventMetadata) instead")]
-		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
-		{
 		}
 
 		protected virtual ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)

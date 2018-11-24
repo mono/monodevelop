@@ -785,22 +785,6 @@ namespace MonoDevelop.Projects
 			return base.GetItemTypeGuids ().Concat (flavorGuids);
 		}
 
-		protected override void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
-		{
-			base.OnGetProjectEventMetadata (metadata);
-			var sb = new System.Text.StringBuilder ();
-			var first = true;
-
-			var projectTypes = this.GetTypeTags ().ToList ();
-			foreach (var p in projectTypes.Where (x => (x != "DotNet") || projectTypes.Count == 1)) {
-				if (!first)
-					sb.Append (", ");
-				sb.Append (p);
-				first = false;
-			}
-			metadata["ProjectTypes"] = sb.ToString ();
-		}
-
 		protected override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
 			var metadata = base.OnGetProjectEventMetadata (configurationSelector);
@@ -837,7 +821,7 @@ namespace MonoDevelop.Projects
 		{
 			base.OnEndLoad ();
 
-			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
+			ProjectOpenedCounter.Inc (1, null, CreateProjectEventMetadata (null));
 
 			if (sourceProject != null)
 				sourceProject.ImportChanged += OnMSBuildProjectImportChanged;

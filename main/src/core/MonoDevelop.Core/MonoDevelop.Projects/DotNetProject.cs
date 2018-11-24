@@ -917,7 +917,7 @@ namespace MonoDevelop.Projects
 			List<AssemblyReference> result = new List<AssemblyReference> ();
 			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (CreateProjectEventMetadata (configuration)))
 					result.AddRange (await RunResolveAssemblyReferencesTarget (configuration));
 			} else {
 				foreach (ProjectReference pref in References) {
@@ -1093,7 +1093,7 @@ namespace MonoDevelop.Projects
 			var result = new List<PackageDependency> ();
 			if (MSBuildProject.UseMSBuildEngine) {
 				// Get the references list from the msbuild project
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (CreateProjectEventMetadata (configuration)))
 					return await RunResolvePackageDependenciesTarget (configuration, cancellationToken);
 			} else
 				return new List<PackageDependency> ();
