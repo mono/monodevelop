@@ -277,9 +277,6 @@ module Refactoring =
           |> List.map (fun p -> p.FileName.ToString() )
       with _ -> []
 
-    let disposeMonitor (monitor:SearchProgressMonitor) =
-        Runtime.RunInMainThread(fun() -> monitor.Dispose()) |> ignore
-
     let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
         async {
@@ -296,7 +293,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> monitor.Dispose ())
 
     let findDerivedReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
@@ -314,7 +311,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> monitor.Dispose ())
 
     let findOverloads (editor:TextEditor, _ctx:DocumentContext, symbolUse:FSharpSymbolUse, _lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
@@ -338,7 +335,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> monitor.Dispose ())
 
     let findExtensionMethods (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
@@ -356,7 +353,7 @@ module Refactoring =
             for (filename, startOffset, endOffset) in distinctRefs do
                 let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
                 monitor.ReportResult sr
-        } |> Async.StartInThreadpoolWithContinuation(fun () -> disposeMonitor monitor)
+        } |> Async.StartInThreadpoolWithContinuation(fun () -> monitor.Dispose ())
 
     module Operations =
         let canRename (symbolUse:FSharpSymbolUse) fileName project =
