@@ -808,10 +808,12 @@ namespace MonoDevelop.Projects
 			if (capabilities.Any ())
 				metadata.Capabilities = string.Join (" ", capabilities);
 
-			var c = GetConfiguration (configurationSelector);
-			if (c != null) {
-				metadata.Configuration = c.Id;
-				metadata.Platform = GetExplicitPlatform (c);
+			if (configurationSelector != null) {
+				var c = GetConfiguration (configurationSelector);
+				if (c != null) {
+					metadata.Configuration = c.Id;
+					metadata.Platform = GetExplicitPlatform (c);
+				}
 			}
 
 			return metadata;
