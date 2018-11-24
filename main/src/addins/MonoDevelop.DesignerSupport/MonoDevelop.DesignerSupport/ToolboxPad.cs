@@ -32,7 +32,9 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Xwt;
+#if MAC
 using MonoDevelop.Components.Mac;
+#endif
 
 namespace MonoDevelop.DesignerSupport
 {
