@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Projects
 			HasSeparator = true;
 			this.Build ();
 			radioCopy.Active = true;
-			labelTitle.Markup = GettextCatalog.GetString (labelTitle.Text, "<b>" + GLib.Markup.EscapeText (file) + "</b>");
+			labelTitle.Markup = string.Format (labelTitle.Text, "<b>" + GLib.Markup.EscapeText (file) + "</b>");
 			Resizable = false;
 			buttonOk.GrabFocus ();
 		}
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 			string here = "." + System.IO.Path.DirectorySeparatorChar;
 			if (!dir.StartsWith (here))
 				dir = here + dir;
-			labelKeep.Markup = GettextCatalog.GetString (labelKeep.LabelProp, dir);
+			labelKeep.Markup = string.Format (labelKeep.LabelProp, dir);
 			radioKeep.Active = true;
 		}
 

@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				IMimeTypePolicyOptionsPanel panel = (IMimeTypePolicyOptionsPanel) node.CreateInstance (typeof(IMimeTypePolicyOptionsPanel));
 				panel.Initialize (ParentDialog, DataObject);
 				panel.InitializePolicy (policyContainer, defaultPolicyContainer, mimeType, mimeType == node.MimeType);
-				panel.Label = GettextCatalog.GetString (node.Label);
+				panel.Label = node.Label;
 				if (!panel.IsVisible ())
 					continue;
 				

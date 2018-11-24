@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Fonts
 
 			foreach (var desc in FontService.FontDescriptions) {
 				selectedFonts [desc.Name] = FontService.GetUnderlyingFontName (desc.Name);
-				var fontNameLabel = new Label (GettextCatalog.GetString (desc.DisplayName));
+				var fontNameLabel = new Label (desc.DisplayName);
 				fontNameLabel.Justify = Justification.Left;
 				fontNameLabel.Xalign = 0;
 				mainBox.PackStart (fontNameLabel, false, false, 0);
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Fonts
 				var setFontButton = new Button ();
 				setFontButton.Label = FontService.FilterFontName (GetFont (desc.Name));
 
-				var descStr = GettextCatalog.GetString ("Set the font options for {0}", GettextCatalog.GetString (desc.DisplayName));
+				var descStr = GettextCatalog.GetString ("Set the font options for {0}", desc.DisplayName);
 				setFontButton.Accessible.Description = descStr;
 				setFontButton.Clicked += delegate {
 					var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
