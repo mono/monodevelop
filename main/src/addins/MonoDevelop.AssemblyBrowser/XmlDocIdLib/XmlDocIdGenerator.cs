@@ -395,10 +395,9 @@ namespace XmlDocIdLib
 
             if (tpType.GenericParameters.Count > 0)
             {
-                CurrPath.Append(
-                    tpType.Namespace +
-                    ((CanAppendSpecialExplicitChar() && ExplicitMode) ? "#" : ".") +
-                    StripGenericName(tpType.Name));
+                CurrPath.Append(tpType.Namespace)
+					.Append ((CanAppendSpecialExplicitChar () && ExplicitMode) ? "#" : ".")
+					.Append(StripGenericName(tpType.Name));
 
                 // list parameters or types
                 bool firstAppend = true;

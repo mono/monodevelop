@@ -716,7 +716,8 @@ namespace MonoDevelop.CSharp.Refactoring
 						var name = Enum.GetName (p.ExplicitDefaultValue.GetType (), p.ExplicitDefaultValue);
 						if (name != null) {
 							AppendReturnType (result, options, p.Type);
-							result.Append ("." + name);
+							result.Append (".");
+							result.Append (name);
 						} else {
 							result.Append ("(");
 							AppendReturnType (result, options, p.Type);
