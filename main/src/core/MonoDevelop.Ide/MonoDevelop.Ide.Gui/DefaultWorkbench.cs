@@ -427,7 +427,7 @@ namespace MonoDevelop.Ide.Gui
 			} else
 				type = "(not a file)";
 
-			var metadata = new Dictionary<string,string> () {
+			var metadata = new Dictionary<string,object> () {
 				{ "FileType", type },
 				{ "DisplayBinding", content.GetType ().FullName },
 			};
@@ -435,7 +435,7 @@ namespace MonoDevelop.Ide.Gui
 			if (isFile)
 				metadata ["DisplayBindingAndType"] = type + " | " + content.GetType ().FullName;
 
-			Counters.DocumentOpened.Inc (metadata);
+			Counters.DocumentOpened.Inc (1, null, metadata);
 
 			var mimeimage = PrepareShowView (content);
 			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
