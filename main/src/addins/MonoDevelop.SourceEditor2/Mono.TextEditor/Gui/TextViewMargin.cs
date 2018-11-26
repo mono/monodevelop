@@ -3368,7 +3368,7 @@ namespace Mono.TextEditor
 
 						if (snapCharacters && !IsNearX1 (xp, xp1, xp2)) {
 							index++;
-							if (index < layoutWrapper.Text.Length  && (layoutWrapper.Text[index] & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker)
+							if (index < layoutWrapper.Text.Length  && CaretMoveActions.IsLowSurrogateMarkerSet (layoutWrapper.Text [index]))
 								index++;
 						}
 						return true;
