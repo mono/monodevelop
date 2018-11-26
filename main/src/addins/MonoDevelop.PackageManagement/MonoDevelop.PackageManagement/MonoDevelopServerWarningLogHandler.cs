@@ -22,7 +22,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var configuration = request.GetOrCreateConfiguration ();
 
-			var response = await base.SendAsync (request, cancellationToken);
+			var response = await base.SendAsync (request, cancellationToken).ConfigureAwait (false);
 
 			response.LogServerWarning (configuration.Logger);
 
