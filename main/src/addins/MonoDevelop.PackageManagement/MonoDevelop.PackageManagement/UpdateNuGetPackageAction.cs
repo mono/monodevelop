@@ -119,13 +119,15 @@ namespace MonoDevelop.PackageManagement
 			SetDirectInstall ();
 
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {
-				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				using (var referenceMaintainer = new ProjectReferenceMaintainer (project)) {
 					await packageManager.ExecuteNuGetProjectActionsAsync (
 						project,
 						actions,
 						context,
 						resolutionContext.SourceCacheContext,
 						cancellationToken);
+
+					await referenceMaintainer.ApplyChanges ();
 				}
 			}
 
@@ -178,11 +180,6 @@ namespace MonoDevelop.PackageManagement
 		protected virtual ILicenseAcceptanceService GetLicenseAcceptanceService ()
 		{
 			return new LicenseAcceptanceService ();
-		}
-
-		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
-		{
-			return new LocalCopyReferenceMaintainer (packageManagementEvents);
 		}
 
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
