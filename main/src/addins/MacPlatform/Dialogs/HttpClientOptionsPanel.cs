@@ -43,7 +43,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			if (control == null) {
 				widget = new HttpClientOptionsWidget ();
-				control = widget.ToGtkWidget ();
+				control = new XwtControl (widget);
 			}
 
 			return control;
@@ -52,7 +52,8 @@ namespace MonoDevelop.MacIntegration
 		public override void Dispose ()
 		{
 			if (control != null) {
-				control.Dispose ();
+				// No need to dispose Control. This is done automatically.
+				// XwtControl does not dispose its widget though.
 				widget.Dispose ();
 			}
 			base.Dispose ();

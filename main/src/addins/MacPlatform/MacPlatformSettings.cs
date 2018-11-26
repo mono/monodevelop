@@ -30,15 +30,7 @@ namespace MonoDevelop.MacIntegration
 {
 	static class MacPlatformSettings
 	{
-		static readonly string UseNSUrlSessionHandlerProperty = "MonoDevelop.MacIntegration.UseNSUrlSessionHandler";
-
-		public static bool UseNSUrlSessionHandler {
-			get {
-				return PropertyService.Get (UseNSUrlSessionHandlerProperty, true);
-			}
-			set {
-				PropertyService.Set (UseNSUrlSessionHandlerProperty, value);
-			}
-		}
+		public static readonly ConfigurationProperty<bool> UseNSUrlSessionHandler
+			= ConfigurationProperty.Create ("MonoDevelop.MacIntegration.UseNSUrlSessionHandler", true);
 	}
 }

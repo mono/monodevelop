@@ -41,7 +41,7 @@ namespace MonoDevelop.MacIntegration
 		/// </summary>
 		void SelectHttpClientImplementation ()
 		{
-			if (MacPlatformSettings.UseNSUrlSessionHandler) {
+			if (MacPlatformSettings.UseNSUrlSessionHandler.Value) {
 				httpClientHandlerComboBox.SelectedItem = nsUrlSessionHttpClientImplementation;
 			} else {
 				httpClientHandlerComboBox.SelectedItem = managedHttpClientImplementation;
@@ -51,7 +51,7 @@ namespace MonoDevelop.MacIntegration
 		public void ApplyChanges ()
 		{
 			bool nsUrlSessionSelected = httpClientHandlerComboBox.SelectedItem == nsUrlSessionHttpClientImplementation;
-			MacPlatformSettings.UseNSUrlSessionHandler = nsUrlSessionSelected;
+			MacPlatformSettings.UseNSUrlSessionHandler.Value = nsUrlSessionSelected;
 		}
 	}
 }

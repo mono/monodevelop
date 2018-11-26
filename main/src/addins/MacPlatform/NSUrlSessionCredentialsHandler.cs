@@ -55,7 +55,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			bool retry = false;
 			while (true) {
-				var response = await base.SendAsync (request, cancellationToken);
+				var response = await base.SendAsync (request, cancellationToken).ConfigureAwait (false);
 
 				if (retry || response.StatusCode != HttpStatusCode.Unauthorized)
 					return response;
