@@ -63,7 +63,7 @@ namespace MonoDevelop.Core.Web
 				var cacheVersion = credentialCache.Version;
 
 				try {
-					var response = await base.SendAsync (request, cancellationToken);
+					var response = await base.SendAsync (request, cancellationToken).ConfigureAwait (false);
 
 					if (response.StatusCode != HttpStatusCode.ProxyAuthenticationRequired) {
 						return response;

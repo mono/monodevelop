@@ -75,7 +75,7 @@ namespace MonoDevelop.Core.Web
 				// store the auth state before sending the request
 				var beforeLockVersion = credentials.Version;
 
-				response = await base.SendAsync (request, cancellationToken);
+				response = await base.SendAsync (request, cancellationToken).ConfigureAwait (false);
 
 				if (credentialService == null) {
 					return response;
