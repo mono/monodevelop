@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using MonoDevelop.Core;
 
@@ -323,22 +324,34 @@ namespace MonoDevelop.UnitTesting
 		DateTime[] GetStoreDates (string configuration)
 		{
 			if (!Directory.Exists (basePath))
-				return new DateTime [0];
+				return Array.Empty<DateTime> ();
 
 			lock (cachedRootList) {
 				DateTime [] res = (DateTime [])cachedRootList [configuration];
 				if (res != null)
 					return res;
 
-				var dates = new List<DateTime> ();
+				var dates = new List<(string File, DateTime Date)> ();
 				var escapedConfiguration = EscapeFilename (configuration);
 				foreach (string file in Directory.GetFiles (basePath, storeId + "-" + escapedConfiguration + "-*")) {
 					try {
 						DateTime t = ParseFileNameDate (escapedConfiguration, Path.GetFileName (file));
-						dates.Add (t);
+						dates.Add ((file, t));
 					} catch { }
 				}
-				res = dates.ToArray ();
+
+				// prune items from the list
+				// items are sorted due to how the file name is generated
+				const int maxStoreItems = 30;
+				int overflow = dates.Count - maxStoreItems;
+				int toRemove = Math.Max (0, overflow);
+				if (toRemove != 0) {
+					for (int i = 0; i < toRemove; ++i)
+						File.Delete (dates [i].File);
+					dates.RemoveRange (0, toRemove);
+				}
+
+				res = dates.Select (x => x.Date).ToArray ();
 				cachedRootList [configuration] = res;
 				return res;
 			}

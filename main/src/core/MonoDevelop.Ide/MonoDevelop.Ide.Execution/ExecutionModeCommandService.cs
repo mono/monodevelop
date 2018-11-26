@@ -604,7 +604,7 @@ namespace MonoDevelop.Ide.Execution
 	{
 		IExecutionCommandCustomizer customizer;
 		
-		[NodeAttribute ("_name")]
+		[NodeAttribute ("_name", Localizable=true)]
 		string name;
 		
 		protected override void Read (Mono.Addins.NodeElement elem)
