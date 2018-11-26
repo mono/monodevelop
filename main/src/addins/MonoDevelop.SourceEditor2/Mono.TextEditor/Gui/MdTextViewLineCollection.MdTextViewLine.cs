@@ -242,9 +242,9 @@ namespace Mono.TextEditor
 				}
 
 				var c = textEditor.GetCharAt (bufferPosition.Position);
-				if ((c & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker)
+				if (CaretMoveActions.IsLowSurrogateMarkerSet (c))
 					return new SnapshotSpan (bufferPosition.Snapshot, bufferPosition.Position, 2);
-				if ((c & CaretMoveActions.HighSurrogateMarker) == CaretMoveActions.HighSurrogateMarker)
+				if (CaretMoveActions.IsHighSurrogateMarkerSet (c))
 					return new SnapshotSpan (bufferPosition.Snapshot, bufferPosition.Position - 1, 2);
 				return new SnapshotSpan (bufferPosition, 1);
 			}
