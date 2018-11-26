@@ -503,7 +503,7 @@ namespace MonoDevelop.Ide.Gui
 		void RegisterPad (PadCodon content)
 		{
 			if (content.HasId) {
-				string lab = content.Label.Length > 0 ? GettextCatalog.GetString (content.Label) : "";
+				string lab = content.Label.Length > 0 ? content.Label : "";
 				ActionCommand cmd = new ActionCommand ("Pad|" + content.PadId, lab, null);
 				cmd.DefaultHandler = new PadActivationHandler (this, content);
 				cmd.Category = GettextCatalog.GetString ("View (Pads)");
@@ -1498,7 +1498,7 @@ namespace MonoDevelop.Ide.Gui
 			string location = ToDockLocation (placement);
 			
 			DockItem item = dock.AddItem (padCodon.PadId);
-			item.Label = GettextCatalog.GetString (padCodon.Label);
+			item.Label = padCodon.Label;
 			item.Icon = ImageService.GetIcon (padCodon.Icon).WithSize (IconSize.Menu);
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
@@ -1536,10 +1536,10 @@ namespace MonoDevelop.Ide.Gui
 			PadCodon codon = padCodons [window];
 			DockItem item = GetDockItem (codon);
 			if (item != null) {
-				string windowTitle = GettextCatalog.GetString (window.Title);
+				string windowTitle = window.Title;
 				var windowIcon = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);
 				if (String.IsNullOrEmpty (windowTitle)) 
-					windowTitle = GettextCatalog.GetString (codon.Label);
+					windowTitle = codon.Label;
 				if (window.HasErrors && !window.ContentVisible) {
 					windowTitle = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + windowTitle + "</span>";
 					windowIcon = windowIcon.WithStyles ("error");

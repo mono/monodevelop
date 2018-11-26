@@ -325,7 +325,7 @@ namespace MonoDevelop.UnitTesting
 					if (foundTest != null)
 						RunTest (foundTest);
 					else
-						UnitTestService.ReportExecutionError (GettextCatalog.GetString ($"Unit test '{testCase}' could not be loaded."));
+						UnitTestService.ReportExecutionError (GettextCatalog.GetString ("Unit test '{0}' could not be loaded.", testCase));
 				}
 
 				internal void Select (object sender, EventArgs e)
