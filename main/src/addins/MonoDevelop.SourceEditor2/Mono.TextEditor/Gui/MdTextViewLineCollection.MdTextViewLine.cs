@@ -75,11 +75,11 @@ namespace Mono.TextEditor
 
 			public SnapshotSpan Extent => new SnapshotSpan (Snapshot, line.Offset, line.Length);
 
-			public IMappingSpan ExtentAsMappingSpan => new MappingSpan (Extent, SpanTrackingMode.EdgeInclusive, null);
+			public IMappingSpan ExtentAsMappingSpan => textEditor.BufferGraph.CreateMappingSpan (Extent, SpanTrackingMode.EdgeInclusive);
 
 			public SnapshotSpan ExtentIncludingLineBreak => new SnapshotSpan (Snapshot, line.Offset, line.LengthIncludingDelimiter);
 
-			public IMappingSpan ExtentIncludingLineBreakAsMappingSpan => new MappingSpan (ExtentIncludingLineBreak, SpanTrackingMode.EdgeInclusive, null);
+			public IMappingSpan ExtentIncludingLineBreakAsMappingSpan => textEditor.BufferGraph.CreateMappingSpan (ExtentIncludingLineBreak, SpanTrackingMode.EdgeInclusive);
 
 			public SnapshotPoint Start => new SnapshotPoint (Snapshot, line.Offset);
 

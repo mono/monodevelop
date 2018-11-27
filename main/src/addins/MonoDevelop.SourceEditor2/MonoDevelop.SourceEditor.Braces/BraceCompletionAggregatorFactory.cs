@@ -27,7 +27,7 @@ namespace MonoDevelop.SourceEditor.Braces
 		internal IContentTypeRegistryService ContentTypeRegistryService { get; private set; }
 		internal ITextBufferUndoManagerProvider UndoManager { get; private set; }
 		internal IEditorOperationsFactoryService EditorOperationsFactoryService { get; private set; }
-		internal GuardedOperations GuardedOperations { get; private set; }
+		internal IGuardedOperations GuardedOperations { get; private set; }
 
 		#endregion
 
@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor.Braces
 			IContentTypeRegistryService contentTypeRegistryService,
 			ITextBufferUndoManagerProvider undoManager,
 			IEditorOperationsFactoryService editorOperationsFactoryService,
-			GuardedOperations guardedOperations)
+			IGuardedOperations guardedOperations)
 		{
 			SessionProviders = sessionProviders;
 			ContextProviders = contextProviders;

@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         internal List<Lazy<ISmartIndentProvider, IContentTypeMetadata>> SmartIndentProviders { get; set; }
 
         [Import]
-        internal GuardedOperations GuardedOperations { get; set; }
+        internal IGuardedOperations GuardedOperations { get; set; }
 
         [Import]
         internal IContentTypeRegistryService ContentTypeRegistryService { get; set; }

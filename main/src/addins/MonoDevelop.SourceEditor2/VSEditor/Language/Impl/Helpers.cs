@@ -138,7 +138,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         internal static IEnumerable<TStyle> GetMatchingPresenterStyles<TSession, TStyle>
                                                 (TSession session,
                                                  IList<Lazy<TStyle, IOrderableContentTypeMetadata>> orderedPresenterStyles,
-                                                 GuardedOperations guardedOperations)
+                                                 IGuardedOperations guardedOperations)
             where TSession : IIntellisenseSession
         {
             List<TStyle> styles = new List<TStyle>();

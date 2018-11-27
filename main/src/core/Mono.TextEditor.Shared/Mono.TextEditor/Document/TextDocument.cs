@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Utilities;
 
 namespace Mono.TextEditor
 {
@@ -230,7 +231,11 @@ namespace Mono.TextEditor
 
 			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
 			this.TextBuffer.Changed += this.OnTextBufferChanged;
-			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
+
+			// BaseBuffer is internal so have to use Reflection
+			//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
+			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			changedImmediateEventInfo.AddEventHandler (TextBuffer, (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate);
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
 
 			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
@@ -241,7 +246,11 @@ namespace Mono.TextEditor
 
 		public void Dispose()
 		{
-			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
+			// BaseBuffer is internal so have to use Reflection
+			//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
+			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			changedImmediateEventInfo.RemoveEventHandler (TextBuffer, (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate);
+
 			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
 			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
@@ -765,6 +774,11 @@ namespace Mono.TextEditor
 			readonly int afterVersionNumber;
 			Microsoft.VisualStudio.Text.INormalizedTextChangeCollection changes;
 
+			/// <summary>
+			/// The type itself is being used as a marker and it's internal, so have to retrieve it via Reflection
+			/// </summary>
+			readonly Type textBufferChangeUndoPrimitiveType;
+
 			public virtual Microsoft.VisualStudio.Text.INormalizedTextChangeCollection Changes {
 				get {
 					return changes;
@@ -778,9 +792,11 @@ namespace Mono.TextEditor
 			
 			protected UndoOperation()
 			{
+				// The type is in the consolidated editor implementation assembly
+				textBufferChangeUndoPrimitiveType = typeof (ITextViewRoleMetadata).Assembly.GetType ("Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive");
 			}
 
-			public UndoOperation (Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
+			public UndoOperation (Microsoft.VisualStudio.Text.TextContentChangedEventArgs args) : this()
 			{
 				this.beforeVersionNumber = args.BeforeVersion.VersionNumber;
 				this.afterVersionNumber = args.AfterVersion.VersionNumber;
@@ -791,7 +807,7 @@ namespace Mono.TextEditor
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.beforeVersionNumber, textBufferChangeUndoPrimitiveType)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.NewPosition, change.NewLength, change.OldText);
 
@@ -806,7 +822,7 @@ namespace Mono.TextEditor
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				if (this.Changes.Count > 0) {
-					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, typeof(Microsoft.VisualStudio.Text.BufferUndoManager.Implementation.TextBufferChangeUndoPrimitive))) {
+					using (var edit = doc.TextBuffer.CreateEdit(Microsoft.VisualStudio.Text.EditOptions.None, this.afterVersionNumber, textBufferChangeUndoPrimitiveType)) {
 						foreach (var change in this.changes)
 							edit.Replace(change.OldPosition, change.OldLength, change.NewText);
 

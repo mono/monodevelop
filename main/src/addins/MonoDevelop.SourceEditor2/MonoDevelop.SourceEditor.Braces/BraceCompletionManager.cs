@@ -11,6 +11,7 @@ namespace MonoDevelop.SourceEditor.Braces
 	using Microsoft.VisualStudio.Text.BraceCompletion;
 	using Microsoft.VisualStudio.Text.Editor;
 	using Microsoft.VisualStudio.Text.Utilities;
+	using Microsoft.VisualStudio.Utilities;
 	using MonoDevelop.Ide.Editor;
 	using System;
 	using System.Diagnostics;
@@ -27,7 +28,7 @@ namespace MonoDevelop.SourceEditor.Braces
 		private readonly IBraceCompletionAggregatorFactory _sessionFactory;
 		private readonly IBraceCompletionAggregator _sessionAggregator;
 		private readonly ITextView _textView;
-		private readonly GuardedOperations _guardedOperations;
+		private readonly IGuardedOperations _guardedOperations;
 
 		private IBraceCompletionSession _postSession;
 		private IBraceCompletionSession _waitingSession;
@@ -37,7 +38,7 @@ namespace MonoDevelop.SourceEditor.Braces
 
 		#region Constructors
 
-		internal BraceCompletionManager (ITextView textView, IBraceCompletionStack stack, IBraceCompletionAggregatorFactory sessionFactory, GuardedOperations guardedOperations)
+		internal BraceCompletionManager (ITextView textView, IBraceCompletionStack stack, IBraceCompletionAggregatorFactory sessionFactory, IGuardedOperations guardedOperations)
 		{
 			_textView = textView;
 			_stack = stack;

@@ -27,7 +27,7 @@ namespace MonoDevelop.SourceEditor.Braces
 		private IBraceCompletionAggregatorFactory _aggregatorFactory = null;
 
 		[Import]
-		private GuardedOperations _guardedOperations = null;
+		private IGuardedOperations _guardedOperations = null;
 
 		#endregion
 

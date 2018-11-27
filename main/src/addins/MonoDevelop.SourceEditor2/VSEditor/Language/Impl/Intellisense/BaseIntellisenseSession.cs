@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         protected IIntellisensePresenter FindPresenter
                                         (IIntellisenseSession session,
                                          IList<Lazy<IIntellisensePresenterProvider, IOrderableContentTypeMetadata>> orderedPresenterProviders,
-                                         GuardedOperations guardedOperations)
+                                         IGuardedOperations guardedOperations)
         {
             var buffers = Helpers.GetBuffersForTriggerPoint(session);
 
