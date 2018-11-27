@@ -41,6 +41,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			TranslatesAutoresizingMaskIntoConstraints = false
 		};
 
+		public static NSAttributedString GetAttributedStringFromFormattedText (string formattedText)
+		{
+			formattedText = formattedText.Replace ("&amp;", "&");
+			var formated = Xwt.FormattedText.FromMarkup (formattedText);
+			return Xwt.Mac.Util.ToAttributedString (formated);
+		}
+
 		public static NSAttributedString GetAttributedString (string text, NSColor foregroundColor, NSFont font)
 		{
 			//There is no need create NSStringAttributes element
