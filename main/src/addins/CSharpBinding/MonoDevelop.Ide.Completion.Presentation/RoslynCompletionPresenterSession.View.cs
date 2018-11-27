@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		XwtPopupWindowTheme Theme;
 
 		int selection = 0;
-		ISpaceReservationAgent agent;
+		dynamic agent;
 
 		bool buttonPressed;
 		IList<CompletionItem> filteredItems = new List<CompletionItem> (0);
@@ -589,10 +589,10 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = true;
 			textView.LostAggregateFocus += CloseOnTextviewLostFocus;
 			box.ShowAll ();
-			//var manager = textView.GetSpaceReservationManager ("completion");
-			//agent = manager.CreatePopupAgent (triggerSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
-			////HACK...
-			//Theme = ((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent.PopUpContainer)((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent)agent)._popup)._popup.Theme;
+			var manager = ((IMdTextView)textView).GetSpaceReservationManager ("completion");
+			agent = manager.CreatePopupAgent (triggerSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
+			//HACK...
+			Theme = ((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent.PopUpContainer)((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent)agent)._popup)._popup.Theme;
 			Theme.CornerRadius = 0;
 			Theme.Padding = 0;
 			UpdateStyle ();
@@ -600,7 +600,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 
 			Update (triggerSpan, items, selectedItem, suggestionModeItem, suggestionMode, isSoftSelected);
-			//manager.AddAgent (agent);
+			manager.AddAgent (agent);
 			textView.QueueSpaceReservationStackRefresh ();
 		}
 
