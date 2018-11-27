@@ -37,14 +37,16 @@ namespace MonoDevelop.PackageManagement
 
 		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
 		{
-			if (e.Project.HasPackagesConfig ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
+			if (e.Project is INuGetAwareProject) {
+				// Ignore.
 			} else if (DotNetCoreNuGetProject.CanCreate (e.Project.DotNetProject)) {
 				// Ignore - .NET Core project target framework changes are handled
 				// by the DotNetCoreProjectExtension.
 			} else if (PackageReferenceNuGetProject.CanCreate (e.Project.DotNetProject)) {
 				RestorePackagesInProjectHandler.Run (e.Project.DotNetProject);
+			} else if (e.Project.HasPackagesConfig ()) {
+				var runner = new PackageCompatibilityRunner (e.Project);
+				runner.Run ();
 			}
 		}
 	}
