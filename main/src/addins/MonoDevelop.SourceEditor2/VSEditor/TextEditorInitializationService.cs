@@ -57,7 +57,6 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         [Import]
         internal IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
 
-
         [Import]
         internal ITextSearchService2 TextSearchService { get; set; }
 

@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
             IObscuringTipManager obscuringTipManager,
             ITextView textView,
             ToolTipParameters parameters,
-            ToolTipPresenterStyle presenterStyle)
+            ToolTipPresenterStyle2 presenterStyle)
             : base(viewElementFactoryService, obscuringTipManager, textView, parameters, presenterStyle)
         {
         }

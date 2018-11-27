@@ -14,12 +14,12 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Utilities;
     using System.ComponentModel.Composition;
 
-    [Export(typeof(IToolTipProviderFactory))]
+    //[Export(typeof(IToolTipProviderFactory))]
     [Obsolete]
     internal sealed class ToolTipProviderFactory : IToolTipProviderFactory
     {
         //Specify the view layer definitions for the view.
-        [Export]
+        //[Export]
         [Name("ToolTip")]
         [Order()]
         internal SpaceReservationManagerDefinition tooltipManager;

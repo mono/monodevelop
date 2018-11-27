@@ -8,7 +8,7 @@
     using Microsoft.VisualStudio.Threading;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(IToolTipService))]
+    //[Export(typeof(IToolTipService))]
     internal sealed class ToolTipService : IToolTipService
     {
         private readonly IEnumerable<Lazy<IToolTipPresenterFactory, IOrderable>> unorderedPresenterProviders;

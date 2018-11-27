@@ -235,7 +235,7 @@ namespace Mono.TextEditor
 			// BaseBuffer is internal so have to use Reflection
 			//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
 			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-			changedImmediateEventInfo.AddEventHandler (TextBuffer, (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate);
+			changedImmediateEventInfo.AddMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
 
 			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
@@ -249,7 +249,7 @@ namespace Mono.TextEditor
 			// BaseBuffer is internal so have to use Reflection
 			//(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
 			var changedImmediateEventInfo = TextBuffer.GetType ().GetEvent ("ChangedImmediate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-			changedImmediateEventInfo.RemoveEventHandler (TextBuffer, (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate);
+			changedImmediateEventInfo.RemoveMethod.Invoke (TextBuffer, new object[] { (EventHandler<Microsoft.VisualStudio.Text.TextContentChangedEventArgs>)OnTextBufferChangedImmediate });
 
 			this.TextBuffer.Changed -= this.OnTextBufferChanged;
 			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;

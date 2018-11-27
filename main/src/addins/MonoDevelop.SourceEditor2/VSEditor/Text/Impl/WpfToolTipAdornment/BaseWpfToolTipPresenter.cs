@@ -18,7 +18,7 @@
         protected readonly IObscuringTipManager obscuringTipManager;
         protected readonly ITextView textView;
         protected readonly ToolTipParameters parameters;
-        protected readonly ToolTipPresenterStyle presenterStyle;
+        protected readonly ToolTipPresenterStyle2 presenterStyle;
 
         protected readonly MonoDevelop.Components.XwtPopup popup = new MonoDevelop.Components.XwtPopup (Xwt.PopupWindow.PopupType.Tooltip);
         protected ITrackingSpan applicableToSpan;
@@ -29,7 +29,7 @@
             IObscuringTipManager obscuringTipManager,
             ITextView textView,
             ToolTipParameters parameters,
-            ToolTipPresenterStyle presenterStyle)
+            ToolTipPresenterStyle2 presenterStyle)
         {
             this.viewElementFactoryService = viewElementFactoryService
                 ?? throw new ArgumentNullException(nameof(viewElementFactoryService));

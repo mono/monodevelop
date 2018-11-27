@@ -16,12 +16,12 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     internal sealed class WpfClassifiedTextElementViewElementFactory : IViewElementFactory
     {
         private readonly IClassificationTypeRegistryService classificationTypeRegistryService;
-        private readonly ToolTipStyleFactory styleFactory;
+        private readonly ToolTipStyleFactory2 styleFactory;
 
         [ImportingConstructor]
         public WpfClassifiedTextElementViewElementFactory(
             IClassificationTypeRegistryService classificationTypeRegistryService,
-            ToolTipStyleFactory styleFactory)
+            ToolTipStyleFactory2 styleFactory)
         {
             this.classificationTypeRegistryService = classificationTypeRegistryService
                 ?? throw new ArgumentNullException(nameof(classificationTypeRegistryService));

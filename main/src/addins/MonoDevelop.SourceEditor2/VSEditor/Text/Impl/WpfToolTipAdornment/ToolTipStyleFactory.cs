@@ -8,16 +8,16 @@
     using Microsoft.VisualStudio.Utilities;
 
     [Export]
-    internal sealed class ToolTipStyleFactory
+    internal sealed class ToolTipStyleFactory2
     {
-        private ToolTipPresenterStyle style;
+        private ToolTipPresenterStyle2 style;
 
         [ImportMany]
-        #pragma warning disable 649 // unassigned
-        private List<Lazy<ToolTipPresenterStyle, IOrderable>> unorderedPresenterStyles;
-        #pragma warning restore 649
+#pragma warning disable 649 // unassigned
+        private List<Lazy<ToolTipPresenterStyle2, IOrderable>> unorderedPresenterStyles;
+#pragma warning restore 649
 
-        public ToolTipPresenterStyle Style
+        public ToolTipPresenterStyle2 Style
         {
             get
             {
@@ -27,7 +27,7 @@
 
                     if (this.style == null)
                     {
-                        throw new ArgumentNullException($"No exports of type {nameof(ToolTipPresenterStyle)}");
+                        throw new ArgumentNullException($"No exports of type {nameof(ToolTipPresenterStyle2)}");
                     }
                 }
 

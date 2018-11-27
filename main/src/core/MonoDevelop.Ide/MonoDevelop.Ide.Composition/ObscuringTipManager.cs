@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Composition
 {
-	[Export (typeof (IObscuringTipManager))]
+	//[Export (typeof (IObscuringTipManager))]
 	class ObscuringTipManager : IObscuringTipManager
 	{
 		public void PushTip (ITextView view, IObscuringTip tip)

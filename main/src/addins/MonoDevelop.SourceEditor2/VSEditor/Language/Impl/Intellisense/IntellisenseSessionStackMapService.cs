@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
-    [Export(typeof(IIntellisenseSessionStackMapService))]
+    //[Export(typeof(IIntellisenseSessionStackMapService))]
     internal sealed class IntellisenseSessionStackMapService : IIntellisenseSessionStackMapService
     {
         [Import]

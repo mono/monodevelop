@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.Text.Editor
     ///     { other components }
     /// }
     /// </example>
-    public sealed class SpaceReservationManagerDefinition
-    {
-    }
+    //public sealed class SpaceReservationManagerDefinition
+    //{
+    //}
 }

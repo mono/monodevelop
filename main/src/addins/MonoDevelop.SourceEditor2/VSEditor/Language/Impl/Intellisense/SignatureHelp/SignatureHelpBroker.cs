@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
-    [Export(typeof(ISignatureHelpBroker))]
+    //[Export(typeof(ISignatureHelpBroker))]
     internal class SignatureHelpBroker : ISignatureHelpBroker
     {
         [ImportMany]

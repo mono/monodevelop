@@ -5,9 +5,9 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(ToolTipPresenterStyle))]
+    [Export(typeof(ToolTipPresenterStyle2))]
     [Name("default")]
-    internal sealed class DefaultToolTipPresenterStyle : ToolTipPresenterStyle
+    internal sealed class DefaultToolTipPresenterStyle : ToolTipPresenterStyle2
     {
         public DefaultToolTipPresenterStyle()
         {
