@@ -709,7 +709,7 @@ namespace MonoDevelop.MacIntegration
 		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
-			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
+			IdeApp.Workbench.RootWindow.Visible = false;
 		}
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
