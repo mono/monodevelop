@@ -669,7 +669,7 @@ namespace Mono.TextEditor
 			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
 #if MAC
 				try {
-					lineHeight = System.Math.Ceiling (OSXEditor.GetLineHeight(font.ToString ()));
+					lineHeight = System.Math.Ceiling (0.5 + OSXEditor.GetLineHeight(font.ToString ()));
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting the macOS font metrics for " + font, e);
 					lineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
