@@ -628,9 +628,9 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			Instance = null;
 			textView.Properties ["RoslynCompletionPresenterSession.IsCompletionActive"] = false;
 			HideDescription ();
-			//var manager = textView.GetSpaceReservationManager ("completion");
-			//if (agent != null)
-			//	manager.RemoveAgent (agent);
+			var manager = ((IMdTextView)textView).GetSpaceReservationManager ("completion");
+			if (agent != null)
+				manager.RemoveAgent (agent);
 		}
 
 		CancellationTokenSource descriptionCts = new CancellationTokenSource ();

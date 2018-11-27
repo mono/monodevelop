@@ -13,5 +13,5 @@ using Mono.Addins;
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Xml", MonoDevelop.BuildInfo.Version)]
-//[assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("TextTemplating", MonoDevelop.BuildInfo.Version)]

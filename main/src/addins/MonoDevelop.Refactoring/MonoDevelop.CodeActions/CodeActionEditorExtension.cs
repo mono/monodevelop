@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Refactoring;
 using RefactoringEssentials;
 using MonoDevelop.AnalysisCore.Gui;
+using MonoDevelop.SourceEditor;
 using Gdk;
 
 namespace MonoDevelop.CodeActions
@@ -68,10 +69,10 @@ namespace MonoDevelop.CodeActions
 
 		void RemoveWidget ()
 		{
-			//if (smartTagMarginMarker != null) {
-			//	Editor.RemoveMarker (smartTagMarginMarker);
-			//	smartTagMarginMarker = null;
-			//}
+			if (smartTagMarginMarker != null) {
+				Editor.RemoveMarker (smartTagMarginMarker);
+				smartTagMarginMarker = null;
+			}
 			CancelSmartTagPopupTimeout ();
 		}
 
@@ -287,7 +288,7 @@ namespace MonoDevelop.CodeActions
 			return menu;
 		}
 
-		//SourceEditor.SmartTagMarginMarker smartTagMarginMarker;
+		SourceEditor.SmartTagMarginMarker smartTagMarginMarker;
 		private ITextSourceVersion beginVersion;
 
 		void CreateSmartTag (CodeActionContainer fixes, int offset)
@@ -306,30 +307,30 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 
-			//var severity = fixes.GetSmartTagSeverity ();
+			var severity = fixes.GetSmartTagSeverity ();
 
-			//if (smartTagMarginMarker?.Line?.LineNumber != editor.CaretLine) {
-			//	RemoveWidget ();
-			//	smartTagMarginMarker = new SourceEditor.SmartTagMarginMarker () { SmartTagSeverity = severity };
-			//	smartTagMarginMarker.ShowPopup += SmartTagMarginMarker_ShowPopup;
-			//	editor.AddMarker (editor.GetLine (editor.CaretLine), smartTagMarginMarker);
-			//} else {
-			//	smartTagMarginMarker.SmartTagSeverity = severity;
-			//	var view = editor.GetContent<SourceEditorView> ();
-			//	view.TextEditor.RedrawMarginLine (view.TextEditor.TextArea.QuickFixMargin, editor.CaretLine);
-			//}
+			if (smartTagMarginMarker?.Line?.LineNumber != editor.CaretLine) {
+				RemoveWidget ();
+				smartTagMarginMarker = new SourceEditor.SmartTagMarginMarker () { SmartTagSeverity = severity };
+				smartTagMarginMarker.ShowPopup += SmartTagMarginMarker_ShowPopup;
+				editor.AddMarker (editor.GetLine (editor.CaretLine), smartTagMarginMarker);
+			} else {
+				smartTagMarginMarker.SmartTagSeverity = severity;
+				var view = editor.GetContent<SourceEditorView> ();
+				view.TextEditor.RedrawMarginLine (view.TextEditor.TextArea.QuickFixMargin, editor.CaretLine);
+			}
 		}
 
 		void SmartTagMarginMarker_ShowPopup (object sender, EventArgs e)
 		{
-			//var marker = (SourceEditor.SmartTagMarginMarker)sender;
+			var marker = (SourceEditor.SmartTagMarginMarker)sender;
 
-			//CancelSmartTagPopupTimeout ();
-			//smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-			//	PopupQuickFixMenu (null, menu => { }, new Xwt.Point (marker.PopupPosition.X, marker.PopupPosition.Y + marker.Height));
-			//	smartTagPopupTimeoutId = 0;
-			//	return false;
-			//});
+			CancelSmartTagPopupTimeout ();
+			smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
+				PopupQuickFixMenu (null, menu => { }, new Xwt.Point (marker.PopupPosition.X, marker.PopupPosition.Y + marker.Height));
+				smartTagPopupTimeoutId = 0;
+				return false;
+			});
 		}
 
 		protected override void Initialize ()
@@ -379,10 +380,10 @@ namespace MonoDevelop.CodeActions
 		[CommandHandler (RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!AnalysisOptions.EnableFancyFeatures 
-				//|| smartTagMarginMarker == null
+			if (!AnalysisOptions.EnableFancyFeatures
+				|| smartTagMarginMarker == null
 				) {
-				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
+				// Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
 
 				PopupQuickFixMenu (null, null);
 				return;

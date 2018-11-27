@@ -85,10 +85,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					Editor.SyntaxHighlighting = fallbackHighlighting;
 				return;
 			}
-			//var old = Editor.SyntaxHighlighting as TagBasedSyntaxHighlighting;
-			//if (old == null) {
-			//	Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.cs");
-			//}
+			var old = Editor.SyntaxHighlighting as TagBasedSyntaxHighlighting;
+			if (old == null) {
+				Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.cs");
+			}
 		}
 
 		public override void Dispose ()

@@ -89,8 +89,8 @@ namespace MonoDevelop.Ide.Editor
 			using (var testCase = await SetupTestCase ("namespace Foo { Exception")) {
 				var doc = testCase.Document;
 				doc.Editor.CaretOffset = doc.Editor.Length;
-				//var extensibleEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
-				//Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document));
+				var extensibleEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
+				Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document));
 			}
 		}
 

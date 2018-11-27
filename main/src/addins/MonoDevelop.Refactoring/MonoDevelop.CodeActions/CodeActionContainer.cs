@@ -69,19 +69,19 @@ namespace MonoDevelop.CodeActions
 
 		public bool FloatingWidgetShown { get; internal set; }
 
-		//internal SourceEditor.SmartTagSeverity GetSmartTagSeverity ()
-		//{
-		//	var result = SourceEditor.SmartTagSeverity.OnlyActions;
-		//	foreach (var fix in CodeFixActions) {
-		//		if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Error) {
-		//			return SourceEditor.SmartTagSeverity.ErrorFixes;
-		//		}
-		//		if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Warning)
-		//			result = SourceEditor.SmartTagSeverity.Fixes;
-		//	}
+		internal SourceEditor.SmartTagSeverity GetSmartTagSeverity ()
+		{
+			var result = SourceEditor.SmartTagSeverity.OnlyActions;
+			foreach (var fix in CodeFixActions) {
+				if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Error) {
+					return SourceEditor.SmartTagSeverity.ErrorFixes;
+				}
+				if (fix.FirstDiagnostic.Severity == DiagnosticSeverity.Warning)
+					result = SourceEditor.SmartTagSeverity.Fixes;
+			}
 
-		//	return result;
-		//}
+			return result;
+		}
 
 		internal CodeActionContainer (ImmutableArray<CodeFixCollection> codeDiagnosticActions, ImmutableArray<CodeRefactoring> codeRefactoringActions)
 		{
