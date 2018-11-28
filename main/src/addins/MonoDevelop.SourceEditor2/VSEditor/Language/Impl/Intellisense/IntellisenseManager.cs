@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
     [PartCreationPolicy(CreationPolicy.NonShared)]
-    [Export(typeof(ITextViewConnectionListener))]
+    //[Export(typeof(ITextViewConnectionListener))]
     [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [TextViewRole(PredefinedTextViewRoles.EmbeddedPeekTextView)]

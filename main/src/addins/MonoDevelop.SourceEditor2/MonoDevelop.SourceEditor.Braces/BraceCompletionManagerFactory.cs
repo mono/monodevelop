@@ -12,7 +12,7 @@ namespace MonoDevelop.SourceEditor.Braces
 	using Microsoft.VisualStudio.Utilities;
 	using System.ComponentModel.Composition;
 
-	[Export (typeof (ITextViewCreationListener))]
+	//[Export (typeof (ITextViewCreationListener))]
 	[ContentType ("text")]
 	[TextViewRole (PredefinedTextViewRoles.Editable)]
 	[PartCreationPolicy (CreationPolicy.Shared)]
