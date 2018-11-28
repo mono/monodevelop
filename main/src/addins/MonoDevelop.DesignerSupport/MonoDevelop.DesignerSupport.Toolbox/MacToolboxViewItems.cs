@@ -35,6 +35,7 @@ using MonoDevelop.Components;
 using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
 using CoreAnimation;
 using Xwt.Mac;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -205,6 +206,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void SetText (string formattedText)
 		{
 			TitleTextField.AttributedStringValue = NativeViewHelper.GetAttributedStringFromFormattedText (formattedText);
+			TitleTextField.AccessibilityTitle = Regex.Replace (formattedText, @"<[^>]*>", string.Empty);
 		}
 
 		public HeaderCollectionViewItem (IntPtr handle) : base (handle)

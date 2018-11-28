@@ -6,6 +6,7 @@ using MonoDevelop.Components;
 using Foundation;
 using System.Linq;
 using CoreGraphics;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				imgView.Refresh ();
 			}
 
-			collectionViewItem.View.AccessibilityTitle = widgetItem.Text ?? "";
+			collectionViewItem.View.AccessibilityTitle = Regex.Replace (widgetItem.Text, @"<[^>]*>", string.Empty);
 			return collectionViewItem;
 		}
 
