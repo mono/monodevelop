@@ -1,10 +1,8 @@
 using System;
-using System.Text;
-using System.Windows.Controls;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -38,15 +36,37 @@ namespace MonoDevelop.Ide.Text
 
 			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
 			TextBuffer = TextDocument.TextBuffer;
+			TextDocument.DirtyStateChanged += OnTextDocumentDirtyStateChanged;
 
 			var control = CreateControl (imports);
 			this.widget = new RootWpfWidget (control);
 			widget.HeightRequest = 50;
 			widget.WidthRequest = 100;
-			//this.xwtWidget = new Xwt.Label ("FOO");
 			this.xwtWidget = GetXwtWidget (widget);
 			xwtWidget.Show ();
 			ContentName = fileName;
+		}
+
+		public override Task Save ()
+		{
+			TextDocument.Save ();
+			return Task.CompletedTask;
+		}
+
+		public override Task Save (FileSaveInformation fileSaveInformation)
+		{
+			TextDocument.SaveAs (fileSaveInformation.FileName, overwrite: true);
+			return Task.CompletedTask;
+		}
+
+		public override bool IsDirty 
+		{
+			get => TextDocument.IsDirty;
+		}
+
+		private void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
+		{
+			OnDirtyChanged ();
 		}
 
 		static readonly string[] textContentType = { "text" };
@@ -88,5 +108,11 @@ namespace MonoDevelop.Ide.Text
 		}
 
 		public override Widget Widget => xwtWidget;
+
+		public override void Dispose ()
+		{
+			TextDocument.Dispose ();
+			base.Dispose ();
+		}
 	}
 }

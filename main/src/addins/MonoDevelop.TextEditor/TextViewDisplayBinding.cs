@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.Text
 {
 	class TextViewDisplayBinding : IViewDisplayBinding
 	{
-		public string Name => "Text View";
+		public string Name => GettextCatalog.GetString ("Source Code Editor");
 
 		public bool CanUseAsDefault => true;
 
