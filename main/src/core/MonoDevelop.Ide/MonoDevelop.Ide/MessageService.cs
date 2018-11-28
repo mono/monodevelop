@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.WelcomePage;
 
 #if MAC
 using AppKit;
@@ -310,6 +311,21 @@ namespace MonoDevelop.Ide
 		{
 			// if dialog is modal, make sure it's parented on any existing modal dialog
 			Gtk.Dialog dialog = dlg;
+			if (WelcomePageService.WelcomeWindowVisible && (dialog.TransientFor == (Gtk.Window)RootWindow || dialog.TransientFor == null)) {
+				dialog.TransientFor = null;
+			} else {
+				if (dialog.Modal) {
+					parent = GetDefaultModalParent ();
+				}
+
+				//ensure the dialog has a parent
+				if (parent == null) {
+					parent = dialog.TransientFor ?? RootWindow;
+				}
+
+				dialog.TransientFor = parent;
+				dialog.DestroyWithParent = true;
+			}
 			MonoDevelop.Components.IdeTheme.ApplyTheme (dialog);
 
 			if (dialog.Title == null)
@@ -324,18 +340,6 @@ namespace MonoDevelop.Ide
 				else
 					PlaceDialog (dialog, parent);
 			}).Wait ();
-			#else
-			if (dialog.Modal) {
-				parent = GetDefaultModalParent ();
-			}
-
-			//ensure the dialog has a parent
-			if (parent == null) {
-				parent = dialog.TransientFor ?? RootWindow;
-			}
-
-			dialog.TransientFor = parent;
-			dialog.DestroyWithParent = true;
 			#endif
 
 			try {
