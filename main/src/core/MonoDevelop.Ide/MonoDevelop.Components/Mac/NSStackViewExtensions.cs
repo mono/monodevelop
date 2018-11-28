@@ -32,8 +32,8 @@ namespace MonoDevelop.Components.Mac
 {
 	public static class NSStackViewExtensions
 	{
-		const int RenderingPriority = 1000;
-		const int LowPriority = 249;
+		const int RenderingPriority = (int)NSLayoutPriority.Required;
+		const int LowPriority = (int)NSLayoutPriority.DefaultLow - 1;
 
 		public static NSStackView CreateHorizontalStackView (int spacing = 10) => new NSStackView () {
 			Orientation = NSUserInterfaceLayoutOrientation.Horizontal,
