@@ -220,57 +220,26 @@ namespace MonoDevelop.PackageManagement
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
 		{
-			PackageSpec existingPackageSpec = GetExistingProjectPackageSpec (context);
+			PackageSpec existingPackageSpec = context.GetExistingProjectPackageSpec (MSBuildProjectPath);
 			if (existingPackageSpec != null) {
 				return new [] { existingPackageSpec };
 			}
 
 			PackageSpec packageSpec = await CreateProjectPackageSpec (context);
-
-			if (context != null) {
-				AddToCache (context, packageSpec);
-			}
-
 			return new [] { packageSpec };
-		}
-
-		PackageSpec GetExistingProjectPackageSpec (DependencyGraphCacheContext context)
-		{
-			PackageSpec packageSpec = null;
-			if (context != null) {
-				if (context.PackageSpecCache.TryGetValue (MSBuildProjectPath, out packageSpec)) {
-					return packageSpec;
-				}
-			}
-			return packageSpec;
 		}
 
 		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
 		{
-			PackageSpec spec = await MSBuildPackageSpecCreator.CreatePackageSpec (project, context.Logger);
+			DependencyGraphSpec dependencySpec = await MSBuildPackageSpecCreator.GetDependencyGraphSpec (project, context?.Logger);
+
+			context.AddToCache (dependencySpec);
+
+			PackageSpec spec = dependencySpec.GetProjectSpec (project.FileName);
 			if (spec != null)
 				return spec;
 
 			throw new InvalidOperationException (GettextCatalog.GetString ("Unable to create package spec for project. '{0}'", project.FileName));
-		}
-
-		void AddToCache (DependencyGraphCacheContext context, PackageSpec projectPackageSpec)
-		{
-			if (IsMissingFromCache (context, projectPackageSpec)) {
-				context.PackageSpecCache.Add (
-					projectPackageSpec.RestoreMetadata.ProjectUniqueName, 
-					projectPackageSpec);
-			}
-		}
-
-		bool IsMissingFromCache (
-			DependencyGraphCacheContext context,
-			PackageSpec packageSpec)
-		{
-			PackageSpec ignore;
-			return !context.PackageSpecCache.TryGetValue (
-				packageSpec.RestoreMetadata.ProjectUniqueName,
-				out ignore);
 		}
 
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)

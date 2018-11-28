@@ -46,8 +46,10 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool VerboseLogging { get; private set; }
 
-		public static async Task<PackageSpec> CreatePackageSpec (DotNetProject project, ILogger logger)
+		public static async Task<DependencyGraphSpec> GetDependencyGraphSpec (DotNetProject project, ILogger logger)
 		{
+			if (logger == null)
+				logger = NullLogger.Instance;
 			logger.Log (LogLevel.Information, GettextCatalog.GetString ("Getting restore information for project {0}", project.FileName));
 
 			using (var resultsPath = new TempFile (".output.dg")) {
@@ -67,9 +69,14 @@ namespace MonoDevelop.PackageManagement
 						}
 					}
 				}
-				var spec = GetDependencyGraph (resultsPath);
-				return spec.GetProjectSpec (project.FileName);
+				return GetDependencyGraph (resultsPath);
 			}
+		}
+
+		public static async Task<PackageSpec> CreatePackageSpec (DotNetProject project, ILogger logger)
+		{
+			var spec = await GetDependencyGraphSpec (project, logger);
+			return spec.GetProjectSpec (project.FileName);
 		}
 
 		static ProgressMonitor CreateProgressMonitor ()
