@@ -39,7 +39,7 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class FakeNuGetProject : NuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
+	class FakeNuGetProject : NuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject, IHasProjectReferenceMaintainer
 	{
 		public FakeNuGetProject (IDotNetProject project)
 		{
@@ -50,6 +50,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public IDotNetProject Project { get; private set; }
+		public IProjectReferenceMaintainer ProjectReferenceMaintainer { get; set; }
 
 		public List<PackageReference> InstalledPackages = new List<PackageReference> ();
 

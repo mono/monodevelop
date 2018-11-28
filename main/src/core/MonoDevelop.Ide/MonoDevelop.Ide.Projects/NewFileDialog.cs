@@ -855,7 +855,7 @@ namespace MonoDevelop.Ide.Projects
 			
 			public void Add (TemplateItem templateItem)
 			{
-				string name = GLib.Markup.EscapeText (GettextCatalog.GetString (templateItem.Name));
+				string name = GLib.Markup.EscapeText (templateItem.Name);
 				if (!string.IsNullOrEmpty (templateItem.Language))
 					name += "\n<span foreground='darkgrey'><small>" + templateItem.Language + "</small></span>";
 				string icon = templateItem.Template.Icon;

@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Mono.Addins;
-using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Desktop;
@@ -105,11 +105,34 @@ namespace MonoDevelop.Ide.Templates
 
 		public IEnumerable<TemplateCategory> GetProjectTemplateCategories (Predicate<SolutionTemplate> match)
 		{
+			List<Exception> errors = null;
 			var templateCategorizer = new ProjectTemplateCategorizer (projectTemplateCategories, match);
 			foreach (IProjectTemplatingProvider provider in templateProviders) {
-				templateCategorizer.CategorizeTemplates (provider.GetTemplates ());
+				try {
+					templateCategorizer.CategorizeTemplates (provider.GetTemplates ());
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unable to load templates from provider: " + provider.GetType ().FullName, ex);
+					if (errors == null)
+						errors = new List<Exception> ();
+					errors.Add (ex);
+				}
 			}
+
+			if (errors != null) {
+				ShowProjectTemplateLoadError (errors);
+			}
+
 			return templateCategorizer.GetCategorizedTemplates ();
+		}
+
+		static void ShowProjectTemplateLoadError (IEnumerable<Exception> errors)
+		{
+			var message = new StringBuilder ();
+			message.AppendLine (GettextCatalog.GetString ("Unable to load project templates."));
+			foreach (var error in errors)
+				message.AppendLine (error.Message);
+
+			MessageService.ShowError (message.ToString ());
 		}
 
 		internal static SolutionTemplate GetTemplate (IEnumerable<TemplateCategory> categories, string templateId)

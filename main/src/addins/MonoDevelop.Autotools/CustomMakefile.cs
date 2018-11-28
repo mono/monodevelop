@@ -117,7 +117,8 @@ namespace MonoDevelop.Autotools
 				foreach (string s in list)
 					sb.AppendFormat (" \\\n\t{0}", s);
 			} else if (list.Count == 1) {
-				sb.Append (" " + list [0]);
+				sb.Append (" ");
+				sb.Append (list [0]);
 			}
 
 			return sb.ToString ();

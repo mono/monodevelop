@@ -1844,7 +1844,7 @@ namespace MonoDevelop.CSharp
 				if (arrayType.Rank == 1)
 					result.Append ("index");
 				else
-					result.Append ("i").Append (i + 1);
+					result.Append ("i").Append ((i + 1).ToString ());
 				if (doHighightParameter)
 					result.Append ("</u>");
 			}

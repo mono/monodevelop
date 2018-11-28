@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Fonts
 			}
 		}
 		
-		[NodeAttribute("_displayName", "Name of the font displayed to the user.")]
+		[NodeAttribute("_displayName", "Name of the font displayed to the user.", Localizable=true)]
 		string displayName;
 		public string DisplayName {
 			get {
