@@ -500,5 +500,16 @@ IEnumerable<string> GetFileExtensions (string filename)
 🚀$
 12");
 		}
+
+		/// <summary>
+		/// Bug 734863: Inverted comma (one more character) is also getting deleted when trying to delete keywords︐ ,︒,︑,︓,︔ ,︕ ,︖ ,︗ ,︘,︙, from keyboard
+		/// </summary>
+		[Test]
+		public void TestBug734863 ()
+		{
+			var data = Create (@"︐$");
+			CaretMoveActions.Left (data);
+			Check (data, @"$︐");
+		}
 	}
 }

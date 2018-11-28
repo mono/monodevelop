@@ -17,6 +17,11 @@
         <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
         <Private>False</Private>
       </Reference>
+      <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj">
+      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
+        <Name>Xwt.XamMac</Name>
+        <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
    <ItemGroup>
     <Reference Include="System" />

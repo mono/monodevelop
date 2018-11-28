@@ -34,6 +34,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
 using CoreAnimation;
+using Xwt.Mac;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -98,6 +100,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public LabelCollectionViewItem (IntPtr handle) : base (handle)
 		{
+		}
+
+		public void SetText (string formattedText) 
+		{
+			TextField.AttributedStringValue = NativeViewHelper.GetAttributedStringFromFormattedText (formattedText);
 		}
 
 		public override void Refresh ()
@@ -194,6 +201,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Focused?.Invoke (this, EventArgs.Empty);
 			return base.BecomeFirstResponder ();
+		}
+
+		public void SetText (string formattedText)
+		{
+			TitleTextField.AttributedStringValue = NativeViewHelper.GetAttributedStringFromFormattedText (formattedText);
+			TitleTextField.AccessibilityTitle = Regex.Replace (formattedText, @"<[^>]*>", string.Empty);
 		}
 
 		public HeaderCollectionViewItem (IntPtr handle) : base (handle)
