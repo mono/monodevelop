@@ -91,10 +91,10 @@ namespace MonoDevelop.CSharp.Formatting
 			var syntaxRoot = indent.DocumentContext.AnalysisDocument.GetSyntaxRootAsync ().WaitAndGetResult ();
 			var token = syntaxRoot.FindToken (offset);
 
-			if (CSharpSyntaxFactsService.Instance.IsVerbatimStringLiteral (token))
+			if (token.SpanStart + 1 < offset && CSharpSyntaxFactsService.Instance.IsVerbatimStringLiteral (token))
 				return new [] { (byte)PasteStrategy.VerbatimString };
 
-			if (CSharpSyntaxFactsService.Instance.IsStringLiteral (token)) 
+			if (token.SpanStart < offset && CSharpSyntaxFactsService.Instance.IsStringLiteral (token)) 
 				return new [] { (byte)PasteStrategy.StringLiteral };
 
 			return null;
