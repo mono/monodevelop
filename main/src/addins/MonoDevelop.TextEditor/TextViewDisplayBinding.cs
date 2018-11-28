@@ -7,12 +7,16 @@ namespace MonoDevelop.Ide.Text
 {
 	class TextViewDisplayBinding : IViewDisplayBinding
 	{
-		public string Name => "Text Editor";
+		public string Name => "Text View";
 
 		public bool CanUseAsDefault => true;
 
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
+			if (fileName == null || !fileName.HasExtension(".cs")) {
+				return false;
+			}
+
 			if (fileName != null)
 				return DesktopService.GetFileIsText (fileName, mimeType);
 
