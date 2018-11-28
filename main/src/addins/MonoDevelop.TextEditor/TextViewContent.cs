@@ -1,5 +1,9 @@
 using System;
+using System.Text;
 using System.Windows.Controls;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -17,12 +21,23 @@ namespace MonoDevelop.Ide.Text
 		RootWpfWidget widget;
 		Xwt.Widget xwtWidget;
 
+		public ITextDocument TextDocument { get; }
+		public ITextBuffer TextBuffer { get; }
+		public ITextView TextView { get; private set; }
+
+		private IWpfTextViewHost textViewHost;
+
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
 			this.imports = imports;
 			this.fileName = fileName;
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;
+
+			var contentType = (mimeType == null) ? imports.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (fileName, mimeType);
+
+			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
+			TextBuffer = TextDocument.TextBuffer;
 
 			var control = CreateControl (imports);
 			this.widget = new RootWpfWidget (control);
@@ -34,6 +49,32 @@ namespace MonoDevelop.Ide.Text
 			ContentName = fileName;
 		}
 
+		static readonly string[] textContentType = { "text" };
+
+		private IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+		{
+			if (filePath != null) {
+				var contentTypeFromPath = imports.FileToContentTypeService.GetContentTypeForFilePath (filePath);
+				if (contentTypeFromPath != null &&
+					contentTypeFromPath != imports.ContentTypeRegistryService.UnknownContentType) {
+					return contentTypeFromPath;
+				}
+			}
+
+			IContentType contentType = imports.MimeToContentTypeRegistryService.GetContentType (mimeType);
+			if (contentType == null) {
+				// fallback 1: see if there is a content tyhpe with the same name
+				contentType = imports.ContentTypeRegistryService.GetContentType (mimeType);
+				if (contentType == null) {
+					// No joy, create a content type that, by default, derives from text. This is strictly an error
+					// (there should be mappings between any mime type and any content type).
+					contentType = imports.ContentTypeRegistryService.AddContentType (mimeType, textContentType);
+				}
+			}
+
+			return contentType;
+		}
+
 		private Widget GetXwtWidget (RootWpfWidget widget)
 		{
 			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, NativeWidgetSizing.External);
@@ -41,9 +82,8 @@ namespace MonoDevelop.Ide.Text
 
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
 		{
-			var textBuffer = imports.TextBufferFactoryService.CreateTextBuffer (@"WPF RUleZ", imports.TextBufferFactoryService.PlaintextContentType);
-			var textView = imports.TextEditorFactoryService.CreateTextView (textBuffer);
-			var textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (textView, setFocus: true);
+			TextView = imports.TextEditorFactoryService.CreateTextView (TextBuffer);
+			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost ((IWpfTextView)TextView, setFocus: true);
 			return textViewHost.HostControl;
 		}
 
