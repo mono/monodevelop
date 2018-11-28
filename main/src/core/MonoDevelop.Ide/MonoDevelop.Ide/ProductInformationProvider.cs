@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Application ID used by the updater. Usually a GUID.
 		/// </summary>
-		public virtual string ApplicationId { get { return GetUpdateInfo ().AppId; } }
+		public virtual string ApplicationId { get { return GetUpdateInfo ()?.AppId; } }
 
 		public abstract string Title { get; }
 
