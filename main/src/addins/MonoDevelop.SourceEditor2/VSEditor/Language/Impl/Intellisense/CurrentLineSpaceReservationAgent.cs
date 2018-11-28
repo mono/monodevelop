@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private IIntellisenseSessionStack _sessionStack;
         private bool _isAttached = false;
 
-        [Export(typeof(ITextViewCreationListener))]
+        //[Export(typeof(ITextViewCreationListener))]
         [ContentType("Text")]
         [TextViewRole(PredefinedTextViewRoles.Editable)]
         internal class CurrentLineSpaceReservationAgent_ViewCreationListener : ITextViewCreationListener
