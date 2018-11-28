@@ -6,6 +6,7 @@ using MonoDevelop.Components;
 using Foundation;
 using System.Linq;
 using CoreGraphics;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (collectionViewItem is LabelCollectionViewItem itmView) {
 				itmView.SetCollectionView (collectionView);
 				itmView.View.ToolTip = widgetItem.Tooltip ?? "";
-				itmView.TextField.StringValue = widgetItem.Text;
+				itmView.SetText (widgetItem.Text);
 				itmView.Image = catchedImages.Image;
 				itmView.SelectedImage = catchedImages.SelectedImage;
 				itmView.Refresh ();
@@ -54,7 +55,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				imgView.Refresh ();
 			}
 
-			collectionViewItem.View.AccessibilityTitle = widgetItem.Text ?? "";
+			collectionViewItem.View.AccessibilityTitle = Regex.Replace (widgetItem.Text, @"<[^>]*>", string.Empty);
 			return collectionViewItem;
 		}
 
@@ -78,7 +79,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			if (collectionView.MakeSupplementaryView (NSCollectionElementKind.SectionHeader, "HeaderCollectionViewItem", indexPath) is HeaderCollectionViewItem button) {
 				var section = toolboxWidget.CategoryVisibilities [(int)indexPath.Section].Category;
-				button.TitleTextField.StringValue = section.Text.Replace ("&amp;", "&");
+				button.SetText (section.Text);
 				button.AccessibilityTitle = button.TitleTextField.StringValue;
 				button.IndexPath = indexPath;
 				button.CollectionView = toolboxWidget;
