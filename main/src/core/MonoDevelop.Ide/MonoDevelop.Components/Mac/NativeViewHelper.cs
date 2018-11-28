@@ -26,21 +26,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #if MAC
+using System;
 using AppKit;
 using Foundation;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.Components.Mac
 {
 	static class NativeViewHelper
 	{
-		public static NSStackView CreateHorizontalStackView (int spacing = 10) => new NSStackView () {
-			Orientation = NSUserInterfaceLayoutOrientation.Horizontal,
-			Alignment = NSLayoutAttribute.CenterY,
-			Spacing = spacing,
-			Distribution = NSStackViewDistribution.Fill,
-			TranslatesAutoresizingMaskIntoConstraints = false
-		};
-
 		public static NSAttributedString GetAttributedStringFromFormattedText (string formattedText)
 		{
 			formattedText = formattedText.Replace ("&amp;", "&");
@@ -57,19 +50,47 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return attributed;
 		}
 
-		public static NSTextField CreateLabel (string text, NSTextAlignment alignment = NSTextAlignment.Left, NSFont font = null)
+		static readonly NSAttributedString NewLine = new NSAttributedString ("\n");
+
+		public static NSAttributedString GetMultiLineAttributedString (string title, string description, nfloat fontSize, NSColor titleColor, NSColor descriptionColor, NSParagraphStyle pstyle = null)
 		{
-			return new NSTextField () {
-				StringValue = text ?? "",
-				Font = font ?? GetSystemFont (false),
-				Editable = false,
-				Bordered = false,
-				Bezeled = false,
-				DrawsBackground = false,
-				Selectable = false,
-				Alignment = alignment,
-				TranslatesAutoresizingMaskIntoConstraints = false
-			};
+			var result = new NSMutableAttributedString ();
+			if (!String.IsNullOrEmpty (title)) {
+				result.Append (new NSAttributedString (title, new NSStringAttributes {
+					Font = NSFont.BoldSystemFontOfSize (fontSize),
+					ForegroundColor = titleColor
+				}));
+			}
+
+			if (!String.IsNullOrEmpty (description)) {
+				result.Append (NewLine);
+				result.Append (new NSAttributedString (description, new NSStringAttributes {
+					Font = NSFont.SystemFontOfSize (fontSize - 2),
+					ForegroundColor = descriptionColor,
+					ParagraphStyle = pstyle ?? NSParagraphStyle.DefaultParagraphStyle
+				}));
+			}
+
+			return result;
+		}
+
+		public static NSAttributedString GetMultiLineAttributedStringWithImage (NSImage image, string title, string description, nfloat fontSize, NSColor titleColor, NSColor descriptionColor)
+		{
+			var attrString = new NSMutableAttributedString ("");
+
+			if (image != null) {
+				var cell = new NSTextAttachmentCell (image);
+				image.AlignmentRect = new CoreGraphics.CGRect (0, 5, image.Size.Width, image.Size.Height);
+				cell.Alignment = NSTextAlignment.Natural;
+				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = cell }));
+				attrString.Append (new NSAttributedString ("  "));
+			}
+
+			var pstyle = new NSMutableParagraphStyle ();
+			pstyle.HeadIndent = pstyle.FirstLineHeadIndent = 24;
+			attrString.Append (GetMultiLineAttributedString (title, description, fontSize, titleColor, descriptionColor, pstyle));
+
+			return attrString;
 		}
 
 		public static NSFont GetSystemFont (bool bold, float size = 0.0f)

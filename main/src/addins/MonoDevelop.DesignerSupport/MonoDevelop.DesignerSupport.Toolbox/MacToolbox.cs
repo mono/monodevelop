@@ -37,6 +37,7 @@ using MonoDevelop.Ide;
 using AppKit;
 using CoreGraphics;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -94,7 +95,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var compactImage = ImageService.GetIcon (Stock.CompactDisplay, Gtk.IconSize.Menu);
 			var addImage = ImageService.GetIcon (Stock.Add, Gtk.IconSize.Menu);
 
-			horizontalStackView = NativeViewHelper.CreateHorizontalStackView (IconsSpacing);
+			horizontalStackView = NSStackViewExtensions.CreateHorizontalStackView (IconsSpacing);
 			AddArrangedSubview (horizontalStackView);
 
 			horizontalStackView.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 0).Active = true;

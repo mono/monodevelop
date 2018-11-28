@@ -210,8 +210,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			collectionViewDelegate.SelectionChanged += CollectionViewDelegate_SelectionChanged;
 
 			var fontSmall = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
-			messageTextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Center, fontSmall);
-			messageTextField.LineBreakMode = NSLineBreakMode.ByWordWrapping;
+			messageTextField = new NSLabel {
+				StringValue = String.Empty,
+				Alignment = NSTextAlignment.Center,
+				Font = fontSmall,
+				LineBreakMode = NSLineBreakMode.ByWordWrapping
+			};
 			messageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
 			AddSubview (messageTextField);
 
