@@ -131,7 +131,17 @@ namespace MonoDevelop.Ide
 	//all methods are synchronously invoked on the GUI thread, except those which take GTK# objects as arguments
 	public static class MessageService
 	{
-		public static Window RootWindow { get; internal set; }
+		static Window defaultRootWindow;
+		public static Window RootWindow {
+			get {
+				if (WelcomePageService.WelcomePageVisible)
+					return WelcomePageService.WelcomeWindow;
+				return defaultRootWindow;
+			}
+			internal set {
+				defaultRootWindow = value;
+			}
+		}
 
 		#region ShowError
 		public static void ShowError (string primaryText)
