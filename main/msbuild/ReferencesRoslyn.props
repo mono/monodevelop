@@ -13,10 +13,6 @@
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.CSharp.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures">
-      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll</HintPath>
-      <Private>$(ReferencesRoslynCopyToOutput)</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.CSharp.Features.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
@@ -26,7 +22,7 @@
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
-      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.Common.$(NuGetVersionRoslyn)\lib\net472\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
@@ -47,10 +43,6 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Features">
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.VisualBasic.Features.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
-      <Private>$(ReferencesRoslynCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures">
-      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces">
