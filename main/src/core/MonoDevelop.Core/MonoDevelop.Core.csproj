@@ -206,7 +206,7 @@
       <HintPath>..\..\..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.2.0.3856\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
+      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.4.0.0.4285-beta1\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>

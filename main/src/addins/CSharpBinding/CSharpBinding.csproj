@@ -87,7 +87,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.3.1.0.3652\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
+      <HintPath>..\..\..\packages\ICSharpCode.Decompiler.4.0.0.4285-beta1\lib\net46\ICSharpCode.Decompiler.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="System.Core" />

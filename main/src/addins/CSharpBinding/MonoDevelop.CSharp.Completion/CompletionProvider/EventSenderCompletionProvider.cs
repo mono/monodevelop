@@ -110,6 +110,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 
 							var completionData = SymbolCompletionItem.CreateWithSymbolId (
 								member.Name,
+								string.Empty,
 								new [] { member },
 								CompletionItemRules.Default,
 								context.Position,

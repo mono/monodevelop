@@ -190,6 +190,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						if (member.IsAccessibleWithin (within)) {
 							var completionData = SymbolCompletionItem.CreateWithSymbolId (
 								member.Name,
+								string.Empty, // TODO: validate this
 								new [] { member },
 								CompletionItemRules.Default,
 								context.Position,
