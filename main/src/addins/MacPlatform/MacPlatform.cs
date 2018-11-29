@@ -713,10 +713,12 @@ namespace MonoDevelop.MacIntegration
 		}
 
 		[GLib.ConnectBefore]
-		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
+		static async void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
-			IdeApp.Workbench.RootWindow.Visible = false;
+			if (await IdeApp.Workspace.Close ()) {
+				IdeApp.Workbench.RootWindow.Visible = false;
+			}
 		}
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
