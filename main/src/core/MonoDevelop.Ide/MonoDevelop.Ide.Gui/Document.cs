@@ -61,6 +61,8 @@ using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor.TextMate;
 using MonoDevelop.Core.Assemblies;
 using Roslyn.Utilities;
+using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -357,6 +359,8 @@ namespace MonoDevelop.Ide.Gui
 				return GetContent <TextEditor> ();
 			}
 		}
+
+		public ITextBuffer TextBuffer => GetContent<ITextBuffer> ();
 
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
@@ -888,7 +892,7 @@ namespace MonoDevelop.Ide.Gui
 					SubscribeRoslynWorkspace ();
 					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
-						TypeSystemService.InformDocumentOpen (analysisDocument, Editor, this);
+						TypeSystemService.InformDocumentOpen (analysisDocument, TextBuffer.AsTextContainer(), this);
 						OnAnalysisDocumentChanged (EventArgs.Empty);
 					}
 					return Task.CompletedTask;
@@ -900,42 +904,39 @@ namespace MonoDevelop.Ide.Gui
 					return Task.CompletedTask;
 				}
 
-				if (Editor != null) {
-					var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
-					if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
-						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+				if (TextBuffer.ContentType.TypeName == "CSharp") {
+					var newProject = Services.ProjectService.CreateDotNetProject ("C#");
 
-						this.adhocProject = newProject;
+					this.adhocProject = newProject;
 
-						newProject.Name = "InvisibleProject";
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
+					newProject.Name = "InvisibleProject";
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
-						// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
-						newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
-						if (!Window.ViewContent.IsUntitled) {
-							adHocFile = Editor.FileName;
-						} else {
-							adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
-						}
-
-						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
-
-						adhocSolution = new Solution ();
-						adhocSolution.AddConfiguration ("", true);
-						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
-							if (token.IsCancellationRequested)
-								return;
-							UnsubscribeRoslynWorkspace ();
-							RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
-							SubscribeRoslynWorkspace ();
-							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
-							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor, this);
-							OnAnalysisDocumentChanged (EventArgs.Empty);
-						});
+					// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
+					newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
+					if (!Window.ViewContent.IsUntitled) {
+						adHocFile = FileName;
+					} else {
+						adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
 					}
+
+					newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
+
+					adhocSolution = new Solution ();
+					adhocSolution.AddConfiguration ("", true);
+					adhocSolution.DefaultSolutionFolder.AddItem (newProject);
+					return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
+						if (token.IsCancellationRequested)
+							return;
+						UnsubscribeRoslynWorkspace ();
+						RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
+						SubscribeRoslynWorkspace ();
+						analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
+						TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, TextBuffer.AsTextContainer (), this);
+						OnAnalysisDocumentChanged (EventArgs.Empty);
+					});
 				}
 			}
 			return Task.CompletedTask;

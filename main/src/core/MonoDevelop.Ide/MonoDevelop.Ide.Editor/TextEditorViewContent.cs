@@ -49,6 +49,7 @@ using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.CodingConventions;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -281,7 +282,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 			foreach (var r in base.OnGetContents (type))
 				yield return r;
-			if (type.IsAssignableFrom (typeof (TextEditor))) {
+
+			if (type == typeof(ITextBuffer)) {
+				yield return textEditor.TextView.TextBuffer;
+				yield break;
+			}
+
+			if (type.IsAssignableFrom (typeof (TextEditor))) {
 				yield return textEditor;
 				yield break;
 			}

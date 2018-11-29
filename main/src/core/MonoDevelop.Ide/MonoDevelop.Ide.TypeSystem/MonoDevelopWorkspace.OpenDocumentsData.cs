@@ -37,13 +37,13 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		internal class OpenDocumentsData
 		{
-			readonly Dictionary<DocumentId, (SourceTextContainer Container, TextEditor Editor, DocumentContext Context)> openDocuments =
-				new Dictionary<DocumentId, (SourceTextContainer, TextEditor, DocumentContext)> ();
+			readonly Dictionary<DocumentId, (SourceTextContainer Container, DocumentContext Context)> openDocuments =
+				new Dictionary<DocumentId, (SourceTextContainer, DocumentContext)> ();
 
-			internal void Add (DocumentId documentId, SourceTextContainer container, TextEditor editor, DocumentContext context)
+			internal void Add (DocumentId documentId, SourceTextContainer container, DocumentContext context)
 			{
 				lock (openDocuments) {
-					openDocuments.Add (documentId, (container, editor, context));
+					openDocuments.Add (documentId, (container, context));
 				}
 			}
 

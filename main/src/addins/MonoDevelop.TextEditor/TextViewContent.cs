@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -45,6 +46,17 @@ namespace MonoDevelop.Ide.Text
 			this.xwtWidget = GetXwtWidget (widget);
 			xwtWidget.Show ();
 			ContentName = fileName;
+		}
+
+		protected override IEnumerable<object> OnGetContents (Type type)
+		{
+			if (type == typeof(ITextBuffer)) {
+				return new[] { TextBuffer };
+			} else if (type == typeof(ITextDocument)) {
+				return new[] { TextDocument };
+			}
+
+			return Array.Empty<object> ();
 		}
 
 		public override Task Save ()

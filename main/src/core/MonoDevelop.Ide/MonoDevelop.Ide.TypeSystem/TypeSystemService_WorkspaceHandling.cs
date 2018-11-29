@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
@@ -243,6 +244,53 @@ namespace MonoDevelop.Ide.TypeSystem
 						yield return docId;
 				}
 			}
+		}
+
+		static void OnDocumentOpened (object sender, Gui.DocumentEventArgs e)
+		{
+			var filePath = e.Document.FileName;
+			var textBuffer = e.Document.TextBuffer;
+			if (textBuffer == null) {
+				return;
+			}
+
+			var project = e.Document.Project;
+			if (project == null) {
+				return;
+			}
+
+			var workspace = GetWorkspace (project.ParentSolution);
+			if (workspace == emptyWorkspace) {
+				return;
+			}
+
+			var documentId = GetDocumentId (workspace, project, filePath);
+			if (documentId == null) {
+				return;
+			}
+
+			workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+		}
+
+		static void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)
+		{
+			var filePath = e.Document.FileName;
+			var project = e.Document.Project;
+			if (project == null) {
+				return;
+			}
+
+			var workspace = GetWorkspace (project.ParentSolution);
+			if (workspace == emptyWorkspace) {
+				return;
+			}
+
+			var documentId = GetDocumentId (workspace, project, filePath);
+			if (documentId == null) {
+				return;
+			}
+
+			workspace.InformDocumentClose (documentId, filePath);
 		}
 
 		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)

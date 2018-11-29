@@ -136,6 +136,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 
 			IntitializeTrackedProjectHandling ();
+
+			IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
+			IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
 		}
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
@@ -658,29 +661,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor, DocumentContext context)
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
 			foreach (var w in workspaces) {
 				if (w.Contains (analysisDocument.ProjectId)) {
-					w.InformDocumentOpen (analysisDocument, editor, context); 
+					w.InformDocumentOpen (analysisDocument, sourceTextContainer, context); 
 					return;
 				}
 			}
 			if (!gotDocumentRequestError) {
 				gotDocumentRequestError = true;
-				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument + ":" + editor.FileName);
+				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument);
 			}
 		}
 
-		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor, DocumentContext context)
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
 			if (ws == null)
 				throw new ArgumentNullException (nameof (ws));
 			if (analysisDocument == null)
 				throw new ArgumentNullException (nameof (analysisDocument));
-			if (editor == null)
-				throw new ArgumentNullException (nameof (editor));
-			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, editor, context); 
+			if (sourceTextContainer == null)
+				throw new ArgumentNullException (nameof (sourceTextContainer));
+			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, sourceTextContainer, context); 
 		}
 
 		static bool gotDocumentRequestError = false;

@@ -383,18 +383,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
+		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
-			var document = InternalInformDocumentOpen (documentId, editor, context);
+			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, context);
 			if (document as Document != null) {
 				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
-					InternalInformDocumentOpen (linkedDoc, editor, context);
+					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, context);
 				}
 			}
 			OnDocumentContextUpdated (documentId);
 		}
 
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
@@ -403,12 +403,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
-			var textContainer = editor.TextView.TextBuffer.AsTextContainer ();
-			OpenDocuments.Add (documentId, textContainer, editor, context);
+			OpenDocuments.Add (documentId, sourceTextContainer, context);
 			if (document is Document) {
-				OnDocumentOpened (documentId, textContainer);
+				OnDocumentOpened (documentId, sourceTextContainer);
 			} else {
-				OnAdditionalDocumentOpened (documentId, textContainer);
+				OnAdditionalDocumentOpened (documentId, sourceTextContainer);
 			}
 			return document;
 		}
