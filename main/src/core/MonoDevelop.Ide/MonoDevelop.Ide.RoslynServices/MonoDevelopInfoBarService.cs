@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		readonly IAsynchronousOperationListener _listener;
 
 		[ImportingConstructor]
-		public MonoDevelopInfoBarService (IForegroundNotificationService foregroundNotificationService, IAsynchronousOperationListenerProvider listenerProvider)
+		public MonoDevelopInfoBarService (IThreadingContext threadingContext, IForegroundNotificationService foregroundNotificationService, IAsynchronousOperationListenerProvider listenerProvider) : base (threadingContext)
 		{
 			_foregroundNotificationService = foregroundNotificationService;
 			_listener = listenerProvider.GetListener (FeatureAttribute.InfoBar);

@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.Composition
 
 			ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
 			ExportProvider = ExportProviderFactory.CreateExportProvider ();
-			HostServices = MefV1HostServices.Create (ExportProvider.AsExportProvider ());
+			HostServices = MonoDevelopMefHostServices.Create (ExportProvider.AsExportProvider ());
 			ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
 		}
 
