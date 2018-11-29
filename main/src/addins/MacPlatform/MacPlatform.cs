@@ -589,7 +589,14 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
-					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
+					if (Ide.WelcomePage.WelcomePageService.HasWindowImplementation && !(IdeApp.Workbench.RootWindow?.Visible ?? false)) {
+						if (IdeApp.Workbench.RootWindow != null) {
+							IdeApp.Workbench.RootWindow.Visible = false;
+						}
+						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow ();
+
+						e.Handled = true;
+					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
 						IdeApp.Workbench.RootWindow.Visible = true;
 
