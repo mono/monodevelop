@@ -505,6 +505,11 @@ namespace MonoDevelop.Ide.Desktop
 		{
 		}
 
+		public virtual void FocusWindow (Window window)
+		{
+			window.GrabFocus ();
+		}
+
 		internal virtual IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
 			return new MainToolbar ();

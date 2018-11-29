@@ -943,6 +943,20 @@ namespace MonoDevelop.MacIntegration
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
 		}
 
+		public override void FocusWindow (Window window)
+		{
+			try {
+				NSWindow nswindow = window; // will also get an NSWindow from a Gtk.Window
+				if (nswindow != null) {
+					nswindow.MakeKeyAndOrderFront (nswindow);
+					return;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Focusing window failed: not an NSWindow", ex);
+			}
+			base.FocusWindow (window);
+		}
+
 		static Cairo.Color ConvertColor (NSColor color)
 		{
 			nfloat r, g, b, a;
