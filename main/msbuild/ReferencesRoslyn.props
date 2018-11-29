@@ -53,10 +53,6 @@
       <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.Workspaces.Common.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>$(ReferencesRoslynCopyToOutput)</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.Workspaces.Common.$(NuGetVersionRoslyn)\lib\netstandard2.0\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
-      <Private>$(ReferencesRoslynCopyToOutput)</Private>
-    </Reference>
   </ItemGroup>
 
 </Project>
