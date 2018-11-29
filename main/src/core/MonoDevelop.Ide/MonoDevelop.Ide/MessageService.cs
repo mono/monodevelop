@@ -337,10 +337,13 @@ namespace MonoDevelop.Ide
 			}).Wait ();
 			#endif
 
+			var initialRootWindow = Xwt.MessageDialog.RootWindow;
 			try {
+				Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (dialog);
 				IdeApp.DisableIdleActions ();
 				return GtkWorkarounds.RunDialogWithNotification (dialog);
 			} finally {
+				Xwt.MessageDialog.RootWindow = initialRootWindow;
 				IdeApp.EnableIdleActions ();
 			}
 		}

@@ -770,10 +770,7 @@ namespace MonoDevelop.Ide.Gui
 				? GettextCatalog.GetString ("Options")
 				: GettextCatalog.GetString ("Preferences");
 
-			var initialRootWindow = Xwt.MessageDialog.RootWindow;
 			try {
-				Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (ops);
-
 				if (panelId != null)
 					ops.SelectPanel (panelId);
 				if (configurationAction != null)
@@ -785,7 +782,6 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				ops.Destroy ();
 				ops.Dispose ();
-				Xwt.MessageDialog.RootWindow = initialRootWindow;
 			}
 		}
 		
