@@ -61,12 +61,12 @@ namespace MonoDevelop.MacIntegration
 		{
 			using (var panel = CreatePanel (data, out var saveState)) {
 				if (panel.RunModal () == 0) {
-					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
 
 				data.SelectedFiles = GetSelectedFiles (panel);
-				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+				DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			}
 		}

@@ -351,6 +351,12 @@ namespace MonoDevelop.Ide
 			PlatformService.GrabDesktopFocus (window);
 		}
 
+		public static void FocusWindow (Window window)
+		{
+			if (window !=  null)
+				PlatformService.FocusWindow (window);
+		}
+
 		public static void RemoveWindowShadow (Window window)
 		{
 			PlatformService.RemoveWindowShadow (window);

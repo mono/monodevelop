@@ -51,7 +51,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			using (var panel = CreatePanel (data, out NSPopUpButton popup)) {
 				if (panel.RunModal () == 0) {
-					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
 				
@@ -60,8 +60,8 @@ namespace MonoDevelop.MacIntegration
 				var idx = popup.IndexOfSelectedItem - 2;
 				if (idx >= 0)
 					data.OverrideAction = data.BuildActions[idx];
-				
-				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+
+				DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			}
 		}

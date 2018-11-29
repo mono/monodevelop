@@ -223,7 +223,7 @@ namespace MonoDevelop.MacIntegration
 				if (nativeParent != null)
 					nativeParent.MakeKeyAndOrderFront (nativeParent);
 				else
-					GtkQuartz.FocusWindow (parent);
+					DesktopService.FocusWindow (parent);
 
 			}
 

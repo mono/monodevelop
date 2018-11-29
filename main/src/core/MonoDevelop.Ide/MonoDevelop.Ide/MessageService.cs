@@ -131,7 +131,17 @@ namespace MonoDevelop.Ide
 	//all methods are synchronously invoked on the GUI thread, except those which take GTK# objects as arguments
 	public static class MessageService
 	{
-		public static Window RootWindow { get; internal set; }
+		static Window defaultRootWindow;
+		public static Window RootWindow {
+			get {
+				if (WelcomePageService.WelcomePageVisible)
+					return WelcomePageService.WelcomeWindow;
+				return defaultRootWindow;
+			}
+			internal set {
+				defaultRootWindow = value;
+			}
+		}
 
 		#region ShowError
 		public static void ShowError (string primaryText)
@@ -311,21 +321,24 @@ namespace MonoDevelop.Ide
 		{
 			// if dialog is modal, make sure it's parented on any existing modal dialog
 			Gtk.Dialog dialog = dlg;
-			if (WelcomePageService.WelcomeWindowVisible && (dialog.TransientFor == (Gtk.Window)RootWindow || dialog.TransientFor == null)) {
-				dialog.TransientFor = null;
-			} else {
-				if (dialog.Modal) {
-					parent = GetDefaultModalParent ();
-				}
+			if (dialog.Modal) {
+				parent = GetDefaultModalParent ();
+			}
 
-				//ensure the dialog has a parent
-				if (parent == null) {
-					parent = dialog.TransientFor ?? RootWindow;
-				}
+			//ensure the dialog has a parent
+			if (parent == null) {
+				if (dialog.TransientFor != null)
+					parent = dialog.TransientFor;
+				else
+					parent = RootWindow;
+			}
 
+			//TODO: use native parenting API for native windows
+			if (parent.nativeWidget is Gtk.Window) {
 				dialog.TransientFor = parent;
 				dialog.DestroyWithParent = true;
 			}
+
 			MonoDevelop.Components.IdeTheme.ApplyTheme (dialog);
 
 			if (dialog.Title == null)
@@ -380,13 +393,15 @@ namespace MonoDevelop.Ide
 			return GetFocusedToplevel ();
 		}
 
-		static Gtk.Window GetFocusedToplevel ()
+		static Window GetFocusedToplevel ()
 		{
+			// TODO: support native toplevels
 			// use the first "normal" toplevel window (skipping docks, popups, etc.) or the main IDE window
-			return Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus &&
-			                                                   (w.TypeHint == Gdk.WindowTypeHint.Dialog ||
-			                                                    w.TypeHint == Gdk.WindowTypeHint.Normal ||
-			                                                    w.TypeHint == Gdk.WindowTypeHint.Utility)) ?? RootWindow;
+			Window gtkToplevel = Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus &&
+																(w.TypeHint == Gdk.WindowTypeHint.Dialog ||
+																 w.TypeHint == Gdk.WindowTypeHint.Normal ||
+																 w.TypeHint == Gdk.WindowTypeHint.Utility));
+			return gtkToplevel ?? RootWindow;
 		}
 		
 		/// <summary>
@@ -414,6 +429,13 @@ namespace MonoDevelop.Ide
 		/// <summary>Centers a window relative to its parent.</summary>
 		static void CenterWindow (Window childControl, Window parentControl)
 		{
+			// TODO: support cross-toolkit centering
+			if (!(parentControl.nativeWidget is Gtk.Window)) {
+				// FIXME: center on screen if no Gtk parent given for a Gtk dialog
+				if (childControl.nativeWidget is Gtk.Window gtkChild)
+					gtkChild.WindowPosition = Gtk.WindowPosition.Center;
+				return;
+			}
 			Gtk.Window child = childControl;
 			Gtk.Window parent = parentControl;
 			child.Child.Show ();
@@ -554,11 +576,8 @@ namespace MonoDevelop.Ide
 		{
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
-				var dialog = new AlertDialog (message);
-				if (WelcomePageService.WelcomeWindowVisible && WelcomePageService.WelcomeWindow != null) {
-					dialog.TransientFor = WelcomePageService.WelcomeWindow;
-				} else {
-					dialog.TransientFor = parent ?? GetDefaultModalParent ();
+				var dialog = new AlertDialog (message) {
+					TransientFor = parent ?? GetDefaultModalParent ()
 				};
 				return dialog.Run ();
 			}
