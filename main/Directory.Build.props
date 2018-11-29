@@ -6,8 +6,8 @@
     <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
     <ReferencesVSEditor>$(RootDirectory)\msbuild\ReferencesVSEditor.props</ReferencesVSEditor>
     <ReferencesGtk>$(RootDirectory)\msbuild\ReferencesGtk.props</ReferencesGtk>
-    <NuGetVersionRoslyn>2.10.0-beta2-63410-10</NuGetVersionRoslyn>
-    <NuGetVersionVSEditor>15.8.519</NuGetVersionVSEditor>
+    <NuGetVersionRoslyn>2.11.0-beta3-63519-01</NuGetVersionRoslyn>
+    <NuGetVersionVSEditor>16.0.142-g25b7188c54</NuGetVersionVSEditor>
     <NuGetVersionAllocationAnalyzer>1.0.0.9</NuGetVersionAllocationAnalyzer>
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
     <NuGetVersionMonoDevelopAnalyzers>0.1.0.1</NuGetVersionMonoDevelopAnalyzers>
