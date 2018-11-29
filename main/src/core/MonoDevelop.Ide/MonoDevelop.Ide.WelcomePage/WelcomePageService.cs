@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static bool WelcomeWindowVisible => welcomeWindow != null && visible;
 
+		public static Window WelcomeWindow => welcomeWindow;
+
 		public static bool HasWindowImplementation => AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().Any ();
 
 		public static void ShowWelcomePageOrWindow (bool animate = false)
