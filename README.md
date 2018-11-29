@@ -18,11 +18,11 @@ There are two main directories:
     tarball/package).
  * `extras`: Additional add-ins (each add-in has its own
     tarball/package).
-
+ 
 Compiling
 ---------
 
-If you are building from Git, make sure that you initialize the submodules
+If you are building from Git, make sure that you initialize the submodules 
 that are part of this repository by executing:
 `git submodule update --init --recursive`
 
