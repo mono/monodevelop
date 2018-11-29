@@ -82,7 +82,7 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<BuildIntegratedNuGetProject> projects,
 			CancellationToken cancellationToken)
 		{
-			var spec = await MSBuildUtility.GetSolutionRestoreSpec (solutionManager.Solution, projects, context.Logger, cancellationToken);
+			var spec = await MonoDevelopDependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, projects, context, cancellationToken);
 
 			var now = DateTime.UtcNow;
 			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
@@ -183,6 +183,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			var now = DateTime.UtcNow;
 			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
+
+			var spec = await MonoDevelopDependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, project, context, cancellationToken);
+			context.AddToCache (spec);
 
 			RestoreResult restoreResult = await DependencyGraphRestoreUtility.RestoreProjectAsync (
 				solutionManager,

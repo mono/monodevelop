@@ -376,6 +376,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MSBuildPackageSpecCreator.cs" />
     <Compile Include="NuGet.ProjectManagement\TempFile.cs" />
     <Compile Include="NuGet.Commands\MSBuildUtility.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopDependencyGraphRestoreUtility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DependencyGraphContextExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
