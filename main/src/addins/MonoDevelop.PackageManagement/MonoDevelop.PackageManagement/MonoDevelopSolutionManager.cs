@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
@@ -102,9 +103,23 @@ namespace MonoDevelop.PackageManagement
 		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution, ISettings settings)
 		{
 			var factory = new MonoDevelopNuGetProjectFactory (settings);
-			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
+			foreach (DotNetProject project in GetAllDotNetProjectsUsingReverseTopologicalSort (solution)) {
 				yield return factory.CreateNuGetProject (project);
 			}
+		}
+
+		/// <summary>
+		/// Returning the projects in a reverse topological sort means that better caching of the
+		/// PackageSpecs for each project can occur if PackageReference projects depend on other
+		/// PackageReference projects since getting the PackageSpec for the root project will result in
+		/// all dependencies being retrieved at the same time and add to the cache.
+		/// </summary>
+		static IEnumerable<DotNetProject> GetAllDotNetProjectsUsingReverseTopologicalSort (Solution solution)
+		{
+			var config = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
+			return solution.GetAllProjectsWithTopologicalSort (config)
+				.OfType<DotNetProject> ()
+				.Reverse ();
 		}
 
 		public Task<string> GetNuGetProjectSafeNameAsync (NuGetProject nuGetProject)
