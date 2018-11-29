@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			}
 
 			var originalText = document.GetTextAsync (CancellationToken.None).WaitAndGetResult (CancellationToken.None);
-			Contract.Requires (object.ReferenceEquals (originalText, snapshot.AsText ()));
+			Contract.ThrowIfFalse (object.ReferenceEquals (originalText, snapshot.AsText ()));
 
 			var root = document.GetSyntaxRootSynchronously (CancellationToken.None);
 
