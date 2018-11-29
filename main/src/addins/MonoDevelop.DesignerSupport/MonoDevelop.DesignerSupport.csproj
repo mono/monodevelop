@@ -143,7 +143,6 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\SearchTextField.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ToggleButton.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ClickedButton.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\NativeViewHelper.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxViewItems.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetDataSource.cs" />
