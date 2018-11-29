@@ -474,6 +474,8 @@ namespace MonoDevelop.Ide
 		{
 			IsExiting = true;
 			if (await workbench.Close ()) {
+				if (WelcomePage.WelcomePageService.HasWindowImplementation)
+					WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 				Gtk.Application.Quit ();
 				isMainRunning = false;
 				return true;
