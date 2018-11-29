@@ -89,7 +89,8 @@ namespace MonoDevelop.PackageManagement
 
 		public static DependencyGraphSpec GetDependencyGraph (string resultsPath)
 		{
-			if (File.Exists (resultsPath) && new FileInfo (resultsPath).Length != 0) {
+			var fileInfo = new FileInfo (resultsPath);
+			if (fileInfo.Exists && fileInfo.Length != 0) {
 				return DependencyGraphSpec.Load (resultsPath);
 			} else {
 				return new DependencyGraphSpec ();
