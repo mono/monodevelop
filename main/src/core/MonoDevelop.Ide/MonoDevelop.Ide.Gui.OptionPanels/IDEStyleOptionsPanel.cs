@@ -136,6 +136,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			Store ();
 			IdeApp.Restart (true).Ignore();
+			(Toplevel as Gtk.Dialog)?.Respond (Gtk.ResponseType.Ok);
 		}
 
 		void UpdateRestartMessage ()
