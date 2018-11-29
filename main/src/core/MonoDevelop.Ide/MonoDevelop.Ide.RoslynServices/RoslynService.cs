@@ -64,13 +64,6 @@ namespace MonoDevelop.Ide.RoslynServices
 			FatalError.NonFatalHandler = exception => LoggingService.LogInternalError ("Roslyn non-fatal exception", exception);
 
 			AttachLoggers ();
-
-			// Initialize Roslyn foreground thread data.
-			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
-				Runtime.MainThread,
-				Runtime.MainTaskScheduler,
-				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
-			);
 		}
 
 		static void AttachLoggers ()

@@ -566,5 +566,22 @@ namespace Mono.TextEditor
 				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
+
+		public void QueuePostLayoutAction (Action action)
+		{
+			// TODO: Implement me
+		}
+
+		public bool TryGetTextViewLines (out ITextViewLineCollection textViewLines)
+		{
+			textViewLines = TextViewLines;
+			return textViewLines != null;
+		}
+
+		public bool TryGetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition, out ITextViewLine textViewLine)
+		{
+			textViewLine = GetTextViewLineContainingBufferPosition (bufferPosition);
+			return textViewLine != null;
+		}
 	}
 }
