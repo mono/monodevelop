@@ -554,8 +554,11 @@ namespace MonoDevelop.Ide
 		{
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
-				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? GetDefaultModalParent ()
+				var dialog = new AlertDialog (message);
+				if (WelcomePageService.WelcomeWindowVisible && WelcomePageService.WelcomeWindow != null) {
+					dialog.TransientFor = WelcomePageService.WelcomeWindow;
+				} else {
+					dialog.TransientFor = parent ?? GetDefaultModalParent ();
 				};
 				return dialog.Run ();
 			}
