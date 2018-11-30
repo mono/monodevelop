@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			layout = null;
 			headerLayout = null;
-			SelectedItem = topItem = null;
+			selectedItem = topItem = null;
 			currentTooltip = null;
 			base.Dispose (disposing);
 		}
