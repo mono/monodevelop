@@ -2,7 +2,7 @@ using System;
 using Mono.Addins;
 using Mono.Addins.Description;
 
-[assembly:Addin ("TextEditor.Wpf", 
+[assembly:Addin ("TextEditor.Cocoa", 
         Namespace = "MonoDevelop", 
         Version = MonoDevelop.BuildInfo.Version,
         Category = "MonoDevelop Core")]

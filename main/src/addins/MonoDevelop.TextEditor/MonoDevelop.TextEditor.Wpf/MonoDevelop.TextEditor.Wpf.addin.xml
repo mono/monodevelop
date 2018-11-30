@@ -3,6 +3,7 @@
 
   	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="MonoDevelop.TextEditor.Wpf.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
