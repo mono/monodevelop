@@ -38,6 +38,7 @@ using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Mac;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -184,8 +185,24 @@ namespace MonoDevelop.MacIntegration
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
 					// sheeting is broken on High Sierra with dark NSAppearance
 					var sheet = IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion != MacSystemInformation.HighSierra;
+
+					// We have an issue with accessibility when using sheets, so disable it here
+					sheet &= !DesktopService.AccessibilityInUse;
+
 					if (!sheet || nativeParent == null) {
+						// Force the alert window to be focused for accessibility
+						NSApplication.SharedApplication.AccessibilityFocusedWindow = alert.Window;
+						alert.Window.AccessibilityFocused = true;
+
+						if (nativeParent != null) {
+							nativeParent.AccessibilityFocused = false;
+						}
+
+						alert.Window.ReleasedWhenClosed = true;
 						response = (int)alert.RunModal ();
+
+						// Focus the old window
+						NSApplication.SharedApplication.AccessibilityFocusedWindow = nativeParent;
 					} else {
 						alert.BeginSheet (nativeParent, (modalResponse) => {
 							response = (int)modalResponse;
