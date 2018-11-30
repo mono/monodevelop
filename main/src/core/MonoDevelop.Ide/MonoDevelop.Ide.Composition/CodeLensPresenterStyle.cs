@@ -1,3 +1,4 @@
+#if WINDOWS
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -39,3 +40,4 @@ namespace MonoDevelop.Ide.Composition
         }
     }
 }
+#endif
