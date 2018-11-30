@@ -174,6 +174,9 @@ namespace MonoDevelop.Ide.Editor
 
 			public void StartWatching (string fileName, string directoryPath)
 			{
+				LoggingService.LogInfo ("ConventionsFileManager StartWatching: {0} {1}", fileName, directoryPath);
+				return;
+
 				lock (watchers) {
 					var key = directoryPath + Path.DirectorySeparatorChar.ToString () + fileName;
 
@@ -192,6 +195,9 @@ namespace MonoDevelop.Ide.Editor
 
 			public void StopWatching (string fileName, string directoryPath)
 			{
+				LoggingService.LogInfo ("ConventionsFileManager StopWatching: {0} {1}", fileName, directoryPath);
+				return;
+
 				lock (watchers) {
 					var key = directoryPath + Path.DirectorySeparatorChar.ToString () + fileName;
 					if (watchers.TryGetValue (key, out FileSystemWatcher watcher)) {

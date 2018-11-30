@@ -58,9 +58,9 @@ namespace MonoDevelop.Ide.Gui
 
 		static DocumentRegistry ()
 		{
-			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
-			fileSystemWatcher.Changed += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
+			//fileSystemWatcher = new FileSystemWatcher ();
+			//fileSystemWatcher.Created += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
+			//fileSystemWatcher.Changed += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
 
 			FileService.FileCreated += HandleFileServiceChange;
 			FileService.FileChanged += HandleFileServiceChange;
