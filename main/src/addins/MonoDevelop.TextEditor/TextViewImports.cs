@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MonoDevelop.Ide.Text
@@ -26,5 +29,14 @@ namespace MonoDevelop.Ide.Text
 
 		[Import]
 		public IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; set; }
+
+		[ImportMany]
+		public List<Lazy<ITextViewModelProvider, IContentTypeAndTextViewRoleMetadata>> TextViewModelProviders { get; set; }
+
+		[Import]
+		public IGuardedOperations GuardedOperations { get; set; }
+
+		[Import]
+		internal IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
 	}
 }

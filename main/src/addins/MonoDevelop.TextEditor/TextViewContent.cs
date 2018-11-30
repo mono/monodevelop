@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -114,7 +115,17 @@ namespace MonoDevelop.Ide.Text
 
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
 		{
-			TextView = imports.TextEditorFactoryService.CreateTextView (TextBuffer);
+			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
+			ITextDataModel dataModel = new VacuousTextDataModel (TextBuffer);
+			ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory(
+				imports.TextViewModelProviders,
+				dataModel.ContentType,
+				roles,
+				(provider) => (provider.CreateTextViewModel (dataModel, roles)),
+				imports.ContentTypeRegistryService,
+				imports.GuardedOperations,
+				this) ?? new VacuousTextViewModel (dataModel);
+			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
 			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost ((IWpfTextView)TextView, setFocus: true);
 			return textViewHost.HostControl;
 		}
