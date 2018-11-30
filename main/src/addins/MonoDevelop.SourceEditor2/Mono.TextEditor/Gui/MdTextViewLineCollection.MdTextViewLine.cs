@@ -30,7 +30,6 @@ using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Language.Intellisense.Implementation;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Formatting;
-using Microsoft.VisualStudio.Text.Implementation;
 using MonoDevelop.Core.Text;
 using System.Threading;
 using MonoDevelop.Ide;
@@ -258,6 +257,37 @@ namespace Mono.TextEditor
 			{
 				return new Span (line.Offset, line.LengthIncludingDelimiter).IntersectsWith (bufferSpan);
 			}
+#if MAC
+			public void SetChange (TextViewLineChange change)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetTop (double top)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetDeltaY (double deltaY)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetSnapshot (ITextSnapshot visualSnapshot, ITextSnapshot editSnapshot)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void SetLineTransform (LineTransform transform)
+			{
+				throw new NotImplementedException ();
+			}
+
+			public void Dispose ()
+			{
+				throw new NotImplementedException ();
+			}
+#endif
 		}
 	}
 }

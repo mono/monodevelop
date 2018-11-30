@@ -19,9 +19,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
     internal class SpaceReservationManager : ISpaceReservationManager
     {
-        public readonly string Name;
-        public readonly int Rank;
-		private readonly Mono.TextEditor.MonoTextEditor _view;
+        public string Name { get; }
+        public int Rank { get; }
+        private readonly Mono.TextEditor.MonoTextEditor _view;
         private bool _hasAggregateFocus;
         internal IList<ISpaceReservationAgent> _agents = new List<ISpaceReservationAgent>();
 
@@ -34,26 +34,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
 
         #region ISpaceReservationManager Members
-        public ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, Xwt.Widget content)
+        public ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, object content)
         {
-            return new PopupAgent(_view, this, visualSpan, styles, content);
+            throw new NotImplementedException();
         }
 
         public void UpdatePopupAgent(ISpaceReservationAgent agent, ITrackingSpan visualSpan, PopupStyles styles)
         {
-            if (agent == null)
-                throw new ArgumentNullException("agent");
-            if (visualSpan == null)
-                throw new ArgumentNullException("visualSpan");
-
-            PopupAgent popupAgent = agent as PopupAgent;
-            if (popupAgent == null)
-                throw new ArgumentException("The agent is not a PopupAgent", "agent");
-
-            popupAgent.SetVisualSpan(visualSpan);
-            popupAgent._style = styles;
-            this.CheckFocusChange();
-            _view.QueueSpaceReservationStackRefresh();
+            throw new NotImplementedException();
         }
 
         public ReadOnlyCollection<ISpaceReservationAgent> Agents
@@ -190,7 +178,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _view.Closed -= this.OnViewClosed;
         }
 
-        internal void PositionAndDisplay(GeometryGroup reservedGeometry)
+        public void PositionAndDisplay(GeometryGroup reservedGeometry)
         {
             _view.GuardedOperations.CallExtensionPoint(this,
                () =>

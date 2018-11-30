@@ -11,6 +11,7 @@
     using Microsoft.VisualStudio.Text.Editor;
     using MonoDevelop.Components;
     using Xwt;
+    using Point = Xwt.Point;
 
     internal abstract class BaseWpfToolTipPresenter : IToolTipPresenter, IObscuringTip
     {

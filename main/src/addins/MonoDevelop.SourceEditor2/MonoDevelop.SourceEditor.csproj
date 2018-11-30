@@ -207,8 +207,6 @@
     <Compile Include="VSEditor\TagBasedSyntaxHighlighting.cs" />
     <Compile Include="VSEditor\TextSelection.cs" />
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
-    <Compile Include="VSEditor\FakeWpf\Geometry.cs" />
-    <Compile Include="VSEditor\FakeWpf\Mouse.cs" />
     <Compile Include="VSEditor\FakeWpf\SimulatingExtensions.cs" />
     <Compile Include="VSEditor\Language\Def\Intellisense\IPopupIntellisensePresenter.cs" />
     <Compile Include="VSEditor\Language\Impl\Helpers.cs" />
@@ -231,10 +229,6 @@
     <Compile Include="VSEditor\Language\Util\LanguageUtil\IntellisenseSourceCache.cs" />
     <Compile Include="VSEditor\Language\Util\LanguageUtil\IntellisenseUtilities.cs" />
     <Compile Include="VSEditor\Text\Def\TextUIWpf\Adornments\ToolTipPresenterStyle.cs" />
-    <Compile Include="VSEditor\Text\Def\TextUIWpf\Editor\ISpaceReservationAgent.cs" />
-    <Compile Include="VSEditor\Text\Def\TextUIWpf\Editor\ISpaceReservationManager.cs" />
-    <Compile Include="VSEditor\Text\Def\TextUIWpf\Editor\SpaceReservationAgentChangedEventArgs.cs" />
-    <Compile Include="VSEditor\Text\Def\TextUIWpf\Editor\SpaceReservationManagerDefinition.cs" />
     <Compile Include="VSEditor\Text\Impl\ToolTipAdornment\GuardedToolTipPresenter.cs" />
     <Compile Include="VSEditor\Text\Impl\ToolTipAdornment\IViewElementFactoryMetadata.cs" />
     <Compile Include="VSEditor\Text\Impl\ToolTipAdornment\ToolTipService.cs" />
@@ -250,7 +244,6 @@
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfClassifiedTextElementViewElementFactory.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfContainerElementViewElementFactory.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfToolTipAdornment\ViewElementFactories\WpfImageElementViewElementFactory.cs" />
-    <Compile Include="VSEditor\Text\Impl\WpfView\PopupAgent.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationManager.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />

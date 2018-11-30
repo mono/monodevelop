@@ -16,15 +16,15 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
-    <DefineConstants>DEBUG;MAC</DefineConstants>
+    <OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
+    <DefineConstants>MAC;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
     <DefineConstants>MAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

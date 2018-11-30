@@ -188,7 +188,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
                 {
                     var topLeft = ((IMdTextView)_textView).VisualElement.GetScreenCoordinates
                         (new Gdk.Point((int)_textView.ViewportLeft, (int)(caretLine.TextTop - _textView.ViewportTop)));
-                    Rect screenRect = new Rect
+                    var screenRect = new System.Windows.Rect
                         (topLeft.X,
                          topLeft.Y,
                          _textView.ViewportWidth,

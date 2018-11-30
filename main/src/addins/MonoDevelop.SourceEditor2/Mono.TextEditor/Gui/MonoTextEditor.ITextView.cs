@@ -40,7 +40,6 @@ using System.Diagnostics;
 using MonoDevelop.Ide;
 using Microsoft.VisualStudio.Text.Classification;
 using System.Threading;
-using Microsoft.VisualStudio.Text.Operations.Implementation;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Mono.TextEditor
@@ -566,5 +565,26 @@ namespace Mono.TextEditor
 				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
+#if MAC
+		public void QueuePostLayoutAction (Action action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool TryGetTextViewLines (out ITextViewLineCollection textViewLines)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool TryGetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition, out ITextViewLine textViewLine)
+		{
+			throw new NotImplementedException ();
+		}
+
+		ISpaceReservationManager ITextView.GetSpaceReservationManager (string name)
+		{
+			throw new NotImplementedException ();
+		}
+#endif
 	}
 }
