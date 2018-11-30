@@ -49,7 +49,7 @@ namespace MonoDevelop.UnitTesting
 	public static class UnitTestService
 	{
 		static ArrayList providers = new ArrayList ();
-		static UnitTest[] rootTests;
+		static UnitTest[] rootTests = Array.Empty<UnitTest> ();
 
 		static UnitTestService ()
 		{
@@ -321,13 +321,7 @@ namespace MonoDevelop.UnitTesting
 
 		static void ProjectOperations_PackageReferencesModified(object sender, EventArgs e)
 		{
-			throttling.Cancel ();
-			throttling = new CancellationTokenSource ();
-			Task.Delay (1000, throttling.Token).ContinueWith ((task) => {
-				if (task.IsCanceled)
-					return;
-				RebuildTests ();
-			}, throttling.Token, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
+			RebuildTests ();
 		}
 
 		static bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
@@ -347,14 +341,21 @@ namespace MonoDevelop.UnitTesting
 
 
 		static CancellationTokenSource rebuildTestsCts = new CancellationTokenSource ();
-		async static void RebuildTests ()
+		const int ThrottlingTimeout = 2000;
+
+		static async void RebuildTests ()
 		{
+			throttling.Cancel ();
+			throttling = new CancellationTokenSource ();
 			try {
+				await Task.Delay (ThrottlingTimeout, throttling.Token);
+				if (throttling.Token.IsCancellationRequested)
+					return;
+
 				if (rootTests != null) {
 					foreach (IDisposable t in rootTests)
 						t.Dispose ();
 				}
-				rootTests = Array.Empty<UnitTest> ();
 				List<UnitTest> list = new List<UnitTest> ();
 				rebuildTestsCts.Cancel ();
 				rebuildTestsCts = new CancellationTokenSource ();
