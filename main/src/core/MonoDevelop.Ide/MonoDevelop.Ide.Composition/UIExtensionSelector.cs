@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
     /// <summary>
     /// Helper class to perform ContentType and TextViewRole match against a set of extensions. 
     /// </summary>
-    internal static class UIExtensionSelector
+    public static class UIExtensionSelector
     {
         /// <summary>
         /// Given a list of extensions that provide text view roles, filter the list and return that

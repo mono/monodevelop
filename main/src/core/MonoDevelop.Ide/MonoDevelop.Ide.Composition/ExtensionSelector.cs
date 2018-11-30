@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.Text.Utilities
     /// Helper class to perform ContentType best-match against a set of extensions. This could
     /// become a public service.
     /// </summary>
-    internal static class ExtensionSelector
+    public static class ExtensionSelector
     {
         /// <summary>
         /// Given a list of extensions that provide content types, filter the list and return that
