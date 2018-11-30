@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -12,20 +13,27 @@ using Xwt;
 
 namespace MonoDevelop.Ide.Text
 {
+#if WINDOWS
 	class TextViewContent : AbstractXwtViewContent
+#elif MAC
+	class TextViewContent : ViewContent
+#endif
 	{
 		TextViewImports imports;
 		FilePath fileName;
 		string mimeType;
 		Project ownerProject;
+#if WINDOWS
 		RootWpfWidget widget;
 		Xwt.Widget xwtWidget;
-
+		public IWpfTextView TextView { get; private set; }
+		private IWpfTextViewHost textViewHost;
+#elif MAC
+		private ICocoaTextViewHost textViewHost;
+		public ICocoaTextView TextView { get; private set; }
+#endif
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
-		public ITextView TextView { get; private set; }
-
-		private IWpfTextViewHost textViewHost;
 
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
@@ -39,13 +47,16 @@ namespace MonoDevelop.Ide.Text
 			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
 			TextBuffer = TextDocument.TextBuffer;
 			TextDocument.DirtyStateChanged += OnTextDocumentDirtyStateChanged;
-
+#if WINDOWS
 			var control = CreateControl (imports);
 			this.widget = new RootWpfWidget (control);
 			widget.HeightRequest = 50;
 			widget.WidthRequest = 100;
 			this.xwtWidget = GetXwtWidget (widget);
 			xwtWidget.Show ();
+#elif MAC
+			control = new EmbeddedNSViewControl (CreateControl ());
+#endif
 			ContentName = fileName;
 		}
 
@@ -108,11 +119,11 @@ namespace MonoDevelop.Ide.Text
 			return contentType;
 		}
 
+#if WINDOWS
 		private Widget GetXwtWidget (RootWpfWidget widget)
 		{
 			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, NativeWidgetSizing.External);
 		}
-
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
 		{
 			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
@@ -131,7 +142,31 @@ namespace MonoDevelop.Ide.Text
 		}
 
 		public override Widget Widget => xwtWidget;
+#elif MAC
+		class EmbeddedNSViewControl : Control
+		{
+			private AppKit.NSView nSView;
 
+			public EmbeddedNSViewControl (AppKit.NSView nSView)
+			{
+				this.nSView = nSView;
+			}
+
+			protected override object CreateNativeWidget<T> ()
+			{
+				return nSView;
+			}
+		}
+
+		private AppKit.NSView CreateControl ()
+		{
+			TextView = imports.TextEditorFactoryService.CreateTextView (TextBuffer);
+			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
+			return textViewHost.HostControl;
+		}
+		Control control;
+		public override Control Control { get => control; }
+#endif
 		public override void Dispose ()
 		{
 			TextDocument.Dispose ();

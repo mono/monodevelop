@@ -35,5 +35,28 @@ namespace MonoDevelop.Ide.Composition
 		public void PostFault (string eventName, string description, Exception exceptionObject, string additionalErrorInfo, bool? isIncludedInWatsonSample)
 		{
 		}
+		// This is new API, since our Mac source code is newer, we need to implement more stuff then Windows
+		// remove #if MAC once upgrading NuGets on Windows
+#if MAC
+		public object CreateTelemetryOperationEventScope (string eventName, TelemetrySeverity severity, object [] correlations, IDictionary<string, object> startingProperties)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void EndTelemetryScope (object telemetryScope, TelemetryResult result, string summary = null)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public object GetCorrelationFromTelemetryScope (object telemetryScope)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void PostFault (string eventName, string description, Exception exceptionObject, string additionalErrorInfo = null, bool? isIncludedInWatsonSample = null, object [] correlations = null)
+		{
+			throw new NotImplementedException ();
+		}
+#endif
 	}
 }

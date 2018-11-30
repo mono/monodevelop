@@ -1,0 +1,33 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj">
+      <Name>CocoaViewImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextData\TextData.csproj">
+      <Name>TextData</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Core\Def\CoreUtility.csproj">
+      <Name>CoreUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextUI\TextUI.csproj">
+      <Name>TextUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
+      <Name>TextUIUtil</Name>
+    </ProjectReference>
+     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextLogic\TextLogic.csproj">
+      <Name>TextLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\Internal\Internal.csproj">
+      <Name>Internal</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\Intellisense\IntellisenseDef.csproj">
+      <Name>IntellisenseDef</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

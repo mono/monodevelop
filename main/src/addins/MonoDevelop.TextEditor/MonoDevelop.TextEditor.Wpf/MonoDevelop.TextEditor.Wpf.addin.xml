@@ -2,11 +2,11 @@
 	<!-- Extension points --> 
 
   	<Extension path="/MonoDevelop/Ide/Composition">
-		<Assembly file="MonoDevelop.TextEditor.dll"/>
+		<Assembly file="MonoDevelop.TextEditor.Wpf.dll"/>
 	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "TextView"
+		<DisplayBinding id = "TextViewWpf"
 						insertbefore = "TextEditor"
 						class = "MonoDevelop.Ide.Text.TextViewDisplayBinding" />
 	</Extension>

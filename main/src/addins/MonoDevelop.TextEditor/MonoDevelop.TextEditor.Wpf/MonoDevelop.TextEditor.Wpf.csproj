@@ -1,4 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems')" />
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
@@ -10,10 +11,12 @@
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\TextEditor</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\build\AddIns\DisplayBindings\TextEditor.Wpf</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\build\AddIns\DisplayBindings\TextEditor.Wpf</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
@@ -86,10 +89,6 @@
     </Reference>
     <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="WindowsFormsIntegration" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
-      <HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Composition">
       <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
       <Private>False</Private>
@@ -101,9 +100,6 @@
     <Compile Include="KeyProcessor\DefaultKeyProcessor.cs" />
     <Compile Include="KeyProcessor\DefaultKeyProcessorProvider.cs" />
     <Compile Include="RootWpfWidget.cs" />
-    <Compile Include="TextViewContent.cs" />
-    <Compile Include="TextViewDisplayBinding.cs" />
-    <Compile Include="TextViewImports.cs" />
     <Compile Include="Undo\UndoHistory.cs" />
     <Compile Include="Undo\UndoHistoryRegistry.cs" />
     <Compile Include="Undo\UndoTransaction.cs" />

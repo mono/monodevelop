@@ -5,5 +5,5 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Text Editor")]
-[assembly: AssemblyDescription ("Integrates the Visual Studio Text Editor Wpf")]
+[assembly: AssemblyDescription ("Integrates the Visual Studio Text Editor Cocoa")]
 [assembly: AssemblyVersion ("2.6")]

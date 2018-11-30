@@ -1,0 +1,14 @@
+<ExtensionModel>
+	<!-- Extension points --> 
+
+  	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll"/>
+		<Assembly file="CocoaViewImpl.dll"/>
+	</Extension>
+
+  	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id = "TextViewCocoa"
+						insertbefore = "TextEditor"
+						class = "MonoDevelop.Ide.Text.TextViewDisplayBinding" />
+	</Extension>
+</ExtensionModel>

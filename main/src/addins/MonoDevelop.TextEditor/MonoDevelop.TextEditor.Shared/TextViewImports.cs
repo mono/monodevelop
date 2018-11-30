@@ -19,8 +19,11 @@ namespace MonoDevelop.Ide.Text
 		public ITextBufferFactoryService TextBufferFactoryService { get; set; }
 
 		[Import]
+#if WINDOWS
 		public ITextEditorFactoryService TextEditorFactoryService { get; set; }
-
+#elif MAC
+		public ICocoaTextEditorFactoryService TextEditorFactoryService { get; set; }
+#endif
 		[Import]
 		public IFileToContentTypeService FileToContentTypeService { get; set; }
 
