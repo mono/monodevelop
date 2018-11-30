@@ -50,5 +50,5 @@
 	url = git://github.com/xamarin/macdoc
 [submodule "main/external/vs-editor-core"]
 	path = main/external/vs-editor-core
-	url = git@github.com:xamarin/vs-editor-core.git
+	url = ../../xamarin/vs-editor-core.git
 	branch = abstracting
