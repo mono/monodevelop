@@ -5,6 +5,20 @@
 // This file contain implementations details that are subject to change without notice.
 // Use at your own risk.
 //
+
+namespace Microsoft.VisualStudio.Text.Editor
+{
+    using System;
+    using Microsoft.VisualStudio.Text.Adornments;
+    internal static class ISpaceReservationManagerExtensions
+    {
+        public static ISpaceReservationAgent CreatePopupAgent(this ISpaceReservationManager spaceReservationManager, ITrackingSpan visualSpan, PopupStyles styles, object content)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     using System;
@@ -34,6 +48,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
 
         #region ISpaceReservationManager Members
+
+#if WINDOWS
+        ISpaceReservationAgent ISpaceReservationManager.CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, UIElement content)
+        {
+            throw new NotImplementedException();
+        }
+#endif
+
         public ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, object content)
         {
             throw new NotImplementedException();
@@ -110,7 +132,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public event EventHandler LostAggregateFocus;
         public event EventHandler GotAggregateFocus;
-        #endregion
+#endregion
 
         internal void ChangeAgents(ISpaceReservationAgent oldAgent, ISpaceReservationAgent newAgent)
         {

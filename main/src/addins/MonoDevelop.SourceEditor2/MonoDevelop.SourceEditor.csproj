@@ -10,6 +10,7 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
@@ -69,6 +70,9 @@
       <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Threading.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.ComponentModel.Composition" />

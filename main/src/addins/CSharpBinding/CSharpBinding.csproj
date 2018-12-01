@@ -82,6 +82,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.Composition" />
