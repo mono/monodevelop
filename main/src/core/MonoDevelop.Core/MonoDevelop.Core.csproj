@@ -172,6 +172,9 @@
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180503.2\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.DiaSymReader">
+      <HintPath>..\..\..\packages\Microsoft.DiaSymReader.1.3.0\lib\net20\Microsoft.DiaSymReader.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build.MSBuildLocator">
       <HintPath>..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\lib\net46\Microsoft.Build.MSBuildLocator.dll</HintPath>
     </Reference>
