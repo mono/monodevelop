@@ -250,6 +250,14 @@ namespace MonoDevelop.Projects
 				DisconnectChildEntryEvents (item);
 				ConnectChildEntryEvents (newItem);
 
+				// Shutdown project builder before the ItemAdded event is fired. This should prevent the old out of
+				// date project builder being used by the TypeSystemService when getting reference information. The
+				// TypeSystemService loads the project when the ItemAdded event is fired before the item is disposed.
+				// Disposing the project will also shutdown the project builder but this happens too late and can
+				// result in the old project builder being used which does not have the latest project xml.
+				if (item is Project)
+					await RemoteBuildEngineManager.UnloadProject (item.FileName);
+
 				NotifyModified ("Items");
 				OnItemRemoved (new SolutionItemChangeEventArgs (item, ParentSolution, true) { ReplacedItem = item }, true);
 				OnItemAdded (new SolutionItemChangeEventArgs (newItem, ParentSolution, true) { ReplacedItem = item }, true);
