@@ -47,6 +47,7 @@ namespace MonoDevelop.DesignerSupport
 
 		object [] propertyProviders = new object [0];
 		object currentObject;
+		IObjectEditor currentEditor;
 
 		public MacPropertyPadEditorProvider (IObjectEditor editor)
 		{
@@ -59,15 +60,18 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IObjectEditor> GetObjectEditorAsync (object item)
 		{
-			if (this.currentObject == obj)
-				return;
-			this.currentObject = obj;
+			if (this.currentObject == item)
+				return Task.FromResult (currentEditor);
+			this.currentObject = item;
 
-			if (editorCache.TryGetValue (item, out IObjectEditor cachedEditor))
+			if (editorCache.TryGetValue (item, out IObjectEditor cachedEditor)) {
+				this.currentEditor = cachedEditor;
 				return Task.FromResult (cachedEditor);
-			var editor = ChooseEditor (item);
+			}
+
+			var editor = new TestPropertyObjectEditor (item, propertyProviders);
 			editorCache.Add (item, editor);
-			return Task.FromResult (editor);
+			return Task.FromResult ((IObjectEditor) editor);
 		}
 
 		public async Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)

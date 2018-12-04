@@ -161,6 +161,8 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MacPropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MacPropertyPadEditorProvider.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\TestPropertyObjectEditor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\DescriptorPropertyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
@@ -200,6 +202,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
     <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
+    <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
