@@ -45,6 +45,9 @@ namespace MonoDevelop.DesignerSupport
 			this.resources = resources;
 		}
 
+		object [] propertyProviders = new object [0];
+		object currentObject;
+
 		public MacPropertyPadEditorProvider (IObjectEditor editor)
 		{
 			editorCache.Add (editor.Target, editor);
@@ -56,6 +59,10 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IObjectEditor> GetObjectEditorAsync (object item)
 		{
+			if (this.currentObject == obj)
+				return;
+			this.currentObject = obj;
+
 			if (editorCache.TryGetValue (item, out IObjectEditor cachedEditor))
 				return Task.FromResult (cachedEditor);
 			var editor = ChooseEditor (item);
@@ -129,12 +136,13 @@ namespace MonoDevelop.DesignerSupport
 		readonly IResourceProvider resources;
 		readonly Dictionary<object, IObjectEditor> editorCache = new Dictionary<object, IObjectEditor> ();
 
-		object [] propertyProviders = new object [0];
-
 		public void SetPropertyProviders (object [] propertyProviders)
 		{
+			if (this.propertyProviders != null) {
+				foreach (var old in this.propertyProviders.OfType<IDisposable> ())
+					old.Dispose ();
+			}
 			this.propertyProviders = propertyProviders;
-			Console.WriteLine (propertyProviders);
 		}
 	}
 }
