@@ -132,9 +132,8 @@
     <Reference Include="System.IO.FileSystem" />
     <Reference Include="System.IO.FileSystem.Primitives" />
     <Reference Include="System.Runtime.Remoting" />
-    <!-- NOTE: NuGet installs the PCL version of System.Reflection.Metadata by default but it is windows-specific. Use netstandard version instead. -->
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms">
       <HintPath>..\..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
