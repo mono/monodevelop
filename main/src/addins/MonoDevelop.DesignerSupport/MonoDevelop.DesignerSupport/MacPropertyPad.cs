@@ -169,7 +169,8 @@ namespace MonoDevelop.DesignerSupport
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				propertyEditorPanel.Select (new object [] { new TestApp () });
+				editorProvider.SetPropertyProviders (propertyProviders);
+				propertyEditorPanel.Select (new object [] { lastComponent });
 			}
 		}
 
