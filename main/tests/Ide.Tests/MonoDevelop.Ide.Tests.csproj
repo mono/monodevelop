@@ -122,7 +122,6 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopProjectCacheHostServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide\RoslynSearchCategoryTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\CodeSnippetTests.cs" />
-    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsExtensionsTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\RoslynPreferencesTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices.Options\OptionsTestBase.cs" />

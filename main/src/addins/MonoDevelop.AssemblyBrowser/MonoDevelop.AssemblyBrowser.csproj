@@ -88,7 +88,6 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\NamespaceBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ResourceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ErrorNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ModuleReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyReferenceFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyResourceFolderNodeBuilder.cs" />
@@ -121,6 +120,7 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserHandler.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.AssemblyBrowserTreeView.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.SearchIdleRunner.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\DecompilerExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AssemblyBrowser.addin.xml" />
