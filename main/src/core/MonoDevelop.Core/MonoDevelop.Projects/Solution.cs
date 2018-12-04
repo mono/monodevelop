@@ -170,6 +170,11 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				if (startupSolutionConfiguration != value) {
+					if (value != null)
+						LoggingService.LogInfo ("Solution StartupConfiguration Id='{0}', Name='{1}", value.Id, value.Name);
+					else
+						LoggingService.LogInfo ("Solution StartupConfiguration set to null");
+
 					var oldIt = StartupItem;
 					startupSolutionConfiguration = value;
 					NotifyModified ();

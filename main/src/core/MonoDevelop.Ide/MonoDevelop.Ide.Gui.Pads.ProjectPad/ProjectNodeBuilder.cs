@@ -442,16 +442,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = (Project) CurrentNode.DataItem;
 			ci.Visible = project.SupportsExecute ();
+
+			LoggingService.LogInfo ("UpdateSetAsStartupProject Visible={0} Project={1} {2}", ci.Visible, project.Name, project.FileName);
 		}
 
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
 		public async void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
+			LoggingService.LogInfo ("SetAsStartupProject Project={0} {1}", project.Name, project.FileName);
 			project.ParentSolution.StartupItem = project;
 			await project.ParentSolution.SaveUserProperties ();
+			LoggingService.LogInfo ("SetAsStartupProject Saved solution's UserProperties Project={0} {1}", project.Name, project.FileName);
 		}
-		
+
 		public override void DeleteItem ()
 		{
 			Project prj = CurrentNode.DataItem as Project;

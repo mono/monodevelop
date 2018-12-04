@@ -1458,13 +1458,19 @@ namespace MonoDevelop.Components.Commands
 
 			try {
 				cmd = GetActionCommand (commandId);
-				if (cmd == null)
+				if (cmd == null) {
+					LoggingService.LogInfo ("No ActionCommand found for {0}", commandId);
 					return false;
+				}
 
 				CurrentCommand = cmd;
 				CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
+
+				if (cmdTarget == null) {
+					LoggingService.LogInfo ("No CommandTarget found for {0}", commandId);
+				}
 
 				while (cmdTarget != null)
 				{
@@ -1533,10 +1539,13 @@ namespace MonoDevelop.Components.Commands
 							else
 								continue;
 						}
+					} else {
+						LoggingService.LogInfo ("ByPass = true {0} CommandTarget={1}", commandId, cmdTarget);
 					}
 					cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
 				}
 
+				LoggingService.LogInfo ("Handlers.Count={0} {1}", handlers.Count, commandId);
 				if (handlers.Count > 0) {
 					foreach (HandlerCallback c in handlers)
 						c ();
