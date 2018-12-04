@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Decompiler.TypeSystem;
-using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {

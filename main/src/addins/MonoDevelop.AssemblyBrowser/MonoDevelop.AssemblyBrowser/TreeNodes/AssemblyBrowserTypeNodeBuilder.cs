@@ -27,7 +27,6 @@
 using MonoDevelop.Ide.Gui.Components;
 using ICSharpCode.Decompiler.TypeSystem;
 using System;
-using Mono.Cecil;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -60,8 +59,8 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				if (thisNode == null || otherNode == null)
 					return -1;
-				var e1 = thisNode.DataItem as IMemberDefinition;
-				var e2 = otherNode.DataItem as IMemberDefinition;
+				var e1 = thisNode.DataItem as IMember;
+				var e2 = otherNode.DataItem as IMember;
 				
 				if (e1 == null && e2 == null)
 					return 0;
@@ -77,7 +76,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
+		protected AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
 		{
 			this.Widget = assemblyBrowserWidget;
 		}

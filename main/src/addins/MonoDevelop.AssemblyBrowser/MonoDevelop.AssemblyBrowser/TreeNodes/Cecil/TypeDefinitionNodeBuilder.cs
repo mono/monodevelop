@@ -29,7 +29,6 @@
 using System;
 using System.Text;
 using System.Linq;
-using Mono.Cecil;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
@@ -42,14 +41,14 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
-using ICSharpCode.ILSpy;
+//using ICSharpCode.ILSpy;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class TypeDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(TypeDefinition); }
+			get { return typeof(ITypeDefinition); }
 		}
 		
 		public override string ContextMenuAddinPath {
@@ -62,51 +61,51 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var type = (TypeDefinition)dataObject;
+			var type = (ITypeDefinition)dataObject;
 			return type.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var type = (TypeDefinition)dataObject;
-			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (CSharpLanguage.Instance.FormatTypeName (type));
-			if (!type.IsPublic)
+			var type = (ITypeDefinition)dataObject;
+			nodeInfo.Label = type.FullTypeName.Name;
+			// MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (CSharpLanguage.Instance.FormatTypeName (type));
+			if (!type.IsPublic ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(type));
 		}
 
-		public static IconId GetStockIcon (TypeDefinition type)
+		public static IconId GetStockIcon (ITypeDefinition type)
 		{
-			return "md-" + GetAccess (type.Attributes) + GetSource (type);
+			return "md-" + GetAccess (type.Accessibility) + GetSource (type);
 		}
 
-		static string GetSource (TypeDefinition type)
+		static string GetSource (ITypeDefinition type)
 		{
-			if (type.IsInterface)
+			if (type.Kind == TypeKind.Interface)
 				return "interface";
-			if (type.IsValueType)
+			if (type.Kind == TypeKind.Struct)
 				return "struct";
-			if (type.IsEnum)
+			if (type.Kind == TypeKind.Enum)
 				return "enum";
-			if (type.IsDelegate ())
+			if (type.Kind == TypeKind.Delegate)
 				return "delegate";
 			return "class";
 		}
 
-		static string GetAccess (TypeAttributes attributes)
+		static string GetAccess (Accessibility attributes)
 		{
-			switch (attributes & TypeAttributes.VisibilityMask) {
-			case TypeAttributes.NestedPrivate:
+			switch (attributes) {
+			case Accessibility.Private:
 				return "private-";
-			case TypeAttributes.Public:
-			case TypeAttributes.NestedPublic:
+			case Accessibility.Public:
 				return "";
-			case TypeAttributes.NestedFamily:
+			case Accessibility.Protected:
 				return "protected-";
-			case TypeAttributes.NestedAssembly:
+			case Accessibility.Internal:
 				return "internal-";
-			case TypeAttributes.NestedFamORAssem:
-			case TypeAttributes.NestedFamANDAssem:
+			case Accessibility.ProtectedAndInternal:
+			case Accessibility.ProtectedOrInternal:
 				return "ProtectedOrInternal-";
 			default:
 				return "";
@@ -115,41 +114,41 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var type = (TypeDefinition)dataObject;
+			var type = (ITypeDefinition)dataObject;
 			var list = new System.Collections.ArrayList ();
-			if (type.BaseType != null || type.HasInterfaces)
-				list.Add (new BaseTypeFolder (type));
+			if (type.DirectBaseTypes.Any ())
+				list.Add (new BaseTypeFolder (type.GetDefinition ()));
 			bool publicOnly = Widget.PublicApiOnly;
 
 			foreach (var nestedType in type.NestedTypes.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && !nestedType.IsPublic)
+				if (publicOnly && !nestedType.IsPublic ())
 					continue;
 				builder.AddChild (nestedType);
 			}
 
 			foreach (var field in type.Fields.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && !field.IsPublic)
+				if (publicOnly && !field.IsPublic ())
 					continue;
 				builder.AddChild (field);
 			}
 
 			foreach (var property in type.Properties.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				var accessor = property.GetMethod ?? property.SetMethod;
-				if (publicOnly && !accessor.IsPublic)
+				var accessor = property.Getter ?? property.Setter;
+				if (publicOnly && !accessor.IsPublic ())
 					continue;
 				builder.AddChild (property);
 			}
 
 			foreach (var evt in type.Events.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				var accessor = evt.AddMethod ?? evt.RemoveMethod;
-				if (publicOnly && !accessor.IsPublic)
+				var accessor = evt.AddAccessor ?? evt.RemoveAccessor;
+				if (publicOnly && !accessor.IsPublic ())
 					continue;
 				builder.AddChild (evt);
 			}
 
-			var accessorMethods = type.GetAccessorMethods ();
+			var accessorMethods = type.GetAccessors ();
 			foreach (var method in type.Methods.OrderBy (m => m.Name, StringComparer.InvariantCulture)) {
-				if (publicOnly && !method.IsPublic)
+				if (publicOnly && !method.IsPublic ())
 					continue;
 				if (!accessorMethods.Contains (method)) {
 					builder.AddChild (method);
@@ -165,13 +164,13 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintAssembly (StringBuilder result, ITreeNavigator navigator)
 		{
-			var assemblyDefinition = (AssemblyDefinition)navigator.GetParentDataItem (typeof (AssemblyDefinition), false);
+			var assemblyDefinition = (AssemblyLoader)navigator.GetParentDataItem (typeof (AssemblyLoader), false);
 			if (assemblyDefinition == null)
 				return;
 			
 			result.Append (GettextCatalog.GetString ("<b>Assembly:</b>\t{0}, Version={1}",
-			                              assemblyDefinition.Name.Name,
-			                              assemblyDefinition.Name.Version));
+			                              assemblyDefinition.Assembly.Name,
+			                              assemblyDefinition.Assembly.Metadata.MetadataVersion));
 			result.AppendLine ();
 		}
 		
@@ -195,11 +194,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var type = (TypeDefinition)navigator.DataItem;
+			var type = (ITypeDefinition)navigator.DataItem;
 			if (type == null)
 				return null;
 			
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
+			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type.ParentModule.PEFile, (System.Reflection.Metadata.TypeDefinitionHandle)type.MetadataToken));
 		}
 
 		internal static DecompilerSettings CreateDecompilerSettings (bool publicOnly, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy codePolicy)
@@ -222,7 +221,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var type = (TypeDefinition)navigator.DataItem;
+			var type = (ITypeDefinition)navigator.DataItem;
 			if (type == null)
 				return null;
 			var settings = MethodDefinitionNodeBuilder.GetDecompilerSettings (data, flags.PublicOnly);
@@ -230,7 +229,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return MethodDefinitionNodeBuilder.Decompile (
 				data, 
 				MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), 
-				builder => builder.DecompileType (type.GetFullTypeName ()), flags: flags);
+				builder => builder.DecompileType (type.FullTypeName), flags: flags);
 		}
 		#endregion
 	}

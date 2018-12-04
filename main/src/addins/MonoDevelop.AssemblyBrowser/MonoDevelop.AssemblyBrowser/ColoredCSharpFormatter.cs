@@ -32,6 +32,10 @@ using System.Linq;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.Decompiler.CSharp.Syntax;
+using ICSharpCode.Decompiler.Disassembler;
+using ICSharpCode.Decompiler.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
+using System.Reflection.Metadata;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -176,8 +180,33 @@ namespace MonoDevelop.AssemblyBrowser
 			var seg = FoldSegmentFactory.CreateFoldSegment (doc, curFold.Item1, sb.Length - curFold.Item1, curFold.Item3, curFold.Item2);
 			FoldSegments.Add (seg);
 		}
+
+		public void WriteReference (OpCodeInfo opCode)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void WriteReference (PEFile module, EntityHandle handle, string text, bool isDefinition = false)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void WriteReference (IType type, string text, bool isDefinition = false)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void WriteReference (IMember member, string text, bool isDefinition = false)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void WriteLocalReference (string text, object reference, bool isDefinition = false)
+		{
+			throw new NotImplementedException ();
+		}
 		#endregion
-		
+
 	}
 }
 
