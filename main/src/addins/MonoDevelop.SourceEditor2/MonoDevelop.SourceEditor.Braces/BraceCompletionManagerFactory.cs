@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor.Braces
 
 		public void TextViewCreated (ITextView textView)
 		{
-			textView.Properties.AddProperty ("BraceCompletionManager",
+			textView.Properties.AddProperty ("BraceCompletionManagerMD",
 				new BraceCompletionManager (textView,
 					new BraceCompletionStack (textView, _adornmentServiceFactory, _guardedOperations), _aggregatorFactory, _guardedOperations));
 		}
