@@ -745,13 +745,15 @@ namespace MonoDevelop.Ide.Gui
 			if (closing) 
 				return;
 			
-			// don't allow Gtk to close the workspace, in case Close() leaves the synchronization context
-			// Gtk.Application.Quit () will handle it for us.
+			// don't allow Gtk to close the workspace, in case IdeApp.Exit() leaves the synchronization context.
+			// IdeApp.Exit() will synchronize and call Gtk.Application.Quit () for us.
 			e.RetVal = true;
-			if (await Close ()) {
+			// We must use IdeApp.Exit () here, because on Mac the NSApplication termination
+			// relies on IdeApp.IsRunning to be unset on exit in order to terminate the application correctly.
+			// IdeApp.Exit () will call Workbench.Close() after updating its status.
+			if (await IdeApp.Exit ()) {
 				closing = true;
 				Destroy (); // default delete action
-				Gtk.Application.Quit ();
 			}
 		}
 		
