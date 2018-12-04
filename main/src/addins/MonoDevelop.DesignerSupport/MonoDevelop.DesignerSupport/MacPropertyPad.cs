@@ -46,59 +46,76 @@ using Foundation;
 
 namespace MonoDevelop.DesignerSupport
 {
+	public class VerticalStackView : NSStackView
+	{
+		public event EventHandler SizeChanged;
+
+		public VerticalStackView ()
+		{
+			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
+			Alignment = NSLayoutAttribute.Leading;
+			Spacing = 10;
+			Distribution = NSStackViewDistribution.Fill;
+
+		}
+
+		public override void SetFrameSize (CGSize newSize)
+		{
+			base.SetFrameSize (newSize);
+			SizeChanged?.Invoke (this, EventArgs.Empty);
+		}
+	}
+
 	public class MacPropertyPad : PadContent, ICommandDelegator, IPropertyPad
 	{
 		Gtk.Widget widget;
+
+		VerticalStackView verticalContainer;
+		PropertyEditorPanel propertyEditorPanel;
+
+		MacPropertyPadEditorProvider editorProvider;
+		//MacPropertyPadResourceProvider resourceProvider;
+		//MacPropertyPadBindingProvider bindingProvider;
+
+		NSScrollView scrollView;
 
 		public bool IsPropertyGridEditing => false;
 
 		public event EventHandler PropertyGridChanged;
 
-		PropertyEditorPanel propertyEditorPanel;
-
-		MockEditorProvider editorProvider;
-		MockResourceProvider resourceProvider;
-		MockBindingProvider bindingProvider;
-
 		protected override void Initialize (IPadWindow window)
 		{
 			base.Initialize (window);
 
-			var container = NativeViewHelper.CreateVerticalStackView ();
-			container.WantsLayer = true;
-			container.Layer.BackgroundColor = NSColor.Yellow.CGColor;
-			container.TranslatesAutoresizingMaskIntoConstraints = true;
-			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
+			verticalContainer = new VerticalStackView ();
 
 			propertyEditorPanel = new PropertyEditorPanel ();
 
-			var scrollView = new NSScrollView () {
+			scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
 			};
 			scrollView.BackgroundColor = NSColor.Red;
 			scrollView.DocumentView = propertyEditorPanel;
 
-			container.AddArrangedSubview (scrollView);
-
-			//scrollView.WidthAnchor.ConstraintEqualToAnchor (container.WidthAnchor, 0).Active = true;
-
-
-			widget = GtkMacInterop.NSViewToGtkWidget (container);
+			verticalContainer.AddArrangedSubview (scrollView);
+		
+			widget = GtkMacInterop.NSViewToGtkWidget (verticalContainer);
 
 			window.PadContentShown += Window_PadContentShown;
 
+			verticalContainer.SizeChanged += VerticalContainer_Resized;
+
+			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
+
 			DesignerSupport.Service.SetPad (this);
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSView.FrameChangedNotification, (s => {
-				if (s.Object == container) {
-					scrollView.Frame = container.Frame;
-					var frame = (CGRect)propertyEditorPanel.Frame;
-					//propertyEditorPanel.SetContentSize (new CGSize (container.Frame.Width, frame.Size.Height)); 
-				}
-			}));
-
 			widget.ShowAll ();
+		}
+
+		void VerticalContainer_Resized (object sender, EventArgs e)
+		{
+			scrollView.SetFrameSize (verticalContainer.Frame.Size);
 		}
 
 		void PropertyEditorPanel_PropertiesChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
@@ -106,10 +123,10 @@ namespace MonoDevelop.DesignerSupport
 		void Window_PadContentShown (object sender, EventArgs e)
 		{
 			if (editorProvider == null) {
-				editorProvider = new MockEditorProvider ();
-				resourceProvider = new MockResourceProvider ();
-				bindingProvider = new MockBindingProvider ();
-				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider, resourceProvider, bindingProvider) {
+				editorProvider = new MacPropertyPadEditorProvider ();
+				//resourceProvider = new MacPropertyPadResourceProvider ();
+				//bindingProvider = new MacPropertyPadBindingProvider ();
+				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
 					SupportsCustomExpressions = true,
 					SupportsMaterialDesign = true,
 				};
@@ -168,6 +185,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//propertyEditorPanel.PropertiesChanged -= PropertyEditorPanel_PropertiesChanged;
 			Window.PadContentShown -= Window_PadContentShown;
+			verticalContainer.SizeChanged -= VerticalContainer_Resized;
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
 		}
