@@ -11,11 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 using NuGet.Common;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
@@ -39,26 +39,16 @@ namespace NuGet.CommandLine
 			using (var resultsPath = new TempFile (".output.dg")) {
 				var properties = CreateMSBuildProperties (solution, resultsPath);
 
-				FilePath msbuildBinPath = GetMSBuildBinPath ();
-				string restoreTargetPath = msbuildBinPath.ParentDirectory.Combine ("NuGet.targets");
+				FilePath msbuildBinDirectory = MSBuildProcessService.GetMSBuildBinDirectory ();
+				string restoreTargetPath = msbuildBinDirectory.Combine ("NuGet.targets");
 
 				XDocument inputTargetXML = GetRestoreInputFile (restoreTargetPath, properties, projects);
 				inputTargetXML.Save (inputTargetPath);
 
-				string command = null;
-				string arguments = null;
-
-				if (Platform.IsWindows) {
-					command = msbuildBinPath;
-					arguments = GetMSBuildArguments (null, inputTargetPath, solution);
-				} else {
-					command = GetMonoPath ();
-					arguments = GetMSBuildArguments (msbuildBinPath, inputTargetPath, solution);
-				}
+				string arguments = GetMSBuildArguments (inputTargetPath, solution);
 
 				using (var monitor = new LoggingProgressMonitor ()) {
-					var process = Runtime.ProcessService.StartProcess (
-						command,
+					var process = MSBuildProcessService.StartMSBuild (
 						arguments,
 						solution.BaseDirectory,
 						monitor.Log,
@@ -74,12 +64,6 @@ namespace NuGet.CommandLine
 				}
 				return MSBuildPackageSpecCreator.GetDependencyGraph (resultsPath);
 			}
-		}
-
-		static string GetMonoPath ()
-		{
-			var monoRuntime = Runtime.SystemAssemblyService.DefaultRuntime as MonoTargetRuntime;
-			return Path.Combine (monoRuntime.MonoRuntimeInfo.Prefix, "bin", "mono64");
 		}
 
 		static Dictionary<string, string> CreateMSBuildProperties (Solution solution, TempFile resultsPath)
@@ -102,27 +86,11 @@ namespace NuGet.CommandLine
 			return properties;
 		}
 
-		static string GetMSBuildBinPath ()
-		{
-			string binDirectory = Runtime.SystemAssemblyService.CurrentRuntime.GetMSBuildBinPath ("15.0");
-			string binPath = Path.Combine (binDirectory, "MSBuild.dll");
-			if (File.Exists (binPath)) {
-				return binPath;
-			}
-
-			return Path.Combine (binDirectory, "MSBuild.exe");
-		}
-
 		static string GetMSBuildArguments (
-			string msbuildBinPath,
 			string inputTargetPath,
 			Solution solution)
 		{
 			var args = new ProcessArgumentBuilder ();
-
-			if (!string.IsNullOrEmpty (msbuildBinPath)) {
-				args.AddQuoted (msbuildBinPath);
-			}
 
 			args.AddQuoted (inputTargetPath);
 			args.Add ("/t:GenerateRestoreGraphFile");
