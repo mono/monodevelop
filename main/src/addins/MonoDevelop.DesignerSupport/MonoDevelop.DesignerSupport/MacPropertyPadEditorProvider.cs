@@ -33,20 +33,19 @@ using System.Threading.Tasks;
 using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Common;
 using Xamarin.PropertyEditing.Reflection;
+using System.Reflection;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MockEditorProvider
+	class MacPropertyPadEditorProvider
 	: IEditorProvider
 	{
-		public static readonly TargetPlatform MockPlatform = new TargetPlatform (new MockEditorProvider ());
-
-		public MockEditorProvider (IResourceProvider resources = null)
+		public MacPropertyPadEditorProvider (IResourceProvider resources = null)
 		{
 			this.resources = resources;
 		}
 
-		public MockEditorProvider (IObjectEditor editor)
+		public MacPropertyPadEditorProvider (IObjectEditor editor)
 		{
 			editorCache.Add (editor.Target, editor);
 		}
@@ -59,7 +58,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (editorCache.TryGetValue (item, out IObjectEditor cachedEditor))
 				return Task.FromResult (cachedEditor);
-			IObjectEditor editor = ChooseEditor (item);
+			var editor = ChooseEditor (item);
 			editorCache.Add (item, editor);
 			return Task.FromResult (editor);
 		}
@@ -69,18 +68,19 @@ namespace MonoDevelop.DesignerSupport
 			Type realType = ReflectionEditorProvider.GetRealType (type);
 			if (realType == null)
 				return Array.Empty<IPropertyInfo> ();
-			return ReflectionEditorProvider.GetPropertiesForType (realType);
+
+			var properties = new List<ReflectionPropertyInfo> ();
+			foreach (var item in realType.GetRuntimeProperties ()) {
+				properties.Add (new ReflectionPropertyInfo (item));
+			}
+			return properties;
 		}
 
 		public Task<AssignableTypesResult> GetAssignableTypesAsync (ITypeInfo type, bool childTypes)
 		{
 			if (type == KnownTypes [typeof (CommonValueConverter)])
 				return Task.FromResult (new AssignableTypesResult (new [] { type }));
-			return GetAssignableTypes (type, childTypes);
-		}
 
-		internal static Task<AssignableTypesResult> GetAssignableTypes (ITypeInfo type, bool childTypes)
-		{
 			return Task.Run (() => {
 				var types = AppDomain.CurrentDomain.GetAssemblies ().SelectMany (a => a.GetTypes ()).AsParallel ()
 					.Where (t => t.Namespace != null && !t.IsAbstract && !t.IsInterface && t.IsPublic && t.GetConstructor (Type.EmptyTypes) != null);
@@ -99,7 +99,7 @@ namespace MonoDevelop.DesignerSupport
 
 				return new AssignableTypesResult (types.Select (t => {
 					string asmName = t.Assembly.GetName ().Name;
-					return new TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
+					return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
 				}).ToList ());
 			});
 		}
