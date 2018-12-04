@@ -128,6 +128,14 @@ namespace MonoDevelop.DesignerSupport
 
 		readonly IResourceProvider resources;
 		readonly Dictionary<object, IObjectEditor> editorCache = new Dictionary<object, IObjectEditor> ();
+
+		object [] propertyProviders = new object [0];
+
+		public void SetPropertyProviders (object [] propertyProviders)
+		{
+			this.propertyProviders = propertyProviders;
+			Console.WriteLine (propertyProviders);
+		}
 	}
 }
 
