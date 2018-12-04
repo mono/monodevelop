@@ -31,6 +31,7 @@ using Gdk;
 using Gtk;
 using Pango;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor;
@@ -180,6 +181,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public ListWidget (CompletionListWindowGtk win)
 		{
+			Accessible.Role = Atk.Role.List;
+
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
 			categoryLayout = new Pango.Layout (this.PangoContext);
@@ -250,8 +253,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			set {
 				if (value != selection) {
+					if (accessibles != null && accessibles.TryGetValue (selection, out CompletionAccessible current)) {
+						current.Accessible.Focused = false;
+					}
 					selection = value;
 					ScrollToSelectedItem ();
+
+					if (accessibles != null && accessibles.TryGetValue (selection, out current)) {
+						current.Accessible.Focused = true;
+					}
 					OnSelectionChanged (EventArgs.Empty);
 					QueueDraw ();
 				}
@@ -601,10 +611,47 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return iconWidth + xSpacing + 5;
 			}
 		}
-		
+
+		Dictionary<int, CompletionAccessible> accessibles;
+		void UpdateAccessibles ()
+		{
+			if (!AccessibilityElementProxy.Enabled) {
+				return;
+			}
+
+			if (accessibles != null) {
+				foreach (var a in accessibles.Values) {
+					a.Dispose ();
+					Accessible.RemoveAccessibleElement (a.Accessible);
+				}
+			}
+
+			accessibles = new Dictionary<int, CompletionAccessible> ();
+			int yPos = 0;
+
+			Iterate (false, ref yPos, delegate (CategorizedCompletionItems category, int ypos) {
+			}, delegate (CategorizedCompletionItems curCategory, int item, int itemIndex, int ypos) {
+				var selected = item == SelectedItemIndex;
+				var a = new CompletionAccessible (this, item,
+				                                  DataProvider.GetText (item),
+				                                  DataProvider.GetDescription (item, selected), selected);
+				accessibles[item] = a;
+				Accessible.AddAccessibleElement (a.Accessible);
+				a.SetFrame (new Gdk.Rectangle (0, ypos, Allocation.Width, rowHeight));
+				if (selected) {
+					a.Accessible.Focused = true;
+				}
+
+				return true;
+			});
+		}
+
 		public void ShowFilteredItems (CompletionListFilterResult filterResult)
 		{
 			filteredItems = filterResult.FilteredItems;
+
+			UpdateAccessibles ();
+
 			if (filterResult.CategorizedItems == null) {
 				categories.Clear ();
 			} else {
@@ -738,6 +785,38 @@ namespace MonoDevelop.Ide.CodeCompletion
 				curItem++;
 			}
 			return true;
+		}
+
+		class CompletionAccessible : IDisposable
+		{
+			public AccessibilityElementProxy Accessible { get; private set; }
+
+			public CompletionAccessible (ListWidget parent, int itemIdx, string label, string description, bool selected)
+			{
+				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
+				Accessible.SetRole (AtkCocoa.Roles.AXStaticText);
+
+				Accessible.Title = label;
+				Accessible.Help = description;
+				Accessible.Selected = selected;
+
+				Accessible.GtkParent = parent;
+			}
+
+			public void Dispose ()
+			{
+			}
+
+			public void SetFrame (Gdk.Rectangle frame)
+			{
+				Accessible.FrameInGtkParent = frame;
+
+				var halfParentHeight = Accessible.GtkParent.Allocation.Height / 2;
+				var dy = halfParentHeight - frame.Y;
+				var cocoaY = halfParentHeight + dy;
+
+				Accessible.FrameInParent = new Gdk.Rectangle (frame.X, cocoaY - frame.Height, frame.Width, frame.Height);
+			}
 		}
 	}
 }
