@@ -25,12 +25,10 @@
       <ProjectReference Include="..\..\..\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing.Mac\Xamarin.PropertyEditing.Mac.csproj">
         <Project>{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}</Project>
         <Name>Xamarin.PropertyEditing.Mac</Name>
-        <Private>False</Private>
       </ProjectReference>
       <ProjectReference Include="..\..\..\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing\Xamarin.PropertyEditing.csproj">
         <Project>{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}</Project>
         <Name>Xamarin.PropertyEditing</Name>
-        <Private>False</Private>
       </ProjectReference>
   </ItemGroup>
    <ItemGroup>
