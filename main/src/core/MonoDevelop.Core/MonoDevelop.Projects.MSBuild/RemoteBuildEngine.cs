@@ -153,8 +153,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal async Task UnloadProject (RemoteProjectBuilder remoteBuilder, int projectId)
 		{
-			lock (remoteProjectBuilders)
-				remoteProjectBuilders.Remove (remoteBuilder.File);
+			OnShuttingDownProjectBuilder (remoteBuilder);
 
 			try {
 				await connection.SendMessage (new UnloadProjectRequest { ProjectId = projectId }).ConfigureAwait (false);
@@ -177,6 +176,21 @@ namespace MonoDevelop.Projects.MSBuild
 				IsShuttingDown = true;
 				foreach (var pb in remoteProjectBuilders.Values)
 					pb.ContinueWith (t => t.Result.Shutdown (), TaskContinuationOptions.NotOnFaulted);
+			}
+		}
+
+		/// <summary>
+		/// Ensures that the project builder is not used from now on. This is called when there are still
+		/// outstanding references but the project builder should be shutdown. It is also called from UnloadProject
+		/// when the project builder is disposed - this ensures only a matching builder is removed from the list.
+		/// </summary>
+		internal void OnShuttingDownProjectBuilder (RemoteProjectBuilder remoteBuilder)
+		{
+			lock (remoteProjectBuilders) {
+				if (remoteProjectBuilders.TryGetValue (remoteBuilder.File, out Task<RemoteProjectBuilder> foundRemoteBuilder)) {
+					if (foundRemoteBuilder.IsCompleted && foundRemoteBuilder.Result == remoteBuilder)
+						remoteProjectBuilders.Remove (remoteBuilder.File);
+				}
 			}
 		}
 

@@ -254,6 +254,8 @@ namespace MonoDevelop.Projects.MSBuild
 					shuttingDown = true;
 					if (references == 0)
 						Dispose ();
+					else
+						engine.OnShuttingDownProjectBuilder (this);
 				}
 			}
 		}
