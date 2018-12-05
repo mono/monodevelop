@@ -1569,7 +1569,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityRangeForLine:")]
 		NSRange AccessibilityRangeForLine (nint line)
 		{
-			var range = GetRangeForLine ((int)line);
+			var range = GetRangeForLine ((int)line + 1);
 			return new NSRange (range.Location, range.Length);
 		}
 
