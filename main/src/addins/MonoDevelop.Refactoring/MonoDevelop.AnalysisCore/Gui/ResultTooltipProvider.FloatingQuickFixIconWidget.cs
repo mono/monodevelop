@@ -32,6 +32,7 @@ using MonoDevelop.Components;
 using MonoDevelop.CodeActions;
 using Gdk;
 using System.Windows.Input;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -58,8 +59,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				TypeHint = Gdk.WindowTypeHint.Utility;
 				var fr = new Gtk.HBox ();
 				fr.BorderWidth = 2;
-				var view = new Gtk.Image ();
-				view.Pixbuf = SmartTagMarginMarker.GetIcon (fixes.GetSmartTagSeverity ()).ToPixbuf ();
+				var view = new ImageView (SmartTagMarginMarker.GetIconId (fixes.GetSmartTagSeverity ()), Gtk.IconSize.Menu);
 				fr.PackStart (view, false, false, 0);
 				fr.PackEnd (new RectangleMarker (), false, false, 0);
 				Add (fr);
