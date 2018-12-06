@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool VerboseLogging { get; private set; }
 
-		public static async Task<DependencyGraphSpec> GetDependencyGraphSpec (DotNetProject project, ILogger logger)
+		public static async Task<DependencyGraphSpec> GetDependencyGraphSpec (DotNetProject project, ConfigurationSelector configuration, ILogger logger)
 		{
 			if (logger == null)
 				logger = NullLogger.Instance;
@@ -56,10 +56,8 @@ namespace MonoDevelop.PackageManagement
 				var context = new TargetEvaluationContext ();
 				context.GlobalProperties.SetValue ("RestoreGraphOutputPath", resultsPath);
 
-				ConfigurationSelector config = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
-
 				using (var monitor = CreateProgressMonitor ()) {
-					var result = await project.RunTarget (monitor, "GenerateRestoreGraphFile", config, context);
+					var result = await project.RunTarget (monitor, "GenerateRestoreGraphFile", configuration, context);
 					if (result != null) {
 						foreach (BuildError error in result.BuildResult.Errors) {
 							if (error.IsWarning)
@@ -73,9 +71,9 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		public static async Task<PackageSpec> CreatePackageSpec (DotNetProject project, ILogger logger)
+		public static async Task<PackageSpec> CreatePackageSpec (DotNetProject project, ConfigurationSelector configuration, ILogger logger)
 		{
-			var spec = await GetDependencyGraphSpec (project, logger);
+			var spec = await GetDependencyGraphSpec (project, configuration, logger);
 			return spec.GetProjectSpec (project.FileName);
 		}
 

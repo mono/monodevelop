@@ -46,29 +46,38 @@ namespace MonoDevelop.PackageManagement
 	class DotNetCoreNuGetProject : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
 	{
 		DotNetProject project;
+		ConfigurationSelector configuration;
 		IPackageManagementEvents packageManagementEvents;
 		string msbuildProjectPath;
 		string projectName;
 		bool restoreRequired;
 
 		public DotNetCoreNuGetProject (DotNetProject project)
-			: this (project, project.GetDotNetCoreTargetFrameworks ())
+			: this (project, ConfigurationSelector.Default)
 		{
 		}
 
-		public DotNetCoreNuGetProject (
-			DotNetProject project,
-			IEnumerable<string> targetFrameworks)
-			: this (project, targetFrameworks, PackageManagementServices.PackageManagementEvents)
+		public DotNetCoreNuGetProject (DotNetProject project, ConfigurationSelector configuration)
+			: this (project, project.GetDotNetCoreTargetFrameworks (), configuration)
 		{
 		}
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
 			IEnumerable<string> targetFrameworks,
+			ConfigurationSelector configuration)
+			: this (project, targetFrameworks, configuration, PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public DotNetCoreNuGetProject (
+			DotNetProject project,
+			IEnumerable<string> targetFrameworks,
+			ConfigurationSelector configuration,
 			IPackageManagementEvents packageManagementEvents)
 		{
 			this.project = project;
+			this.configuration = configuration;
 			this.packageManagementEvents = packageManagementEvents;
 
 			var targetFramework = NuGetFramework.UnsupportedFramework;
@@ -104,8 +113,13 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
+			return Create (project, ConfigurationSelector.Default);
+		}
+
+		public static NuGetProject Create (DotNetProject project, ConfigurationSelector configuration)
+		{
 			if (CanCreate (project))
-				return new DotNetCoreNuGetProject (project);
+				return new DotNetCoreNuGetProject (project, configuration);
 
 			return null;
 		}
@@ -231,7 +245,7 @@ namespace MonoDevelop.PackageManagement
 
 		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
 		{
-			DependencyGraphSpec dependencySpec = await MSBuildPackageSpecCreator.GetDependencyGraphSpec (project, context?.Logger);
+			DependencyGraphSpec dependencySpec = await MSBuildPackageSpecCreator.GetDependencyGraphSpec (project, configuration, context?.Logger);
 
 			context.AddToCache (dependencySpec);
 

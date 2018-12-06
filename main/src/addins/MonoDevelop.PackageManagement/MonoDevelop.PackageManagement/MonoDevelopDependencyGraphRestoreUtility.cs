@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 			CancellationToken cancellationToken)
 		{
 			if (projects.Count () > MaxSupportedProjectsForMSBuildHost) {
-				return MSBuildUtility.GetSolutionRestoreSpec (solutionManager.Solution, projects, context.Logger, cancellationToken);
+				return MSBuildUtility.GetSolutionRestoreSpec (solutionManager.Solution, projects, solutionManager.Configuration, context.Logger, cancellationToken);
 			}
 
 			return DependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, context);

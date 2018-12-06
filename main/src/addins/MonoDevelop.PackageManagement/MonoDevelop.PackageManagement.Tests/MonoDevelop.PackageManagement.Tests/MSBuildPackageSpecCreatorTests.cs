@@ -43,7 +43,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			string projectFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms", "NetStandardXamarinForms.csproj");
 			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
-				var spec = await MSBuildPackageSpecCreator.CreatePackageSpec (project, NullLogger.Instance);
+				var spec = await MSBuildPackageSpecCreator.CreatePackageSpec (project, ConfigurationSelector.Default, NullLogger.Instance);
 
 				var targetFramework = spec.TargetFrameworks.Single ();
 				var dependency = targetFramework.Dependencies.Single (d => d.Name == "Xamarin.Forms");
@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			string projectFile = Util.GetSampleProject ("multi-target", "multi-target.csproj");
 			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
-				var spec = await MSBuildPackageSpecCreator.CreatePackageSpec (project, NullLogger.Instance);
+				var spec = await MSBuildPackageSpecCreator.CreatePackageSpec (project, ConfigurationSelector.Default, NullLogger.Instance);
 
 				var netstandard = spec.TargetFrameworks.Single (f => f.FrameworkName.Framework == ".NETStandard");
 				var netcoreapp = spec.TargetFrameworks.Single (f => f.FrameworkName.Framework == ".NETCoreApp");

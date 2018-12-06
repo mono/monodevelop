@@ -30,6 +30,7 @@ namespace NuGet.CommandLine
 		public static async Task<DependencyGraphSpec> GetSolutionRestoreSpec (
 			Solution solution,
 			IEnumerable<BuildIntegratedNuGetProject> projects,
+			ConfigurationSelector configuration,
 			ILogger logger,
 			CancellationToken cancellationToken)
 		{
@@ -37,7 +38,7 @@ namespace NuGet.CommandLine
 
 			using (var inputTargetPath = new TempFile (".nugetinputs.targets"))
 			using (var resultsPath = new TempFile (".output.dg")) {
-				var properties = CreateMSBuildProperties (solution, resultsPath);
+				var properties = CreateMSBuildProperties (solution, configuration, resultsPath);
 
 				FilePath msbuildBinDirectory = MSBuildProcessService.GetMSBuildBinDirectory ();
 				string restoreTargetPath = msbuildBinDirectory.Combine ("NuGet.targets");
@@ -66,10 +67,9 @@ namespace NuGet.CommandLine
 			}
 		}
 
-		static Dictionary<string, string> CreateMSBuildProperties (Solution solution, TempFile resultsPath)
+		static Dictionary<string, string> CreateMSBuildProperties (Solution solution, ConfigurationSelector configuration, TempFile resultsPath)
 		{
-			ConfigurationSelector config = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
-			var solutionConfig = config.GetConfiguration (solution);
+			var solutionConfig = configuration.GetConfiguration (solution);
 
 			var properties = new Dictionary<string, string> () {
 				{ "RestoreGraphOutputPath", resultsPath },

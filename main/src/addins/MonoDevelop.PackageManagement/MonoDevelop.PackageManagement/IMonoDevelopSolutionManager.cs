@@ -36,6 +36,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		Solution Solution { get; }
 		ISettings Settings { get; }
+		ConfigurationSelector Configuration { get; }
 		NuGetProject GetNuGetProject (IDotNetProject project);
 		ISourceRepositoryProvider CreateSourceRepositoryProvider ();
 		void ReloadSettings ();
