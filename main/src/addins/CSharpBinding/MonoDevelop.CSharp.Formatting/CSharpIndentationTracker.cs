@@ -66,10 +66,11 @@ namespace MonoDevelop.CSharp.Formatting
 			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
 			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
 			int? indentation = smartIndentationService.GetDesiredIndentation (editor.TextView, caretLine);
-			if (indentation.HasValue && indentation.Value > 0)
+			if (indentation.HasValue && indentation.Value > 0) {
 				return CalculateIndentationString (indentation.Value);
-
-			return editor.GetLineIndent (lineNumber);
+			}
+			Console.WriteLine (Environment.StackTrace);
+			return editor.GetLineIndent (lineNumber) + CalculateIndentationString (editor.Options.IndentationSize);
 		}
 
 		string CalculateIndentationString (int spaceCount)
