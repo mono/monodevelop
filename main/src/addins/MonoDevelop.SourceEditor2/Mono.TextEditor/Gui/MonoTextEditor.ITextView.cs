@@ -498,7 +498,7 @@ namespace Mono.TextEditor
 
 					if (hasAggregateFocus) {
 						//Got focus so make sure that the view that had focus (which wasn't us since we didn't have focus before) raises its
-						//lost focus event before we raise our got focus event. This will potentially do bad things if someone changes focus 
+						//lost focus event before we raise our got focus event. This will potentially do bad things if someone changes focus
 						//if the lost aggregate focus handler.
 						Debug.Assert (ViewWithAggregateFocus != this);
 						if (ViewWithAggregateFocus != null) {
@@ -569,19 +569,49 @@ namespace Mono.TextEditor
 
 		public void QueuePostLayoutAction (Action action)
 		{
-			// TODO: Implement me
+			if (this.IsClosed)
+				return;
+
+			// Post layout actions are called directly after setting InLayout to false, and are popped one by one in the
+			// order in which they were queued.
+			if (!this.InLayout) {
+				action ();
+			} else {
+				// TODO: implement this right
+				action ();
+			}
 		}
 
 		public bool TryGetTextViewLines (out ITextViewLineCollection textViewLines)
 		{
-			textViewLines = TextViewLines;
-			return textViewLines != null;
+			textViewLines = null;
+
+			if (this.InLayout || this.IsClosed) {
+				return false;
+			}
+
+			try {
+				textViewLines = this.TextViewLines;
+				return true;
+			} catch {
+				return false;
+			}
 		}
 
 		public bool TryGetTextViewLineContainingBufferPosition (SnapshotPoint bufferPosition, out ITextViewLine textViewLine)
 		{
-			textViewLine = GetTextViewLineContainingBufferPosition (bufferPosition);
-			return textViewLine != null;
+			textViewLine = null;
+
+			if (this.InLayout || this.IsClosed || bufferPosition.Snapshot != TextSnapshot) {
+				return false;
+			}
+
+			try {
+				textViewLine = GetTextViewLineContainingBufferPosition (bufferPosition);
+				return true;
+			} catch {
+				return false;
+			}
 		}
 	}
 }
