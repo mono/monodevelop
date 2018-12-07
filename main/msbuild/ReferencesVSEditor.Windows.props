@@ -37,6 +37,10 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.Intellisense.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.NavigateTo.Interfaces.15.8.525\lib\net46\Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll</HintPath>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
