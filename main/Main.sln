@@ -445,17 +445,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardClassificationImpl"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageUtil", "external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj", "{9B0C6B46-52CA-42F5-83E1-C259F54EE5F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsBase-net_4_x", "external\vs-editor-core\src\XplatEditor\FPF\WindowsBase\WindowsBase-net_4_x.csproj", "{A8F39368-ECD9-41A5-A562-CC7C82B3CC86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsBase-net_4_x", "external\vs-editor-core\src\FPF\WindowsBase\WindowsBase-net_4_x.csproj", "{A8F39368-ECD9-41A5-A562-CC7C82B3CC86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationCore", "external\vs-editor-core\src\XplatEditor\FPF\PresentationCore\PresentationCore.csproj", "{6CFF32E7-9621-4F17-8D31-732F93F0C1A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationCore", "external\vs-editor-core\src\FPF\PresentationCore\PresentationCore.csproj", "{6CFF32E7-9621-4F17-8D31-732F93F0C1A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationFramework", "external\vs-editor-core\src\XplatEditor\FPF\PresentationFramework\PresentationFramework.csproj", "{FDE5334A-70B5-41AE-9445-A0C77725A63D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationFramework", "external\vs-editor-core\src\FPF\PresentationFramework\PresentationFramework.csproj", "{FDE5334A-70B5-41AE-9445-A0C77725A63D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationClient", "external\vs-editor-core\src\XplatEditor\FPF\UIAutomationClient\UIAutomationClient.csproj", "{8858E6B0-8398-46A9-9022-358D10E5E394}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationClient", "external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj", "{8858E6B0-8398-46A9-9022-358D10E5E394}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationProvider", "external\vs-editor-core\src\XplatEditor\FPF\UIAutomationProvider\UIAutomationProvider.csproj", "{8EC74798-FED7-4F3C-A01B-25013317A90B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationProvider", "external\vs-editor-core\src\FPF\UIAutomationProvider\UIAutomationProvider.csproj", "{8EC74798-FED7-4F3C-A01B-25013317A90B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationTypes", "external\vs-editor-core\src\XplatEditor\FPF\UIAutomationTypes\UIAutomationTypes.csproj", "{52BF10FD-66DF-430F-8A30-E5E63A93AE91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationTypes", "external\vs-editor-core\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj", "{52BF10FD-66DF-430F-8A30-E5E63A93AE91}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Cocoa", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Cocoa\MonoDevelop.TextEditor.Cocoa.csproj", "{5FEEDF49-0493-411C-B4F3-FAB7543499D2}"
 EndProject
