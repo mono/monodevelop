@@ -7,42 +7,55 @@
   <ItemGroup>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj">
       <Name>CocoaViewImpl</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextData\TextData.csproj">
       <Name>TextData</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Core\Def\CoreUtility.csproj">
       <Name>CoreUtility</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextUI\TextUI.csproj">
       <Name>TextUI</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
       <Name>TextUIUtil</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
      <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextLogic\TextLogic.csproj">
       <Name>TextLogic</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\Internal\Internal.csproj">
       <Name>Internal</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\Intellisense\IntellisenseDef.csproj">
       <Name>IntellisenseDef</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj">
       <Name>TextDataUtil</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\PresentationCore\PresentationCore.csproj">
       <Name>PresentationCore</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\PresentationFramework\PresentationFramework.csproj">
       <Name>PresentationFramework</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\WindowsBase\WindowsBase-net_4_x.csproj">
       <Name>WindowsBase</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\StandardClassification\StandardClassification.csproj">
       <Name>StandardClassification</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
