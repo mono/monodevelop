@@ -32,13 +32,13 @@
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj">
       <Name>TextDataUtil</Name>
     </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\XplatEditor\FPF\PresentationCore\PresentationCore.csproj">
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\PresentationCore\PresentationCore.csproj">
       <Name>PresentationCore</Name>
     </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\XplatEditor\FPF\PresentationFramework\PresentationFramework.csproj">
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\PresentationFramework\PresentationFramework.csproj">
       <Name>PresentationFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\XplatEditor\FPF\WindowsBase\WindowsBase-net_4_x.csproj">
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\WindowsBase\WindowsBase-net_4_x.csproj">
       <Name>WindowsBase</Name>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\StandardClassification\StandardClassification.csproj">

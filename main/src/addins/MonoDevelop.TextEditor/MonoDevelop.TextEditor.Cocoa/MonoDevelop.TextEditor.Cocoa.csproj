@@ -90,12 +90,12 @@
 			<Name>Xwt.Gtk</Name>
 			<Private>False</Private>
 		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\XplatEditor\FPF\UIAutomationClient\UIAutomationClient.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\XplatEditor\FPF\PresentationCore\PresentationCore.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\XplatEditor\FPF\UIAutomationProvider\UIAutomationProvider.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\XplatEditor\FPF\WindowsBase\WindowsBase-net_4_x.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\XplatEditor\FPF\UIAutomationTypes\UIAutomationTypes.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\XplatEditor\FPF\PresentationFramework\PresentationFramework.csproj" />
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj" />
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\PresentationCore\PresentationCore.csproj" />
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationProvider\UIAutomationProvider.csproj" />
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\WindowsBase\WindowsBase-net_4_x.csproj" />
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj" />
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\PresentationFramework\PresentationFramework.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Core\Def\CoreUtility.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\Language\LanguageImpl.csproj" />
