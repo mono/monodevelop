@@ -59,7 +59,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		void Init ()
 		{
-			TestId = test.Id.ToString ();
+			TestId = test.FullyQualifiedName;
 			if (!string.IsNullOrEmpty (test.CodeFilePath))
 				sourceCodeLocation = new SourceCodeLocation (test.CodeFilePath, test.LineNumber, 0);
 			else {
