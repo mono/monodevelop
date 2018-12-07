@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public static void Show ()
 		{
-			WelcomePageService.ShowWelcomePageOrWindow ();
+			WelcomePageService.ShowWelcomePageOrWindow (options: new WelcomeWindowShowOptions (false));
 		}
 		
 		protected override void Run()
