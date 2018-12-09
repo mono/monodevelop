@@ -577,8 +577,7 @@ namespace Mono.TextEditor
 			if (!this.InLayout) {
 				action ();
 			} else {
-				// TODO: implement this right
-				action ();
+				MonoDevelop.Core.Runtime.RunInMainThread (() => action ());
 			}
 		}
 

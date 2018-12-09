@@ -108,7 +108,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			assemblyLoaderTask = Task.Run (() => {
 				try {
-					var peFile = new PEFile (FileName, System.Reflection.PortableExecutable.PEStreamOptions.PrefetchMetadata);
+					var peFile = new PEFile (FileName, System.Reflection.PortableExecutable.PEStreamOptions.PrefetchEntireImage);
 					assemblyDefinitionTaskSource.SetResult (peFile);
 					return peFile;
 				} catch (Exception e) {
@@ -168,7 +168,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			public PEFile ResolveModule (PEFile mainModule, string moduleName)
 			{
-				var loader = widget.AddReferenceByAssemblyName (mainModule.FullName);
+				var loader = widget.AddReferenceByFileName (mainModule.FileName);
 				return loader != null ? loader.Assembly : null;
 			}
 		}

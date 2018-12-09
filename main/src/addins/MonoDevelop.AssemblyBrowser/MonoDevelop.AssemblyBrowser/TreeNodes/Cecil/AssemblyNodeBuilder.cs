@@ -84,7 +84,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var namespaces = new Dictionary<string, NamespaceData> ();
 			bool publicOnly = Widget.PublicApiOnly;
 			
-			foreach (var type in compilationUnit.DecompilerTypeSystem.GetAllTypeDefinitions ()) {
+			foreach (var type in compilationUnit.DecompilerTypeSystem.MainModule.TypeDefinitions) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
 					namespaces [namespaceName] = new NamespaceData (namespaceName);
