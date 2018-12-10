@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static bool HasWindowImplementation => AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().Any ();
 
-		public static void ShowWelcomePageOrWindow (bool animate = false, WelcomeWindowShowOptions options = null)
+		public static void ShowWelcomePageOrWindow (WelcomeWindowShowOptions options = null)
 		{
 			if (options == null) {
 				options = new WelcomeWindowShowOptions (true);
@@ -82,16 +82,16 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			// Try to get a dialog version of the "welcome screen" first
 			if (!ShowWelcomeWindow (options)) {
-				ShowWelcomePage ();
+				ShowWelcomePage (true);
 			}
 		}
 
-		public static void HideWelcomePageOrWindow (bool animate = false)
+		public static void HideWelcomePageOrWindow ()
 		{
 			if (HasWindowImplementation && welcomeWindowProvider != null && welcomeWindow != null) {
 				welcomeWindowProvider.HideWindow (welcomeWindow);
 			} else {
-				HideWelcomePage (animate);
+				HideWelcomePage (true);
 			}
 
 			visible = false;
