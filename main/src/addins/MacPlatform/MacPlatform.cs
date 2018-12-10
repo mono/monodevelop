@@ -593,7 +593,7 @@ namespace MonoDevelop.MacIntegration
 						if (IdeApp.Workbench.RootWindow != null) {
 							IdeApp.Workbench.RootWindow.Visible = false;
 						}
-						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow ();
+						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
 
 						e.Handled = true;
 					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
