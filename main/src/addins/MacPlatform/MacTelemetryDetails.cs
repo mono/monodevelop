@@ -74,6 +74,7 @@ namespace MacPlatform
 
 					var timeSinceEpoch = DateTimeOffset.UtcNow - epoch;
 					var loginSinceEpoch = login - epoch;
+
 					result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
 				}
 			} catch (Exception e) {
