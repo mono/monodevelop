@@ -1,9 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
-	<!-- Extension points --> 
-
-  	<Extension path="/MonoDevelop/Ide/Composition">
-		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll"/>
-		<Assembly file="CocoaViewImpl.dll" />
+	<!-- Extension points -->
+	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
+		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.Implementation.dll" />
@@ -27,23 +27,14 @@
 		<Assembly file="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
-		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll" />
 		<Assembly file="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Internal.dll" />
-		<Assembly file="Microsoft.VisualStudio.Language.Intellisense.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.UI.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.Data.dll" />
-		<Assembly file="Microsoft.VisualStudio.CoreUtility.dll" />
 	</Extension>
-
-  	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "TextViewCocoa"
-						insertbefore = "TextEditor"
-						class = "MonoDevelop.Ide.Text.TextViewDisplayBinding" />
+	<Extension path="/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.Ide.Text.TextViewDisplayBinding" />
 	</Extension>
 </ExtensionModel>
