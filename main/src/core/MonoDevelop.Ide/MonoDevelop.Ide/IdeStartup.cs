@@ -899,8 +899,8 @@ namespace MonoDevelop.Ide
 				AssetTypeName = assetType.Name,
 				IsInitialRun = IdeApp.IsInitialRun,
 				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
-				TimeSinceMachineStart = platformDetails.TimeSinceMachineStart.Seconds,
-				TimeSinceLogin = platformDetails.TimeSinceLogin.Seconds,
+				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
+				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
 				Timings = timings
 			};
 		}
