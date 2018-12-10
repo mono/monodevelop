@@ -304,5 +304,26 @@ namespace MonoDevelop.PackageManagement
 		{
 			return true;
 		}
+
+		public override Task AddFileToProjectAsync (string filePath)
+		{
+			if (project.IsFileInProject (filePath))
+				return Task.CompletedTask;
+
+			return Runtime.RunInMainThread (async () => {
+				var fullPath = GetFullPath (filePath);
+				string buildAction = project.GetDefaultBuildAction (fullPath);
+				var fileItem = new ProjectFile (fullPath) {
+					BuildAction = buildAction
+				};
+				project.AddFile (fileItem);
+				await SaveProject ();
+			});
+		}
+
+		string GetFullPath (string relativePath)
+		{
+			return project.BaseDirectory.Combine (relativePath);
+		}
 	}
 }

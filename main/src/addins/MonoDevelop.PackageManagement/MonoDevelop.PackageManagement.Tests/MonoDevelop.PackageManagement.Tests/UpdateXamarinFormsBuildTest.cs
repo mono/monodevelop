@@ -105,9 +105,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		Task UpdateNuGetPackage (DotNetProject project, string packageId, string packageVersion)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
-			var context = new FakeNuGetProjectContext {
-				LogToConsole = true
-			};
+			var context = CreateNuGetProjectContext (solutionManager.Settings);
 			var sources = solutionManager.CreateSourceRepositoryProvider ().GetRepositories ();
 
 			var action = new InstallNuGetPackageAction (sources, solutionManager, new DotNetProjectProxy (project), context);
