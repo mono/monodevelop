@@ -73,9 +73,7 @@ namespace MonoDevelop.DesignerSupport
 		VerticalStackView verticalContainer;
 		MacPropertyGrid propertyEditorPanel;
 
-		MacPropertyPadEditorProvider editorProvider;
-		//MacPropertyPadResourceProvider resourceProvider;
-		//MacPropertyPadBindingProvider bindingProvider;
+		PropertyPadEditorProvider editorProvider;
 
 		NSScrollView scrollView;
 
@@ -153,9 +151,7 @@ namespace MonoDevelop.DesignerSupport
 		void Window_PadContentShown (object sender, EventArgs e)
 		{
 			if (editorProvider == null) {
-				editorProvider = new MacPropertyPadEditorProvider ();
-				//resourceProvider = new MacPropertyPadResourceProvider ();
-				//bindingProvider = new MacPropertyPadBindingProvider ();
+				editorProvider = new PropertyPadEditorProvider ();
 				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
 					SupportsCustomExpressions = true,
 					SupportsMaterialDesign = true,

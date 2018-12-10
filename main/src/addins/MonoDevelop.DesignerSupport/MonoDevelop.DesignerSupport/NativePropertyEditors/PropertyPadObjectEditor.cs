@@ -37,7 +37,7 @@ using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class TestPropertyObjectEditor
+	class PropertyPadObjectEditor
 		: IObjectEditor, INameableObject, IObjectEventEditor
 	{
 		private readonly object target;
@@ -46,7 +46,7 @@ namespace MonoDevelop.DesignerSupport
 			private set;
 		}
 
-		private readonly List<DescriptorPropertyInfo> properties = new List<DescriptorPropertyInfo> ();
+		private readonly List<IPropertyInfo> properties = new List<IPropertyInfo> ();
 		private static readonly IObjectEditor [] EmptyDirectChildren = new IObjectEditor [0];
 		private readonly List<ReflectionEventInfo> events = new List<ReflectionEventInfo> ();
 
@@ -75,7 +75,7 @@ namespace MonoDevelop.DesignerSupport
 		//private readonly List<ReflectionPropertyInfo> properties = new List<ReflectionPropertyInfo> ();
 		//private readonly List<ReflectionEventInfo> events = new List<ReflectionEventInfo> ();
 
-		public TestPropertyObjectEditor (object target, object [] propertyProviders)
+		public PropertyPadObjectEditor (object target, object [] propertyProviders)
 		{
 			if (target == null)
 				throw new ArgumentNullException (nameof (target));
@@ -89,10 +89,9 @@ namespace MonoDevelop.DesignerSupport
 			//this.properties.AddRange (ReflectionEditorProvider.GetPropertiesForType (targetType));
 			foreach (object prov in propertyProviders) {
 				var props = GetProperties (prov, null);
-				//tree.Populate (properties, prov);
-				//populate tree
-				foreach (PropertyDescriptor pd in props) {
-					properties.Add (new DescriptorPropertyInfo (pd));
+
+				for (int i = 0; i < props.Count; i++) {
+					properties.Add (new DescriptorPropertyInfo (props[i]));
 				}
 				//UpdateProperty (pd, instance, rows);
 			}
@@ -179,7 +178,7 @@ namespace MonoDevelop.DesignerSupport
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
 
-			var info = property as ReflectionPropertyInfo;
+			var info = property as DescriptorPropertyInfo;
 			if (info == null)
 				throw new ArgumentException ();
 

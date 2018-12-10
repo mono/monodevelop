@@ -158,9 +158,9 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Styles.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MacPropertyPad.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\MacPropertyPadEditorProvider.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\TestPropertyObjectEditor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadObjectEditor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\DescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadEditorProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

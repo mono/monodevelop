@@ -37,10 +37,10 @@ using System.Reflection;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyPadEditorProvider
+	class PropertyPadEditorProvider
 	: IEditorProvider
 	{
-		public MacPropertyPadEditorProvider (IResourceProvider resources = null)
+		public PropertyPadEditorProvider (IResourceProvider resources = null)
 		{
 			this.resources = resources;
 		}
@@ -49,7 +49,7 @@ namespace MonoDevelop.DesignerSupport
 		object currentObject;
 		IObjectEditor currentEditor;
 
-		public MacPropertyPadEditorProvider (IObjectEditor editor)
+		public PropertyPadEditorProvider (IObjectEditor editor)
 		{
 			editorCache.Add (editor.Target, editor);
 		}
@@ -69,7 +69,7 @@ namespace MonoDevelop.DesignerSupport
 				return Task.FromResult (cachedEditor);
 			}
 
-			var editor = new TestPropertyObjectEditor (item, propertyProviders);
+			var editor = new PropertyPadObjectEditor (item, propertyProviders);
 			editorCache.Add (item, editor);
 			return Task.FromResult ((IObjectEditor) editor);
 		}
