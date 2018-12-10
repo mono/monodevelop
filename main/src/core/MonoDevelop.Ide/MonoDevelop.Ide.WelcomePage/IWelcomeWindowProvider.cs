@@ -23,17 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
 using MonoDevelop.Components;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
+	public class WelcomeWindowShowOptions
+	{
+		public WelcomeWindowShowOptions (bool closeSolution)
+		{
+			CloseSolution = closeSolution;
+		}
+
+		public bool CloseSolution { get; set; }
+	}
+
 	[TypeExtensionPoint]
 	public interface IWelcomeWindowProvider
 	{
 		Window CreateWindow ();
-		void ShowWindow (Window window);
+		void ShowWindow (Window window, WelcomeWindowShowOptions options);
 		void HideWindow (Window window);
 	}
 }

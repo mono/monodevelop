@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
 				if (!IdeApp.IsExiting && HasWindowImplementation) {
-					ShowWelcomeWindow ();
+					ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
 				}
 			};
 			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
@@ -74,20 +74,24 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static bool HasWindowImplementation => AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().Any ();
 
-		public static void ShowWelcomePageOrWindow (bool animate = false)
+		public static void ShowWelcomePageOrWindow (WelcomeWindowShowOptions options = null)
 		{
+			if (options == null) {
+				options = new WelcomeWindowShowOptions (true);
+			}
+
 			// Try to get a dialog version of the "welcome screen" first
-			if (!ShowWelcomeWindow ()) {
-				ShowWelcomePage ();
+			if (!ShowWelcomeWindow (options)) {
+				ShowWelcomePage (true);
 			}
 		}
 
-		public static void HideWelcomePageOrWindow (bool animate = false)
+		public static void HideWelcomePageOrWindow ()
 		{
 			if (HasWindowImplementation && welcomeWindowProvider != null && welcomeWindow != null) {
 				welcomeWindowProvider.HideWindow (welcomeWindow);
 			} else {
-				HideWelcomePage (animate);
+				HideWelcomePage (true);
 			}
 
 			visible = false;
@@ -119,7 +123,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			WelcomePageHidden?.Invoke (welcomePage, EventArgs.Empty);
 		}
 
-		public static bool ShowWelcomeWindow ()
+		public static bool ShowWelcomeWindow (WelcomeWindowShowOptions options)
 		{
 			if (welcomeWindowProvider == null) {
 				welcomeWindowProvider = AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().FirstOrDefault ();
@@ -133,7 +137,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					return false;
 			}
 
-			welcomeWindowProvider.ShowWindow (welcomeWindow);
+			welcomeWindowProvider.ShowWindow (welcomeWindow, options);
 			visible = true;
 
 			return true;
