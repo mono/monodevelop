@@ -158,6 +158,13 @@ type ``Template tests``() =
         MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
             <- Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
 
+    [<TestFixtureTearDown>]
+    member x.TestFixtureTearDown() =
+        IdeApp.Exit()
+        |> Async.AwaitTask
+        |> Async.Ignore
+        |> Async.RunSynchronously
+
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``FSharp portable project``() =
         let name = "FSharpPortableLibrary"
