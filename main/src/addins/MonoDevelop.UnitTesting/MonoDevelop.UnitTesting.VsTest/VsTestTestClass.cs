@@ -43,7 +43,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			this.Project = project;
 			this.testRunner = testRunner;
 			FixtureTypeName = vsTestUnit.FixtureTypeName;
-			TestId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
+			TestSourceCodeDocumentId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)
