@@ -84,8 +84,9 @@ type ``Template tests``() =
     let testWithParameters (tt:string) (buildFolder:string) (parameters:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
+
+        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
         toTask <| async {
-            let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
             let dir = FilePath (templatesDir/buildFolder)
             dir.Delete()
             Directory.CreateDirectory (dir |> string) |> ignore
