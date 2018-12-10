@@ -71,7 +71,7 @@ namespace MonoDevelop.DesignerSupport
 		Gtk.Widget widget;
 
 		VerticalStackView verticalContainer;
-		PropertyEditorPanel propertyEditorPanel;
+		MacPropertyGrid propertyEditorPanel;
 
 		MacPropertyPadEditorProvider editorProvider;
 		//MacPropertyPadResourceProvider resourceProvider;
@@ -89,18 +89,25 @@ namespace MonoDevelop.DesignerSupport
 
 			verticalContainer = new VerticalStackView ();
 
-			propertyEditorPanel = new PropertyEditorPanel ();
+			propertyEditorPanel = new MacPropertyGrid ();
 
 			scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
 				HasHorizontalScroller = false,
 			};
-			scrollView.BackgroundColor = NSColor.Red;
+			scrollView.WantsLayer = true;
 			scrollView.DocumentView = propertyEditorPanel;
 
 			verticalContainer.AddArrangedSubview (scrollView);
 		
 			widget = GtkMacInterop.NSViewToGtkWidget (verticalContainer);
+			widget.CanFocus = true;
+			widget.Sensitive = true;
+			widget.KeyPressEvent += Widget_KeyPressEvent;
+			widget.KeyReleaseEvent += Widget_KeyReleaseEvent;
+			widget.Focused += Widget_Focused;
+
+			propertyEditorPanel.Focused += PropertyEditorPanel_Focused;
 
 			window.PadContentShown += Window_PadContentShown;
 
@@ -111,6 +118,29 @@ namespace MonoDevelop.DesignerSupport
 			DesignerSupport.Service.SetPad (this);
 
 			widget.ShowAll ();
+		}
+
+		void Widget_Focused (object o, Gtk.FocusedArgs args)
+		{
+			propertyEditorPanel.BecomeFirstResponder ();
+		}
+
+		void PropertyEditorPanel_Focused (object sender, EventArgs e)
+		{
+			if (!widget.HasFocus) {
+				widget.HasFocus = true;
+				Widget_Focused (null, null);
+			}
+		}
+
+		void Widget_KeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		{
+
+		}
+
+		void Widget_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		{
+
 		}
 
 		void VerticalContainer_Resized (object sender, EventArgs e)
@@ -185,12 +215,33 @@ namespace MonoDevelop.DesignerSupport
 		public override void Dispose ()
 		{
 			//propertyEditorPanel.PropertiesChanged -= PropertyEditorPanel_PropertiesChanged;
-			Window.PadContentShown -= Window_PadContentShown;
+
+			widget.Focused -= Widget_Focused;
+			widget.KeyPressEvent -= Widget_KeyPressEvent;
+			widget.KeyReleaseEvent -= Widget_KeyReleaseEvent;
+
+			propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
+
 			verticalContainer.SizeChanged -= VerticalContainer_Resized;
+
+			Window.PadContentShown -= Window_PadContentShown;
+
 			DesignerSupport.Service.SetPad (null);
+
 			base.Dispose ();
 		}
 
+	}
+
+	class MacPropertyGrid : PropertyEditorPanel
+	{
+		public EventHandler Focused;
+
+		public override bool BecomeFirstResponder ()
+		{
+			Focused?.Invoke (this, EventArgs.Empty);
+			return base.BecomeFirstResponder ();
+		}
 	}
 }
 
