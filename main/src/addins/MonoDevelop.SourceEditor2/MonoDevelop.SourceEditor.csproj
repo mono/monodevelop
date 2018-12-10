@@ -72,7 +72,7 @@
     </Reference>
     <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="WindowsBase" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.ComponentModel.Composition" />
