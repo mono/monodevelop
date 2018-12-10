@@ -72,9 +72,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		Task UpdateNuGetPackage (DotNetProject project, string packageId)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
-			var context = new FakeNuGetProjectContext {
-				LogToConsole = true
-			};
+			var context = CreateNuGetProjectContext (solutionManager.Settings);
+
 			var packageManager = new MonoDevelopNuGetPackageManager (solutionManager);
 
 			var action = new UpdateNuGetPackageAction (

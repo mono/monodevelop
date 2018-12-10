@@ -97,7 +97,7 @@ namespace MonoDevelop.PackageManagement
 		static ProjectRestoreMetadata CreateRestoreMetadata (PackageSpec packageSpec, IDotNetProject project, ISettings settings)
 		{
 			return new ProjectRestoreMetadata {
-				ConfigFilePaths = SettingsUtility.GetConfigFilePaths (settings).ToList (),
+				ConfigFilePaths = settings.GetConfigFilePaths (),
 				FallbackFolders = GetFallbackPackageFolders (settings, project),
 				PackagesPath = GetPackagesPath (settings, project),
 				ProjectStyle = ProjectStyle.PackageReference,
