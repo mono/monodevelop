@@ -37,17 +37,18 @@ using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public class DescriptorPropertyInfo
+	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
-		private readonly PropertyDescriptor propertyInfo;
+		readonly PropertyDescriptor propertyInfo;
 
-		private static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
-		private static readonly PropertyVariationOption [] EmtpyVariationOptions = new PropertyVariationOption [0];
+		static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
+		static readonly PropertyVariationOption [] EmptyVariationOptions = new PropertyVariationOption [0];
 
 		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo) 
 		{
 			this.propertyInfo = propertyInfo;
+
 		}
 
 		public string Name => propertyInfo.Name;
@@ -64,7 +65,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public ValueSources ValueSources => ValueSources.Local;
 
-		public IReadOnlyList<PropertyVariationOption> Variations => EmtpyVariationOptions;
+		public IReadOnlyList<PropertyVariationOption> Variations => EmptyVariationOptions;
 
 		public IReadOnlyList<IAvailabilityConstraint> AvailabilityConstraints => EmptyConstraints;
 
@@ -99,6 +100,36 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var asm = type.Assembly.GetName ().Name;
 			return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+		}
+
+		private readonly Lazy<List<TypeConverter>> typeConverter;
+
+		internal Task<T> GetValueAsync<T> (object target)
+		{
+			string error;
+			object value = this.propertyInfo.GetValue (target);
+			try {
+				return Task.FromResult ((T)value);
+			} catch (Exception ex) {
+				error = ex.ToString (); 
+			}
+
+			T converted = default (T);
+			try {
+				if (value != null && !(value is T)) {
+					if (typeof (T) == typeof (string)) {
+						value = value.ToString ();
+					} else {
+						value = Convert.ChangeType (value, typeof (T));
+					}
+				}
+				return Task.FromResult ((T)value);
+
+			} catch (Exception ex) {
+				error = ex.ToString ();
+				Console.WriteLine (error);
+				return Task.FromResult (converted);
+			}
 		}
 	}
 }
