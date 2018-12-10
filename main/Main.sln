@@ -445,7 +445,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardClassificationImpl"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageUtil", "external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj", "{9B0C6B46-52CA-42F5-83E1-C259F54EE5F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsBase-net_4_x", "external\vs-editor-core\src\FPF\WindowsBase\WindowsBase-net_4_x.csproj", "{A8F39368-ECD9-41A5-A562-CC7C82B3CC86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsBase", "external\vs-editor-core\src\FPF\WindowsBase\WindowsBase.csproj", "{A8F39368-ECD9-41A5-A562-CC7C82B3CC86}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationCore", "external\vs-editor-core\src\FPF\PresentationCore\PresentationCore.csproj", "{6CFF32E7-9621-4F17-8D31-732F93F0C1A6}"
 EndProject
