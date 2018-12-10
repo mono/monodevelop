@@ -6,7 +6,7 @@
 
 	<PropertyGroup>
 		<!-- target framework for the core and addins -->
-		<MDFrameworkVersion>v4.7.1</MDFrameworkVersion>
+		<MDFrameworkVersion>v4.7.2</MDFrameworkVersion>
 	</PropertyGroup>
 
 	<!--
