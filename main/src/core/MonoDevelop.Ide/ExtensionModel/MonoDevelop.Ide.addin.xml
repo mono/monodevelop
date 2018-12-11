@@ -417,6 +417,7 @@
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.Desktop.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
+		<Assembly file="Microsoft.VisualStudio.CodingConventions.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>

@@ -11,7 +11,9 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.Composition
 {
+#if MAC
 	[Export(typeof(IInlineRenameService))]
+#endif
 	internal class InlineRenameService : IInlineRenameService
 	{
 		public IInlineRenameSession ActiveSession => null;
