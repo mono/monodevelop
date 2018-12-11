@@ -87,7 +87,7 @@ namespace MonoDevelop.PackageManagement
 			: this (
 				solutionManager,
 				dotNetProject,
-				new NuGetProjectContext (),
+				new NuGetProjectContext (solutionManager.Settings),
 				recentPackagesRepository)
 		{
 		}

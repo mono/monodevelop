@@ -352,5 +352,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			return true;
 		}
+
+		public override Task AddFileToProjectAsync (string filePath)
+		{
+			// NuGet does nothing here for .NET Core sdk projects so we also do nothing.
+			// This method is called when adding the packages lock file to the project.
+			return Task.CompletedTask;
+		}
 	}
 }

@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Common;
 using NuGet.Configuration;
 
 namespace NuGet.Credentials
@@ -138,7 +139,9 @@ namespace NuGet.Credentials
 
 		public CredentialService CreateNonInteractive ()
 		{
-			return new CredentialService (Providers, nonInteractive: true);
+			bool handlesDefaultCredentials = Providers.Any (provider => provider is DefaultCredentialsCredentialProvider);
+			var lazyProviders = AsyncLazy.New (() => Providers)
+;			return new CredentialService (lazyProviders, nonInteractive: true, handlesDefaultCredentials: handlesDefaultCredentials);
 		}
 
 		/// <summary>

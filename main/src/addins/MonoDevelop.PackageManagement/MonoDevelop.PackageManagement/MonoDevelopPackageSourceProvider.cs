@@ -59,11 +59,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		[Obsolete ("DisablePackageSource(PackageSource source) is deprecated. Please use DisablePackageSource(string name) instead.")]
 		public void DisablePackageSource (PackageSource source)
 		{
 			packageSourceProvider.DisablePackageSource (source);
 		}
 
+		[Obsolete ("IsPackageSourceEnabled(PackageSource source) is deprecated. Please use IsPackageSourceEnabled(string name) instead.")]
 		public bool IsPackageSourceEnabled (PackageSource source)
 		{
 			return packageSourceProvider.IsPackageSourceEnabled (source);
@@ -101,6 +103,46 @@ namespace MonoDevelop.PackageManagement
 			) {
 				ProtocolVersion = 3
 			};
+		}
+
+		public PackageSource GetPackageSourceByName (string name)
+		{
+			return packageSourceProvider.GetPackageSourceByName (name);
+		}
+
+		public PackageSource GetPackageSourceBySource (string source)
+		{
+			return packageSourceProvider.GetPackageSourceBySource (source);
+		}
+
+		public void RemovePackageSource (string name)
+		{
+			packageSourceProvider.RemovePackageSource (name);
+		}
+
+		public void EnablePackageSource (string name)
+		{
+			packageSourceProvider.EnablePackageSource (name);
+		}
+
+		public void DisablePackageSource (string name)
+		{
+			packageSourceProvider.DisablePackageSource (name);
+		}
+
+		public void UpdatePackageSource (PackageSource source, bool updateCredentials, bool updateEnabled)
+		{
+			packageSourceProvider.UpdatePackageSource (source, updateCredentials, updateEnabled);
+		}
+
+		public void AddPackageSource (PackageSource source)
+		{
+			packageSourceProvider.AddPackageSource (source);
+		}
+
+		public bool IsPackageSourceEnabled (string name)
+		{
+			return packageSourceProvider.IsPackageSourceEnabled (name);
 		}
 	}
 }
