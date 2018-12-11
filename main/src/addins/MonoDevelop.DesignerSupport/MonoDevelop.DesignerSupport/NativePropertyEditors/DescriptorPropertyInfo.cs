@@ -51,9 +51,9 @@ namespace MonoDevelop.DesignerSupport
 
 		}
 
-		public string Name => propertyInfo.Name;
+		public string Name => propertyInfo.DisplayName;
 
-		public string Description => propertyInfo.DisplayName;
+		public string Description => propertyInfo.Description;
 
 		public Type Type => propertyInfo.PropertyType;
 
