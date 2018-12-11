@@ -41,19 +41,9 @@ namespace MonoDevelop.DesignerSupport
 	class PropertyPadEditorProvider
 	: IEditorProvider
 	{
-		public PropertyPadEditorProvider (IResourceProvider resources = null)
-		{
-			this.resources = resources;
-		}
-
 		object [] propertyProviders = new object [0];
 		object currentObject;
 		IObjectEditor currentEditor;
-
-		public PropertyPadEditorProvider (IObjectEditor editor)
-		{
-			editorCache.Add (editor.Target, editor);
-		}
 
 		public IReadOnlyDictionary<Type, ITypeInfo> KnownTypes {
 			get;
@@ -63,6 +53,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (this.currentObject == item)
 				return Task.FromResult (currentEditor);
+
 			this.currentObject = item;
 
 			if (editorCache.TryGetValue (item, out IObjectEditor cachedEditor)) {
@@ -70,61 +61,9 @@ namespace MonoDevelop.DesignerSupport
 				return Task.FromResult (cachedEditor);
 			}
 
-			var editor = ChooseEditor (item);
+			var editor = new PropertyPadObjectEditor (item, propertyProviders);
 			editorCache.Add (item, editor);
 			return Task.FromResult ((IObjectEditor) editor);
-		}
-
-
-		IObjectEditor ChooseEditor (object item)
-		{
-			return new PropertyPadObjectEditor (item, propertyProviders);
-		}
-
-
-		public async Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)
-		{
-			var properties = new List<DescriptorPropertyInfo> ();
-			if (type is PropertyTypeInfo propertyTypeInfo) {
-				var customDescriptor = propertyTypeInfo.customDescriptor;
-				var propiedadesFromDescriptor = PropertyPadObjectEditor.GetProperties (propertyTypeInfo.customDescriptor, null);
-				for (int i = 0; i < propiedadesFromDescriptor.Count; i++) {
-					var prop = propiedadesFromDescriptor [i] as PropertyDescriptor;
-					if (prop.IsBrowsable) {
-						properties.Add (new DescriptorPropertyInfo (prop, customDescriptor));
-					}
-				}
-			} 
-
-			return properties;
-		}
-
-		public Task<AssignableTypesResult> GetAssignableTypesAsync (ITypeInfo type, bool childTypes)
-		{
-			if (type == KnownTypes [typeof (CommonValueConverter)])
-				return Task.FromResult (new AssignableTypesResult (new [] { type }));
-
-			return Task.Run (() => {
-				var types = AppDomain.CurrentDomain.GetAssemblies ().SelectMany (a => a.GetTypes ()).AsParallel ()
-					.Where (t => t.Namespace != null && !t.IsAbstract && !t.IsInterface && t.IsPublic && t.GetConstructor (Type.EmptyTypes) != null);
-
-				Type realType = ReflectionEditorProvider.GetRealType (type);
-				if (childTypes) {
-					var generic = realType.GetInterface ("ICollection`1");
-					if (generic != null) {
-						realType = generic.GetGenericArguments () [0];
-					} else {
-						realType = typeof (object);
-					}
-				}
-
-				types = types.Where (t => realType.IsAssignableFrom (t));
-
-				return new AssignableTypesResult (types.Select (t => {
-					string asmName = t.Assembly.GetName ().Name;
-					return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
-				}).ToList ());
-			});
 		}
 
 		public Task<object> CreateObjectAsync (ITypeInfo type)
@@ -136,17 +75,6 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult (Activator.CreateInstance (realType));
 		}
 
-		public Task<IReadOnlyList<object>> GetChildrenAsync (object item)
-		{
-			return Task.FromResult<IReadOnlyList<object>> (Array.Empty<object> ());
-		}
-
-		public Task<IReadOnlyDictionary<Type, ITypeInfo>> GetKnownTypesAsync (IReadOnlyCollection<Type> knownTypes)
-		{
-			return Task.FromResult<IReadOnlyDictionary<Type, ITypeInfo>> (new Dictionary<Type, ITypeInfo> ());
-		}
-
-		readonly IResourceProvider resources;
 		readonly Dictionary<object, IObjectEditor> editorCache = new Dictionary<object, IObjectEditor> ();
 
 		public void SetPropertyProviders (object [] propertyProviders)
@@ -157,6 +85,15 @@ namespace MonoDevelop.DesignerSupport
 			}
 			this.propertyProviders = propertyProviders;
 		}
+
+		public Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)
+			=> Task.FromResult<IReadOnlyCollection<IPropertyInfo>> (new List<IPropertyInfo> ());
+
+		public Task<AssignableTypesResult> GetAssignableTypesAsync (ITypeInfo type, bool childTypes)
+			=> Task.FromResult (new AssignableTypesResult (new List<ITypeInfo> ()));
+
+		public Task<IReadOnlyList<object>> GetChildrenAsync (object item) 
+			=>  Task.FromResult<IReadOnlyList<object>> (Array.Empty<object> ());
 	}
 }
 
