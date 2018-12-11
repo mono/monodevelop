@@ -84,24 +84,28 @@ namespace MonoDevelop.DesignerSupport
 				throw new ArgumentNullException (nameof (propertyProviders));
 
 			this.target = target;
-			Type targetType = target.GetType ();
+		
+			foreach (object objectDescriptor in propertyProviders) {
+				if (objectDescriptor is CustomDescriptor customDescriptor) {
 
-			//this.properties.AddRange (ReflectionEditorProvider.GetPropertiesForType (targetType));
-			foreach (object prov in propertyProviders) {
-				var props = GetProperties (prov, null);
+					var lol = customDescriptor.GetProperties ();
+					var propiedadesFromDescriptor = GetProperties (customDescriptor, null);
 
-				for (int i = 0; i < props.Count; i++) {
-					properties.Add (new DescriptorPropertyInfo (props[i]));
+					//var propiedadesFromTarget = GetProperties (target, null);
+
+					//var props = GetProperties (target, null);
+					for (int i = 0; i < propiedadesFromDescriptor.Count; i++) {
+						var prop = propiedadesFromDescriptor [i] as PropertyDescriptor;
+						if (prop.IsBrowsable) {
+							properties.Add (new DescriptorPropertyInfo (prop, customDescriptor));
+						}
+					}
 				}
-				//UpdateProperty (pd, instance, rows);
 			}
 
-			foreach (EventInfo ev in targetType.GetEvents ()) {
-				this.events.Add (new ReflectionEventInfo (ev));
-			}
 		}
 
-		public PropertyDescriptorCollection GetProperties (object component, Attribute [] attributes)
+		public static PropertyDescriptorCollection GetProperties (object component, Attribute [] attributes)
 		{
 			if (component == null)
 				return new PropertyDescriptorCollection (new PropertyDescriptor [] { });

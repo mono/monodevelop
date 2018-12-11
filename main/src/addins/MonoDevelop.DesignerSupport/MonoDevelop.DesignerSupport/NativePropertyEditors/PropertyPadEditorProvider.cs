@@ -34,6 +34,7 @@ using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Common;
 using Xamarin.PropertyEditing.Reflection;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -83,15 +84,17 @@ namespace MonoDevelop.DesignerSupport
 
 		public async Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)
 		{
-			Type realType = ReflectionEditorProvider.GetRealType (type);
-			if (realType == null)
-				return Array.Empty<IPropertyInfo> ();
-
-			var pdc = TypeDescriptor.GetProperties (realType);
 			var properties = new List<DescriptorPropertyInfo> ();
-			foreach (PropertyDescriptor propertyInfo in pdc) {
-				properties.Add (new DescriptorPropertyInfo (propertyInfo));
-			}
+			if (type is PropertyTypeInfo propertyTypeInfo) {
+				var customDescriptor = propertyTypeInfo.customDescriptor;
+				var propiedadesFromDescriptor = PropertyPadObjectEditor.GetProperties (propertyTypeInfo.customDescriptor, null);
+				for (int i = 0; i < propiedadesFromDescriptor.Count; i++) {
+					var prop = propiedadesFromDescriptor [i] as PropertyDescriptor;
+					if (prop.IsBrowsable) {
+						properties.Add (new DescriptorPropertyInfo (prop, customDescriptor));
+					}
+				}
+			} 
 
 			return properties;
 		}
