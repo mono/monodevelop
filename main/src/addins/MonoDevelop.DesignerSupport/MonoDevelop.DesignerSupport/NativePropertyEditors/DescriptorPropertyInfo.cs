@@ -37,12 +37,13 @@ using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class PropertyTypeInfo : Xamarin.PropertyEditing.TypeInfo
+	class PropertyProviderTypeInfo : Xamarin.PropertyEditing.TypeInfo
 	{
-		public CustomDescriptor customDescriptor;
-		public PropertyTypeInfo (CustomDescriptor propertyDescriptor, IAssemblyInfo assembly, string nameSpace, string name) : base (assembly, nameSpace, name)
+		public object PropertyProvider { get; }
+
+		public PropertyProviderTypeInfo (object propertyProvider, IAssemblyInfo assembly, string nameSpace, string name) : base (assembly, nameSpace, name)
 		{
-			this.customDescriptor = propertyDescriptor;
+			PropertyProvider = propertyProvider;
 		}
 	}
 
@@ -50,24 +51,24 @@ namespace MonoDevelop.DesignerSupport
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
 		public PropertyDescriptor PropertyDescriptor { get; private set; }
-		public CustomDescriptor CustomDescriptor { get; private set; }
+		public object PropertyProvider { get; private set; }
 
 		static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
 		static readonly PropertyVariationOption [] EmptyVariationOptions = new PropertyVariationOption [0];
 
-		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, CustomDescriptor customDescriptor) 
+		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider) 
 		{
 			this.PropertyDescriptor = propertyInfo;
-			this.CustomDescriptor = customDescriptor;
+			this.PropertyProvider = propertyProvider;
 		}
 
 		public string Name => PropertyDescriptor.DisplayName;
 
 		public string Description => PropertyDescriptor.Description;
 
-		public Type Type => Map (PropertyDescriptor, CustomDescriptor);
+		public Type Type => Map (PropertyDescriptor, PropertyProvider);
 
-		public ITypeInfo RealType => ToTypeInfo (CustomDescriptor, Type);
+		public ITypeInfo RealType => ToTypeInfo (PropertyProvider, Type);
 
 		public string Category => PropertyDescriptor.Category;
 
@@ -106,15 +107,15 @@ namespace MonoDevelop.DesignerSupport
 			return this.PropertyDescriptor.GetHashCode ();
 		}
 
-		static Type Map (PropertyDescriptor property, CustomDescriptor customDescriptor)
+		static Type Map (PropertyDescriptor property, object customDescriptor)
 		{
 			return property.PropertyType;
 		}
 
-		public static ITypeInfo ToTypeInfo (CustomDescriptor customDescriptor, Type type, bool isRelevant = true)
+		public static ITypeInfo ToTypeInfo (object propertyProvider, Type type, bool isRelevant = true)
 		{
 			var asm = type.Assembly.GetName ().Name;
-			return new PropertyTypeInfo (customDescriptor, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+			return new PropertyProviderTypeInfo (propertyProvider, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
 		internal Task<T> GetValueAsync<T> (object target)
@@ -123,7 +124,7 @@ namespace MonoDevelop.DesignerSupport
 			object value = null;
 			try {
 				TypeConverter tc = PropertyDescriptor.Converter;
-				object cob = PropertyDescriptor.GetValue (CustomDescriptor);
+				object cob = PropertyDescriptor.GetValue (PropertyProvider);
 				if (tc.CanConvertTo (typeof (T))) {
 					value = tc.ConvertTo (cob, typeof (T));
 				}
@@ -155,7 +156,7 @@ namespace MonoDevelop.DesignerSupport
 			try {
 				var tc = PropertyDescriptor.Converter;
 				if (tc.CanConvertFrom (typeof (T))) {
-					PropertyDescriptor.SetValue (CustomDescriptor, value);
+					PropertyDescriptor.SetValue (PropertyProvider, value);
 				}
 			} catch (Exception ex) {
 				Console.WriteLine (ex);

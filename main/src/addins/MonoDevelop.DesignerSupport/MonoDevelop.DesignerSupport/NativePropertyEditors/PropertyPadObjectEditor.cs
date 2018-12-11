@@ -78,17 +78,12 @@ namespace MonoDevelop.DesignerSupport
 		public PropertyPadObjectEditor (Tuple<object, object []> target)
 		{
 			this.target = target.Item1;
-		
-			foreach (object objectDescriptor in target.Item2) {
-				if (objectDescriptor is CustomDescriptor customDescriptor) {
-
-					var descriptorProperties = GetProperties (customDescriptor, null);
-
-					for (int i = 0; i < descriptorProperties.Count; i++) {
-						var prop = descriptorProperties [i] as PropertyDescriptor;
-						if (prop.IsBrowsable) {
-							properties.Add (new DescriptorPropertyInfo (prop, customDescriptor));
-						}
+			foreach (object propertyProvider in target.Item2) {
+				var props = GetProperties (propertyProvider, null);
+				for (int i = 0; i < props.Count; i++) {
+					var prop = props [i] as PropertyDescriptor;
+					if (prop.IsBrowsable) {
+						properties.Add (new DescriptorPropertyInfo (prop, propertyProvider));
 					}
 				}
 			}
