@@ -151,7 +151,7 @@ namespace MonoDevelop.PackageManagement
 			Runtime.RunInMainThread (() => {
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 				var dotNetProject = new DotNetProjectProxy ((DotNetProject)project);
-				var context = new NuGetProjectContext ();
+				var context = new NuGetProjectContext (solutionManager.Settings);
 
 				actions = packages.Select (packageReference => {
 					var action = new InstallNuGetPackageAction (
