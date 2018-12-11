@@ -57,9 +57,10 @@ namespace MonoDevelop.Ide.Editor
 				var editor = TextEditorFactory.CreateNewEditor ();
 				var viewContent = editor.GetViewContent ();
 				string fileName = Path.Combine (tempPath, "a.cs");
-				var ctx = await EditorConfigService.GetEditorConfigContext (fileName);
-				((DefaultSourceEditorOptions)editor.Options).SetContext (ctx);
-				test (editor);
+				using (var ctx = await EditorConfigService.GetEditorConfigContext (fileName)) {
+					((DefaultSourceEditorOptions)editor.Options).SetContext (ctx);
+					test (editor);
+				}
 			} finally {
 				Directory.Delete (tempPath, true);
 			}
