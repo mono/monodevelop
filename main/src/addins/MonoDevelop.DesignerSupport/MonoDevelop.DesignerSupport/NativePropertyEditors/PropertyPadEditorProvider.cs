@@ -87,10 +87,12 @@ namespace MonoDevelop.DesignerSupport
 			if (realType == null)
 				return Array.Empty<IPropertyInfo> ();
 
-			var properties = new List<ReflectionPropertyInfo> ();
-			foreach (var item in realType.GetRuntimeProperties ()) {
-				properties.Add (new ReflectionPropertyInfo (item));
+			var pdc = TypeDescriptor.GetProperties (realType);
+			var properties = new List<DescriptorPropertyInfo> ();
+			foreach (PropertyDescriptor propertyInfo in pdc) {
+				properties.Add (new DescriptorPropertyInfo (propertyInfo));
 			}
+
 			return properties;
 		}
 
