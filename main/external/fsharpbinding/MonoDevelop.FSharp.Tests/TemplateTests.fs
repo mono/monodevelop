@@ -7,7 +7,6 @@ open System.Threading.Tasks
 open FsUnit
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Core
-open MonoDevelop.Core.ProgressMonitoring
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Projects
@@ -46,14 +45,6 @@ type ``Template tests``() =
             yield! category.Categories |> Seq.collect flattenCategories
         }
 
-    let solutionTemplates =
-        templateService.GetProjectTemplateCategories (predicate)
-        |> Seq.collect flattenCategories
-        |> Seq.collect(fun c -> c.Templates)
-        |> Seq.choose(fun s -> s.GetTemplate("F#") |> Option.ofObj)
-        |> Seq.filter(fun t -> t.Id.IndexOf("SharedAssets") = -1) // shared assets projects can't be built standalone
-        |> List.ofSeq
-
     let templatesDir = UnitTests.Util.TmpDir / "fsharp-buildtemplates"
 
     let getErrorsForProject (solution:Solution) =
@@ -84,8 +75,9 @@ type ``Template tests``() =
     let testWithParameters (tt:string) (buildFolder:string) (parameters:string) =
         if not MonoDevelop.Core.Platform.IsMac then
             Assert.Ignore ()
+
+        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
         toTask <| async {
-            let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = tt)
             let dir = FilePath (templatesDir/buildFolder)
             dir.Delete()
             Directory.CreateDirectory (dir |> string) |> ignore
@@ -122,10 +114,6 @@ type ``Template tests``() =
                 templateService.ProcessTemplate(template, config, sln.RootFolder)
 
             let folder = new SolutionFolder()
-            let solutionTemplate =
-                solutionTemplates 
-                |> Seq.find(fun t -> t.Id = tt)
-
             let projects = sln.Items |> Seq.filter(fun i -> i :? DotNetProject) |> Seq.cast<DotNetProject> |> List.ofSeq
 
             // Save solution before installing NuGet packages to prevent any Imports from being added
@@ -170,11 +158,19 @@ type ``Template tests``() =
         MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
             <- Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
 
+    [<TestFixtureTearDown>]
+    member x.TestFixtureTearDown() =
+        IdeApp.Exit()
+        |> Async.AwaitTask
+        |> Async.Ignore
+        |> Async.RunSynchronously
+
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``FSharp portable project``() =
+        let name = "FSharpPortableLibrary"
+        let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
+
         async {
-            let name = "FSharpPortableLibrary"
-            let projectTemplate = ProjectTemplate.ProjectTemplates |> Seq.find (fun t -> t.Id = name)
             let dir = FilePath (templatesDir/"fsportable")
             dir.Delete()
             let cinfo = new ProjectCreateInformation (ProjectBasePath = dir, ProjectName = name, SolutionName = name, SolutionPath = dir)
