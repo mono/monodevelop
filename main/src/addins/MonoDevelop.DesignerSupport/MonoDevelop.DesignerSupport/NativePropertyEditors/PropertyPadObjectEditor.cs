@@ -75,20 +75,13 @@ namespace MonoDevelop.DesignerSupport
 		//private readonly List<ReflectionPropertyInfo> properties = new List<ReflectionPropertyInfo> ();
 		//private readonly List<ReflectionEventInfo> events = new List<ReflectionEventInfo> ();
 
-		public PropertyPadObjectEditor (object target, object [] propertyProviders)
+		public PropertyPadObjectEditor (Tuple<object, object []> target)
 		{
-			if (target == null)
-				throw new ArgumentNullException (nameof (target));
-
-			if (propertyProviders == null)
-				throw new ArgumentNullException (nameof (propertyProviders));
-
-			this.target = target;
+			this.target = target.Item1;
 		
-			foreach (object objectDescriptor in propertyProviders) {
+			foreach (object objectDescriptor in target.Item2) {
 				if (objectDescriptor is CustomDescriptor customDescriptor) {
 
-					var lol = customDescriptor.GetProperties ();
 					var descriptorProperties = GetProperties (customDescriptor, null);
 
 					for (int i = 0; i < descriptorProperties.Count; i++) {
@@ -99,7 +92,6 @@ namespace MonoDevelop.DesignerSupport
 					}
 				}
 			}
-
 		}
 
 		public static PropertyDescriptorCollection GetProperties (object component, Attribute [] attributes)
@@ -207,12 +199,11 @@ namespace MonoDevelop.DesignerSupport
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
 
-			var info = property as ReflectionPropertyInfo;
-			if (info == null)
-				throw new ArgumentException ();
-
-			await info.SetValueAsync (this.target, value.Value);
-			OnPropertyChanged (info);
+			if (property is DescriptorPropertyInfo info && info.CanWrite) {
+				info.SetValue (this.target, value.Value);
+				OnPropertyChanged (info);
+			}			
+			throw new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (property));
 		}
 
 		protected virtual void OnPropertyChanged (IPropertyInfo property)
