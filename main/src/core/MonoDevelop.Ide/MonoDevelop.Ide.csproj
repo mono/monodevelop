@@ -53,6 +53,9 @@
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.ImageCatalog">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.ImageCatalog.15.8.28010\lib\net45\Microsoft.VisualStudio.ImageCatalog.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Imaging">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Imaging.15.8.28010\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
     </Reference>
