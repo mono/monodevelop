@@ -25,6 +25,10 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
@@ -40,6 +44,10 @@
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor">
+      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Platform.VSEditor.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 

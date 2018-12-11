@@ -105,6 +105,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="CodeLensPresenterStyle.cs" />
     <Compile Include="KeyProcessor\DefaultKeyProcessor.cs" />
     <Compile Include="KeyProcessor\DefaultKeyProcessorProvider.cs" />
     <Compile Include="RootWpfWidget.cs" />
