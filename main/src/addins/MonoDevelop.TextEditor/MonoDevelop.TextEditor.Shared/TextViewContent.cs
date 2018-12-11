@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AppKit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Utilities;
@@ -41,6 +42,11 @@ namespace MonoDevelop.Ide.Text
 			this.fileName = fileName;
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;
+
+			//TODO: HACK, this needs to be moved elsewhere and updated when MonoDevelop settings change.
+			imports.EditorOptionsFactoryService.GlobalOptions.SetOptionValue (
+				DefaultTextViewHostOptions.LineNumberMarginId,
+				Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin);
 
 			var contentType = (mimeType == null) ? imports.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (fileName, mimeType);
 
@@ -160,7 +166,17 @@ namespace MonoDevelop.Ide.Text
 
 		private AppKit.NSView CreateControl ()
 		{
-			TextView = imports.TextEditorFactoryService.CreateTextView (TextBuffer);
+			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
+			ITextDataModel dataModel = new VacuousTextDataModel (TextBuffer);
+			ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
+				imports.TextViewModelProviders,
+				dataModel.ContentType,
+				roles,
+				(provider) => (provider.CreateTextViewModel (dataModel, roles)),
+				imports.ContentTypeRegistryService,
+				imports.GuardedOperations,
+				this) ?? new VacuousTextViewModel (dataModel);
+			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
 			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			return textViewHost.HostControl;
 		}

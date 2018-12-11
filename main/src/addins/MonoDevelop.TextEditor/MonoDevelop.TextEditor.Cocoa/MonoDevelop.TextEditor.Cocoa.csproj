@@ -30,6 +30,13 @@
 		<WarningLevel>4</WarningLevel>
 		<ConsolePause>false</ConsolePause>
 	</PropertyGroup>
+	<PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+	  <StartAction>Program</StartAction>
+	  <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+	  <StartArguments>--no-redirect</StartArguments>
+	  <StartWorkingDirectory>..\..\..\..\build\bin\</StartWorkingDirectory>
+	  <ConsolePause>false</ConsolePause>
+	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="System" />
 		<Reference Include="System.ComponentModel.Composition" />

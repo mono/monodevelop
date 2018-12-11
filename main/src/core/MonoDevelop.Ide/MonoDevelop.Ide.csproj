@@ -4241,6 +4241,21 @@
     <Compile Include="MonoDevelop.Ide.Desktop\ThermalMonitor.cs" />
     <Compile Include="MonoDevelop.Ide\PlatformThermalStatusEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopFrameworkAssemblyPathResolver.cs" />
+    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs">
+      <Link>RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\VisualStudioForMacStructureTaggerProvider.cs">
+      <Link>RoslynOutliningWorkaround\VisualStudioForMacStructureTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\ViewHostingControl.cs">
+      <Link>RoslynOutliningWorkaround\ViewHostingControl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\RoslynOutliningRegionTag.cs">
+      <Link>RoslynOutliningWorkaround\RoslynOutliningRegionTag.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\BlockTagState.cs">
+      <Link>RoslynOutliningWorkaround\BlockTagState.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
@@ -4338,6 +4353,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\code-actions\" />
+    <Folder Include="RoslynOutliningWorkaround\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
