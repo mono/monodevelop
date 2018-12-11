@@ -94,6 +94,7 @@ namespace MonoDevelop.DesignerSupport
 				HasHorizontalScroller = false,
 			};
 			scrollView.WantsLayer = true;
+			scrollView.BackgroundColor = Styles.HeaderBackgroundColor;
 			scrollView.DocumentView = propertyEditorPanel;
 
 			verticalContainer.AddArrangedSubview (scrollView);

@@ -3,7 +3,7 @@ using AppKit;
 using MonoDevelop.Ide;
 using Xamarin.PropertyEditing.Mac;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.DesignerSupport
 {
 	static class Styles
 	{
