@@ -33,7 +33,7 @@ namespace MonoDevelop.DotNetCore.Tests
 	[TestFixture]
 	class DotNetCoreProjectSupportedTargetFrameworksTests : DotNetCoreVersionsRestorerTestBase
 	{
-		static string[] netStandardVersions = { "2.0", "1.6", "1.5", "1.4", "1.3", "1.2", "1.1", "1.0" };
+		static string[] netStandardVersions = { "2.1", "2.0", "1.6", "1.5", "1.4", "1.3", "1.2", "1.1", "1.0" };
 
 		[TestCase ("5.4.0", "2.0", "2.0.5")]
 		[TestCase ("5.3.99", "1.6", new string[0])]
@@ -78,6 +78,17 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual (".NETCoreApp,Version=v1.1", frameworks [0].Id.ToString ());
 			Assert.AreEqual (".NETCoreApp,Version=v1.0", frameworks [1].Id.ToString ());
 			Assert.AreEqual (2, frameworks.Count);
+		}
+
+		[Test]
+		public void GetNetCoreAppTargetFrameworks_NetCore30RuntimeInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("3.0.0");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+			Assert.AreEqual (".NETCoreApp,Version=v3.0", frameworks [0].Id.ToString ());
+			Assert.AreEqual (1, frameworks.Count);
 		}
 
 		[Test]

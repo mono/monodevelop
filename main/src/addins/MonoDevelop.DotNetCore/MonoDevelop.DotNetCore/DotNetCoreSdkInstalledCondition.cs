@@ -79,7 +79,9 @@ namespace MonoDevelop.DotNetCore
 				return true;
 
 			// Special case '2.2', '2.1' and '2.0'.
-			if (requiredSdkversion == "2.2") {
+			if (requiredSdkversion == "3.0") {
+				return versions.Any (IsNetCoreSdk30);
+			} else if (requiredSdkversion == "2.2") {
 				return versions.Any (IsNetCoreSdk22);
 			} else if (requiredSdkversion == "2.1") {
 				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
@@ -89,6 +91,14 @@ namespace MonoDevelop.DotNetCore
 
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
 			return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
+		}
+
+		/// <summary>
+		/// 3.0 is the lowest version that supports .NET Core 3.0 projects.
+		/// </summary>
+		static bool IsNetCoreSdk30 (DotNetCoreVersion version)
+		{
+			return version.Major == 3 && version.Minor == 0;
 		}
 
 		/// <summary>

@@ -29,43 +29,81 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using Newtonsoft.Json.Linq;
 
 namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreSdkPaths
 	{
 		string msbuildSDKsPath;
-		string sdkRootPath;
 
-		public void FindMSBuildSDKsPath ()
-		{
-			if (DotNetCoreRuntime.IsInstalled)
-				FindMSBuildSDKsPath (DotNetCoreRuntime.FileName);
-		}
+		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
+		public string SdkRootPath { get; internal set; }
 
-		public void FindMSBuildSDKsPath (string dotNetCorePath)
+		public DotNetCoreSdkPaths (string dotNetCorePath = "")
 		{
-			if (string.IsNullOrEmpty (dotNetCorePath))
-				return;
+			if (string.IsNullOrEmpty (dotNetCorePath)) {
+				if (DotNetCoreRuntime.IsInstalled)
+					dotNetCorePath = DotNetCoreRuntime.FileName;
+				else
+					return; //TODO or throw an exception?
+			}
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
-			sdkRootPath = Path.Combine (rootDirectory, "sdk");
+			SdkRootPath = Path.Combine (rootDirectory, "sdk");
 
-			if (!Directory.Exists (sdkRootPath))
+			if (!Directory.Exists (SdkRootPath))
 				return;
 
-			SdkVersions = GetInstalledSdkVersions (sdkRootPath)
+			SdkVersions = GetInstalledSdkVersions ()
 				.OrderByDescending (version => version)
 				.ToArray ();
+		}
+
+		//https://docs.microsoft.com/en-us/dotnet/core/tools/global-json
+		public void ResolveSDK (DotNetCoreVersion dotNetCoreVersion = null, string workingDir = "")
+		{
 			if (!SdkVersions.Any ())
 				return;
 
-			DotNetCoreVersion latestVersion = SdkVersions.FirstOrDefault ();
-			SdksParentDirectory = Path.Combine (sdkRootPath, latestVersion.OriginalString);
-			if (SdksParentDirectory == null)
-				return;
+			//look at the WHOLE logic, create SDKResovlerFoo (testing), use here
+			DotNetCoreVersion targetVersion = null;
+			var specificVersion = ReadGlobalJson (workingDir);
 
-			msbuildSDKsPath = Path.Combine (SdksParentDirectory, "Sdks");
+			//if !global.json, returns latest
+			if (string.IsNullOrEmpty (specificVersion)) {
+				msbuildSDKsPath = GetSdksParentDirectory (GetLatesSdk (dotNetCoreVersion));
+				Exist = true;
+				return;
+			}
+
+			DotNetCoreVersion requiredVersion;
+			DotNetCoreVersion.TryParse (specificVersion, out requiredVersion);
+
+			if (requiredVersion == null)
+				//TODO: what kind of Exception?
+				throw new Exception ("TargetFramework version unknown");
+
+			//if global.json exists and matches returns it
+			targetVersion = SdkVersions.FirstOrDefault (x => x.OriginalString.IndexOf (specificVersion, StringComparison.InvariantCulture) == 0);
+			if (targetVersion == null) {
+				//if global.json exists and !matches then:
+				if (requiredVersion.Major == 2 && requiredVersion.Minor >= 1) {
+					targetVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major
+																	&& version.Minor == requiredVersion.Minor
+																	&& version.Patch > requiredVersion.Patch)
+												.OrderByDescending (version => version.Patch).FirstOrDefault ();
+				} else {
+					targetVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major && version.Minor == requiredVersion.Minor)
+												.OrderByDescending (version => version.Patch).FirstOrDefault ();
+				}
+
+				if (targetVersion == null)
+					//TODO: what kind of Exception?
+					throw new Exception ($"Couldn't find SDK Version {specificVersion} for {requiredVersion}");
+			}
+
+			msbuildSDKsPath = GetSdksParentDirectory (targetVersion);
 			Exist = true;
 		}
 
@@ -97,18 +135,9 @@ namespace MonoDevelop.DotNetCore
 			}
 		}
 
-		public string SdkRootPath {
-			get { return sdkRootPath; }
-		}
-
-		public DotNetCoreVersion[] SdkVersions { get; private set; }
-
 		string SdksParentDirectory { get; set; }
 
-		static IEnumerable<string> SplitSdks (string sdk)
-		{
-			return sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-		}
+		static IEnumerable<string> SplitSdks (string sdk) => sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
 		bool CheckSdksExist (string sdk)
 		{
@@ -155,6 +184,44 @@ namespace MonoDevelop.DotNetCore
 			return Directory.EnumerateDirectories (sdkRootPath)
 				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
 				.Where (version => version != null);
+		}
+
+		string GetSdksParentDirectory (DotNetCoreVersion targetVersion)
+		{
+			SdksParentDirectory = Path.Combine (SdkRootPath, targetVersion.OriginalString);
+			if (SdksParentDirectory == null)
+				return string.Empty;
+
+			return Path.Combine (SdksParentDirectory, "Sdks");
+		}
+
+		string ReadGlobalJson (string workingDir)
+		{
+			var globalJsonPath = Path.Combine (workingDir, "global.json");
+			if (!File.Exists (globalJsonPath))
+				return string.Empty;
+
+			using (var r = new StreamReader (globalJsonPath)) {
+				var token = JObject.Parse (r.ReadToEnd ());
+				var version = (string)token.SelectToken ("sdk").SelectToken ("version");
+				return version;
+			}
+		}
+
+		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions ()
+		{
+			return Directory.EnumerateDirectories (SdkRootPath)
+				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
+				.Where (version => version != null);
+		}
+
+		internal DotNetCoreVersion GetLatesSdk (DotNetCoreVersion version)
+		{
+			if (version == null)
+				return SdkVersions.OrderByDescending (v => v).FirstOrDefault ();
+
+			return SdkVersions.Where (v => v.Major == version.Major && v.Minor == version.Minor)
+								.OrderByDescending (v => v).FirstOrDefault ();
 		}
 	}
 }

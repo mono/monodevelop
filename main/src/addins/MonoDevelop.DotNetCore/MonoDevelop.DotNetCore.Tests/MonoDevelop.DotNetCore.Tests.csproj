@@ -36,6 +36,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateWizardTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateStringTagProviderTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DependencyNodeTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSDKResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

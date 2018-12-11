@@ -36,6 +36,12 @@ namespace MonoDevelop.DotNetCore
 			return framework.Id.IsNetStandard ();
 		}
 
+		public static bool IsNetStandard21 (this TargetFramework framework)
+		{
+			return framework.IsNetStandard () &&
+				framework.Id.Version == "2.1";
+		}
+
 		public static bool IsNetStandard20 (this TargetFramework framework)
 		{
 			return framework.IsNetStandard () &&
@@ -65,6 +71,12 @@ namespace MonoDevelop.DotNetCore
 		public static bool IsNetCoreApp (this TargetFramework framework)
 		{
 			return framework.Id.IsNetCoreApp ();
+		}
+
+		public static bool IsNetCoreApp30 (this TargetFramework framework)
+		{
+			return framework.IsNetCoreApp () &&
+				framework.Id.Version == "3.0";
 		}
 
 		public static bool IsNetCoreApp22 (this TargetFramework framework)

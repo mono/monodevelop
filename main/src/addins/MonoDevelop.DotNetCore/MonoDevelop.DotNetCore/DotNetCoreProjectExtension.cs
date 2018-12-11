@@ -1,4 +1,4 @@
-﻿//
+//
 // DotNetCoreProjectExtension.cs
 //
 // Author:
@@ -44,6 +44,7 @@ namespace MonoDevelop.DotNetCore
 	public class DotNetCoreProjectExtension: DotNetProjectExtension
 	{
 		const string ShownDotNetCoreSdkInstalledExtendedPropertyName = "DotNetCore.ShownDotNetCoreSdkNotInstalledDialog";
+		const string GlobalJsonPathExtendedPropertyName = "DotNetCore.GlobalJsonPath";
 
 		DotNetCoreMSBuildProject dotNetCoreMSBuildProject = new DotNetCoreMSBuildProject ();
 		DotNetCoreSdkPaths sdkPaths;
@@ -51,6 +52,53 @@ namespace MonoDevelop.DotNetCore
 		public DotNetCoreProjectExtension ()
 		{
 			DotNetCoreProjectReloadMonitor.Initialize ();
+			if (IsDotNetCoreSdk22Installed ())
+				DotNetProjectProxy.ModifyImplicitPackageReferenceVersion = ModifyImplicitPackageReference;
+		}
+
+		void FileService_FileChanged (object sender, FileEventArgs e)
+		{
+			if (!Project.ParentSolution.ExtendedProperties.Contains (GlobalJsonPathExtendedPropertyName))
+				return;
+
+			var globalJsonPath = (string) Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName];
+			bool isGlobalJsonItem = e.Any (x => x.FileName.ToString ().IndexOf (globalJsonPath, StringComparison.InvariantCulture) == 0);
+			if (!isGlobalJsonItem)
+				return;
+
+			DetectSDK ();
+		}
+
+
+		static bool IsDotNetCoreSdk22Installed ()
+		{
+			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
+		}
+
+		/// <summary>
+		/// HACK: Handle implicit package versions defined by .NET Core 2.2 SDK.
+		/// </summary>
+		static void ModifyImplicitPackageReference (ProjectPackageReference packageReference, DotNetProject project)
+		{
+			bool targetLatestRuntimePatch = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetLatestRuntimePatch", false);
+			string targetFrameworkVersion = project.TargetFramework.Id.Version;
+
+			foreach (IMSBuildItemEvaluated item in project.MSBuildProject.EvaluatedItems) {
+				if (!IsImplicitPackageReferenceMatch (item, packageReference, targetFrameworkVersion))
+					continue;
+
+				string versionProperty = targetLatestRuntimePatch ? "LatestVersion" : "DefaultVersion";
+				string version = item.Metadata.GetValue (versionProperty) ?? string.Empty;
+				packageReference.Metadata.SetValue ("Version", version);
+				return;
+			}
+		}
+
+		static bool IsImplicitPackageReferenceMatch (IMSBuildItemEvaluated item, ProjectPackageReference packageReference, string targetFrameworkVersion)
+		{
+			return item.Name == "ImplicitPackageReferenceVersion" &&
+				StringComparer.OrdinalIgnoreCase.Equals (item.Include, packageReference.Include) &&
+				targetFrameworkVersion == item.Metadata.GetValue ("TargetFrameworkVersion");
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
@@ -222,11 +270,12 @@ namespace MonoDevelop.DotNetCore
 			return Runtime.RunInMainThread (() => {
 				if (ShownDotNetCoreSdkNotInstalledDialogForSolution ())
 					return;
-
+					
 				Project.ParentSolution.ExtendedProperties [ShownDotNetCoreSdkInstalledExtendedPropertyName] = "true";
 
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.IsUnsupportedVersion = unsupportedSdkVersion;
+					dialog.RequiresDotNetCore30 = Project.TargetFramework.IsNetCoreApp30 ();
 					dialog.RequiresDotNetCore22 = Project.TargetFramework.IsNetCoreApp22 ();
 					dialog.RequiresDotNetCore21 = Project.TargetFramework.IsNetCoreApp21 ();
 					dialog.RequiresDotNetCore20 = Project.TargetFramework.IsNetStandard20OrNetCore20 ();
@@ -293,7 +342,8 @@ namespace MonoDevelop.DotNetCore
 		{
 			base.OnItemReady ();
 			Project.Modified += OnProjectModified;
-
+			FileService.FileChanged += FileService_FileChanged;
+			 
 			if (!IdeApp.IsInitialized)
 				return;
 
@@ -302,11 +352,46 @@ namespace MonoDevelop.DotNetCore
 			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				ShowDotNetCoreNotInstalledDialog (sdkPaths.IsUnsupportedSdkVersion);
 			}
+
+			if (Project.ParentSolution == null)
+				return;
+
+			if (Project.ParentSolution.ExtendedProperties.Contains (GlobalJsonPathExtendedPropertyName))
+				return;
+
+			//detect globaljson
+			var globalJsonPath = Path.Combine (Project.ParentSolution.BaseDirectory, "global.json");
+			if (File.Exists (globalJsonPath))
+				Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath;
+			DetectSDK ();
+		}
+
+		void DetectSDK (bool restore = false)
+		{
+			sdkPaths.ResolveSDK (DotNetCoreVersion.Parse (Project.TargetFramework.Id.Version),  Project.ParentSolution.BaseDirectory);
+			DotNetCoreSdk.Update (sdkPaths);
+			if (restore)
+				ReevaluateAllOpenDotNetCoreProjects ().Ignore ();
+		}
+
+		async Task ReevaluateAllOpenDotNetCoreProjects ()
+		{
+			if (!IdeApp.Workspace.IsOpen)
+				return;
+
+			var progressMonitor = new ProgressMonitor ();
+			foreach (var project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
+				if (project.HasFlavor<DotNetCoreProjectExtension> ()) {
+					await project.ReevaluateProject (progressMonitor);
+					RestorePackagesInProjectHandler.Run (project, restoreTransitiveProjectReferences: true, reevaluateBeforeRestore: true);
+				}
+			}
 		}
 
 		public override void Dispose ()
 		{
 			Project.Modified -= OnProjectModified;
+			FileService.FileChanged -= FileService_FileChanged;
 
 			if (IdeApp.IsInitialized)
 				PackageManagementServices.ProjectTargetFrameworkMonitor.ProjectTargetFrameworkChanged -= ProjectTargetFrameworkChanged;
@@ -328,6 +413,7 @@ namespace MonoDevelop.DotNetCore
 			// Need to re-evaluate before restoring to ensure the implicit package references are correct after
 			// the target framework has changed.
 			RestorePackagesInProjectHandler.Run (Project, restoreTransitiveProjectReferences: true, reevaluateBeforeRestore: true);
+			DetectSDK (true);
 		}
 
 		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
@@ -403,6 +489,8 @@ namespace MonoDevelop.DotNetCore
 				return GettextCatalog.GetString (".NET Core 2.1 SDK is not installed. This is required to build .NET Core 2.1 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore21DownloadUrl);
 			else if (targetFramework.IsNetCoreApp22 ())
 				return GettextCatalog.GetString (".NET Core 2.2 SDK is not installed. This is required to build .NET Core 2.2 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore22DownloadUrl);
+			else if (targetFramework.IsNetCoreApp30 ())
+				return GettextCatalog.GetString (".NET Core 3.0 SDK is not installed. This is required to build .NET Core 3.0 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore30DownloadUrl);
 
 			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
 		}
@@ -432,7 +520,7 @@ namespace MonoDevelop.DotNetCore
 
 			if (!HasSdk)
 				return;
-
+		
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 		}
 

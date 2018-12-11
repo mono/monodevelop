@@ -129,7 +129,9 @@ namespace MonoDevelop.DotNetCore.Templating
 				if (!SupportsNetCore1x ()) {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 					if (highestFramework != null) {
-						if (highestFramework.IsNetCoreApp22 ()) {
+						if (highestFramework.IsNetCoreApp30 ()) {
+							Parameters ["UseNetCore30"] = "true";
+						} else if (highestFramework.IsNetCoreApp22 ()) {
 							Parameters ["UseNetCore22"] = "true";
 						} else if (highestFramework != null && highestFramework.IsNetCoreApp21 ()) {
 							Parameters ["UseNetCore21"] = "true";
@@ -142,8 +144,10 @@ namespace MonoDevelop.DotNetCore.Templating
 				} else {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 					if (highestFramework != null) {
-						if (highestFramework.IsNetCoreApp22 ()) {
-							Parameters["UseNetCore22"] = "true";
+						if (highestFramework.IsNetCoreApp30 ()) {
+							Parameters["UseNetCore30"] = "true";
+						} else if (highestFramework.IsNetCoreApp22 ()) {
+							Parameters ["UseNetCore22"] = "true";
 						} else if (highestFramework.IsNetCoreApp21 ()) {
 							Parameters ["UseNetCore21"] = "true";
 						} else if (highestFramework.IsNetCoreApp20 ()) {
