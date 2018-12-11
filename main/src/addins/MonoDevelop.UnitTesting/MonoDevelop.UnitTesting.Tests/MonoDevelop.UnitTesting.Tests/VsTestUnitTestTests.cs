@@ -84,6 +84,17 @@ namespace MonoDevelop.UnitTesting.Tests
 			grp.AddTest (new MyVsTestUnitTest ("Test", "Test", "TestCase1"));
 			grp.AddTest (new MyVsTestUnitTest ("Test", "Test.Test", "TestCase1"));
 		}
+
+		/// <summary>
+		/// VSTS Bug 729387: [Feedback] Broken text editor unit test #6735
+		/// </summary>
+		[Test]
+		public void TestVSTS729387 ()
+		{
+			var test = CreateVsUnitTest ("Namespace.MyTest.Test1", "Test1");
+			Assert.AreEqual ("Namespace.MyTest.Test1", test.TestSourceCodeDocumentId);
+		}
+
 		class MyVsTestUnitTest : VsTestUnitTest
 		{
 			public MyVsTestUnitTest (string displayName, string fixtureTypeNamespace, string fixtureTypeName) : base(displayName)
