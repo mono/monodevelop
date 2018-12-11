@@ -1,13 +1,18 @@
 <ExtensionModel>
 	<Runtime>
+		<Import assembly="Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll"/>
 		<Import assembly="MonoDevelop.TextEditor.Wpf.dll"/>
+		<Import assembly="Microsoft.VisualStudio.Text.UI.Wpf.dll"/>
+		<Import assembly="Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 	</Runtime>
 
 	<!-- Extension points --> 
 
   	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Platform.VSEditor.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Text.UI.Wpf.dll"/>
 		<Assembly file="MonoDevelop.TextEditor.Wpf.dll"/>
-		<Assembly file="..\..\..\bin\Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
