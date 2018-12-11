@@ -27,13 +27,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using NUnit.Framework;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
+using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -327,6 +328,63 @@ namespace MonoDevelop.PackageManagement.Tests
 			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
 
 			Assert.IsNull (nugetProject);
+		}
+
+		[Test]
+		public async Task AddFile_NewFile_AddsFileToProject ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+
+			await project.AddFileToProjectAsync (fileName);
+
+			ProjectFile fileItem = dotNetProject.Files.GetFile (fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (Projects.BuildAction.Compile, fileItem.BuildAction);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task AddFile_NewTextFile_AddsFileToProjectWithCorrectItemType ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.txt".ToNativePath ();
+
+			await project.AddFileToProjectAsync (fileName);
+
+			ProjectFile fileItem = dotNetProject.Files.GetFile (fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (Projects.BuildAction.None, fileItem.BuildAction);
+		}
+
+		[Test]
+		public async Task AddFile_RelativeFileNameUsed_AddsFileToProject ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+			string relativeFileName = @"src\NewFile.cs".ToNativePath ();
+
+			await project.AddFileToProjectAsync (relativeFileName);
+
+			ProjectFile fileItem = dotNetProject.Files.GetFile (fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (Projects.BuildAction.Compile, fileItem.BuildAction);
+		}
+
+		[Test]
+		public async Task AddFile_FileAlreadyExistsInProject_FileIsNotAddedToProject ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+
+			await project.AddFileToProjectAsync (fileName);
+			await project.AddFileToProjectAsync (fileName);
+
+			int projectItemsCount = dotNetProject.Files.Count;
+			Assert.AreEqual (1, projectItemsCount);
 		}
 	}
 }

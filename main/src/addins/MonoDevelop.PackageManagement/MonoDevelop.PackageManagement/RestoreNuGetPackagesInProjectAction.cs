@@ -90,7 +90,7 @@ namespace MonoDevelop.PackageManagement
 					await restoreManager.RestoreMissingPackagesAsync (
 						solutionManager.SolutionDirectory,
 						nugetProject,
-						new NuGetProjectContext (),
+						new NuGetProjectContext (solutionManager.Settings),
 						downloadContext,
 						cancellationToken);
 				}

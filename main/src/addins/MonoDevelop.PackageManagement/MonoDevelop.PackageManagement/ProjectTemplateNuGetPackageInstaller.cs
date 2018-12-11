@@ -106,14 +106,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			var primaryRepositories = repositoryProvider.GetRepositories (packageReference).ToList ();
 			var secondaryRepositories = GetSecondaryRepositories (primaryRepositories, packageReference);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution);
 
-			var context = new NuGetProjectContext {
+			var context = new NuGetProjectContext (solutionManager.Settings) {
 				FileConflictResolution = FileConflictAction.IgnoreAll
 			};
 			return new InstallNuGetPackageAction (
 				primaryRepositories,
 				secondaryRepositories,
-				PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution),
+				solutionManager,
 				new DotNetProjectProxy (dotNetProject),
 				context) {
 				LicensesMustBeAccepted = packageReference.RequireLicenseAcceptance,

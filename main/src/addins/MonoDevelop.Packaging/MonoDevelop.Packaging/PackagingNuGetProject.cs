@@ -91,7 +91,7 @@ namespace MonoDevelop.Packaging
 
 				bool developmentDependency = false;
 				if (IsNuGetBuildPackagingPackage (packageIdentity)) {
-					await GlobalPackagesExtractor.Extract (project.ParentSolution, packageIdentity, downloadResourceResult, token);
+					await GlobalPackagesExtractor.Extract (project.ParentSolution, packageIdentity, downloadResourceResult, nuGetProjectContext, token);
 
 					developmentDependency = true;
 					GenerateNuGetBuildPackagingTargets (packageIdentity);

@@ -131,7 +131,7 @@ namespace MonoDevelop.PackageManagement
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
 					await restoreManager.RestoreMissingPackagesInSolutionAsync (
 						solutionManager.SolutionDirectory,
-						new NuGetProjectContext (),
+						new NuGetProjectContext (solutionManager.Settings),
 						cancellationToken);
 				}
 			}
@@ -145,7 +145,7 @@ namespace MonoDevelop.PackageManagement
 			if (nugetAwareRestorer != null) {
 				await nugetAwareRestorer.RestoreMissingPackagesAsync (
 					nugetAwareProjects,
-					new NuGetProjectContext (),
+					new NuGetProjectContext (solutionManager.Settings),
 					cancellationToken);
 			}
 

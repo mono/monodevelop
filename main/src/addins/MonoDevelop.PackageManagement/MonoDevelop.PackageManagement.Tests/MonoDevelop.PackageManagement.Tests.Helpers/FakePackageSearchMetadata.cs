@@ -73,6 +73,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool PrefixReserved { get; set; }
 
+		public LicenseMetadata LicenseMetadata { get; set; }
+
 		public Task<IEnumerable<VersionInfo>> GetVersionsAsync ()
 		{
 			throw new NotImplementedException ();

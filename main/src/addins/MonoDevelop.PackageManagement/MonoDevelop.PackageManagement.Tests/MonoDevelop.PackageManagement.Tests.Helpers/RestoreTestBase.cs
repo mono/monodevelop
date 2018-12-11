@@ -30,8 +30,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NUnit.Framework;
+using NuGet.Configuration;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
+using NuGet.Packaging.PackageExtraction;
+using NuGet.Packaging.Signing;
+using NuGet.ProjectManagement;
+using NUnit.Framework;
 using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -98,6 +103,22 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return restoreManager.RestorePackages (
 				projects,
 				CancellationToken.None);
+		}
+
+		protected INuGetProjectContext CreateNuGetProjectContext (ISettings settings)
+		{
+			var context = new FakeNuGetProjectContext {
+				LogToConsole = true
+			};
+
+			var logger = new LoggerAdapter (context);
+			context.PackageExtractionContext = new PackageExtractionContext (
+				PackageSaveMode.Defaultv2,
+				PackageExtractionBehavior.XmlDocFileSaveMode,
+				ClientPolicyContext.GetClientPolicy (settings, logger),
+				logger);
+
+			return context;
 		}
 	}
 }
