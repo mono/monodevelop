@@ -69,7 +69,6 @@ namespace MonoDevelop.CSharp.Formatting
 			if (indentation.HasValue && indentation.Value > 0) {
 				return CalculateIndentationString (indentation.Value);
 			}
-			Console.WriteLine (Environment.StackTrace);
 			return editor.GetLineIndent (lineNumber) + CalculateIndentationString (editor.Options.IndentationSize);
 		}
 
