@@ -41,7 +41,7 @@
       <Name>TextDataUtil</Name>
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj" />
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
       <Name>TextUIUtil</Name>
       <Private>false</Private>
     </ProjectReference>
