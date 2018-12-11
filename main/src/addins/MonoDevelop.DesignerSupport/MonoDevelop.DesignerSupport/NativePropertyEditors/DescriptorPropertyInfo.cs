@@ -49,28 +49,29 @@ namespace MonoDevelop.DesignerSupport
 	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
-		readonly PropertyDescriptor propertyInfo;
+		public PropertyDescriptor PropertyDescriptor { get; private set; }
+		public CustomDescriptor CustomDescriptor { get; private set; }
 
 		static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
 		static readonly PropertyVariationOption [] EmptyVariationOptions = new PropertyVariationOption [0];
-		CustomDescriptor customDescriptor;
+
 		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, CustomDescriptor customDescriptor) 
 		{
-			this.propertyInfo = propertyInfo;
-			this.customDescriptor = customDescriptor;
+			this.PropertyDescriptor = propertyInfo;
+			this.CustomDescriptor = customDescriptor;
 		}
 
-		public string Name => propertyInfo.DisplayName;
+		public string Name => PropertyDescriptor.DisplayName;
 
-		public string Description => propertyInfo.Description;
+		public string Description => PropertyDescriptor.Description;
 
-		public Type Type => propertyInfo.PropertyType;
+		public Type Type => Map (PropertyDescriptor, CustomDescriptor);
 
-		public ITypeInfo RealType => ToTypeInfo (customDescriptor, Type);
+		public ITypeInfo RealType => ToTypeInfo (CustomDescriptor, Type);
 
-		public string Category => propertyInfo.Category;
+		public string Category => PropertyDescriptor.Category;
 
-		public bool CanWrite => !propertyInfo.IsReadOnly;
+		public bool CanWrite => !PropertyDescriptor.IsReadOnly;
 
 		public ValueSources ValueSources => ValueSources.Local;
 
@@ -85,7 +86,7 @@ namespace MonoDevelop.DesignerSupport
 			if (ReferenceEquals (this, other))
 				return true;
 
-			return this.propertyInfo.Equals (other.propertyInfo);
+			return this.PropertyDescriptor.Equals (other.PropertyDescriptor);
 		}
 
 		public override bool Equals (object obj)
@@ -102,7 +103,12 @@ namespace MonoDevelop.DesignerSupport
 
 		public override int GetHashCode ()
 		{
-			return this.propertyInfo.GetHashCode ();
+			return this.PropertyDescriptor.GetHashCode ();
+		}
+
+		static Type Map (PropertyDescriptor property, CustomDescriptor customDescriptor)
+		{
+			return property.PropertyType;
 		}
 
 		public static ITypeInfo ToTypeInfo (CustomDescriptor customDescriptor, Type type, bool isRelevant = true)
@@ -111,15 +117,13 @@ namespace MonoDevelop.DesignerSupport
 			return new PropertyTypeInfo (customDescriptor, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
-		private readonly Lazy<List<TypeConverter>> typeConverter;
-
 		internal Task<T> GetValueAsync<T> (object target)
 		{
 			string error;
 			object value = null;
 			try {
-				TypeConverter tc = propertyInfo.Converter;
-				object cob = propertyInfo.GetValue (customDescriptor);
+				TypeConverter tc = PropertyDescriptor.Converter;
+				object cob = PropertyDescriptor.GetValue (CustomDescriptor);
 				if (tc.CanConvertTo (typeof (T))) {
 					value = tc.ConvertTo (cob, typeof (T));
 				}
@@ -143,6 +147,18 @@ namespace MonoDevelop.DesignerSupport
 				error = ex.ToString ();
 				Console.WriteLine (error);
 				return Task.FromResult (converted);
+			}
+		}
+
+		internal void SetValue<T> (object target, T value)
+		{
+			try {
+				var tc = PropertyDescriptor.Converter;
+				if (tc.CanConvertFrom (typeof (T))) {
+					PropertyDescriptor.SetValue (CustomDescriptor, value);
+				}
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
 			}
 		}
 	}

@@ -41,8 +41,7 @@ namespace MonoDevelop.DesignerSupport
 	class PropertyPadEditorProvider
 	: IEditorProvider
 	{
-		object [] propertyProviders = new object [0];
-		object currentObject;
+		Tuple<object, object[]> currentObject;
 		IObjectEditor currentEditor;
 
 		public IReadOnlyDictionary<Type, ITypeInfo> KnownTypes {
@@ -51,19 +50,12 @@ namespace MonoDevelop.DesignerSupport
 
 		public Task<IObjectEditor> GetObjectEditorAsync (object item)
 		{
-			if (this.currentObject == item)
+			if (item is Tuple<object, object []> tuple) {
+				this.currentObject = tuple;
+				this.currentEditor = new PropertyPadObjectEditor (tuple); ;
 				return Task.FromResult (currentEditor);
-
-			this.currentObject = item;
-
-			if (editorCache.TryGetValue (item, out IObjectEditor cachedEditor)) {
-				this.currentEditor = cachedEditor;
-				return Task.FromResult (cachedEditor);
 			}
-
-			var editor = new PropertyPadObjectEditor (item, propertyProviders);
-			editorCache.Add (item, editor);
-			return Task.FromResult ((IObjectEditor) editor);
+			return Task.FromResult<IObjectEditor> (null);
 		}
 
 		public Task<object> CreateObjectAsync (ITypeInfo type)
@@ -71,19 +63,7 @@ namespace MonoDevelop.DesignerSupport
 			var realType = Type.GetType ($"{type.NameSpace}.{type.Name}, {type.Assembly.Name}");
 			if (realType == null)
 				return Task.FromResult<object> (null);
-
 			return Task.FromResult (Activator.CreateInstance (realType));
-		}
-
-		readonly Dictionary<object, IObjectEditor> editorCache = new Dictionary<object, IObjectEditor> ();
-
-		public void SetPropertyProviders (object [] propertyProviders)
-		{
-			if (this.propertyProviders != null) {
-				foreach (var old in this.propertyProviders.OfType<IDisposable> ())
-					old.Dispose ();
-			}
-			this.propertyProviders = propertyProviders;
 		}
 
 		public Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)

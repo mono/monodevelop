@@ -162,7 +162,8 @@ namespace MonoDevelop.DesignerSupport
 
 		public void BlankPad ()
 		{
-			propertyEditorPanel.Select (new object [0]);
+			propertyEditorPanel.SelectedItems.Clear ();
+			currentSelectedObject = null;
 			CommandRouteOrigin = null;
 		}
 
@@ -188,16 +189,17 @@ namespace MonoDevelop.DesignerSupport
 
 		}
 
-		public class TestApp
-		{
-			public string MyProperty { get; set; }
-		}
+		Tuple<object, object []> currentSelectedObject;
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				editorProvider.SetPropertyProviders (propertyProviders);
-				propertyEditorPanel.Select (new object [] { lastComponent });
+				var selection = new Tuple<object, object []> (lastComponent, propertyProviders);
+				if (currentSelectedObject != selection) {
+					propertyEditorPanel.SelectedItems.Clear ();
+					propertyEditorPanel.SelectedItems.Add (new Tuple<object, object []> (lastComponent, propertyProviders));
+					currentSelectedObject = selection;
+				}
 			}
 		}
 
