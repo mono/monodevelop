@@ -89,13 +89,10 @@ namespace MonoDevelop.DesignerSupport
 				if (objectDescriptor is CustomDescriptor customDescriptor) {
 
 					var lol = customDescriptor.GetProperties ();
-					var propiedadesFromDescriptor = GetProperties (customDescriptor, null);
+					var descriptorProperties = GetProperties (customDescriptor, null);
 
-					//var propiedadesFromTarget = GetProperties (target, null);
-
-					//var props = GetProperties (target, null);
-					for (int i = 0; i < propiedadesFromDescriptor.Count; i++) {
-						var prop = propiedadesFromDescriptor [i] as PropertyDescriptor;
+					for (int i = 0; i < descriptorProperties.Count; i++) {
+						var prop = descriptorProperties [i] as PropertyDescriptor;
 						if (prop.IsBrowsable) {
 							properties.Add (new DescriptorPropertyInfo (prop, customDescriptor));
 						}
@@ -210,7 +207,7 @@ namespace MonoDevelop.DesignerSupport
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
 
-			ReflectionPropertyInfo info = property as ReflectionPropertyInfo;
+			var info = property as ReflectionPropertyInfo;
 			if (info == null)
 				throw new ArgumentException ();
 
