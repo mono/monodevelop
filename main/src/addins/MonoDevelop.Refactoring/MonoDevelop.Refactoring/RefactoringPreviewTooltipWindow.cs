@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using Pango;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Gdk;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
@@ -131,7 +132,7 @@ namespace MonoDevelop.Refactoring
 					// Post process text with markup, as we need the UI thread here.
 					for (int i = 0; i < diff.LineResults.Count; ++i) {
 						var temp = diff.LineResults [i];
-						if (temp.LineKind == LineKind.Normal && temp.TextOrMarkup == null) {
+						if (temp.LineKind == LineKind.Normal && temp.TextMarkup == null) {
 							var newText = editor.GetMarkup (temp.Offset, temp.Length, new MarkupOptions (MarkupFormat.Pango, false));
 							diff.LineResults [i] = new LineResult (newText, temp.Offset, temp.Length, temp.LineKind, temp.XNeedsMeasure);
 						}
@@ -153,15 +154,15 @@ namespace MonoDevelop.Refactoring
 
 		readonly struct LineResult
 		{
-			public readonly string TextOrMarkup;
+			public readonly string TextMarkup;
 			public readonly int Offset;
 			public readonly int Length;
 			public readonly LineKind LineKind;
 			public readonly bool XNeedsMeasure;
 
-			public LineResult (string textOrMarkup, int offset, int length, LineKind lineKind, bool xNeedsMeasure)
+			public LineResult (string textMarkup, int offset, int length, LineKind lineKind, bool xNeedsMeasure)
 			{
-				TextOrMarkup = textOrMarkup;
+				TextMarkup = textMarkup;
 				Offset = offset;
 				Length = length;
 				LineKind = lineKind;
@@ -276,7 +277,7 @@ namespace MonoDevelop.Refactoring
 
 				string text = null;
 				if (lineKind != LineKind.Normal || !(document is TextEditor)) {
-					text = document.GetTextAt (offset, length);
+					text = Ambience.EscapeText (document.GetTextAt (offset, length));
 				} // Ignore markup items as the markup needs to be requested on the UI thread.
 
 				bool xNeedsMeasure = line.Length != curLineIndent;
@@ -352,11 +353,7 @@ namespace MonoDevelop.Refactoring
 					return;
 				}
 
-				if (lineResult.LineKind == LineKind.Normal)
-					drawingLayout.SetMarkup (lineResult.TextOrMarkup);
-				else
-					drawingLayout.SetText (lineResult.TextOrMarkup);
-
+				drawingLayout.SetMarkup (lineResult.TextMarkup);
 				drawingLayout.GetPixelSize (out int w, out int h);
 				x = Math.Max (x, w);
 				y += lineHeight;
@@ -376,7 +373,7 @@ namespace MonoDevelop.Refactoring
 			foreach (var lineResult in diff.LineResults) {
 				switch (lineResult.LineKind) {
 				case LineKind.Normal:
-					DrawLine (g, lineResult, ref y, isMarkup: true);
+					DrawLine (g, lineResult, ref y);
 					break;
 				case LineKind.Removed:
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
@@ -384,28 +381,24 @@ namespace MonoDevelop.Refactoring
 					g.SetSourceColor (diff.RemovedBackground);
 					g.Fill ();
 					g.SetSourceColor (diff.RemovedForeground);
-					DrawLine (g, lineResult, ref y, isMarkup: false);
+					DrawLine (g, lineResult, ref y);
 					break;
 				case LineKind.Added:
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
 					g.SetSourceColor (diff.AddedBackground);
 					g.Fill ();
 					g.SetSourceColor (diff.AddedForeground);
-					DrawLine (g, lineResult, ref y, isMarkup: false);
+					DrawLine (g, lineResult, ref y);
 					break;
 				}
 			}
 		}
 
-		void DrawLine (Cairo.Context g, LineResult lineResult, ref int y, bool isMarkup)
+		void DrawLine (Cairo.Context g, LineResult lineResult, ref int y)
 		{
 			using (var drawingLayout = new Pango.Layout (PangoContext)) {
 				drawingLayout.FontDescription = fontDescription;
-
-				if (isMarkup)
-					drawingLayout.SetMarkup (lineResult.TextOrMarkup);
-				else
-					drawingLayout.SetText (lineResult.TextOrMarkup);
+				drawingLayout.SetMarkup (lineResult.TextMarkup);
 
 				g.Save ();
 				g.Translate (textBorder, y);
