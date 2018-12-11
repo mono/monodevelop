@@ -1,5 +1,5 @@
 //
-// MockEditorProvider.cs
+// PropertyPadEditorProvider.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>
@@ -69,10 +69,17 @@ namespace MonoDevelop.DesignerSupport
 				return Task.FromResult (cachedEditor);
 			}
 
-			var editor = new PropertyPadObjectEditor (item, propertyProviders);
+			var editor = ChooseEditor (item);
 			editorCache.Add (item, editor);
 			return Task.FromResult ((IObjectEditor) editor);
 		}
+
+
+		IObjectEditor ChooseEditor (object item)
+		{
+			return new PropertyPadObjectEditor (item, propertyProviders);
+		}
+
 
 		public async Task<IReadOnlyCollection<IPropertyInfo>> GetPropertiesForTypeAsync (ITypeInfo type)
 		{
@@ -114,9 +121,6 @@ namespace MonoDevelop.DesignerSupport
 				}).ToList ());
 			});
 		}
-
-		IObjectEditor ChooseEditor (object item)
-		 => new ReflectionObjectEditor (item);
 
 		public Task<object> CreateObjectAsync (ITypeInfo type)
 		{

@@ -1,5 +1,5 @@
 ﻿//
-// MockEditorProvider.cs
+// PropertyPadObjectEditor.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>

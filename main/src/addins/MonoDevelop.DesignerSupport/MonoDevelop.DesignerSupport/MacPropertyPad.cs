@@ -46,7 +46,7 @@ using Foundation;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public class VerticalStackView : NSStackView
+	class VerticalStackView : NSStackView
 	{
 		public event EventHandler SizeChanged;
 
@@ -66,7 +66,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 	}
 
-	public class MacPropertyPad : PadContent, ICommandDelegator, IPropertyPad
+	class MacPropertyPad : PadContent, ICommandDelegator, IPropertyPad
 	{
 		Gtk.Widget widget;
 

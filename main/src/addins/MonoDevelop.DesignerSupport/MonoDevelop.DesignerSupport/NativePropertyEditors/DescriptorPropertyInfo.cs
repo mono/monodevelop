@@ -1,5 +1,5 @@
 ﻿//
-// MockEditorProvider.cs
+// DescriptorPropertyInfo.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>
