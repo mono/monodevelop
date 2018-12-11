@@ -101,7 +101,6 @@
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\Language\LanguageImpl.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\StandardClassification\StandardClassificationImpl.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Def\TextUIWpf\TextUIWpf.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BraceCompletion\BraceCompletionImpl.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationAggregator\ClassificationAggregatorImpl.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationFormat\ClassificationFormatMapImpl.csproj" />
@@ -126,8 +125,6 @@
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextLogicUtil\TextLogicUtil.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj" />
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationProvider\UIAutomationProvider.csproj" />
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj" />
 	</ItemGroup>
 	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

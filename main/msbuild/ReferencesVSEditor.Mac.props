@@ -37,6 +37,10 @@
       <Name>TextUI</Name>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextUIWpf\TextUIWpf.csproj">
+      <Name>TextUIWpf</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj">
       <Name>TextDataUtil</Name>
       <Private>false</Private>
@@ -59,6 +63,14 @@
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\WindowsBase\WindowsBase.csproj">
       <Name>WindowsBase</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\UIAutomationProvider\UIAutomationProvider.csproj">
+      <Name>UIAutomationProvider</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj">
+      <Name>UIAutomationTypes</Name>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
   </ItemGroup>
