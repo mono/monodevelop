@@ -107,8 +107,9 @@ namespace MonoDevelop.DesignerSupport
 		internal Task<T> GetValueAsync<T> (object target)
 		{
 			string error;
-			object value = this.propertyInfo.GetValue (target);
+			object value = null;
 			try {
+				value = this.propertyInfo.GetValue (target);
 				return Task.FromResult ((T)value);
 			} catch (Exception ex) {
 				error = ex.ToString (); 
