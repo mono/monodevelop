@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.MSBuild
 						else // Project builder is shutting down
 							remoteProjectBuilders.Remove (projectFile);
 					} else if (addReference) {
-						builder.ContinueWith (t => t.Result.AddReference (), TaskContinuationOptions.NotOnFaulted);
+						builder.ContinueWith (t => AddProjectBuilderReference (t.Result), TaskContinuationOptions.NotOnFaulted);
 						return builder;
 					} else
 						return builder;
@@ -130,9 +130,15 @@ namespace MonoDevelop.Projects.MSBuild
 				builder = CreateRemoteProjectBuilder (projectFile);
 				remoteProjectBuilders.Add (projectFile, builder);
 				if (addReference)
-					builder.ContinueWith (t => t.Result.AddReference (), TaskContinuationOptions.NotOnFaulted);
+					builder.ContinueWith (t => AddProjectBuilderReference (t.Result), TaskContinuationOptions.NotOnFaulted);
 				return builder;
 			}
+		}
+
+		void AddProjectBuilderReference (RemoteProjectBuilder remoteBuilder)
+		{
+			if (!remoteBuilder.AddReference ())
+				RemoveBuilder (remoteBuilder);
 		}
 
 		async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
@@ -160,12 +166,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal async Task UnloadProject (RemoteProjectBuilder remoteBuilder, int projectId)
 		{
-			lock (remoteProjectBuilders) {
-				if (remoteProjectBuilders.TryGetValue (remoteBuilder.File, out Task<RemoteProjectBuilder> foundRemoteBuilder)) {
-					if (foundRemoteBuilder.IsCompleted && foundRemoteBuilder.Result == remoteBuilder)
-						remoteProjectBuilders.Remove (remoteBuilder.File);
-				}
-			}
+			RemoveBuilder (remoteBuilder);
 
 			try {
 				await connection.SendMessage (new UnloadProjectRequest { ProjectId = projectId }).ConfigureAwait (false);
@@ -173,6 +174,16 @@ namespace MonoDevelop.Projects.MSBuild
 				LoggingService.LogError ("Project unloading failed", ex);
 				if (!await CheckDisconnected ())
 					throw;
+			}
+		}
+
+		void RemoveBuilder (RemoteProjectBuilder remoteBuilder)
+		{
+			lock (remoteProjectBuilders) {
+				if (remoteProjectBuilders.TryGetValue (remoteBuilder.File, out Task<RemoteProjectBuilder> foundRemoteBuilder)) {
+					if (foundRemoteBuilder.IsCompleted && foundRemoteBuilder.Result == remoteBuilder)
+						remoteProjectBuilders.Remove (remoteBuilder.File);
+				}
 			}
 		}
 
