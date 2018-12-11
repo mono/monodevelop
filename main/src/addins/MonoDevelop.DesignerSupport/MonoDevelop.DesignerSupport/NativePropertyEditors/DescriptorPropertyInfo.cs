@@ -37,6 +37,15 @@ using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
+	class PropertyTypeInfo : Xamarin.PropertyEditing.TypeInfo
+	{
+		public CustomDescriptor customDescriptor;
+		public PropertyTypeInfo (CustomDescriptor propertyDescriptor, IAssemblyInfo assembly, string nameSpace, string name) : base (assembly, nameSpace, name)
+		{
+			this.customDescriptor = propertyDescriptor;
+		}
+	}
+
 	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
@@ -44,11 +53,11 @@ namespace MonoDevelop.DesignerSupport
 
 		static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
 		static readonly PropertyVariationOption [] EmptyVariationOptions = new PropertyVariationOption [0];
-
-		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo) 
+		CustomDescriptor customDescriptor;
+		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, CustomDescriptor customDescriptor) 
 		{
 			this.propertyInfo = propertyInfo;
-
+			this.customDescriptor = customDescriptor;
 		}
 
 		public string Name => propertyInfo.DisplayName;
@@ -57,7 +66,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public Type Type => propertyInfo.PropertyType;
 
-		public ITypeInfo RealType => ToTypeInfo (Type);
+		public ITypeInfo RealType => ToTypeInfo (customDescriptor, Type);
 
 		public string Category => propertyInfo.Category;
 
@@ -96,10 +105,10 @@ namespace MonoDevelop.DesignerSupport
 			return this.propertyInfo.GetHashCode ();
 		}
 
-		public static ITypeInfo ToTypeInfo (Type type, bool isRelevant = true)
+		public static ITypeInfo ToTypeInfo (CustomDescriptor customDescriptor, Type type, bool isRelevant = true)
 		{
 			var asm = type.Assembly.GetName ().Name;
-			return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+			return new PropertyTypeInfo (customDescriptor, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
 		private readonly Lazy<List<TypeConverter>> typeConverter;
@@ -109,7 +118,11 @@ namespace MonoDevelop.DesignerSupport
 			string error;
 			object value = null;
 			try {
-				value = this.propertyInfo.GetValue (target);
+				TypeConverter tc = propertyInfo.Converter;
+				object cob = propertyInfo.GetValue (customDescriptor);
+				if (tc.CanConvertTo (typeof (T))) {
+					value = tc.ConvertTo (cob, typeof (T));
+				}
 				return Task.FromResult ((T)value);
 			} catch (Exception ex) {
 				error = ex.ToString (); 
