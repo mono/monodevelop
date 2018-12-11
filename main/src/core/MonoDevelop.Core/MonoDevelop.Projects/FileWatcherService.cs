@@ -40,6 +40,8 @@ namespace MonoDevelop.Projects
 	{
 		// We don't want more than 8 threads for FileSystemWatchers.
 		const int maxWatchers = 8;
+		static readonly ConcurrentExclusiveSchedulerPair pair = new ConcurrentExclusiveSchedulerPair ();
+		static readonly TaskFactory exclusiveFactory = new TaskFactory (pair.ExclusiveScheduler);
 
 		static readonly PathTree tree = new PathTree ();
 		static readonly Dictionary<FilePath, FileWatcherWrapper> watchers = new Dictionary<FilePath, FileWatcherWrapper> ();
@@ -76,7 +78,7 @@ namespace MonoDevelop.Projects
 			cancellationTokenSource = new CancellationTokenSource ();
 			CancellationToken token = cancellationTokenSource.Token;
 
-			return Task.Run (() => UpdateWatchers (token));
+			return exclusiveFactory.StartNew (() => UpdateWatchers (token), token);
 		}
 
 		static void UpdateWatchers (CancellationToken token)
