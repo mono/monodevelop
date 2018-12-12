@@ -34,6 +34,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementEvents packageManagementEvents;
 		NuGetAwareProjectPackageRestoreManager restoreManager;
+		IMonoDevelopSolutionManager solutionManager;
 		INuGetAwareProject nugetAwareProject;
 
 		public RestoreNuGetPackagesInNuGetAwareProjectAction (
@@ -41,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 			IMonoDevelopSolutionManager solutionManager)
 		{
 			nugetAwareProject = (INuGetAwareProject)project;
+			this.solutionManager = solutionManager;
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
@@ -75,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			await restoreManager.RestoreMissingPackagesAsync (
 				nugetAwareProject,
-				new NuGetProjectContext (),
+				new NuGetProjectContext (solutionManager.Settings),
 				cancellationToken);
 
 			packageManagementEvents.OnPackagesRestored ();

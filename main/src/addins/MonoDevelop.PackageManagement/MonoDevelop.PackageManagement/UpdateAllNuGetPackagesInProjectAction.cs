@@ -59,7 +59,7 @@ namespace MonoDevelop.PackageManagement
 			: this (
 				solutionManager,
 				new DotNetProjectProxy (dotNetProject),
-				new NuGetProjectContext (),
+				new NuGetProjectContext (solutionManager.Settings),
 				new MonoDevelopNuGetPackageManager (solutionManager),
 				new MonoDevelopPackageRestoreManager (solutionManager),
 				PackageManagementServices.PackageManagementEvents)

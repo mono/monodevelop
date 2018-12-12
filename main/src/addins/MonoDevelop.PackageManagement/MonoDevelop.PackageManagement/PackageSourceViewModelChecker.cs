@@ -27,11 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Common;
 using NuGet.Credentials;
 
 namespace MonoDevelop.PackageManagement
@@ -111,7 +113,8 @@ namespace MonoDevelop.PackageManagement
 
 		HttpClient CreateHttpClient(PackageSourceViewModel packageSource)
 		{
-			var credentialService = new CredentialService (new ICredentialProvider[0], true);
+			var lazyProvider = AsyncLazy.New (() => Enumerable.Empty<ICredentialProvider> ());
+			var credentialService = new CredentialService (lazyProvider, true, false);
 			return HttpClientFactory.CreateHttpClient (
 				packageSource.GetPackageSource (),
 				credentialService);

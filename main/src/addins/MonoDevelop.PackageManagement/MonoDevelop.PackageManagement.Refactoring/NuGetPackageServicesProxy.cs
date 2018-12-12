@@ -90,12 +90,13 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			Runtime.RunInMainThread (delegate {
 				var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
 				var repository = repositoryProvider.CreateRepository (new PackageSource (source));
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 
 				var action = new InstallNuGetPackageAction (
 					new [] { repository },
-					PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution),
+					solutionManager,
 					new DotNetProjectProxy ((DotNetProject)project),
-					new NuGetProjectContext ()) {
+					new NuGetProjectContext (solutionManager.Settings)) {
 					PackageId = packageId,
 					Version = string.IsNullOrEmpty (version) ? null : new NuGetVersion (version),
 					IncludePrerelease = includePrerelease,
