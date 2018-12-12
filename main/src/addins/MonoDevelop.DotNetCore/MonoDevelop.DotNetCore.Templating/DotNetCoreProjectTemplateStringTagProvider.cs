@@ -126,12 +126,10 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			DotNetCoreVersion dotNetCoreSdk = null;
 
-			if (tag.StartsWith ("DotNetCoreSdk.3.0", StringComparison.OrdinalIgnoreCase)) {
-				dotNetCoreSdk = GetDotNetCoreSdk30Version ();
-			} else if (tag.StartsWith ("DotNetCoreSdk.2.2", StringComparison.OrdinalIgnoreCase)) {
-				dotNetCoreSdk = GetDotNetCoreSdk22Version ();
-			} else if (tag.StartsWith ("DotNetCoreSdk.2.1", StringComparison.OrdinalIgnoreCase)) {
-				dotNetCoreSdk = GetDotNetCoreSdk21Version ();
+			foreach (var sdk in SupportedSDK) {
+				if (tag.StartsWith ($"DotNetCoreSdk.{sdk}", StringComparison.OrdinalIgnoreCase)) {
+					dotNetCoreSdk = GetDotNetCoreSdkVersion (DotNetCoreVersion.Parse (sdk));
+				}
 			}
 
 			if (dotNetCoreSdk == null)
@@ -150,22 +148,15 @@ namespace MonoDevelop.DotNetCore.Templating
 			return string.Empty;
 		}
 
-		DotNetCoreVersion GetDotNetCoreSdk30Version ()
+		DotNetCoreVersion GetDotNetCoreSdkVersion (DotNetCoreVersion version)
 		{
-			return DotNetCoreSdk.Versions
-				.FirstOrDefault (v => v.Major == 3 && v.Minor == 0);
-		}
+			//special case 2.1
+			if (version.Major == 2 && version.Minor == 1)
+				return DotNetCoreSdk.Versions
+				.FirstOrDefault (v => v.Major == version.Major && v.Minor == version.Minor && v.Patch >= 300);
 
-		DotNetCoreVersion GetDotNetCoreSdk22Version ()
-		{
 			return DotNetCoreSdk.Versions
-				.FirstOrDefault (v => v.Major == 2 && v.Minor == 2);
-		}
-
-		DotNetCoreVersion GetDotNetCoreSdk21Version ()
-		{
-			return DotNetCoreSdk.Versions
-				.FirstOrDefault (v => v.Major == 2 && v.Minor == 1 && v.Patch >= 300);
+				.FirstOrDefault (v => v.Major == version.Major && v.Minor == version.Minor);
 		}
 
 		/// <summary>
