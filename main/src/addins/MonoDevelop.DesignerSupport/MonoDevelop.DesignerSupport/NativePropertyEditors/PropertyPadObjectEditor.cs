@@ -71,9 +71,6 @@ namespace MonoDevelop.DesignerSupport
 
 		public event EventHandler<EditorPropertyChangedEventArgs> PropertyChanged;
 
-		//private readonly List<ReflectionPropertyInfo> properties = new List<ReflectionPropertyInfo> ();
-		//private readonly List<ReflectionEventInfo> events = new List<ReflectionEventInfo> ();
-
 		public PropertyPadObjectEditor (Tuple<object, object []> target)
 		{
 			this.target = target.Item1;
@@ -83,10 +80,25 @@ namespace MonoDevelop.DesignerSupport
 				for (int i = 0; i < props.Count; i++) {
 					var prop = props [i] as PropertyDescriptor;
 					if (prop.IsBrowsable) {
-						properties.Add (PropertyPadPropertyInfoFactory.PropertyInfo (prop, propertyProvider));
+						properties.Add (CreatePropertyInfo (prop, propertyProvider));
 					}
 				}
 			}
+		}
+
+		protected IPropertyInfo CreatePropertyInfo (PropertyDescriptor propertyDescriptor, object PropertyProvider)
+		{
+			var valueSources = ValueSources.Local | ValueSources.Resource;
+
+			var type = propertyDescriptor.PropertyType;
+			if (type == typeof (bool))
+				return new BoolDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			if (type == typeof (int))
+				return new IntDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			if (type == typeof (float))
+				return new FloatDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				
+			return new StringDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 		}
 
 		public static PropertyDescriptorCollection GetProperties (object component, Attribute [] attributes)
@@ -166,15 +178,16 @@ namespace MonoDevelop.DesignerSupport
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
 
-			var info = property as DescriptorPropertyInfo;
-			if (info == null)
+			if (!(property is DescriptorPropertyInfo info))
 				throw new ArgumentException ();
 
 			T value = await info.GetValueAsync<T> (this.target);
 
 			return new ValueInfo<T> {
+				Value = value,
 				Source = ValueSource.Local,
-				Value = value
+				//ValueDescriptor = valueInfoString.ValueDescriptor,
+				//CustomExpression = valueString
 			};
 		}
 
@@ -189,16 +202,18 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult (true);
 		}
 
-		public async Task SetValueAsync<T> (IPropertyInfo property, ValueInfo<T> value, PropertyVariation variations = null)
+		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> valueInfo, PropertyVariation variations = null)
 		{
-			if (property == null)
-				throw new ArgumentNullException (nameof (property));
+			if (propertyInfo == null)
+				throw new ArgumentNullException (nameof (propertyInfo));
 
-			if (property is DescriptorPropertyInfo info && info.CanWrite) {
-				info.SetValue (this.target, value.Value);
+			if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
+				info.SetValue (this.target, valueInfo.Value);
 				OnPropertyChanged (info);
-			}			
-			throw new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (property));
+			}
+
+			PropertyChanged?.Invoke (this, new EditorPropertyChangedEventArgs (propertyInfo));
+			return Task.CompletedTask;
 		}
 
 		protected virtual void OnPropertyChanged (IPropertyInfo property)

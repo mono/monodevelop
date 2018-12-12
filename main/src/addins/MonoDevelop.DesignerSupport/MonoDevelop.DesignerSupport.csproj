@@ -159,11 +159,14 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MacPropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadObjectEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\DescriptorPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadEditorProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyProviderTypeInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyDescriptorEventInfo.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadPropertyInfoFactory.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\StringDescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\IntDescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\BoolDescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FloatDescriptorPropertyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
@@ -204,6 +207,7 @@
     <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
     <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
     <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\" />
+    <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
