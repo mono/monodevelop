@@ -305,7 +305,7 @@ namespace MonoDevelop.PackageManagement
 			return true;
 		}
 
-		public override Task AddFileToProjectAsync (string filePath)
+		public Task AddFileToProjectAsync (string filePath)
 		{
 			if (project.IsFileInProject (filePath))
 				return Task.CompletedTask;
