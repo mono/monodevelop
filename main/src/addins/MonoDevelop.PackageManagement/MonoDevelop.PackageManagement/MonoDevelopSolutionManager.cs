@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
@@ -50,17 +51,13 @@ namespace MonoDevelop.PackageManagement
 		public MonoDevelopSolutionManager (Solution solution)
 		{
 			Solution = solution;
+			UpdateConfiguration ();
 			LoadSettings ();
-			solution.SolutionItemAdded += (sender, e) => {
-				projects = null;
-			};
-			solution.SolutionItemRemoved += (sender, e) => {
-				projects = null;
-			};
 		}
 
 		public Solution Solution { get; private set; }
 		public ISettings Settings { get; private set; }
+		public ConfigurationSelector Configuration { get; private set; }
 
 		public bool IsSolutionOpen {
 			get { return true; }
@@ -94,17 +91,30 @@ namespace MonoDevelop.PackageManagement
 		public Task<IEnumerable<NuGetProject>> GetNuGetProjectsAsync ()
 		{
 			if (projects == null) {
-				projects = GetNuGetProjects (Solution, Settings).ToList ();
+				projects = GetNuGetProjects (Solution, Settings, Configuration).ToList ();
 			}
 			return Task.FromResult (projects.AsEnumerable ());
 		}
 
-		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution, ISettings settings)
+		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution, ISettings settings, ConfigurationSelector configuration)
 		{
-			var factory = new MonoDevelopNuGetProjectFactory (settings);
-			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
+			var factory = new MonoDevelopNuGetProjectFactory (settings, configuration);
+			foreach (DotNetProject project in GetAllDotNetProjectsUsingReverseTopologicalSort (solution, configuration)) {
 				yield return factory.CreateNuGetProject (project);
 			}
+		}
+
+		/// <summary>
+		/// Returning the projects in a reverse topological sort means that better caching of the
+		/// PackageSpecs for each project can occur if PackageReference projects depend on other
+		/// PackageReference projects since getting the PackageSpec for the root project will result in
+		/// all dependencies being retrieved at the same time and add to the cache.
+		/// </summary>
+		static IEnumerable<DotNetProject> GetAllDotNetProjectsUsingReverseTopologicalSort (Solution solution, ConfigurationSelector config)
+		{
+			return solution.GetAllProjectsWithTopologicalSort (config)
+				.OfType<DotNetProject> ()
+				.Reverse ();
 		}
 
 		public Task<string> GetNuGetProjectSafeNameAsync (NuGetProject nuGetProject)
@@ -118,7 +128,7 @@ namespace MonoDevelop.PackageManagement
 
 		public NuGetProject GetNuGetProject (IDotNetProject project)
 		{
-			return new MonoDevelopNuGetProjectFactory (Settings)
+			return new MonoDevelopNuGetProjectFactory (Settings, Configuration)
 				.CreateNuGetProject (project);
 		}
 
@@ -157,6 +167,12 @@ namespace MonoDevelop.PackageManagement
 		public void ClearProjectCache ()
 		{
 			projects = null;
+			UpdateConfiguration ();
+		}
+
+		void UpdateConfiguration ()
+		{
+			Configuration = IdeApp.Workspace?.ActiveConfiguration ?? ConfigurationSelector.Default;
 		}
 
 		public void EnsureSolutionIsLoaded ()

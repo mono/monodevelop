@@ -107,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject project)
 		{
-			return new MonoDevelopNuGetProjectFactory (solutionManager.Settings)
+			return new MonoDevelopNuGetProjectFactory (solutionManager.Settings, solutionManager.Configuration)
 				.CreateNuGetProject (project);
 		}
 

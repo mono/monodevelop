@@ -31,6 +31,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.CommandLine;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
@@ -81,7 +82,7 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<BuildIntegratedNuGetProject> projects,
 			CancellationToken cancellationToken)
 		{
-			var spec = await DependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, context);
+			var spec = await MonoDevelopDependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, projects, context, cancellationToken);
 
 			var now = DateTime.UtcNow;
 			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
@@ -182,6 +183,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			var now = DateTime.UtcNow;
 			Action<SourceCacheContext> cacheContextModifier = c => c.MaxAge = now;
+
+			var spec = await MonoDevelopDependencyGraphRestoreUtility.GetSolutionRestoreSpec (solutionManager, project, context, cancellationToken);
+			context.AddToCache (spec);
 
 			RestoreResult restoreResult = await DependencyGraphRestoreUtility.RestoreProjectAsync (
 				solutionManager,

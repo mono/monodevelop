@@ -38,15 +38,17 @@ namespace MonoDevelop.PackageManagement
 	internal class MonoDevelopNuGetProjectFactory
 	{
 		ISettings settings;
+		ConfigurationSelector configuration;
 
 		public MonoDevelopNuGetProjectFactory ()
-			: this (SettingsLoader.LoadDefaultSettings ())
+			: this (SettingsLoader.LoadDefaultSettings (), ConfigurationSelector.Default)
 		{
 		}
 
-		public MonoDevelopNuGetProjectFactory (ISettings settings)
+		public MonoDevelopNuGetProjectFactory (ISettings settings, ConfigurationSelector configuration)
 		{
 			this.settings = settings;
+			this.configuration = configuration;
 		}
 
 		public NuGetProject CreateNuGetProject (IDotNetProject project)
@@ -70,11 +72,11 @@ namespace MonoDevelop.PackageManagement
 			if (nugetAwareProject != null)
 				return nugetAwareProject.CreateNuGetProject ();
 
-			NuGetProject dotNetCoreProject = DotNetCoreNuGetProject.Create (project);
+			NuGetProject dotNetCoreProject = DotNetCoreNuGetProject.Create (project, configuration);
 			if (dotNetCoreProject != null)
 				return dotNetCoreProject;
 
-			NuGetProject packageReferenceProject = PackageReferenceNuGetProject.Create (project);
+			NuGetProject packageReferenceProject = PackageReferenceNuGetProject.Create (project, configuration);
 			if (packageReferenceProject != null)
 				return packageReferenceProject;
 

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
@@ -33,7 +34,9 @@ namespace MonoDevelop.PackageManagement
 {
 	internal interface IMonoDevelopSolutionManager : ISolutionManager
 	{
+		Solution Solution { get; }
 		ISettings Settings { get; }
+		ConfigurationSelector Configuration { get; }
 		NuGetProject GetNuGetProject (IDotNetProject project);
 		ISourceRepositoryProvider CreateSourceRepositoryProvider ();
 		void ReloadSettings ();
