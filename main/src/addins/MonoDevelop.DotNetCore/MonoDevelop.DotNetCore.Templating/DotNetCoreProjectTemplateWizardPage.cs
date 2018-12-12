@@ -38,6 +38,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		readonly DotNetCoreProjectTemplateWizard wizard;
 		GtkDotNetCoreProjectTemplateWizardPageWidget view;
 		List<TargetFramework> targetFrameworks;
+		IEnumerable<string> parameters;
 
 		public DotNetCoreProjectTemplateWizardPage (
 			DotNetCoreProjectTemplateWizard wizard,
@@ -45,11 +46,21 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			this.wizard = wizard;
 			this.targetFrameworks = targetFrameworks;
+			parameters = CreateTargetFrameworksParameters ();
 
 			if (targetFrameworks.Any ())
 				SelectedTargetFrameworkIndex = 0;
 			else
 				CanMoveToNextPage = false;
+		}
+
+		IEnumerable<string> CreateTargetFrameworksParameters ()
+		{
+			for (var i = 0; i < targetFrameworks.Count; i++) {
+				var parameter = targetFrameworks [i].GetParameterName ();
+				if (!string.IsNullOrEmpty (parameter))
+					yield return parameter;
+			}
 		}
 
 		public override string Title {
@@ -77,9 +88,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		public bool ShowMultiplatformLibraryImage { get; private set; }
 
-		public IList<TargetFramework> TargetFrameworks {
-			get { return targetFrameworks; }
-		}
+		public IList<TargetFramework> TargetFrameworks => targetFrameworks;
 
 		int selectedTargetFrameworkIndex;
 
@@ -90,21 +99,20 @@ namespace MonoDevelop.DotNetCore.Templating
 				UpdateTargetFrameworkParameters ();
 			}
 		}
-
+			
 		void UpdateTargetFrameworkParameters ()
 		{
-			TargetFramework framework = targetFrameworks [selectedTargetFrameworkIndex];
+			var framework = targetFrameworks [selectedTargetFrameworkIndex];
+
 			wizard.Parameters ["Framework"] = framework.Id.GetShortFrameworkName ();
 
-			wizard.Parameters ["UseNetCore30"] = framework.IsNetCoreApp30 ().ToString ();
-			wizard.Parameters ["UseNetCore22"] = framework.IsNetCoreApp22 ().ToString ();
-			wizard.Parameters ["UseNetCore21"] = framework.IsNetCoreApp21 ().ToString ();
-			wizard.Parameters ["UseNetCore20"] = framework.IsNetCoreApp20 ().ToString ();
-			wizard.Parameters ["UseNetCore1x"] = framework.IsNetCoreApp1x ().ToString ();
+			foreach (var param in parameters) {
+				wizard.Parameters [param] = "false";
+			}
 
-			wizard.Parameters ["UseNetStandard21"] = framework.IsNetStandard21 ().ToString ();
-			wizard.Parameters ["UseNetStandard20"] = framework.IsNetStandard20 ().ToString ();
-			wizard.Parameters ["UseNetStandard1x"] = framework.IsNetStandard1x ().ToString ();
+			var parameter = framework.GetParameterName ();
+			if (!string.IsNullOrEmpty (parameter))
+				wizard.Parameters [parameter] = "true";
 		}
 	}
 }

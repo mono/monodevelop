@@ -61,7 +61,7 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		//https://docs.microsoft.com/en-us/dotnet/core/tools/global-json
-		public void ResolveSDK (DotNetCoreVersion dotNetCoreVersion = null, string workingDir = "")
+		public void ResolveSDK (string workingDir = "")
 		{
 			if (!SdkVersions.Any ())
 				return;
@@ -72,7 +72,7 @@ namespace MonoDevelop.DotNetCore
 
 			//if !global.json, returns latest
 			if (string.IsNullOrEmpty (specificVersion)) {
-				msbuildSDKsPath = GetSdksParentDirectory (GetLatesSdk (dotNetCoreVersion));
+				msbuildSDKsPath = GetSdksParentDirectory (GetLatestSdk ());
 				Exist = true;
 				return;
 			}
@@ -215,13 +215,6 @@ namespace MonoDevelop.DotNetCore
 				.Where (version => version != null);
 		}
 
-		internal DotNetCoreVersion GetLatesSdk (DotNetCoreVersion version)
-		{
-			if (version == null)
-				return SdkVersions.OrderByDescending (v => v).FirstOrDefault ();
-
-			return SdkVersions.Where (v => v.Major == version.Major && v.Minor == version.Minor)
-								.OrderByDescending (v => v).FirstOrDefault ();
-		}
+		internal DotNetCoreVersion GetLatestSdk () => SdkVersions.OrderByDescending (v => v).FirstOrDefault ();
 	}
 }

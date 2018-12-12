@@ -107,7 +107,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void WhenDotNetCorePathIsNull_ThenItReturnsLatestSdk ()
 		{
 			var resolver = CreateResolver (string.Empty, mockSdkVersions: true);
-			var expectedVersion = resolver.GetLatesSdk (null);
+			var expectedVersion = resolver.GetLatestSdk ();
 			var expectedResult = Path.Combine (resolver.SdkRootPath, expectedVersion.OriginalString, "Sdks");
 
 			resolver.ResolveSDK ();
@@ -128,7 +128,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void WhenNoGlobalJson_ThenItReturnsLatestSdk ()
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
-			var expectedVersion = resolver.GetLatesSdk (null);
+			var expectedVersion = resolver.GetLatestSdk ();
 			var expectedResult = Path.Combine (resolver.SdkRootPath, expectedVersion.OriginalString, "Sdks");
 
 			resolver.ResolveSDK ();
@@ -147,7 +147,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, expectedVersion.OriginalString);
 
-				resolver.ResolveSDK (expectedVersion, workingDirectory);
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -165,7 +165,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (versionThatDoesNotExists, workingDirectory);
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -183,7 +183,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (versionThatDoesNotExists, workingDirectory);
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -194,14 +194,14 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
 			var versionThatDoesNotExists = DotNetCoreVersion.Parse ("2.2.3");
-			var versionThatShouldReturn = resolver.GetLatesSdk (versionThatDoesNotExists);
+			var versionThatShouldReturn = resolver.GetLatestSdk ();
 			var expectedResult = Path.Combine (resolver.SdkRootPath, versionThatShouldReturn.OriginalString, "Sdks");
 
 			using (var solution = await GetSolution ()) {
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				Assert.Throws<Exception> (() => resolver.ResolveSDK (versionThatDoesNotExists, workingDirectory));
+				Assert.Throws<Exception> (() => resolver.ResolveSDK (workingDirectory));
 			}
 		}
 

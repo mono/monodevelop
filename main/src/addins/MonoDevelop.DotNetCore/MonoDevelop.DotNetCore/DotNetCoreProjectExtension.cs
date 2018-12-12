@@ -275,10 +275,7 @@ namespace MonoDevelop.DotNetCore
 
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.IsUnsupportedVersion = unsupportedSdkVersion;
-					dialog.RequiresDotNetCore30 = Project.TargetFramework.IsNetCoreApp30 ();
-					dialog.RequiresDotNetCore22 = Project.TargetFramework.IsNetCoreApp22 ();
-					dialog.RequiresDotNetCore21 = Project.TargetFramework.IsNetCoreApp21 ();
-					dialog.RequiresDotNetCore20 = Project.TargetFramework.IsNetStandard20OrNetCore20 ();
+					dialog.RequiredDotNetCoreVersion = DotNetCoreVersion.Parse (Project.TargetFramework.Id.Version);
 					dialog.Show ();
 				}
 			});
@@ -360,6 +357,7 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			//detect globaljson
+			//TODO recursive search here
 			var globalJsonPath = Path.Combine (Project.ParentSolution.BaseDirectory, "global.json");
 			if (File.Exists (globalJsonPath))
 				Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath;
@@ -368,7 +366,7 @@ namespace MonoDevelop.DotNetCore
 
 		void DetectSDK (bool restore = false)
 		{
-			sdkPaths.ResolveSDK (DotNetCoreVersion.Parse (Project.TargetFramework.Id.Version),  Project.ParentSolution.BaseDirectory);
+			sdkPaths.ResolveSDK (Project.ParentSolution.BaseDirectory);
 			DotNetCoreSdk.Update (sdkPaths);
 			if (restore)
 				ReevaluateAllOpenDotNetCoreProjects ().Ignore ();
@@ -438,7 +436,8 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
-			} else if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
+			}
+			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
 				return CreateDotNetCoreSdkRequiredBuildResult ();
 			}
 			return null;
@@ -479,20 +478,20 @@ namespace MonoDevelop.DotNetCore
 				Project.TargetFramework);
 		}
 
-		static string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion, TargetFramework targetFramework)
+		string GetDotNetCoreSdkRequiredBuildErrorMessage (bool isUnsupportedVersion, TargetFramework targetFramework)
 		{
-			if (isUnsupportedVersion)
-				return GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
-			else if (targetFramework.IsNetStandard20OrNetCore20 ())
-				return GettextCatalog.GetString (".NET Core 2.0 SDK is not installed. This is required to build .NET Core 2.0 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore20DownloadUrl);
-			else if (targetFramework.IsNetCoreApp21 ())
-				return GettextCatalog.GetString (".NET Core 2.1 SDK is not installed. This is required to build .NET Core 2.1 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore21DownloadUrl);
-			else if (targetFramework.IsNetCoreApp22 ())
-				return GettextCatalog.GetString (".NET Core 2.2 SDK is not installed. This is required to build .NET Core 2.2 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore22DownloadUrl);
-			else if (targetFramework.IsNetCoreApp30 ())
-				return GettextCatalog.GetString (".NET Core 3.0 SDK is not installed. This is required to build .NET Core 3.0 projects. {0}", DotNetCoreNotInstalledDialog.DotNetCore30DownloadUrl);
+			string message;
+			string downloadUrl;
 
-			return GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build .NET Core projects. {0}", DotNetCoreNotInstalledDialog.DotNetCoreDownloadUrl);
+			if (isUnsupportedVersion) {
+				message = DotNetCoreNotInstalledDialog.GetDotNetCoreMessage ();
+				downloadUrl = DotNetCoreNotInstalledDialog.GetDotNetCoreDownloadUrl ();
+			} else {
+				message = DotNetCoreNotInstalledDialog.GetDotNetCoreMessage (targetFramework.Id.Version);
+				downloadUrl = DotNetCoreNotInstalledDialog.GetDotNetCoreDownloadUrl (targetFramework.Id.Version);
+			}
+
+			return $"{message} {downloadUrl}";
 		}
 
 		protected override void OnBeginLoad ()

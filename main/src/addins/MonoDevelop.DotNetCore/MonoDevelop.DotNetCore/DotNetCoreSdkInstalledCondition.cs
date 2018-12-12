@@ -27,7 +27,6 @@
 using System;
 using System.Linq;
 using Mono.Addins;
-using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -38,10 +37,7 @@ namespace MonoDevelop.DotNetCore
 			DotNetCoreRuntime.Changed += OnLocationChanged;
 		}
 
-		void OnLocationChanged (object sender, EventArgs e)
-		{
-			NotifyChanged ();
-		}
+		void OnLocationChanged (object sender, EventArgs e) => NotifyChanged ();
 
 		/// <summary>
 		/// The SDK version check is not quite correct. It currently only checks the
@@ -78,52 +74,33 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (requiredSdkversion))
 				return true;
 
-			// Special case '2.2', '2.1' and '2.0'.
-			if (requiredSdkversion == "3.0") {
-				return versions.Any (IsNetCoreSdk30);
-			} else if (requiredSdkversion == "2.2") {
-				return versions.Any (IsNetCoreSdk22);
-			} else if (requiredSdkversion == "2.1") {
+			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
+			DotNetCoreVersion requiredDotNetCoreVersion;
+			DotNetCoreVersion.TryParse (requiredSdkversion, out requiredDotNetCoreVersion);
+
+			if (requiredDotNetCoreVersion == null)
+				return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
+
+			// Special case '2.1' and '2.0'.
+			if (requiredSdkversion == "2.1") {
 				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
-			} else if (requiredSdkversion == "2.0") {
+			} 
+			if (requiredSdkversion == "2.0") {
 				return versions.Any (IsNetCoreSdk20) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
 			}
 
-			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
-			return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
-		}
-
-		/// <summary>
-		/// 3.0 is the lowest version that supports .NET Core 3.0 projects.
-		/// </summary>
-		static bool IsNetCoreSdk30 (DotNetCoreVersion version)
-		{
-			return version.Major == 3 && version.Minor == 0;
-		}
-
-		/// <summary>
-		/// 2.2 is the lowest version that supports .NET Core 2.2 projects.
-		/// </summary>
-		static bool IsNetCoreSdk22 (DotNetCoreVersion version)
-		{
-			return version.Major == 2 && version.Minor == 2;
+			return versions.Any (version => version.Major == requiredDotNetCoreVersion.Major && version.Minor == requiredDotNetCoreVersion.Minor);
 		}
 
 		/// <summary>
 		/// 2.1.300 is the lowest version that supports .NET Core 2.1 projects.
 		/// </summary>
-		static bool IsNetCoreSdk21 (DotNetCoreVersion version)
-		{
-			return version.Major == 2 && version.Minor == 1 && version.Patch >= 300;
-		}
+		static bool IsNetCoreSdk21 (DotNetCoreVersion version) => version.Major == 2 && version.Minor == 1 && version.Patch >= 300;
 
 		/// <summary>
 		/// 2.1.300 is the lowest version that supports .NET Core 2.1 projects.
 		/// </summary>
-		static bool IsNetCoreSdk20 (DotNetCoreVersion version)
-		{
-			return version.Major == 2 && version.Minor <= 1 && version.Patch < 300;
-		}
+		static bool IsNetCoreSdk20 (DotNetCoreVersion version) => version.Major == 2 && version.Minor <= 1 && version.Patch < 300;
 
 		/// <summary>
 		/// .NET Standard library projects do not require the .NET Core runtime.
