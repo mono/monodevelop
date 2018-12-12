@@ -62,14 +62,14 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			var logger = new LoggerAdapter (context);
-			var solutionManager = new MonoDevelopSolutionManager (solution);
-			var clientPolicyContext = ClientPolicyContext.GetClientPolicy (solutionManager.Settings, logger);
+			var signedPackageVerifier = new PackageSignatureVerifier (SignatureVerificationProviderFactory.GetSignatureVerificationProviders ());
 
 			var packageExtractionContext = new PackageExtractionContext (
 				PackageSaveMode.Defaultv3,
 				PackageExtractionBehavior.XmlDocFileSaveMode,
-				clientPolicyContext,
-				logger);
+				logger,
+				signedPackageVerifier,
+				SignedPackageVerifierSettings.GetDefault ());
 
 			downloadResult.PackageStream.Position = 0;
 			await PackageExtractor.InstallFromSourceAsync (
