@@ -59,6 +59,7 @@ namespace MonoDevelop.UnitTesting.Tests
 		[TestCase ("A.B.MyTest", "A.B.MyTestDisplayName", "A", "B", "MyTestDisplayName")]
 		[TestCase ("A.B.MyTest", "A.B.MyTest(text: \"ab\")", "A", "B", "MyTest(text: \"ab\")")]
 		[TestCase ("A.B.MyTest", "A.B.MyTest(text: \"a.b\")", "A", "B", "MyTest(text: \"a.b\")")]
+		[TestCase ("MyClass.MyTest", "Name with dot.", "", "MyClass", "Name with dot.")]
 		public void TestName (
 			string fullyQualifiedName,
 			string displayName,
