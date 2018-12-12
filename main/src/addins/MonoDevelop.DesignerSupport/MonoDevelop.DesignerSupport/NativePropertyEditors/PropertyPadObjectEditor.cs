@@ -32,7 +32,6 @@ using System.Threading.Tasks;
 using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Reflection;
 using System.Linq;
-using System.Reflection;
 using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
@@ -48,7 +47,7 @@ namespace MonoDevelop.DesignerSupport
 
 		private readonly List<IPropertyInfo> properties = new List<IPropertyInfo> ();
 		private static readonly IObjectEditor [] EmptyDirectChildren = new IObjectEditor [0];
-		private readonly List<ReflectionEventInfo> events = new List<ReflectionEventInfo> ();
+		private readonly List<PropertyDescriptorEventInfo> events = new List<PropertyDescriptorEventInfo> ();
 
 		public object Target => this.target;
 
