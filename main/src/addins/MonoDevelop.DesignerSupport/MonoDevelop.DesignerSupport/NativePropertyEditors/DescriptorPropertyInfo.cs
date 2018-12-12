@@ -34,6 +34,7 @@ using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Reflection;
 using System.Reflection;
 using System.ComponentModel;
+using System.Collections;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public Type Type => Map (PropertyDescriptor, PropertyProvider);
 
-		public ITypeInfo RealType => ToTypeInfo (PropertyProvider, Type);
+		public ITypeInfo RealType => ToTypeInfo (PropertyDescriptor, PropertyProvider, Type);
 
 		public string Category => PropertyDescriptor.Category;
 
@@ -97,15 +98,41 @@ namespace MonoDevelop.DesignerSupport
 			return this.PropertyDescriptor.GetHashCode ();
 		}
 
-		static Type Map (PropertyDescriptor property, object customDescriptor)
+		static Type Map (PropertyDescriptor pd, object customDescriptor)
 		{
-			return property.PropertyType;
+			var editType = pd.PropertyType;
+			if (typeof (IList).IsAssignableFrom (editType)) {
+				// Iterate through all properties since there may be more than one indexer.
+				if (GetCollectionItemType (editType) != null)
+					return typeof (IList);
+			}
+
+			if (pd.Converter.GetType ().BaseType.Name == "StandardStringsConverter" ||
+			pd.Converter.GetType () == typeof (EnumConverter) ) {
+				return typeof (IList);
+			} 
+
+			if (pd.Converter.GetType () == typeof (CharConverter)) {
+				return typeof (char);
+			}
+
+			return editType;
 		}
 
-		public static ITypeInfo ToTypeInfo (object propertyProvider, Type type, bool isRelevant = true)
+		public static Type GetCollectionItemType (Type colType)
+		{
+			foreach (var member in colType.GetDefaultMembers ()) {
+				var prop = member as PropertyInfo;
+				if (prop != null && prop.Name == "Item" && prop.PropertyType != typeof (object))
+					return prop.PropertyType;
+			}
+			return null;
+		}
+
+		public static ITypeInfo ToTypeInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, Type type, bool isRelevant = true)
 		{
 			var asm = type.Assembly.GetName ().Name;
-			return new PropertyProviderTypeInfo (propertyProvider, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+			return new PropertyProviderTypeInfo (propertyDescriptor, propertyProvider, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
 		internal Task<T> GetValueAsync<T> (object target)
