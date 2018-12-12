@@ -38,26 +38,27 @@ using System.Collections;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class DescriptorPropertyInfo
+	abstract class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
 		public PropertyDescriptor PropertyDescriptor { get; private set; }
 		public object PropertyProvider { get; private set; }
-
+		readonly ValueSources valueSources;
 		static readonly IAvailabilityConstraint [] EmptyConstraints = new IAvailabilityConstraint [0];
 		static readonly PropertyVariationOption [] EmptyVariationOptions = new PropertyVariationOption [0];
 
-		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider) 
+		public DescriptorPropertyInfo (PropertyDescriptor propertyInfo, object propertyProvider, ValueSources valueSources) 
 		{
 			this.PropertyDescriptor = propertyInfo;
 			this.PropertyProvider = propertyProvider;
+			this.valueSources = valueSources;
 		}
 
 		public string Name => PropertyDescriptor.DisplayName;
 
 		public string Description => PropertyDescriptor.Description;
 
-		public Type Type => Map (PropertyDescriptor, PropertyProvider);
+		abstract public Type Type { get; }
 
 		public ITypeInfo RealType => ToTypeInfo (PropertyDescriptor, PropertyProvider, Type);
 
@@ -65,7 +66,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool CanWrite => !PropertyDescriptor.IsReadOnly;
 
-		public ValueSources ValueSources => ValueSources.Local;
+		public ValueSources ValueSources => valueSources;
 
 		public IReadOnlyList<PropertyVariationOption> Variations => EmptyVariationOptions;
 
@@ -96,27 +97,6 @@ namespace MonoDevelop.DesignerSupport
 		public override int GetHashCode ()
 		{
 			return this.PropertyDescriptor.GetHashCode ();
-		}
-
-		static Type Map (PropertyDescriptor pd, object customDescriptor)
-		{
-			var editType = pd.PropertyType;
-			if (typeof (IList).IsAssignableFrom (editType)) {
-				// Iterate through all properties since there may be more than one indexer.
-				if (GetCollectionItemType (editType) != null)
-					return typeof (IList);
-			}
-
-			if (pd.Converter.GetType ().BaseType.Name == "StandardStringsConverter" ||
-			pd.Converter.GetType () == typeof (EnumConverter) ) {
-				return typeof (IList);
-			} 
-
-			if (pd.Converter.GetType () == typeof (CharConverter)) {
-				return typeof (char);
-			}
-
-			return editType;
 		}
 
 		public static Type GetCollectionItemType (Type colType)
@@ -168,7 +148,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		internal void SetValue<T> (object target, T value)
+		internal virtual void SetValue<T> (object target, T value)
 		{
 			try {
 				var tc = PropertyDescriptor.Converter;
@@ -178,6 +158,11 @@ namespace MonoDevelop.DesignerSupport
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
+		}
+
+		internal string ProppyListToStringValue (IReadOnlyList<string> listValue)
+		{
+		 	return	string.Join ("|", listValue);
 		}
 	}
 }

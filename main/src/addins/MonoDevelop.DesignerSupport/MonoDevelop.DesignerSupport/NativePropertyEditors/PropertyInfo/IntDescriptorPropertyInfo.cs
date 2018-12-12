@@ -1,5 +1,5 @@
 ﻿//
-// PropertyPadObjectEditor.cs
+// IntDescriptorPropertyInfo.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>
@@ -26,16 +26,19 @@
 
 #if MAC
 
+using System;
+using Xamarin.PropertyEditing;
 using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
-	internal static class PropertyPadPropertyInfoFactory
+	class IntDescriptorPropertyInfo : DescriptorPropertyInfo
 	{
-		public static DescriptorPropertyInfo PropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider)
+		public IntDescriptorPropertyInfo (PropertyDescriptor propertyDescriptor, object propertyProvider, ValueSources valueSources) : base (propertyDescriptor, propertyProvider, valueSources)
 		{
-			return new DescriptorPropertyInfo (propertyDescriptor, propertyProvider);
 		}
+
+		public override Type Type => typeof (int);
 	}
 }
 
