@@ -40,7 +40,6 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		IDEExecutionContext executionContext;
 		ISettings settings;
-		PackageExtractionContext packageExtractionContext;
 
 		public NuGetProjectContext (ISettings settings)
 		{
@@ -82,20 +81,7 @@ namespace MonoDevelop.PackageManagement
 			return packageManagementEvents.OnResolveFileConflict (message);
 		}
 
-		public PackageExtractionContext PackageExtractionContext {
-			get {
-				if (packageExtractionContext == null) {
-					var logger = new LoggerAdapter (this);
-					packageExtractionContext = new PackageExtractionContext (
-						PackageSaveMode.Defaultv2,
-						PackageExtractionBehavior.XmlDocFileSaveMode,
-						ClientPolicyContext.GetClientPolicy (settings, logger),
-						logger);
-				}
-				return packageExtractionContext;
-			}
-			set { packageExtractionContext = value; }
-		}
+		public PackageExtractionContext PackageExtractionContext { get; set; }
 	}
 }
 

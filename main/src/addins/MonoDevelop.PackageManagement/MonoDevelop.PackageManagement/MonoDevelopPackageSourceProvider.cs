@@ -104,46 +104,6 @@ namespace MonoDevelop.PackageManagement
 				ProtocolVersion = 3
 			};
 		}
-
-		public PackageSource GetPackageSourceByName (string name)
-		{
-			return packageSourceProvider.GetPackageSourceByName (name);
-		}
-
-		public PackageSource GetPackageSourceBySource (string source)
-		{
-			return packageSourceProvider.GetPackageSourceBySource (source);
-		}
-
-		public void RemovePackageSource (string name)
-		{
-			packageSourceProvider.RemovePackageSource (name);
-		}
-
-		public void EnablePackageSource (string name)
-		{
-			packageSourceProvider.EnablePackageSource (name);
-		}
-
-		public void DisablePackageSource (string name)
-		{
-			packageSourceProvider.DisablePackageSource (name);
-		}
-
-		public void UpdatePackageSource (PackageSource source, bool updateCredentials, bool updateEnabled)
-		{
-			packageSourceProvider.UpdatePackageSource (source, updateCredentials, updateEnabled);
-		}
-
-		public void AddPackageSource (PackageSource source)
-		{
-			packageSourceProvider.AddPackageSource (source);
-		}
-
-		public bool IsPackageSourceEnabled (string name)
-		{
-			return packageSourceProvider.IsPackageSourceEnabled (name);
-		}
 	}
 }
 
