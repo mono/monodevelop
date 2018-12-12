@@ -889,5 +889,44 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, directories.Count);
 			Assert.IsTrue (directories.First () == sol.BaseDirectory);
 		}
+
+		[Test]
+		public async Task CreateDirectory_AddFolderItemToProject_DirectoryDeletedEventIsNotFired ()
+		{
+			FilePath rootProject = Util.GetSampleProject ("FileWatcherTest", "Root.csproj");
+			string solFile = rootProject.ParentDirectory.Combine ("FileWatcherTest", "FileWatcherTest2.sln");
+			sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject)sol.Items [0];
+			p.UseAdvancedGlobSupport = true;
+			p.UseFileWatcher = true;
+			var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
+			ClearFileEventsCaptured ();
+			await FileWatcherService.Add (sol);
+
+			var newDirectory = p.BaseDirectory.Combine ("NewFolder");
+			Directory.CreateDirectory (newDirectory);
+
+			var newFolderItem = new ProjectFile (newDirectory);
+			newFolderItem.Subtype = Subtype.Directory;
+			p.Files.Add (newFolderItem);
+
+			var newDirectory2 = p.BaseDirectory.Combine ("NewFolder2");
+			var newFolderItem2 = new ProjectFile (newDirectory2);
+			newFolderItem2.Subtype = Subtype.Directory;
+			p.Files.Add (newFolderItem2);
+
+			Directory.CreateDirectory (newDirectory2);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+			await WaitForFileChanged (file.FilePath);
+
+			AssertFileChanged (file.FilePath);
+			Assert.IsTrue (p.Files.Contains (newFolderItem));
+			Assert.IsTrue (p.Files.Contains (newFolderItem2));
+			Assert.IsFalse (filesRemoved.Any (f => f.FileName == newDirectory));
+			Assert.IsFalse (filesRemoved.Any (f => f.FileName == newDirectory2));
+		}
 	}
 }
