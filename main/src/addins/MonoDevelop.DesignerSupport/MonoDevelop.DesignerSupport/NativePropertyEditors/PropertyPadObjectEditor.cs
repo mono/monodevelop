@@ -56,7 +56,7 @@ namespace MonoDevelop.DesignerSupport
 		public static ITypeInfo ToTypeInfo (Type type, bool isRelevant = true)
 		{
 			var asm = type.Assembly.GetName ().Name;
-			return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
+			return new TypeInfo (new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
 		public IReadOnlyCollection<IPropertyInfo> Properties => this.properties;
@@ -79,10 +79,11 @@ namespace MonoDevelop.DesignerSupport
 			this.target = target.Item1;
 			foreach (object propertyProvider in target.Item2) {
 				var props = GetProperties (propertyProvider, null);
+
 				for (int i = 0; i < props.Count; i++) {
 					var prop = props [i] as PropertyDescriptor;
 					if (prop.IsBrowsable) {
-						properties.Add (new DescriptorPropertyInfo (prop, propertyProvider));
+						properties.Add (PropertyPadPropertyInfoFactory.PropertyInfo (prop, propertyProvider));
 					}
 				}
 			}
@@ -134,7 +135,7 @@ namespace MonoDevelop.DesignerSupport
 
 				return new AssignableTypesResult (types.Select (t => {
 					string asmName = t.Assembly.GetName ().Name;
-					return new Xamarin.PropertyEditing.TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
+					return new TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
 				}).ToList ());
 			});
 		}

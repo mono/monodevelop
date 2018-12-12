@@ -163,6 +163,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadEditorProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyProviderTypeInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyDescriptorEventInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadPropertyInfoFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
