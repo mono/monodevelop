@@ -941,7 +941,7 @@
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore21=true"
+			condition="UseNetCore22=true"
 			category="netcore/test/general" />
 		<Template
 			id="NUnit3.DotNetNew.Template.FSharp"
@@ -952,7 +952,7 @@
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore21=true"
+			condition="UseNetCore22=true"
 			category="netcore/test/general" />
 		<Template
 			id="NUnit3.DotNetNew.Template.VisualBasic"
@@ -964,7 +964,7 @@
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore21=true"
+			condition="UseNetCore22=true"
 			category="netcore/test/general" />
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="3.0">
