@@ -101,6 +101,18 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard20=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard20=true")]
+		public async Task NetStandard21 (string templateId, string parameters)
+		{
+			if (!IsDotNetCoreSdk2xInstalled ()) {
+				Assert.Ignore (".NET Core 3 SDK is not installed - required by project template.");
+			}
+
+			await CreateFromTemplateAndBuild ("NetStandard21", templateId, parameters);
+		}
+
+		[Test]
 		public async Task NetStandard20_VBNet ()
 		{
 			if (IsDotNetCoreSdk21Installed () || IsDotNetCoreSdk22Installed ()) {
@@ -179,6 +191,34 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
 		}
 
+		[TestCase ("Microsoft.Common.Console.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Library.CSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
+		[TestCase ("Microsoft.Test.xUnit.CSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Test.MSTest.CSharp", "UseNetCore22=true")]
+
+		[TestCase ("Microsoft.Common.Console.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Library.FSharp-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
+		[TestCase ("Microsoft.Test.xUnit.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Test.MSTest.FSharp", "UseNetCore22=true")]
+
+		[TestCase ("Microsoft.Common.Console.VisualBasic", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Common.Library.VisualBasic-netcoreapp", "UseNetCore22=true;Framework=netcoreapp2.2")]
+		[TestCase ("Microsoft.Test.xUnit.VisualBasic", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Test.MSTest.VisualBasic", "UseNetCore22=true")]
+
+		// NUnit3 templates come with .NET Core 2.2, but they only support .NET Core 2.1 framework
+		[TestCase ("NUnit3.DotNetNew.Template.CSharp", "UseNetCore21=true")]
+		[TestCase ("NUnit3.DotNetNew.Template.FSharp", "UseNetCore21=true")]
+		[TestCase ("NUnit3.DotNetNew.Template.VisualBasic", "UseNetCore21=true")]
+		public async Task NetCore30 (string templateId, string parameters)
+		{
+			if (!IsDotNetCoreSdk30Installed ()) {
+				Assert.Ignore (".NET Core 3.0 SDK is not installed - required by project template.");
+			}
+
+			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters);
+		}
+
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.0")]
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore1x=true;Framework=netcoreapp1.1")]
 
@@ -250,6 +290,22 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
 		}
 
+		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.Mvc.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true")]
+		public async Task AspNetCore30 (string templateId, string parameters)
+		{
+			if (!IsDotNetCoreSdk22Installed ()) {
+				Assert.Ignore (".NET Core 3.0 SDK is not installed - required by project template.");
+			}
+
+			await CreateFromTemplateAndBuild ("NetCore30", templateId, parameters);
+		}
+
 		static bool IsDotNetCoreSdk2xInstalled ()
 		{
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 2);
@@ -267,6 +323,11 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		static bool IsDotNetCoreSdk22Installed ()
+		{
+			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
+		}
+
+		static bool IsDotNetCoreSdk30Installed ()
 		{
 			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
 		}
