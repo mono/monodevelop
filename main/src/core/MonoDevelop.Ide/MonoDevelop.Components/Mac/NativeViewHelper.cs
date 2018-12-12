@@ -57,7 +57,7 @@ namespace MonoDevelop.Components.Mac
 			var result = new NSMutableAttributedString ();
 			if (!String.IsNullOrEmpty (title)) {
 				result.Append (new NSAttributedString (title, new NSStringAttributes {
-					Font = NSFont.BoldSystemFontOfSize (fontSize),
+					Font = NSFont.SystemFontOfSize (fontSize),
 					ForegroundColor = titleColor
 				}));
 			}
