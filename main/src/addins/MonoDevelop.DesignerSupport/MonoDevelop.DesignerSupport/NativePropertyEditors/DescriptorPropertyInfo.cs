@@ -37,16 +37,6 @@ using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class PropertyProviderTypeInfo : Xamarin.PropertyEditing.TypeInfo
-	{
-		public object PropertyProvider { get; }
-
-		public PropertyProviderTypeInfo (object propertyProvider, IAssemblyInfo assembly, string nameSpace, string name) : base (assembly, nameSpace, name)
-		{
-			PropertyProvider = propertyProvider;
-		}
-	}
-
 	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
