@@ -27,6 +27,9 @@ module Project =
 
 type FSharpProject() as self =
     inherit DotNetProject()
+    do
+        self.RoslynLanguageName <- Microsoft.CodeAnalysis.LanguageNames.FSharp
+
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
     let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "Itanium" |]
 
