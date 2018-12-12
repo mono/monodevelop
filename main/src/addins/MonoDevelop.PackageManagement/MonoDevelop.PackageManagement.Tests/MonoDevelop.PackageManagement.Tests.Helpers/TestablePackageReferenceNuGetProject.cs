@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestablePackageReferenceNuGetProject (
 			DotNetProject project,
 			PackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+			: base (project, ConfigurationSelector.Default, packageManagementEvents)
 		{
 			PackageManagementEvents = packageManagementEvents;
 		}

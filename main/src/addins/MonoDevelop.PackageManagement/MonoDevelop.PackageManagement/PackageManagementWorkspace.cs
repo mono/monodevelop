@@ -44,8 +44,20 @@ namespace MonoDevelop.PackageManagement
 				IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 				IdeApp.Workspace.ItemAddedToSolution += SolutionItemAddedOrRemoved;
 				IdeApp.Workspace.ItemRemovedFromSolution += SolutionItemAddedOrRemoved;
+				IdeApp.Workspace.ActiveConfigurationChanged += ActiveConfigurationChanged;
 			} else {
 				LoggingService.LogError ("IdeApp workspace is not available when creating PackageManagementWorkspace.");
+			}
+		}
+
+		void ActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			try {
+				foreach (MonoDevelopSolutionManager solutionManager in solutionManagers) {
+					solutionManager.ClearProjectCache ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error updating solution manager after configuration changed.", ex);
 			}
 		}
 
