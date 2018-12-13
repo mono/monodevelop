@@ -2162,6 +2162,13 @@ namespace MonoDevelop.Components.Commands
 				}
 				#endif
 
+				#if WINDOWS
+				var wpfWidget = GetFocusedWpfWidget();
+				if (wpfWidget != null) {
+					return wpfWidget;
+				}
+				#endif
+
 				widget = GetFocusedChild (widget);
 			}
 			if (widget != lastActiveWidget) {
@@ -2171,6 +2178,32 @@ namespace MonoDevelop.Components.Commands
 			}
 			return widget;
 		}
+
+#if WINDOWS
+
+		// Can't simply use Keyboard.FocusedElement because the focused element is the MenuItem
+		// when filling out the File menu.
+		// Also can't use FocusManager.GetFocusedElement() because it's not clear what to pass as
+		// the focus scope, as there isn't a single WPF "window", but rather isolated WPF "islands"
+		// and which one is the focused one?
+		// We remember the last focused element before the menu acquired focus and use that.
+		public static System.Windows.FrameworkElement LastFocusedWpfElement { get; set; }
+
+		Windows.GtkWPFWidget GetFocusedWpfWidget ()
+		{
+			var focusedElement = System.Windows.Input.Keyboard.FocusedElement as System.Windows.FrameworkElement;
+			if (focusedElement == null) {
+				return null;
+			}
+
+			if (focusedElement is System.Windows.Controls.MenuItem && LastFocusedWpfElement != null) {
+				return LastFocusedWpfElement.Tag as Windows.GtkWPFWidget;
+			}
+
+			var widget = focusedElement.Tag as Windows.GtkWPFWidget;
+			return widget;
+		}
+#endif
 
 		Gtk.Widget GetFocusedChild (Gtk.Widget widget)
 		{

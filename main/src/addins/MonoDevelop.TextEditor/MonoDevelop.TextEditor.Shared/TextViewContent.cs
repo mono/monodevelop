@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -60,6 +61,12 @@ namespace MonoDevelop.Ide.Text
 			this.widget = new RootWpfWidget (control);
 			widget.HeightRequest = 50;
 			widget.WidthRequest = 100;
+
+			TextView.VisualElement.Tag = widget;
+			TextView.VisualElement.LostKeyboardFocus += (s, e) => {
+				CommandManager.LastFocusedWpfElement = TextView.VisualElement;
+			};
+
 			this.xwtWidget = GetXwtWidget (widget);
 			xwtWidget.Show ();
 #elif MAC
@@ -132,6 +139,7 @@ namespace MonoDevelop.Ide.Text
 		{
 			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, NativeWidgetSizing.External);
 		}
+
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
 		{
 			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
