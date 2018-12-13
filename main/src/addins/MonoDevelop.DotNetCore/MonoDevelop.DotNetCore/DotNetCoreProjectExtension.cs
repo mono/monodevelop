@@ -58,13 +58,11 @@ namespace MonoDevelop.DotNetCore
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
 		{
-			if (!Project.ParentSolution.ExtendedProperties.Contains (GlobalJsonPathExtendedPropertyName))
+			var globalJson = e.FirstOrDefault (x => x.FileName.ToString ().Contains ("global.json") && !x.FileName.IsDirectory);
+			if (globalJson == null)
 				return;
 
-			var globalJsonPath = (string) Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName];
-			bool isGlobalJsonItem = e.Any (x => x.FileName.ToString ().IndexOf (globalJsonPath, StringComparison.InvariantCulture) == 0);
-			if (!isGlobalJsonItem)
-				return;
+			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJson.FileName.ToString ();
 
 			DetectSDK (true);
 		}
@@ -357,10 +355,10 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			//detect globaljson
-			//TODO recursive search here
-			var globalJsonPath = Path.Combine (Project.ParentSolution.BaseDirectory, "global.json");
-			if (File.Exists (globalJsonPath))
-				Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath;
+			var globalJsonPath = new DirectoryInfo (Project.ParentSolution.BaseDirectory).GetFiles ("global.json", SearchOption.AllDirectories).FirstOrDefault ();
+			if (globalJsonPath == null)
+				return;
+			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath.FullName;
 			DetectSDK ();
 		}
 
@@ -369,18 +367,16 @@ namespace MonoDevelop.DotNetCore
 			sdkPaths.ResolveSDK (Project.ParentSolution.BaseDirectory);
 			DotNetCoreSdk.Update (sdkPaths);
 			if (restore && sdkPaths.Exist)
-				ReevaluateAllOpenDotNetCoreProjects ().Ignore ();
+				ReevaluateAllOpenDotNetCoreProjects ();
 		}
 
-		async Task ReevaluateAllOpenDotNetCoreProjects ()
+		void ReevaluateAllOpenDotNetCoreProjects ()
 		{
 			if (!IdeApp.Workspace.IsOpen)
 				return;
-
-			var progressMonitor = new ProgressMonitor ();
+				
 			foreach (var project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
 				if (project.HasFlavor<DotNetCoreProjectExtension> ()) {
-					await project.ReevaluateProject (progressMonitor);
 					RestorePackagesInProjectHandler.Run (project, restoreTransitiveProjectReferences: true, reevaluateBeforeRestore: true);
 				}
 			}

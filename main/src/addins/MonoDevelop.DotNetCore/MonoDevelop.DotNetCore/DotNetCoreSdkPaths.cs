@@ -206,11 +206,14 @@ namespace MonoDevelop.DotNetCore
 
 		string ReadGlobalJson (string workingDir)
 		{
-			var globalJsonPath = Path.Combine (workingDir, "global.json");
-			if (!File.Exists (globalJsonPath))
+			if (string.IsNullOrEmpty (workingDir))
 				return string.Empty;
 
-			using (var r = new StreamReader (globalJsonPath)) {
+			var globalJsonPath = new DirectoryInfo (workingDir).GetFiles ("global.json", SearchOption.AllDirectories).FirstOrDefault ();
+			if (globalJsonPath == null)
+				return string.Empty;
+
+			using (var r = new StreamReader (globalJsonPath.FullName)) {
 				try {
 					var token = JObject.Parse (r.ReadToEnd ());
 					if (token == null)
