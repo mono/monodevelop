@@ -52,8 +52,6 @@ namespace MonoDevelop.DotNetCore
 		public DotNetCoreProjectExtension ()
 		{
 			DotNetCoreProjectReloadMonitor.Initialize ();
-			if (IsDotNetCoreSdk22Installed ())
-				DotNetProjectProxy.ModifyImplicitPackageReferenceVersion = ModifyImplicitPackageReference;
 		}
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
@@ -65,38 +63,6 @@ namespace MonoDevelop.DotNetCore
 			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJson.FileName.ToString ();
 
 			DetectSDK (true);
-		}
-
-
-		static bool IsDotNetCoreSdk22Installed ()
-		{
-			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
-		}
-
-		/// <summary>
-		/// HACK: Handle implicit package versions defined by .NET Core 2.2 SDK.
-		/// </summary>
-		static void ModifyImplicitPackageReference (ProjectPackageReference packageReference, DotNetProject project)
-		{
-			bool targetLatestRuntimePatch = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetLatestRuntimePatch", false);
-			string targetFrameworkVersion = project.TargetFramework.Id.Version;
-
-			foreach (IMSBuildItemEvaluated item in project.MSBuildProject.EvaluatedItems) {
-				if (!IsImplicitPackageReferenceMatch (item, packageReference, targetFrameworkVersion))
-					continue;
-
-				string versionProperty = targetLatestRuntimePatch ? "LatestVersion" : "DefaultVersion";
-				string version = item.Metadata.GetValue (versionProperty) ?? string.Empty;
-				packageReference.Metadata.SetValue ("Version", version);
-				return;
-			}
-		}
-
-		static bool IsImplicitPackageReferenceMatch (IMSBuildItemEvaluated item, ProjectPackageReference packageReference, string targetFrameworkVersion)
-		{
-			return item.Name == "ImplicitPackageReferenceVersion" &&
-				StringComparer.OrdinalIgnoreCase.Equals (item.Include, packageReference.Include) &&
-				targetFrameworkVersion == item.Metadata.GetValue ("TargetFrameworkVersion");
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
