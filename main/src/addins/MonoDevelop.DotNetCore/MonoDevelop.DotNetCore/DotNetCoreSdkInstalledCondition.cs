@@ -74,20 +74,20 @@ namespace MonoDevelop.DotNetCore
 			if (string.IsNullOrEmpty (requiredSdkversion))
 				return true;
 
+			// Special case '2.1' and '2.0'.
+			if (requiredSdkversion == "2.1") {
+				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
+			}
+			if (requiredSdkversion == "2.0") {
+				return versions.Any (IsNetCoreSdk20) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
+			}
+
 			requiredSdkversion = requiredSdkversion.Replace ("*", string.Empty);
 			DotNetCoreVersion requiredDotNetCoreVersion;
 			DotNetCoreVersion.TryParse (requiredSdkversion, out requiredDotNetCoreVersion);
 
 			if (requiredDotNetCoreVersion == null)
 				return versions.Any (version => version.ToString ().StartsWith (requiredSdkversion, StringComparison.OrdinalIgnoreCase));
-
-			// Special case '2.1' and '2.0'.
-			if (requiredSdkversion == "2.1") {
-				return versions.Any (IsNetCoreSdk21) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
-			} 
-			if (requiredSdkversion == "2.0") {
-				return versions.Any (IsNetCoreSdk20) || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetCore (requiredSdkversion);
-			}
 
 			return versions.Any (version => version.Major == requiredDotNetCoreVersion.Major && version.Minor == requiredDotNetCoreVersion.Minor);
 		}

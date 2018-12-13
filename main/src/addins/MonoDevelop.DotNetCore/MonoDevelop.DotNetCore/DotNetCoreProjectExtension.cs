@@ -66,7 +66,7 @@ namespace MonoDevelop.DotNetCore
 			if (!isGlobalJsonItem)
 				return;
 
-			DetectSDK ();
+			DetectSDK (true);
 		}
 
 
@@ -368,7 +368,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			sdkPaths.ResolveSDK (Project.ParentSolution.BaseDirectory);
 			DotNetCoreSdk.Update (sdkPaths);
-			if (restore)
+			if (restore && sdkPaths.Exist)
 				ReevaluateAllOpenDotNetCoreProjects ().Ignore ();
 		}
 
@@ -437,7 +437,7 @@ namespace MonoDevelop.DotNetCore
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
 			}
-			if (HasSdk && !IsDotNetCoreSdkInstalled ()) {
+			if ((HasSdk && !IsDotNetCoreSdkInstalled ()) || sdkPaths.IsUnsupportedSdkVersion) {
 				return CreateDotNetCoreSdkRequiredBuildResult ();
 			}
 			return null;

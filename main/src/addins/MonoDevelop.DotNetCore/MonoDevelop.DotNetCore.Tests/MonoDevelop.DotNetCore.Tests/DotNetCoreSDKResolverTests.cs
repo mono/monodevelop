@@ -190,7 +190,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
-		public async Task WhenGlobalJsonAndVersionNotMatches_AndVersionIs21OrBefore_ThenItReturnsLatestPatchVersion2 ()
+		public async Task WhenGlobalJsonAndVersionNotMatches_AndVersionIs21OrBefore_ThenItReturnsIsNotSupported ()
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
 			var versionThatDoesNotExists = DotNetCoreVersion.Parse ("2.2.3");
@@ -201,7 +201,9 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				Assert.Throws<Exception> (() => resolver.ResolveSDK (workingDirectory));
+				resolver.ResolveSDK (workingDirectory);
+
+				Assert.True (resolver.IsUnsupportedSdkVersion);
 			}
 		}
 

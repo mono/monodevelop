@@ -46,7 +46,7 @@ namespace MonoDevelop.DotNetCore
 				if (DotNetCoreRuntime.IsInstalled)
 					dotNetCorePath = DotNetCoreRuntime.FileName;
 				else
-					return; //TODO or throw an exception?
+					return;
 			}
 
 			string rootDirectory = Path.GetDirectoryName (dotNetCorePath);
@@ -80,9 +80,12 @@ namespace MonoDevelop.DotNetCore
 			DotNetCoreVersion requiredVersion;
 			DotNetCoreVersion.TryParse (specificVersion, out requiredVersion);
 
-			if (requiredVersion == null)
-				//TODO: what kind of Exception?
-				throw new Exception ("TargetFramework version unknown");
+			if (requiredVersion == null) {
+				msbuildSDKsPath = string.Empty;
+				IsUnsupportedSdkVersion = true;
+				Exist = false;
+				return;
+			}
 
 			//if global.json exists and matches returns it
 			targetVersion = SdkVersions.FirstOrDefault (x => x.OriginalString.IndexOf (specificVersion, StringComparison.InvariantCulture) == 0);
@@ -98,13 +101,17 @@ namespace MonoDevelop.DotNetCore
 												.OrderByDescending (version => version.Patch).FirstOrDefault ();
 				}
 
-				if (targetVersion == null)
-					//TODO: what kind of Exception?
-					throw new Exception ($"Couldn't find SDK Version {specificVersion} for {requiredVersion}");
+				if (targetVersion == null) {
+					msbuildSDKsPath = string.Empty;
+					IsUnsupportedSdkVersion = true;
+					Exist = false;
+					return;
+				}
 			}
 
 			msbuildSDKsPath = GetSdksParentDirectory (targetVersion);
 			Exist = true;
+			IsUnsupportedSdkVersion = false;
 		}
 
 		public void FindSdkPaths (string sdk)
@@ -186,6 +193,8 @@ namespace MonoDevelop.DotNetCore
 				.Where (version => version != null);
 		}
 
+		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions () => GetInstalledSdkVersions (SdkRootPath);
+
 		string GetSdksParentDirectory (DotNetCoreVersion targetVersion)
 		{
 			SdksParentDirectory = Path.Combine (SdkRootPath, targetVersion.OriginalString);
@@ -202,17 +211,17 @@ namespace MonoDevelop.DotNetCore
 				return string.Empty;
 
 			using (var r = new StreamReader (globalJsonPath)) {
-				var token = JObject.Parse (r.ReadToEnd ());
-				var version = (string)token.SelectToken ("sdk").SelectToken ("version");
-				return version;
+				try {
+					var token = JObject.Parse (r.ReadToEnd ());
+					if (token == null)
+						return string.Empty;
+					var version = (string)token.SelectToken ("sdk").SelectToken ("version");
+					return version;
+				} catch (Exception e) {
+					LoggingService.LogWarning ($"Unable to parse {globalJsonPath}.", e);
+					return string.Empty;
+				}
 			}
-		}
-
-		internal IEnumerable<DotNetCoreVersion> GetInstalledSdkVersions ()
-		{
-			return Directory.EnumerateDirectories (SdkRootPath)
-				.Select (directory => DotNetCoreVersion.GetDotNetCoreVersionFromDirectory (directory))
-				.Where (version => version != null);
 		}
 
 		internal DotNetCoreVersion GetLatestSdk () => SdkVersions.OrderByDescending (v => v).FirstOrDefault ();
