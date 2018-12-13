@@ -64,10 +64,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (DotNetCoreRuntime.IsNetCore30Installed () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard21 ())
 				yield return CreateTargetFramework (".NETStandard", "2.1");
-
-			if (DotNetCoreRuntime.IsNetCore2xInstalled () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard21 ())
-				yield return CreateTargetFramework (".NETStandard", "2.0");
-
+				
 			if (DotNetCoreRuntime.IsNetCore2xInstalled () || MonoRuntimeInfoExtensions.CurrentRuntimeVersion.SupportsNetStandard20 ())
 				yield return CreateTargetFramework (".NETStandard", "2.0");
 
