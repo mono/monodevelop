@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -92,10 +93,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		protected static Task RestoreDotNetCoreNuGetPackages (Solution solution)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (solution);
-			var context = new FakeNuGetProjectContext {
-				LogToConsole = true
-			};
-
 			var restoreManager = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 
 			var projects = solution.GetAllDotNetProjects ().Select (p => new DotNetCoreNuGetProject (p));
@@ -119,6 +116,24 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				//logger);
 
 			return context;
+		}
+
+		protected class PackagManagementEventsConsoleLogger : IDisposable
+		{
+			public PackagManagementEventsConsoleLogger ()
+			{
+				PackageManagementServices.PackageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
+			}
+
+			public void Dispose ()
+			{
+				PackageManagementServices.PackageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
+			}
+
+			void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
+			{
+				Console.WriteLine (e.Message.ToString ());
+			}
 		}
 	}
 }
