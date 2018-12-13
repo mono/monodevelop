@@ -163,10 +163,6 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyProviderTypeInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyDescriptorEventInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DescriptorPropertyInfo.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\StringDescriptorPropertyInfo.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\IntDescriptorPropertyInfo.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\BoolDescriptorPropertyInfo.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FloatDescriptorPropertyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

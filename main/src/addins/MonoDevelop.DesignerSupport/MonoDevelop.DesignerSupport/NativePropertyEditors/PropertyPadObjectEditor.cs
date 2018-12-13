@@ -33,6 +33,7 @@ using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Reflection;
 using System.Linq;
 using System.ComponentModel;
+using System.Collections;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -86,19 +87,21 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
+		bool HasStandartValues (PropertyDescriptor propertyDescriptor)
+		{
+			if (propertyDescriptor.Converter.GetStandardValuesSupported ()) {
+				if (!propertyDescriptor.Converter.GetStandardValuesExclusive () && propertyDescriptor.Converter.CanConvertFrom (typeof (string))) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		protected IPropertyInfo CreatePropertyInfo (PropertyDescriptor propertyDescriptor, object PropertyProvider)
 		{
 			var valueSources = ValueSources.Local | ValueSources.Resource;
 
-			var type = propertyDescriptor.PropertyType;
-			if (type == typeof (bool))
-				return new BoolDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-			if (type == typeof (int))
-				return new IntDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-			if (type == typeof (float))
-				return new FloatDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-				
-			return new StringDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			return new DescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 		}
 
 		public static PropertyDescriptorCollection GetProperties (object component, Attribute [] attributes)
