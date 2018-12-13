@@ -33,6 +33,7 @@ using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
+using System;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -56,8 +57,9 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			var dependencies = (await project.GetPackageDependencies (ConfigurationSelector.Default, default (CancellationToken))).ToList ();
 			var fsharpCore = dependencies.SingleOrDefault (d => d.Name == "FSharp.Core");
+			var fsharpCoreVersion = Version.Parse (fsharpCore.Version);
 
-			Assert.AreEqual ("4.5.0", fsharpCore.Version);
+			Assert.True (fsharpCoreVersion.Major == 4 && fsharpCoreVersion.Minor == 5 && fsharpCoreVersion.Build >= 0, $"Version {fsharpCoreVersion.Major}.{fsharpCoreVersion.Minor}.{fsharpCoreVersion.Build} != 4.5.x");
 		}
 
 		[Test]
