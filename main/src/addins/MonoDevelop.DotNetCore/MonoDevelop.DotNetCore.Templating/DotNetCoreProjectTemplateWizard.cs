@@ -123,7 +123,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			} else {
 				if (!SupportsNetCore1x ()) {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
-					if (highestFramework != null) {
+					if (highestFramework != null && highestFramework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("2.0"))) {
 						var parameter = highestFramework.GetParameterName ();
 						if (!string.IsNullOrEmpty (parameter))
 							Parameters [parameter] = "true";

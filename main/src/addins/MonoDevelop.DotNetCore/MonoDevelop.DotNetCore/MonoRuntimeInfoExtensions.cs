@@ -44,7 +44,7 @@ namespace MonoDevelop.DotNetCore
 		public static bool SupportsNetStandard21 (this Version monoVersion)
 		{
 			//FIXME: update this: which Mono version will support .NET Standadrd 2.1
-			return monoVersion >= MonoVersion5_4;
+			return false;
 		}
 
 		public static bool SupportsNetCore (this Version monoVersion, string netCoreVersion)

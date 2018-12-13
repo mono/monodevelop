@@ -79,6 +79,16 @@ namespace MonoDevelop.DotNetCore
 			return framework.Id.IsNetCoreApp () && framework.Id.Version.IndexOf (version, StringComparison.InvariantCulture) == 0;
 		}
 
+		public static bool IsNetCoreAppOrHigher (this TargetFramework framework, DotNetCoreVersion version)
+		{
+			DotNetCoreVersion dotNetCoreVersion;
+			DotNetCoreVersion.TryParse (framework.Id.Version, out dotNetCoreVersion);
+			if (dotNetCoreVersion == null)
+				return false;
+
+			return framework.Id.IsNetCoreApp () && dotNetCoreVersion >= version;
+		}
+
 		public static bool IsNetFramework (this TargetFramework framework) => framework.Id.IsNetFramework ();
 
 		public static bool IsNetStandard20OrNetCore20 (this TargetFramework framework) => framework.IsNetStandard ("2.0") || framework.IsNetCoreApp ("2.0");
