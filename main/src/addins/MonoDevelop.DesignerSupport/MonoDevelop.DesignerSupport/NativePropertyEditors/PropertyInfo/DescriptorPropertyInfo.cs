@@ -38,7 +38,7 @@ using System.Collections;
 
 namespace MonoDevelop.DesignerSupport
 {
-	abstract class DescriptorPropertyInfo
+	class DescriptorPropertyInfo
 		: IPropertyInfo, IEquatable<DescriptorPropertyInfo>
 	{
 		public PropertyDescriptor PropertyDescriptor { get; private set; }
@@ -58,7 +58,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public string Description => PropertyDescriptor.Description;
 
-		abstract public Type Type { get; }
+		public virtual Type Type => PropertyDescriptor.PropertyType;
 
 		public ITypeInfo RealType => ToTypeInfo (PropertyDescriptor, PropertyProvider, Type);
 
@@ -115,7 +115,7 @@ namespace MonoDevelop.DesignerSupport
 			return new PropertyProviderTypeInfo (propertyDescriptor, propertyProvider, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
-		internal Task<T> GetValueAsync<T> (object target)
+		internal virtual Task<T> GetValueAsync<T> (object target)
 		{
 			string error;
 			object value = null;
