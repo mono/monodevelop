@@ -107,7 +107,7 @@ namespace MonoDevelop.DesignerSupport
 			get;
 		}
 
-		protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
+		readonly protected Dictionary<string, string> predefinedValues = new Dictionary<string, string> ();
 		public IReadOnlyDictionary<string, string> PredefinedValues => predefinedValues;
 	}
 }
