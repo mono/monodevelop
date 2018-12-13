@@ -406,7 +406,6 @@ namespace MonoDevelop.DotNetCore
 
 			// Need to re-evaluate before restoring to ensure the implicit package references are correct after
 			// the target framework has changed.
-			RestorePackagesInProjectHandler.Run (Project, restoreTransitiveProjectReferences: true, reevaluateBeforeRestore: true);
 			DetectSDK (true);
 		}
 
