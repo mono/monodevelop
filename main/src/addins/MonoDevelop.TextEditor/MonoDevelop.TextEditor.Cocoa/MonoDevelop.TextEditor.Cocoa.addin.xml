@@ -3,7 +3,7 @@
 	<!-- Extension points -->
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
-		<Assembly file="..\..\..\bin\Microsoft.VisualStudio.Language.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.Utilities.dll" />
