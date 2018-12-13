@@ -3,7 +3,7 @@
 	<!-- Extension points -->
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
-		<Assembly file="Microsoft.VisualStudio.Language.dll" />
+		<Assembly file="..\..\..\bin\Microsoft.VisualStudio.Language.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.Utilities.dll" />
@@ -19,13 +19,11 @@
 		<Assembly file="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.Internal.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
