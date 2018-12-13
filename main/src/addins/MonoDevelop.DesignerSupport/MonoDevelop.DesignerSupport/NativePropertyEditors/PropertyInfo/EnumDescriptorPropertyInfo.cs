@@ -1,5 +1,5 @@
 ﻿//
-// StringDescriptorPropertyInfo.cs
+// EnumDescriptorPropertyInfo.cs
 //
 // Author:
 //       jmedrano <josmed@microsoft.com>

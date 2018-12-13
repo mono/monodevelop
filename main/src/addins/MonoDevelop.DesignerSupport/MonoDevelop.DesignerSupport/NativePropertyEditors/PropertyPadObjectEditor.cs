@@ -87,7 +87,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		bool HasStandartValues (PropertyDescriptor propertyDescriptor)
+		bool HasStandardValues (PropertyDescriptor propertyDescriptor)
 		{
 			if (propertyDescriptor.Converter.GetStandardValuesSupported ()) {
 				if (!propertyDescriptor.Converter.GetStandardValuesExclusive () && propertyDescriptor.Converter.CanConvertFrom (typeof (string))) {
@@ -104,6 +104,11 @@ namespace MonoDevelop.DesignerSupport
 			if (propertyDescriptor.PropertyType.IsEnum) {
 				return new EnumDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
+
+			if (HasStandardValues (propertyDescriptor)) {
+				return new StringStandardValuesPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			}
+
 			return new DescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 		}
 
