@@ -3,6 +3,7 @@
 	<Import Project="..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems')" />
 	<Import Project="..\..\..\..\MonoDevelop.props" />
 	<Import Project="$(ReferencesVSEditor)" />
+	<Import Project="$(ReferencesGtk)" />
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -52,6 +53,7 @@
 	<ItemGroup>
 		<Compile Include="AssemblyInfo.cs" />
 		<Compile Include="AddinInfo.cs" />
+		<Compile Include="ImageService.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="MonoDevelop.TextEditor.Cocoa.addin.xml" />
