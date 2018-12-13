@@ -101,6 +101,9 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var valueSources = ValueSources.Local | ValueSources.Resource;
 
+			if (propertyDescriptor.PropertyType.IsEnum) {
+				return new EnumDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			}
 			return new DescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 		}
 
