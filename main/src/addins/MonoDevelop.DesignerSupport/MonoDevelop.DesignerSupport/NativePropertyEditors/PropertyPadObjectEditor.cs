@@ -109,8 +109,7 @@ namespace MonoDevelop.DesignerSupport
 
 		protected IPropertyInfo CreatePropertyInfo (PropertyDescriptor propertyDescriptor, object PropertyProvider)
 		{
-			var valueSources = ValueSources.Local | ValueSources.Resource;
-
+			var valueSources = ValueSources.Local | ValueSources.Default;
 			if (propertyDescriptor.PropertyType.IsEnum) {
 				return new EnumDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
