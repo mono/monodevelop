@@ -1669,6 +1669,19 @@ namespace MonoDevelop.Projects
 				Assert.That (ex.Message, Contains.Substring (importFileName));
 			}
 		}
+
+		[Test]
+		public void AddLastChild ()
+		{
+			using (var p = LoadAndEvaluate ("ConsoleApp-VS2013", "ConsoleApplication.csproj")) {
+				var propertyGroup = p.CreatePropertyGroup ();
+				propertyGroup.SetValue ("PostBuildEvent", "test");
+				p.AddLastChild (propertyGroup);
+
+				var lastChild = p.ChildNodes.Last ();
+				Assert.AreSame (propertyGroup, lastChild);
+			}
+		}
 	}
 
 	class CustomGlobalPropertyProvider : IMSBuildGlobalPropertyProvider

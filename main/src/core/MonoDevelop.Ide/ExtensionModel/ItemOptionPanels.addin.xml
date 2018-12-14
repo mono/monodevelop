@@ -63,6 +63,9 @@
 			<Section id = "SigningPreferences" _label = "Assembly Signing" class = "MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferencesPanel" icon="md-prefs-signing" />
 			<Section id = "OutputOptionsPanel" _label = "Output" class = "MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanel" icon="md-prefs-output" />
 		</Condition>
+		<Condition id="ItemType" value="DotNetProject">
+			<Section id = "BuildEvents" _label = "Build Events" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildEventsOptionsPanel" />
+		</Condition>
 		<Condition id="ItemType" value="Solution">
 			<Section id = "SolutionConfigurations" _label="Configurations" icon="md-prefs-solution">
 				<Panel id = "Configurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>

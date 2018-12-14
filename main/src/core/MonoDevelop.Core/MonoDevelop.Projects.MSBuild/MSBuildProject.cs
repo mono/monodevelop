@@ -1198,6 +1198,20 @@ namespace MonoDevelop.Projects.MSBuild
 		internal Dictionary<string, string> GlobalProperties {
 			get { return globalProperties; }
 		}
+
+		public void AddLastChild (MSBuildObject node)
+		{
+			AssertCanModify ();
+			if (node.ParentProject != null)
+				throw new InvalidOperationException ("Node already belongs to a project");
+
+			node.ParentNode = this;
+
+			ChildNodes = ChildNodes.Add (node);
+
+			node.ResetIndent (true);
+			NotifyChanged ();
+		}
 	}
 
 	static class XmlUtil
