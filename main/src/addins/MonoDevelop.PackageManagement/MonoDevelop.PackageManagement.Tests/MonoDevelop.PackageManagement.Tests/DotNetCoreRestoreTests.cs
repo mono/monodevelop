@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,6 +58,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			var fsharpCore = dependencies.SingleOrDefault (d => d.Name == "FSharp.Core");
 
 			Assert.AreEqual ("4.5.0", fsharpCore.Version);
+		}
+
+		[Test]
+		public async Task OfflineRestore_NetCore21Project ()
+		{
+			FilePath solutionFileName = Util.GetSampleProject ("restore-netcore-offline", "dotnetcoreconsole.sln");
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllDotNetProjects ().Single ();
+
+			using (var logger = new PackagManagementEventsConsoleLogger ()) {
+				await RestoreDotNetCoreNuGetPackages (solution);
+			}
+
+			var packagesDirectory = solution.BaseDirectory.Combine ("packages-cache");
+			Assert.IsFalse (Directory.Exists (packagesDirectory));
+			Assert.IsTrue (File.Exists (project.BaseDirectory.Combine ("obj", "project.assets.json")));
 		}
 	}
 }

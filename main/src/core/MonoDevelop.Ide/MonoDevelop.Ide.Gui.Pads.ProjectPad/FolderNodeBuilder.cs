@@ -545,6 +545,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.NewFolder)]
 		public async void AddNewFolder ()
 		{
+			// Expand the project node before adding the file to the project. This fixes a problem where if the
+			// project node is collapsed and Refresh was used the project node would not expand and the new folder
+			// node would not be selected.
+			CurrentNode.Expanded = true;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			
 			string baseFolderPath = GetFolderPath (CurrentNode.DataItem);
@@ -565,7 +569,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			newFolder.Subtype = Subtype.Directory;
 			project.Files.Add (newFolder);
 
-			CurrentNode.Expanded = true;
 			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));
 
 			await IdeApp.ProjectOperations.SaveAsync (project);
