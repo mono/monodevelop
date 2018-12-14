@@ -34,21 +34,18 @@ namespace MonoDevelop.Debugger
 	class TextEntryWithCodeCompletion : TextEntry, ICompletionWidget
 	{
 		CodeCompletionContext ctx;
-		Gtk.Entry gtkEntry;
 
-		Gdk.ModifierType modifier;
+		Xwt.ModifierKeys modifier;
 		bool keyHandled = false;
 		uint keyValue;
 		char keyChar;
-		Gdk.Key key;
+		Key key;
 
 		public TextEntryWithCodeCompletion ()
 		{
-			gtkEntry = Xwt.Toolkit.CurrentEngine.GetNativeWidget (this) as Gtk.Entry;
-			if (gtkEntry == null)
-				throw new NotImplementedException ();
-			gtkEntry.KeyReleaseEvent += HandleKeyReleaseEvent;
-			gtkEntry.KeyPressEvent += HandleKeyPressEvent;
+			KeyPressed += HandleKeyPressEvent;
+			KeyReleased += HandleKeyReleaseEvent;
+
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 		}
 
@@ -65,32 +62,40 @@ namespace MonoDevelop.Debugger
 				CompletionContextChanged (this, EventArgs.Empty);
 		}
 
+		char CharFromKey (Xwt.Key xwtKey)
+		{
+			if (xwtKey >= Key.Exclamation && xwtKey <= Key.Tilde) {
+				return (char)xwtKey;
+			}
+
+			return '\0';
+		}
+
 		[GLib.ConnectBeforeAttribute]
-		void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		void HandleKeyPressEvent (object o, KeyEventArgs args)
 		{
 			keyHandled = false;
 
-			keyChar = (char)args.Event.Key;
-			keyValue = args.Event.KeyValue;
-			modifier = args.Event.State;
-			key = args.Event.Key;
+			keyChar = CharFromKey (args.Key);
+			modifier = args.Modifiers;
+			key = args.Key;
 
-			if ((args.Event.Key == Gdk.Key.Down || args.Event.Key == Gdk.Key.Up)) {
+			if ((args.Key == Key.Down || args.Key == Key.Up)) {
 				keyChar = '\0';
 			}
 
 			if (list != null)
-				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+				args.Handled = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromXwt (key, keyChar, modifier));
 		}
 
-		void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		void HandleKeyReleaseEvent (object o, KeyEventArgs args)
 		{
 			if (keyHandled)
 				return;
 
 			string text = ctx == null ? Text : Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, Text.Length)));
 			CompletionWindowManager.UpdateWordSelection (text);
-			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromXwt (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 
@@ -121,7 +126,7 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		class NullDotKeyHandler : ICompletionKeyHandler
 		{
-			#region ICompletionKeyHandler implementation
+#region ICompletionKeyHandler implementation
 
 			public bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
 			{
@@ -141,10 +146,10 @@ namespace MonoDevelop.Debugger
 				return false;
 			}
 
-			#endregion
+#endregion
 		}
 
-		#region ICompletionWidget implementation
+#region ICompletionWidget implementation
 
 		public event EventHandler CompletionContextChanged;
 
@@ -186,11 +191,11 @@ namespace MonoDevelop.Debugger
 
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
-			var height = gtkEntry.SizeRequest ().Height;
+			var height = Size.Height;
 			var location = ConvertToScreenCoordinates (new Point (0, height));
 
 			return new CodeCompletionContext (
-				(int)location.X, (int)location.Y, height,
+				(int)location.X, (int)location.Y, (int)height,
 				triggerOffset, 0, triggerOffset, CaretOffset
 			);
 		}
@@ -203,13 +208,13 @@ namespace MonoDevelop.Debugger
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
 			Text = complete_word;
-			gtkEntry.Position = complete_word.Length;
+			CursorPosition = complete_word.Length;
 		}
 
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset)
 		{
 			Text = complete_word;
-			gtkEntry.Position = complete_word.Length;
+			CursorPosition = complete_word.Length;
 		}
 
 		public CodeCompletionContext CurrentCodeCompletionContext {
@@ -220,10 +225,10 @@ namespace MonoDevelop.Debugger
 
 		public int CaretOffset {
 			get {
-				return gtkEntry.Position;
+				return CursorPosition;
 			}
 			set {
-				gtkEntry.Position = value;
+				CursorPosition = value;
 			}
 		}
 
@@ -241,7 +246,7 @@ namespace MonoDevelop.Debugger
 
 		public Gtk.Style GtkStyle {
 			get {
-				return gtkEntry.Style;
+				return null;
 			}
 		}
 
@@ -250,7 +255,7 @@ namespace MonoDevelop.Debugger
 				return 1;
 			}
 		}
-		#endregion
+#endregion
 	}
 }
 
