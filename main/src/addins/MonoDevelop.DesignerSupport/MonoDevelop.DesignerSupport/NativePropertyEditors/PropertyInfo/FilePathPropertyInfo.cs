@@ -44,11 +44,20 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			base.SetValue (target, value);
+			if (value is FilePath filePath) {
+				PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (filePath.Source));
+			} else {
+				Console.WriteLine ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ());
+			}
 		}
 
 		internal override Task<T> GetValueAsync<T> (object target)
 		{
+			if (target is Core.FilePath directoryPath) {
+				T result = (T)(object)new FilePath (directoryPath.FullPath);
+				return Task.FromResult (result);
+			}
+			Console.WriteLine ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
 			return base.GetValueAsync<T> (target);
 		}
 	}
