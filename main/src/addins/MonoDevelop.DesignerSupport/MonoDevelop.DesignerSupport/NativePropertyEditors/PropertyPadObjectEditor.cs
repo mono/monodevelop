@@ -150,34 +150,9 @@ namespace MonoDevelop.DesignerSupport
 
 		#endregion
 
-		public Task<AssignableTypesResult> GetAssignableTypesAsync (IPropertyInfo property, bool childTypes)
+		public async Task<AssignableTypesResult> GetAssignableTypesAsync (IPropertyInfo property, bool childTypes)
 		{
-			return GetAssignableTypes (property.RealType, childTypes);
-		}
-
-		internal static Task<AssignableTypesResult> GetAssignableTypes (ITypeInfo type, bool childTypes)
-		{
-			return Task.Run (() => {
-				var types = AppDomain.CurrentDomain.GetAssemblies ().SelectMany (a => a.GetTypes ()).AsParallel ()
-					.Where (t => t.Namespace != null && !t.IsAbstract && !t.IsInterface && t.IsPublic && t.GetConstructor (Type.EmptyTypes) != null);
-
-				Type realType = ReflectionEditorProvider.GetRealType (type);
-				if (childTypes) {
-					var generic = realType.GetInterface ("ICollection`1");
-					if (generic != null) {
-						realType = generic.GetGenericArguments () [0];
-					} else {
-						realType = typeof (object);
-					}
-				}
-
-				types = types.Where (t => realType.IsAssignableFrom (t));
-
-				return new AssignableTypesResult (types.Select (t => {
-					string asmName = t.Assembly.GetName ().Name;
-					return new TypeInfo (new AssemblyInfo (asmName, isRelevant: asmName.StartsWith ("Xamarin")), t.Namespace, t.Name);
-				}).ToList ());
-			});
+			return new AssignableTypesResult (Array.Empty<ITypeInfo> ());
 		}
 
 		public Task<IReadOnlyList<string>> GetHandlersAsync (IEventInfo ev)
