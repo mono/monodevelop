@@ -234,6 +234,8 @@ namespace MacPlatform
 
 		public TimeSpan GetEventTime (Gdk.EventKey eventKey)
 		{
+			// Gtk.Application.CurrentEvent and other copied gdk_events seem to have a problem
+			// when used as they use gdk_event_copy which seems to crash on de-allocating the private slice.
 			IntPtr currentEvent = GtkWorkarounds.GetCurrentEventHandle ();
 			bool equals = currentEvent == eventKey.Handle;
 			GtkWorkarounds.FreeEvent (currentEvent);

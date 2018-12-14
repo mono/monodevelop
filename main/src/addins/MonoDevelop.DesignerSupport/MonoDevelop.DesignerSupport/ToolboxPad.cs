@@ -86,6 +86,8 @@ namespace MonoDevelop.DesignerSupport
 
 					Gtk.Drag.SourceUnset (widget);
 
+					// Gtk.Application.CurrentEvent and other copied gdk_events seem to have a problem
+					// when used as they use gdk_event_copy which seems to crash on de-allocating the private slice.
 					IntPtr currentEvent = GtkWorkarounds.GetCurrentEventHandle ();
 					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, new Gdk.Event (currentEvent));
 
