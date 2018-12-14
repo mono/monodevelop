@@ -284,7 +284,7 @@ namespace MonoDevelop.Projects
 			// The native file watcher sometimes generates a Changed, Created and Deleted event in
 			// that order from a single native file event. So check the file has been deleted before raising
 			// a FileRemoved event.
-			if (!File.Exists (e.FullPath))
+			if (!File.Exists (e.FullPath) && !Directory.Exists (e.FullPath))
 				FileService.NotifyFileRemoved (e.FullPath);
 		}
 
