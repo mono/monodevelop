@@ -97,6 +97,16 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 
+		PropertyDescriptor GetPropertyDescriptor (PropertyDescriptorCollection collection, string name)
+		{
+			for (int i = 0; i < collection.Count; i++) {
+				if (collection[i].Name == name) {
+					return collection [i];
+				}
+			}
+			return null;
+		}
+
 		protected IPropertyInfo CreatePropertyInfo (PropertyDescriptor propertyDescriptor, object PropertyProvider)
 		{
 			var valueSources = ValueSources.Local | ValueSources.Resource;
@@ -106,11 +116,11 @@ namespace MonoDevelop.DesignerSupport
 			}
 
 			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
-				var kindAtt = propertyDescriptor.Attributes.OfType<FilePathIsFolderAttribute> ().FirstOrDefault ();
-				if (kindAtt == null) {
-					return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-				} 
-				return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				var isDirectoryPropertyDescriptor = GetPropertyDescriptor (propertyDescriptor.GetChildProperties (), nameof (Core.FilePath.IsDirectory));
+				if (isDirectoryPropertyDescriptor != null && (bool)isDirectoryPropertyDescriptor.GetValue (target)) {
+					return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				}
+				return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
 
 			if (HasStandardValues (propertyDescriptor)) {
