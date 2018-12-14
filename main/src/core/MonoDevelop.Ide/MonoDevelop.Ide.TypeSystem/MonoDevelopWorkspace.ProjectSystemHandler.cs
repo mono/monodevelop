@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Projection;
 
@@ -271,12 +272,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								solution.Modified += OnSolutionModified;
 								NotifySolutionModified (solution, solutionId, workspace);
 								workspace.OnSolutionAdded (solutionInfo);
-								lock (workspace.generatedFiles) {
-									foreach (var generatedFile in workspace.generatedFiles) {
-										if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
-											workspace.OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
-									}
-								}
+								OnSolutionOpened (workspace, solutionInfo);
 							}
 						}
 						// Check for modified projects here after the solution has been added to the workspace
@@ -285,6 +281,36 @@ namespace MonoDevelop.Ide.TypeSystem
 						// the restore.
 						ReloadModifiedProjects ();
 						return solutionInfo;
+					}
+				}
+			}
+
+			void OnSolutionOpened (MonoDevelopWorkspace workspace, SolutionInfo solutionInfo)
+			{
+				AssignOpenDocumentsToWorkspace (workspace);
+				OpenGeneratedFiles (workspace);
+			}
+
+			static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace)
+			{
+				foreach (var openDocument in IdeApp.Workbench.Documents) {
+					var filePath = openDocument.FileName;
+					var solution = workspace.CurrentSolution;
+					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
+					foreach (var documentId in documentIds) {
+						if (!workspace.IsDocumentOpen (documentId)) {
+							workspace.InformDocumentOpen (documentId, openDocument.TextBuffer.AsTextContainer (), openDocument);
+						}
+					}
+				}
+			}
+
+			static void OpenGeneratedFiles (MonoDevelopWorkspace workspace)
+			{
+				lock (workspace.generatedFiles) {
+					foreach (var generatedFile in workspace.generatedFiles) {
+						if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
+							workspace.OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
 					}
 				}
 			}

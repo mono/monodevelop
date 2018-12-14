@@ -264,12 +264,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			var documentId = GetDocumentId (workspace, project, filePath);
-			if (documentId == null) {
-				return;
+			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+			foreach (var documentId in documentIds) {
+				workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
 			}
-
-			workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
 		}
 
 		static void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)
@@ -285,12 +283,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			var documentId = GetDocumentId (workspace, project, filePath);
-			if (documentId == null) {
-				return;
+			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+			foreach (var documentId in documentIds) {
+				workspace.InformDocumentClose (documentId, filePath);
 			}
-
-			workspace.InformDocumentClose (documentId, filePath);
 		}
 
 		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
