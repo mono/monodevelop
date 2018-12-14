@@ -166,6 +166,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\EnumDescriptorPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\StringStandardValuesPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FilePathPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DirectoryPathPropertyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
