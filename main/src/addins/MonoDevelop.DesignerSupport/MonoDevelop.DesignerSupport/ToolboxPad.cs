@@ -85,7 +85,12 @@ namespace MonoDevelop.DesignerSupport
 				if (!isDragging) {
 
 					Gtk.Drag.SourceUnset (widget);
-					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, Gtk.Global.CurrentEvent ?? new Gdk.Event (IntPtr.Zero));
+
+					IntPtr currentEvent = GtkWorkarounds.GetCurrentEventHandle ();
+					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, new Gdk.Event (currentEvent));
+
+					// gtk_drag_begin does not store the event, so we're okay
+					GtkWorkarounds.FreeEvent (currentEvent);
 
 				}
 			};
