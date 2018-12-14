@@ -105,6 +105,10 @@ namespace MonoDevelop.DesignerSupport
 				return new EnumDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
 
+			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
+				return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+			}
+
 			if (HasStandardValues (propertyDescriptor)) {
 				return new StringStandardValuesPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}

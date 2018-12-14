@@ -72,6 +72,8 @@ namespace MonoDevelop.DesignerSupport
 
 		public IReadOnlyList<IAvailabilityConstraint> AvailabilityConstraints => EmptyConstraints;
 
+		public bool IsUncommon => false;
+
 		public bool Equals (DescriptorPropertyInfo other)
 		{
 			if (ReferenceEquals (null, other))
@@ -151,18 +153,10 @@ namespace MonoDevelop.DesignerSupport
 		internal virtual void SetValue<T> (object target, T value)
 		{
 			try {
-				var tc = PropertyDescriptor.Converter;
-				if (tc.CanConvertFrom (typeof (T))) {
-					PropertyDescriptor.SetValue (PropertyProvider, value);
-				}
+				PropertyDescriptor.SetValue (PropertyProvider, value);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
-		}
-
-		internal string ProppyListToStringValue (IReadOnlyList<string> listValue)
-		{
-		 	return	string.Join ("|", listValue);
 		}
 	}
 }
