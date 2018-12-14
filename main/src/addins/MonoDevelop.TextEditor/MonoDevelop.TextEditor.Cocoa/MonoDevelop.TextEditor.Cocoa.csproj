@@ -54,6 +54,7 @@
 		<Compile Include="AssemblyInfo.cs" />
 		<Compile Include="AddinInfo.cs" />
 		<Compile Include="ImageService.cs" />
+		<Compile Include="EditorCommandHandlers.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="MonoDevelop.TextEditor.Cocoa.addin.xml" />
