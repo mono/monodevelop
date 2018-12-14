@@ -154,8 +154,7 @@ namespace MonoDevelop.DesignerSupport
 			if (editorProvider == null) {
 				editorProvider = new PropertyPadEditorProvider ();
 				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
-					SupportsCustomExpressions = true,
-					SupportsMaterialDesign = true,
+					AutoExpandGroups = new string [] { "Build", "Misc", "NuGet", "Reference" }
 				};
 			}
 		}
