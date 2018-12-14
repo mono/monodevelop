@@ -106,10 +106,10 @@ namespace MonoDevelop.DesignerSupport
 			}
 
 			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
-				return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-			}
-
-			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
+				var kindAtt = propertyDescriptor.Attributes.OfType<FilePathIsFolderAttribute> ().FirstOrDefault ();
+				if (kindAtt == null) {
+					return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				} 
 				return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
 
