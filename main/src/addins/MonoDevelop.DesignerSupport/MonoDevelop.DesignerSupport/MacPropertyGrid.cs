@@ -1,4 +1,4 @@
-﻿
+
 /* 
  * PropertyPad.cs: The pad that holds the MD property grid. Can also 
  * hold custom grid widgets.

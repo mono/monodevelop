@@ -70,19 +70,22 @@ namespace MonoDevelop.DesignerSupport
 						propertyPad.SetCurrentObject (lastComponent, provs);
 					else
 						propertyPad.BlankPad ();
-
+#if !MAC
 					if (lastPadProvider is IPropertyPadCustomizer customizer && pad is PropertyPad ppad) {
 						customizer.Customize (ppad.PadWindow, ppad.PropertyGrid);
 					}
+#endif
 					propertyPad.PropertyGridChanged += OnPropertyGridChanged;		
 				}
 				else if (lastCustomProvider != null) {
+#if !MAC
 					if (propertyPad is PropertyPad ppad) {
 						ppad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
 
 						if (lastCustomProvider is IPropertyPadCustomizer customizer)
 							customizer.Customize (ppad.PadWindow, null);
 					}
+#endif
 				}
 			}
 		}
@@ -147,10 +150,10 @@ namespace MonoDevelop.DesignerSupport
 				}
 				else
 					propertyPad.BlankPad ();
-
+#if !MAC
 				if (provider is IPropertyPadCustomizer customizer && propertyPad is PropertyPad ppad)
 					customizer.Customize (ppad.PadWindow, ppad.PropertyGrid);
-
+#endif
 				propertyPad.PropertyGridChanged += OnPropertyGridChanged;
 			}
 			else {
@@ -175,7 +178,8 @@ namespace MonoDevelop.DesignerSupport
 				DisposeCustomPropertyPadProvider ();
 
 				lastCustomProvider = provider;
-				
+
+#if !MAC
 				if (propertyPad != null) {
 					if (propertyPad is PropertyPad ppad) {
 						ppad.UseCustomWidget (provider.GetCustomPropertyWidget ());
@@ -185,6 +189,7 @@ namespace MonoDevelop.DesignerSupport
 						}
 					}
 				}
+#endif
 			}
 			else {
 				ReSetPad ();
