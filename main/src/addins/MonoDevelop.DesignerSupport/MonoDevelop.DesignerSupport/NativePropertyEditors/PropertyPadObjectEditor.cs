@@ -111,6 +111,8 @@ namespace MonoDevelop.DesignerSupport
 		{
 			var valueSources = ValueSources.Local | ValueSources.Default;
 			if (propertyDescriptor.PropertyType.IsEnum) {
+				if (propertyDescriptor.PropertyType.IsDefined (typeof (FlagsAttribute), true))
+					return new FlagDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 				return new EnumDescriptorPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
 
