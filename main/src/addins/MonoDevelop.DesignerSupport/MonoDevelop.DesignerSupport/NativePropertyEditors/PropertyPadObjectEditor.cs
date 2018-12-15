@@ -214,8 +214,6 @@ namespace MonoDevelop.DesignerSupport
 				info.SetValue (this.target, valueInfo.Value);
 				OnPropertyChanged (info);
 			}
-
-			PropertyChanged?.Invoke (this, new EditorPropertyChangedEventArgs (propertyInfo));
 			return Task.CompletedTask;
 		}
 
