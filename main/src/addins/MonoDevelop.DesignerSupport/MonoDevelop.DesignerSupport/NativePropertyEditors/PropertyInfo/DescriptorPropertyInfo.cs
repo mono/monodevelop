@@ -119,20 +119,20 @@ namespace MonoDevelop.DesignerSupport
 
 		internal virtual Task<T> GetValueAsync<T> (object target)
 		{
-			string error;
 			object value = null;
+
 			try {
+				value = PropertyDescriptor.GetValue (PropertyProvider);
 				TypeConverter tc = PropertyDescriptor.Converter;
-				object cob = PropertyDescriptor.GetValue (PropertyProvider);
 				if (tc.CanConvertTo (typeof (T))) {
-					value = tc.ConvertTo (cob, typeof (T));
+					value = tc.ConvertTo (value, typeof (T));
 				}
 				return Task.FromResult ((T)value);
 			} catch (Exception ex) {
-				error = ex.ToString (); 
+				Console.WriteLine (ex);
 			}
 
-			T converted = default (T);
+			T converted = default;
 			try {
 				if (value != null && !(value is T)) {
 					if (typeof (T) == typeof (string)) {
@@ -142,12 +142,10 @@ namespace MonoDevelop.DesignerSupport
 					}
 				}
 				return Task.FromResult ((T)value);
-
 			} catch (Exception ex) {
-				error = ex.ToString ();
-				Console.WriteLine (error);
-				return Task.FromResult (converted);
+				Console.WriteLine (ex);
 			}
+			return Task.FromResult (converted);
 		}
 
 		internal virtual void SetValue<T> (object target, T value)
