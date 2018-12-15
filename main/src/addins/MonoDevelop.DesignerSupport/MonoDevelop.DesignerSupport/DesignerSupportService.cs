@@ -70,13 +70,15 @@ namespace MonoDevelop.DesignerSupport
 						propertyPad.SetCurrentObject (lastComponent, provs);
 					else
 						propertyPad.BlankPad ();
-
+#if !MAC
 					if (lastPadProvider is IPropertyPadCustomizer customizer && pad is PropertyPad ppad) {
 						customizer.Customize (ppad.PadWindow, ppad.PropertyGrid);
 					}
+#endif
 					propertyPad.PropertyGridChanged += OnPropertyGridChanged;		
 				}
 				else if (lastCustomProvider != null) {
+#if !MAC
 					if (propertyPad is PropertyPad ppad) {
 						try {
 							var currentCustomWidget = lastCustomProvider.GetCustomPropertyWidget ();
@@ -90,6 +92,7 @@ namespace MonoDevelop.DesignerSupport
 							ReSetPad ();
 						}
 					}
+#endif
 				}
 			}
 		}
@@ -147,16 +150,19 @@ namespace MonoDevelop.DesignerSupport
 				object[] provs = GetProvidersForObject (comp, provider.GetProvider ());
 				if (provs.Length > 0) {
 					propertyPad.SetCurrentObject (comp, provs);
+
+#if !MAC
 					if (propertyPad is PropertyPad propPad) {
 						propPad.CommandRouteOrigin = commandRouteOrigin;
 					}
+#endif
 				}
 				else
 					propertyPad.BlankPad ();
-
+#if !MAC
 				if (provider is IPropertyPadCustomizer customizer && propertyPad is PropertyPad ppad)
 					customizer.Customize (ppad.PadWindow, ppad.PropertyGrid);
-
+#endif
 				propertyPad.PropertyGridChanged += OnPropertyGridChanged;
 			}
 			else {
@@ -181,17 +187,18 @@ namespace MonoDevelop.DesignerSupport
 				DisposeCustomPropertyPadProvider ();
 
 				lastCustomProvider = provider;
-				
+
 				if (propertyPad != null && propertyPad is PropertyPad ppad) {
 					try {
 						var customWidget = provider.GetCustomPropertyWidget ();
 						if (customWidget != null) {
 							ppad.UseCustomWidget (customWidget);
 							ppad.CommandRouteOrigin = commandRouteOrigin;
-
+#if !MAC
 							var customizer = provider as IPropertyPadCustomizer;
 							if (customizer != null)
 								customizer.Customize (ppad.PadWindow, null);
+#endif								
 						} else {
 							propertyPad?.BlankPad ();
 							return;
@@ -228,9 +235,9 @@ namespace MonoDevelop.DesignerSupport
 				lastPadProvider.OnChanged (lastComponent);
 		}
 		
-		#endregion
+#endregion
 		
-		#region Toolbox
+#region Toolbox
 		
 		public ToolboxService ToolboxService {
 			get{
@@ -243,7 +250,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		#endregion
+#endregion
 		
 		internal DesignerSupportService ()
 		{

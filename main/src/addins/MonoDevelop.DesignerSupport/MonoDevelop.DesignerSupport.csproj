@@ -167,6 +167,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\StringStandardValuesPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FilePathPropertyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DirectoryPathPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\IPropertyPad.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

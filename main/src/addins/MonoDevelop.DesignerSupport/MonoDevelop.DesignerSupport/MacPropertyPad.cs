@@ -66,7 +66,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 	}
 
-	class MacPropertyPad : PadContent, ICommandDelegator, IPropertyPad
+	class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
 	{
 		Gtk.Widget widget;
 

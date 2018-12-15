@@ -30,6 +30,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if !MAC
 
 using MonoDevelop.Ide.Gui;
 
@@ -46,17 +47,6 @@ using Gtk;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public interface IPropertyPad
-	{
-		bool IsPropertyGridEditing { get; }
-
-		event EventHandler PropertyGridChanged;
-
-		void SetCurrentObject (object lastComponent, object [] propertyProviders);
-		void BlankPad ();
-		void PopulateGrid (bool saveEditSession);
-	}
-
 	public class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
 	{
 		public event EventHandler PropertyGridChanged;
@@ -98,7 +88,7 @@ namespace MonoDevelop.DesignerSupport
 			get { return container; }
 		}
 		
-		#region AbstractPadContent implementations
+#region AbstractPadContent implementations
 		
 		public override Control Control {
 			get { return frame; }
@@ -111,9 +101,9 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 		}
 		
-		#endregion
+#endregion
 
-		#region ICommandDelegatorRouter implementation
+#region ICommandDelegatorRouter implementation
 
 		object ICommandDelegator.GetDelegatedCommandTarget ()
 		{
@@ -126,7 +116,7 @@ namespace MonoDevelop.DesignerSupport
 				return null;
 		}
 
-		#endregion
+#endregion
 		
 		//Grid consumers must call this when they lose focus!
 		public void BlankPad ()
@@ -204,7 +194,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		#region IToolbarProvider implementation
+#region IToolbarProvider implementation
 		public void Insert (Gtk.Widget w, int pos)
 		{
 			if (tb != null)
@@ -246,7 +236,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		#endregion
+#endregion
 	}
 
 	class InvisibleFrame : Gtk.Alignment
@@ -265,4 +255,6 @@ namespace MonoDevelop.DesignerSupport
 			return old;
 		}
 	}
+
 }
+#endif
