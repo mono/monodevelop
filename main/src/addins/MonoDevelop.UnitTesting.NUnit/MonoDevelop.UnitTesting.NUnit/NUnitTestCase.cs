@@ -43,7 +43,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.className = className;
 			this.pathName = tinfo.PathName;
 			this.rootSuite = rootSuite;
-			this.TestId = tinfo.TestId;
+			this.TestSourceCodeDocumentId = this.TestId = tinfo.TestId;
 			this.IsExplicit = tinfo.IsExplicit;
 		}
 		

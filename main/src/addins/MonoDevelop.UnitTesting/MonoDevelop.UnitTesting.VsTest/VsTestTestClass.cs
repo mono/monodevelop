@@ -37,12 +37,13 @@ namespace MonoDevelop.UnitTesting.VsTest
 		public Project Project { get; private set; }
 		IVsTestTestRunner testRunner;
 
-		public VsTestTestClass (IVsTestTestRunner testRunner, Project project, string name)
-			: base (name)
+		public VsTestTestClass (IVsTestTestRunner testRunner, Project project, VsTestUnitTest vsTestUnit)
+			: base (vsTestUnit.FixtureTypeName)
 		{
 			this.Project = project;
 			this.testRunner = testRunner;
-			FixtureTypeName = name;
+			FixtureTypeName = vsTestUnit.FixtureTypeName;
+			TestSourceCodeDocumentId = string.IsNullOrEmpty (vsTestUnit.FixtureTypeNamespace) ? FixtureTypeName : vsTestUnit.FixtureTypeNamespace + "." + FixtureTypeName;
 		}
 
 		protected override UnitTestResult OnRun (TestContext testContext)
