@@ -750,7 +750,6 @@ namespace MonoDevelop.Projects
 		internal protected override async Task OnSave (ProgressMonitor monitor)
 		{
 			SetFastBuildCheckDirty ();
-			modifiedInMemory = false;
 
 			string content = await WriteProjectAsync (monitor);
 
@@ -766,6 +765,15 @@ namespace MonoDevelop.Projects
 				await ClearCachedData ();
 				RefreshProjectBuilder ().Ignore ();
 			}
+
+			// Need to clear this flag at the end to prevent a race condition where the project is modified in memory
+			// then saved immediately afterwards. Clearing this flag was originally done at the beginning of this method
+			// which could cause the type system to get old reference information. The project modified event triggers
+			// the type system to get updated reference information. If the type system access the project when it is
+			// saving, after the modifiedInMemory flag is reset, but before the cached data is cleared or the project
+			// builder refreshed, then out of date information can be returned to the type system. One way to reproduce
+			// this was to update a NuGet package in a project that used a packages.config file.
+			modifiedInMemory = false;
 		}
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()

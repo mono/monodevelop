@@ -62,6 +62,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public CancellationToken ExecutedCancellationToken;
 
 		public Action BeforeExecuteAction = () => { };
+		public Func<Task> BeforeExecuteActionTask;
 
 		public Task ExecuteNuGetProjectActionsAsync (
 			NuGetProject nuGetProject,
@@ -76,6 +77,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			ExecutedCancellationToken = token;
 
 			BeforeExecuteAction ();
+
+			if (BeforeExecuteActionTask != null)
+				return BeforeExecuteActionTask.Invoke ();
 
 			return Task.FromResult (0);
 		}
