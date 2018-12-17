@@ -330,8 +330,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
-
-			control.FocusChain = new Gtk.Widget [] { logView };
 		}
 
 		public override void Dispose ()
