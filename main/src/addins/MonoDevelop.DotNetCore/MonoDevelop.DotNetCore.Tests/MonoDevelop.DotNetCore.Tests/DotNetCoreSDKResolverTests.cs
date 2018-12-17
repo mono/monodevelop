@@ -38,50 +38,64 @@ namespace MonoDevelop.DotNetCore.Tests
 	public class DotNetCoreSDKResolverTests
 	{
 		readonly DotNetCoreVersion [] SdkVersions = {
-				DotNetCoreVersion.Parse ("1.1.1"),
 				DotNetCoreVersion.Parse ("1.0.5"),
-				DotNetCoreVersion.Parse ("1.1.2"),
-				DotNetCoreVersion.Parse ("2.0.0-preview1"),
-				DotNetCoreVersion.Parse ("2.0.0-preview2"),
-				DotNetCoreVersion.Parse ("2.0.0"),
 				DotNetCoreVersion.Parse ("1.0.7"),
-				DotNetCoreVersion.Parse ("1.1.4"),
 				DotNetCoreVersion.Parse ("1.0.8"),
-				DotNetCoreVersion.Parse ("1.1.5"),
-				DotNetCoreVersion.Parse ("2.0.3"),
-				DotNetCoreVersion.Parse ("2.0.4"),
 				DotNetCoreVersion.Parse ("1.0.9"),
-				DotNetCoreVersion.Parse ("1.1.6"),
-				DotNetCoreVersion.Parse ("2.0.5"),
-				DotNetCoreVersion.Parse ("2.1-preview1"),
 				DotNetCoreVersion.Parse ("1.0.10"),
-				DotNetCoreVersion.Parse ("2.0.6"),
-				DotNetCoreVersion.Parse ("2.1-preview2"),
 				DotNetCoreVersion.Parse ("1.0.11"),
+				DotNetCoreVersion.Parse ("1.0.12"),
+				DotNetCoreVersion.Parse ("1.0.13"),
+				DotNetCoreVersion.Parse ("1.1.1"),
+				DotNetCoreVersion.Parse ("1.1.2"),
+				DotNetCoreVersion.Parse ("1.1.4"),
+				DotNetCoreVersion.Parse ("1.1.5"),
+				DotNetCoreVersion.Parse ("1.1.6"),
 				DotNetCoreVersion.Parse ("1.1.7"),
 				DotNetCoreVersion.Parse ("1.1.8"),
-				DotNetCoreVersion.Parse ("2.0.7"),
-				DotNetCoreVersion.Parse ("2.1-rc1"),
-				DotNetCoreVersion.Parse ("2.0.7-2"),
-				DotNetCoreVersion.Parse ("2.1.0"),
-				DotNetCoreVersion.Parse ("2.1.1"),
-				DotNetCoreVersion.Parse ("1.0.12"),
 				DotNetCoreVersion.Parse ("1.1.9"),
-				DotNetCoreVersion.Parse ("2.0.9"),
-				DotNetCoreVersion.Parse ("2.1.2"),
-				DotNetCoreVersion.Parse ("2.1.3"),
-				DotNetCoreVersion.Parse ("2.2.0-preview1"),
-				DotNetCoreVersion.Parse ("2.1.4"),
-				DotNetCoreVersion.Parse ("2.2.0-preview2"),
-				DotNetCoreVersion.Parse ("2.1.5"),
-				DotNetCoreVersion.Parse ("1.0.13"),
 				DotNetCoreVersion.Parse ("1.1.10"),
-				DotNetCoreVersion.Parse ("2.2.0-preview3"),
-				DotNetCoreVersion.Parse ("2.1.6"),
-				DotNetCoreVersion.Parse ("3.0.100-preview-009790"),
-
+				//.Net Core v 2.0
+				DotNetCoreVersion.Parse ("2.0.0-preview1-005977"),
+				DotNetCoreVersion.Parse ("2.0.0-preview2-006497"),
+				DotNetCoreVersion.Parse ("2.0.0"),
+				DotNetCoreVersion.Parse ("2.0.3"),
+				DotNetCoreVersion.Parse ("2.1.2"),
+				DotNetCoreVersion.Parse ("2.1.4"),
+				DotNetCoreVersion.Parse ("2.1.100"),
+				DotNetCoreVersion.Parse ("2.1.101"),
+				DotNetCoreVersion.Parse ("2.1.102"),
+				DotNetCoreVersion.Parse ("2.1.103"),
+				DotNetCoreVersion.Parse ("2.1.104"),
+				DotNetCoreVersion.Parse ("2.1.105"),
+				DotNetCoreVersion.Parse ("2.1.200"),
+				DotNetCoreVersion.Parse ("2.1.201"),
+				DotNetCoreVersion.Parse ("2.1.202"),
+				//.Net Core v 2.1
+				DotNetCoreVersion.Parse ("2.1.300-preview1"),
+				DotNetCoreVersion.Parse ("2.1.300-preview2"),
+				DotNetCoreVersion.Parse ("2.1.300-rc1"),
+				DotNetCoreVersion.Parse ("2.1.300"),
+				DotNetCoreVersion.Parse ("2.1.301"),
+				DotNetCoreVersion.Parse ("2.1.302"),
+				DotNetCoreVersion.Parse ("2.1.400"),
+				DotNetCoreVersion.Parse ("2.1.401"),
+				DotNetCoreVersion.Parse ("2.1.402"),
+				DotNetCoreVersion.Parse ("2.1.403"),
+				DotNetCoreVersion.Parse ("2.1.500"),
+				DotNetCoreVersion.Parse ("2.1.502"),
+				//.Net Core v 2.2
+				DotNetCoreVersion.Parse ("2.2.100-preview1"),
+				DotNetCoreVersion.Parse ("2.2.100-preview2"),
+				DotNetCoreVersion.Parse ("2.2.100-preview3"),
+				DotNetCoreVersion.Parse ("2.2.100"),
+				DotNetCoreVersion.Parse ("2.2.101"),
+				//.Net Core 3.0
+				DotNetCoreVersion.Parse ("3.0.100-preview-009812"),
+				//. Fake versions
 				DotNetCoreVersion.Parse ("2.2.0"),
 				DotNetCoreVersion.Parse ("2.2.2"),
+				DotNetCoreVersion.Parse ("2.1.399"),
 
 			};
 	
@@ -140,7 +154,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task WhenGlobalJsonAndVersionMatches_ThenItReturnsThatVersion ()
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
-			var expectedVersion = DotNetCoreVersion.Parse ("2.1.0");
+			var expectedVersion = DotNetCoreVersion.Parse ("2.1.500");
 			var expectedResult = Path.Combine (resolver.SdkRootPath, expectedVersion.OriginalString, "Sdks");
 
 			using (var solution = await GetSolution ()) {
@@ -175,8 +189,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task WhenGlobalJsonAndVersionNotMatches_AndVersionIs21OrBefore_ThenItReturnsLatestPatchVersion ()
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
-			var versionThatDoesNotExists = DotNetCoreVersion.Parse ("2.2.1");
-			var versionThatShouldReturn = DotNetCoreVersion.Parse ("2.2.2");
+			var versionThatDoesNotExists = DotNetCoreVersion.Parse ("2.1.310");
+			var versionThatShouldReturn = DotNetCoreVersion.Parse ("2.1.399");
 			var expectedResult = Path.Combine (resolver.SdkRootPath, versionThatShouldReturn.OriginalString, "Sdks");
 
 			using (var solution = await GetSolution ()) {
@@ -193,10 +207,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		public async Task WhenGlobalJsonAndVersionNotMatches_AndVersionIs21OrBefore_ThenItReturnsIsNotSupported ()
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
-			var versionThatDoesNotExists = DotNetCoreVersion.Parse ("2.2.3");
-			var versionThatShouldReturn = resolver.GetLatestSdk ();
-			var expectedResult = Path.Combine (resolver.SdkRootPath, versionThatShouldReturn.OriginalString, "Sdks");
-
+			var versionThatDoesNotExists = DotNetCoreVersion.Parse ("2.1.503");
+		
 			using (var solution = await GetSolution ()) {
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
@@ -204,6 +216,34 @@ namespace MonoDevelop.DotNetCore.Tests
 				resolver.ResolveSDK (workingDirectory);
 
 				Assert.True (resolver.IsUnsupportedSdkVersion);
+			}
+		}
+
+		//versionRequested, versionReturned, IsSupported?
+		[TestCase ("2.1.303", "", false)]
+		[TestCase ("2.1.301", "2.1.302", true)]
+		[TestCase ("2.1.501", "", false)]
+		public async Task WhenGlobalJsonAndVersionNotMatches (string requestedVersion, string expectedVersion, bool isSupported)
+		{
+			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
+			var versionThatDoesNotExists = DotNetCoreVersion.Parse (requestedVersion);
+			DotNetCoreVersion versionThatShouldReturn;
+			string expectedResult = string.Empty;
+
+			if (!string.IsNullOrEmpty (expectedVersion)) {
+				versionThatShouldReturn = DotNetCoreVersion.Parse (expectedVersion);
+				expectedResult = Path.Combine (resolver.SdkRootPath, versionThatShouldReturn.OriginalString, "Sdks");
+			}
+
+			using (var solution = await GetSolution ()) {
+				var workingDirectory = Path.GetDirectoryName (solution.FileName);
+				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
+
+				resolver.ResolveSDK (workingDirectory);
+
+				Assert.That (resolver.IsUnsupportedSdkVersion, Is.EqualTo (!isSupported));
+				if (isSupported)
+					Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
 		}
 

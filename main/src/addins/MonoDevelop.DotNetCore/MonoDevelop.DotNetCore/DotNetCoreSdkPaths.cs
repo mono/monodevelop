@@ -91,11 +91,13 @@ namespace MonoDevelop.DotNetCore
 			targetVersion = SdkVersions.FirstOrDefault (x => x.OriginalString.IndexOf (specificVersion, StringComparison.InvariantCulture) == 0);
 			if (targetVersion == null) {
 				//if global.json exists and !matches then:
-				if (requiredVersion.Major == 2 && requiredVersion.Minor >= 1) {
+				if (requiredVersion >= DotNetCoreVersion.Parse ("2.1")) {
 					targetVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major
-																	&& version.Minor == requiredVersion.Minor
-																	&& version.Patch > requiredVersion.Patch)
-												.OrderByDescending (version => version.Patch).FirstOrDefault ();
+																	&& version.Minor == requiredVersion.Minor)
+												.OrderByDescending (version => version.Patch).FirstOrDefault (x => {
+												return (x.Patch / 100 == requiredVersion.Patch / 100) &&
+														(x.Patch % 100 >= requiredVersion.Patch % 100);
+												});
 				} else {
 					targetVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major && version.Minor == requiredVersion.Minor)
 												.OrderByDescending (version => version.Patch).FirstOrDefault ();
