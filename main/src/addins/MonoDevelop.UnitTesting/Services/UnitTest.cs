@@ -238,7 +238,16 @@ namespace MonoDevelop.UnitTesting
 			get;
 			protected set;
 		}
-		
+
+		/// <summary>
+		/// Used for the text editor integration to identify the source code member connected to the unit test.
+		/// </summary>
+		public string TestSourceCodeDocumentId {
+			get;
+			protected set;
+		}
+
+
 		public string FullName {
 			get {
 				if (parent != null)

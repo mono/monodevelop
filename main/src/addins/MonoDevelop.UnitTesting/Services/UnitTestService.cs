@@ -243,6 +243,16 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
+		public static UnitTest SearchTestByDocumentId (string id)
+		{
+			foreach (UnitTest t in RootTests) {
+				UnitTest r = SearchTestByDocumentId (t, id);
+				if (r != null)
+					return r;
+			}
+			return null;
+		}
+
 
 		static UnitTest SearchTest (UnitTest test, string fullName)
 		{
@@ -270,9 +280,27 @@ namespace MonoDevelop.UnitTesting
 				return test;
 
 			UnitTestGroup group = test as UnitTestGroup;
-			if (group != null)  {
+			if (group != null) {
 				foreach (UnitTest t in group.Tests) {
 					UnitTest result = SearchTestById (t, id);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
+		}
+
+		static UnitTest SearchTestByDocumentId (UnitTest test, string id)
+		{
+			if (test == null)
+				return null;
+			if (test.TestSourceCodeDocumentId == id)
+				return test;
+
+			UnitTestGroup group = test as UnitTestGroup;
+			if (group != null) {
+				foreach (UnitTest t in group.Tests) {
+					UnitTest result = SearchTestByDocumentId (t, id);
 					if (result != null)
 						return result;
 				}
