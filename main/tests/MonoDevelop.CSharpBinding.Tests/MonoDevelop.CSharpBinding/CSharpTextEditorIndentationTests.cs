@@ -602,5 +602,27 @@ namespace MyLibrary
 			}
 		}
 
+		/// <summary>
+		/// Bug 740691: [Feedback] Regression (C#): When I move a method parameter to a new line, it no longer aligns the parameter to the previous parameters column.
+		/// </summary>
+		[Test]
+		public async Task TestVSTS740691 ()
+		{
+			using (var data = await Create (@"
+using System;
+
+namespace MyLibrary
+{
+	public class MyClass
+	{
+		public void DoStuff(string message,
+$)
+	}
+}", createWithProject: true)) {
+				var tracker = new CSharpIndentationTracker (data.Document.Editor, data.Document);
+				var indent = tracker.GetIndentationString (data.Document.Editor.CaretLine);
+				Assert.AreEqual ("\t\t\t", indent);
+			}
+		}
 	}
 }
