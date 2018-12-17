@@ -268,6 +268,43 @@ class Foo
 			}
 		}
 
+
+		/// <summary>
+		/// Pasting verbatim strings removes double quotes #6641
+		/// </summary>
+		[Test]
+		public async Task TestIssue6641 ()
+		{
+			var opt = FormattingOptionsFactory.CreateMono ();
+			using (var testCase = await CreateEngine (@"
+class Test
+{
+	public static void Main (string[] args)
+	{
+		Console.WriteLine($@""Test"");
+	}
+}
+")) {
+				var handler = CreateTextPasteIndentEngine (testCase, opt);
+				var copyData = handler.GetCopyData (testCase.Document.Editor.CaretOffset, "@\"Test\"".Length);
+				Assert.IsNull (copyData);
+			}
+
+			using (var testCase = await CreateEngine (@"
+class Test
+{
+	public static void Main (string[] args)
+	{
+		Console.WriteLine($""Test"");
+	}
+}
+")) {
+				var handler = CreateTextPasteIndentEngine (testCase, opt);
+				var copyData = handler.GetCopyData (testCase.Document.Editor.CaretOffset, "\"Test\"".Length);
+				Assert.IsNull (copyData);
+			}
+		}
+
 		protected override IEnumerable<TextEditorExtension> GetEditorExtensions ()
 		{
 			yield return new CSharpTextEditorIndentation ();
