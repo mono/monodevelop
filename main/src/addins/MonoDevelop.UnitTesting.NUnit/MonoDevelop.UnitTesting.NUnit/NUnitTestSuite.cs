@@ -42,7 +42,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			fullName = !string.IsNullOrEmpty (tinfo.PathName) ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
 			this.testInfo = tinfo;
 			this.rootSuite = rootSuite;
-			this.TestId = tinfo.TestId;
+			this.TestSourceCodeDocumentId = this.TestId = tinfo.TestId;
 			this.canMergeWithParent =  !string.IsNullOrEmpty (tinfo.PathName) &&
 									   string.IsNullOrEmpty (tinfo.FixtureTypeName) &&
 									   string.IsNullOrEmpty (tinfo.FixtureTypeNamespace);
