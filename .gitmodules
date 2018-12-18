@@ -25,7 +25,7 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = d15-9
+	branch = d15-9-sr1
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
 	url = git://github.com/mono/sharpsvn-binary.git
