@@ -55,15 +55,17 @@ namespace MonoDevelop.Ide.Composition
 			internal static bool writeCache;
 			readonly ICachingFaultInjector cachingFaultInjector;
 			Task saveTask;
-			public HashSet<Assembly> Assemblies { get; }
+			public HashSet<Assembly> MefAssemblies { get; }
+			public HashSet<Assembly> AllAssemblies { get; }
 			internal string MefCacheFile { get; }
 			internal string MefCacheControlFile { get; }
 
-			public Caching (HashSet<Assembly> assemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
+			public Caching (HashSet<Assembly> mefAssemblies, HashSet<Assembly> allAssemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
 			{
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
 
-				Assemblies = assemblies;
+				MefAssemblies = mefAssemblies;
+				AllAssemblies = allAssemblies;
 				MefCacheFile = getCacheFilePath ("mef-cache");
 				MefCacheControlFile = getCacheFilePath ("mef-cache-control");
 				this.cachingFaultInjector = cachingFaultInjector;
@@ -121,7 +123,7 @@ namespace MonoDevelop.Ide.Composition
 					return false;
 				}
 
-				var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
+				var currentAssemblies = AllAssemblies.ToDictionary (x => x.Location, x => x.ManifestModule.ModuleVersionId);
 
 				// Short-circuit on number of assemblies change
 				if (controlCache.AssemblyInfos.Length != currentAssemblies.Count)
@@ -130,10 +132,13 @@ namespace MonoDevelop.Ide.Composition
 				// Validate that the assemblies match and we have the same time stamps on them.
 				foreach (var assemblyInfo in controlCache.AssemblyInfos) {
 					cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
-					if (!currentAssemblies.Contains (assemblyInfo.Location))
+					if (!currentAssemblies.TryGetValue (assemblyInfo.Location, out var mvid))
 						return false;
 
-					if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
+					if (mvid != assemblyInfo.ModuleVersionId)
+						return false;
+
+					if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.Timestamp)
 						return false;
 				}
 
@@ -175,9 +180,10 @@ namespace MonoDevelop.Ide.Composition
 			{
 				// Create cache control data.
 				var controlCache = new MefControlCache {
-					AssemblyInfos = Assemblies.Select (asm => new MefControlCacheAssemblyInfo {
+					AssemblyInfos = AllAssemblies.Select (asm => new MefControlCacheAssemblyInfo {
 						Location = asm.Location,
-						LastWriteTimeUtc = File.GetLastWriteTimeUtc (asm.Location),
+						Timestamp = File.GetLastWriteTimeUtc (asm.Location),
+						ModuleVersionId = asm.ManifestModule.ModuleVersionId,
 					}).ToArray (),
 				};
 
@@ -205,7 +211,10 @@ namespace MonoDevelop.Ide.Composition
 			public string Location;
 
 			[JsonRequired]
-			public DateTime LastWriteTimeUtc;
+			public DateTime Timestamp;
+
+			[JsonRequired]
+			public Guid ModuleVersionId;
 		}
 	}
 }

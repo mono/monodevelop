@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Composition
 		{
 			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
 			{
-				info.LastWriteTimeUtc = info.LastWriteTimeUtc.Subtract (TimeSpan.FromSeconds (1));
+				info.Timestamp = info.Timestamp.Subtract (TimeSpan.FromSeconds (1));
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Composition
 		{
 			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
 			{
-				info.LastWriteTimeUtc = info.LastWriteTimeUtc.Add (TimeSpan.FromSeconds (1));
+				info.Timestamp = info.Timestamp.Add (TimeSpan.FromSeconds (1));
 			}
 		}
 
@@ -58,15 +58,24 @@ namespace MonoDevelop.Ide.Composition
 		{
 			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
 			{
-				// Change one of the assemblies' paths
+				// Change one of the assemblies' path
 				info.Location = typeof (LocationCachingFaultInjector).Assembly.Location;
+			}
+		}
+
+		internal class ModuleVersionIdCachingFaultInjector : CompositionManager.ICachingFaultInjector
+		{
+			public void FaultAssemblyInfo (CompositionManager.MefControlCacheAssemblyInfo info)
+			{
+				// Change one of the assemblies' mvid
+				info.ModuleVersionId = Guid.NewGuid ();
 			}
 		}
 
 		static CompositionManager.Caching GetCaching (CompositionManager.ICachingFaultInjector faultInjector = null, Action<string> onCacheFileRequested = null, [CallerMemberName] string testName = null)
 		{
-			var assemblies = CompositionManager.ReadAssembliesFromAddins ();
-			var caching = new CompositionManager.Caching (assemblies, file => {
+			var (mefAssemblies, allAssemblies) = CompositionManager.ReadAssembliesFromAddins ();
+			var caching = new CompositionManager.Caching (mefAssemblies, allAssemblies, file => {
 				onCacheFileRequested?.Invoke (file);
 
 				var tmpDir = Path.Combine (Util.TmpDir, "mef", testName);
@@ -238,7 +247,29 @@ namespace MonoDevelop.Ide.Composition
 
 			await caching.Write (composition, cacheManager);
 
-			caching.Assemblies.Add (typeof (Console).Assembly);
+			caching.AllAssemblies.Add (typeof (CompositionManagerCachingTests).Assembly);
+
+			Assert.IsFalse (caching.CanUse ());
+		}
+
+		[Test]
+		public async Task TestCacheControlDataIntegrity ()
+		{
+			var caching = GetCaching ();
+
+			Assert.That (caching.MefAssemblies, Contains.Item (typeof (CompositionManager).Assembly));
+			Assert.That (caching.AllAssemblies, Contains.Item (typeof (CompositionManager).Assembly));
+
+			Assert.That (caching.MefAssemblies, Is.Not.Contains (typeof (Console).Assembly));
+			Assert.That (caching.AllAssemblies, Contains.Item (typeof (Console).Assembly));
+
+			Assert.That (caching.MefAssemblies, Is.SubsetOf (caching.AllAssemblies));
+			var composition = await CompositionManager.CreateRuntimeCompositionFromDiscovery (caching);
+			var cacheManager = new CachedComposition ();
+
+			await caching.Write (composition, cacheManager);
+
+			caching.AllAssemblies.Add (typeof (CompositionManagerCachingTests).Assembly);
 
 			Assert.IsFalse (caching.CanUse ());
 		}
@@ -246,6 +277,7 @@ namespace MonoDevelop.Ide.Composition
 		[TestCase (typeof (OlderStampCachingFaultInjector))]
 		[TestCase (typeof (NewerStampCachingFaultInjector))]
 		[TestCase (typeof (LocationCachingFaultInjector))]
+		[TestCase (typeof (ModuleVersionIdCachingFaultInjector))]
 		public async Task TestControlCacheFaultInjection (Type injectorType)
 		{
 			var injector = (CompositionManager.ICachingFaultInjector)Activator.CreateInstance (injectorType);
