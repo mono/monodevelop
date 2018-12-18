@@ -80,7 +80,6 @@ namespace MonoDevelop.DotNetCore.Tests
 				DotNetCoreVersion.Parse ("2.1.302"),
 				DotNetCoreVersion.Parse ("2.1.400"),
 				DotNetCoreVersion.Parse ("2.1.401"),
-				DotNetCoreVersion.Parse ("2.1.402"),
 				DotNetCoreVersion.Parse ("2.1.403"),
 				DotNetCoreVersion.Parse ("2.1.500"),
 				DotNetCoreVersion.Parse ("2.1.502"),
@@ -219,10 +218,18 @@ namespace MonoDevelop.DotNetCore.Tests
 			}
 		}
 
-		//versionRequested, versionReturned, IsSupported?
-		[TestCase ("2.1.303", "", false)]
-		[TestCase ("2.1.301", "2.1.302", true)]
-		[TestCase ("2.1.501", "", false)]
+		[TestCase ("2.1.303", "2.1.399", true, 
+			Description = "WHEN we set the global.json to SDK=2.1.303 and it does not exist " 
+						+ " since version is 2.1.100 or higher THEN Resolver should return that IsSupported AND the latest patch that in this case is 2.1.399")]
+		[TestCase ("2.1.402", "2.1.403", true,
+			Description ="WHEN we set the global.json to SDK=2.1.402 and it does not exist " 
+						+ " since version is 2.1.100 or higher THEN Resolver should return that IsSupported AND the latest patch that in this case is 2.1.403")]
+		[TestCase ("2.1.503", "", false, 
+			Description = "WHEN we set the global.json to SDK=2.1.503 and it does not exist " 
+						+ "THEN since there is no higher patch installed it should return that NOT IsSupported AND empty expected version")]
+ 		[TestCase ("2.0.4", "2.0.3", true,
+			Description = "WHEN we set the global.json to SDK=2.0.4 and it does not exist "
+						+ " since version before 2.1.100 THEN Resolver should return that IsSupported AND the latest patch that in this case is 2.0.3")]
 		public async Task WhenGlobalJsonAndVersionNotMatches (string requestedVersion, string expectedVersion, bool isSupported)
 		{
 			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
