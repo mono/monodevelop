@@ -273,7 +273,9 @@ namespace MonoDevelop.Ide.Composition
 							GatherDependencies (dependencyAssembly);
 						} catch (FileNotFoundException) {
 							// Discard in case the assembly is not found, this will be reported by MEF discovery anyway.
-							LoggingService.LogInfo ("Could not find dependency {0}, possibly missing Runtime import", dependencyName.FullName);
+							LoggingService.LogInfo ("Could not find dependency '{0}' referenced by '{1}', possibly missing Runtime import", dependencyName.FullName, currentAssembly.FullName);
+						} catch (Exception e) {
+							LoggingService.LogError ("Could not load assembly for MEF", e);
 						}
 					}
 				}
