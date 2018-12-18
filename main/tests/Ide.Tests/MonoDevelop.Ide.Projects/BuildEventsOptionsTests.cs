@@ -59,6 +59,12 @@ namespace MonoDevelop.Ide.Projects
 			return (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
 		}
 
+		async Task<DotNetProject> LoadNetStandardSdkProject (string baseDirectoryName = "netstandard-sdk")
+		{
+			var projectFile = Util.GetSampleProject (baseDirectoryName, "NetStandard", "NetStandard.csproj");
+			return (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile);
+		}
+
 		void OpenBuildOptionsPanel ()
 		{
 			buildOptionsPanel = new BuildEventsOptionsPanel ();
@@ -141,6 +147,144 @@ namespace MonoDevelop.Ide.Projects
 			Assert.AreEqual ("Always", buildOptionsWidget.SelectedRunPostBuildEvent);
 			Assert.AreEqual ("prebuild", buildOptionsWidget.PreBuildEventText);
 			Assert.AreEqual ("postbuild", buildOptionsWidget.PostBuildEventText);
+		}
+
+		[Test]
+		public async Task OpenProjectWithExistingPreAndPostBuildEvents_ChangeEvents ()
+		{
+			project = await LoadConsoleProject ("build-events");
+			OpenBuildOptionsPanel ();
+
+			buildOptionsWidget.SelectedRunPostBuildEvent = "OnOutputUpdated";
+			buildOptionsWidget.PreBuildEventText = "prebuild-updated";
+			buildOptionsWidget.PostBuildEventText = "postbuild-updated";
+
+			buildOptionsPanel.ApplyChanges ();
+
+			var mainPropertyGroup = project.MSBuildProject.GetGlobalPropertyGroup ();
+			var postBuildPropertyGroup = project.MSBuildProject.ChildNodes.Last () as MSBuildPropertyGroup;
+			var preBuildPropertyGroup = project.MSBuildProject.ChildNodes [project.MSBuildProject.ChildNodes.Count - 2] as MSBuildPropertyGroup;
+			Assert.IsNotNull (postBuildPropertyGroup);
+			Assert.IsNotNull (preBuildPropertyGroup);
+			Assert.AreEqual ("postbuild-updated", postBuildPropertyGroup.GetValue ("PostBuildEvent"));
+			Assert.AreEqual ("prebuild-updated", preBuildPropertyGroup.GetValue ("PreBuildEvent"));
+			Assert.AreEqual ("OnOutputUpdated", mainPropertyGroup.GetValue ("RunPostBuildEvent"));
+		}
+
+		[Test]
+		public async Task OpenSdkStyleProjectWithExistingPreAndPostBuildEvents_InformationShownInOptionsPanel ()
+		{
+			project = await LoadNetStandardSdkProject ("build-events-sdk");
+			OpenBuildOptionsPanel ();
+
+			Assert.AreEqual ("Always", buildOptionsWidget.SelectedRunPostBuildEvent);
+			Assert.AreEqual ("prebuild", buildOptionsWidget.PreBuildEventText);
+			Assert.AreEqual ("postbuild", buildOptionsWidget.PostBuildEventText);
+		}
+
+		[Test]
+		public async Task AddPreBuildCommand_SdkStyleProject_PreBuildTargetAddedAtEndOfProject ()
+		{
+			project = await LoadNetStandardSdkProject ();
+			OpenBuildOptionsPanel ();
+
+			buildOptionsWidget.PreBuildEventText = "prebuild";
+
+			buildOptionsPanel.ApplyChanges ();
+
+			var item = project.MSBuildProject.ChildNodes.Last ();
+			var target = item as MSBuildTarget;
+			Assert.IsNotNull (target);
+			Assert.AreEqual ("PreBuild", target.Name);
+			Assert.AreEqual ("PreBuildEvent", target.BeforeTargets);
+
+			var task = target.Tasks.Single () as MSBuildExecTask;
+			Assert.AreEqual ("prebuild", task.Command);
+		}
+
+		[Test]
+		public async Task AddPostBuildCommand_SdkStyleProject_PostBuildTargetAddedAtEndOfProject ()
+		{
+			project = await LoadNetStandardSdkProject ();
+			OpenBuildOptionsPanel ();
+
+			buildOptionsWidget.PostBuildEventText = "postbuild";
+			buildOptionsWidget.SelectedRunPostBuildEvent = "Always";
+
+			buildOptionsPanel.ApplyChanges ();
+
+			var mainPropertyGroup = project.MSBuildProject.GetGlobalPropertyGroup ();
+			var item = project.MSBuildProject.ChildNodes.Last ();
+			var target = item as MSBuildTarget;
+			Assert.IsNotNull (target);
+			Assert.AreEqual ("PostBuild", target.Name);
+			Assert.AreEqual ("PostBuildEvent", target.AfterTargets);
+
+			var task = target.Tasks.Single () as MSBuildExecTask;
+			Assert.AreEqual ("postbuild", task.Command);
+			Assert.AreEqual ("Always", mainPropertyGroup.GetValue ("RunPostBuildEvent"));
+		}
+
+		[Test]
+		public async Task OpenSdkProjectWithExistingPreAndPostBuildEvents_ChangeEvents ()
+		{
+			project = await LoadNetStandardSdkProject ("build-events-sdk");
+			OpenBuildOptionsPanel ();
+
+			buildOptionsWidget.SelectedRunPostBuildEvent = "OnOutputUpdated";
+			buildOptionsWidget.PreBuildEventText = "prebuild-updated";
+			buildOptionsWidget.PostBuildEventText = "postbuild-updated";
+
+			buildOptionsPanel.ApplyChanges ();
+
+			var mainPropertyGroup = project.MSBuildProject.GetGlobalPropertyGroup ();
+			var postBuildTarget = project.MSBuildProject.ChildNodes.Last () as MSBuildTarget;
+			var preBuildTarget = project.MSBuildProject.ChildNodes [project.MSBuildProject.ChildNodes.Count - 2] as MSBuildTarget;
+			Assert.IsNotNull (postBuildTarget);
+			Assert.IsNotNull (preBuildTarget);
+
+			var preBuildTask = preBuildTarget.Tasks.Single () as MSBuildExecTask;
+			Assert.AreEqual ("prebuild-updated", preBuildTask.Command);
+
+			var postBuildTask = postBuildTarget.Tasks.Single () as MSBuildExecTask;
+			Assert.AreEqual ("postbuild-updated", postBuildTask.Command);
+			Assert.AreEqual ("OnOutputUpdated", mainPropertyGroup.GetValue ("RunPostBuildEvent"));
+		}
+
+		[Test]
+		public async Task OpenSdkProjectWithExistingPreAndPostBuildTarget_NoExecTasks_ChangeEvents ()
+		{
+			project = await LoadNetStandardSdkProject ("build-events-sdk");
+			var postBuildTarget = project.MSBuildProject.ChildNodes.Last () as MSBuildTarget;
+			var preBuildTarget = project.MSBuildProject.ChildNodes [project.MSBuildProject.ChildNodes.Count - 2] as MSBuildTarget;
+			var preBuildTask = preBuildTarget.Tasks.Single () as MSBuildExecTask;
+			var postBuildTask = postBuildTarget.Tasks.Single () as MSBuildExecTask;
+			postBuildTarget.RemoveTask (postBuildTask);
+			preBuildTarget.RemoveTask (preBuildTask);
+			await project.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (0, postBuildTarget.Tasks.Count ());
+			Assert.AreEqual (0, preBuildTarget.Tasks.Count ());
+
+			OpenBuildOptionsPanel ();
+
+			buildOptionsWidget.SelectedRunPostBuildEvent = "OnOutputUpdated";
+			buildOptionsWidget.PreBuildEventText = "prebuild-updated";
+			buildOptionsWidget.PostBuildEventText = "postbuild-updated";
+
+			buildOptionsPanel.ApplyChanges ();
+
+			var mainPropertyGroup = project.MSBuildProject.GetGlobalPropertyGroup ();
+			postBuildTarget = project.MSBuildProject.ChildNodes.Last () as MSBuildTarget;
+			preBuildTarget = project.MSBuildProject.ChildNodes [project.MSBuildProject.ChildNodes.Count - 2] as MSBuildTarget;
+			Assert.IsNotNull (postBuildTarget);
+			Assert.IsNotNull (preBuildTarget);
+
+			preBuildTask = preBuildTarget.Tasks.Single () as MSBuildExecTask;
+			Assert.AreEqual ("prebuild-updated", preBuildTask.Command);
+
+			postBuildTask = postBuildTarget.Tasks.Single () as MSBuildExecTask;
+			Assert.AreEqual ("postbuild-updated", postBuildTask.Command);
+			Assert.AreEqual ("OnOutputUpdated", mainPropertyGroup.GetValue ("RunPostBuildEvent"));
 		}
 	}
 }

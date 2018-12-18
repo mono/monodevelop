@@ -176,6 +176,7 @@ namespace MonoDevelop.Projects.MSBuild
 			switch (reader.LocalName) {
 				case "ItemGroup": ob = new MSBuildItemGroup (); break;
 				case "PropertyGroup": ob = new MSBuildPropertyGroup (); break;
+				case "Exec": ob = new MSBuildExecTask (); break;
 			}
 			if (ob != null) {
 				ob.ParentNode = this;
@@ -228,6 +229,17 @@ namespace MonoDevelop.Projects.MSBuild
 				throw new InvalidOperationException ("Task doesn't belong to the target");
 			task.RemoveIndent ();
 			ChildNodes = ChildNodes.Remove (task);
+		}
+
+		public void AddTask (MSBuildTask task)
+		{
+			AssertCanModify ();
+			task.ParentNode = this;
+			ChildNodes = ChildNodes.Add (task);
+			task.ResetIndent (true);
+
+			if (ParentProject != null)
+				ParentProject.NotifyChanged ();
 		}
 
 		public override string ToString ()

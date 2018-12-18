@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
@@ -41,10 +43,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		static readonly string RunPostBuildEventPropertyName = "RunPostBuildEvent";
 		static readonly string PostBuildEventPropertyName = "PostBuildEvent";
 		static readonly string PreBuildEventPropertyName = "PreBuildEvent";
+		static readonly string PreBuildTargetName = "PreBuild";
+		static readonly string PostBuildTargetName = "PostBuild";
 
+		DotNetProject project;
+		bool sdkStyleProject;
 		XwtControl control;
 		BuildEventsWidget widget;
 		string originalRunPostBuildEvent;
+
+		public override void Initialize (OptionsDialog dialog, object dataObject)
+		{
+			base.Initialize (dialog, dataObject);
+			project = (DotNetProject)dataObject;
+			sdkStyleProject = project.MSBuildProject.GetReferencedSDKs ().Any ();
+		}
 
 		public override Control CreatePanelWidget ()
 		{
@@ -52,29 +65,49 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				widget = new BuildEventsWidget ();
 				control = new XwtControl (widget);
 
-				var project = (DotNetProject)ConfiguredProject;
 				widget.SelectedRunPostBuildEvent = project.ProjectProperties.GetValue (RunPostBuildEventPropertyName);
 				originalRunPostBuildEvent = widget.SelectedRunPostBuildEvent;
 
-				widget.PreBuildEventText = GetPreBuildEventProperty (project)?.Value;
-				widget.PostBuildEventText = GetPostBuildEventProperty (project)?.Value;
+				widget.PreBuildEventText = GetPreBuildEventText ();
+				widget.PostBuildEventText = GetPostBuildEventText ();
 			}
 			return control;
 		}
 
+		string GetPreBuildEventText ()
+		{
+			if (sdkStyleProject) {
+				return GetBuildTargetExecTask (project, PreBuildTargetName, beforeTarget: true)?.Command;
+			} else {
+				return GetBuildEventProperty (project, PreBuildEventPropertyName)?.Value;
+			}
+		}
+
+		string GetPostBuildEventText ()
+		{
+			if (sdkStyleProject) {
+				return GetBuildTargetExecTask (project, PostBuildTargetName, beforeTarget: false)?.Command;
+			} else {
+				return GetBuildEventProperty (project, PostBuildEventPropertyName)?.Value;
+			}
+		}
+
 		public override void ApplyChanges ()
 		{
-			var project = (DotNetProject)ConfiguredProject;
-
 			if (originalRunPostBuildEvent != widget.SelectedRunPostBuildEvent) {
 				project.ProjectProperties.SetValue (RunPostBuildEventPropertyName, widget.SelectedRunPostBuildEvent);
 			}
 
-			UpdateBuildEvent (project, PreBuildEventPropertyName, widget.PreBuildEventText);
-			UpdateBuildEvent (project, PostBuildEventPropertyName, widget.PostBuildEventText);
+			if (sdkStyleProject) {
+				UpdateBuildEventTarget (project, PreBuildTargetName, widget.PreBuildEventText, beforeTarget: true);
+				UpdateBuildEventTarget (project, PostBuildTargetName, widget.PostBuildEventText, beforeTarget: false);
+			} else {
+				UpdateBuildEventProperty (project, PreBuildEventPropertyName, widget.PreBuildEventText);
+				UpdateBuildEventProperty (project, PostBuildEventPropertyName, widget.PostBuildEventText);
+			}
 		}
 
-		static void UpdateBuildEvent (DotNetProject project, string propertyName, string buildEventText)
+		static void UpdateBuildEventProperty (DotNetProject project, string propertyName, string buildEventText)
 		{
 			MSBuildProperty buildEventProperty = GetBuildEventProperty (project, propertyName);
 			if (buildEventProperty != null) {
@@ -84,16 +117,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				propertyGroup.SetValue (propertyName, buildEventText);
 				project.MSBuildProject.AddLastChild (propertyGroup);
 			}
-		}
-
-		static MSBuildProperty GetPostBuildEventProperty (DotNetProject project)
-		{
-			return GetBuildEventProperty (project, PostBuildEventPropertyName);
-		}
-
-		static MSBuildProperty GetPreBuildEventProperty (DotNetProject project)
-		{
-			return GetBuildEventProperty (project, PreBuildEventPropertyName);
 		}
 
 		static MSBuildProperty GetBuildEventProperty (DotNetProject project, string propertyName)
@@ -106,7 +129,63 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					}
 				}
 			}
+			return null;
+		}
 
+		static void UpdateBuildEventTarget (DotNetProject project, string targetName, string buildEventText, bool beforeTarget)
+		{
+			MSBuildTarget target = GetBuildTarget (project, targetName, beforeTarget);
+			MSBuildExecTask execTask = null;
+			if (target != null) {
+				execTask = target.Tasks.OfType<MSBuildExecTask> ().FirstOrDefault ();
+			}
+
+			if (execTask != null) {
+				execTask.Command = buildEventText;
+				return;
+			}
+
+			if (string.IsNullOrEmpty (buildEventText)) {
+				// Do not add the target if there is no build event text.
+				return;
+			}
+
+			execTask = new MSBuildExecTask ();
+			execTask.Command = buildEventText;
+			if (target == null) {
+				string targetDependencyName = targetName + "Event";
+				target = new MSBuildTarget (targetName, new [] { execTask });
+				if (beforeTarget) {
+					target.BeforeTargets = targetDependencyName;
+				} else {
+					target.AfterTargets = targetDependencyName;
+				}
+				project.MSBuildProject.AddLastChild (target);
+			} else {
+				target.AddTask (execTask);
+			}
+		}
+
+		static MSBuildExecTask GetBuildTargetExecTask (DotNetProject project, string buildTargetName, bool beforeTarget)
+		{
+			MSBuildTarget target = GetBuildTarget (project, buildTargetName, beforeTarget);
+			if (target == null)
+				return null;
+
+			return target.Tasks.OfType<MSBuildExecTask> ().FirstOrDefault ();
+		}
+
+		static MSBuildTarget GetBuildTarget (DotNetProject project, string buildTargetName, bool beforeTarget)
+		{
+			string targetDependencyName = buildTargetName + "Event";
+			foreach (MSBuildTarget target in project.MSBuildProject.Targets) {
+				if (target.Name == buildTargetName && string.IsNullOrEmpty (target.Condition)) {
+					if ((beforeTarget && target.BeforeTargets == targetDependencyName) ||
+						(!beforeTarget && target.AfterTargets == targetDependencyName)) {
+						return target;
+					}
+				}
+			}
 			return null;
 		}
 	}
