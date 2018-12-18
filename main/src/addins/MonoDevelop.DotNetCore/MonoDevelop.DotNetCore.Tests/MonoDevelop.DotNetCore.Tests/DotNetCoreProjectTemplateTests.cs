@@ -299,7 +299,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true")]
 		public async Task AspNetCore30 (string templateId, string parameters)
 		{
-			if (!IsDotNetCoreSdk22Installed ()) {
+			if (!IsDotNetCoreSdk30Installed ()) {
 				Assert.Ignore (".NET Core 3.0 SDK is not installed - required by project template.");
 			}
 
