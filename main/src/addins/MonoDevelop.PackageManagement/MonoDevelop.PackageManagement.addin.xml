@@ -8,6 +8,7 @@
 		<Import assembly="NuGet.Versioning.dll" />
 		<Import assembly="NuGet.Commands.dll" />
 		<Import assembly="NuGet.LibraryModel.dll" />
+		<Import assembly="NuGet.Common.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
