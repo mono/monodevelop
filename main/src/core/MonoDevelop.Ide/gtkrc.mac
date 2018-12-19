@@ -244,14 +244,20 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    base[ACTIVE] = "#a0a0a0"
-    text[ACTIVE] = @selected_fg_color
+    base[ACTIVE] = "#dcdcdc"
+    text[ACTIVE] = @fg_color
 
     engine "xamarin" {
         roundness = 0
         gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
         glazestyle = 1
     }
+}
+
+style "padtreeview" = "treeview"
+{
+    base[ACTIVE] = "#a0a0a0"
+    text[ACTIVE] = @selected_fg_color
 }
 
 style "tree-header"
@@ -499,6 +505,8 @@ widget_class "*ToolButton*" style "toolbar-button"
 widget_class "*.<GtkTreeView>*" style "treeview"
 widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
 widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
+
+widget "*.solutionBrowserTree" style "padtreeview"
 
 widget_class "*<GtkIconView>" style "icon-view"
 
