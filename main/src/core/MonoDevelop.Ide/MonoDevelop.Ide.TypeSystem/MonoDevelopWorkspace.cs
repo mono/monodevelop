@@ -460,6 +460,26 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
+		internal static void UpdateText (SourceText newText, Microsoft.VisualStudio.Text.ITextBuffer buffer, Microsoft.VisualStudio.Text.EditOptions options)
+		{
+			using (var edit = buffer.CreateEdit (options, reiteratedVersionNumber: null, editTag: null)) {
+				var oldSnapshot = buffer.CurrentSnapshot;
+				var oldText = oldSnapshot.AsText ();
+				var changes = newText.GetTextChanges (oldText);
+				//if (Microsoft.CodeAnalysis.Workspace.TryGetWorkspace(oldText.Container, out var workspace))
+				//{
+				//    var undoService = workspace.Services.GetService<ISourceTextUndoService>();
+				//    undoService.BeginUndoTransaction(oldSnapshot);
+				//}
+
+				foreach (var change in changes) {
+					edit.Replace (change.Span.Start, change.Span.Length, change.NewText);
+				}
+
+				edit.Apply ();
+			}
+		}
+
 		//FIXME: this should NOT be async. our implementation is doing some very expensive things like formatting that it shouldn't need to do.
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
@@ -478,7 +498,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				hostDocument.UpdateText (text);
 				return;
 			}
+			if (IsDocumentOpen (id)) {
+				var textBuffer = document.GetTextAsync (CancellationToken.None).WaitAndGetResult (CancellationToken.None).Container.TryGetTextBuffer ();
 
+				if (textBuffer != null) {
+					UpdateText (text, textBuffer, Microsoft.VisualStudio.Text.EditOptions.DefaultMinimalChange);
+					return;
+				}
+			}
 			var (projection, filePath) = Projections.Get (document.FilePath);
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
 			// Guard against already done changes in linked files.

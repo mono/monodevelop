@@ -6,11 +6,14 @@ using AppKit;
 #endif
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding;
+using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using Xwt;
@@ -38,6 +41,7 @@ namespace MonoDevelop.Ide.Text
 #endif
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
+		private IEditorCommandHandlerService _editorCommandHandlerService;
 
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
@@ -73,6 +77,8 @@ namespace MonoDevelop.Ide.Text
 			control = new EmbeddedNSViewControl (CreateControl ());
 #endif
 			ContentName = fileName;
+			TextView.Properties [typeof (Ide.Text.TextViewContent)] = this;
+			_editorCommandHandlerService = imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)
@@ -197,6 +203,34 @@ namespace MonoDevelop.Ide.Text
 		{
 			TextDocument.Dispose ();
 			base.Dispose ();
+		}
+
+		[CommandUpdateHandler (EditCommands.AddCodeComment)]
+		void AddCodeComment (CommandInfo info)
+		{
+			var commandState = _editorCommandHandlerService.GetCommandState ((textView, textBuffer) => new CommentSelectionCommandArgs (textView, textBuffer), null);
+			info.Enabled = commandState.IsAvailable;
+			info.Visible = !commandState.IsUnspecified;
+		}
+
+		[CommandHandler (EditCommands.AddCodeComment)]
+		void AddCodeComment ()
+		{
+			_editorCommandHandlerService.Execute ((textView, textBuffer) => new CommentSelectionCommandArgs (textView, textBuffer), null);
+		}
+
+		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
+		void RemoveCodeComment (CommandInfo info)
+		{
+			var commandState = _editorCommandHandlerService.GetCommandState ((textView, textBuffer) => new UncommentSelectionCommandArgs (textView, textBuffer), null);
+			info.Enabled = commandState.IsAvailable;
+			info.Visible = !commandState.IsUnspecified;
+		}
+
+		[CommandHandler (EditCommands.RemoveCodeComment)]
+		void RemoveCodeComment ()
+		{
+			_editorCommandHandlerService.Execute ((textView, textBuffer) => new UncommentSelectionCommandArgs (textView, textBuffer), null);
 		}
 	}
 }

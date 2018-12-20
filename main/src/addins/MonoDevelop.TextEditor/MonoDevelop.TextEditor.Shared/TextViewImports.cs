@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 
@@ -41,5 +42,8 @@ namespace MonoDevelop.Ide.Text
 
 		[Import]
 		internal IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
+
+		[Import]
+		internal IEditorCommandHandlerServiceFactory EditorCommandHandlerServiceFactory { get; set; }
 	}
 }
