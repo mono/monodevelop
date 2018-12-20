@@ -57,6 +57,8 @@ using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui.Components;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -553,17 +555,33 @@ namespace MonoDevelop.Ide.Gui
 
 		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
 		{
+			if (info.Line < 1 && info.Offset < 0)
+				return;
 			var ipos = doc.Editor;
-			if ((info.Line >= 1 || info.Offset >= 0) && ipos != null) {
+			var textView = doc.GetContent<ITextView> ();
+			if (ipos != null || textView != null) {
 				doc.DisableAutoScroll ();
 				doc.RunWhenLoaded (() => {
-					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
-					if (info.Offset >= 0) {
-						loc = ipos.OffsetToLocation (info.Offset);
+					if (ipos != null) {
+						var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
+						if (info.Offset >= 0) {
+							loc = ipos.OffsetToLocation (info.Offset);
+						}
+						if (loc.IsEmpty)
+							return;
+						ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+					} else {
+						var offset = info.Offset;
+						if (offset < 0) {
+							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line);
+							if (info.Column >= 1)
+								offset = line.Start + info.Column;
+							else
+								offset = line.Start;
+						}
+						textView.Caret.MoveTo (new SnapshotPoint (textView.TextSnapshot, offset));
+						textView.Caret.EnsureVisible ();
 					}
-					if (loc.IsEmpty)
-						return;
-					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 				});
 			}
 		}

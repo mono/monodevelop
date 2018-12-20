@@ -43,12 +43,14 @@
 		</ConditionType>
 	</ExtensionPoint>
 	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
+		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
-		<SeparatorItem id = "Separator1" />
+		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" />
-		<SeparatorItem id = "Separator2" />
+		<SeparatorItem id = "Separator3" />
 	</Extension>
 </ExtensionModel>
