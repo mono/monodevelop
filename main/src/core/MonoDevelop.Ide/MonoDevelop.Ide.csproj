@@ -4321,6 +4321,7 @@
     <InternalsVisibleTo Include="Xamarin.Designer.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin" />
     <InternalsVisibleTo Include="Xamarin.Forms.Addin.Tests" />
+    <InternalsVisibleTo Include="Xamarin.Forms.Templates.Tests" />
     <InternalsVisibleTo Include="Xamarin.FormsPreviewer.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.Ide" />
     <InternalsVisibleTo Include="Xamarin.iOSDesigner.MonoDevelop" />
