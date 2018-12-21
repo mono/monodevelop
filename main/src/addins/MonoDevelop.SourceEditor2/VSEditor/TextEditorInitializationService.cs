@@ -113,14 +113,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             ITextBuffer textBuffer = textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
             ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
 
-            ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory
-                            (TextViewModelProviders,
-                             dataModel.ContentType,
-                             roles,
-                             (provider) => (provider.CreateTextViewModel(dataModel, roles)),
-                             ContentTypeRegistryService,
-                             this.GuardedOperations,
-                             this) ?? new VacuousTextViewModel(dataModel);
+            ITextViewModel viewModel = new VacuousTextViewModel(dataModel);
 
             var view = ((MonoDevelop.SourceEditor.SourceEditorView)textEditor.Implementation).TextEditor;
             view.Initialize(viewModel, roles, this.EditorOptionsFactoryService.GlobalOptions, this);

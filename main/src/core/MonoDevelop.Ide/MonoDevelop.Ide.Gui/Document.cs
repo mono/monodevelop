@@ -890,11 +890,14 @@ namespace MonoDevelop.Ide.Gui
 					if (RoslynWorkspace == null) // Solution not loaded yet
 						return Task.CompletedTask;
 					SubscribeRoslynWorkspace ();
-					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					var newAnalysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					var changedAnalysisDocument = newAnalysisDocument != analysisDocument;
+					analysisDocument = newAnalysisDocument;
 					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
 						TypeSystemService.InformDocumentOpen (analysisDocument, TextBuffer.AsTextContainer(), this);
-						OnAnalysisDocumentChanged (EventArgs.Empty);
 					}
+					if (changedAnalysisDocument)
+						OnAnalysisDocumentChanged (EventArgs.Empty);
 					return Task.CompletedTask;
 				}
 			}

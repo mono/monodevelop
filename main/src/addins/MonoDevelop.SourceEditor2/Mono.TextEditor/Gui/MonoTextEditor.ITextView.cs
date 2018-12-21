@@ -565,6 +565,7 @@ namespace Mono.TextEditor
 				TextCaret.MoveTo (MultiSelectionBroker.PrimarySelection.InsertionPoint);
 			}
 		}
+
 #if MAC
 		public void QueuePostLayoutAction (Action action)
 		{
@@ -586,5 +587,25 @@ namespace Mono.TextEditor
 			throw new NotImplementedException ();
 		}
 #endif
+
+		public IXPlatAdornmentLayer GetXPlatAdornmentLayer (string name)
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Gets or sets the Zoom level for the <see cref="ITextView3"/> between 20% to 400%
+		/// </summary>
+		public double XPlatZoomLevel {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Occurs when the <see cref="XPlatZoomLevel"/> is set.
+		/// </summary>
+		public event EventHandler<XPlatZoomLevelChangedEventArgs> XPlatZoomLevelChanged;
+
+		public ITextViewLineSource FormattedLineSource { get; } = null;
 	}
 }
