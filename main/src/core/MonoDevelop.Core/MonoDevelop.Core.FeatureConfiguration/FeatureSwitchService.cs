@@ -24,22 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
+using Mono.Addins;
+
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	public class FeatureSwitch
-	{
-		public string Name { get; set; }
-
-		public FeatureSwitchCondition Condition { get; set; }
-
-		public bool IsEnabled => Condition?.Evaluate () ?? true;
-	}
-
 	public static class FeatureSwitchService
 	{
-		public static FeatureSwitch RegisterFeature (string name, FeatureSwitchCondition condition)
+		public static bool IsFeatureEnabled (string featureName)
 		{
-			return new FeatureSwitch { Name = name, Condition = condition };
+			if (string.IsNullOrEmpty (featureName)) {
+				return true;
+			}
+
+			if (Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED")
+				.Split (';')
+				.Contains (featureName)) {
+				return true;
+			}
+
+			// Fallback to ask extensions, enabling by default
+			return !(AddinManager.GetExtensionObjects<IFeatureSwitchEnabler> ("MonoDevelop.Core.FeatureConfiguration.IFeatureSwitchEnabler")?
+				.Any (x => !x.IsFeatureEnabled (featureName)) ?? true);
 		}
 	}
 }
