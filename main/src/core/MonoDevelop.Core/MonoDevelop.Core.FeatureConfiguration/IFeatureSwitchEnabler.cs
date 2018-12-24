@@ -1,10 +1,10 @@
 //
-// FeatureSwitchCondition.cs
+// IFeatureSwitchEnabler.cs
 //
 // Author:
 //       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2018 Microsoft, Inc (http://microsoft.com)
+// Copyright (c) 2018 Microsoft Corp. (http://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using Mono.Addins;
-
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	public class FeatureSwitchCondition : ConditionType
+	public interface IFeatureSwitchEnabler
 	{
-		public override bool Evaluate (NodeElement conditionNode)
-		{
-			var featureName = conditionNode.GetAttribute ("name");
-			if (String.IsNullOrEmpty (featureName)) {
-				return true;
-			}
-
-			return FeatureSwitchService.IsFeatureEnabled (featureName);
-		}
+		bool IsFeatureEnabled (string featureName);
 	}
 }

@@ -743,6 +743,7 @@
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchEnabler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
