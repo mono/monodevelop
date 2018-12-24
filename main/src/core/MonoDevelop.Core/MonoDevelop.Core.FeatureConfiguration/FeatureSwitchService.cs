@@ -32,21 +32,24 @@ namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public static class FeatureSwitchService
 	{
-		public static bool IsFeatureEnabled (string featureName)
+		public static bool IsFeatureEnabled (string featureName, bool defaultValue = true)
 		{
 			if (string.IsNullOrEmpty (featureName)) {
-				return true;
+				return defaultValue;
 			}
 
-			if (Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED")
-				.Split (';')
-				.Contains (featureName)) {
+			var env = Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED");
+			if (env != null && env.Split (';').Contains (featureName)) {
 				return true;
 			}
 
 			// Fallback to ask extensions, enabling by default
-			return !(AddinManager.GetExtensionObjects<IFeatureSwitchEnabler> ("MonoDevelop.Core.FeatureConfiguration.IFeatureSwitchEnabler")?
-				.Any (x => !x.IsFeatureEnabled (featureName)) ?? true);
+			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchEnabler> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks");
+			if (extensions != null) {
+				return extensions.Any (x => !x.IsFeatureEnabled (featureName, defaultValue)) ? false : defaultValue;
+			}
+
+			return defaultValue;
 		}
 	}
 }

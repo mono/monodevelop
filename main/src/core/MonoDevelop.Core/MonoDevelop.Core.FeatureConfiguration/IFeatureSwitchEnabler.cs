@@ -28,6 +28,6 @@ namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public interface IFeatureSwitchEnabler
 	{
-		bool IsFeatureEnabled (string featureName);
+		bool IsFeatureEnabled (string featureName, bool defaultValue = true);
 	}
 }
