@@ -461,6 +461,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Coco
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoDevelop.TextEditor.Shared", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.shproj", "{503A27BD-D74C-4EDD-818C-0A0F06D9C672}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternMatchingImpl", "external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj", "{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
@@ -2398,6 +2400,22 @@ Global
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE;
@@ -2611,6 +2629,7 @@ Global
 		{52BF10FD-66DF-430F-8A30-E5E63A93AE91} = {378D061D-D16E-408F-8E01-68B04D77258A}
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2} = {C14B06AC-905A-47AB-BAD9-652E3499CFE0}
 		{503A27BD-D74C-4EDD-818C-0A0F06D9C672} = {C14B06AC-905A-47AB-BAD9-652E3499CFE0}
+		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F} = {32539734-6484-4451-9EF3-61610CA25BBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}

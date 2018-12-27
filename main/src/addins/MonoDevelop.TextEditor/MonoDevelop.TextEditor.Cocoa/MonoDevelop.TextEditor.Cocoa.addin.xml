@@ -23,6 +23,7 @@
 		<Assembly file="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />

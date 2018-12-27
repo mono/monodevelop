@@ -218,6 +218,10 @@
 		  <Name>MonoDevelop.Refactoring</Name>
 		  <Private>False</Private>
 		</ProjectReference>
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj">
+		  <Project>{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}</Project>
+		  <Name>PatternMatchingImpl</Name>
+		</ProjectReference>
 	</ItemGroup>
 	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
