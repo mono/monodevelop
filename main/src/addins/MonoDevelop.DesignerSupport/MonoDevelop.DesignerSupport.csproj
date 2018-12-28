@@ -146,6 +146,9 @@
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadItem.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\MonoDevelopHostResourceProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IDragDataToolboxNode.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptor.BuildActionStringsConverter.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptor.StandardStringsConverter.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptor.CustomToolStringsConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
