@@ -32,10 +32,10 @@ namespace MonoDevelop.Core.FeatureConfiguration
 {
 	public static class FeatureSwitchService
 	{
-		public static bool IsFeatureEnabled (string featureName, bool defaultValue = true)
+		public static bool? IsFeatureEnabled (string featureName)
 		{
 			if (string.IsNullOrEmpty (featureName)) {
-				return defaultValue;
+				return null;
 			}
 
 			var env = Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED");
@@ -43,13 +43,31 @@ namespace MonoDevelop.Core.FeatureConfiguration
 				return true;
 			}
 
-			// Fallback to ask extensions, enabling by default
-			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchEnabler> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks");
-			if (extensions != null) {
-				return extensions.Any (x => !x.IsFeatureEnabled (featureName, defaultValue)) ? false : defaultValue;
+			env = Environment.GetEnvironmentVariable ("MD_FEATURES_DISABLED");
+			if (env != null && env.Split (';').Contains (featureName)) {
+				return false;
 			}
 
-			return defaultValue;
+			// Fallback to ask extensions, enabling by default
+			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchController> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks");
+			if (extensions != null) {
+				bool explicitlyEnabled = false, explicitlyDisabled = false;
+				foreach (var ext in extensions) {
+					switch (ext.IsFeatureEnabled (featureName)) {
+					case true:
+						explicitlyEnabled = true;
+						break;
+					case false:
+						explicitlyDisabled = true;
+						break;
+					}
+				}
+
+				if (explicitlyDisabled) return false;
+				if (explicitlyEnabled) return true;
+			}
+
+			return null;
 		}
 	}
 }
