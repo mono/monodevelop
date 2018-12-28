@@ -124,6 +124,7 @@ namespace MonoDevelop.DesignerSupport
 		[LocalizedCategory ("Build")]
 		[LocalizedDisplayName ("Custom Tool")]
 		[LocalizedDescription ("The ID of a custom code generator.")]
+		[TypeConverter (typeof (CustomToolStringsConverter))]
 		public string Generator {
 			get { return file.Generator; }
 			set { file.Generator = value; }
