@@ -586,7 +586,6 @@ namespace Mono.TextEditor
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		public IXPlatAdornmentLayer GetXPlatAdornmentLayer (string name)
 		{
@@ -607,5 +606,6 @@ namespace Mono.TextEditor
 		public event EventHandler<XPlatZoomLevelChangedEventArgs> XPlatZoomLevelChanged;
 
 		public ITextViewLineSource FormattedLineSource { get; } = null;
+#endif
 	}
 }

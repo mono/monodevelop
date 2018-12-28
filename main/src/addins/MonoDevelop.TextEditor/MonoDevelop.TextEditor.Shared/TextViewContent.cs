@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Text
 
 			TextView.VisualElement.Tag = widget;
 			TextView.VisualElement.LostKeyboardFocus += (s, e) => {
-				CommandManager.LastFocusedWpfElement = TextView.VisualElement;
+				Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
 			};
 
 			this.xwtWidget = GetXwtWidget (widget);
