@@ -13,7 +13,7 @@ namespace MonoDevelop.Ide.Text
 
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (fileName == null || !fileName.HasExtension(".cs")) {
+			if (fileName == null || !(fileName.HasExtension(".cs") || IsSupportedAndroidFileName (fileName, ownerProject))) {
 				return false;
 			}
 
@@ -24,6 +24,17 @@ namespace MonoDevelop.Ide.Text
 				return DesktopService.GetMimeTypeIsText (mimeType);
 
 			return false;
+		}
+
+		bool IsSupportedAndroidFileName (FilePath fileName, Project ownerProject)
+		{
+			// We only care about .xml and .axml files that are marked as AndroidResource
+			if (!(fileName.HasExtension (".xml") || fileName.HasExtension (".axml")))
+				return false;
+
+			const string AndroidResourceBuildAction = "AndroidResource";
+			var buildAction = ownerProject.GetProjectFile (fileName)?.BuildAction;
+			return string.Equals (buildAction, AndroidResourceBuildAction, System.StringComparison.Ordinal);
 		}
 
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
