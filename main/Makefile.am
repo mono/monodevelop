@@ -29,7 +29,7 @@ NUGET_RESTORE = mono external/nuget-binary/nuget.exe restore -DisableParallelPro
 restore-packages:
 	@$(NUGET_RESTORE)
 	msbuild /t:Restore /p:RestoreDisableParallel=true external/RefactoringEssentials/RefactoringEssentials/RefactoringEssentials.csproj
-	msbuild /r /bl:VSEditorCore.binlog /noautorsp external/vs-editor-core/VSEditorCore.proj
+	msbuild /t:Restore /p:RestoreDisableParallel=true external/vs-editor-core/src/CocoaControls/CocoaControls.csproj
 	mono external/fsharpbinding/.paket/paket.bootstrapper.exe
 	pushd . && cd external/fsharpbinding && mono .paket/paket.exe restore && popd
 
