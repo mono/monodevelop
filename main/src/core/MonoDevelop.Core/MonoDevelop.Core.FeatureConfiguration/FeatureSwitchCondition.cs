@@ -38,7 +38,7 @@ namespace MonoDevelop.Core.FeatureConfiguration
 				return true;
 			}
 
-			return FeatureSwitchService.IsFeatureEnabled (featureName);
+			return FeatureSwitchService.IsFeatureEnabled (featureName) ?? true;
 		}
 	}
 }

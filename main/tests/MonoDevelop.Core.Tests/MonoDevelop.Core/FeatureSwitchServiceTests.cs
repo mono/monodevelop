@@ -36,11 +36,43 @@ namespace MonoDevelop.Core
 	public class FeatureSwitchServiceTests : TestBase
 	{
 		[Test]
+		public void IgnoresUnknownFeatures ()
+		{
+			Assert.IsNull (FeatureSwitchService.IsFeatureEnabled ("FakeFeature"));
+		}
+
+		[Test]
 		public void CanEnableWithEnvVar ()
 		{
-			Assert.False (FeatureSwitchService.IsFeatureEnabled ("MonoDevelop.Core.FeatureSwitchTests", false));
 			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "MonoDevelop.Core.FeatureSwitchTests");
-			Assert.True (FeatureSwitchService.IsFeatureEnabled ("MonoDevelop.Core.FeatureSwitchTests", false));
+			Assert.True (FeatureSwitchService.IsFeatureEnabled ("MonoDevelop.Core.FeatureSwitchTests") ?? false);
+		}
+
+		[Test]
+		public void CanEnableMultipleWithEnvVar ()
+		{
+			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "Feature1;Feature2;Feature3;Feature4");
+			Assert.True (FeatureSwitchService.IsFeatureEnabled ("Feature1") ?? false);
+			Assert.True (FeatureSwitchService.IsFeatureEnabled ("Feature2") ?? false);
+			Assert.True (FeatureSwitchService.IsFeatureEnabled ("Feature3") ?? false);
+			Assert.True (FeatureSwitchService.IsFeatureEnabled ("Feature4") ?? false);
+		}
+
+		[Test]
+		public void CanDisableWithEnvVar ()
+		{
+			Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", "MonoDevelop.Core.FeatureSwitchTests");
+			Assert.False (FeatureSwitchService.IsFeatureEnabled ("MonoDevelop.Core.FeatureSwitchTests") ?? true);
+		}
+
+		[Test]
+		public void CanDisableMultipleWithEnvVar ()
+		{
+			Environment.SetEnvironmentVariable ("MD_FEATURES_DISABLED", "Feature1;Feature2;Feature3;Feature4");
+			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature1") ?? true);
+			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature2") ?? true);
+			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature3") ?? true);
+			Assert.False (FeatureSwitchService.IsFeatureEnabled ("Feature4") ?? true);
 		}
 	}
 }
