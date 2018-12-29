@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
 		public readonly ConfigurationProperty<string> UserInterfaceThemeName = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
+		public readonly ConfigurationProperty<bool> OpenStartWindowOnStartup = ConfigurationProperty.Create ("MonoDevelop.OpenStartWindowOnStartup", true);
 		public readonly ConfigurationProperty<bool> LoadPrevSolutionOnStartup = ConfigurationProperty.Create ("SharpDevelop.LoadPrevProjectOnStartup", false);
 		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
 		public readonly ConfigurationProperty<bool> LoadDocumentUserProperties = ConfigurationProperty.Create ("SharpDevelop.LoadDocumentProperties", true);

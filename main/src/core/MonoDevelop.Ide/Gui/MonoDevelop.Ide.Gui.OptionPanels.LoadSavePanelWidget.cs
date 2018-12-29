@@ -14,6 +14,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.HBox hbox10;
 		private global::Gtk.VBox vbox65;
 		private global::Gtk.CheckButton loadUserDataCheckButton;
+		private global::Gtk.CheckButton openStartWindowCheckButton;
 		private global::Gtk.CheckButton loadPrevProjectCheckButton;
 		private global::Gtk.VBox vbox19;
 		private global::Gtk.Label saveLabel;
@@ -111,6 +112,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
+			// Solution-load options
+			this.openStartWindowCheckButton = new global::Gtk.CheckButton {
+				Name = "openStartWindowCheckButton",
+				Label = global::Mono.Unix.Catalog.GetString ("_Always show me the Start Window"),
+				DrawIndicator = true,
+				UseUnderline = true
+			};
+			this.vbox65.Add (this.openStartWindowCheckButton);
+			var w = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.openStartWindowCheckButton]));
+			w.Position = 2;
+			w.Expand = false;
+			w.Fill = false;
 			// Container child vbox65.Gtk.Box+BoxChild
 			this.loadPrevProjectCheckButton = new global::Gtk.CheckButton ();
 			this.loadPrevProjectCheckButton.Name = "loadPrevProjectCheckButton";
@@ -119,7 +132,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.loadPrevProjectCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.loadPrevProjectCheckButton);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.loadPrevProjectCheckButton]));
-			w7.Position = 1;
+			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.hbox10.Add (this.vbox65);

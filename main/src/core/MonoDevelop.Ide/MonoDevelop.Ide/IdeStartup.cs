@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
-				hideWelcomePage = startupInfo.HasFiles;
+				hideWelcomePage = startupInfo.HasFiles || !IdeApp.Preferences.OpenStartWindowOnStartup.Value;
 				IdeApp.Initialize (monitor, hideWelcomePage);
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
@@ -469,6 +469,8 @@ namespace MonoDevelop.Ide
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
 				IdeApp.Workbench.Show ();
+			} else if (hideWelcomePage) {
+				IdeApp.Workbench.RootWindow.Show ();
 			}
 
 			return false;
