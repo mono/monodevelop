@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Classification\WebClassification.cs" />
     <Compile Include="CodeLensPresenterStyle.cs" />
     <Compile Include="KeyProcessor\DefaultKeyProcessor.cs" />
     <Compile Include="KeyProcessor\DefaultKeyProcessorProvider.cs" />
