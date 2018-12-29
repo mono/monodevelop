@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Gui;
@@ -13,7 +15,7 @@ namespace MonoDevelop.Ide.Text
 
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (fileName == null || !(fileName.HasExtension(".cs") || IsSupportedAndroidFileName (fileName, ownerProject))) {
+			if (fileName == null || !(IsSupportedFileExtension (fileName) || IsSupportedAndroidFileName (fileName, ownerProject))) {
 				return false;
 			}
 
@@ -24,6 +26,21 @@ namespace MonoDevelop.Ide.Text
 				return DesktopService.GetMimeTypeIsText (mimeType);
 
 			return false;
+		}
+
+		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
+			".cs",
+			".html",
+			".cshtml",
+			".css",
+			".json",
+			".js",
+			".ts"
+		};
+
+		bool IsSupportedFileExtension (FilePath fileName)
+		{
+			return supportedFileExtensions.Contains (fileName.Extension);
 		}
 
 		bool IsSupportedAndroidFileName (FilePath fileName, Project ownerProject)
