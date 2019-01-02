@@ -100,6 +100,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetStandard2x", templateId, parameters);
 		}
 
+		[Ignore (".NET Standard 2.1 still not supported")]
 		[Test]
 		[TestCase ("Microsoft.Common.Library.CSharp", "UseNetStandard21=true")]
 		[TestCase ("Microsoft.Common.Library.FSharp", "UseNetStandard21=true")]
