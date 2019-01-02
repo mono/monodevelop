@@ -81,8 +81,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			loadUserDataCheckButton.Active = IdeApp.Preferences.LoadDocumentUserProperties;
 			createBackupCopyCheckButton.Active = IdeApp.Preferences.CreateFileBackupCopies;
-			openStartWindowCheckButton.Active = IdeApp.Preferences.OpenStartWindowOnStartup.Value;
-			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup.Value;
+			openStartWindowRadioButton.Active = IdeApp.Preferences.OpenStartWindowOnStartup.Value;
+			loadPrevProjectRadioButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup.Value;
 
 			SetupAccessibility ();
 		}
@@ -96,9 +96,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			loadUserDataCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadUserData", "",
 			                                                          GettextCatalog.GetString ("Check to load the user specific settings with the solution"));
-			openStartWindowCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.openStartWindow", "",
+			openStartWindowRadioButton.SetCommonAccessibilityAttributes ("LoadSavePanel.openStartWindow", "",
 				GettextCatalog.GetString ("Check to load the Start Window on every startup"));
-			loadPrevProjectCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", "",
+			loadPrevProjectRadioButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", "",
 			                                                             GettextCatalog.GetString ("Check to load the previous solution when starting the application"));
 			createBackupCopyCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.createBackup", "",
 			                                                              GettextCatalog.GetString ("Check to always create a backup copy"));
@@ -119,8 +119,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store () 
 		{
-			IdeApp.Preferences.OpenStartWindowOnStartup.Value = openStartWindowCheckButton.Active;
-			IdeApp.Preferences.LoadPrevSolutionOnStartup.Value = loadPrevProjectCheckButton.Active;
+			IdeApp.Preferences.OpenStartWindowOnStartup.Value = openStartWindowRadioButton.Active;
+			IdeApp.Preferences.LoadPrevSolutionOnStartup.Value = loadPrevProjectRadioButton.Active;
 			IdeApp.Preferences.LoadDocumentUserProperties.Value = loadUserDataCheckButton.Active;
 			IdeApp.Preferences.CreateFileBackupCopies.Value = createBackupCopyCheckButton.Active;
 			IdeApp.Preferences.ProjectsDefaultPath.Value = folderEntry.Path;

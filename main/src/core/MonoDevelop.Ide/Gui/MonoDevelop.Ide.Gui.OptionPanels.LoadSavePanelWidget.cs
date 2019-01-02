@@ -14,8 +14,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.HBox hbox10;
 		private global::Gtk.VBox vbox65;
 		private global::Gtk.CheckButton loadUserDataCheckButton;
-		private global::Gtk.CheckButton openStartWindowCheckButton;
-		private global::Gtk.CheckButton loadPrevProjectCheckButton;
+		private global::Gtk.RadioButton openStartWindowRadioButton;
+		private global::Gtk.RadioButton loadPrevProjectRadioButton;
 		private global::Gtk.VBox vbox19;
 		private global::Gtk.Label saveLabel;
 		private global::Gtk.HBox hbox11;
@@ -113,25 +113,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w6.Expand = false;
 			w6.Fill = false;
 			// Solution-load options
-			this.openStartWindowCheckButton = new global::Gtk.CheckButton {
+			this.openStartWindowRadioButton = new global::Gtk.RadioButton ((global::Gtk.RadioButton) null) {
 				Name = "openStartWindowCheckButton",
 				Label = global::Mono.Unix.Catalog.GetString ("_Always show me the Start Window"),
 				DrawIndicator = true,
 				UseUnderline = true
 			};
-			this.vbox65.Add (this.openStartWindowCheckButton);
-			var w = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.openStartWindowCheckButton]));
-			w.Position = 2;
+			this.vbox65.Add (this.openStartWindowRadioButton);
+			var w = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.openStartWindowRadioButton]));
+			w.Position = 1;
 			w.Expand = false;
 			w.Fill = false;
 			// Container child vbox65.Gtk.Box+BoxChild
-			this.loadPrevProjectCheckButton = new global::Gtk.CheckButton ();
-			this.loadPrevProjectCheckButton.Name = "loadPrevProjectCheckButton";
-			this.loadPrevProjectCheckButton.Label = global::Mono.Unix.Catalog.GetString ("_Load previous solution on startup");
-			this.loadPrevProjectCheckButton.DrawIndicator = true;
-			this.loadPrevProjectCheckButton.UseUnderline = true;
-			this.vbox65.Add (this.loadPrevProjectCheckButton);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.loadPrevProjectCheckButton]));
+			this.loadPrevProjectRadioButton = new global::Gtk.RadioButton (this.openStartWindowRadioButton);
+			this.loadPrevProjectRadioButton.Name = "loadPrevProjectCheckButton";
+			this.loadPrevProjectRadioButton.Label = global::Mono.Unix.Catalog.GetString ("_Load previous solution on startup");
+			this.loadPrevProjectRadioButton.DrawIndicator = true;
+			this.loadPrevProjectRadioButton.UseUnderline = true;
+			this.vbox65.Add (this.loadPrevProjectRadioButton);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.loadPrevProjectRadioButton]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;

@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide
 		Socket listen_socket   = null;
 		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
+		static StartupInfo startupInfo;
 		static readonly int ipcBasePort = 40000;
 		static Stopwatch startupTimer = new Stopwatch ();
 		static Stopwatch startupSectionTimer = new Stopwatch ();
@@ -184,7 +185,7 @@ namespace MonoDevelop.Ide
 
 			AddinManager.AddinLoadError += OnAddinError;
 
-			var startupInfo = new StartupInfo (args);
+			startupInfo = new StartupInfo (args);
 
 			// If a combine was specified, force --newwindow.
 
@@ -469,21 +470,21 @@ namespace MonoDevelop.Ide
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
 				IdeApp.Workbench.Show ();
-			} else if (hideWelcomePage) {
-				IdeApp.Workbench.RootWindow.Show ();
+			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
+				IdeApp.Workbench.Show ();
 			}
 
 			return false;
 		}
 
-		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
+		void CreateStartupMetadata (StartupInfo si, Dictionary<string, long> timings)
 		{
 			var result = DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
 
-			var startupMetadata = GetStartupMetadata (startupInfo, result, timings);
+			var startupMetadata = GetStartupMetadata (si, result, timings);
 			Counters.Startup.Inc (startupMetadata);
 
 			if (ttcMetadata != null) {
