@@ -624,5 +624,22 @@ $)
 				Assert.AreEqual ("\t\t\t", indent);
 			}
 		}
+
+		/// <summary>
+		/// Bug 753551: Using statement indenting
+		/// </summary>
+		[Test]
+		public async Task TestVSTS753551 ()
+		{
+			using (var data = await Create (@"
+// Test
+using System;
+$
+	", createWithProject: true)) {
+				var tracker = new CSharpIndentationTracker (data.Document.Editor, data.Document);
+				var indent = tracker.GetIndentationString (data.Document.Editor.CaretLine);
+				Assert.AreEqual ("", indent);
+			}
+		}
 	}
 }
