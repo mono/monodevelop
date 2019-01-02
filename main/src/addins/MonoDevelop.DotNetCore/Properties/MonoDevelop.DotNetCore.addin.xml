@@ -326,7 +326,7 @@
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard30=true"
+			condition="UseNetStandard21=true"
 			category="multiplat/library/general" />
 		<Template
 			_overrideName=".NET Standard Library"
@@ -338,7 +338,7 @@
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard30=true"
+			condition="UseNetStandard21=true"
 			category="multiplat/library/general" />
 		<Template
 			_overrideName=".NET Standard Library"
@@ -351,7 +351,7 @@
 			imageId="md-crossplatform-library-project"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard30=true"
+			condition="UseNetStandard21=true"
 			category="multiplat/library/general" />
 		</Condition>
 		
@@ -499,7 +499,7 @@
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard30=true"
+			condition="UseNetStandard21=true"
 			category="netcore/library/general" />
 		<Template
 			_overrideName=".NET Standard Library"
@@ -511,7 +511,7 @@
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard;FSharpNetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard30=true"
+			condition="UseNetStandard21=true"
 			category="netcore/library/general" />
 		<Template
 			_overrideName=".NET Standard Library"
@@ -524,7 +524,7 @@
 			imageId="md-netcore-empty-project"
 			supportedParameters="NetStandard"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard30=true"
+			condition="UseNetStandard21=true"
 			category="netcore/library/general" />
 		</Condition>		
 		<!--
