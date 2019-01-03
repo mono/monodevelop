@@ -312,7 +312,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Toolbar.HideCommandBar (barId);
 		}
 
-		public void ShowInfoBar (bool inActiveView, InfoBarOptions options)
+		public Control ShowInfoBar (bool inActiveView, InfoBarOptions options)
 		{
 			IInfoBarHost infoBarHost = null;
 			if (inActiveView) {
@@ -323,7 +323,7 @@ namespace MonoDevelop.Ide.Gui
 			if (infoBarHost == null)
 				infoBarHost = IdeApp.Workbench.RootWindow as IInfoBarHost;
 
-			infoBarHost?.AddInfoBar (options);
+			return infoBarHost?.AddInfoBar (options);
 		}
 
 		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {

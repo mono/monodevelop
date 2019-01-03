@@ -24,11 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
+
 namespace MonoDevelop.Ide.Gui.Components
 {
 	interface IInfoBarHost
 	{
-		void AddInfoBar (InfoBarOptions options);
+		Control AddInfoBar (InfoBarOptions options);
 	}
 
 	public class InfoBarOptions
