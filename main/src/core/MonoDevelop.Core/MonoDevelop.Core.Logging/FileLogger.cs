@@ -31,7 +31,6 @@ using System.IO;
 
 namespace MonoDevelop.Core.Logging
 {
-	
 	public class FileLogger : ILogger, IDisposable
 	{
 		TextWriter writer;
@@ -81,10 +80,10 @@ namespace MonoDevelop.Core.Logging
 			}
 		}
 
-        public EnabledLoggingLevel EnabledLevel { get; set; } = EnabledLoggingLevel.UpToInfo;
-        public string Name { get; set; }
+		public EnabledLoggingLevel EnabledLevel { get; set; } = EnabledLoggingLevel.UpToInfo;
+		public string Name { get; set; }
 
-        public void Dispose ()
+		public void Dispose ()
 		{
 			Dispose (true);
 			GC.SuppressFinalize (this);
