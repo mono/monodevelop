@@ -2,11 +2,13 @@
 <ExtensionModel>
 	<!-- Extension points -->
 	<Extension path="/MonoDevelop/Ide/Composition">
-		<Assembly file="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Data.Utilities.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Assembly file="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
-		<Assembly file="Microsoft.VisualStudio.Language.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
@@ -14,7 +16,6 @@
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
@@ -24,7 +25,6 @@
 		<Assembly file="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
-		<Assembly file="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
