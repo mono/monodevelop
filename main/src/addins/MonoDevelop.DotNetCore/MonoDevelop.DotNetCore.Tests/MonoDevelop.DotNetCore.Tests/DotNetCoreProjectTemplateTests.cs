@@ -330,7 +330,7 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		static bool IsDotNetCoreSdk30Installed ()
 		{
-			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
+			return DotNetCoreSdk.Versions.Any (version => version.Major == 3 && version.Minor == 0);
 		}
 
 		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters)
