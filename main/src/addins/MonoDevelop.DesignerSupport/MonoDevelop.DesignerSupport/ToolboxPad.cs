@@ -107,8 +107,17 @@ namespace MonoDevelop.DesignerSupport
 		bool isDragging = false;
 		public override void Dispose ()
 		{
-			widget.KeyPressEvent -= toolbox.OnKeyPressed;
-			widget.KeyReleaseEvent -= toolbox.KeyReleased;
+			if (widget != null) {
+				widget.KeyPressEvent -= toolbox.OnKeyPressed;
+				widget.KeyReleaseEvent -= toolbox.KeyReleased;
+				widget.Destroy ();
+				widget.Dispose ();
+				widget = null;
+			}
+			if (toolbox != null) {
+				toolbox.Dispose ();
+				toolbox = null;
+			}
 			base.Dispose ();
 		}
 #endif

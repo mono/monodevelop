@@ -65,12 +65,10 @@ namespace MonoDevelop.Ide
 		static RootWorkspace workspace;
 		readonly static IdePreferences preferences;
 
-		public const int CurrentRevision = 5;
-
 		static bool isMainRunning;
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
-		static int upgradedFromRevision;
+		static Version upgradedFromVersion;
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
@@ -181,8 +179,8 @@ namespace MonoDevelop.Ide
 		}
 		
 		// If IsInitialRunAfterUpgrade is true, returns the previous version
-		public static int UpgradedFromRevision {
-			get { return upgradedFromRevision; }
+		public static Version UpgradedFromVersion {
+			get { return upgradedFromVersion; }
 		}
 		
 		public static Version Version {
@@ -265,7 +263,7 @@ namespace MonoDevelop.Ide
 			commandService.EnableIdleUpdate = true;
 
 			if (Customizer != null)
-				Customizer.OnIdeInitialized ();
+				Customizer.OnIdeInitialized (hideWelcomePage);
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
@@ -276,51 +274,26 @@ namespace MonoDevelop.Ide
 			// Set initial run flags
 			Counters.Initialization.Trace ("Upgrading Settings");
 
-			if (PropertyService.Get("MonoDevelop.Core.FirstRun", false)) {
+			if (PropertyService.Get("MonoDevelop.Core.FirstRun", true)) {
 				isInitialRun = true;
 				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildInfo.Version);
-				PropertyService.Set ("MonoDevelop.Core.LastRunRevision", CurrentRevision);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
 				PropertyService.SaveProperties ();
 			}
 
-			string lastVersion = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.9.1");
-			int lastRevision = PropertyService.Get ("MonoDevelop.Core.LastRunRevision", 0);
-			if (lastRevision != CurrentRevision && !isInitialRun) {
+			string lastVersionString = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.0");
+			Version.TryParse (lastVersionString, out var lastVersion);
+
+			if (Runtime.Version > lastVersion && !isInitialRun) {
 				isInitialRunAfterUpgrade = true;
-				if (lastRevision == 0) {
-					switch (lastVersion) {
-						case "1.0": lastRevision = 1; break;
-						case "2.0": lastRevision = 2; break;
-						case "2.2": lastRevision = 3; break;
-						case "2.2.1": lastRevision = 4; break;
-					}
-				}
-				upgradedFromRevision = lastRevision;
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildInfo.Version);
-				PropertyService.Set ("MonoDevelop.Core.LastRunRevision", CurrentRevision);
+				upgradedFromVersion = lastVersion;
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
 				PropertyService.SaveProperties ();
 			}
 			
 			// The ide is now initialized
 
 			isInitialized = true;
-			
-			if (isInitialRun) {
-				try {
-					OnInitialRun ();
-				} catch (Exception e) {
-					LoggingService.LogError ("Error found while initializing the IDE", e);
-				}
-			}
-
-			if (isInitialRunAfterUpgrade) {
-				try {
-					OnUpgraded (upgradedFromRevision);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error found while initializing the IDE", e);
-				}
-			}
 			
 			if (initializedEvent != null) {
 				initializedEvent (null, EventArgs.Empty);
@@ -465,16 +438,20 @@ namespace MonoDevelop.Ide
 			get { return isMainRunning; }
 		}
 
+		public static bool IsExiting { get; private set; }
+
 		/// <summary>
 		/// Exits MonoDevelop. Returns false if the user cancels exiting.
 		/// </summary>
 		public static async Task<bool> Exit ()
 		{
+			IsExiting = true;
 			if (await workbench.Close ()) {
 				Gtk.Application.Quit ();
 				isMainRunning = false;
 				return true;
 			}
+			IsExiting = false;
 			return false;
 		}
 
@@ -618,35 +595,6 @@ namespace MonoDevelop.Ide
 		{
 			if (Exited != null)
 				Exited (null, EventArgs.Empty);
-		}
-
-		static void OnInitialRun ()
-		{
-			SetInitialLayout ();
-		}
-
-		static void OnUpgraded (int previousRevision)
-		{
-			if (previousRevision <= 3) {
-				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
-				IdeApp.Preferences.DefaultTargetRuntime.Value = Runtime.SystemAssemblyService.CurrentRuntime;
-			}
-			if (previousRevision < 5)
-				SetInitialLayout ();
-		}
-		
-		static void SetInitialLayout ()
-		{
-			if (!IdeApp.Workbench.Layouts.Contains ("Solution")) {
-				// Create the Solution layout, based on Default
-				IdeApp.Workbench.CurrentLayout = "Solution";
-				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad> ().Visible = false;
-				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad> ().Visible = false;
-				foreach (Pad p in IdeApp.Workbench.Pads) {
-					if (p.Visible)
-						p.AutoHide = true;
-				}
-			}
 		}
 
 		static ITimeTracker commandTimeCounter;

@@ -67,7 +67,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			string childNamespace = VsTestTest.GetChildNamespace (FixtureTypeNamespace);
 			if (string.IsNullOrEmpty (childNamespace)) {
 				if (currentClass == null || currentClass.FixtureTypeName != VsTestTest.FixtureTypeName) {
-					currentClass = new VsTestTestClass (testRunner, Project, VsTestTest.FixtureTypeName);
+					currentClass = new VsTestTestClass (testRunner, Project, VsTestTest);
 					Tests.Add (currentClass);
 				}
 				currentClass.Tests.Add (VsTestTest);

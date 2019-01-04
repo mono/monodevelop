@@ -57,7 +57,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		protected virtual void OnOpenWorkspace (object sender, WorkspaceItemEventArgs e)
 		{
-			treeView.AddChild (e.Item);
+			if (treeView.GetNodeAtObject (e.Item) == null)
+				treeView.AddChild (e.Item);
 		}
 
 		protected virtual void OnCloseWorkspace (object sender, WorkspaceItemEventArgs e)

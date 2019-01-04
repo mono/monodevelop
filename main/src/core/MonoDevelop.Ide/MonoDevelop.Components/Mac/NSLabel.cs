@@ -1,24 +1,21 @@
-// 
-// WelcomePageCommands.cs
-//  
+//
+// NSLabel.cs
+//
 // Author:
-//       Michael Hutchinson <mhutch@xamarin.com>
-//       Scott Ellington
-// 
-// Copyright (c) 2011 Xamarin Inc.
-// Copyright (c) 2005-2010 Novell, Inc.
-// Copyright (c) 2005 Scott Ellington
-// 
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
+//
+// Copyright (c) 2018 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,30 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using System.Linq;
+using System;
 
-namespace MonoDevelop.Ide.WelcomePage
+#if MAC
+using AppKit;
+
+namespace MonoDevelop.Components.Mac
 {
-	class ShowWelcomePageHandler : CommandHandler
+	public class NSLabel : NSTextField
 	{
-		public static void Show ()
+		public NSLabel ()
 		{
-			WelcomePageService.ShowWelcomePageOrWindow (options: new WelcomeWindowShowOptions (false));
-		}
-		
-		protected override void Run()
-		{
-			Show ();
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Text = WelcomePageService.HasWindowImplementation ? GettextCatalog.GetString ("Start Window") : GettextCatalog.GetString ("Welcome Page");
-			base.Update (info);
+			Editable = false;
+			Bordered = false;
+			Bezeled = false;
+			DrawsBackground = false;
+			Selectable = false;
+			TranslatesAutoresizingMaskIntoConstraints = false;
 		}
 	}
 }
+
+#endif

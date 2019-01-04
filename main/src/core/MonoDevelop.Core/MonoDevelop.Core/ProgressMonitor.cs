@@ -131,7 +131,15 @@ namespace MonoDevelop.Core
 			ReportGlobalDataToParent = true;
 		}
 
-		public virtual void Dispose ()
+		public void Dispose ()
+		{
+			if (context != null)
+				context.Send (o => ((ProgressMonitor)o).OnDispose (true), this);
+			else
+				OnDispose (true);
+		}
+
+		protected virtual void OnDispose (bool disposing)
 		{
 			if (disposed)
 				return;

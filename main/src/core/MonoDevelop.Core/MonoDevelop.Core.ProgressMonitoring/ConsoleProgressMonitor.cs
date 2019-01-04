@@ -69,12 +69,12 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
 			if (!leaveOpen)
 				writer.Dispose ();
 
-			base.Dispose ();
+			base.OnDispose (disposing);
 		}
 		
 		public bool EnableTimeStamp {

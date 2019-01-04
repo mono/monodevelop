@@ -32,8 +32,7 @@ using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
-using MonoDevelop.DesignerSupport.Toolbox.NativeViews;
-using CoreAnimation;
+using MonoDevelop.Components.Mac;
 using Xwt.Mac;
 using System.Text.RegularExpressions;
 
@@ -128,7 +127,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			ImageView.AccessibilityElement = ImageView.Cell.AccessibilityElement = false;
 			contentCollectionView.AddArrangedSubview (ImageView);
 
-			TextField = NativeViewHelper.CreateLabel ("", NSTextAlignment.Left, NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize));
+			TextField = new NSLabel {
+				StringValue = String.Empty,
+				Alignment = NSTextAlignment.Left,
+				Font = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize)
+			};
 			TextField.AccessibilityElement = TextField.Cell.AccessibilityElement = false;
 			contentCollectionView.AddArrangedSubview (TextField);
 			contentCollectionView.EdgeInsets = new NSEdgeInsets (0, 7, 0, 0);
@@ -218,8 +221,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Font = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
 			Title = "";
 
-			TitleTextField = NativeViewHelper.CreateLabel ("", font: Font);
-			TitleTextField.AccessibilityElement = false;
+			TitleTextField = new NSLabel {
+				StringValue = String.Empty,
+				Font = Font,
+				AccessibilityElement = false
+			};
 
 			AddSubview (TitleTextField);
 			TitleTextField.LeftAnchor.ConstraintEqualToAnchor (LeftAnchor, 10).Active = true;

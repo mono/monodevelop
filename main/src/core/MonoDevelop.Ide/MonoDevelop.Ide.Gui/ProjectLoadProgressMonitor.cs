@@ -40,10 +40,10 @@ namespace MonoDevelop.Ide.Gui
 			AddFollowerMonitor (monitor);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
 			CurrentSolution = null;
-			base.Dispose ();
+			base.OnDispose (disposing);
 		}
 		
 		public override MigrationType ShouldMigrateProject ()

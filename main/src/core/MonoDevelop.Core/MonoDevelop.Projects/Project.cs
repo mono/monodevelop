@@ -494,12 +494,12 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		public Task<ProjectFile[]> GetSourceFilesAsync (ConfigurationSelector configuration)
+		public Task<ImmutableArray<ProjectFile>> GetSourceFilesAsync (ConfigurationSelector configuration)
 		{
 			if (sourceProject == null)
-				return Task.FromResult (new ProjectFile [0]);
+				return Task.FromResult (ImmutableArray<ProjectFile>.Empty);
 
-			return BindTask<ProjectFile []> (cancelToken => {
+			return BindTask<ImmutableArray<ProjectFile>> (cancelToken => {
 				var cancelSource = new CancellationTokenSource ();
 				cancelToken.Register (() => cancelSource.Cancel ());
 
@@ -512,7 +512,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		public Task<ProjectFile []> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<ImmutableArray<ProjectFile>> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return ProjectExtension.OnGetSourceFiles (monitor, configuration);
 		}
@@ -529,7 +529,7 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		protected virtual async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
 			var evaluatedItems = await GetEvaluatedSourceFiles (configuration);
@@ -541,7 +541,7 @@ namespace MonoDevelop.Projects
 			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
 			results.UnionWith (evaluatedCompileItems);
 
-			return results.ToArray ();
+			return results.ToImmutableArray ();
 		}
 
 		class ProjectFileFilePathComparer : IEqualityComparer<ProjectFile>
@@ -622,15 +622,15 @@ namespace MonoDevelop.Projects
 
 		readonly struct CoreCompileEvaluationResult
 		{
-			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (Array.Empty<ProjectFile> (), ImmutableArray<FilePath>.Empty);
+			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (ImmutableArray<ProjectFile>.Empty, ImmutableArray<FilePath>.Empty);
 
-			public CoreCompileEvaluationResult (ProjectFile[] sourceFiles, ImmutableArray<FilePath> analyzerFiles)
+			public CoreCompileEvaluationResult (ImmutableArray<ProjectFile> sourceFiles, ImmutableArray<FilePath> analyzerFiles)
 			{
 				SourceFiles = sourceFiles;
 				AnalyzerFiles = analyzerFiles;
 			}
 
-			public readonly ProjectFile[] SourceFiles;
+			public readonly ImmutableArray<ProjectFile> SourceFiles;
 			public readonly ImmutableArray<FilePath> AnalyzerFiles;
 		}
 
@@ -737,7 +737,7 @@ namespace MonoDevelop.Projects
 						analyzerList.Add (msbuildPath);
 				}
 
-				return new CoreCompileEvaluationResult (sourceFilesList.ToArray (), analyzerList.ToImmutableArray ());
+				return new CoreCompileEvaluationResult (sourceFilesList.ToImmutableArray (), analyzerList.ToImmutableArray ());
 			}
 		}
 
@@ -4872,7 +4872,7 @@ namespace MonoDevelop.Projects
 				return Project.OnGetAnalyzerFiles (monitor, configuration);
 			}
 
-			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			internal protected override Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				return Project.OnGetSourceFiles (monitor, configuration);
 			}

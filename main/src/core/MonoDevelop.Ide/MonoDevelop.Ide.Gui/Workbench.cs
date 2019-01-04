@@ -758,7 +758,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public void ShowGlobalPreferencesDialog (Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
 		{
-			if (parentWindow == null)
+			if (parentWindow == null && IdeApp.Workbench.RootWindow.Visible)
 				parentWindow = IdeApp.Workbench.RootWindow;
 
 			OptionsDialog ops = new OptionsDialog (

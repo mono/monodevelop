@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				do {
 					order.Add ((string) priorityList.Model.GetValue (iter, 0));
 				} while (priorityList.Model.IterNext (ref iter));
-				settings.GroupOrder = order; 
+				settings.GroupOrder = order.ToArray (); 
 			}
 			settings.Save ();
 		}

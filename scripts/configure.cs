@@ -61,6 +61,9 @@ namespace MonoDevelop.Configuration
                     case "is-preview":
                         GetIsPreview(args);
                         break;
+                    case "is-major-preview":
+                        GetIsMajorPreview(args);
+                        break;
                     default:
                         Console.WriteLine("Unknown command: " + cmd);
                         return 1;
@@ -87,6 +90,10 @@ namespace MonoDevelop.Configuration
 			Console.WriteLine (config.IsPreview);
 		}
 
+		static void GetIsMajorPreview (string[] args)
+		{
+			Console.WriteLine (config.IsMajorPreview);
+		}
 		static void GetReleaseId (string[] args)
 		{
 			Console.WriteLine (config.ReleaseId);
@@ -137,7 +144,8 @@ namespace MonoDevelop.Configuration
         public readonly string ReleaseId;
         public readonly PlatformInfo PlatformInfo;
         public readonly bool IsPreview;
-       
+        public readonly bool IsMajorPreview;
+
         public IdeConfigurationTool(string monoDevelopPath)
         {
             MonoDevelopPath = monoDevelopPath;
@@ -148,6 +156,7 @@ namespace MonoDevelop.Configuration
             CompatVersion = SystemUtil.Grep(versionTxt, "CompatVersion=(.*)");
 			SourceUrl = SystemUtil.Grep(versionTxt, "SourceUrl=(.*)", true);
             IsPreview = SystemUtil.Grep(versionTxt, "IsPreview=(.*)") == "true";
+            IsMajorPreview = SystemUtil.Grep(versionTxt, "IsMajorPreview=(.*)") == "true";
 
 			var customSource = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATEINFO_SOURCE_URL");
 			if (!string.IsNullOrEmpty (customSource))
