@@ -158,6 +158,7 @@ module Refactoring =
 
             links.Add (link)
             editor.StartTextLinkMode (TextLinkModeOptions (links))
+            //editor.StartInsertionMode( INSer)
         else
             MessageService.ShowCustomDialog (Dialog.op_Implicit (new Rename.RenameItemDialog("Rename Item", symbolUse.Symbol.DisplayName, performChanges symbolUse locations)))
             |> ignore
@@ -691,6 +692,311 @@ type FSharpFindReferencesProvider () =
         //TODO:
         Task.CompletedTask
 
+//namespace MonoDevelop.Refactoring
+
+open MonoDevelop.FSharp
+open System
+open System.IO
+open System.Collections.Generic
+open System.Threading.Tasks
+open MonoDevelop
+open MonoDevelop.Core
+open MonoDevelop.Components
+open MonoDevelop.Components.Commands
+open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Projects
+open MonoDevelop.Refactoring
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop.Ide.FindInFiles
+open ExtCore.Control
+
+open MonoDevelop.Core
+open System.Threading
+open System.Threading.Tasks
+open MonoDevelop.Ide
+open MonoDevelop.CodeActions
+open System
+open MonoDevelop.Components.Commands
+
+open MonoDevelop.Ide.CodeCompletion
+open System.Collections.Immutable
+open Microsoft.CodeAnalysis
+open MonoDevelop.Projects
+open MonoDevelop.Ide
+open Microsoft.CodeAnalysis.Options
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Core.Instrumentation
+open System.Diagnostics
+open MonoDevelop.Ide.TypeSystem
+open MonoDevelop.CodeIssues
+open MonoDevelop.CodeActions
+open System.Threading
+open System.Threading.Tasks
+open MonoDevelop.AnalysisCore
+open System.Linq
+open MonoDevelop.Ide.Gui
+open MonoDevelop.Core
+open Mono.Addins
+open System
+open System.Collections.Generic
+open Microsoft.CodeAnalysis.CodeFixes
+open Microsoft.CodeAnalysis
+open Microsoft.VisualStudio.FSharp.Editor
+open Microsoft.CodeAnalysis.CodeRefactorings
+open Microsoft.CodeAnalysis;
+open Microsoft.CodeAnalysis.CodeFixes;
+open Microsoft.CodeAnalysis.CodeRefactorings;
+open Microsoft.CodeAnalysis.Formatting;
+open Microsoft.CodeAnalysis.Text;
+open System;
+open System.Collections.Generic;
+open System.Collections.Immutable;
+open Microsoft.FSharp.Compiler
+open Microsoft.FSharp.Compiler.Range
+open Microsoft.FSharp.Compiler.Ast
+
+
+type RapidFixMenuHandler() as this =
+    inherit CommandHandler()
+
+    //let codeFixService = Ide.Composition.CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.CodeFixes.ICodeFixService> () :?> ICodeFixService
+    //let codeRefactoringService =
+        //Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> :?> ICodeRefactoringService
+    //let codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> ();
+
+    let findIdent () = 
+        let doc = IdeApp.Workbench.ActiveDocument
+        match doc.TryGetAst() with
+        | Some ast ->
+            match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
+            //Is this a double check, i.e. isnt update checking can rename?
+            | _, Some sym ->
+                //let lastIdent = Symbols.lastIdent col lineTxt
+                Some sym
+            | _ -> None
+        | _ -> None
+
+    let inside (symbolRange, selection:Text.ISegment) =
+        let symbolStart, _symbolEnd = symbolRange
+        symbolStart >= selection.Offset
+
+    let getExpandRange (editor:TextEditor, tree:ParsedInput) =
+        let posStart = Range.mkPos 7 12
+        let posEnd = Range.mkPos 7 23
+        Range.mkRange "File" posStart posEnd |> Some
+
+        //if not editor.IsSomethingSelected then None
+        //else
+            //let rangeAsOffsets(range:Range.range) =
+            //    let startPos = editor.LocationToOffset(range.StartLine, range.StartColumn + 1)
+            //    let endPos = editor.LocationToOffset(range.EndLine, range.EndColumn + 1)
+            //    (startPos, endPos)
+
+            
+            //let rec walker = 
+            //    { new AstTraversal.AstVisitorBase<_>() with
+                    
+            //        override this.VisitModuleDecl(defaultTraverse, decl) =
+            //            match decl with
+            //            | SynModuleDecl.Open(_, range) -> Some([], range)
+            //            | _ -> defaultTraverse(decl)
+
+            //        member this.VisitExpr(path, traverseSynExpr, defaultTraverse, expr) =
+            //            match expr with
+            //            | SynExpr.LongIdent(_,_,_,range) -> Some (path, range)
+            //            | SynExpr.Ident ident -> Some (path, ident.idRange)
+            //            | SynExpr.Const(synconst, constRange) ->
+            //                match synconst with
+            //                | SynConst.String(_str, range) -> Some (path, range)
+            //                | _ -> Some (path, constRange)
+            //            | _ ->
+            //                if inside(rangeAsOffsets expr.Range, editor.SelectionRange) then
+            //                    Some (path, expr.Range)
+            //                else
+            //                    defaultTraverse(expr) }
+
+            ////let traversePath = 
+            //AstTraversal.Traverse(mkPos editor.CaretLine (editor.CaretColumn), tree, walker)
+            //|> Option.map (snd)
+
+            //let rangesFromTraverse = function
+            //    | TraverseStep.Binding binding -> [binding.RangeOfHeadPat; binding.RangeOfBindingAndRhs; binding.RangeOfBindingSansRhs]
+            //    | TraverseStep.MatchClause synMatchClause -> [synMatchClause.Range]
+            //    | TraverseStep.Expr synExpr -> [synExpr.Range]
+            //    | TraverseStep.MemberDefn synMemberDefn -> [synMemberDefn.Range]
+            //    | TraverseStep.Module synModuleDecl -> [synModuleDecl.Range]
+            //    | TraverseStep.ModuleOrNamespace synModuleOrNamespace -> [synModuleOrNamespace.Range]
+            //    | TraverseStep.TypeDefn synTypeDefn -> [synTypeDefn.Range]
+
+            //let selectionLineStart =
+            //    let line = editor.GetLine editor.SelectionRegion.BeginLine
+            //    if editor.SelectionRegion.BeginLine <> editor.SelectionRegion.EndLine then
+            //        line.Offset + line.GetIndentation(editor).Length, editor.SelectionRange.EndOffset
+            //    else
+            //        line.Offset + line.GetIndentation(editor).Length, line.EndOffset
+
+            //let wholeDocument =
+            //    0, editor.Length
+
+            //traversePath 
+            //|> Option.bind 
+                //(fun (traverseSteps, range) ->
+                    //let ranges = 
+                    //    traverseSteps 
+                    //    |> List.collect rangesFromTraverse
+
+                    //let offsetRanges =
+                    //    range::ranges |> List.map rangeAsOffsets
+
+                    //let allranges =
+                    //    [yield wholeDocument; yield selectionLineStart; yield! offsetRanges]
+
+                    //allranges
+                    //|> List.filter (fun range -> biggerOverlap(range, editor.SelectionRange))
+                    //|> List.sortBy (fun (startPos, endPos) -> endPos - startPos)
+                    //|> List.tryHead)
+    let selection (editor:TextEditor) = 
+        maybe {
+            let! ast = editor.DocumentContext.TryGetAst()
+            let! tree = ast.ParseTree
+            let! selection = getExpandRange(editor, tree)
+            return (ast, selection)
+        }
+
+    let provider () = 
+        IdeApp.Workbench.ActiveDocument 
+        |> Option.ofObj
+        |> Option.bind (fun document -> 
+            selection document.Editor |> Option.map (fun (ast, range) -> document, ast, range)) 
+        |> Option.map (fun (document, ast, range) -> 
+            let monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Add Open", IconId());
+            ast, range, FSharpAddOpenCodeFixProvider(document, MonoDevelop.FSharp.AssemblyContentProvider (), findIdent, monitor )
+        )
+
+    let cancellationToken = new CancellationToken()
+
+    override x.Run () =
+        base.Run ()
+
+    override x.Run (data) =
+        let del =  data :?> Action
+        if del <> null
+        then del.Invoke ()
+
+    override x.Update (ci:CommandInfo) =
+        this.Update (ci.ArrayInfo)
+
+
+    override x.Update (ainfo:CommandArrayInfo) =
+        //let ainfo = ci.ArrayInfo
+
+        let document = IdeApp.Workbench.ActiveDocument 
+        let editor = document.Editor
+
+
+        //document.Project
+
+
+        //let mutable fixes = []
+        //let context = 
+            //new CodeFixContext(document, ImmutableArray<Diagnostic>.Empty,
+            //// TODO: Can we share code between similar lambdas that we pass to this API in BatchFixAllProvider.cs, CodeFixService.cs and CodeRefactoringService.cs?
+                //Action<CodeActions.CodeAction, ImmutableArray<Diagnostic>>(fun action applicableDiagnostics ->
+                    //// Serialize access for thread safety - we don't know what thread the fix provider will call this delegate from.
+                    //lock (fixes) (fun () -> 
+                    //    fixes <- (new CodeFix(document.Project, action, applicableDiagnostics)) :: fixes
+                    //)), cancellationToken)
+            //,
+            //verifyArguments = false,
+            //cancellationToken = cancellationToken);
+
+        provider ()
+        |> Option.bind (fun (ast, range, x) -> 
+            let t = x.CodeFixesAsync ast range cancellationToken
+            Async.RunSynchronously (t, cancellationToken = cancellationToken)
+
+            )
+        |> Option.toList
+        |> List.concat
+        |> function 
+        | [] -> 
+            ainfo.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+        | xs -> 
+            xs |> List.iter (fun (x, action) ->
+                //let x = x.Title
+                printfn "Suggestion: %s" x
+                ainfo.Add (new CommandInfo (GettextCatalog.GetString (x), true, false), Action(action));
+            )
+
+        //context.Document.
+
+
+
+
+    //member x.UpdateQuickFixMenu(ci:CommandInfo) =
+    //    x.Update(ci)
+
+    //override x.Update (ci:CommandInfo) =
+
+        //let info = ci.ArrayInfo
+        //ainfo.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+
+
+
+
+        //let mutable ext = editor |> Option.bind (fun x -> x.GetContent<CodeActionEditorExtension> () |> Option.ofObj)
+        //if Option.isNone ext then () else
+            //()
+        //let mutable metadata = new Counters.FixesMenuMetadata ();
+        //use timer = Counters.FixesMenu.BeginTiming ("Quick Fix menu", metadata)
+        //info.Add(ObjectCreationExpressionSyntax, null)
+        //let mutable currentFixes = AwaitExpressionSyntax
+        //let mutable menu =
+        //    this.CodeFixMenuService.CreateFixMenu
+        //        (editor, currentFixes, cancelToken)
+        //info.Clear()
+        //for item in menu.Items do
+        //    this.AddItem(info, item)
+        //if menu.Items.Count = 0 then
+        //    info.Add(ObjectCreationExpressionSyntax, null)
+        //metadata.SetSuccess()
+        //info.NotifyChanged()
+
+    member this.CreateCommandInfoSet(menu: CodeFixMenu) =
+
+        let mutable cis = new CommandInfoSet ();
+        cis.Text <- menu.Label
+        for item in menu.Items do
+            this.AddItem(cis.CommandInfos, item)
+        cis
+
+    //override this.Run(data) = 
+    //    match data with 
+    //    | :? Action as x -> x.Invoke()
+    //    | _ -> ()
+
+    //member this.Run(editor:TextEditor, ctx:DocumentContext) = 
+        //()
+
+
+    member this.AddItem(cis: CommandArrayInfo, item: CodeFixMenuEntry) =
+        if item = CodeFixMenuEntry.Separator then
+            if cis.Count = 0 then ()
+            else cis.AddSeparator()
+        match item with 
+        | :? CodeFixMenu as menu -> 
+            let mutable submenu = new CommandInfoSet (Text = menu.Label)
+            for subItem in menu.Items do
+                this.AddItem(submenu.CommandInfos, subItem)
+            cis.Add(submenu, item.Action)
+            
+        | _ -> 
+            let mutable info = new CommandInfo (item.Label);
+            info.Enabled <- item.Action <> null
+            cis.Add(info, item.Action)
+
 type FSharpCommandsTextEditorExtension () =
     inherit Editor.Extension.TextEditorExtension ()
     static member SupportedFileExtensions =
@@ -718,3 +1024,12 @@ type FSharpCommandsTextEditorExtension () =
     [<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.FindReferences")>]
     member x.FindReferences () =
         FindReferencesHandler().Run(x.Editor, x.DocumentContext)
+
+    //[<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu")>]
+    //member x.QuickFixComand () =
+    //    SuperFixMenuHandler().Run(x.Editor, x.DocumentContext)
+
+    //[<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu")>]
+    //member x.QuickFixCommand_Update(ci:CommandInfo) =
+        //SuperFixMenuHandler().UpdateQuickFixMenu(ci)
+       

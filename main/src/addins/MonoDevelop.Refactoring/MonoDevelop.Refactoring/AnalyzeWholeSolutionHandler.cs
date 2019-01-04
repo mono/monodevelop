@@ -187,6 +187,10 @@ namespace MonoDevelop.Refactoring
 				this.project = project;
 			}
 
+			public override Microsoft.CodeAnalysis.DocumentId AnalysisDocumentId {
+				get { return null; }
+			}
+
 			public override Document AnalysisDocument {
 				get {
 					throw new NotImplementedException ();

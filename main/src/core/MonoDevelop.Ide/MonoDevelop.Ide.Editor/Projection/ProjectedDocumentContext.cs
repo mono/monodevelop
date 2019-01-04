@@ -47,6 +47,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 		}
 
+		public override Microsoft.CodeAnalysis.DocumentId AnalysisDocumentId {
+			get { return null; }
+		}
+
 		public DocumentContext OriginalContext {
 			get {
 				return originalContext;
