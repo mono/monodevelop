@@ -67,3 +67,5 @@ module DocumentContextExt =
         member x.TryGetFSharpParsedDocument() =
             x.TryGetParsedDocument()
             |> Option.bind (function :? FSharpParsedDocument as fpd -> Some fpd | _ -> None)
+
+        
