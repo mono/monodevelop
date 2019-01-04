@@ -77,8 +77,8 @@ namespace MonoDevelop.CSharp.Formatting
 			if (line == null)
 				return editor.GetLineIndent (lineNumber);
 			try {
-				var syntaxRoot = doc.GetSyntaxRootSynchronously (default);
 				if (line.Contains (editor.CaretOffset)) {
+					var syntaxRoot = doc.GetSyntaxRootSynchronously (default);
 					var token = syntaxRoot.FindTokenOnLeftOfPosition (editor.CaretOffset);
 					if (token.IsKind (Microsoft.CodeAnalysis.CSharp.SyntaxKind.CommaToken))
 						return line.GetIndentation (editor) + CalculateIndentationString (editor.Options.IndentationSize);
