@@ -49,6 +49,10 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+		public abstract Microsoft.CodeAnalysis.DocumentId AnalysisDocumentId {
+			get;
+		}
+
 		/// <summary>
 		/// Project != null
 		/// </summary>
