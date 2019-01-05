@@ -291,6 +291,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			await CreateFromTemplateAndBuild ("NetCore2x", templateId, parameters);
 		}
 
+		[Ignore ("Requires .NET Core App 3.0 runtime")]
 		[TestCase ("Microsoft.Web.Empty.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Empty.FSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.Mvc.CSharp", "UseNetCore30=true")]
