@@ -350,7 +350,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		static void CheckProjectTypeGuids (Solution solution, string expectedProjectTypeGuid)
 		{
 			foreach (Project project in solution.GetAllProjects ()) {
-				Assert.AreEqual (expectedProjectTypeGuid, project.TypeGuid);
+				Assert.AreEqual (expectedProjectTypeGuid, project.TypeGuid, $"For project: {project.Name} Expected Type is {expectedProjectTypeGuid} and is returning {project.TypeGuid}");
 			}
 		}
 
