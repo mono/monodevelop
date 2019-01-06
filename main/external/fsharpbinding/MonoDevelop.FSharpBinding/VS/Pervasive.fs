@@ -1,5 +1,5 @@
 ﻿[<AutoOpen>]
-module Microsoft.VisualStudio.FSharp.Editor.Pervasive
+module MonoDevelop.FSharp.Pervasive
 
 open System
 open System.Diagnostics

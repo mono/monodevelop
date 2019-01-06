@@ -317,9 +317,9 @@
 				
         <Command _description="Quick Fix Menu"
                  id="MonoDevelop.FSharp.QuickFixMenu" 
-                 _label="Super Fix"
+                 _label="Quick Fix"
 				 type = "array"
-		         defaultHandler = "MonoDevelop.FSharp.RapidFixMenuHandler" />
+		         defaultHandler = "MonoDevelop.FSharp.QuickFixMenuHandler" />
       </Category>
     </ComplexCondition>
   </Extension>
@@ -338,7 +338,7 @@
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
-	</Condition>
+    </Condition>
   </Extension>
   
   <ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Fsi" name = "Editor context menu for fsi">

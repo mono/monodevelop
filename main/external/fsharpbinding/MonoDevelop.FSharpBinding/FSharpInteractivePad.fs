@@ -68,7 +68,6 @@ type FsiDocumentContext() =
     let pd = new FSharpParsedDocument(name, None, None) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
-
     let mutable completionWidget:ICompletionWidget = null
     let mutable editor:TextEditor = null
 
@@ -77,7 +76,6 @@ type FsiDocumentContext() =
     do 
         project.FileName <- FilePath name
 
-    override x.AnalysisDocumentId = null
     override x.ParsedDocument = pd
     override x.AttachToProject(_) = ()
     override x.ReparseDocument() = ()

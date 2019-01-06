@@ -261,7 +261,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpBinding", "FSharpBind
 		external\fsharpbinding\build.fsx = external\fsharpbinding\build.fsx
 	EndProjectSection
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpBinding", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharpBinding.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp", "external\fsharpbinding\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared", "external\fsharpbinding\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
 EndProject
@@ -351,8 +351,6 @@ Global
 		ReleaseGnome|Any CPU = ReleaseGnome|Any CPU
 		ReleaseMac|Any CPU = ReleaseMac|Any CPU
 		ReleaseWin32|Any CPU = ReleaseWin32|Any CPU
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

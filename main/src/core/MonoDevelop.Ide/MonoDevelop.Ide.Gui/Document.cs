@@ -73,11 +73,6 @@ namespace MonoDevelop.Ide.Gui
 		ParsedDocument parsedDocument;
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
-		public override Microsoft.CodeAnalysis.DocumentId AnalysisDocumentId 
-		{
-			get { return analysisDocument; }
-		}
-
 		const int ParseDelay = 600;
 
 		public IWorkbenchWindow Window {

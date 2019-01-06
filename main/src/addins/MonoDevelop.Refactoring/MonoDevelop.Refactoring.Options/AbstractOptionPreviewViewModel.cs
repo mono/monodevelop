@@ -197,10 +197,6 @@ namespace MonoDevelop.Refactoring.Options
 			{
 			}
 
-			public override Microsoft.CodeAnalysis.DocumentId AnalysisDocumentId {
-				get { return null; }
-			}
-
 			public override OptionSet GetOptionSet ()
 			{
 				return null;
