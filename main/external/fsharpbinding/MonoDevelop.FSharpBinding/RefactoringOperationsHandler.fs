@@ -158,7 +158,6 @@ module Refactoring =
 
             links.Add (link)
             editor.StartTextLinkMode (TextLinkModeOptions (links))
-            //editor.StartInsertionMode( INSer)
         else
             MessageService.ShowCustomDialog (Dialog.op_Implicit (new Rename.RenameItemDialog("Rename Item", symbolUse.Symbol.DisplayName, performChanges symbolUse locations)))
             |> ignore
@@ -692,103 +691,20 @@ type FSharpFindReferencesProvider () =
         //TODO:
         Task.CompletedTask
 
-//namespace MonoDevelop.Refactoring
-
 open MonoDevelop.FSharp
-open System
-open System.IO
-open System.Collections.Generic
-open System.Threading.Tasks
-open MonoDevelop
-open MonoDevelop.Core
-open MonoDevelop.Components
-open MonoDevelop.Components.Commands
-open MonoDevelop.Ide
-open MonoDevelop.Ide.Editor
-open MonoDevelop.Projects
-open MonoDevelop.Refactoring
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.SourceCodeServices
-open MonoDevelop.Ide.FindInFiles
-open ExtCore.Control
-
-open MonoDevelop.Core
 open System.Threading
-open System.Threading.Tasks
-open MonoDevelop.Ide
-open MonoDevelop.CodeActions
-open System
-open MonoDevelop.Components.Commands
-
-open MonoDevelop.Ide.CodeCompletion
-open System.Collections.Immutable
 open Microsoft.CodeAnalysis
-open MonoDevelop.Projects
-open MonoDevelop.Ide
-open Microsoft.CodeAnalysis.Options
-open MonoDevelop.Ide.Editor
-open MonoDevelop.Core.Instrumentation
-open System.Diagnostics
-open MonoDevelop.Ide.TypeSystem
-open MonoDevelop.CodeIssues
-open MonoDevelop.CodeActions
-open System.Threading
-open System.Threading.Tasks
-open MonoDevelop.AnalysisCore
-open System.Linq
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Core
 open Mono.Addins
-open System
-open System.Collections.Generic
 open Microsoft.CodeAnalysis.CodeFixes
-open Microsoft.CodeAnalysis
-open Microsoft.VisualStudio.FSharp.Editor
-open Microsoft.CodeAnalysis.CodeRefactorings
-open Microsoft.CodeAnalysis;
-open Microsoft.CodeAnalysis.CodeFixes;
-open Microsoft.CodeAnalysis.CodeRefactorings;
-open Microsoft.CodeAnalysis.Formatting;
-open Microsoft.CodeAnalysis.Text;
-open System;
-open System.Collections.Generic;
-open System.Collections.Immutable;
-open Microsoft.FSharp.Compiler
+open MonoDevelop.FSharp.Editor
 open Microsoft.FSharp.Compiler.Range
-open Microsoft.FSharp.Compiler.Ast
 open MonoDevelop.FSharp.Shared
 
-
-type RapidFixMenuHandler() as this =
+type QuickFixMenuHandler() =
     inherit CommandHandler()
-
-    //let codeFixService = Ide.Composition.CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.CodeFixes.ICodeFixService> () :?> ICodeFixService
-    //let codeRefactoringService =
-        //Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> :?> ICodeRefactoringService
-    //let codeRefactoringService = Ide.Composition.CompositionManager.GetExportedValue<ICodeRefactoringService> ();
-
-    let findIdent () = 
-        let doc = IdeApp.Workbench.ActiveDocument
-        match doc.TryGetAst() with
-        | Some ast ->
-            match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
-            //Is this a double check, i.e. isnt update checking can rename?
-            | _, Some sym ->
-                //let lastIdent = Symbols.lastIdent col lineTxt
-                Some sym
-            | _ -> None
-        | _ -> None
-
-    let inside (symbolRange, selection:Text.ISegment) =
-        let symbolStart, _symbolEnd = symbolRange
-        symbolStart >= selection.Offset
-
     
-
     let getSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
         asyncMaybe {
-            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
-            let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
             let! results = languageService.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
 
             let! range = 
@@ -800,29 +716,12 @@ type RapidFixMenuHandler() as this =
                 |> Seq.map (fun x -> 
                     let startPos = mkPos line x.StartColumn
                     let endPos = mkPos line x.EndColumn
-                    mkRange "" startPos endPos
+                    mkRange fileName startPos endPos
                 )
                 |> Seq.distinct
                 |> Seq.tryHead
             return range
-
-            //let! foo = results.GetSymbolAtLocation (line, col, lineStr) |> Async.RunSynchronously
-            //let foobar = results.GetDeclarationLocation (line, col, lineStr) |> Async.RunSynchronously
-
-            //let range: Range.range option = None
-            //let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
-            //let lastIdent = Seq.last identIsland
-            //return (lastIdent, symbolUse) 
         }
-
-    //let getSymbolAtLocationInFile (projectFilename, fileName, version, source, line:int, col, lineStr) =
-        //asyncMaybe {
-            //LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
-            //let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
-            //let! results = languageService.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
-            //let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
-            //let lastIdent = Seq.last identIsland
-            //return (lastIdent, symbolUse) }
 
     let getSymbolUseForEditorCaret (editor: TextEditor) = 
         match IdeApp.Workbench.ActiveDocument with
@@ -857,21 +756,15 @@ type RapidFixMenuHandler() as this =
             let! range = getSymbolUseForEditorCaret editor
 
             let monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Add Open", IconId());
-            let assemblyProvider = MonoDevelop.FSharp.AssemblyContentProvider ()
+            let assemblyProvider = AssemblyContentProvider ()
             let! codeFixes = FSharpAddOpenCodeFixProvider.getCodeFixesAsync document.Editor assemblyProvider monitor ast range
             return codeFixes
         }
-
-    override x.Run () =
-        base.Run ()
 
     override x.Run (data) =
         let del =  data :?> Action
         if del <> null
         then del.Invoke ()
-
-    override x.Update (ci:CommandInfo) =
-        this.Update (ci.ArrayInfo)
 
     override x.UpdateAsync (info:CommandArrayInfo, cancelToken: CancellationToken) =
         info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
@@ -898,22 +791,6 @@ type RapidFixMenuHandler() as this =
         } 
         |> Async.Ignore
         |> CommonRoslynHelpers.StartAsyncUnitAsTask cancelToken
-
-    member this.AddItem(cis: CommandArrayInfo, item: CodeFixMenuEntry) =
-        if item = CodeFixMenuEntry.Separator then
-            if cis.Count = 0 then ()
-            else cis.AddSeparator()
-        match item with 
-        | :? CodeFixMenu as menu -> 
-            let mutable submenu = new CommandInfoSet (Text = menu.Label)
-            for subItem in menu.Items do
-                this.AddItem(submenu.CommandInfos, subItem)
-            cis.Add(submenu, item.Action)
-            
-        | _ -> 
-            let mutable info = new CommandInfo (item.Label);
-            info.Enabled <- item.Action <> null
-            cis.Add(info, item.Action)
 
 type FSharpCommandsTextEditorExtension () =
     inherit Editor.Extension.TextEditorExtension ()

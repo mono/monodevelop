@@ -172,8 +172,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var proj in mdProjects) {
 					if (token.IsCancellationRequested)
 						return null;
-					//if (proj is MonoDevelop.Projects.DotNetProject netProj && !netProj.SupportsRoslyn)
-						//continue;
+					if (proj is MonoDevelop.Projects.DotNetProject netProj && !netProj.SupportsRoslyn)
+						continue;
 					var tp = LoadProject (proj, token, null).ContinueWith (t => {
 						if (!t.IsCanceled)
 							projects.Add (t.Result);

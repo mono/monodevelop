@@ -1,27 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-
-namespace rec Microsoft.VisualStudio.FSharp.Editor
+namespace MonoDevelop.FSharp
 
 open System
-open System.Composition
-open System.Collections.Immutable
-open System.Threading
-open System.Threading.Tasks
-
-open Microsoft.CodeAnalysis
-open Microsoft.CodeAnalysis.Host.Mef
-open Microsoft.CodeAnalysis.Text
-open Microsoft.CodeAnalysis.CodeFixes
-open Microsoft.CodeAnalysis.CodeActions
-
 open Microsoft.FSharp.Compiler
-//open Microsoft.FSharp.Compiler.Parser
 open Microsoft.FSharp.Compiler.Range
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp
 open MonoDevelop
 open MonoDevelop.Ide.Editor
-open Microsoft.CodeAnalysis
 open MonoDevelop.Refactoring
 
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
@@ -151,4 +137,5 @@ module internal FSharpAddOpenCodeFixProvider =
             let candidates = entities |> Seq.map createEntity |> Seq.concat |> Seq.toList
             return getSuggestions editor monitor candidates |> Seq.toList
         }
+
 

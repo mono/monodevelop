@@ -77,15 +77,15 @@ module internal Extensions =
                 elif subArray.[subidx] = wholeArray.[idx] then loop (subidx+1) (idx+1) 
                 else false
             loop 0 index
-        
+
         /// Returns true if one array has another as its subset from index 0.
         let startsWith (prefix: _ []) (whole: _ []) =
             isSubArray prefix whole 0
-        
+
         /// Returns true if one array has trailing elements equal to another's.
         let endsWith (suffix: _ []) (whole: _ []) =
             isSubArray suffix whole (whole.Length-suffix.Length)
-        
+
     type FSharpEntity with
         member x.TryGetFullName() =
             try x.TryFullName 
@@ -230,7 +230,6 @@ type internal Parent =
                 idents.[i] <- p.[i]
         | _ -> ()
         idents
-    
     member x.FixParentModuleSuffix (idents: Idents) =
         Parent.RewriteParentIdents x.WithModuleSuffix idents
 
@@ -335,8 +334,7 @@ module internal AssemblyContentProvider =
                      let (++) x y = ()
                  open M
                  let _ = 1 ++ 2
-                
-                 we should return additional RawEntity { FullName = MModule.op_PlusPlus; CleanedIdents = [|"M"; "op_PlusPlus"|] ... }
+  we should return additional RawEntity { FullName = MModule.op_PlusPlus; CleanedIdents = [|"M"; "op_PlusPlus"|] ... }
               *)
               yield! func.TryGetFullCompiledOperatorNameIdents() 
                      |> Option.map (fun fullCompiledIdents ->
@@ -490,9 +488,9 @@ module internal Entity =
                           getRelativeNamespace targetScope ns
                       | None, _ -> getRelativeNamespace targetScope ns
                       | _ -> ns
-              
+
                   let relativeNs = getRelativeNs openableNs
-              
+
                   match relativeNs, restIdents with
                   | [||], [||] -> None
                   | [||], [|_|] -> None
@@ -555,11 +553,11 @@ module internal ParsedInput =
     /// Returns all `Ident`s and `LongIdent`s found in an untyped AST.
     let internal getLongIdents (input: ParsedInput option) : IDictionary<Range.pos, LongIdent> =
         let identsByEndPos = Dictionary<Range.pos, LongIdent>()
-    
+
         let addLongIdent (longIdent: LongIdent) =
             for ident in longIdent do
                 identsByEndPos.[ident.idRange.End] <- longIdent
-    
+
         let addLongIdentWithDots (LongIdentWithDots (longIdent, lids) as value) =
             match longIdent with
             | [] -> ()
@@ -571,7 +569,7 @@ module internal ParsedInput =
     
         let addIdent (ident: Ident) =
             identsByEndPos.[ident.idRange.End] <- [ident]
-    
+
         let rec walkImplFileInput (ParsedImplFileInput(_, _, _, _, _, moduleOrNamespaceList, _)) =
             List.iter walkSynModuleOrNamespace moduleOrNamespaceList
     
@@ -804,7 +802,7 @@ module internal ParsedInput =
                 walkComponentInfo isTypeExtensionOrAlias info
                 walkTypeDefnSigRepr repr
                 List.iter walkMemberSig memberSigs
-    
+
         and walkMember = function
             | SynMemberDefn.AbstractSlot (valSig, _, _) -> walkValSig valSig
             | SynMemberDefn.Member (binding, _) -> walkBinding binding
@@ -830,35 +828,35 @@ module internal ParsedInput =
         and walkUnionCaseType = function
             | SynUnionCaseType.UnionCaseFields fields -> List.iter walkField fields
             | SynUnionCaseType.UnionCaseFullType (t, _) -> walkType t
-    
+
         and walkUnionCase (SynUnionCase.UnionCase (attrs, _, t, _, _, _)) =
             List.iter walkAttribute attrs
             walkUnionCaseType t
-    
+
         and walkTypeDefnSimple = function
             | SynTypeDefnSimpleRepr.Enum (cases, _) -> List.iter walkEnumCase cases
             | SynTypeDefnSimpleRepr.Union (_, cases, _) -> List.iter walkUnionCase cases
             | SynTypeDefnSimpleRepr.Record (_, fields, _) -> List.iter walkField fields
             | SynTypeDefnSimpleRepr.TypeAbbrev (_, t, _) -> walkType t
             | _ -> ()
-    
+
         and walkComponentInfo isTypeExtensionOrAlias (ComponentInfo(attrs, typars, constraints, longIdent, _, _, _, _)) =
             List.iter walkAttribute attrs
             List.iter walkTyparDecl typars
             List.iter walkTypeConstraint constraints
             if isTypeExtensionOrAlias then
                 addLongIdent longIdent
-    
+
         and walkTypeDefnRepr = function
             | SynTypeDefnRepr.ObjectModel (_, defns, _) -> List.iter walkMember defns
             | SynTypeDefnRepr.Simple(defn, _) -> walkTypeDefnSimple defn
             | SynTypeDefnRepr.Exception _ -> ()
-    
+
         and walkTypeDefnSigRepr = function
             | SynTypeDefnSigRepr.ObjectModel (_, defns, _) -> List.iter walkMemberSig defns
             | SynTypeDefnSigRepr.Simple(defn, _) -> walkTypeDefnSimple defn
             | SynTypeDefnSigRepr.Exception _ -> ()
-    
+
         and walkTypeDefn (TypeDefn (info, repr, members, _)) =
             let isTypeExtensionOrAlias =
                 match repr with

@@ -151,7 +151,7 @@ namespace MonoDevelop.CodeActions
 
 					var lineSpan = new TextSpan (line.Offset, line.Length);
 					var fixes = await codeFixService.GetFixesAsync (ad, lineSpan, true, cancellationToken);
-					fixes = await Runtime.RunInMainThread (() => FilterOnUIThread (fixes, DocumentContext.RoslynWorkspace));
+					fixes = await Runtime.RunInMainThread(() => FilterOnUIThread (fixes, DocumentContext.RoslynWorkspace));
 
 					var refactorings = await codeRefactoringService.GetRefactoringsAsync (ad, span, cancellationToken);
 					var codeActionContainer = new CodeActionContainer (fixes, refactorings);
@@ -185,7 +185,7 @@ namespace MonoDevelop.CodeActions
 		{
 			Runtime.AssertMainThread ();
 			var caretOffset = Editor.CaretOffset;
-			return collections.Select (c => FilterOnUIThread (c, workspace)).Where (x => x != null).OrderBy (x => GetDistance (x, caretOffset)).ToImmutableArray ();
+			return collections.Select (c => FilterOnUIThread (c, workspace)).Where(x => x != null).OrderBy(x => GetDistance (x, caretOffset)).ToImmutableArray ();
 		}
 
 		static int GetDistance (CodeFixCollection fixCollection, int caretOffset)
