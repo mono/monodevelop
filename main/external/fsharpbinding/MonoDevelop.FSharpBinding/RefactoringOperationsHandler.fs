@@ -759,6 +759,7 @@ open System.Collections.Immutable;
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Range
 open Microsoft.FSharp.Compiler.Ast
+open MonoDevelop.FSharp.Shared
 
 
 type RapidFixMenuHandler() as this =
@@ -785,100 +786,84 @@ type RapidFixMenuHandler() as this =
         let symbolStart, _symbolEnd = symbolRange
         symbolStart >= selection.Offset
 
-    let getExpandRange (editor:TextEditor, tree:ParsedInput) =
-        let posStart = Range.mkPos 7 12
-        let posEnd = Range.mkPos 7 23
-        Range.mkRange "File" posStart posEnd |> Some
+    
 
-        //if not editor.IsSomethingSelected then None
-        //else
-            //let rangeAsOffsets(range:Range.range) =
-            //    let startPos = editor.LocationToOffset(range.StartLine, range.StartColumn + 1)
-            //    let endPos = editor.LocationToOffset(range.EndLine, range.EndColumn + 1)
-            //    (startPos, endPos)
+    let getSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
+        asyncMaybe {
+            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
+            let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
+            let! results = languageService.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
 
-            
-            //let rec walker = 
-            //    { new AstTraversal.AstVisitorBase<_>() with
-                    
-            //        override this.VisitModuleDecl(defaultTraverse, decl) =
-            //            match decl with
-            //            | SynModuleDecl.Open(_, range) -> Some([], range)
-            //            | _ -> defaultTraverse(decl)
+            let! range = 
+                results.GetErrors() 
+                |> Seq.filter (fun x -> x.Severity = FSharpErrorSeverity.Error)
+                |> Seq.filter (fun x -> x.StartLineAlternate = x.EndLineAlternate)
+                |> Seq.filter (fun x -> x.StartLineAlternate = line)
+                |> Seq.filter (fun x -> x.StartColumn < col && col < x.EndColumn)
+                |> Seq.map (fun x -> 
+                    let startPos = mkPos line x.StartColumn
+                    let endPos = mkPos line x.EndColumn
+                    mkRange "" startPos endPos
+                )
+                |> Seq.distinct
+                |> Seq.tryHead
+            return range
 
-            //        member this.VisitExpr(path, traverseSynExpr, defaultTraverse, expr) =
-            //            match expr with
-            //            | SynExpr.LongIdent(_,_,_,range) -> Some (path, range)
-            //            | SynExpr.Ident ident -> Some (path, ident.idRange)
-            //            | SynExpr.Const(synconst, constRange) ->
-            //                match synconst with
-            //                | SynConst.String(_str, range) -> Some (path, range)
-            //                | _ -> Some (path, constRange)
-            //            | _ ->
-            //                if inside(rangeAsOffsets expr.Range, editor.SelectionRange) then
-            //                    Some (path, expr.Range)
-            //                else
-            //                    defaultTraverse(expr) }
+            //let! foo = results.GetSymbolAtLocation (line, col, lineStr) |> Async.RunSynchronously
+            //let foobar = results.GetDeclarationLocation (line, col, lineStr) |> Async.RunSynchronously
 
-            ////let traversePath = 
-            //AstTraversal.Traverse(mkPos editor.CaretLine (editor.CaretColumn), tree, walker)
-            //|> Option.map (snd)
-
-            //let rangesFromTraverse = function
-            //    | TraverseStep.Binding binding -> [binding.RangeOfHeadPat; binding.RangeOfBindingAndRhs; binding.RangeOfBindingSansRhs]
-            //    | TraverseStep.MatchClause synMatchClause -> [synMatchClause.Range]
-            //    | TraverseStep.Expr synExpr -> [synExpr.Range]
-            //    | TraverseStep.MemberDefn synMemberDefn -> [synMemberDefn.Range]
-            //    | TraverseStep.Module synModuleDecl -> [synModuleDecl.Range]
-            //    | TraverseStep.ModuleOrNamespace synModuleOrNamespace -> [synModuleOrNamespace.Range]
-            //    | TraverseStep.TypeDefn synTypeDefn -> [synTypeDefn.Range]
-
-            //let selectionLineStart =
-            //    let line = editor.GetLine editor.SelectionRegion.BeginLine
-            //    if editor.SelectionRegion.BeginLine <> editor.SelectionRegion.EndLine then
-            //        line.Offset + line.GetIndentation(editor).Length, editor.SelectionRange.EndOffset
-            //    else
-            //        line.Offset + line.GetIndentation(editor).Length, line.EndOffset
-
-            //let wholeDocument =
-            //    0, editor.Length
-
-            //traversePath 
-            //|> Option.bind 
-                //(fun (traverseSteps, range) ->
-                    //let ranges = 
-                    //    traverseSteps 
-                    //    |> List.collect rangesFromTraverse
-
-                    //let offsetRanges =
-                    //    range::ranges |> List.map rangeAsOffsets
-
-                    //let allranges =
-                    //    [yield wholeDocument; yield selectionLineStart; yield! offsetRanges]
-
-                    //allranges
-                    //|> List.filter (fun range -> biggerOverlap(range, editor.SelectionRange))
-                    //|> List.sortBy (fun (startPos, endPos) -> endPos - startPos)
-                    //|> List.tryHead)
-    let selection (editor:TextEditor) = 
-        maybe {
-            let! ast = editor.DocumentContext.TryGetAst()
-            let! tree = ast.ParseTree
-            let! selection = getExpandRange(editor, tree)
-            return (ast, selection)
+            //let range: Range.range option = None
+            //let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
+            //let lastIdent = Seq.last identIsland
+            //return (lastIdent, symbolUse) 
         }
 
-    let provider () = 
-        IdeApp.Workbench.ActiveDocument 
-        |> Option.ofObj
-        |> Option.bind (fun document -> 
-            selection document.Editor |> Option.map (fun (ast, range) -> document, ast, range)) 
-        |> Option.map (fun (document, ast, range) -> 
-            let monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Add Open", IconId());
-            ast, range, FSharpAddOpenCodeFixProvider(document, MonoDevelop.FSharp.AssemblyContentProvider (), findIdent, monitor )
-        )
+    //let getSymbolAtLocationInFile (projectFilename, fileName, version, source, line:int, col, lineStr) =
+        //asyncMaybe {
+            //LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
+            //let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
+            //let! results = languageService.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
+            //let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
+            //let lastIdent = Seq.last identIsland
+            //return (lastIdent, symbolUse) }
 
-    let cancellationToken = new CancellationToken()
+    let getSymbolUseForEditorCaret (editor: TextEditor) = 
+        match IdeApp.Workbench.ActiveDocument with
+        | null -> async { return None }
+        | doc when doc.FileName = FilePath.Null || doc.FileName <> editor.FileName || doc.ParsedDocument = null -> async { return None }
+        | _doc ->
+            let documentContext = _doc
+            async {
+                LoggingService.logDebug "HighlightUsagesExtension: ResolveAsync starting on %s" (documentContext.Name |> IO.Path.GetFileName )
+                try
+                    let line, col, lineStr = editor.GetLineInfoByCaretOffset ()
+
+                    //let idents = Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent
+                    let currentFile = documentContext.Name
+                    let source = editor.Text
+                    let projectFile = documentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
+
+                    //let tast = lang
+                    let! symbolReferences = getSymbolAtLocationInFile (projectFile, currentFile, 0, source, line, col, lineStr)
+                    return symbolReferences
+                with
+                | :? TaskCanceledException -> return None
+                | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
+                         return None 
+            }
+
+    let getCodeFixes () = 
+        asyncMaybe {
+            let! document = IdeApp.Workbench.ActiveDocument |> Option.ofObj
+            let editor = document.Editor
+            let! ast = editor.DocumentContext.TryGetAst()
+            let! range = getSymbolUseForEditorCaret editor
+
+            let monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Add Open", IconId());
+            let assemblyProvider = MonoDevelop.FSharp.AssemblyContentProvider ()
+            let! codeFixes = FSharpAddOpenCodeFixProvider.getCodeFixesAsync document.Editor assemblyProvider monitor ast range
+            return codeFixes
+        }
 
     override x.Run () =
         base.Run ()
@@ -891,98 +876,31 @@ type RapidFixMenuHandler() as this =
     override x.Update (ci:CommandInfo) =
         this.Update (ci.ArrayInfo)
 
+    override x.UpdateAsync (info:CommandArrayInfo, cancelToken: CancellationToken) =
+        info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);
+        let mainThread = System.Threading.SynchronizationContext.Current
 
-    override x.Update (ainfo:CommandArrayInfo) =
-        //let ainfo = ci.ArrayInfo
+        async {
+            let! codeFixQuery = getCodeFixes ()
+            
+            do! Async.SwitchToContext mainThread
+            info.Clear()
 
-        let document = IdeApp.Workbench.ActiveDocument 
-        let editor = document.Editor
-
-
-        //document.Project
-
-
-        //let mutable fixes = []
-        //let context = 
-            //new CodeFixContext(document, ImmutableArray<Diagnostic>.Empty,
-            //// TODO: Can we share code between similar lambdas that we pass to this API in BatchFixAllProvider.cs, CodeFixService.cs and CodeRefactoringService.cs?
-                //Action<CodeActions.CodeAction, ImmutableArray<Diagnostic>>(fun action applicableDiagnostics ->
-                    //// Serialize access for thread safety - we don't know what thread the fix provider will call this delegate from.
-                    //lock (fixes) (fun () -> 
-                    //    fixes <- (new CodeFix(document.Project, action, applicableDiagnostics)) :: fixes
-                    //)), cancellationToken)
-            //,
-            //verifyArguments = false,
-            //cancellationToken = cancellationToken);
-
-        provider ()
-        |> Option.bind (fun (ast, range, x) -> 
-            let t = x.CodeFixesAsync ast range cancellationToken
-            Async.RunSynchronously (t, cancellationToken = cancellationToken)
-
-            )
-        |> Option.toList
-        |> List.concat
-        |> function 
-        | [] -> 
-            ainfo.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
-        | xs -> 
-            xs |> List.iter (fun (x, action) ->
-                //let x = x.Title
-                printfn "Suggestion: %s" x
-                ainfo.Add (new CommandInfo (GettextCatalog.GetString (x), true, false), Action(action));
-            )
-
-        //context.Document.
-
-
-
-
-    //member x.UpdateQuickFixMenu(ci:CommandInfo) =
-    //    x.Update(ci)
-
-    //override x.Update (ci:CommandInfo) =
-
-        //let info = ci.ArrayInfo
-        //ainfo.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
-
-
-
-
-        //let mutable ext = editor |> Option.bind (fun x -> x.GetContent<CodeActionEditorExtension> () |> Option.ofObj)
-        //if Option.isNone ext then () else
-            //()
-        //let mutable metadata = new Counters.FixesMenuMetadata ();
-        //use timer = Counters.FixesMenu.BeginTiming ("Quick Fix menu", metadata)
-        //info.Add(ObjectCreationExpressionSyntax, null)
-        //let mutable currentFixes = AwaitExpressionSyntax
-        //let mutable menu =
-        //    this.CodeFixMenuService.CreateFixMenu
-        //        (editor, currentFixes, cancelToken)
-        //info.Clear()
-        //for item in menu.Items do
-        //    this.AddItem(info, item)
-        //if menu.Items.Count = 0 then
-        //    info.Add(ObjectCreationExpressionSyntax, null)
-        //metadata.SetSuccess()
-        //info.NotifyChanged()
-
-    member this.CreateCommandInfoSet(menu: CodeFixMenu) =
-
-        let mutable cis = new CommandInfoSet ();
-        cis.Text <- menu.Label
-        for item in menu.Items do
-            this.AddItem(cis.CommandInfos, item)
-        cis
-
-    //override this.Run(data) = 
-    //    match data with 
-    //    | :? Action as x -> x.Invoke()
-    //    | _ -> ()
-
-    //member this.Run(editor:TextEditor, ctx:DocumentContext) = 
-        //()
-
+            match codeFixQuery with 
+            | None ->  
+                info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+            | Some codeFixes ->  
+                match codeFixes with 
+                | [] -> 
+                    info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
+                | xs -> 
+                    xs |> List.iter (fun (x, action) -> 
+                        info.Add (new CommandInfo (GettextCatalog.GetString (x), true, false), Action(action));
+                    )
+            info.NotifyChanged ();
+        } 
+        |> Async.Ignore
+        |> CommonRoslynHelpers.StartAsyncUnitAsTask cancelToken
 
     member this.AddItem(cis: CommandArrayInfo, item: CodeFixMenuEntry) =
         if item = CodeFixMenuEntry.Separator then
@@ -1027,12 +945,4 @@ type FSharpCommandsTextEditorExtension () =
     [<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.FindReferences")>]
     member x.FindReferences () =
         FindReferencesHandler().Run(x.Editor, x.DocumentContext)
-
-    //[<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu")>]
-    //member x.QuickFixComand () =
-    //    SuperFixMenuHandler().Run(x.Editor, x.DocumentContext)
-
-    //[<CommandHandler ("MonoDevelop.Refactoring.RefactoryCommands.QuickFixMenu")>]
-    //member x.QuickFixCommand_Update(ci:CommandInfo) =
-        //SuperFixMenuHandler().UpdateQuickFixMenu(ci)
        

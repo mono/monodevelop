@@ -469,7 +469,7 @@ module internal Entity =
             |> Array.heads
             // long ident must contain an unresolved part, otherwise we show false positive suggestions like
             // "open System" for `let _ = System.DateTime.Naaaw`. Here only "Naaw" is unresolved.
-            //|> Array.filter (fun x -> x |> Array.exists (fun x -> not x.Resolved))
+            |> Array.filter (fun x -> x |> Array.exists (fun x -> not x.Resolved))
             |> Array.choose (fun parts ->
                 let parts = parts |> Array.map (fun x -> x.Ident)
                 if not (candidate |> Array.endsWith parts) then None
@@ -892,12 +892,9 @@ module internal ParsedInput =
     let getLongIdentAt ast pos =
         let idents = getLongIdents (Some ast)
 
-        idents.Values |> Seq.tryFind (fun x -> 
-            x |> List.exists (fun x -> x.idText = "Application") )
-
-        //match idents.TryGetValue pos with
-        //| true, idents -> Some idents
-        //| _ -> None
+        match idents.TryGetValue pos with
+        | true, idents -> Some idents
+        | _ -> None
 
     type Col = int
 

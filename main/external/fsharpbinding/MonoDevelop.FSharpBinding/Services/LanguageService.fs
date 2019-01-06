@@ -510,6 +510,15 @@ type LanguageService(dirtyNotify, _extraProjectInfo) as x =
             let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
             return (lastIdent, refs) }
 
+    member x.GetSymbolAtLocationInFile(projectFilename, fileName, version, source, line:int, col, lineStr) =
+        asyncMaybe {
+            LoggingService.logDebug "LanguageService: GetUsesOfSymbolAtLocationInFile: file:%s, line:%i, col:%i" (Path.GetFileName(fileName)) line col
+            let! _colu, identIsland = Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent |> async.Return
+            let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, version, source, AllowStaleResults.MatchingSource)
+            let! symbolUse = results.GetSymbolAtLocation(line, col, lineStr)
+            let lastIdent = Seq.last identIsland
+            return (lastIdent, symbolUse) }
+
     /// Get all the uses of the specified symbol in the current project and optionally all dependent projects
     member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
         async {
