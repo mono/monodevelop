@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			entry = new Entry ();
 			PackStart (entry, true, true, 0);
 			
-			button = new Button { Label = "..." };
+			button = new Button { Label = "…" };
 			button.SetCommonAccessibilityAttributes ("ProjectFileEntry.button",
 				GettextCatalog.GetString ("Select a Project File"),
 				GettextCatalog.GetString ("Click to select a project file"));
