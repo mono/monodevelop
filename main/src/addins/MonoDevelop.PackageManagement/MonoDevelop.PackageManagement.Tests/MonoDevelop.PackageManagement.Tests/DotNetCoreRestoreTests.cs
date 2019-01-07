@@ -63,13 +63,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public async Task OfflineRestore_NetCore21Project ()
+		public async Task OfflineRestore_NetCore22Project ()
 		{
 			FilePath solutionFileName = Util.GetSampleProject ("restore-netcore-offline", "dotnetcoreconsole.sln");
 			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			var project = solution.GetAllDotNetProjects ().Single ();
 
-			using (var logger = new PackagManagementEventsConsoleLogger ()) {
+			using (var logger = new PackageManagementEventsConsoleLogger ()) {
 				await RestoreDotNetCoreNuGetPackages (solution);
 			}
 
