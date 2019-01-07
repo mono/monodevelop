@@ -47,6 +47,9 @@ namespace MonoDevelop.DotNetCore.Tests
 			if (!string.IsNullOrEmpty (runTests)) {
 				Assert.Ignore ("Ignoring DotNetCoreProjectTemplateTests");
 			}
+
+			// Set environment variable to enable VB.NET support
+			Environment.SetEnvironmentVariable ("MD_FEATURES_ENABLED", "VBNetDotnetCoreTemplates");
 		}
 
 		[Test]
