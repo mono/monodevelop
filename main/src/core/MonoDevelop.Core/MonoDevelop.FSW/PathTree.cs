@@ -114,7 +114,7 @@ namespace MonoDevelop.FSW
 			while (currentNode != null)
 			{
 				int currentIndex = path.IndexOf(Path.DirectorySeparatorChar, lastIndex);
-				int comparisonResult = string.Compare(currentNode.FullPath, currentNode.Start, path, lastIndex, currentNode.Length);
+				int comparisonResult = string.Compare(currentNode.FullPath, currentNode.Start, path, lastIndex, currentNode.Length, FilePath.PathComparison);
 
 				// We need to insert in this node's position.
 				if (comparisonResult > 0)
