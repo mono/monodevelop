@@ -755,7 +755,7 @@ type QuickFixMenuHandler() =
             let! ast = editor.DocumentContext.TryGetAst()
             let! range = getSymbolUseForEditorCaret editor
 
-            let monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Add Open", IconId());
+            use monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (GettextCatalog.GetString("Add Open"), IconId());
             let assemblyProvider = AssemblyContentProvider ()
             let! codeFixes = FSharpAddOpenCodeFixProvider.getCodeFixesAsync document.Editor assemblyProvider monitor ast range
             return codeFixes
@@ -785,7 +785,7 @@ type QuickFixMenuHandler() =
                     info.Add (new CommandInfo (GettextCatalog.GetString ("No code fixes available"), false, false), null);
                 | xs -> 
                     xs |> List.iter (fun (x, action) -> 
-                        info.Add (new CommandInfo (GettextCatalog.GetString (x), true, false), Action(action));
+                        info.Add (new CommandInfo (x, true, false), Action(action));
                     )
             info.NotifyChanged ();
         } 

@@ -41,7 +41,6 @@ module CommonRoslynHelpers =
                 try
                     return! computation
                 with e ->
-                    //Assert.Exception(e)
                     MonoDevelop.Core.LoggingService.LogInternalError e
                     return Unchecked.defaultof<_>
             }
