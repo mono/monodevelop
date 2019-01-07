@@ -901,32 +901,36 @@ namespace MonoDevelop.Projects
 			p.UseFileWatcher = true;
 			var file = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 			ClearFileEventsCaptured ();
-			await FileWatcherService.Add (sol);
+			try {
+				await FileWatcherService.Add (sol);
 
-			var newDirectory = p.BaseDirectory.Combine ("NewFolder");
-			Directory.CreateDirectory (newDirectory);
+				var newDirectory = p.BaseDirectory.Combine ("NewFolder");
+				Directory.CreateDirectory (newDirectory);
 
-			var newFolderItem = new ProjectFile (newDirectory);
-			newFolderItem.Subtype = Subtype.Directory;
-			p.Files.Add (newFolderItem);
+				var newFolderItem = new ProjectFile (newDirectory);
+				newFolderItem.Subtype = Subtype.Directory;
+				p.Files.Add (newFolderItem);
 
-			var newDirectory2 = p.BaseDirectory.Combine ("NewFolder2");
-			var newFolderItem2 = new ProjectFile (newDirectory2);
-			newFolderItem2.Subtype = Subtype.Directory;
-			p.Files.Add (newFolderItem2);
+				var newDirectory2 = p.BaseDirectory.Combine ("NewFolder2");
+				var newFolderItem2 = new ProjectFile (newDirectory2);
+				newFolderItem2.Subtype = Subtype.Directory;
+				p.Files.Add (newFolderItem2);
 
-			Directory.CreateDirectory (newDirectory2);
+				Directory.CreateDirectory (newDirectory2);
 
-			await p.SaveAsync (Util.GetMonitor ());
+				await p.SaveAsync (Util.GetMonitor ());
 
-			TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
-			await WaitForFileChanged (file.FilePath);
+				TextFileUtility.WriteText (file.FilePath, string.Empty, Encoding.UTF8);
+				await WaitForFileChanged (file.FilePath);
 
-			AssertFileChanged (file.FilePath);
-			Assert.IsTrue (p.Files.Contains (newFolderItem));
-			Assert.IsTrue (p.Files.Contains (newFolderItem2));
-			Assert.IsFalse (filesRemoved.Any (f => f.FileName == newDirectory));
-			Assert.IsFalse (filesRemoved.Any (f => f.FileName == newDirectory2));
+				AssertFileChanged (file.FilePath);
+				Assert.IsTrue (p.Files.Contains (newFolderItem));
+				Assert.IsTrue (p.Files.Contains (newFolderItem2));
+				Assert.IsFalse (filesRemoved.Any (f => f.FileName == newDirectory));
+				Assert.IsFalse (filesRemoved.Any (f => f.FileName == newDirectory2));
+			} finally {
+				await FileWatcherService.Remove (sol);
+			}
 		}
 	}
 }
