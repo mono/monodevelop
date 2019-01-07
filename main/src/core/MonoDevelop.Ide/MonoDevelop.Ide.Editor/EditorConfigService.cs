@@ -153,6 +153,7 @@ namespace MonoDevelop.Ide.Editor
 				FileService.FileRenamed -= FileService_FileMoved;
 				FileService.FileRemoved -= FileService_FileRemoved;
 				FileService.FileChanged -= FileService_FileChanged;
+				FileWatcherService.WatchDirectories (this, null).Ignore ();
 				lock (watchedFiles) {
 					watchedFiles = null;
 				}
