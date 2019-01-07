@@ -13,5 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TextViewDisplayBinding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextViewImports.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextViewContent.Commands.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EditorContentProviderService.cs" />
   </ItemGroup>
 </Project>

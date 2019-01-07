@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 #if MAC
 using AppKit;
@@ -32,9 +33,9 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using Xwt;
 
 namespace MonoDevelop.Ide.Text
 {
@@ -60,6 +61,7 @@ namespace MonoDevelop.Ide.Text
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
 		private IEditorCommandHandlerService _editorCommandHandlerService;
+		List<IEditorContentProvider> contentProviders;
 
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
@@ -97,19 +99,49 @@ namespace MonoDevelop.Ide.Text
 			ContentName = fileName;
 			TextView.Properties [typeof (Ide.Text.TextViewContent)] = this;
 			_editorCommandHandlerService = imports.EditorCommandHandlerServiceFactory.GetService (TextView);
+
+			contentProviders = imports.EditorContentProviderService.GetContentProvidersForView (TextView).ToList ();
+		}
+
+		protected override object OnGetContent (Type type)
+		{
+			foreach (var provider in contentProviders) {
+				var content = provider.GetContent (TextView, type);
+				if (content != null) {
+					return content;
+				}
+			}
+			return GetIntrinsicType (type);
 		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			if (type == typeof(ITextBuffer)) {
-				return new[] { TextBuffer };
-			} else if (type == typeof(ITextDocument)) {
-				return new[] { TextDocument };
-			} else if (type == typeof (ITextView)) {
-				return new [] { TextView };
-			}
+			foreach (var provider in contentProviders) {
+				var contents = provider.GetContents (TextView, type);
+				if (contents != null) {
+					foreach (var content in contents) {
+						yield return content;
 
-			return Array.Empty<object> ();
+					}
+				}
+			}
+			var intrinsicType = GetIntrinsicType (type);
+			if (intrinsicType != null) {
+				yield return intrinsicType;
+			}
+		}
+
+		object GetIntrinsicType (Type type)
+		{
+			if (type.IsInstanceOfType (TextBuffer))
+				return TextBuffer;
+			if (type.IsInstanceOfType (TextDocument))
+				return TextDocument;
+			if (type.IsInstanceOfType (TextView))
+				return TextView;
+			if (type.IsInstanceOfType (this))
+				return this;
+			return null;
 		}
 
 		public override Task Save ()
