@@ -4,13 +4,50 @@ using MonoDevelop.AspNetCore.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using Xwt;
 
 namespace MonoDevelop.AspNetCore.Dialogs
 {
+	internal class DefaultFolderResolver
+	{
+		internal const string DefaultConfiguration = "Release";
+
+		DotNetProject project;
+		public Uri BinBaseUri => new Uri (Path.Combine (project.BaseDirectory, "bin"));
+
+		public DefaultFolderResolver (DotNetProject project) => this.project = project;
+
+		// The default folder is: "bin/Release/<netcore-version>/publish"
+		// as long as Release exists. If it does not, then we take the active one.
+		public string GetDefaultFolder (UriKind uriKind)
+		{
+			//check if there is a Release configuration
+			bool releaseFound = false;
+			for (int i = 0; i < project.Configurations.Count; i++) {
+				if (project.Configurations [i].Name == DefaultConfiguration) {
+					releaseFound = true;
+					break;
+				}
+			}
+
+			var configuration = DefaultConfiguration;
+			if (!releaseFound) //if there is no Release config, then we take the active one
+				configuration = project.GetActiveConfiguration ();
+
+			var defaultDirectory = Path.Combine (BinBaseUri.ToString (), configuration,
+								project.TargetFramework.Id.GetShortFrameworkName (),
+								"publish");
+
+			if (uriKind == UriKind.Relative)
+				return BinBaseUri.MakeRelativeUri (new Uri (defaultDirectory)).ToString ();
+
+			return defaultDirectory;
+		}
+	}
+
 	class PublishToFolderDialog : Dialog
 	{
-		const string DefaultConfiguration = "Release";
 		VBox mainVBox;
 		Label publishYourAppLabel;
 		VBox browseVBox;
@@ -23,7 +60,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 		HBox messageBox;
 		Label messageLabel;
 		ImageView messageIcon;
-		Uri BinBaseUri => new Uri (Path.Combine (publishCommandItem.Project.BaseDirectory, "bin"));
+		DefaultFolderResolver defaultDirectoryResolver;
 
 		readonly PublishCommandItem publishCommandItem;
 
@@ -63,11 +100,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				Name = "browseEntryHBox",
 				Spacing = 4
 			};
-			var defaultDirectory = Path.Combine (BinBaseUri.ToString (),
-								publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
-								DefaultConfiguration);
+			defaultDirectoryResolver = new DefaultFolderResolver (publishCommandItem.Project);
 			//make it relative by default
-			defaultDirectory = BinBaseUri.MakeRelativeUri (new Uri (defaultDirectory)).ToString ();
+			var defaultDirectory = defaultDirectoryResolver.GetDefaultFolder (UriKind.Relative);
 			pathEntry = new TextEntry {
 				Name = "pathEntry",
 				Text = defaultDirectory
@@ -146,7 +181,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				CurrentFolder = pathEntry.Text
 			};
 			fileDialog.Run ();
-			pathEntry.Text = BinBaseUri.MakeRelativeUri (new Uri (fileDialog.SelectedFile)).ToString ();
+			pathEntry.Text = defaultDirectoryResolver.BinBaseUri.MakeRelativeUri (new Uri (fileDialog.SelectedFile)).ToString ();
 		}
 
 		protected override void Dispose (bool disposing)
