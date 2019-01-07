@@ -72,7 +72,8 @@ namespace MonoDevelop.Core
 
         internal string Add(char[] chars, int start, int len)
         {
-            var hashCode = Hash.GetFNVHashCode(chars, start, len);
+			var span = chars.AsSpan (start, len);
+			var hashCode = Hash.GetFNVHashCode(chars, start, len);
 
             // capture array to avoid extra range checks
             var arr = _localTable;
@@ -83,7 +84,7 @@ namespace MonoDevelop.Core
             if (text != null && arr[idx].HashCode == hashCode)
             {
                 var result = arr[idx].Text;
-                if (StringTable.TextEquals(result, chars, start, len))
+                if (StringTable.TextEquals(result, span))
                 {
                     return result;
                 }
@@ -257,7 +258,7 @@ namespace MonoDevelop.Core
 
                 if (e != null)
                 {
-                    if (hash == hashCode && TextEquals(e, chars, start, len))
+                    if (hash == hashCode && TextEquals(e, chars.AsSpan(start, len)))
                     {
                         break;
                     }
@@ -312,7 +313,7 @@ namespace MonoDevelop.Core
             return e;
         }
 
-        private static unsafe string FindSharedEntryASCII(int hashCode, byte* asciiChars, int length)
+        private static string FindSharedEntryASCII(int hashCode, ReadOnlySpan<byte> asciiChars)
         {
             var arr = s_sharedTable;
             int idx = SharedIdxFromHash(hashCode);
@@ -327,7 +328,7 @@ namespace MonoDevelop.Core
 
                 if (e != null)
                 {
-                    if (hash == hashCode && TextEqualsASCII(e, asciiChars, length))
+                    if (hash == hashCode && TextEqualsASCII(e, asciiChars))
                     {
                         break;
                     }
@@ -570,34 +571,37 @@ namespace MonoDevelop.Core
             return text;
         }
 
-        internal static unsafe string AddSharedUTF8(byte* bytes, int byteCount)
+        internal static string AddSharedUTF8(ReadOnlySpan<byte> bytes)
         {
             bool isAscii;
-            int hashCode = Hash.GetFNVHashCode(bytes, byteCount, out isAscii);
+            int hashCode = Hash.GetFNVHashCode(bytes, out isAscii);
 
             if (isAscii)
             {
-                string shared = FindSharedEntryASCII(hashCode, bytes, byteCount);
+                string shared = FindSharedEntryASCII(hashCode, bytes);
                 if (shared != null)
                 {
                     return shared;
                 }
             }
 
-            return AddSharedSlow(hashCode, bytes, byteCount, isAscii);
+            return AddSharedSlow(hashCode, bytes, isAscii);
         }
 
-        private static unsafe string AddSharedSlow(int hashCode, byte* utf8Bytes, int byteCount, bool isAscii)
+        private static unsafe string AddSharedSlow(int hashCode, ReadOnlySpan<byte> utf8Bytes, bool isAscii)
         {
-            // TODO: This should be Encoding.UTF8.GetString (for better layering) but the unsafe variant isn't portable. 
-            //       The MetadataReader has code to light it up and even fall back to internal String.CreateStringFromEncoding
-            //       on .NET < 4.5.3. Use that instead of copying the light-up code here.
-            string text = System.Reflection.Metadata.MetadataStringDecoder.DefaultUTF8.GetString(utf8Bytes, byteCount);
+			string text;
 
-            // Don't add non-ascii strings to table. The hashCode we have here is not correct and we won't find them again.
-            // Non-ascii in UTF8-encoded parts of metadata (the only use of this at the moment) is assumed to be rare in 
-            // practice. If that turns out to be wrong, we could decode to pooled memory and rehash here.
-            if (isAscii)
+			unsafe {
+				fixed (byte* bytes = &utf8Bytes.GetPinnableReference ()) {
+					text = Encoding.UTF8.GetString (bytes, utf8Bytes.Length);
+				}
+			}
+
+			// Don't add non-ascii strings to table. The hashCode we have here is not correct and we won't find them again.
+			// Non-ascii in UTF8-encoded parts of metadata (the only use of this at the moment) is assumed to be rare in 
+			// practice. If that turns out to be wrong, we could decode to pooled memory and rehash here.
+			if (isAscii)
             {
                 AddSharedSlow(hashCode, text);
             }
@@ -695,21 +699,21 @@ namespace MonoDevelop.Core
             return true;
         }
 
-        internal static unsafe bool TextEqualsASCII(string text, byte* ascii, int length)
+        internal static unsafe bool TextEqualsASCII(string text, ReadOnlySpan<byte> ascii)
         {
 #if DEBUG
-            for (var i = 0; i < length; i++)
+            for (var i = 0; i < ascii.Length; i++)
             {
                 Debug.Assert((ascii[i] & 0x80) == 0, "The byte* input to this method must be valid ASCII.");
             }
 #endif
 
-            if (length != text.Length)
+            if (ascii.Length != text.Length)
             {
                 return false;
             }
 
-            for (var i = 0; i < length; i++)
+            for (var i = 0; i < ascii.Length; i++)
             {
                 if (ascii[i] != text[i])
                 {
@@ -720,25 +724,7 @@ namespace MonoDevelop.Core
             return true;
         }
 
-        internal static bool TextEquals(string array, char[] text, int start, int length)
-        {
-            return array.Length == length && TextEqualsCore(array, text, start);
-        }
-
-        private static bool TextEqualsCore(string array, char[] text, int start)
-        {
-            // use array.Length to eliminate the range check
-            int s = start;
-            for (var i = 0; i < array.Length; i++)
-            {
-                if (array[i] != text[s])
-                {
-                    return false;
-                }
-                s++;
-            }
-
-            return true;
-        }
+        internal static bool TextEquals(string array, ReadOnlySpan<char> text)
+			=> text.Equals (array.AsSpan (), StringComparison.Ordinal);
     }
 }

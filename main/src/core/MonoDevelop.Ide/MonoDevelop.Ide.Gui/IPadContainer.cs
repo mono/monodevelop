@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.workbench = workbench;
 			this.codon = codon;
-			this.title = GettextCatalog.GetString (codon.Label);
+			this.title = codon.Label;
 			this.icon = codon.Icon;
 		}
 		

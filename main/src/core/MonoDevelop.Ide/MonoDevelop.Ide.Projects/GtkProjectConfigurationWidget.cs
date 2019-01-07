@@ -384,7 +384,7 @@ namespace MonoDevelop.Ide.Projects
 			eventBox.ShowAll ();
 
 			return new EventBoxTooltip (eventBox) {
-				ToolTip = GettextCatalog.GetString (tooltipText),
+				ToolTip = tooltipText,
 				Severity = TaskSeverity.Information
 			};
 		}

@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelRealm = new global::Gtk.Label ();
 			this.labelRealm.Name = "labelRealm";
 			this.labelRealm.Xalign = 0F;
-			this.labelRealm.LabelProp = "Realm";
+			this.labelRealm.LabelProp = global::Mono.Unix.Catalog.GetString ("Realm");
 			this.vbox2.Add (this.labelRealm);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelRealm]));
 			w3.Position = 1;

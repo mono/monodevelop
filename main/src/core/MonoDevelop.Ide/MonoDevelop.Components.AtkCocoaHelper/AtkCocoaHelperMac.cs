@@ -36,6 +36,7 @@ using CoreGraphics;
 using Foundation;
 using Gdk;
 using ObjCRuntime;
+using MetalPerformanceShaders;
 
 namespace MonoDevelop.Components.AtkCocoaHelper
 {
@@ -81,12 +82,27 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
+		public static void SetCurrentFocus (NSObject element)
+		{
+			NSApplication.SharedApplication.AccessibilityApplicationFocusedUIElement = element;
+			NSAccessibility.PostNotification (NSApplication.SharedApplication, NSAccessibilityNotifications.UIElementFocusedChangedNotification,
+											  new NSDictionary (NSAccessibilityNotificationUserInfoKeys.UIElementsKey, NSArray.FromObject (element)));
+		}
+
 		public static void SetCurrentFocus (AccessibilityElementProxy focusElement)
 		{
 			var element = focusElement != null ? focusElement.Proxy as NSObject : null;
-			NSApplication.SharedApplication.AccessibilityApplicationFocusedUIElement = element;
-			NSAccessibility.PostNotification (NSApplication.SharedApplication, NSAccessibilityNotifications.UIElementFocusedChangedNotification, 
-			                                  new NSDictionary (NSAccessibilityNotificationUserInfoKeys.UIElementsKey, NSArray.FromObject (element)));
+			SetCurrentFocus (element);
+		}
+
+		public static void SetCurrentFocus (this Atk.Object o)
+		{
+			var nsa = GetNSAccessibilityElement (o);
+			if (nsa == null) {
+				return;
+			}
+
+			SetCurrentFocus ((NSObject)nsa);
 		}
 
 		public static void SetLabel (this Atk.Object o, string label)
@@ -1569,7 +1585,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		[Export ("accessibilityRangeForLine:")]
 		NSRange AccessibilityRangeForLine (nint line)
 		{
-			var range = GetRangeForLine ((int)line);
+			var range = GetRangeForLine ((int)line + 1);
 			return new NSRange (range.Location, range.Length);
 		}
 

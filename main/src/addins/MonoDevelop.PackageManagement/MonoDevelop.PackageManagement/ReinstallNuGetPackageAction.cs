@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 			: this (
 				project,
 				solutionManager,
-				new NuGetProjectContext (),
+				new NuGetProjectContext (solutionManager.Settings),
 				PackageManagementServices.PackageManagementEvents)
 		{
 		}

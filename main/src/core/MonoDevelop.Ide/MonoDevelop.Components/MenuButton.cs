@@ -29,6 +29,8 @@
 using System;
 using Gtk;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace MonoDevelop.Components
 {
 	
@@ -47,6 +49,8 @@ namespace MonoDevelop.Components
 		public MenuButton ()
 			: base ()
 		{
+			Accessible.SetRole (AtkCocoa.Roles.AXMenuButton);
+
 			HBox box = new HBox ();
 			box.Spacing = 6;
 			Add (box);
@@ -57,6 +61,8 @@ namespace MonoDevelop.Components
 			box.PackStart (image, false, false, 0);
 			label = new Label ();
 			label.NoShowAll = true;
+			label.Accessible.SetShouldIgnore (true);
+
 			box.PackStart (label, false, false, 0);
 			ArrowType = Gtk.ArrowType.Down;
 			base.Label = null;
@@ -193,6 +199,8 @@ namespace MonoDevelop.Components
 			set {
 				label.Text = value;
 				label.Visible = !string.IsNullOrEmpty (value);
+
+				Accessible.Name = value;
 			}
 		}
 		

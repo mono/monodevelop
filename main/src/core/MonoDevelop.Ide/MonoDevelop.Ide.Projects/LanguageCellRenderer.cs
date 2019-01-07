@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Projects
 		const int dropdownTriangleRightHandPadding = 8;
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
+		const int rightHandCellPadding = 12;
 
 		int minLanguageRectWidth;
 
@@ -76,15 +77,37 @@ namespace MonoDevelop.Ide.Projects
 		{
 			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 
+			textWidth = GetTextWidth (widget);
 			int languageRectangleWidth = textWidth + languageLeftHandPadding;
 			if (TemplateHasMultipleLanguages ()) {
 				languageRectangleWidth += languageRightHandPadding + dropdownTriangleWidth + dropdownTriangleRightHandPadding;
 			} else {
-				languageRectangleWidth += languageLeftHandPadding;
+				languageRectangleWidth += languageRightHandPadding;
 				languageRectangleWidth = Math.Max (languageRectangleWidth, minLanguageRectWidth);
 			}
 
-			width = languageRectangleWidth;
+			width = languageRectangleWidth + rightHandCellPadding;
+		}
+
+		int GetTextWidth (Widget widget)
+		{
+			if (Template == null) {
+				return 0;
+			}
+
+			using (var layout = new Pango.Layout (widget.PangoContext)) {
+				int width = 0;
+				foreach (string language in Template.AvailableLanguages) {
+					SetMarkup (layout, language);
+
+					int currentHeight = 0;
+					int currentWidth = 0;
+					layout.GetPixelSize (out currentWidth, out currentHeight);
+
+					width = Math.Max (currentWidth, width);
+				}
+				return width;
+			}
 		}
 
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
@@ -150,14 +173,13 @@ namespace MonoDevelop.Ide.Projects
 			if (TemplateHasMultipleLanguages ()) {
 				languageRectangleWidth += languageRightHandPadding + dropdownTriangleWidth + dropdownTriangleRightHandPadding;
 			} else {
-				languageRectangleWidth += languageLeftHandPadding;
+				languageRectangleWidth += languageRightHandPadding;
 				languageRectangleWidth = Math.Max (languageRectangleWidth, minLanguageRectWidth);
 			}
 
 			var dy = (cell_area.Height - languageRectangleHeight) / 2 - 1;
 			var y = cell_area.Y + dy;
-			//var x = widget.Allocation.Width - languageRectangleWidth - (int)Xpad;
-			var x = cell_area.X;
+			var x = cell_area.X + cell_area.Width - languageRectangleWidth - rightHandCellPadding;
 
 			return new Rectangle (x, y, languageRectangleWidth, languageRectangleHeight);
 		}

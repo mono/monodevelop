@@ -50,9 +50,9 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		public string DiagnosticMessage => dependency.DiagnosticMessage;
 		public bool IsDiagnostic => dependency.IsDiagnostic;
 
-		public IEnumerable<string> DependencyNames => dependency.Dependencies;
+		public ImmutableArray<string> DependencyNames => dependency.Dependencies;
 
-		public IEnumerable<PackageDependencyInfo> Dependencies {
+		public ImmutableArray<PackageDependencyInfo> Dependencies {
 			get { return dependencies; }
 		}
 

@@ -8,9 +8,22 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.DesignerSupport</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'ReleaseMac' OR '$(Configuration)' == 'DebugMac' ">
+      <Reference Include="Xamarin.Mac">
+        <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+        <Private>False</Private>
+      </Reference>
+      <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj">
+      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
+        <Name>Xwt.XamMac</Name>
+        <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Design" />
@@ -72,7 +85,7 @@
   <ItemGroup>
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TextToolboxNode.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolbox.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxItemToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\PropertyPad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\DesignerSupportService.cs" />
@@ -126,6 +139,16 @@
     <Compile Include="MonoDevelop.DesignerSupport.Projects\ImplicitFrameworkAssemblyReferenceDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxExtensions.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ICustomTooltipToolboxNode.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxWidget.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\SearchTextField.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ToggleButton.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\ClickedButton.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxViewItems.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidget.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetDataSource.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetFlowLayoutDelegate.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Styles.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
@@ -161,6 +184,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
+    <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

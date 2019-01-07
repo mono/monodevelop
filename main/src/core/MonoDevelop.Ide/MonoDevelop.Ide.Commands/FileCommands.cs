@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.NewSolution ();
+			IdeApp.ProjectOperations.NewSolution ().Ignore ();
 		}
 	}
 	
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.NewSolution ("MonoDevelop.Workspace");
+			IdeApp.ProjectOperations.NewSolution ("MonoDevelop.Workspace").Ignore ();
 		}
 	}
 

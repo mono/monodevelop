@@ -132,6 +132,22 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public void SaveToDisk ()
+		{
+		}
+
+		public IList<string> GetConfigFilePaths ()
+		{
+			var paths = new List<string> ();
+			paths.Add (FileName);
+			return paths;
+		}
+
+		public IList<string> GetConfigRoots ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

@@ -465,18 +465,18 @@ namespace MonoDevelop.Ide
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
 
 			// OpenDocuments appears when the app is idle.
-			if (!hideWelcomePage) {
+			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
+				IdeApp.Workbench.Show ();
 			}
 
-			IdeApp.Workbench.Show ();
 			return false;
 		}
 
-		async void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
+		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
 		{
-			var result = await Task.Run (() => DesktopService.PlatformTelemetry);
+			var result = DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
@@ -917,8 +917,8 @@ namespace MonoDevelop.Ide
 				AssetTypeName = assetType.Name,
 				IsInitialRun = IdeApp.IsInitialRun,
 				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
-				TimeSinceMachineStart = platformDetails.TimeSinceMachineStart.Seconds,
-				TimeSinceLogin = platformDetails.TimeSinceLogin.Seconds,
+				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
+				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
 				Timings = timings
 			};
 		}

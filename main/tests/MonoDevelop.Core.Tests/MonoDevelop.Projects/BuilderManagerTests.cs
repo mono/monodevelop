@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NUnit.Framework;
@@ -359,6 +360,75 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, await RemoteBuildEngineManager.CountActiveBuildersForProject (projectFile));
 			Assert.AreEqual (0, RemoteBuildEngineManager.ActiveEnginesCount);
 			Assert.AreEqual (0, RemoteBuildEngineManager.EnginesCount);
+		}
+
+		/// <summary>
+		/// Tests that a project builder that is marked as shutdown but currently running is not used for a new msbuild
+		/// target. This prevents the project builder being disposed whilst the second msbuild target is being run.
+		/// Tests that a null reference exception is not thrown by the project builder.
+		/// </summary>
+		[Test]
+		public async Task ReloadProject_ProjectDisposedWhilstTargetRunning_AnotherTargetRun ()
+		{
+			// When a long operation is running and a new one is requested, a new builder is created
+
+			await RemoteBuildEngineManager.RecycleAllBuilders ();
+			Assert.AreEqual (0, RemoteBuildEngineManager.ActiveEnginesCount);
+
+			FilePath solFile = Util.GetSampleProject ("builder-manager-tests", "builder-manager-tests.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var project1 = (Project)sol.Items.FirstOrDefault (p => p.Name == "SyncBuildProject");
+
+				InitBuildSyncEvent (project1);
+
+				// Start the build. Use RunTarget to avoid the BindTask which will cancel the build on project dispose.
+				var build1 = project1.RunTarget (Util.GetMonitor (), "Build", sol.Configurations [0].Selector);
+
+				// Wait for the build to reach the sync task
+				await WaitForBuildSyncEvent (project1);
+
+				// The build is now in progess. Simulate reloading the project.
+				using (var project2 = (Project)await sol.RootFolder.ReloadItem (Util.GetMonitor (), project1)) {
+					var builderTask = project2.GetProjectBuilder (CancellationToken.None, null, allowBusy: true);
+
+					// Allow second build to finish and dispose its project builder. Have to do this here otherwise
+					// GetProjectBuilder will hang waiting for a connection response back after it creates a new
+					// project builder.
+					SignalBuildToContinue (project1);
+					if (await Task.WhenAny (build1, Task.Delay (timeoutMs)) != build1)
+						Assert.Fail ("Build did not end in time");
+
+					Assert.AreEqual (0, build1.Result.BuildResult.ErrorCount);
+
+					using (var builder = await builderTask) {
+
+						// Sanity check. We should only have one project builder and one build engine.
+						Assert.AreEqual (1, RemoteBuildEngineManager.ActiveEnginesCount);
+						Assert.AreEqual (1, RemoteBuildEngineManager.EnginesCount);
+						Assert.AreEqual (1, await RemoteBuildEngineManager.CountActiveBuildersForProject (project2.FileName));
+
+						var configs = project2.GetConfigurations (sol.Configurations [0].Selector, false);
+
+						var build2 = await Task.Run (() => {
+							// Previously this would throw a NullReferenceException since the builder has been disposed
+							// and the engine is null.
+							return builder.Run (
+								configs,
+								new StringWriter (),
+								new MSBuildLogger (),
+								MSBuildVerbosity.Quiet,
+								new [] { "ResolveAssemblyReferences" },
+								new string [0],
+								new string [0],
+								new System.Collections.Generic.Dictionary<string, string> (),
+								CancellationToken.None);
+						});
+
+						Assert.AreEqual (0, build2.Errors.Length);
+					}
+				}
+			}
 		}
 
 		[Test]

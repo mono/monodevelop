@@ -50,10 +50,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeFileRemover fileRemover;
 		FakePackageRestoreManager restoreManager;
 
-		void CreateAction (string projectName = "MyProject")
+		void CreateAction (string projectName = "MyProject", params ProjectReference[] projectReferences)
 		{
 			project = new FakeDotNetProject (@"d:\projects\MyProject\MyProject.csproj");
 			project.Name = projectName;
+			project.References.AddRange (projectReferences);
 			solutionManager = new FakeSolutionManager ();
 			nugetProject = new FakeNuGetProject (project);
 			solutionManager.NuGetProjects[project] = nugetProject;
@@ -310,86 +311,114 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_ReferenceBeingUpdatedHasLocalCopyTrue_ReferenceAddedHasLocalCopyTrue ()
 		{
-			CreateAction ();
+			var originalProjectReference = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			originalProjectReference.LocalCopy = true;
+			CreateAction ("MyProject", originalProjectReference);
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
 			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
-			packageManager.BeforeExecuteAction = () => {
-				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
-				referenceBeingRemoved.LocalCopy = true;
-				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+			packageManager.BeforeExecuteActionTask = async () => {
+				packageManagementEvents.OnReferenceRemoving (originalProjectReference);
+				await nugetProject.ProjectReferenceMaintainer.RemoveReference (originalProjectReference);
+
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (firstReferenceBeingAdded);
+
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (secondReferenceBeingAdded);
 			};
 
 			action.Execute ();
 
-			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
-			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+			var nunitFrameworkReference = project.References.FirstOrDefault (r => r.Reference == originalProjectReference.Reference);
+			var newReference = project.References.FirstOrDefault (r => r.Reference == "NewAssembly");
+			Assert.IsTrue (newReference.LocalCopy);
+			Assert.IsTrue (nunitFrameworkReference.LocalCopy);
 		}
 
 		[Test]
 		public void Execute_ReferenceBeingUpdatedHasLocalCopyTrueButCaseIsDifferent_ReferenceAddedHasLocalCopyTrue ()
 		{
-			CreateAction ();
+			var originalProjectReference = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+			originalProjectReference.LocalCopy = true;
+			CreateAction ("MyProject", originalProjectReference);
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
 			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
-			packageManager.BeforeExecuteAction = () => {
-				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
-				referenceBeingRemoved.LocalCopy = true;
-				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+			packageManager.BeforeExecuteActionTask = async () => {
+				packageManagementEvents.OnReferenceRemoving (originalProjectReference);
+				await nugetProject.ProjectReferenceMaintainer.RemoveReference (originalProjectReference);
+
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (firstReferenceBeingAdded);
+
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (secondReferenceBeingAdded);
 			};
 
 			action.Execute ();
 
-			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
-			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+			var nunitFrameworkReference = project.References.FirstOrDefault (r => r.Reference == originalProjectReference.Reference);
+			var newReference = project.References.FirstOrDefault (r => r.Reference == "NewAssembly");
+			Assert.IsTrue (newReference.LocalCopy);
+			Assert.IsTrue (nunitFrameworkReference.LocalCopy);
 		}
 
 		[Test]
 		public void Execute_ReferenceBeingUpdatedHasLocalCopyFalse_ReferenceAddedHasLocalCopyFalse ()
 		{
-			CreateAction ();
+			var originalProjectReference = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+			originalProjectReference.LocalCopy = false;
+			CreateAction ("MyProject", originalProjectReference);
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
 			firstReferenceBeingAdded.LocalCopy = true;
 			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
-			packageManager.BeforeExecuteAction = () => {
-				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
-				referenceBeingRemoved.LocalCopy = false;
-				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+			packageManager.BeforeExecuteActionTask = async () => {
+				packageManagementEvents.OnReferenceRemoving (originalProjectReference);
+				await nugetProject.ProjectReferenceMaintainer.RemoveReference (originalProjectReference);
+
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (firstReferenceBeingAdded);
+
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (secondReferenceBeingAdded);
 			};
 			action.Execute ();
 
-			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
-			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+			var nunitFrameworkReference = project.References.FirstOrDefault (r => r.Reference == originalProjectReference.Reference);
+			var newReference = project.References.FirstOrDefault (r => r.Reference == "NewAssembly");
+			Assert.IsTrue (newReference.LocalCopy);
+			Assert.IsFalse (nunitFrameworkReference.LocalCopy);
 		}
 
 		[Test]
 		public void Execute_ReferenceBeingUpdatedHasLocalCopyFalseButCaseIsDifferent_ReferenceAddedHasLocalCopyFalse ()
 		{
-			CreateAction ();
+			var originalProjectReference = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+			originalProjectReference.LocalCopy = false;
+			CreateAction ("MyProject", originalProjectReference);
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
 			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
 			firstReferenceBeingAdded.LocalCopy = true;
 			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
-			packageManager.BeforeExecuteAction = () => {
-				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
-				referenceBeingRemoved.LocalCopy = false;
-				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+			packageManager.BeforeExecuteActionTask = async () => {
+				packageManagementEvents.OnReferenceRemoving (originalProjectReference);
+				await nugetProject.ProjectReferenceMaintainer.RemoveReference (originalProjectReference);
+
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (firstReferenceBeingAdded);
+
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+				await nugetProject.ProjectReferenceMaintainer.AddReference (secondReferenceBeingAdded);
 			};
 
 			action.Execute ();
 
-			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
-			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+			var nunitFrameworkReference = project.References.FirstOrDefault (r => r.Reference == originalProjectReference.Reference);
+			var newReference = project.References.FirstOrDefault (r => r.Reference == "NewAssembly");
+			Assert.IsTrue (newReference.LocalCopy);
+			Assert.IsFalse (nunitFrameworkReference.LocalCopy);
 		}
 
 		[Test]

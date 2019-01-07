@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery;
 using Microsoft.CodeAnalysis.Shared.Extensions;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -22,13 +23,13 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		public async Task<ParameterHintingResult> GetParameterDataProviderAsync (Document document, int position, CancellationToken token = default (CancellationToken))
 		{
-			var providers = CSharpCompletionTextEditorExtension.signatureProviders.Value.ToList ();
+			var providers = CSharpCompletionTextEditorExtension.signatureProviders.Value;
 			var triggerInfo = new SignatureHelpTriggerInfo (SignatureHelpTriggerReason.TypeCharCommand, (await document.GetTextAsync (token)).ToString () [position - 1]);
 
 			return await GetParameterDataProviderAsync (providers, document, position, triggerInfo, token);
 		}
 
-		public async Task<ParameterHintingResult> GetParameterDataProviderAsync (List<ISignatureHelpProvider> providers, Document document, int position, SignatureHelpTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
+		public async Task<ParameterHintingResult> GetParameterDataProviderAsync (ImmutableArray<ISignatureHelpProvider> providers, Document document, int position, SignatureHelpTriggerInfo triggerInfo, CancellationToken token = default (CancellationToken))
 		{
 			var hintingData = new List<ParameterHintingData> ();
 			SignatureHelpItems bestSignatureHelpItems = null;

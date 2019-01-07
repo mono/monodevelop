@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -34,29 +35,66 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		static bool visible;
 		static WelcomePageFrame welcomePage;
+		static IWelcomeWindowProvider welcomeWindowProvider;
+		static Window welcomeWindow;
 
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
 
 		internal static void Initialize ()
 		{
+			IdeApp.Workbench.RootWindow.Hidden += (sender, e) => {
+				if (!IdeApp.IsExiting && HasWindowImplementation) {
+					ShowWelcomeWindow (new WelcomeWindowShowOptions (true));
+				}
+			};
 			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
-				HideWelcomePage ();
+				HideWelcomePageOrWindow ();
 			};
 			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				ShowWelcomePage ();
+				if (!IdeApp.IsExiting && !IdeApp.Workspace.WorkspaceItemIsOpening) {
+					ShowWelcomePageOrWindow ();
+				}
 			};
 			IdeApp.Workbench.DocumentOpened += delegate {
-				HideWelcomePage ();
+				HideWelcomePageOrWindow ();
 			};
 			IdeApp.Workbench.DocumentClosed += delegate {
-				if (IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen)
-					ShowWelcomePage ();
+				if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen) {
+					ShowWelcomePageOrWindow ();
+				}
 			};
 		}
 
-		public static bool WelcomePageVisible {
-			get { return visible; }
+		public static bool WelcomePageVisible => visible;
+
+		public static bool WelcomeWindowVisible => welcomeWindow != null && visible;
+
+		public static Window WelcomeWindow => welcomeWindow;
+
+		public static bool HasWindowImplementation => AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().Any ();
+
+		public static void ShowWelcomePageOrWindow (WelcomeWindowShowOptions options = null)
+		{
+			if (options == null) {
+				options = new WelcomeWindowShowOptions (true);
+			}
+
+			// Try to get a dialog version of the "welcome screen" first
+			if (!ShowWelcomeWindow (options)) {
+				ShowWelcomePage (true);
+			}
+		}
+
+		public static void HideWelcomePageOrWindow ()
+		{
+			if (HasWindowImplementation && welcomeWindowProvider != null && welcomeWindow != null) {
+				welcomeWindowProvider.HideWindow (welcomeWindow);
+			} else {
+				HideWelcomePage (true);
+			}
+
+			visible = false;
 		}
 
 		public static void ShowWelcomePage (bool animate = false)
@@ -83,6 +121,26 @@ namespace MonoDevelop.Ide.WelcomePage
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.RemoveOverlayWidget (animate);
 			}
 			WelcomePageHidden?.Invoke (welcomePage, EventArgs.Empty);
+		}
+
+		public static bool ShowWelcomeWindow (WelcomeWindowShowOptions options)
+		{
+			if (welcomeWindowProvider == null) {
+				welcomeWindowProvider = AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().FirstOrDefault ();
+				if (welcomeWindowProvider == null)
+					return false;
+			}
+
+			if (welcomeWindow == null) {
+				welcomeWindow = welcomeWindowProvider.CreateWindow ();
+				if (welcomeWindow == null)
+					return false;
+			}
+
+			welcomeWindowProvider.ShowWindow (welcomeWindow, options);
+			visible = true;
+
+			return true;
 		}
 	}
 }

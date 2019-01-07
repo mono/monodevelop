@@ -31,6 +31,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -123,6 +125,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 			formatter.CorrectIndenting (policyParent, editor, line);
+		}
+
+		public Task CorrectIndentingAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken = default)
+		{
+			return formatter.CorrectIndentingAsync (editor, context, startLine, endLine, cancellationToken);
 		}
 
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, IDocumentLine line)

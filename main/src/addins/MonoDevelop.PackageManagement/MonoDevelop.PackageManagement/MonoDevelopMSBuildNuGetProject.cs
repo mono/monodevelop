@@ -30,7 +30,7 @@ using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	class MonoDevelopMSBuildNuGetProject : MSBuildNuGetProject, IHasDotNetProject
+	class MonoDevelopMSBuildNuGetProject : MSBuildNuGetProject, IHasDotNetProject, IHasProjectReferenceMaintainer
 	{
 		MonoDevelopMSBuildNuGetProjectSystem projectSystem;
 
@@ -50,6 +50,11 @@ namespace MonoDevelop.PackageManagement
 
 		public IDotNetProject Project {
 			get { return projectSystem.Project; }
+		}
+
+		public IProjectReferenceMaintainer ProjectReferenceMaintainer {
+			get { return projectSystem.ProjectReferenceMaintainer; }
+			set { projectSystem.ProjectReferenceMaintainer = value; }
 		}
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
+using System;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -55,8 +57,25 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			var dependencies = (await project.GetPackageDependencies (ConfigurationSelector.Default, default (CancellationToken))).ToList ();
 			var fsharpCore = dependencies.SingleOrDefault (d => d.Name == "FSharp.Core");
+			var fsharpCoreVersion = Version.Parse (fsharpCore.Version);
 
-			Assert.AreEqual ("4.5.0", fsharpCore.Version);
+			Assert.True (fsharpCoreVersion.Major == 4 && fsharpCoreVersion.Minor == 5 && fsharpCoreVersion.Build >= 0, $"Version {fsharpCoreVersion.Major}.{fsharpCoreVersion.Minor}.{fsharpCoreVersion.Build} != 4.5.x");
+		}
+
+		[Test]
+		public async Task OfflineRestore_NetCore21Project ()
+		{
+			FilePath solutionFileName = Util.GetSampleProject ("restore-netcore-offline", "dotnetcoreconsole.sln");
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllDotNetProjects ().Single ();
+
+			using (var logger = new PackagManagementEventsConsoleLogger ()) {
+				await RestoreDotNetCoreNuGetPackages (solution);
+			}
+
+			var packagesDirectory = solution.BaseDirectory.Combine ("packages-cache");
+			Assert.IsFalse (Directory.Exists (packagesDirectory));
+			Assert.IsTrue (File.Exists (project.BaseDirectory.Combine ("obj", "project.assets.json")));
 		}
 	}
 }

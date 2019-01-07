@@ -5,6 +5,10 @@
 		<Import assembly="Microsoft.Web.XmlTransform.dll" />
 		<Import assembly="NuGet.Packaging.dll" />
 		<Import assembly="NuGet.Frameworks.dll" />
+		<Import assembly="NuGet.Versioning.dll" />
+		<Import assembly="NuGet.Commands.dll" />
+		<Import assembly="NuGet.LibraryModel.dll" />
+		<Import assembly="NuGet.Common.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -83,7 +87,7 @@
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
+				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add NuGet _Packages..." />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject" />
 			<CommandItem

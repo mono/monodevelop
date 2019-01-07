@@ -282,6 +282,7 @@ namespace MonoDevelop.SourceEditor.Braces
 		{
 			_textView.Closed += textView_Closed;
 			_textView.Options.OptionChanged += Options_OptionChanged;
+			DefaultSourceEditorOptions.Instance.Changed += EditorOptions_OptionChanged;
 		}
 
 		private void textView_Closed (object sender, EventArgs e)
@@ -293,6 +294,12 @@ namespace MonoDevelop.SourceEditor.Braces
 		{
 			_textView.Closed -= textView_Closed;
 			_textView.Options.OptionChanged -= Options_OptionChanged;
+			DefaultSourceEditorOptions.Instance.Changed -= EditorOptions_OptionChanged;
+		}
+
+		private void EditorOptions_OptionChanged (object sender, EventArgs args)
+		{
+			GetOptions ();
 		}
 
 		private void Options_OptionChanged (object sender, EditorOptionChangedEventArgs e)

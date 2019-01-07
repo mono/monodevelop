@@ -643,7 +643,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 				var workspace = document.Project.Solution.Workspace;
 				var changes = Formatter.GetFormattedTextChanges (
-					root, new TextSpan[] { CommonFormattingHelpers.GetFormattingSpan (root, visibleSpan) },
+					root, new TextSpan [] { CommonFormattingHelpers.GetFormattingSpan (root, visibleSpan) },
 					workspace, options, formattingRules, CancellationToken.None);
 
 				visibleSpans.Add (visibleSpan);

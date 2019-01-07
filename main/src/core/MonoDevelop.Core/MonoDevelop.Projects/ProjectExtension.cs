@@ -175,7 +175,7 @@ namespace MonoDevelop.Projects
 			return next.OnGetAnalyzerFiles (monitor, configuration);
 		}
 
-		internal protected virtual Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		internal protected virtual Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return next.OnGetSourceFiles (monitor, configuration);
 		}

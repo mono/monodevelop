@@ -426,14 +426,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public event EventHandler ZoomLevelChanged {
-			add {
-				textEditorImpl.ZoomLevelChanged += value;
-			}
-			remove {
-				textEditorImpl.ZoomLevelChanged -= value;
-			}
-		}
+		public event EventHandler ZoomLevelChanged;
 
 		public string ContextMenuPath {
 			get {
@@ -486,6 +479,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
+		}
+
+		public void InformLoadComplete ()
+		{
+			Runtime.AssertMainThread ();
+			textEditorImpl.InformLoadComplete ();
 		}
 
 		public void ClearSelection ()
@@ -980,6 +979,7 @@ namespace MonoDevelop.Ide.Editor
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
+			textEditorImpl.ZoomLevelChanged -= TextEditor_ZoomLevelChanged;
 			foreach (var provider in textEditorImpl.TooltipProvider)
 				provider.Dispose ();
 			textEditorImpl.Dispose ();
@@ -1050,11 +1050,18 @@ namespace MonoDevelop.Ide.Editor
 			ExtensionContext = AddinManager.CreateExtensionContext ();
 			ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
 
+			textEditorImpl.ZoomLevelChanged += TextEditor_ZoomLevelChanged;
 			FileNameChanged += TextEditor_FileNameChanged;
 			MimeTypeChanged += TextEditor_MimeTypeChanged;
+
 			TextEditor_MimeTypeChanged (null, null);
 
 			this.TextView = CompositionManager.GetExportedValue<ITextEditorInitializationService> ().CreateTextView (this);
+		}
+
+		void TextEditor_ZoomLevelChanged (object sender, EventArgs e)
+		{
+			ZoomLevelChanged?.Invoke (this, e);
 		}
 
 		async void TextEditor_FileNameChanged (object sender, EventArgs e)

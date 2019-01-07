@@ -207,7 +207,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelFprint = new global::Gtk.Label ();
 			this.labelFprint.Name = "labelFprint";
 			this.labelFprint.Xalign = 0F;
-			this.labelFprint.LabelProp = "label14";
 			this.table1.Add (this.labelFprint);
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelFprint]));
 			w13.TopAttach = ((uint)(5));
@@ -220,7 +219,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelFrom = new global::Gtk.Label ();
 			this.labelFrom.Name = "labelFrom";
 			this.labelFrom.Xalign = 0F;
-			this.labelFrom.LabelProp = "label12";
 			this.table1.Add (this.labelFrom);
 			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelFrom]));
 			w14.TopAttach = ((uint)(3));
@@ -233,7 +231,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelHost = new global::Gtk.Label ();
 			this.labelHost.Name = "labelHost";
 			this.labelHost.Xalign = 0F;
-			this.labelHost.LabelProp = "label10";
 			this.table1.Add (this.labelHost);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelHost]));
 			w15.TopAttach = ((uint)(1));
@@ -246,7 +243,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelIssuer = new global::Gtk.Label ();
 			this.labelIssuer.Name = "labelIssuer";
 			this.labelIssuer.Xalign = 0F;
-			this.labelIssuer.LabelProp = "label11";
 			this.table1.Add (this.labelIssuer);
 			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelIssuer]));
 			w16.TopAttach = ((uint)(2));
@@ -259,7 +255,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelRealm = new global::Gtk.Label ();
 			this.labelRealm.Name = "labelRealm";
 			this.labelRealm.Xalign = 0F;
-			this.labelRealm.LabelProp = "label9";
 			this.table1.Add (this.labelRealm);
 			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRealm]));
 			w17.LeftAttach = ((uint)(1));
@@ -269,7 +264,6 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelUntil = new global::Gtk.Label ();
 			this.labelUntil.Name = "labelUntil";
 			this.labelUntil.Xalign = 0F;
-			this.labelUntil.LabelProp = "label13";
 			this.table1.Add (this.labelUntil);
 			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelUntil]));
 			w18.TopAttach = ((uint)(4));

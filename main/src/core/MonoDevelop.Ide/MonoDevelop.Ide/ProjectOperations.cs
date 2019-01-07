@@ -692,27 +692,27 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
-		public void NewSolution ()
+
+		public Task<bool> NewSolution ()
 		{
-			NewSolution (null);
-		}
-		
-		public void NewSolution (string defaultTemplate)
-		{
-			NewSolution (defaultTemplate, true);
+			return NewSolution (null);
 		}
 
-		public async void NewSolution (string defaultTemplate, bool showTemplateSelection)
+		public Task<bool> NewSolution (string defaultTemplate)
+		{
+			return NewSolution (defaultTemplate, true);
+		}
+
+		public async Task<bool> NewSolution (string defaultTemplate, bool showTemplateSelection)
 		{
 			if (!await IdeApp.Workbench.SaveAllDirtyFiles ())
-				return;
+				return false;
 
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
 			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
-			newProjectDialog.Show ();
+			return newProjectDialog.Show ();
 		}
 		
 		public Task<WorkspaceItem> AddNewWorkspaceItem (Workspace parentWorkspace)
@@ -2362,12 +2362,27 @@ namespace MonoDevelop.Ide
 			
 			monitor.EndTask ();
 		}
-		
+
+		static void GetTargetCopyFileNameParts(FilePath path, out string nameWithoutExtension, out string extension)
+		{
+			// under normal circumstances this is what we would want, foo.cs -> foo and .cs
+			// however, for cases like foo.xaml.cs, we want foo and .xaml.cs
+			nameWithoutExtension = path.FileNameWithoutExtension;
+			extension = path.Extension;
+			var x = Path.GetFileNameWithoutExtension (nameWithoutExtension);
+			while (x != nameWithoutExtension) {
+				extension = Path.GetExtension (nameWithoutExtension) + extension;
+				nameWithoutExtension = x;
+			}
+		}
+
 		internal static FilePath GetTargetCopyName (FilePath path, bool isFolder)
 		{
+			GetTargetCopyFileNameParts (path, out string nameWithoutExtension, out string extension);
+
 			int n=1;
 			// First of all try to find an existing copy tag
-			string fn = path.FileNameWithoutExtension;
+			string fn = nameWithoutExtension;
 			for (int i=1; i<100; i++) {
 				string copyTag = GetCopyTag (i); 
 				if (fn.EndsWith (copyTag)) {
@@ -2382,7 +2397,7 @@ namespace MonoDevelop.Ide
 			FilePath basePath = path;
 			while ((!isFolder && File.Exists (path)) || (isFolder && Directory.Exists (path))) {
 				string copyTag = GetCopyTag (n);
-				path = basePath.ParentDirectory.Combine (basePath.FileNameWithoutExtension + copyTag + basePath.Extension);
+				path = basePath.ParentDirectory.Combine (nameWithoutExtension + copyTag + extension);
 				n++;
 			}
 			return path;

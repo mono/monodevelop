@@ -742,6 +742,7 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkResolverManifest.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

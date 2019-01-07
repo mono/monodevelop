@@ -84,7 +84,9 @@ namespace MonoDevelop.SourceEditor
 
 			var formatter = ctx.RoslynWorkspace.Services.GetLanguageServices (model.Language).GetService<IDocumentationCommentFormattingService> ();
 			var documentation = symbol.GetDocumentationParts (model, caretOffset, formatter, cancellationToken);
-			sb.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+			sb.Append ("<span font='");
+			sb.Append (FontService.SansFontName);
+			sb.Append("' size='small'>");
 
 			if (documentation != null && documentation.Any ()) {
 				sb.AppendLine ();

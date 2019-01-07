@@ -253,7 +253,7 @@ namespace MonoDevelop.Platform
 				? BashPause
 				: String.Empty;
 			
-			return String.Format (@" -T ""{4}"" --working-directory=""{3}"" -e bash -c ""'{0}' {1} ; {2}""",
+			return String.Format (@" -T ""{4}"" --working-directory=""{3}"" -x bash -c ""'{0}' {1} ; {2}""",
 				command,
 				EscapeArgs (args),
 				extra_commands,
@@ -339,7 +339,7 @@ namespace MonoDevelop.Platform
 				preferred_runner = KdeTerminalRunner;
 				preferedOpenFolderRunner = KdeTerminalOpenFolderRunner;
 			}
-			else if (Environment.GetEnvironmentVariable ("XDG_CURRENT_DESKTOP").IndexOf("XFCE", StringComparison.OrdinalIgnoreCase) > -1) {
+			else if ((Environment.GetEnvironmentVariable ("XDG_CURRENT_DESKTOP") ?? string.Empty).IndexOf("XFCE", StringComparison.OrdinalIgnoreCase) > -1) {
 				preferred_terminal = "xfce4-terminal";
 				preferred_runner = Xfce4TerminalRunner;
 				preferedOpenFolderRunner = Xfce4TerminalOpenFolderRunner;

@@ -226,7 +226,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					floatingWidget.Destroy ();
 					floatingWidget = null;
 				}
-				floatingWidget = new FloatingQuickFixIconWidget (codeActionEditorExtension, window, sourceEditorView, SmartTagSeverity.ErrorFixes, info.Tag, point);
+				floatingWidget = new FloatingQuickFixIconWidget (codeActionEditorExtension, window, sourceEditorView, info.Tag, point);
 				sourceEditorView.TextEditor.GdkWindow.GetOrigin (out int ox, out int oy);
 				floatingWidget.Move (ox + (int)point.X, oy + (int)(point.Y + 4));
 				window.Tag = floatingWidget;

@@ -746,7 +746,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (dataList == null)
 				return;
-			
 			Counters.ProcessCodeCompletion.Trace ("Begin filtering and sorting completion data");
 
 			var filterResult = dataList.FilterCompletionList (new CompletionListFilterInput (dataList, filteredItems, oldCompletionString, completionString));
@@ -1029,7 +1028,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
-			if ((char.IsWhiteSpace (descriptor.KeyChar) || char.IsPunctuation (descriptor.KeyChar)) && SelectedItem == null)
+			if ((char.IsWhiteSpace (descriptor.KeyChar) || char.IsPunctuation (descriptor.KeyChar) || descriptor.KeyChar == '(' || descriptor.KeyChar == '<' || descriptor.KeyChar == '[')  && SelectedItem == null)
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			return KeyActions.Process;
@@ -1085,23 +1084,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var data = dataList [SelectedItemIndex];
 
-			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
-				if (descriptor.KeyChar == ':') {
-					foreach (var item in filteredItems) {
-						if (dataList [item].DisplayText.EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
-							SelectedItemIndex = item;
-							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
-						}
-					}
-				} else {
-					var selectedItem = SelectedItemIndex;
-					if (selectedItem < 0 || selectedItem >= dataList.Count)
-						return KeyActions.CloseWindow;
-					if (descriptor.SpecialKey == SpecialKey.None) {
-						ResetSizes ();
-						UpdateWordSelection ();
+			if (descriptor.KeyChar == ':') {
+				foreach (var item in filteredItems) {
+					if (dataList [item].DisplayText.EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
+						SelectedItemIndex = item;
+						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
 				}
+			}
+			if (descriptor.SpecialKey == SpecialKey.None) {
+				ResetSizes ();
+				UpdateWordSelection ();
+			}
+
+			if (!char.IsLetterOrDigit(descriptor.KeyChar)) {
+				var selectedItem = SelectedItemIndex;
+				if (selectedItem < 0 || selectedItem >= dataList.Count)
+					return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
 			return KeyActions.Process;

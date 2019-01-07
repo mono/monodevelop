@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Extensions
 		/// <summary>
 		/// Called when the Ide has been initialized
 		/// </summary>
-		internal protected virtual void OnIdeInitialized ()
+		internal protected virtual void OnIdeInitialized (bool hideWelcomePage)
 		{
 		}
 

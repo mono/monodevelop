@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public static void Show ()
 		{
-			WelcomePageService.ShowWelcomePage (true);
+			WelcomePageService.ShowWelcomePageOrWindow (options: new WelcomeWindowShowOptions (false));
 		}
 		
 		protected override void Run()
@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Text = WelcomePageService.HasWindowImplementation ? GettextCatalog.GetString ("Start Window") : GettextCatalog.GetString ("Welcome Page");
 			base.Update (info);
 		}
 	}

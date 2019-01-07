@@ -354,7 +354,7 @@ namespace MonoDevelop.Autotools
 			foreach (string s in MakefileData.CompilerMessageRegex.Keys)
 				comboMessageType.AppendText (s);
 				
-			comboMessageType.AppendText ("Custom");		
+			comboMessageType.AppendText (GettextCatalog.GetString ("Custom"));		
 			comboMessageType.Active = 0;
 		}
 
@@ -720,7 +720,7 @@ namespace MonoDevelop.Autotools
 				List<string> list = new List<string> (vars);
 				list.Sort ();
 				
-				comboFilesVar.AppendText ("(None)");
+				comboFilesVar.AppendText (GettextCatalog.GetString ("(None)"));
 				foreach (string item in list)
 					combos [0].AppendText (item);
 

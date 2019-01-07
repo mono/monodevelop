@@ -36,7 +36,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label = new global::Gtk.Label ();
 			this.label.Name = "label";
 			this.label.Xalign = 0F;
-			this.label.LabelProp = "label";
 			this.vbox2.Add (this.label);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label]));
 			w2.Position = 0;

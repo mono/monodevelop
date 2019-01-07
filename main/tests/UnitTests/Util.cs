@@ -159,12 +159,12 @@ namespace UnitTests
 				break;
 			case XmlNodeType.Attribute:
 				if (nod.LocalName == "xmlns" && nod.NamespaceURI == "http://www.w3.org/2000/xmlns/") return;
-				sb.Append (" " + nod.NamespaceURI + ":" + nod.LocalName + "='" + nod.Value + "'");
+				sb.Append (" ").Append (nod.NamespaceURI).Append (":").Append (nod.LocalName).Append ("='").Append (nod.Value).Append ("'");
 				break;
 
 			case XmlNodeType.Element:
 				XmlElement elem = (XmlElement) nod;
-				sb.Append ("<" + elem.NamespaceURI + ":" + elem.LocalName);
+				sb.Append ("<").Append (elem.NamespaceURI).Append (":").Append (elem.LocalName);
 
 				ArrayList ats = new ArrayList ();
 				foreach (XmlAttribute at in elem.Attributes)
