@@ -328,7 +328,7 @@
     <CommandItem id = "MonoDevelop.FSharp.CurrentRefactoringOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
     <Condition id="FileType" fileExtensions=".fs,.fsi,.fsx,.fsscript">
 	  <ItemSet id = "MonoDevelop.FSharp.QuickFixMenu" _label = "Quick Fix" autohide = "true" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator">
-  		<CommandItem id = "MonoDevelop.FSharp.QuickFixMenu" />
+  	    <CommandItem id = "MonoDevelop.FSharp.QuickFixMenu" />
       </ItemSet>
       <SeparatorItem id = "FSharpScriptDebug" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
