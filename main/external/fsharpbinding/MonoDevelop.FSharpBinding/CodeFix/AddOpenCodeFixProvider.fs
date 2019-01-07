@@ -13,11 +13,11 @@ open MonoDevelop.Refactoring
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module internal InsertContext =
     /// Corrects insertion line number based on kind of scope and text surrounding the insertion point.
-    let adjustInsertionPoint (text: string) ctx  =
+    let adjustInsertionPoint (editor:TextEditor) (text: string) ctx  =
 
         let sourceText = String.getLines text
         let getLineStr line = sourceText.[line].ToString().Trim()
-        let line =
+        let line, indentLevel =
             match ctx.ScopeKind with
             | ScopeKind.TopModule ->
                 if ctx.Pos.Line > 1 then
@@ -31,9 +31,9 @@ module internal InsertContext =
                                 let count = count + 1
                                 skipComments (getLineStr count) count
                             else count
-                        skipComments (getLineStr 0) 0
-                    else ctx.Pos.Line - 1
-                else 0
+                        skipComments (getLineStr 0) 0, 0
+                    else ctx.Pos.Line - 1, 0
+                else 0, 0
             | ScopeKind.Namespace ->
                 // for namespaces the start line is start line of the first nested entity
                 if ctx.Pos.Line > 1 then
@@ -43,15 +43,27 @@ module internal InsertContext =
                         if lineStr.StartsWith "namespace" then Some i
                         else None)
                     |> function
-                        | Some line -> line + 1
-                        | None -> ctx.Pos.Line - 1
-                else 1  
-            | _ -> ctx.Pos.Line - 1
+                        | Some line -> line + 1, 0
+                        | None -> ctx.Pos.Line - 1, 0
+                else 1, 0 
+            | _ -> 
+                let line = getLineStr (ctx.Pos.Line - 2)
+                let isExplicitModule = line.StartsWith "module" && line.EndsWith "="
 
-        if line = 0 then 0 
+                if isExplicitModule then 
+
+                    // This is required to get the correct indentation for mutliple explict nested modules. 
+                    // eg. Foo.Bar.Baz
+                    let line = sourceText.[ctx.Pos.Line - 2]
+                    let indent = line.Substring(0, line.IndexOf ('m')).Length
+
+                    ctx.Pos.Line - 1, indent + editor.Options.IndentationSize
+                else ctx.Pos.Line - 1, 0
+
+        if line = 0 then 0, 0
         else   
             let lengthOfLines = sourceText |> Array.take line |> String.concat "\n" |> sprintf "%s\n"
-            lengthOfLines.Length
+            lengthOfLines.Length , indentLevel
 
 
     /// <summary>
@@ -60,9 +72,16 @@ module internal InsertContext =
     /// <param name="sourceText">SourceText.</param>
     /// <param name="ctx">Insertion context. Typically returned from tryGetInsertionContext</param>
     /// <param name="ns">Namespace to open.</param>
-    let insertOpenDeclartionWithEditor (editor:TextEditor) (ctx) displayText = 
+    let insertOpenDeclarationWithEditor (editor:TextEditor) (ctx) displayText = 
         let activeDocFileName = editor.FileName.ToString ()
-        let offset = adjustInsertionPoint editor.Text ctx
+        let offset, indentLevel = adjustInsertionPoint editor editor.Text ctx
+
+        // A correction to the offset (for indentation) is required when an expclit module is used. (`module = `)
+        let offset, displayText = 
+            if indentLevel = 0 then offset, displayText 
+            else 
+                let indent = " " |> List.replicate indentLevel |> String.concat ""
+                offset - 1, Environment.NewLine + indent + displayText
 
         TextReplaceChange (FileName = activeDocFileName,
                            Offset = offset,
@@ -95,7 +114,7 @@ module internal FSharpAddOpenCodeFixProvider =
 
             displayText, 
                 fun () -> 
-                    let changes = InsertContext.insertOpenDeclartionWithEditor editor ctx displayText
+                    let changes = InsertContext.insertOpenDeclarationWithEditor editor ctx displayText
                     RefactoringService.AcceptChanges(monitor, changes)
             )
 
