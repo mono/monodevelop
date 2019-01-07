@@ -736,13 +736,10 @@ type QuickFixMenuHandler() =
                 LoggingService.logDebug "HighlightUsagesExtension: ResolveAsync starting on %s" (documentContext.Name |> IO.Path.GetFileName )
                 try
                     let line, col, lineStr = editor.GetLineInfoByCaretOffset ()
-
-                    //let idents = Parsing.findIdents col lineStr MonoDevelop.FSharp.Shared.SymbolLookupKind.ByLongIdent
                     let currentFile = documentContext.Name
                     let source = editor.Text
                     let projectFile = documentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
 
-                    //let tast = lang
                     let! symbolReferences = getSymbolAtLocationInFile (projectFile, currentFile, 0, source, line, col, lineStr)
                     return symbolReferences
                 with
@@ -765,9 +762,9 @@ type QuickFixMenuHandler() =
         }
 
     override x.Run (data) =
-        let del =  data :?> Action
-        if del <> null
-        then del.Invoke ()
+        data 
+        |> Option.tryCast<Action> 
+        |> Option.iter (fun data -> data.Invoke ())
 
     override x.UpdateAsync (info:CommandArrayInfo, cancelToken: CancellationToken) =
         info.Add (new CommandInfo (GettextCatalog.GetString ("Loading..."), false, false), null);

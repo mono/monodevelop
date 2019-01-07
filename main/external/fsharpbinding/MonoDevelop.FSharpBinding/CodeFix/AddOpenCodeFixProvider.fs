@@ -23,9 +23,9 @@ module internal InsertContext =
                 if ctx.Pos.Line > 1 then
                     // it's an implicit module without any open declarations    
                     let line = getLineStr (ctx.Pos.Line - 2)
-                    let isImpliciteTopLevelModule = not (line.StartsWith "module" && not (line.EndsWith "="))
+                    let isImplicitTopLevelModule = not (line.StartsWith "module" && not (line.EndsWith "="))
 
-                    if isImpliciteTopLevelModule then 
+                    if isImplicitTopLevelModule then 
                         let rec skipComments (line:string) count =
                             if line.StartsWith ("//") then 
                                 let count = count + 1
@@ -121,8 +121,6 @@ module internal FSharpAddOpenCodeFixProvider =
                                    e.CleanedIdents 
                                    |> Array.replace (e.CleanedIdents.Length - 1) (lastIdent.Substring(0, lastIdent.Length - 9)) ])
 
-            let idents = ParsedInput.getLongIdents (Some parsedInput)
-
             let longIdent = ParsedInput.getLongIdentAt parsedInput unresolvedIdentRange.End
             
             let! maybeUnresolvedIdents =
@@ -131,7 +129,7 @@ module internal FSharpAddOpenCodeFixProvider =
                     longIdent
                     |> List.map (fun ident ->
                         { Ident = ident.idText
-                          Resolved = false }) // not (ident.idRange = unresolvedIdentRange) })
+                          Resolved = false })
                     |> List.toArray)
             let createEntity = ParsedInput.tryFindInsertionContext unresolvedIdentRange.StartLine parsedInput maybeUnresolvedIdents
             let candidates = entities |> Seq.map createEntity |> Seq.concat |> Seq.toList

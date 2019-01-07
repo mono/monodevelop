@@ -17,7 +17,7 @@ module CommonRoslynHelpers =
     let TryFSharpRangeToTextSpan(sourceText: SourceText, range: range) : TextSpan option =
         try Some(FSharpRangeToTextSpan(sourceText, range))
         with e -> 
-            //Assert.Exception(e)
+            MonoDevelop.Core.LoggingService.LogInternalError e
             None
 
     let TextSpanToFSharpRange(fileName: string, textSpan: TextSpan, sourceText: SourceText) : range =
