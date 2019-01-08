@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
-				hideWelcomePage = startupInfo.HasFiles || !IdeApp.Preferences.OpenStartWindowOnStartup.Value;
+				hideWelcomePage = startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				IdeApp.Initialize (monitor, hideWelcomePage);
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide
 
 				// load previous combine
 				RecentFile openedProject = null;
-				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
+				if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();

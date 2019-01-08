@@ -16,6 +16,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.CheckButton loadUserDataCheckButton;
 		private global::Gtk.RadioButton openStartWindowRadioButton;
 		private global::Gtk.RadioButton loadPrevProjectRadioButton;
+		private global::Gtk.RadioButton emptyEnvironmentRadioButton;
 		private global::Gtk.VBox vbox19;
 		private global::Gtk.Label saveLabel;
 		private global::Gtk.HBox hbox11;
@@ -135,6 +136,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
+			this.emptyEnvironmentRadioButton = new global::Gtk.RadioButton (this.openStartWindowRadioButton) {
+				Name = "emptyEnvironmentCheckButton",
+				Label = global::Mono.Unix.Catalog.GetString ("_Show empty environment"),
+				DrawIndicator = true,
+				UseUnderline = true
+			};
+			this.vbox65.Add (this.emptyEnvironmentRadioButton);
+			w = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.emptyEnvironmentRadioButton]));
+			w.Position = 3;
+			w.Expand = false;
+			w.Fill = false;
 			this.hbox10.Add (this.vbox65);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox10 [this.vbox65]));
 			w8.Position = 0;
