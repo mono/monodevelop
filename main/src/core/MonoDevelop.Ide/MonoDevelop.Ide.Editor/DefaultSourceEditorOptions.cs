@@ -865,10 +865,9 @@ namespace MonoDevelop.Ide.Editor
 				context.CodingConventionsChangedAsync -= UpdateContextOptions;
 		}
 
-		protected void OnChanged (EventArgs args)
+		void OnChanged (EventArgs args)
 		{
-			if (Changed != null)
-				Changed (null, args);
+			Changed?.Invoke (null, args);
 		}
 
 		public event EventHandler Changed;

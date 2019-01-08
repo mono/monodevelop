@@ -23,10 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Editor.Highlighting;
-using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
@@ -48,7 +47,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		int LineNumber { get; }
 
 		string CurrentIndent { get; }
-		new IDocumentIndentEngine Clone ();
+
+		IDocumentIndentEngine Clone ();
 
 		/// <summary>
 		///     Resets the engine.
