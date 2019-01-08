@@ -3038,7 +3038,6 @@
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
-    <Compile Include="MonoDevelop.Ide.Composition\UIExtensionSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\VacuousTextDataModel.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\VacuousTextViewModel.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />
@@ -4179,6 +4178,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopSymbolNavigationService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IEditorContentProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextViewExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.FileKey.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs">
