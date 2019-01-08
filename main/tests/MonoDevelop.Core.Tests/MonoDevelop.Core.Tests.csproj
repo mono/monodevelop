@@ -10,6 +10,7 @@
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,35 +29,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\packages\System.Collections.Immutable.1.5.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.$(NuGetVersionRoslyn)\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\packages\Mono.Cecil.0.10.0-beta7\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\packages\Mono.Cecil.0.10.0-beta7\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\packages\Mono.Cecil.0.10.0-beta7\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\packages\Mono.Cecil.0.10.0-beta7\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System.Memory">
-      <HintPath>..\..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
@@ -147,14 +121,6 @@
       <Name>MonoDevelop.Core.Tests.Addin</Name>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.FSW\" />
-    <Folder Include="MonoDevelop.Core.Instrumentation\" />
-    <Folder Include="MonoDevelop.Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
