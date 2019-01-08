@@ -724,6 +724,7 @@
     <Compile Include="MonoDevelop.Core.AddIns\PlatformConditionAttribute.cs" />
     <Compile Include="MonoDevelop.Core\CoreServices.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemDefinitionGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
