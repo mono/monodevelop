@@ -746,6 +746,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 			AttachPathedDocument ();
 
+			// this is used by TextViewExtensions.TryGetParentDocument
+			var textView = GetContent<Microsoft.VisualStudio.Text.Editor.ITextView> ();
+			if (textView != null) {
+				textView.Properties.AddProperty (typeof(Document), this);
+			}
+
 			window.Document = this;
 		}
 		
