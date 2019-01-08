@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -56,5 +57,70 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		[DefaultValue (null)]
 		IEnumerable<string> TextViewRoles { get; }
+	}
+
+	/// <summary>
+	/// Base IEditorContentProvider implementation that lazily creates a content instance for
+	/// each matching <see cref="TextView"/>.
+	/// </summary>
+	public abstract class ViewEditorContentProvider<T> : IEditorContentProvider
+	{
+		readonly Type extType = typeof (T);
+
+		public object GetContent (ITextView view, Type type)
+		{
+			if (!type.IsAssignableFrom (extType)) {
+				return null;
+			}
+			if (view.Properties.TryGetProperty<T> (extType, out var prop)) {
+				return prop;
+			}
+			prop = CreateInstance (view);
+			view.Properties.AddProperty (extType, prop);
+			return prop;
+		}
+
+		protected abstract T CreateInstance (ITextView view);
+
+		public IEnumerable<object> GetContents (ITextView view, Type type)
+		{
+			var content = GetContent (view, type);
+			if (content != null) {
+				yield return content;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Base IEditorContentProvider implementation that lazily creates a content instance for
+	/// each matching <see cref="TextBuffer"/>.
+	/// </summary>
+	public abstract class BufferEditorContentProvider<T> : IEditorContentProvider
+	{
+		readonly Type extType = typeof (T);
+
+		public object GetContent (ITextView view, Type type)
+		{
+			if (!type.IsAssignableFrom (extType)) {
+				return null;
+			}
+			var buffer = view.TextBuffer;
+			if (buffer.Properties.TryGetProperty<T> (extType, out var prop)) {
+				return prop;
+			}
+			prop = CreateInstance (buffer);
+			buffer.Properties.AddProperty (extType, prop);
+			return prop;
+		}
+
+		protected abstract T CreateInstance (ITextBuffer buffer);
+
+		public IEnumerable<object> GetContents (ITextView view, Type type)
+		{
+			var content = GetContent (view, type);
+			if (content != null) {
+				yield return content;
+			}
+		}
 	}
 }
