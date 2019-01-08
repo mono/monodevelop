@@ -209,12 +209,21 @@ namespace MonoDevelop.DotNetCore
 			return Path.Combine (SdksParentDirectory, "Sdks");
 		}
 
-		string LookUpGlobalJson (string workingDir)
+		public string LookUpGlobalJson (string workingDir)
 		{
 			if (string.IsNullOrEmpty (workingDir))
 				return string.Empty;
 
-			var globalJsonPath = new DirectoryInfo (workingDir).GetFiles ("global.json", SearchOption.AllDirectories).FirstOrDefault ();
+			var workingDirInfo = new DirectoryInfo (workingDir);
+			var globalJsonPath = workingDirInfo.GetFiles ("global.json", SearchOption.TopDirectoryOnly).FirstOrDefault ();
+			while (globalJsonPath == null) {
+				if (workingDirInfo.Parent == null)
+					break;
+
+				workingDirInfo = workingDirInfo.Parent;
+				globalJsonPath = workingDirInfo.GetFiles ("global.json", SearchOption.TopDirectoryOnly).FirstOrDefault ();
+			}
+
 			if (globalJsonPath == null)
 				return string.Empty;
 

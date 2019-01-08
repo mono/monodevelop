@@ -325,11 +325,11 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			//detect globaljson
-			var globalJsonPath = new DirectoryInfo (Project.ParentSolution.BaseDirectory).GetFiles ("global.json", SearchOption.AllDirectories).FirstOrDefault ();
+			var globalJsonPath = sdkPaths.LookUpGlobalJson (Project.ParentSolution.BaseDirectory); 
 			if (globalJsonPath == null)
 				return;
 
-			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath.FullName;
+			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath;
 			DetectSDK ();
 		}
 

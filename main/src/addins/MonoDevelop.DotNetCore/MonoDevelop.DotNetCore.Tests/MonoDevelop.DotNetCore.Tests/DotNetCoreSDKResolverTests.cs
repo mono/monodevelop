@@ -115,7 +115,7 @@ namespace MonoDevelop.DotNetCore.Tests
 			var solutionFileName = Util.GetSampleProject ("dotnetcore-console", "dotnetcore-sdk-console.sln");
 			return (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 		}
-
+			
 		[Test]
 		public void WhenDotNetCorePathIsNull_ThenItReturnsLatestSdk ()
 		{
@@ -160,8 +160,30 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, expectedVersion.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory, true);
+				resolver.GlobalJsonPath = globalJsonPath;
+				resolver.ResolveSDK (workingDirectory);
 
+				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
+			}
+		}
+
+		[Test (Description = "This test is essentially the same than WhenGlobalJsonAndVersionMatches_ThenItReturnsThatVersion " + 
+			" but the global.json is generated into parent's workingDirectory forcing ResolveSDK to look it up")]
+		public async Task WhenGlobalJsonIsInParentWorkDirAndVersionMatches_ThenItReturnsThatVersion ()
+		{
+			var resolver = CreateResolver (DotNetCoreRuntime.FileName, mockSdkVersions: true);
+			var expectedVersion = DotNetCoreVersion.Parse ("2.1.500");
+			var expectedResult = Path.Combine (resolver.SdkRootPath, expectedVersion.OriginalString, "Sdks");
+
+			using (var solution = await GetSolution ()) {
+				var workingDirectory = Path.GetDirectoryName (solution.FileName);
+				var workingParentDirectory = new DirectoryInfo (workingDirectory).Parent;
+				var globalJsonPath = CreateGlobalJson (workingParentDirectory.FullName, expectedVersion.OriginalString);
+					
+				//in this test we force ResolveSDK to look up global.json in parent's directories
+				resolver.ResolveSDK (workingDirectory, forceLookUpGlobalJson: true);
+
+				Assert.That (globalJsonPath, Is.EqualTo (resolver.GlobalJsonPath));
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
 		}
@@ -178,7 +200,8 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory, true);
+				resolver.GlobalJsonPath = globalJsonPath;
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -196,7 +219,8 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory, true);
+				resolver.GlobalJsonPath = globalJsonPath;
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -212,7 +236,8 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory, true);
+				resolver.GlobalJsonPath = globalJsonPath;
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.True (resolver.IsUnsupportedSdkVersion);
 			}
@@ -246,12 +271,19 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory, true);
+				resolver.GlobalJsonPath = globalJsonPath;
+				resolver.ResolveSDK (workingDirectory);
 
 				Assert.That (resolver.IsUnsupportedSdkVersion, Is.EqualTo (!isSupported));
 				if (isSupported)
 					Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
+		}
+
+		[TearDown]
+		public void TearDown ()
+		{
+			Util.ClearTmpDir ();
 		}
 
 		string CreateGlobalJson (string workingDirectory, string version)
