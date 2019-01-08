@@ -91,7 +91,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="15.8.112" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces" Version="15.8.519" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Platform.VSEditor" Version="15.8.519" PrivateAssets="runtime" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Implementation" Version="15.2.3-pre" PrivateAssets="runtime" />
     <PackageReference Include="Mono.Cecil" Version="0.10.1" PrivateAssets="runtime" />
     <PackageReference Include="MonoDevelopDev.Analyzers" Version="0.1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" PrivateAssets="runtime" />
