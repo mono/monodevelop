@@ -18,6 +18,10 @@
     <Reference Include="NuGet.Versioning">
       <HintPath>..\..\..\..\packages\NuGet.Versioning.4.9.0-rtm.5658\lib\net46\NuGet.Versioning.dll</HintPath>
     </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
