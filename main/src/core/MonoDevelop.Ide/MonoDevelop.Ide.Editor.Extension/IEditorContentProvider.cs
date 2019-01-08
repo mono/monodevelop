@@ -63,6 +63,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// Base IEditorContentProvider implementation that lazily creates a content instance for
 	/// each matching <see cref="TextView"/>.
 	/// </summary>
+	/// <remarks>
+	/// If the content instance is <see cref="IDisposable"/>, it will be disposed when the view is closed.
+	/// </remarks>
 	public abstract class ViewEditorContentProvider<T> : IEditorContentProvider
 	{
 		readonly Type extType = typeof (T);
@@ -77,6 +80,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			prop = CreateInstance (view);
 			view.Properties.AddProperty (extType, prop);
+			if (prop is IDisposable disposable) {
+				view.Closed += (s, e) => disposable.Dispose ();
+			}
 			return prop;
 		}
 
@@ -95,6 +101,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// Base IEditorContentProvider implementation that lazily creates a content instance for
 	/// each matching <see cref="TextBuffer"/>.
 	/// </summary>
+	/// <remarks>
+	/// The instance will not be disposed, so it should not subscribe to events other than those on the buffer.
+	/// </remarks>
 	public abstract class BufferEditorContentProvider<T> : IEditorContentProvider
 	{
 		readonly Type extType = typeof (T);
