@@ -95,7 +95,7 @@ namespace MonoDevelop.DotNetCore
 
 		public void Show ()
 		{
-			if (IsUnsupportedVersion)
+			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
 				Message = GetDotNetCoreMessage ();
 			else {
 				Message = GetDotNetCoreMessage (RequiredDotNetCoreVersion.OriginalString);
@@ -111,6 +111,7 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		public bool IsUnsupportedVersion { get; set; }
+		public bool IsNetStandard { get; set; }
 		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
 	}
 }

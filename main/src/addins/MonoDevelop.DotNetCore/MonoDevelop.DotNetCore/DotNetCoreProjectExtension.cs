@@ -243,6 +243,7 @@ namespace MonoDevelop.DotNetCore
 				using (var dialog = new DotNetCoreNotInstalledDialog ()) {
 					dialog.IsUnsupportedVersion = unsupportedSdkVersion;
 					dialog.RequiredDotNetCoreVersion = DotNetCoreVersion.Parse (Project.TargetFramework.Id.Version);
+					dialog.IsNetStandard = Project.TargetFramework.Id.IsNetStandard ();
 					dialog.Show ();
 				}
 			});
