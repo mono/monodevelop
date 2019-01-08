@@ -55,12 +55,12 @@ namespace MonoDevelop.Ide.Text
 		public IWpfTextView TextView { get; private set; }
 		private IWpfTextViewHost textViewHost;
 #elif MAC
-		private ICocoaTextViewHost textViewHost;
+		ICocoaTextViewHost textViewHost;
 		public ICocoaTextView TextView { get; private set; }
 #endif
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
-		private IEditorCommandHandlerService _editorCommandHandlerService;
+		IEditorCommandHandlerService _editorCommandHandlerService;
 		List<IEditorContentProvider> contentProviders;
 
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
@@ -75,6 +75,7 @@ namespace MonoDevelop.Ide.Text
 				DefaultTextViewHostOptions.LineNumberMarginId,
 				Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin);
 
+			//TODO: this can change when the file is renamed
 			var contentType = (mimeType == null) ? imports.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (fileName, mimeType);
 
 			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
@@ -97,7 +98,7 @@ namespace MonoDevelop.Ide.Text
 			control = new EmbeddedNSViewControl (CreateControl ());
 #endif
 			ContentName = fileName;
-			TextView.Properties [typeof (Ide.Text.TextViewContent)] = this;
+			TextView.Properties [typeof (TextViewContent)] = this;
 			_editorCommandHandlerService = imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 
 			contentProviders = imports.EditorContentProviderService.GetContentProvidersForView (TextView).ToList ();
@@ -161,14 +162,14 @@ namespace MonoDevelop.Ide.Text
 			get => TextDocument.IsDirty;
 		}
 
-		private void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
+		void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
 		{
 			OnDirtyChanged ();
 		}
 
 		static readonly string[] textContentType = { "text" };
 
-		private IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
 		{
 			if (filePath != null) {
 				var contentTypeFromPath = imports.FileToContentTypeService.GetContentTypeForFilePath (filePath);
@@ -219,20 +220,20 @@ namespace MonoDevelop.Ide.Text
 #elif MAC
 		class EmbeddedNSViewControl : Control
 		{
-			private AppKit.NSView nSView;
+			readonly NSView nsView;
 
-			public EmbeddedNSViewControl (AppKit.NSView nSView)
+			public EmbeddedNSViewControl (NSView nsView)
 			{
-				this.nSView = nSView;
+				this.nsView = nsView;
 			}
 
 			protected override object CreateNativeWidget<T> ()
 			{
-				return nSView;
+				return nsView;
 			}
 		}
 
-		private AppKit.NSView CreateControl ()
+		NSView CreateControl ()
 		{
 			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
 			ITextDataModel dataModel = new VacuousTextDataModel (TextBuffer);
@@ -248,8 +249,10 @@ namespace MonoDevelop.Ide.Text
 			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			return textViewHost.HostControl;
 		}
+
 		Control control;
 		public override Control Control { get => control; }
+
 #endif
 		public override void Dispose ()
 		{
