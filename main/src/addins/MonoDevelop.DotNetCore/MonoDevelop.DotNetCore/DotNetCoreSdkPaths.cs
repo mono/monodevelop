@@ -39,6 +39,7 @@ namespace MonoDevelop.DotNetCore
 
 		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
 		public string SdkRootPath { get; internal set; }
+		public string GlobalJsonPath { get; set; }
 
 		public DotNetCoreSdkPaths (string dotNetCorePath = "")
 		{
@@ -61,14 +62,16 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		//https://docs.microsoft.com/en-us/dotnet/core/tools/global-json
-		public void ResolveSDK (string workingDir = "")
+		public void ResolveSDK (string workingDir = "", bool forceLookUpGlobalJson = false)
 		{
 			if (!SdkVersions.Any ())
 				return;
-
-			//look at the WHOLE logic, create SDKResovlerFoo (testing), use here
+					
 			DotNetCoreVersion targetVersion = null;
-			var specificVersion = ReadGlobalJson (workingDir);
+			if (forceLookUpGlobalJson) {
+				GlobalJsonPath = LookUpGlobalJson (workingDir);
+			}
+			var specificVersion = ReadGlobalJson ();
 
 			//if !global.json, returns latest
 			if (string.IsNullOrEmpty (specificVersion)) {
@@ -206,7 +209,7 @@ namespace MonoDevelop.DotNetCore
 			return Path.Combine (SdksParentDirectory, "Sdks");
 		}
 
-		string ReadGlobalJson (string workingDir)
+		string LookUpGlobalJson (string workingDir)
 		{
 			if (string.IsNullOrEmpty (workingDir))
 				return string.Empty;
@@ -215,7 +218,15 @@ namespace MonoDevelop.DotNetCore
 			if (globalJsonPath == null)
 				return string.Empty;
 
-			using (var r = new StreamReader (globalJsonPath.FullName)) {
+			return globalJsonPath.FullName;
+		}
+
+		string ReadGlobalJson ()
+		{
+			if (string.IsNullOrEmpty (GlobalJsonPath))
+				return string.Empty;
+
+			using (var r = new StreamReader (GlobalJsonPath)) {
 				try {
 					var token = JObject.Parse (r.ReadToEnd ());
 					if (token == null)
@@ -223,7 +234,7 @@ namespace MonoDevelop.DotNetCore
 					var version = (string)token.SelectToken ("sdk").SelectToken ("version");
 					return version;
 				} catch (Exception e) {
-					LoggingService.LogWarning ($"Unable to parse {globalJsonPath}.", e);
+					LoggingService.LogWarning ($"Unable to parse {GlobalJsonPath}.", e);
 					return string.Empty;
 				}
 			}

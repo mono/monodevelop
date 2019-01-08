@@ -160,7 +160,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, expectedVersion.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory);
+				resolver.ResolveSDK (workingDirectory, true);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -178,7 +178,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory);
+				resolver.ResolveSDK (workingDirectory, true);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -196,7 +196,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory);
+				resolver.ResolveSDK (workingDirectory, true);
 
 				Assert.That (resolver.MSBuildSDKsPath, Is.EqualTo (expectedResult));
 			}
@@ -212,7 +212,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory);
+				resolver.ResolveSDK (workingDirectory, true);
 
 				Assert.True (resolver.IsUnsupportedSdkVersion);
 			}
@@ -246,7 +246,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				var workingDirectory = Path.GetDirectoryName (solution.FileName);
 				var globalJsonPath = CreateGlobalJson (workingDirectory, versionThatDoesNotExists.OriginalString);
 
-				resolver.ResolveSDK (workingDirectory);
+				resolver.ResolveSDK (workingDirectory, true);
 
 				Assert.That (resolver.IsUnsupportedSdkVersion, Is.EqualTo (!isSupported));
 				if (isSupported)

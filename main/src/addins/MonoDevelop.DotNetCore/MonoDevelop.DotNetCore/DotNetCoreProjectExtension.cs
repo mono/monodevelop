@@ -60,7 +60,10 @@ namespace MonoDevelop.DotNetCore
 			if (globalJson == null)
 				return;
 
-			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJson.FileName.ToString ();
+			if (Path.GetFileName (globalJson.FileName).IndexOf ("global.json", StringComparison.OrdinalIgnoreCase) == 0)
+				Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJson.FileName.ToString ();
+			else //i.e. global.json has been renamed
+				Project.ParentSolution.ExtendedProperties.Remove (GlobalJsonPathExtendedPropertyName);
 
 			DetectSDK (true);
 		}
@@ -324,12 +327,19 @@ namespace MonoDevelop.DotNetCore
 			var globalJsonPath = new DirectoryInfo (Project.ParentSolution.BaseDirectory).GetFiles ("global.json", SearchOption.AllDirectories).FirstOrDefault ();
 			if (globalJsonPath == null)
 				return;
+
 			Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJsonPath.FullName;
 			DetectSDK ();
 		}
 
 		void DetectSDK (bool restore = false)
 		{
+			if (Project.ParentSolution.ExtendedProperties.Contains (GlobalJsonPathExtendedPropertyName)
+				&& File.Exists ((string)Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName]))
+				sdkPaths.GlobalJsonPath = (string)Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName];
+			else
+				sdkPaths.GlobalJsonPath = string.Empty;
+
 			sdkPaths.ResolveSDK (Project.ParentSolution.BaseDirectory);
 			DotNetCoreSdk.Update (sdkPaths);
 			if (restore && sdkPaths.Exist)
