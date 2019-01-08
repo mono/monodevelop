@@ -4163,9 +4163,10 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopSymbolNavigationService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IEditorContentProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextViewExtensions.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Extension\IEditorCommandTargetProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.FileKey.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomeWindowProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs">
@@ -4183,10 +4184,6 @@
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\BlockTagState.cs">
       <Link>RoslynOutliningWorkaround\BlockTagState.cs</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
-    <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NativeViewHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />

@@ -169,7 +169,7 @@ namespace MonoDevelop.Components.MainToolbar
 												var searchService = TryGetNavigateToSearchService (proj);
 												if (searchService == null)
 													return ImmutableArray<INavigateToSearchResult>.Empty;
-												return await searchService.SearchProjectAsync (proj, searchPattern.Pattern, kinds ?? searchService.KindsProvided, token).ConfigureAwait (false);
+												return await searchService.SearchProjectAsync (proj, ImmutableArray.Create<Document>(), searchPattern.Pattern, kinds ?? searchService.KindsProvided, token).ConfigureAwait (false);
 											}
 										})
 					).ConfigureAwait (false);

@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		void OnActiveDocumentChanged (object sender, EventArgs e)
 		{
-			ActiveDocumentChanged?.Invoke (this, GetActiveDocument ());
+			ActiveDocumentChanged?.Invoke (this, TryGetActiveDocument ());
 		}
 
 		public event EventHandler<DocumentId> ActiveDocumentChanged;
