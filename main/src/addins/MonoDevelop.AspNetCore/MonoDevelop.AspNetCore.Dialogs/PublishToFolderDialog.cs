@@ -164,7 +164,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				publishCommandItem.Profile = new ProjectPublishProfile {
 					PublishUrl = pathEntry.Text,
 					TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
-					LastUsedBuildConfiguration = defaultDirectoryResolver.CurrentConfiguration,
+					LastUsedBuildConfiguration = defaultDirectoryResolver.Configuration,
 					LastUsedPlatform = publishCommandItem.Project.GetActivePlatform ()
 				};
 
