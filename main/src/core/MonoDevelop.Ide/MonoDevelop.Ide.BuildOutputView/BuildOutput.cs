@@ -43,15 +43,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 {
 	class BuildOutput : IDisposable
 	{
-		// Feature toggle for Build Output, disabled in versions <= 8.0
-		public static FeatureSwitch FeatureToggle = FeatureSwitchService.RegisterFeature (
-			"MonoDevelop.Ide.BuildOutputView",
-			new AggregatedFeatureSwitchCondition (
-				false,
-				new VersionGreaterThanFeatureSwitchCondition ("8.0"),
-				new EnvVarExistsFeatureSwitchCondition ("MD_FEATURE_BUILD_OUTPUT_ENABLED", null)
-			)
-		);
+		public static bool IsFeatureEnabled => FeatureSwitchService.IsFeatureEnabled ("IdeBuildOutputView") ?? true;
 
 		BuildOutputProgressMonitor progressMonitor;
 		ImmutableList<BuildOutputProcessor> projects = ImmutableList<BuildOutputProcessor>.Empty;
