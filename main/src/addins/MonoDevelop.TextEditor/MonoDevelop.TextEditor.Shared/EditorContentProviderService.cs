@@ -28,7 +28,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Text
 {
-	class EditorContentProviderService
+	[Export (typeof (EditorContentProviderService))]
+	sealed class EditorContentProviderService
 	{
 		[ImportMany (typeof (IEditorContentProvider))]
 		internal List<Lazy<IEditorContentProvider, IEditorContentProviderMetadata>> EditorContentProviders { get; set; }
