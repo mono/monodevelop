@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp
 	[ContentType(ContentTypeNames.CSharpContentType)]
 	[TextViewRole(PredefinedTextViewRoles.PrimaryDocument)]
 	[Order(Before="Default")]
-	class CSharpPathedDocumentExtensionProvider : ViewEditorContentProvider<CSharpPathedDocumentExtension>
+	class CSharpPathedDocumentExtensionProvider : EditorContentInstanceProvider<CSharpPathedDocumentExtension>
 	{
 		protected override CSharpPathedDocumentExtension CreateInstance (ITextView view) => new CSharpPathedDocumentExtension (view);
 	}

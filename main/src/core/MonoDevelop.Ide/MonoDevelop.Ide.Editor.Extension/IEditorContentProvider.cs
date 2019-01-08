@@ -35,7 +35,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// </summary>
 	/// <remarks>
 	/// Implementations should be exported with [Export(IEditorContentProvider)] and
-	/// should specify an Order, at least one ContentType, and optionally one or more TextViewRole values.
+	/// should specify an <see cref="OrderAttribute"/>, at least one <see cref="ContentTypeAttribute"/>, and
+	/// optionally one or more <see cref="TextViewRoleAttribute"/>s.
 	/// </remarks>
 	public interface IEditorContentProvider
 	{
@@ -60,13 +61,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 	}
 
 	/// <summary>
-	/// Base IEditorContentProvider implementation that lazily creates a content instance for
-	/// each matching <see cref="TextView"/>.
+	/// Base IEditorContentProvider implementation that lazily creates a content instance
+	/// for a <see cref="TextView"/>.
 	/// </summary>
 	/// <remarks>
 	/// If the content instance is <see cref="IDisposable"/>, it will be disposed when the view is closed.
 	/// </remarks>
-	public abstract class ViewEditorContentProvider<T> : IEditorContentProvider
+	public abstract class EditorContentInstanceProvider<T> : IEditorContentProvider
 	{
 		readonly Type extType = typeof (T);
 
@@ -87,42 +88,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 		protected abstract T CreateInstance (ITextView view);
-
-		public IEnumerable<object> GetContents (ITextView view, Type type)
-		{
-			var content = GetContent (view, type);
-			if (content != null) {
-				yield return content;
-			}
-		}
-	}
-
-	/// <summary>
-	/// Base IEditorContentProvider implementation that lazily creates a content instance for
-	/// each matching <see cref="TextBuffer"/>.
-	/// </summary>
-	/// <remarks>
-	/// The instance will not be disposed, so it should not subscribe to events other than those on the buffer.
-	/// </remarks>
-	public abstract class BufferEditorContentProvider<T> : IEditorContentProvider
-	{
-		readonly Type extType = typeof (T);
-
-		public object GetContent (ITextView view, Type type)
-		{
-			if (!type.IsAssignableFrom (extType)) {
-				return null;
-			}
-			var buffer = view.TextBuffer;
-			if (buffer.Properties.TryGetProperty<T> (extType, out var prop)) {
-				return prop;
-			}
-			prop = CreateInstance (buffer);
-			buffer.Properties.AddProperty (extType, prop);
-			return prop;
-		}
-
-		protected abstract T CreateInstance (ITextBuffer buffer);
 
 		public IEnumerable<object> GetContents (ITextView view, Type type)
 		{
