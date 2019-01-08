@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Gdk;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
 {
@@ -127,6 +128,13 @@ namespace MonoDevelop.Components
 					ctx.Save ();
 					ctx.DrawImage (this, IsParentDisabled () ? image.WithAlpha (0.4) : image, x, y);
 					ctx.Restore ();
+
+					if (HasFocus) {
+						ctx.SetSourceColor (Styles.BaseSelectionBackgroundColor.ToCairoColor ());
+						ctx.LineWidth = 1.0;
+						ctx.Rectangle (x, y, image.Width - 1, Image.Height - 1);
+						ctx.Stroke ();
+					}
 				}
 			}
 			return true;
