@@ -59,23 +59,8 @@
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <PackageReference Include="Microsoft.TemplateEngine.Abstractions" Version="1.0.0-beta3-20171117-314" />
-    <PackageReference Include="Microsoft.TemplateEngine.Core" Version="1.0.0-beta3-20171117-314" />
-    <PackageReference Include="Microsoft.TemplateEngine.Core.Contracts" Version="1.0.0-beta3-20171117-314" />
-    <PackageReference Include="Microsoft.TemplateEngine.Edge" Version="1.0.0-beta3-20171117-314" />
-    <PackageReference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" Version="1.0.0-beta3-20171117-314" />
-    <PackageReference Include="Microsoft.TemplateEngine.Utils" Version="1.0.0-beta3-20171117-314" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.8.28010" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="15.8.28010" />
-    <PackageReference Include="Microsoft.VisualStudio.Utilities" Version="15.8.28010" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="14.3.26930" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="JetBrains.SharpZipLib.Stripped" Version="0.87.20170615.10" />
-    <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
-    <PackageReference Include="System.Composition" Version="1.0.31" />
-    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
-    <PackageReference Include="System.Threading.Tasks.DataFlow" Version="4.7.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="Microsoft.TemplateEngine.Edge" Version="1.0.0-beta3-20171117-314" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" Version="1.0.0-beta3-20171117-314" PrivateAssets="runtime" />
     <PackageReference Include="YamlDotNet.Signed" Version="5.2.1" />
   </ItemGroup>
   <ItemGroup>
@@ -4178,6 +4163,7 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopSymbolNavigationService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IEditorContentProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextViewExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\IEditorCommandTargetProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.FileKey.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomeWindowProvider.cs" />
   </ItemGroup>
