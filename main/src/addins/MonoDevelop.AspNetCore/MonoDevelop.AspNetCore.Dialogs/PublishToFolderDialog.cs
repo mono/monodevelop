@@ -12,12 +12,10 @@ namespace MonoDevelop.AspNetCore.Dialogs
 	internal class DefaultFolderResolver
 	{
 		internal const string DefaultConfiguration = "Release";
-
-		string config = DefaultConfiguration;
 		DotNetProject project;
 
 		public Uri BinBaseUri => new Uri (Path.Combine (project.BaseDirectory, "bin"));
-		public string Configuration => config;
+		public string Configuration { get; private set; } = DefaultConfiguration;
 		public DefaultFolderResolver (DotNetProject project) => this.project = project;
 
 		// The default folder is: "bin/Release/<netcore-version>/publish"
@@ -34,9 +32,9 @@ namespace MonoDevelop.AspNetCore.Dialogs
 			}
 				
 			if (!releaseFound) //if there is no Release config, then we take the active one
-				config = project.GetActiveConfiguration ();
+				Configuration = project.GetActiveConfiguration ();
 
-			var defaultDirectory = Path.Combine (BinBaseUri.ToString (), config,
+			var defaultDirectory = Path.Combine (BinBaseUri.ToString (), Configuration,
 								project.TargetFramework.Id.GetShortFrameworkName (),
 								"publish");
 
