@@ -441,10 +441,10 @@ namespace MonoDevelop.DotNetCore
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
-			return AddMissingProjectFiles (sourceFiles);
+			return AddMissingProjectFiles (sourceFiles, configuration);
 		}
 
-		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files)
+		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files, ConfigurationSelector configuration)
 		{
 			ImmutableArray<ProjectFile>.Builder missingFiles = null;
 			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
@@ -455,12 +455,36 @@ namespace MonoDevelop.DotNetCore
 				}
 			}
 
+			// Ensure generated assembly info file is available to type system. It is created in the obj
+			// directory and is excluded from the project with a wildcard exclude but the type system needs it to
+			// ensure the project's assembly information is correct to prevent diagnostic errors.
+			var generatedAssemblyInfoFile = GetGeneratedAssemblyInfoFile (configuration);
+			if (generatedAssemblyInfoFile != null) {
+				if (missingFiles == null)
+					missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
+				missingFiles.Add (generatedAssemblyInfoFile);
+			}
+
 			if (missingFiles == null)
 				return files;
 
 			missingFiles.Capacity = missingFiles.Count + files.Length;
 			missingFiles.AddRange (files);
 			return missingFiles.MoveToImmutable ();
+		}
+
+		ProjectFile GetGeneratedAssemblyInfoFile (ConfigurationSelector configuration)
+		{
+			var projectConfig = configuration.GetConfiguration (Project) as ProjectConfiguration;
+			if (projectConfig == null)
+				return null;
+
+			bool generateAssemblyInfo = projectConfig.Properties.GetValue ("GenerateAssemblyInfo", true);
+			FilePath assemblyInfoFile = projectConfig.Properties.GetPathValue ("GeneratedAssemblyInfoFile");
+
+			if (generateAssemblyInfo && assemblyInfoFile.IsNotNull)
+				return new ProjectFile (assemblyInfoFile, BuildAction.Compile);
+			return null;
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)
