@@ -3,7 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.CodeAnalysis;
+using Roslyn.Utilities;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			/// <param name="timestamp">Last write time (UTC).</param>
 			public FileKey (string fullPath, DateTime timestamp)
 			{
-				Debug.Assert (Path.IsAbsolute (fullPath));
+				Debug.Assert (PathUtilities.IsAbsolute (fullPath));
 				Debug.Assert (timestamp.Kind == DateTimeKind.Utc);
 
 				FullPath = fullPath;
