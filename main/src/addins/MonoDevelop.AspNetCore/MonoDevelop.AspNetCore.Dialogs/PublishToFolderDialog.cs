@@ -13,9 +13,11 @@ namespace MonoDevelop.AspNetCore.Dialogs
 	{
 		internal const string DefaultConfiguration = "Release";
 
+		string config = DefaultConfiguration;
 		DotNetProject project;
-		public Uri BinBaseUri => new Uri (Path.Combine (project.BaseDirectory, "bin"));
 
+		public Uri BinBaseUri => new Uri (Path.Combine (project.BaseDirectory, "bin"));
+		public string Configuration => config;
 		public DefaultFolderResolver (DotNetProject project) => this.project = project;
 
 		// The default folder is: "bin/Release/<netcore-version>/publish"
@@ -30,12 +32,11 @@ namespace MonoDevelop.AspNetCore.Dialogs
 					break;
 				}
 			}
-
-			var configuration = DefaultConfiguration;
+				
 			if (!releaseFound) //if there is no Release config, then we take the active one
-				configuration = project.GetActiveConfiguration ();
+				config = project.GetActiveConfiguration ();
 
-			var defaultDirectory = Path.Combine (BinBaseUri.ToString (), configuration,
+			var defaultDirectory = Path.Combine (BinBaseUri.ToString (), config,
 								project.TargetFramework.Id.GetShortFrameworkName (),
 								"publish");
 
@@ -163,7 +164,7 @@ namespace MonoDevelop.AspNetCore.Dialogs
 				publishCommandItem.Profile = new ProjectPublishProfile {
 					PublishUrl = pathEntry.Text,
 					TargetFramework = publishCommandItem.Project.TargetFramework.Id.GetShortFrameworkName (),
-					LastUsedBuildConfiguration = publishCommandItem.Project.GetActiveConfiguration (),
+					LastUsedBuildConfiguration = defaultDirectoryResolver.CurrentConfiguration,
 					LastUsedPlatform = publishCommandItem.Project.GetActivePlatform ()
 				};
 
