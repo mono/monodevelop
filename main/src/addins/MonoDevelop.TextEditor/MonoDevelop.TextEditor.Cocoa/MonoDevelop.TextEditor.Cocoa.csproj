@@ -9,27 +9,8 @@
 		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 		<ProjectGuid>{5FEEDF49-0493-411C-B4F3-FAB7543499D2}</ProjectGuid>
 		<OutputType>Library</OutputType>
-		<RootNamespace>MonoDevelop.TextEditor.Cocoa</RootNamespace>
-		<AssemblyName>MonoDevelop.TextEditor.Cocoa</AssemblyName>
-		<TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
+		<TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
 		<OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
-		<DefineConstants>MAC;DEBUG</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<ConsolePause>false</ConsolePause>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<Optimize>true</Optimize>
-		<OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
-		<DefineConstants>MAC</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<ConsolePause>false</ConsolePause>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
 	  <StartAction>Program</StartAction>
