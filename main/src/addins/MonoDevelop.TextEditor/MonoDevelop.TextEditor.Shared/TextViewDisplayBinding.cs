@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -9,12 +10,16 @@ namespace MonoDevelop.Ide.Text
 {
 	class TextViewDisplayBinding : IViewDisplayBinding
 	{
-		public string Name => GettextCatalog.GetString ("Source Code Editor");
+		public string Name => GettextCatalog.GetString ("New Editor");
 
 		public bool CanUseAsDefault => true;
 
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
+			if (!DefaultSourceEditorOptions.Instance.EnableNewEditor) {
+				return false;
+			}
+
 			if (fileName == null || !(IsSupportedFileExtension (fileName) || IsSupportedAndroidFileName (fileName, ownerProject))) {
 				return false;
 			}
