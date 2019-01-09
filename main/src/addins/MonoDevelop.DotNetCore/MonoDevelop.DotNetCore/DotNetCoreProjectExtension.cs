@@ -56,7 +56,7 @@ namespace MonoDevelop.DotNetCore
 
 		void FileService_FileChanged (object sender, FileEventArgs e)
 		{
-			var globalJson = e.FirstOrDefault (x => x.FileName.ToString ().Contains ("global.json") && !x.FileName.IsDirectory);
+			var globalJson = e.FirstOrDefault (x => x.FileName.FileName.IndexOf ("global.json", StringComparison.OrdinalIgnoreCase) == 0 && !x.FileName.IsDirectory);
 			if (globalJson == null)
 				return;
 					
