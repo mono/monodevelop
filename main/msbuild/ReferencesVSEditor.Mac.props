@@ -74,4 +74,21 @@
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
   </ItemGroup>
+
+  <!-- MSBuild doesn't copy the FPF references as they match BCL assembly names -->
+  <Target Name="CopyFPFAssemblies" AfterTargets="_CopyFilesMarkedCopyLocal" Condition="'$(ReferencesVSEditorCopyToOutput)'=='true'">
+    <PropertyGroup>
+      <FPFConfiguration>Release</FPFConfiguration>
+      <FPFConfiguration Condition="$(Configuration.Contains('Debug'))">Debug</FPFConfiguration>
+      <FPFOutputPath>$(RootDirectory)external\vs-editor-core\bin\FPF\$(FPFConfiguration)\net472\</FPFOutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <FPFOutputFiles Include="$(FPFOutputPath)WindowsBase.*" />
+      <FileWrites Include="@(FPFOutputFiles)" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(FPFOutputFiles)"
+      DestinationFolder="$(OutputPath)"
+      SkipUnchangedFiles="true" />
+  </Target>
 </Project>
