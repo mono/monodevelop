@@ -154,6 +154,8 @@
 
         protected IMdTextView WpfTextView => this.textView as IMdTextView;
 
+        public bool IsMouseOverAggregated => false;
+
         protected Point GetScreenPointFromTextXY(double x, double y)
         {
             var view = WpfTextView;
