@@ -45,7 +45,7 @@ namespace MonoDevelop.FSW
 
 			if (!Platform.IsWindows) {
 				node = node.FirstChild;
-				Assert.AreEqual ("/", node.DangerousPath);
+				Assert.AreEqual ("", node.GetPath ().ToString ());
 			}
 
 			Assert.IsNull (node.FirstChild);
