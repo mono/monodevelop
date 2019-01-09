@@ -12,15 +12,18 @@ namespace MonoDevelop.FSW
 		public PathTreeNode Next { get; set; }
 		public int ChildrenCount { get; set; }
 
+		readonly string fullPath;
+		readonly int start;
+		readonly int length;
+
 		readonly List<object> ids = new List<object> ();
 		internal void RegisterId (object id) => ids.Add (id);
 		internal bool UnregisterId (object id) => ids.Remove (id);
-		public bool IsLive => ids.Count != 0;
 
-		public ReadOnlySpan<char> GetPath () => DangerousPath.AsSpan (0, Start + Length);
-		internal string DangerousPath { get; }
-		internal int Start { get; }
-		internal int Length { get; }
+		public bool IsLive => ids.Count != 0;
+		public ReadOnlySpan<char> GetPath () => fullPath.AsSpan (0, start + length);
+		internal ReadOnlySpan<char> GetSegment () => fullPath.AsSpan (start, length);
+		internal string Segment => fullPath.Substring (start, length);
 
 		internal PathTreeNode LastChild {
 			get {
@@ -30,14 +33,12 @@ namespace MonoDevelop.FSW
 				return child;
 			}
 		}
-		internal ReadOnlySpan<char> GetSegment () => DangerousPath.AsSpan (Start, Length);
-		internal string Segment => DangerousPath.Substring (Start, Length);
 
 		public PathTreeNode (string fullPath, int start, int length)
 		{
-			DangerousPath = fullPath;
-			Start = start;
-			Length = length;
+			this.fullPath = fullPath;
+			this.start = start;
+			this.length = length;
 		}
 
 		internal static (PathTreeNode root, PathTreeNode leaf) CreateSubTree (string path, int start)
