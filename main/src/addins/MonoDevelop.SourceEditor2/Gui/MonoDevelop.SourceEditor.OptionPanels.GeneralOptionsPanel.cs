@@ -4,6 +4,34 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	internal partial class GeneralOptionsPanel
 	{
+		/*
+
+vbox1
+  GtkLabel13 "Coding"
+  alignment2
+      vbox4
+          hbox3
+              fixed2
+          hbox1
+              label1 Line ending conversion
+              comboboxLineEndings
+  GtkLabel14 "Code Folding"
+  alignment3
+      vbox5
+          foldingCheckbutton
+          foldregionsCheckbutton
+          foldCommentsCheckbutton
+  GtkLabel15 "Appearance"
+  alignment4
+      vbox6
+          wordWrapCheckbutton
+          antiAliasingCheckbutton
+  GtkLabel16 "Experimental"
+  alignment5
+      vbox7
+          newEditorCheckbutton
+
+		*/
 		private global::Gtk.VBox vbox1;
 
 		private global::Gtk.Label GtkLabel13;
@@ -43,6 +71,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton wordWrapCheckbutton;
 
 		private global::Gtk.CheckButton antiAliasingCheckbutton;
+
+		private global::Gtk.Label GtkLabel16;
+
+		private global::Gtk.Alignment alignment5;
+
+		private global::Gtk.VBox vbox7;
+
+		private global::Gtk.CheckButton newEditorCheckbutton;
 
 		protected virtual void Build()
 		{
@@ -234,6 +270,49 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w19.Position = 5;
 			w19.Expand = false;
 			w19.Fill = false;
+
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.GtkLabel16 = new global::Gtk.Label ();
+			this.GtkLabel16.Name = "GtkLabel16";
+			this.GtkLabel16.Xalign = 0F;
+			this.GtkLabel16.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Experimental</b>");
+			this.GtkLabel16.UseMarkup = true;
+			this.vbox1.Add (this.GtkLabel16);
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel16]));
+			w20.Position = 6;
+			w20.Expand = false;
+			w20.Fill = false;
+
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.alignment5 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
+			this.alignment5.Name = "alignment5";
+			this.alignment5.LeftPadding = ((uint)(12));
+
+			// Container child alignment3.Gtk.Container+ContainerChild
+			this.vbox7 = new global::Gtk.VBox ();
+			this.vbox7.Name = "vbox7";
+			this.vbox7.Spacing = 6;
+
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.newEditorCheckbutton = new global::Gtk.CheckButton ();
+			this.newEditorCheckbutton.CanFocus = true;
+			this.newEditorCheckbutton.Name = "newEditorCheckbutton";
+			this.newEditorCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Open C# files in the New Editor");
+			this.newEditorCheckbutton.DrawIndicator = true;
+			this.newEditorCheckbutton.UseUnderline = true;
+			this.vbox7.Add (this.newEditorCheckbutton);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.newEditorCheckbutton]));
+			w21.Position = 0;
+			w21.Expand = false;
+			w21.Fill = false;
+
+			this.alignment5.Add (this.vbox7);
+			this.vbox1.Add (this.alignment5);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment5]));
+			w22.Position = 7;
+			w22.Expand = false;
+			w22.Fill = false;
+
 			this.Add(this.vbox1);
 			if ((this.Child != null))
 			{
