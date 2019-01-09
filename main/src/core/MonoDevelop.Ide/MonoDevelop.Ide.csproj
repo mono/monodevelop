@@ -4265,6 +4265,8 @@
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\BlockTagState.cs">
       <Link>RoslynOutliningWorkaround\BlockTagState.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
