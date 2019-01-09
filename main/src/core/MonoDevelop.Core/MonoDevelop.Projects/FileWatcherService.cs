@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 				if (token.IsCancellationRequested)
 					return;
 
-				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.FullPath);
+				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.GetPath ().ToString ());
 				var newWatchers = new HashSet<FilePath> (newPathsToWatch.Where (dir => Directory.Exists (dir)));
 				if (newWatchers.Count == 0 && watchers.Count == 0) {
 					// Unchanged.

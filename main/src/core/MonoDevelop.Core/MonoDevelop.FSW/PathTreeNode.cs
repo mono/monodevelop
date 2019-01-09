@@ -17,9 +17,10 @@ namespace MonoDevelop.FSW
 		internal bool UnregisterId (object id) => ids.Remove (id);
 		public bool IsLive => ids.Count != 0;
 
-		public string FullPath { get; }
-		public int Start { get; }
-		public int Length { get; }
+		public ReadOnlySpan<char> GetPath () => DangerousPath.AsSpan (0, Start + Length);
+		internal string DangerousPath { get; }
+		internal int Start { get; }
+		internal int Length { get; }
 
 		internal PathTreeNode LastChild {
 			get {
@@ -29,11 +30,12 @@ namespace MonoDevelop.FSW
 				return child;
 			}
 		}
-		internal string Segment => FullPath.Substring (Start, Length);
+		internal ReadOnlySpan<char> GetSegment () => DangerousPath.AsSpan (Start, Length);
+		internal string Segment => DangerousPath.Substring (Start, Length);
 
 		public PathTreeNode (string fullPath, int start, int length)
 		{
-			FullPath = fullPath;
+			DangerousPath = fullPath;
 			Start = start;
 			Length = length;
 		}
