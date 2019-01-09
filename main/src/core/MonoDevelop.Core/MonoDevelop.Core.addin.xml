@@ -12,10 +12,14 @@
 	<ConditionType id="AssemblyInstalled" type="MonoDevelop.Core.AddIns.AssemblyInstalledCondition" />
 	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.MSBuild.TargetsAvailableCondition" />
 	<ConditionType id="Branding" type="MonoDevelop.Core.AddIns.BrandingCondition" />
-
+	<ConditionType id="FeatureSwitch" type="MonoDevelop.Core.FeatureConfiguration.FeatureSwitchCondition" />
 	
 	<!-- Extension points -->
 	
+	<ExtensionPoint path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks" name="Feature switch checks">
+  		<Description>Pluggable checks for feature dynamic enabling/disabling</Description>
+  		<ExtensionNode objectType="MonoDevelop.Core.FeatureConfiguration.IFeatureSwitchController" />
+  	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
