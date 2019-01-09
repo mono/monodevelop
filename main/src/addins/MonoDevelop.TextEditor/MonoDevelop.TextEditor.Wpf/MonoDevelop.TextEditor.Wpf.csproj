@@ -118,9 +118,6 @@
     <Compile Include="Undo\UndoTransaction.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.TextEditor.Wpf.addin.xml" />
   </ItemGroup>
   <ItemGroup>

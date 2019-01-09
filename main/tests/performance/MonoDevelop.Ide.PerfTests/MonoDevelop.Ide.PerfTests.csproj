@@ -13,12 +13,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NUnit" Version="2.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Baseline_MonoDevelop.Ide.PerfTests.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -43,9 +40,6 @@
       <Project>{82B9A5C5-5713-49B5-93D1-BE29B00FF35A}</Project>
       <Name>MonoDevelop.UserInterfaceTesting</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TestSolutions\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestStartup.cs">
