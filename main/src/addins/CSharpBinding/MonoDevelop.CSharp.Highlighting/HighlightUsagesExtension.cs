@@ -100,14 +100,11 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		protected async override Task<ImmutableArray<DocumentHighlights>> ResolveAsync (CancellationToken token)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null)
-				return ImmutableArray<DocumentHighlights>.Empty;
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = DocumentContext?.AnalysisDocument;
 			if (analysisDocument == null)
 				return ImmutableArray<DocumentHighlights>.Empty;
 
-			return await highlightsService.GetDocumentHighlightsAsync (analysisDocument, doc.Editor.CaretOffset, ImmutableHashSet<Document>.Empty.Add (analysisDocument), token);
+			return await highlightsService.GetDocumentHighlightsAsync (analysisDocument, Editor.CaretOffset, ImmutableHashSet<Document>.Empty.Add (analysisDocument), token);
 		}
 
 		protected override Task<IEnumerable<MemberReference>> GetReferencesAsync (ImmutableArray<DocumentHighlights> resolveResult, CancellationToken token)
