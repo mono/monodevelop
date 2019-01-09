@@ -194,9 +194,9 @@ namespace MonoDevelop.Ide.Text
 		}
 
 #if WINDOWS
-		private Widget GetXwtWidget (RootWpfWidget widget)
+		private Xwt.Widget GetXwtWidget (RootWpfWidget widget)
 		{
-			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, NativeWidgetSizing.External);
+			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, Xwt.NativeWidgetSizing.External);
 		}
 
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
@@ -216,7 +216,7 @@ namespace MonoDevelop.Ide.Text
 			return textViewHost.HostControl;
 		}
 
-		public override Widget Widget => xwtWidget;
+		public override Xwt.Widget Widget => xwtWidget;
 #elif MAC
 		class EmbeddedNSViewControl : Control
 		{
