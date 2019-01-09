@@ -1,9 +1,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
+  <Import Project="$(ReferencesVSEditor)" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
-    <ReferencesRoslynCopyToOutput>true</ReferencesRoslynCopyToOutput>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -91,7 +91,6 @@
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="15.8.112" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces" Version="15.8.519" PrivateAssets="runtime" />
-    <PackageReference Include="Microsoft.VisualStudio.Platform.VSEditor" Version="16.0.127" PrivateAssets="runtime" />
     <PackageReference Include="Mono.Cecil" Version="0.10.1" PrivateAssets="runtime" />
     <PackageReference Include="MonoDevelopDev.Analyzers" Version="0.1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" PrivateAssets="runtime" />
@@ -641,7 +640,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
-    <None Include="packages.config" />
     <None Include="MSBuild\CodeSharing.Common.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -674,10 +672,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Utilities\" />
-    <Folder Include="MonoDevelop.Core.FeatureConfiguration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">

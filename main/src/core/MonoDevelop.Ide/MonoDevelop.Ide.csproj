@@ -1,6 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
+  <Import Project="$(ReferencesVSEditor)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -4175,9 +4176,6 @@
     </Compile>
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\VisualStudioForMacStructureTaggerProvider.cs">
       <Link>RoslynOutliningWorkaround\VisualStudioForMacStructureTaggerProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\ViewHostingControl.cs">
-      <Link>RoslynOutliningWorkaround\ViewHostingControl.cs</Link>
     </Compile>
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\RoslynOutliningRegionTag.cs">
       <Link>RoslynOutliningWorkaround\RoslynOutliningRegionTag.cs</Link>

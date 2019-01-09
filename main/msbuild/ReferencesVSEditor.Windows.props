@@ -2,53 +2,11 @@
 
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
+    <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">runtime</ReferencesVSEditorPrivateAssets>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.CoreUtility.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Data">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Data.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Data.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Internal">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Internal.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Logic">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.Logic.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.Intellisense">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.Intellisense.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.NavigateTo.Interfaces.15.8.525\lib\net46\Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.StandardClassification">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Language.StandardClassification.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Platform.VSEditor.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="Microsoft.VisualStudio.Platform.VSEditor" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" />
   </ItemGroup>
 
 </Project>
