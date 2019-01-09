@@ -293,6 +293,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace)
 			{
+				if (!IdeApp.IsInitialized)
+					return;
+
 				foreach (var openDocument in IdeApp.Workbench.Documents) {
 					var filePath = openDocument.FileName;
 					var solution = workspace.CurrentSolution;
