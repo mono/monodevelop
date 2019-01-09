@@ -59,13 +59,8 @@ namespace MonoDevelop.DotNetCore
 			var globalJson = e.FirstOrDefault (x => x.FileName.ToString ().Contains ("global.json") && !x.FileName.IsDirectory);
 			if (globalJson == null)
 				return;
-
-			if (Path.GetFileName (globalJson.FileName).IndexOf ("global.json", StringComparison.OrdinalIgnoreCase) == 0)
-				Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] = globalJson.FileName.ToString ();
-			else //i.e. global.json has been renamed
-				Project.ParentSolution.ExtendedProperties.Remove (GlobalJsonPathExtendedPropertyName);
-
-			DetectSDK (true);
+					
+			DetectSDK (restore: true);
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
@@ -335,11 +330,11 @@ namespace MonoDevelop.DotNetCore
 
 		void DetectSDK (bool restore = false)
 		{
-			if (Project.ParentSolution.ExtendedProperties.Contains (GlobalJsonPathExtendedPropertyName)
-				&& File.Exists ((string)Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName]))
-				sdkPaths.GlobalJsonPath = (string)Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName];
-			else
+			if (Project.ParentSolution.ExtendedProperties [GlobalJsonPathExtendedPropertyName] is string globalJsonPathProperty && File.Exists (globalJsonPathProperty)) {
+				sdkPaths.GlobalJsonPath = globalJsonPathProperty;
+			} else {
 				sdkPaths.GlobalJsonPath = string.Empty;
+			}
 
 			sdkPaths.ResolveSDK (Project.ParentSolution.BaseDirectory);
 			DotNetCoreSdk.Update (sdkPaths);
