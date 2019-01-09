@@ -118,17 +118,20 @@ namespace MonoDevelop.Projects
 		{
 			FileService.FreezeEvents ();
 
-			var tmp = System.IO.Path.GetTempFileName ();
-			FileService.NotifyFileChanged (tmp);
+			try {
+				var tmp = System.IO.Path.GetTempFileName ();
+				FileService.NotifyFileChanged (tmp);
 
-			FileService.CopyFile (tmp, tmp + ".tmp");
-			FileService.DeleteFile (tmp);
-			FileService.DeleteFile (tmp + ".tmp");
+				FileService.CopyFile (tmp, tmp + ".tmp");
+				FileService.DeleteFile (tmp);
+				FileService.DeleteFile (tmp + ".tmp");
 
-			FileService.NotifyFileRemoved (tmp);
-			FileService.NotifyFileRemoved (tmp + ".tmp");
+				FileService.NotifyFileRemoved (tmp);
+				FileService.NotifyFileRemoved (tmp + ".tmp");
+			} finally {
+				FileService.ThawEvents ();
 
-			FileService.ThawEvents ();
+			}
 		}
 
 		/// <summary>
