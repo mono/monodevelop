@@ -634,16 +634,31 @@ namespace MonoDevelop.Core
 
 		static void WindowsRename (string sourceFile, string destFile)
 		{
-			//Replace fails if the target file doesn't exist, so in that case try a simple move
+			string tmpPath = null;
+
+			// In case the file doesn't exist, we need to use Move
 			if (!File.Exists (destFile)) {
 				try {
 					File.Move (sourceFile, destFile);
 					return;
 				} catch {
 				}
+			} else {
+				tmpPath = Path.GetTempFileName ();
 			}
 
-			File.Replace (sourceFile, destFile, null);
+			// Do not use File.Replace as that generates weird FSW events which make the IDE think
+			// that the document should be monitoring the autosave file.
+			if (tmpPath != null) {
+				File.Copy (destFile, tmpPath, true);
+			}
+
+			File.Copy (sourceFile, destFile, true);
+
+			// If we reached this point, it's safe to assume we succesfully overwrote.
+			if (tmpPath != null) {
+				File.Delete (tmpPath);
+			}
 		}
 
 		static void UnixRename (string sourceFile, string destFile)
