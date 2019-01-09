@@ -64,8 +64,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				using (var sol = (MonoDevelop.Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-					await FileWatcherService.Add (sol);
-
 					var manager = ws.MetadataReferenceManager;
 					var item = manager.GetOrCreateMetadataReference (tempPath, MetadataReferenceProperties.Assembly);
 					Assert.IsNotNull (item);
@@ -89,7 +87,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 
 					var taskForOldAsm = WaitForSnapshotChange (item);
-					File.Copy (newAsm, tempPath, true);
+					File.Copy (oldAsm, tempPath, true);
 
 					var argsForOldAsm = await taskForOldAsm;
 
