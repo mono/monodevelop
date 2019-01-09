@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -38,6 +39,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly Dictionary<string, Dictionary<MetadataReferenceProperties, MonoDevelopMetadataReference>> cacheWithCustomProperties = new Dictionary<string, Dictionary<MetadataReferenceProperties, MonoDevelopMetadataReference>> ();
 			public MonoDevelopMetadataReference GetOrCreate (MonoDevelopMetadataReferenceManager provider, string path, MetadataReferenceProperties properties)
 			{
+				path = new FilePath (path).ResolveLinks ();
+
 				if (properties == MetadataReferenceProperties.Assembly) {
 					// fast path for no custom properties
 					return GetOrCreate (cacheAssemblyProperties, path, provider, path, properties);
