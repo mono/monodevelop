@@ -463,6 +463,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoDevelop.TextEditor.Shar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternMatchingImpl", "external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj", "{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolTipAdornmentImpl", "external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj", "{1339C301-982F-4A37-BD71-1F104FCCE65D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
@@ -2396,6 +2398,7 @@ Global
 		{52BF10FD-66DF-430F-8A30-E5E63A93AE91}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{52BF10FD-66DF-430F-8A30-E5E63A93AE91}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{52BF10FD-66DF-430F-8A30-E5E63A93AE91}.Release|x86.Build.0 = Release|Any CPU
+		{52BF10FD-66DF-430F-8A30-E5E63A93AE91}.Release|x86.ActiveCfg = Release|Any CPU
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
@@ -2416,6 +2419,26 @@ Global
 		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Debug|x86.Build.0 = Debug|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Release|x86.ActiveCfg = Release|Any CPU
+		{1339C301-982F-4A37-BD71-1F104FCCE65D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE;
@@ -2630,6 +2653,7 @@ Global
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2} = {C14B06AC-905A-47AB-BAD9-652E3499CFE0}
 		{503A27BD-D74C-4EDD-818C-0A0F06D9C672} = {C14B06AC-905A-47AB-BAD9-652E3499CFE0}
 		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F} = {32539734-6484-4451-9EF3-61610CA25BBF}
+		{1339C301-982F-4A37-BD71-1F104FCCE65D} = {32539734-6484-4451-9EF3-61610CA25BBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}
