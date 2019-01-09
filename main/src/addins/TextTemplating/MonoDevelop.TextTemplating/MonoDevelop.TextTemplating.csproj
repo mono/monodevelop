@@ -33,13 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.TextTemplating">
-      <HintPath>..\..\..\..\packages\Mono.TextTemplating.1.3.1\lib\net45\Mono.TextTemplating.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Mono.TextTemplating" Version="1.3.1" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

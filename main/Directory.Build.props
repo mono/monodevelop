@@ -10,7 +10,7 @@
     <NuGetVersionCecil>0.10.1</NuGetVersionCecil>
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
     <NuGetVersionMicrosoftTemplateEngine>1.0.0-beta3-20171117-314</NuGetVersionMicrosoftTemplateEngine>
-    <NuGetVersionMicrosoftTestPlatform>16.0.0-preview-20181205-02</NuGetVersionMicrosoftTestPlatform>
+    <NuGetVersionMicrosoftTestPlatform>15.5.0-preview-20170919-04</NuGetVersionMicrosoftTestPlatform>
     <NuGetVersionMonoDevelopAnalyzers>0.1.0.1</NuGetVersionMonoDevelopAnalyzers>
     <NuGetVersionNewtonsoftJson>10.0.3</NuGetVersionNewtonsoftJson>
     <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
