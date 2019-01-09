@@ -3,7 +3,6 @@
   <PropertyGroup>
     <RootDirectory>$(MSBuildThisFileDirectory)</RootDirectory>
     <PackagesDirectory>$(RootDirectory)packages</PackagesDirectory>
-    <ReferencesRoslyn>$(RootDirectory)\msbuild\ReferencesRoslyn.props</ReferencesRoslyn>
     <ReferencesVSEditor Condition=" '$(OS)' == 'Windows_NT' ">$(RootDirectory)\msbuild\ReferencesVSEditor.Windows.props</ReferencesVSEditor>
     <ReferencesVSEditor Condition=" '$(OS)' != 'Windows_NT' ">$(RootDirectory)\msbuild\ReferencesVSEditor.Mac.props</ReferencesVSEditor>
     <ReferencesGtk>$(RootDirectory)\msbuild\ReferencesGtk.props</ReferencesGtk>
@@ -13,5 +12,4 @@
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
     <NuGetVersionMonoDevelopAnalyzers>0.1.0.1</NuGetVersionMonoDevelopAnalyzers>
   </PropertyGroup>
-
 </Project>
