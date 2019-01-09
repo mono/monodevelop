@@ -2129,7 +2129,18 @@ namespace MonoDevelop.Components.Commands
 				}
 			}
 
+#if MAC
+			if (!hasFocus) {
+				var nsWindow = AppKit.NSApplication.SharedApplication.KeyWindow;
+				hasFocus = nsWindow != null;
+				lastFocused = win = Mac.GtkMacInterop.GetGtkWindow (nsWindow);
+			} else {
+				lastFocused = newFocused;
+			}
+#else
 			lastFocused = newFocused;
+#endif
+
 			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
 			
 			if (win != null && win.IsRealized) {

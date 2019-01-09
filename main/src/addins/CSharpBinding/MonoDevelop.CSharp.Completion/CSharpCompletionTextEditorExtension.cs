@@ -285,8 +285,8 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (extensionMethodImport) {
 					if (ctx.TargetToken.Parent is MemberAccessExpressionSyntax memberAccess) {
-						var symbolInfo = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression);
-						if (symbolInfo.Symbol.Kind == SymbolKind.NamedType)
+						var symbol = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression).Symbol;
+						if (symbol != null && symbol.Kind == SymbolKind.NamedType)
 							return;
 						extensionMethodReceiverType = ctx.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
 						if (extensionMethodReceiverType == null) 
