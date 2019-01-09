@@ -14,5 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TextViewImports.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextViewContent.Commands.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EditorContentProviderService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" />
   </ItemGroup>
 </Project>
