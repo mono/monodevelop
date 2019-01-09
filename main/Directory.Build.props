@@ -6,10 +6,18 @@
     <ReferencesVSEditor Condition=" '$(OS)' == 'Windows_NT' ">$(RootDirectory)\msbuild\ReferencesVSEditor.Windows.props</ReferencesVSEditor>
     <ReferencesVSEditor Condition=" '$(OS)' != 'Windows_NT' ">$(RootDirectory)\msbuild\ReferencesVSEditor.Mac.props</ReferencesVSEditor>
     <ReferencesGtk>$(RootDirectory)\msbuild\ReferencesGtk.props</ReferencesGtk>
-    <NuGetVersionRoslyn>3.0.0-beta2-19055-09</NuGetVersionRoslyn>
-    <NuGetVersionVSEditor>16.0.127</NuGetVersionVSEditor>
     <NuGetVersionAllocationAnalyzer>1.0.0.9</NuGetVersionAllocationAnalyzer>
+    <NuGetVersionCecil>0.10.1</NuGetVersionCecil>
     <NuGetVersionErrorProneNetStructs>0.1.2</NuGetVersionErrorProneNetStructs>
+    <NuGetVersionMicrosoftTemplateEngine>1.0.0-beta3-20171117-314</NuGetVersionMicrosoftTemplateEngine>
+    <NuGetVersionMicrosoftTestPlatform>16.0.0-preview-20181205-02</NuGetVersionMicrosoftTestPlatform>
     <NuGetVersionMonoDevelopAnalyzers>0.1.0.1</NuGetVersionMonoDevelopAnalyzers>
+    <NuGetVersionNewtonsoftJson>10.0.3</NuGetVersionNewtonsoftJson>
+    <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
+    <NuGetVersionNUnit3>3.9.0</NuGetVersionNUnit3>
+    <NuGetVersionRoslyn>3.0.0-beta2-19055-09</NuGetVersionRoslyn>
+    <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
+    <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
+    <NuGetVersionVSEditor>16.0.127</NuGetVersionVSEditor>
   </PropertyGroup>
 </Project>

@@ -29,7 +29,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <PackageReference Include="NUnit" Version="2.7.0" />
+    <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

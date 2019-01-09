@@ -89,11 +89,11 @@
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
-    <PackageReference Include="Microsoft.VisualStudio.Composition" Version="15.8.112" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces" Version="15.8.519" PrivateAssets="runtime" />
-    <PackageReference Include="Mono.Cecil" Version="0.10.1" PrivateAssets="runtime" />
-    <PackageReference Include="MonoDevelopDev.Analyzers" Version="0.1.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" PrivateAssets="runtime" />
+    <PackageReference Include="Mono.Cecil" Version="$(NuGetVersionCecil)" PrivateAssets="runtime" />
+    <PackageReference Include="MonoDevelopDev.Analyzers" Version="$(NuGetVersionMonoDevelopAnalyzers)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" PrivateAssets="runtime" />
     <PackageReference Include="JetBrains.SharpZipLib.Stripped" Version="0.87.20170615.10" PrivateAssets="runtime" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.11" PrivateAssets="runtime" />
     <PackageReference Include="StreamJsonRpc" Version="1.5.43" PrivateAssets="runtime" />
@@ -101,7 +101,7 @@
     <!-- remove this as it conflicts with the one in mscorlib. mono bug? -->
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" ExcludeAssets="all" />
     <!-- update this to a version that doesn't crash -->
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" ExcludeAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />

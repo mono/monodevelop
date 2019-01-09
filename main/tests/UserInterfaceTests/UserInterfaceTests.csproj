@@ -20,8 +20,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <PackageReference Include="NUnitV2.Core" Version="2.7.0" />
-    <PackageReference Include="NUnit" Version="2.7.0" />
+    <PackageReference Include="NUnitV2.Core" Version="$(NuGetVersionNUnit2)" />
+    <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />

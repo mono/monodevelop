@@ -14,7 +14,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <PackageReference Include="NUnit.Engine" Version="3.0.1" PrivateAssets="runtime" />
+    <PackageReference Include="NUnit.Engine" Version="$(NuGetVersionNUnit3)" PrivateAssets="runtime" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
