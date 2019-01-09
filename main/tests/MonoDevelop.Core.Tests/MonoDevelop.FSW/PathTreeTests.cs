@@ -45,7 +45,7 @@ namespace MonoDevelop.FSW
 
 			if (!Platform.IsWindows) {
 				node = node.FirstChild;
-				Assert.AreEqual ("/", node.FullPath);
+				Assert.AreEqual ("/", node.DangerousPath);
 			}
 
 			Assert.IsNull (node.FirstChild);
@@ -423,6 +423,7 @@ namespace MonoDevelop.FSW
 		/// Parent 'lib' directory was being dropped since the PathTree considered it to be a child of the mmp directory.
 		/// </summary>
 		[Test]
+		[Platform (Exclude = "Win")]
 		public void NormalizeTwoDirectories_FirstIsChildOfSecondDirectoryAdded ()
 		{
 			var tree = new PathTree ();
@@ -431,7 +432,7 @@ namespace MonoDevelop.FSW
 			tree.AddNode ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mmp", id1);
 			tree.AddNode ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib", id1);
 
-			var folders = tree.Normalize (10).Select (node => (FilePath)node.FullPath);
+			var folders = tree.Normalize (10).Select (node => (FilePath)node.GetPath ().ToString ());
 			var set = new HashSet <FilePath> (folders);
 
 			Assert.IsTrue (set.Contains ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib"), "Set: " + string.Join ("\n", set));
@@ -442,6 +443,7 @@ namespace MonoDevelop.FSW
 		/// being ignored. The PathTree considers them children of the gac/System directory.
 		/// </summary>
 		[Test]
+		[Platform(Exclude="Win")]
 		public void NormalizeSeveralDirectories_CommonBaseDirectory ()
 		{
 			var tree = new PathTree ();
@@ -459,7 +461,7 @@ namespace MonoDevelop.FSW
 				tree.AddNode (path, id1);
 			}
 
-			var folders = tree.Normalize (10).Select (node => (FilePath)node.FullPath);
+			var folders = tree.Normalize (10).Select (node => (FilePath)node.GetPath ().ToString ());
 			var set = new HashSet<FilePath> (folders);
 
 			foreach (var path in paths) {
