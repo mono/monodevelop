@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var messagingAsm = assemblies.Single (x => x.Metadata.GetValue<string> ("Filename") == name);
 			var metadataReference = manager.GetOrCreateMetadataReference (messagingAsm.FilePath, MetadataReferenceProperties.Assembly);
 
+			await FileWatcherService.Update ();
+
 			var roslynProj = ws.GetProjectId (to);
 
 			var oldRefs = ws.CurrentSolution.GetProject (roslynProj).MetadataReferences;

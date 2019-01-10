@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Editor
 
 		class ConventionsFileManager : IFileWatcher
 		{
-			HashSet<string> watchedFiles = new HashSet<string> ();
+			HashSet<FilePath> watchedFiles = new HashSet<FilePath> ();
 
 			public event ConventionsFileChangedAsyncEventHandler ConventionFileChanged;
 			public event ContextFileMovedAsyncEventHandler ContextFileMoved;
@@ -116,8 +116,9 @@ namespace MonoDevelop.Ide.Editor
 					foreach (var file in e) {
 						if (watchedFiles.Remove (file.SourceFile)) {
 							ContextFileMoved?.Invoke (this, new ContextFileMovedEventArgs (file.SourceFile, file.TargetFile));
-							if (file.SourceFile.FileName == file.TargetFile.FileName)
+							if (file.SourceFile == file.TargetFile) {
 								StartWatching (file.TargetFile.FileName, file.TargetFile.ParentDirectory);
+							}
 						}
 					}
 				}
@@ -152,6 +153,7 @@ namespace MonoDevelop.Ide.Editor
 				FileService.FileRenamed -= FileService_FileMoved;
 				FileService.FileRemoved -= FileService_FileRemoved;
 				FileService.FileChanged -= FileService_FileChanged;
+				FileWatcherService.WatchDirectories (this, null).Ignore ();
 				lock (watchedFiles) {
 					watchedFiles = null;
 				}

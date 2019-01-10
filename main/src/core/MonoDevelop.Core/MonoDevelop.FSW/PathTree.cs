@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
@@ -111,16 +112,25 @@ namespace MonoDevelop.FSW
 			var currentNode = parent.FirstChild;
 			previousNode = null;
 
+			var remainingSegments = path.AsSpan ().TrimEnd (Path.DirectorySeparatorChar);
+
 			while (currentNode != null)
 			{
-				int currentIndex = path.IndexOf(Path.DirectorySeparatorChar, lastIndex);
-				int comparisonResult = string.Compare(currentNode.FullPath, currentNode.Start, path, lastIndex, currentNode.Length);
+				var currentSegment = currentNode.GetSegment ();
 
+				// Chunk by directory separator
+				int currentIndex = remainingSegments.IndexOf (Path.DirectorySeparatorChar);
+
+				int segmentLength = currentIndex == -1 ? remainingSegments.Length : currentIndex;
+
+				var toAddSegment = remainingSegments.Slice (0, segmentLength);
+
+				int comparisonResult = currentSegment.CompareTo (toAddSegment, FilePath.PathComparison);
 				// We need to insert in this node's position.
 				if (comparisonResult > 0)
 					break;
 
-				// Keep searching.
+				// Keep searching if we still have items.
 				if (comparisonResult < 0)
 				{
 					previousNode = currentNode;
@@ -129,10 +139,11 @@ namespace MonoDevelop.FSW
 				}
 
 				// We found this segment in the tree.
-				lastIndex = currentIndex + 1;
+				remainingSegments = remainingSegments.Slice (Math.Min (currentIndex + 1, remainingSegments.Length));
+				lastIndex += currentIndex + 1;
 
 				// We found the node already, register the ID.
-				if (currentIndex == -1 || lastIndex == path.Length)
+				if (currentIndex == -1 || remainingSegments.Length == 0)
 				{
 					result = currentNode;
 					return true;
