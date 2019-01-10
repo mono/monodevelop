@@ -324,7 +324,7 @@ namespace MonoDevelop.Core
 			try {
 				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
 					fsFiles.Key.NotifyFilesChanged (fsFiles);
-				OnFileChanged (new FileEventArgs (files, false, autoReload));
+				OnFileChanged (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File change notification failed", ex);
 			}
