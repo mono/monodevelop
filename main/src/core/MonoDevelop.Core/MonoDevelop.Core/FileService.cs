@@ -924,6 +924,7 @@ namespace MonoDevelop.Core
 
 		List<EventData> events = new List<EventData> ();
 		readonly object lockObject = new object ();
+		readonly Processor processor = new Processor ();
 
 		int frozen;
 
@@ -945,19 +946,7 @@ namespace MonoDevelop.Core
 				events = new List<EventData> ();
 			}
 
-			var previous = pendingEvents.Count > 0 ? pendingEvents[0] : null;
-			EventData current = null;
-
-			// Merge similar events to trigger fewer notifications.
-			for (int n = 1; n < pendingEvents.Count; n++, previous = current) {
-				current = pendingEvents [n];
-
-				if (!previous.IsChainArgs () || !previous.ShouldMerge (current))
-					continue;
-
-				previous.MergeArgs (current);
-				pendingEvents [n] = EmptyEventData.Instance;
-			}
+			processor.Process (pendingEvents);
 
 			// Trigger notifications
 			Runtime.RunInMainThread (() => {
@@ -985,6 +974,26 @@ namespace MonoDevelop.Core
 					var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
 					del1.Invoke (null, args1);
 				}, (del, args));
+			}
+		}
+
+		class Processor
+		{
+			public void Process (List<EventData> pendingEvents)
+			{
+				var previous = pendingEvents.Count > 0 ? pendingEvents [0] : null;
+				EventData current = null;
+
+				// Merge similar events to trigger fewer notifications.
+				for (int n = 1; n < pendingEvents.Count; n++, previous = current) {
+					current = pendingEvents [n];
+
+					if (!previous.IsChainArgs () || !previous.ShouldMerge (current))
+						continue;
+
+					previous.MergeArgs (current);
+					pendingEvents [n] = EmptyEventData.Instance;
+				}
 			}
 		}
 	}
