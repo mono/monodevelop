@@ -431,6 +431,38 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void NetCoreApp_NetCore30Installed ()
+		{
+			CreateWizard ();
+			DotNetCoreRuntimesInstalled ("3.0.0");
+
+			int pages = wizard.TotalPages;
+
+			Assert.AreEqual (0, pages);
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard21"));
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard20"));
+			Assert.IsFalse (WizardHasParameter ("UseNetStandard1x"));
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore30"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore22"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore21"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore20"));
+			Assert.IsFalse (WizardHasParameter ("UseNetCore1x"));
+			Assert.IsFalse (WizardHasParameter ("framework"));
+			Assert.AreEqual (".NETCoreApp,Version=v3.0", wizard.TargetFrameworks [0].Id.ToString ());
+			Assert.AreEqual (1, wizard.TargetFrameworks.Count);
+
+			var page = wizard.GetPage (1);
+			Assert.AreEqual ("netcoreapp3.0", wizard.Parameters ["Framework"]);
+			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore30"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore21"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
+			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
+		}
+
+		[Test]
 		public void NetCoreApp_NetCore22Installed ()
 		{
 			CreateWizard ();

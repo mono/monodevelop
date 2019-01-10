@@ -37,44 +37,33 @@ namespace MonoDevelop.DotNetCore.Templating
 	[Extension]
 	class DotNetCoreProjectTemplateStringTagProvider : IStringTagProvider
 	{
+		string [] SupportedSDK = { "2.1", "2.2", "3.0" };
+
 		public IEnumerable<StringTagDescription> GetTags (Type type)
 		{
-			// 2.1 templates
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.1.Templates.Common.ProjectTemplates.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.1 Common Project Templates NuGet package path")
-			);
+			for (var i = 0; i < SupportedSDK.Length; i++) {
+				yield return new StringTagDescription (
+					$"DotNetCoreSdk.{SupportedSDK[i]}.Templates.Common.ProjectTemplates.nupkg",
+					GettextCatalog.GetString (string.Format (".NET Core SDK {0} Common Project Templates NuGet package path", SupportedSDK [i]))
+				);
 
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.1.Templates.Test.ProjectTemplates.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.1 Test Project Templates NuGet package path")
-			);
+				yield return new StringTagDescription (
+					$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.Test.ProjectTemplates.nupkg",
+					GettextCatalog.GetString (string.Format (".NET Core SDK {0} Test Project Templates NuGet package path", SupportedSDK[i]))
+				);
 
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.1 Web Project Templates NuGet package path")
-			);
-
-			// 2.2 templates
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.2.Templates.Common.ProjectTemplates.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.2 Common Project Templates NuGet package path")
-			);
-
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.2.Templates.Test.ProjectTemplates.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.2 Test Project Templates NuGet package path")
-			);
-
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.2 Web Project Templates NuGet package path")
-			);
-
-			yield return new StringTagDescription (
-				"DotNetCoreSdk.2.2.Templates.NUnit3.DotNetNew.Template.nupkg",
-				GettextCatalog.GetString (".NET Core SDK 2.2 NUnit Project Templates NuGet package path")
-			);
+				yield return new StringTagDescription (
+					$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.Web.ProjectTemplates.nupkg",
+					GettextCatalog.GetString (string.Format (".NET Core SDK {0} Web Project Templates NuGet package path", SupportedSDK[i]))
+				);
+					
+				if (i > 0 ) { //2.2 and before 
+					yield return new StringTagDescription (
+						$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.NUnit3.DotNetNew.Template.nupkg",
+						GettextCatalog.GetString (string.Format (".NET Core SDK {0} NUnit Project Templates NuGet package path", SupportedSDK [i]))
+					);
+				}
+			}
 		}
 
 		public object GetTagValue (object instance, string tag)
@@ -131,16 +120,16 @@ namespace MonoDevelop.DotNetCore.Templating
 		}
 
 		/// <summary>
-		/// Only .NET Core SDKs 2.1/2.2 are supported.
+		/// Only .NET Core SDKs 2.1/2.2/3.0 are supported.
 		/// </summary>
 		string GetDotNetCoreSdkTemplatesDirectory (string tag)
 		{
 			DotNetCoreVersion dotNetCoreSdk = null;
 
-			if (tag.StartsWith ("DotNetCoreSdk.2.1", StringComparison.OrdinalIgnoreCase)) {
-				dotNetCoreSdk = GetDotNetCoreSdk21Version ();
-			} else if (tag.StartsWith ("DotNetCoreSdk.2.2", StringComparison.OrdinalIgnoreCase)) {
-				dotNetCoreSdk = GetDotNetCoreSdk22Version ();
+			foreach (var sdk in SupportedSDK) {
+				if (tag.StartsWith ($"DotNetCoreSdk.{sdk}", StringComparison.OrdinalIgnoreCase)) {
+					dotNetCoreSdk = GetDotNetCoreSdkVersion (DotNetCoreVersion.Parse (sdk));
+				}
 			}
 
 			if (dotNetCoreSdk == null)
@@ -159,16 +148,15 @@ namespace MonoDevelop.DotNetCore.Templating
 			return string.Empty;
 		}
 
-		DotNetCoreVersion GetDotNetCoreSdk22Version ()
+		DotNetCoreVersion GetDotNetCoreSdkVersion (DotNetCoreVersion version)
 		{
-			return DotNetCoreSdk.Versions
-				.FirstOrDefault (v => v.Major == 2 && v.Minor == 2);
-		}
+			//special case 2.1
+			if (version.Major == 2 && version.Minor == 1)
+				return DotNetCoreSdk.Versions
+				.FirstOrDefault (v => v.Major == version.Major && v.Minor == version.Minor && v.Patch >= 300);
 
-		DotNetCoreVersion GetDotNetCoreSdk21Version ()
-		{
 			return DotNetCoreSdk.Versions
-				.FirstOrDefault (v => v.Major == 2 && v.Minor == 1 && v.Patch >= 300);
+				.FirstOrDefault (v => v.Major == version.Major && v.Minor == version.Minor);
 		}
 
 		/// <summary>
