@@ -904,6 +904,16 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		sealed class EmptyEventData : EventData
+		{
+			public static EmptyEventData Instance = new EmptyEventData ();
+
+			public override void Invoke () { }
+			public override bool ShouldMerge (EventData other) => false;
+			public override void MergeArgs (EventData other) { }
+			public override bool IsChainArgs () => false;
+		}
+
 		abstract class EventData
 		{
 			public abstract void Invoke ();
@@ -935,18 +945,24 @@ namespace MonoDevelop.Core
 				events = new List<EventData> ();
 			}
 
+			var previous = pendingEvents.Count > 0 ? pendingEvents[0] : null;
+			EventData current = null;
+
+			// Merge similar events to trigger fewer notifications.
+			for (int n = 1; n < pendingEvents.Count; n++, previous = current) {
+				current = pendingEvents [n];
+
+				if (!previous.IsChainArgs () || !previous.ShouldMerge (current))
+					continue;
+
+				previous.MergeArgs (current);
+				pendingEvents [n] = EmptyEventData.Instance;
+			}
+
+			// Trigger notifications
 			Runtime.RunInMainThread (() => {
-				for (int n=0; n<pendingEvents.Count; n++) {
-					EventData ev = pendingEvents [n];
-					if (ev.IsChainArgs ()) {
-						EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
-						if (next != null && ev.ShouldMerge (next)) {
-							ev.MergeArgs (next);
-							continue;
-						}
-					}
+				foreach (var ev in pendingEvents)
 					ev.Invoke ();
-				}
 			}).Ignore ();
 		}
 
