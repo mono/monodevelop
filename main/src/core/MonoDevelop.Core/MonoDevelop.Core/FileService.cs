@@ -938,28 +938,28 @@ namespace MonoDevelop.Core
 
 		public void Thaw ()
 		{
-			List<EventData> pendingEvents = null;
+			List<EventData> pendingEvents;
 			lock (events) {
-				if (--frozen == 0) {
-					pendingEvents = events;
-					events = new List<EventData> ();
-				}
+				if (--frozen != 0 || events.Count == 0)
+					return;
+
+				pendingEvents = events;
+				events = new List<EventData> ();
 			}
-			if (pendingEvents != null) {
-				Runtime.RunInMainThread (() => {
-					for (int n=0; n<pendingEvents.Count; n++) {
-						EventData ev = pendingEvents [n];
-						if (ev.IsChainArgs ()) {
-							EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
-							if (next != null && ev.ShouldMerge (next)) {
-								ev.MergeArgs (next);
-								continue;
-							}
+
+			Runtime.RunInMainThread (() => {
+				for (int n=0; n<pendingEvents.Count; n++) {
+					EventData ev = pendingEvents [n];
+					if (ev.IsChainArgs ()) {
+						EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
+						if (next != null && ev.ShouldMerge (next)) {
+							ev.MergeArgs (next);
+							continue;
 						}
-						ev.Invoke ();
 					}
-				}).Ignore ();
-			}
+					ev.Invoke ();
+				}
+			}).Ignore ();
 		}
 
 		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
