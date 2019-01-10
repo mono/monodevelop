@@ -245,6 +245,9 @@ namespace MonoDevelop.Ide.FindInFiles
 												"Find",
 												GettextCatalog.GetString ("Enter string to find"));
 			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
+			toggleFindInFiles.Accessible.SetLabel (GettextCatalog.GetString ("Find in files toggle button"));
+			toggleReplaceInFiles.Accessible.SetLabel (GettextCatalog.GetString ("Replace in files toggle button"));
+
 		}
 
 		void SetupAccessibilityForReplace ()
