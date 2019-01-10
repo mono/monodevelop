@@ -957,6 +957,9 @@ namespace MonoDevelop.Core
 
 		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
 		{
+			if (del == null)
+				return;
+
 			lock (lockObject) {
 				if (frozen > 0) {
 					var ed = new EventData<TArgs> ();
