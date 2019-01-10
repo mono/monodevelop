@@ -109,6 +109,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public abstract IEnumerable<MSBuildItem> FindGlobItemsIncludingFile  (object projectInstance, string include);
 
 		internal abstract IEnumerable<MSBuildItem> FindUpdateGlobItemsIncludingFile (object projectInstance, string include, MSBuildItem globItem);
+
+		internal abstract IEnumerable<object> GetEvaluatedItemDefinitions (object projectInstance);
 	}
 }
 

@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects.MSBuild
 		MSBuildProject msproject;
 		List<IMSBuildItemEvaluated> evaluatedItems = new List<IMSBuildItemEvaluated> ();
 		List<IMSBuildItemEvaluated> evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
+		List<IMSBuildItemEvaluated> evaluatedItemDefinitions = new List<IMSBuildItemEvaluated> ();
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
 		MSBuildTarget[] targets = new MSBuildTarget[0];
 		MSBuildTarget[] targetsIgnoringCondition = new MSBuildTarget[0];
@@ -124,9 +125,16 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			evaluatedItemsIgnoringCondition.Clear ();
 			evaluatedItems.Clear ();
+			evaluatedItemDefinitions.Clear ();
 
 			if (!OnlyEvaluateProperties) {
-				
+				foreach (var it in e.GetEvaluatedItemDefinitions (project)) {
+					var xit = it as MSBuildItemEvaluated;
+					if (xit != null) {
+						evaluatedItemDefinitions.Add (xit);
+					}
+				}
+
 				var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItems (project)) {
 					var xit = it as MSBuildItemEvaluated;
@@ -199,6 +207,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IMSBuildEvaluatedPropertyCollection EvaluatedProperties {
 			get { return evaluatedProperties; }
+		}
+
+		internal IEnumerable<IMSBuildItemEvaluated> EvaluatedItemDefinitions {
+			get { return evaluatedItemDefinitions; }
 		}
 
 		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItems {
