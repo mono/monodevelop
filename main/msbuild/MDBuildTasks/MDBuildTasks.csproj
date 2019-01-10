@@ -37,10 +37,11 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MDDownloadFiles.cs" />
+    <Compile Include="MDDownloadNupkg.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\DownloadFile.targets">
-      <Link>DownloadFile.targets</Link>
+    <None Include="..\MDBuildTasks.targets">
+      <Link>MDBuildTasks.targets</Link>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

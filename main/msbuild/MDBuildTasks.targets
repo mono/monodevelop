@@ -1,0 +1,85 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<!--
+		the one built into MSBuild 15.98+ is broken:
+		https://github.com/Microsoft/msbuild/issues/3726
+		-->
+		<PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
+	</ItemGroup>
+	<UsingTask
+		TaskName="MDDownloadFiles"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(RoslynCodeTaskFactory)"
+		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+		<!--
+		TaskFactory="RoslynCodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		-->
+		<ParameterGroup>
+			<Downloads ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.IO.Compression" />
+			<Reference Include="System.IO.Compression.FileSystem" />
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/MDDownloadFiles.cs" />
+		</Task>
+	</UsingTask>
+
+	<UsingTask
+		TaskName="MDDownloadNupkg"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(RoslynCodeTaskFactory)"
+		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+		<!--
+		TaskFactory="RoslynCodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		-->
+		<!--
+		this causes a RoslynCodeTaskFactory warning
+		but it's useful to uncomment for msbuild intellisense
+		-->
+		<!--
+		<ParameterGroup>
+			<Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<PackagesDirectory ParameterType="System.String" Required="true" />
+			<StampFile ParameterType="System.String" Required="true" />
+			<PackagesConfigFile ParameterType="System.String" Required="true" />
+		</ParameterGroup>
+		-->
+		<Task>
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/MDDownloadNupkg.cs" />
+		</Task>
+	</UsingTask>
+
+	<Target Name="MDDownloadFiles" Condition="'@(MDDownload)' != ''" AfterTargets="Build">
+		<MDDownloadFiles Downloads="@(MDDownload)" />
+	</Target>
+
+	<Target Name="MDDownloadNupkg" Condition="'@(MDDownloadNupkg)' != ''" BeforeTargets="Build" DependsOnTargets="_MDDownloadNupkgGather;_MDDownloadNupkgIfNeeded">
+		<Message Text="Downloaded nupkgs: @(MDDownloadedNupkg)" />
+	</Target>
+
+	<Target Name="_MDDownloadNupkgGather">
+		<PropertyGroup>
+			<MDDownloadNupkgDirectory Condition="'$(MDDownloadNupkgDirectory)'==''">$(SolutionDir)packages\</MDDownloadNupkgDirectory>
+			<MDDownloadNupkgDirectory Condition="!HasTrailingSlash('$(MDDownloadNupkgDirectory)')">$(MDDownloadNupkgDirectory)\</MDDownloadNupkgDirectory>
+			<_MDDownloadNupkgStamp>$(IntermediateOutputPath)MDDownloadFiles\stamp</_MDDownloadNupkgStamp>
+			<_MDDownloadNupkgPkgCfg>$(IntermediateOutputPath)MDDownloadFiles\packages.config</_MDDownloadNupkgPkgCfg>
+		</PropertyGroup>
+		<ItemGroup>
+			<MDDownloadedNupkg Include="@(MDDownloadNupkg->'$(MDDownloadNupkgDirectory)%(Identity).%(Version)\%(Identity).%(Version).nupkg')" />
+			<FileWrites Include="$(_MDDownloadNupkgStamp);$(_MDDownloadNupkgPkgCfg)" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="_MDDownloadNupkgIfNeeded" Inputs="$(MSBuildAllProjects)" Outputs="@(MDDownloadedNupkg);$(_MDDownloadNupkgStamp)" >
+		<MDDownloadNupkg
+			ToolPath="$(MSBuildThisFileDirectory)\..\external\nuget-binary"
+			ToolExe="nuget.exe"
+			Packages="@(MDDownloadNupkg)"
+			PackagesDirectory="$(MDDownloadNupkgDirectory)"
+			StampFile="$(_MDDownloadNupkgStamp)"
+			PackagesConfigFile="$(_MDDownloadNupkgPkgCfg)"
+		/>
+	</Target>
+</Project>
