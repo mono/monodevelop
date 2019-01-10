@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 using CoreFoundation;
 using Foundation;
-
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Desktop;
 
@@ -74,6 +74,7 @@ namespace MacPlatform
 
 					var timeSinceEpoch = DateTimeOffset.UtcNow - epoch;
 					var loginSinceEpoch = login - epoch;
+
 					result.sinceLogin = timeSinceEpoch - loginSinceEpoch;
 				}
 			} catch (Exception e) {
@@ -225,12 +226,24 @@ namespace MacPlatform
 			return KernelInterop.TrySampleHostCpu (out value);
 		}
 
+		[DllImport("libgtk-win32-2.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		static extern IntPtr gtk_get_current_event ();
+
+		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern void gdk_event_free (IntPtr raw);
+
 		public TimeSpan GetEventTime (Gdk.EventKey eventKey)
 		{
+			// Gtk.Application.CurrentEvent and other copied gdk_events seem to have a problem
+			// when used as they use gdk_event_copy which seems to crash on de-allocating the private slice.
+			IntPtr currentEvent = GtkWorkarounds.GetCurrentEventHandle ();
+			bool equals = currentEvent == eventKey.Handle;
+			GtkWorkarounds.FreeEvent (currentEvent);
+
 			// If this GDK event is the current Gtk.Application event, assume that NSApplication's
 			// current event is the event from which the GDK event was created and use its timestamp
 			// instead, which has a much higher precision than the GDK time.
-			if (Gtk.Application.CurrentEvent == eventKey)
+			if (equals)
 				return FromNSTimeInterval (AppKit.NSApplication.SharedApplication.CurrentEvent.Timestamp);
 
 			return TimeSpan.FromMilliseconds (eventKey.Time);

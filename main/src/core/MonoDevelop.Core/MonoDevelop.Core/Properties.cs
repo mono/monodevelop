@@ -268,16 +268,25 @@ namespace MonoDevelop.Core
 		public void Save (string fileName)
 		{
 			string backupFileName = fileName + ".previous";
-			string tempFileName = Path.GetDirectoryName (fileName) + 
-				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
-			
-			//make a copy of the current file
-			try {
-				if (File.Exists (fileName)) {
-					File.Copy (fileName, backupFileName, true);
+			string dirName = Path.GetDirectoryName (fileName);
+			string tempFileName = dirName + Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
+
+			if (Directory.Exists (dirName)) {
+				//make a copy of the current file
+				try {
+					if (File.Exists (fileName)) {
+						File.Copy (fileName, backupFileName, true);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error copying properties file '{0}' to backup\n{1}", fileName, ex);
 				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error copying properties file '{0}' to backup\n{1}", fileName, ex);
+			} else {
+				try {
+					Directory.CreateDirectory (dirName);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error creating directory '{0}'\n{1}", dirName, ex);
+					return;
+				}
 			}
 			
 			//write out the new state to a temp file

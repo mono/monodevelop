@@ -152,7 +152,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override Xwt.Drawing.Image GetStatusIcon (string unitTestIdentifier, string caseId = null)
 			{
-				var test = UnitTestService.SearchTestById (unitTestIdentifier + caseId);
+				var test = UnitTestService.SearchTestByDocumentId (unitTestIdentifier + caseId);
 				if (test != null)
 					return test.StatusIcon;
 				return TestStatusIcon.None;
@@ -160,7 +160,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override bool IsFailure (string unitTestIdentifier, string caseId = null)
 			{
-				var test = UnitTestService.SearchTestById (unitTestIdentifier + caseId);
+				var test = UnitTestService.SearchTestByDocumentId (unitTestIdentifier + caseId);
 				if (test != null) {
 					var result = test.GetLastResult ();
 					if (result != null)
@@ -171,7 +171,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override string GetMessage (string unitTestIdentifier, string caseId = null)
 			{
-				var test = UnitTestService.SearchTestById (unitTestIdentifier + caseId);
+				var test = UnitTestService.SearchTestByDocumentId (unitTestIdentifier + caseId);
 				if (test != null) {
 					var result = test.GetLastResult ();
 					if (result != null)
@@ -182,7 +182,7 @@ namespace MonoDevelop.UnitTesting
 
 			public override bool HasResult (string unitTestIdentifier, string caseId = null)
 			{
-				return UnitTestService.SearchTestById (unitTestIdentifier + caseId) != null;
+				return UnitTestService.SearchTestByDocumentId (unitTestIdentifier + caseId) != null;
 			}
 
 			public override void PopupContextMenu (UnitTestLocation unitTest, int x, int y)
@@ -240,7 +240,7 @@ namespace MonoDevelop.UnitTesting
 
 							var label = "Test" + id;
 							string tooltip = null;
-							var test = UnitTestService.SearchTestById (unitTest.UnitTestIdentifier + id);
+							var test = UnitTestService.SearchTestByDocumentId (unitTest.UnitTestIdentifier + id);
 							if (test != null) {
 								var result = test.GetLastResult ();
 								if (result != null && result.IsFailure) {
@@ -292,7 +292,7 @@ namespace MonoDevelop.UnitTesting
 
 				bool TimeoutHandler ()
 				{
-					var test = UnitTestService.SearchTestById (testCase);
+					var test = UnitTestService.SearchTestByDocumentId (testCase);
 					if (test != null) {
 						RunTest (test); 
 						timeoutHandler = 0;
@@ -308,7 +308,7 @@ namespace MonoDevelop.UnitTesting
 						IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
 						return;
 
-					var foundTest = UnitTestService.SearchTestById (testCase);
+					var foundTest = UnitTestService.SearchTestByDocumentId (testCase);
 					if (foundTest != null) {
 						RunTest (foundTest);
 						return;
@@ -321,16 +321,16 @@ namespace MonoDevelop.UnitTesting
 						await UnitTestService.RefreshTests (CancellationToken.None);
 					}
 
-					foundTest = UnitTestService.SearchTestById (testCase);
+					foundTest = UnitTestService.SearchTestByDocumentId (testCase);
 					if (foundTest != null)
 						RunTest (foundTest);
 					else
-						UnitTestService.ReportExecutionError (GettextCatalog.GetString ($"Unit test '{testCase}' could not be loaded."));
+						UnitTestService.ReportExecutionError (GettextCatalog.GetString ("Unit test '{0}' could not be loaded.", testCase));
 				}
 
 				internal void Select (object sender, EventArgs e)
 				{
-					var test = UnitTestService.SearchTestById (testCase);
+					var test = UnitTestService.SearchTestByDocumentId (testCase);
 					if (test == null)
 						return;
 					UnitTestService.CurrentSelectedTest = test;

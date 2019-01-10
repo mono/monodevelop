@@ -115,9 +115,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public AsyncOperation AsyncOperation { get; set; }
 		public object SyncRoot { get; set; }
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
-			base.Dispose ();
+			base.OnDispose (disposing);
 			IsDisposed = true;
 		}
 

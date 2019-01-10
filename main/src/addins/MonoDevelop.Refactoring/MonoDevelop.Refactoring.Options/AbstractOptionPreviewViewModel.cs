@@ -47,7 +47,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
 using Roslyn.Utilities;
-using Microsoft.CodeAnalysis.CodeStyle;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Core.Text;

@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 
 					var taskForOldAsm = WaitForSnapshotChange (item);
-					File.Copy (newAsm, tempPath, true);
+					File.Copy (oldAsm, tempPath, true);
 
 					var argsForOldAsm = await taskForOldAsm;
 
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var tcs = new TaskCompletionSource<MetadataReferenceUpdatedEventArgs> ();
 			var cts = new CancellationTokenSource ();
-			cts.Token.Register (() => tcs.TrySetResult (null));
+			cts.Token.Register (() => tcs.TrySetCanceled ());
 			item.SnapshotUpdated += (sender, args) => {
 				// This routes through file service
 				tcs.TrySetResult (args);

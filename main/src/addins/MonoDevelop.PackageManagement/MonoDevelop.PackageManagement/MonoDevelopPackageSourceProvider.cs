@@ -59,11 +59,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		[Obsolete ("DisablePackageSource(PackageSource source) is deprecated. Please use DisablePackageSource(string name) instead.")]
 		public void DisablePackageSource (PackageSource source)
 		{
 			packageSourceProvider.DisablePackageSource (source);
 		}
 
+		[Obsolete ("IsPackageSourceEnabled(PackageSource source) is deprecated. Please use IsPackageSourceEnabled(string name) instead.")]
 		public bool IsPackageSourceEnabled (PackageSource source)
 		{
 			return packageSourceProvider.IsPackageSourceEnabled (source);

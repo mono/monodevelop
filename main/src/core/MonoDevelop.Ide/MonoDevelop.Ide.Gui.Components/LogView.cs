@@ -497,10 +497,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public void Clear ()
 		{
-			unchecked {
-				Cookie++;
-			}
-
 			lock (updates) {
 				updates.Clear ();
 				lastTextWrite = null;
@@ -869,8 +865,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			Indent = new IndentTracker ();
 
-			if (clearConsole)
+			if (clearConsole) {
+				unchecked {
+					outputPad.Cookie++;
+				}
 				outputPad.Clear ();
+			}
 
 			padCookie = pad.Cookie;
 			internalLogger.TextWritten += WriteConsoleLogText;
@@ -957,9 +957,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			return new InvalidOperationException ("Output progress monitor already disposed.");
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
-			base.Dispose ();
+			base.OnDispose (disposing);
 			console.Dispose ();
 			Disposed?.Invoke (this, EventArgs.Empty);
 		}

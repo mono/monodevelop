@@ -137,8 +137,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IntitializeTrackedProjectHandling ();
 
-			IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
-			IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
+			IdeApp.Initialized += (sender, args) => {
+				IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
+				IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
+			};
 		}
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)

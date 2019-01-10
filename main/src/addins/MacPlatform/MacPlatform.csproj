@@ -60,6 +60,7 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj">
       <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
       <Name>Xwt.XamMac</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -110,7 +111,6 @@
     <Compile Include="MacTelemetryDetails.cs" />
     <Compile Include="Interop.cs" />
     <Compile Include="KernelInterop.cs" />
-    <Compile Include="MacInterop\KeyCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

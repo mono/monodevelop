@@ -168,7 +168,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void KeyDown (NSEvent theEvent)
 		{
 			// 0x30 is Tab
-			if (theEvent.KeyCode == KeyCodes.Tab) {
+			if (theEvent.KeyCode == ((ushort)Components.Mac.KeyCodes.Tab)) {
 				if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
 					UnfocusToolbar?.Invoke (this, EventArgs.Empty);
 					return;
@@ -183,7 +183,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void DrawBezelWithFrame (CGRect frame, NSView controlView)
 		{
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
+#pragma warning disable EPS06 // Hidden struct copy operation
 				var inset = frame.Inset (0.25f, 0.25f);
+#pragma warning restore EPS06 // Hidden struct copy operation
 
 				var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 				path.LineWidth = 0.5f;

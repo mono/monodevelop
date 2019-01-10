@@ -63,7 +63,6 @@ namespace MonoDevelop.VersionControl.Git
 			this.labelOper.WidthRequest = 443;
 			this.labelOper.Name = "labelOper";
 			this.labelOper.Xalign = 0F;
-			this.labelOper.LabelProp = "The remote branch <b>origin/blablabla</b> will be merged into the branch <b>master</b>.";
 			this.labelOper.UseMarkup = true;
 			this.labelOper.Wrap = true;
 			this.vbox2.Add (this.labelOper);

@@ -117,7 +117,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 				var workspace1 = TypeSystemService.Workspace;
 				var mefExporter = (IMefHostExportProvider)workspace1.Services.HostServices;
 				var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
-					.FilterToSpecificLanguage (LanguageNames.CSharp).ToList ();
+					.FilterToSpecificLanguage (LanguageNames.CSharp).ToImmutableArray ();
 				return engine.GetParameterDataProviderAsync (helpProviders, document, cursorPosition, new SignatureHelpTriggerInfo (SignatureHelpTriggerReason.InvokeSignatureHelpCommand)).Result;
 			} else
 				return engine.GetParameterDataProviderAsync (document, cursorPosition).Result;

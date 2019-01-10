@@ -43,8 +43,6 @@ namespace MonoDevelop.AnalysisCore
 		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
-		const bool ClrHeapEnabled = false;
-
 		private TaskCompletionSource<OptionsTable> optionsCompletionSource = new TaskCompletionSource<OptionsTable> ();
 		internal Task<OptionsTable> GetOptionsAsync () => optionsCompletionSource.Task;
 		readonly Task<ImmutableArray<HostDiagnosticAnalyzerPackage>> hostDiagnosticAnalyzerInfoTask;
@@ -83,12 +81,6 @@ namespace MonoDevelop.AnalysisCore
 					var assemblyName = asm.GetName ().Name;
 					if (Array.IndexOf (RuntimeEnabledAssemblies, assemblyName) == -1) {
 						switch (assemblyName) {
-						case "ClrHeapAllocationAnalyzer":
-							if (!ClrHeapEnabled)
-								continue;
-							#pragma warning disable 162 // Unreachable
-							break;
-							#pragma warning restore 162
 						//blacklist
 						case "FSharpBinding":
 							continue;

@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			return groupNames [group];
 		}
 		
-		public IList<string> GroupOrder { get; set; }
+		public string[] GroupOrder { get; set; }
 		public bool IsGrouped { get; set; }
 		public bool IsSorted { get; set; }
 	}

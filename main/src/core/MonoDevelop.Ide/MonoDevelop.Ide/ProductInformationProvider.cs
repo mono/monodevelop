@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Application ID used by the updater. Usually a GUID.
 		/// </summary>
-		public abstract string ApplicationId { get; }
+		public virtual string ApplicationId { get { return GetUpdateInfo ()?.AppId; } }
 
 		public abstract string Title { get; }
 
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide
 			var absolutePath = UpdateInfoFile;
 			if (absolutePath != null && !absolutePath.IsAbsolute) {
 #if MAC
-				// relative paths are relative the bundle root
+				// relative paths are relative to the bundle root
 				FilePath bundlePath = Foundation.NSBundle.MainBundle.BundlePath;
 				absolutePath = bundlePath.Combine (UpdateInfoFile);
 #endif

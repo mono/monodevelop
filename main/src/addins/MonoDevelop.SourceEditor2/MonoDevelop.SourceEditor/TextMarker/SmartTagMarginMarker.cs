@@ -67,16 +67,21 @@ namespace MonoDevelop.SourceEditor
 			PopupPosition = new Xwt.Point (metrics.X, metrics.Y);
 		}
 
-		public static Xwt.Drawing.Image GetIcon (SmartTagSeverity severity)
+		public static string GetIconId (SmartTagSeverity severity)
 		{
 			switch (severity) {
 			case SmartTagSeverity.Fixes:
-				return ImageService.GetIcon ("md-lightbulb", Gtk.IconSize.Menu);
+				return "md-lightbulb";
 			case SmartTagSeverity.ErrorFixes:
-				return ImageService.GetIcon ("md-lightbulb-error", Gtk.IconSize.Menu);
+				return "md-lightbulb-error";
 			default:
-				return ImageService.GetIcon ("md-lightbulb-screwdriver", Gtk.IconSize.Menu);
+				return "md-lightbulb-screwdriver";
 			}
+		}
+
+		public static Xwt.Drawing.Image GetIcon (SmartTagSeverity severity)
+		{
+			return ImageService.GetIcon (GetIconId (severity), Gtk.IconSize.Menu);
 		}
 
 		public override void InformMousePress (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)

@@ -26,11 +26,13 @@
 using System;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.CodingConventions;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -95,7 +97,7 @@ namespace MonoDevelop.Ide.Editor
 
 		class ConventionsFileManager : IFileWatcher
 		{
-			Dictionary<string, FileSystemWatcher> watchers = new Dictionary<string, FileSystemWatcher> ();
+			HashSet<FilePath> watchedFiles = new HashSet<FilePath> ();
 
 			public event ConventionsFileChangedAsyncEventHandler ConventionFileChanged;
 			public event ContextFileMovedAsyncEventHandler ContextFileMoved;
@@ -110,33 +112,36 @@ namespace MonoDevelop.Ide.Editor
 
 			void FileService_FileMoved (object sender, FileCopyEventArgs e)
 			{
-				foreach (var file in e) {
-					if (watchers.TryGetValue (file.SourceFile, out FileSystemWatcher watcher)) {
-						ContextFileMoved?.Invoke (this, new ContextFileMovedEventArgs (file.SourceFile, file.TargetFile));
-						watcher.Dispose ();
-						watchers.Remove (file.SourceFile);
-						StartWatching (file.TargetFile.FileName, file.TargetFile.ParentDirectory);
+				lock (watchedFiles) {
+					foreach (var file in e) {
+						if (watchedFiles.Remove (file.SourceFile)) {
+							ContextFileMoved?.Invoke (this, new ContextFileMovedEventArgs (file.SourceFile, file.TargetFile));
+							if (file.SourceFile == file.TargetFile) {
+								StartWatching (file.TargetFile.FileName, file.TargetFile.ParentDirectory);
+							}
+						}
 					}
 				}
 			}
 
 			void FileService_FileChanged (object sender, FileEventArgs e)
 			{
-				foreach (var file in e) {
-					if (watchers.TryGetValue (file.FileName, out FileSystemWatcher watcher)) {
-						ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (watcher.Filter, watcher.Path, ChangeType.FileModified));
+				lock (watchedFiles) {
+					foreach (var file in e) {
+						if (watchedFiles.Contains (file.FileName)) {
+							ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (file.FileName.FileName, file.FileName.ParentDirectory, ChangeType.FileModified));
+						}
 					}
 				}
 			}
 
 			void FileService_FileRemoved (object sender, FileEventArgs e)
 			{
-				lock (watchers) {
+				lock (watchedFiles) {
 					foreach (var file in e) {
-						if (watchers.TryGetValue (file.FileName, out FileSystemWatcher watcher)) {
-							ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (watcher.Filter, watcher.Path, ChangeType.FileDeleted));
-							watcher.Dispose ();
-							watchers.Remove (file.FileName);
+						if (watchedFiles.Remove (file.FileName)) {
+							ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (file.FileName.FileName, file.FileName.ParentDirectory, ChangeType.FileDeleted));
+							WatchDirectories ();
 						}
 					}
 				}
@@ -148,57 +153,41 @@ namespace MonoDevelop.Ide.Editor
 				FileService.FileRenamed -= FileService_FileMoved;
 				FileService.FileRemoved -= FileService_FileRemoved;
 				FileService.FileChanged -= FileService_FileChanged;
-				lock (watchers) {
-					foreach (var kv in watchers)
-						kv.Value.Dispose ();
-					watchers = null;
+				FileWatcherService.WatchDirectories (this, null).Ignore ();
+				lock (watchedFiles) {
+					watchedFiles = null;
 				}
-			}
-
-			void OnChanged (object source, FileSystemEventArgs e)
-			{
-				var watcher = (FileSystemWatcher)source;
-				ConventionFileChanged?.Invoke (this, new ConventionsFileChangeEventArgs (watcher.Filter, watcher.Path, GetChangeType(e.ChangeType)));
-			}
-
-			static ChangeType GetChangeType(WatcherChangeTypes type)
-			{
-				switch (type) {
-				case WatcherChangeTypes.Changed:
-					return ChangeType.FileModified;
-				case WatcherChangeTypes.Deleted:
-					return ChangeType.FileDeleted;
-				}
-				return ChangeType.FileModified;
 			}
 
 			public void StartWatching (string fileName, string directoryPath)
 			{
-				lock (watchers) {
+				lock (watchedFiles) {
 					var key = directoryPath + Path.DirectorySeparatorChar.ToString () + fileName;
 
-					if (watchers.ContainsKey (key))
+					if (!File.Exists (key))
 						return;
 
-					var watcher = new FileSystemWatcher ();
-					watcher.Path = directoryPath;
-					watcher.Filter = fileName;
-					watcher.Changed += OnChanged;
-					watcher.Deleted += OnChanged;
-					watcher.EnableRaisingEvents = true;
-					watchers.Add (key, watcher);
+					if (!watchedFiles.Add (key))
+						return;
+
+					WatchDirectories ();
 				}
 			}
 
 			public void StopWatching (string fileName, string directoryPath)
 			{
-				lock (watchers) {
+				lock (watchedFiles) {
 					var key = directoryPath + Path.DirectorySeparatorChar.ToString () + fileName;
-					if (watchers.TryGetValue (key, out FileSystemWatcher watcher)) {
-						watcher.Dispose ();
-						watchers.Remove (key);
+					if (watchedFiles.Remove (key)) {
+						WatchDirectories ();
 					}
 				}
+			}
+
+			void WatchDirectories ()
+			{
+				var directories = watchedFiles.Count == 0 ? null : watchedFiles.Select (file => new FilePath (file).ParentDirectory);
+				FileWatcherService.WatchDirectories (this, directories);
 			}
 		}
 	}

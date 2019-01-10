@@ -68,10 +68,10 @@ namespace MonoDevelop.Ide.Gui
 					icon.ToolTip = tip;
 			});
 		}
-		
-		public override void Dispose()
+
+		protected override void OnDispose (bool disposing)
 		{
-			base.Dispose ();
+			base.OnDispose (disposing);
 			Application.Invoke ((o, args) => {
 				if (icon != null) {
 					icon.Dispose ();

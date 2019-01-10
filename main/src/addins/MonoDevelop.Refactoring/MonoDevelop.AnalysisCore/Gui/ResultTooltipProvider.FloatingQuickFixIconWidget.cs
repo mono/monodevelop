@@ -32,6 +32,7 @@ using MonoDevelop.Components;
 using MonoDevelop.CodeActions;
 using Gdk;
 using System.Windows.Input;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -50,8 +51,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				CodeActionEditorExtension codeActionEditorExtension,
 				LanguageItemWindow window,
 				SourceEditorView sourceEditorView,
-				SourceEditor.SmartTagSeverity severity,
-				CodeActionContainer fixes, 
+				CodeActionContainer fixes,
 				Cairo.Point point) : base (Gtk.WindowType.Popup)
 			{
 				this.ext = codeActionEditorExtension;
@@ -64,8 +64,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				TypeHint = Gdk.WindowTypeHint.Utility;
 				var fr = new Gtk.HBox ();
 				fr.BorderWidth = 2;
-				var view = new Gtk.Image ();
-				view.Pixbuf = SmartTagMarginMarker.GetIcon (severity).ToPixbuf ();
+				var view = new ImageView (SmartTagMarginMarker.GetIconId (fixes.GetSmartTagSeverity ()), Gtk.IconSize.Menu);
 				fr.PackStart (view, false, false, 0);
 				fr.PackEnd (new RectangleMarker (), false, false, 0);
 				Add (fr);
@@ -100,7 +99,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				ext.CancelSmartTagPopupTimeout ();
 				ext.smartTagPopupTimeoutId = GLib.Timeout.Add (150, delegate {
 					ext.PopupQuickFixMenu (null, fixes, menu => { }, new Xwt.Point (
-						point.X, 
+						point.X,
 						point.Y + Allocation.Height + 10));
 					ext.smartTagPopupTimeoutId = 0;
 					return false;

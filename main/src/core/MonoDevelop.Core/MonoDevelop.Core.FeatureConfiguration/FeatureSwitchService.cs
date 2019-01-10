@@ -24,22 +24,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
+using Mono.Addins;
+
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	public class FeatureSwitch
-	{
-		public string Name { get; set; }
-
-		public FeatureSwitchCondition Condition { get; set; }
-
-		public bool IsEnabled => Condition?.Evaluate () ?? true;
-	}
-
 	public static class FeatureSwitchService
 	{
-		public static FeatureSwitch RegisterFeature (string name, FeatureSwitchCondition condition)
+		public static bool? IsFeatureEnabled (string featureName)
 		{
-			return new FeatureSwitch { Name = name, Condition = condition };
+			if (string.IsNullOrEmpty (featureName)) {
+				return null;
+			}
+
+			var env = Environment.GetEnvironmentVariable ("MD_FEATURES_ENABLED");
+			if (env != null && env.Split (';').Contains (featureName)) {
+				return true;
+			}
+
+			env = Environment.GetEnvironmentVariable ("MD_FEATURES_DISABLED");
+			if (env != null && env.Split (';').Contains (featureName)) {
+				return false;
+			}
+
+			// Fallback to ask extensions, enabling by default
+			var extensions = AddinManager.GetExtensionObjects<IFeatureSwitchController> ("/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks");
+			if (extensions != null) {
+				bool explicitlyEnabled = false, explicitlyDisabled = false;
+				foreach (var ext in extensions) {
+					switch (ext.IsFeatureEnabled (featureName)) {
+					case true:
+						explicitlyEnabled = true;
+						break;
+					case false:
+						explicitlyDisabled = true;
+						break;
+					}
+				}
+
+				if (explicitlyDisabled) return false;
+				if (explicitlyEnabled) return true;
+			}
+
+			return null;
 		}
 	}
 }

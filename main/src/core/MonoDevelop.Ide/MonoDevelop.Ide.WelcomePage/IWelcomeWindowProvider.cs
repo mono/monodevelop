@@ -1,10 +1,10 @@
 //
-// KeyCodes.cs
+// IWelcomeDialogProvider.cs
 //
 // Author:
-//       iain <iaholmes@microsoft.com>
+//       Rodrigo Moya <rodrigo.moya@xamarin.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2018 Microsoft Inc. (http://microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
-namespace MonoDevelop.MacInterop
+using MonoDevelop.Components;
+using Mono.Addins;
+
+namespace MonoDevelop.Ide.WelcomePage
 {
-	// These are the keycodes values NSEvent.KeyCode
-	// To find the code for a key not here, you can use the Key Codes application
-	// available from https://manytricks.com/keycodes/
-	internal static class KeyCodes
+	public class WelcomeWindowShowOptions
 	{
-		internal const ushort Enter = 0x24;
-		internal const ushort Tab = 0x30;
-		internal const ushort Space = 0x31;
+		public WelcomeWindowShowOptions (bool closeSolution)
+		{
+			CloseSolution = closeSolution;
+		}
+
+		public bool CloseSolution { get; set; }
+	}
+
+	[TypeExtensionPoint]
+	public interface IWelcomeWindowProvider
+	{
+		Window CreateWindow ();
+		void ShowWindow (Window window, WelcomeWindowShowOptions options);
+		void HideWindow (Window window);
 	}
 }

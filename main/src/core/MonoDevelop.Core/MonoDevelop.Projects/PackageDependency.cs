@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	public sealed class PackageDependency
 	{
-		string[] dependencies;
+		ImmutableArray<string> dependencies;
 
 		PackageDependency (string type, IMSBuildItemEvaluated item)
 		{
@@ -48,7 +49,7 @@ namespace MonoDevelop.Projects
 		public string DiagnosticCode { get; private set; }
 		public string DiagnosticMessage { get; private set; }
 
-		public IEnumerable<string> Dependencies {
+		public ImmutableArray<string> Dependencies {
 			get { return dependencies; }
 		}
 
@@ -94,7 +95,7 @@ namespace MonoDevelop.Projects
 				DiagnosticMessage = item.Metadata.GetValue ("Message", "");
 				IsDiagnostic = true;
 			}
-			dependencies = item.Metadata.GetValue ("Dependencies", "").Split (new char [] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
+			dependencies = item.Metadata.GetValue ("Dependencies", "").Split (new char [] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).ToImmutableArray ();
 		}
 
 		/// <summary>

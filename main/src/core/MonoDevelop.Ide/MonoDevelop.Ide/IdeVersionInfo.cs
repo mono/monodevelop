@@ -157,8 +157,6 @@ namespace MonoDevelop.Ide
 
 		public override string Version => BuildInfo.FullVersion;
 
-		public override string ApplicationId => "34937104-97FC-42A0-9159-D951135F72CA";
-
 		protected override FilePath UpdateInfoFile => "./Contents/MacOS/updateinfo";
 	}
 }

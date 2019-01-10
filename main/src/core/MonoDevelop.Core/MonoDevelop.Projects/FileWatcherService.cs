@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 				if (token.IsCancellationRequested)
 					return;
 
-				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.FullPath);
+				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.GetPath ().ToString ());
 				var newWatchers = new HashSet<FilePath> (newPathsToWatch.Where (dir => Directory.Exists (dir)));
 				if (newWatchers.Count == 0 && watchers.Count == 0) {
 					// Unchanged.
@@ -153,23 +153,34 @@ namespace MonoDevelop.Projects
 		public static Task WatchDirectories (object id, IEnumerable<FilePath> directories)
 		{
 			lock (watchers) {
-				if (RegisterDirectoriesInTree_NoLock (id, directories))
+				HashSet<FilePath> set = null; 
+				if (directories != null)
+					set = new HashSet<FilePath> (directories.Where (x => !x.IsNullOrEmpty));
+
+				if (RegisterDirectoriesInTree_NoLock (id, set))
 					return UpdateWatchersAsync ();
 				return Task.CompletedTask;
 			}
 		}
 
-		static bool RegisterDirectoriesInTree_NoLock (object id, IEnumerable<FilePath> directories)
+		static bool RegisterDirectoriesInTree_NoLock (object id, HashSet<FilePath> set)
 		{
 			Debug.Assert (Monitor.IsEntered (watchers));
 
 			// Remove paths subscribed for this id.
-			// TODO: Only modify those which need to be modified, don't register/unregister with no reason.
 
 			bool modified = false;
 
 			if (monitoredDirectories.TryGetValue (id, out var oldDirectories)) {
-				foreach (var dir in oldDirectories) {
+				HashSet<FilePath> toRemove = null;
+				if (set != null) {
+					toRemove = new HashSet<FilePath> (oldDirectories);
+					// Remove the old ones which are not in the new set.
+					toRemove.ExceptWith (set);
+				} else
+					toRemove = oldDirectories;
+
+				foreach (var dir in toRemove) {
 					var node = tree.RemoveNode (dir, id);
 
 					bool wasRemoved = node != null && !node.IsLive;
@@ -179,20 +190,25 @@ namespace MonoDevelop.Projects
 
 			// Remove the current registered directories
 			monitoredDirectories.Remove (id);
-			if (directories == null)
+			if (set == null)
 				return modified;
 
-			// Apply new ones if we have any
-			var set = new HashSet<FilePath> (directories.Where(x => !x.IsNullOrEmpty));
+			HashSet<FilePath> toAdd = null;
+			if (oldDirectories != null) {
+				toAdd = new HashSet<FilePath> (set);
+				toAdd.ExceptWith (oldDirectories);
+			} else
+				toAdd = set;
 
+			// Apply new ones if we have any
 			if (set.Count > 0) {
 				monitoredDirectories [id] = set;
-				foreach (var path in set) {
-					tree.AddNode (path, id);
-				}
+				foreach (var path in toAdd) {
+					tree.AddNode (path, id, out bool isNew);
 
-				// If we reached here, we have added at least 1 node, and the tree has changed.
-				modified = true;
+					// We have only modified the tree if there is any new pathtree node item added
+					modified |= isNew;
+				}
 			}
 			return modified;
 		}
@@ -238,6 +254,11 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
+			watcher.Changed -= OnFileChanged;
+			watcher.Created -= OnFileCreated;
+			watcher.Deleted -= OnFileDeleted;
+			watcher.Renamed -= OnFileRenamed;
+			watcher.Error -= OnFileWatcherError;
 			watcher.Dispose ();
 		}
 
@@ -261,7 +282,7 @@ namespace MonoDevelop.Projects
 			// The native file watcher sometimes generates a Changed, Created and Deleted event in
 			// that order from a single native file event. So check the file has been deleted before raising
 			// a FileRemoved event.
-			if (!File.Exists (e.FullPath))
+			if (!File.Exists (e.FullPath) && !Directory.Exists (e.FullPath))
 				FileService.NotifyFileRemoved (e.FullPath);
 		}
 

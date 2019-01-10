@@ -71,6 +71,7 @@ namespace MonoDevelop.CodeActions
 		{
 			if (smartTagMarginMarker != null) {
 				Editor.RemoveMarker (smartTagMarginMarker);
+				smartTagMarginMarker.ShowPopup -= SmartTagMarginMarker_ShowPopup;
 				smartTagMarginMarker = null;
 			}
 			CancelSmartTagPopupTimeout ();
@@ -103,6 +104,7 @@ namespace MonoDevelop.CodeActions
 			if (Editor.IsInAtomicUndo)
 				return;
 			CancelQuickFixTimer ();
+			var token = quickFixCancellationTokenSource.Token;
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null) {
 				if (HasCurrentFixes) {
 					var curOffset = Editor.CaretOffset;
@@ -114,7 +116,7 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				smartTagTask = GetCurrentFixesAsync (quickFixCancellationTokenSource.Token);
+				smartTagTask = GetCurrentFixesAsync (token);
 			} else {
 				RemoveWidget ();
 			}
@@ -126,6 +128,8 @@ namespace MonoDevelop.CodeActions
 		{
 			var loc = Editor.CaretOffset;
 			var ad = DocumentContext.AnalysisDocument;
+			var line = Editor.GetLine (Editor.CaretLine);
+
 			if (ad == null) {
 				return Task.FromResult (CodeActionContainer.Empty);
 			}
@@ -145,10 +149,11 @@ namespace MonoDevelop.CodeActions
 						return CodeActionContainer.Empty;
 					}
 
-					var fixes = await codeFixService.GetFixesAsync (ad, span, true, cancellationToken);
+					var lineSpan = new TextSpan (line.Offset, line.Length);
+					var fixes = await codeFixService.GetFixesAsync (ad, lineSpan, true, cancellationToken);
+					fixes = await Runtime.RunInMainThread(() => FilterOnUIThread (fixes, DocumentContext.RoslynWorkspace));
 
 					var refactorings = await codeRefactoringService.GetRefactoringsAsync (ad, span, cancellationToken);
-
 					var codeActionContainer = new CodeActionContainer (fixes, refactorings);
 					Application.Invoke ((o, args) => {
 						if (cancellationToken.IsCancellationRequested)
@@ -173,6 +178,45 @@ namespace MonoDevelop.CodeActions
 				}
 
 			}, cancellationToken);
+		}
+
+		ImmutableArray<CodeFixCollection> FilterOnUIThread (
+			  ImmutableArray<CodeFixCollection> collections, Workspace workspace)
+		{
+			Runtime.AssertMainThread ();
+			var caretOffset = Editor.CaretOffset;
+			return collections.Select (c => FilterOnUIThread (c, workspace)).Where(x => x != null).OrderBy(x => GetDistance (x, caretOffset)).ToImmutableArray ();
+		}
+
+		static int GetDistance (CodeFixCollection fixCollection, int caretOffset)
+		{
+			return fixCollection.TextSpan.End < caretOffset ? caretOffset - fixCollection.TextSpan.End : fixCollection.TextSpan.Start - caretOffset;
+		}
+
+		static CodeFixCollection FilterOnUIThread (
+			CodeFixCollection collection,
+			Workspace workspace)
+		{
+			Runtime.AssertMainThread ();
+
+			var applicableFixes = collection.Fixes.WhereAsArray (f => IsApplicable (f.Action, workspace));
+			return applicableFixes.Length == 0
+				? null
+				: applicableFixes.Length == collection.Fixes.Length
+					? collection
+					: new CodeFixCollection (
+						collection.Provider, collection.TextSpan, applicableFixes,
+						collection.FixAllState, collection.SupportedScopes, collection.FirstDiagnostic);
+		}
+
+		static bool IsApplicable (Microsoft.CodeAnalysis.CodeActions.CodeAction action, Workspace workspace)
+		{
+			if (!action.PerformFinalApplicabilityCheck) {
+				return true;
+			}
+
+			Runtime.AssertMainThread ();
+			return action.IsApplicable (workspace);
 		}
 
 		internal async void PopupQuickFixMenu (Gdk.EventButton evt, Action<CodeFixMenu> menuAction, Xwt.Point? point = null)
@@ -350,8 +394,9 @@ namespace MonoDevelop.CodeActions
 
 		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)
 		{
-			if (beginVersion.CompareAge (Editor.Version) != 0)
+			if (beginVersion != null && beginVersion.CompareAge (Editor.Version) != 0)
 				RemoveWidget ();
+			beginVersion = null;
 		}
 
 		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)

@@ -25,95 +25,20 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Immutable;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.FeatureConfiguration
 {
-	/// <summary>
-	/// Base class for feature switch conditions.
-	/// </summary>
-	public abstract class FeatureSwitchCondition
+	public class FeatureSwitchCondition : ConditionType
 	{
-		internal abstract bool Evaluate ();
-	}
-
-	/// <summary>
-	/// Base class for version-based checks
-	/// </summary>
-	public abstract class VersionBasedFeatureSwitchCondition : FeatureSwitchCondition
-	{
-		protected static Version CurrentVersion = Version.Parse (BuildInfo.FullVersion);
-	}
-
-	/// <summary>
-	/// Switch condition to check than current version is greater than or equal to
-	/// a given version (provided in the constructor)
-	/// </summary>
-	public class VersionGreaterThanFeatureSwitchCondition : VersionBasedFeatureSwitchCondition
-	{
-		readonly Version versionToCheck;
-
-		public VersionGreaterThanFeatureSwitchCondition (string version)
+		public override bool Evaluate (NodeElement conditionNode)
 		{
-			versionToCheck = Version.Parse (version);
-		}
-
-		public VersionGreaterThanFeatureSwitchCondition (Version version)
-		{
-			versionToCheck = version;
-		}
-
-		internal override bool Evaluate () => CurrentVersion >= versionToCheck;
-	}
-
-	public class EnvVarExistsFeatureSwitchCondition : FeatureSwitchCondition
-	{
-		readonly string nameToCheck, valueToCheck;
-
-		public EnvVarExistsFeatureSwitchCondition (string name, string value)
-		{
-			nameToCheck = name;
-			valueToCheck = value;
-		}
-
-		internal override bool Evaluate ()
-		{
-			if (!string.IsNullOrEmpty (nameToCheck)) {
-				var v = Environment.GetEnvironmentVariable (nameToCheck);
-				return string.IsNullOrEmpty (valueToCheck) ? !string.IsNullOrEmpty (v) : v == valueToCheck;
+			var featureName = conditionNode.GetAttribute ("name");
+			if (String.IsNullOrEmpty (featureName)) {
+				return true;
 			}
 
-			return true;
-		}
-	}
-
-	/// <summary>
-	/// Allows aggregation of several switch conditions into a single condition.
-	/// </summary>
-	public class AggregatedFeatureSwitchCondition : FeatureSwitchCondition
-	{
-		readonly ImmutableArray<FeatureSwitchCondition> conditions;
-		readonly bool allMustPass;
-
-		public AggregatedFeatureSwitchCondition (bool allMustPass, params FeatureSwitchCondition [] conditions)
-		{
-			this.conditions = conditions.ToImmutableArray ();
-			this.allMustPass = allMustPass;
-		}
-
-		internal override bool Evaluate ()
-		{
-			bool result = false;
-
-			foreach (var cond in conditions) {
-				bool r = cond.Evaluate ();
-				if (allMustPass && !r) return false;
-				if (!allMustPass && r) return true;
-
-				result |= r;
-			}
-
-			return result;
+			return FeatureSwitchService.IsFeatureEnabled (featureName) ?? true;
 		}
 	}
 }

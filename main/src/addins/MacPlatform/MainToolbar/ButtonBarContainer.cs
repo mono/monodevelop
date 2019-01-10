@@ -125,7 +125,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var frame = new CGRect (nextX, y, extraPadding + (bar.SegmentCount * SegmentWidth), height);
 				bar.Frame = frame;
 
+#pragma warning disable EPS06 // Hidden struct copy operation
 				nextX = frame.GetMaxX () + buttonBarSpacing;
+#pragma warning restore EPS06 // Hidden struct copy operation
 			}
 
 			SetFrameSize (new CGSize (nextX - buttonBarSpacing, height));

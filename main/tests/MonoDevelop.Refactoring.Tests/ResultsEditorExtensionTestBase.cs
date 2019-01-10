@@ -95,12 +95,16 @@ namespace MonoDevelop.Refactoring.Tests
 
 		protected async Task<T> GatherDiagnostics<T> (string input, Func<Ide.Gui.Document, TaskCompletionSource<T>, Task> callback)
 		{
-			var tuple = await GatherDiagnosticsNoDispose (input, callback);
+			TextEditorExtensionTestCase testCase = null;
+			try {
+				var tuple = await GatherDiagnosticsNoDispose (input, callback);
 
-			var testCase = tuple.Item2;
-			testCase.Dispose ();
+				testCase = tuple.Item2;
 
-			return tuple.Item1;
+				return tuple.Item1;
+			} finally {
+				testCase?.Dispose ();
+			}
 		}
 
 		protected static void AssertExpectedDiagnostics (IEnumerable<ExpectedDiagnostic> expected, Ide.Gui.Document doc)

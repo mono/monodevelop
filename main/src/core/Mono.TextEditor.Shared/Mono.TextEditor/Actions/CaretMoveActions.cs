@@ -42,9 +42,6 @@ namespace Mono.TextEditor
 {
 	static class CaretMoveActions
 	{
-		internal const ushort HighSurrogateMarker = 0b1101_1000_0000_0000;
-		internal const ushort LowSurrogateMarker = 0b1101_1100_0000_0000;
-
 		public static void Left (TextEditorData data)
 		{
 			using (var undo = data.OpenUndoGroup ()) {
@@ -92,7 +89,7 @@ namespace Mono.TextEditor
 					data.Caret.Location = nextLocation;
 				}
 				var curOffset = data.Caret.Offset;
-				if (curOffset > 0 && curOffset < data.Length && ((ushort)data.GetCharAt (curOffset) & LowSurrogateMarker) == LowSurrogateMarker)
+				if (curOffset > 0 && curOffset < data.Length && IsLowSurrogateMarkerSet (data.GetCharAt (curOffset)))
 					data.Caret.Offset--;
 
 			}
@@ -162,14 +159,16 @@ namespace Mono.TextEditor
 						}
 					}
 				}
-				MoveOutOfUTF32Character (data);
+				var curOffset = data.Caret.Offset;
+				if (curOffset > 0 && curOffset < data.Length && IsLowSurrogateMarkerSet (data.GetCharAt (curOffset)))
+					data.Caret.Offset++;
 			}
 		}
 
 		static void MoveOutOfUTF32Character (TextEditorData data)
 		{
 			var curOffset = data.Caret.Offset;
-			if (curOffset > 0 && curOffset < data.Length && ((ushort)data.GetCharAt (curOffset) & HighSurrogateMarker) == HighSurrogateMarker)
+			if (curOffset > 0 && curOffset < data.Length && IsLowSurrogateMarkerSet (data.GetCharAt (curOffset)))
 				data.Caret.Offset++;
 		}
 
@@ -268,7 +267,7 @@ namespace Mono.TextEditor
 				MoveOutOfUTF32Character (data);
 			}
 		}
-		
+
 		static int GetHomeMark (TextDocument document, DocumentLine line)
 		{
 			int result;
@@ -418,6 +417,21 @@ namespace Mono.TextEditor
 				Down (data);
 				LineEnd (data);
 			}
+		}
+		const ushort SurrogateMask       = 0b1111_1100_0000_0000;
+		const ushort LowSurrogateMarker  = 0b1101_1100_0000_0000;
+		const ushort HighSurrogateMarker = 0b1101_1000_0000_0000;
+
+		internal static bool IsLowSurrogateMarkerSet (char ch)
+		{
+			return (ch & LowSurrogateMarker) == LowSurrogateMarker &&
+				  (ch & ~LowSurrogateMarker & SurrogateMask) == 0;
+		}
+
+		internal static bool IsHighSurrogateMarkerSet (char ch)
+		{
+			return (ch & HighSurrogateMarker) == HighSurrogateMarker &&
+				  (ch & ~HighSurrogateMarker & SurrogateMask) == 0;
 		}
 	}
 }

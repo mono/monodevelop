@@ -35,11 +35,12 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
+using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
-	public class DotNetCoreNuGetProjectTests
+	public class DotNetCoreNuGetProjectTests : TestBase
 	{
 		DotNetProject dotNetProject;
 		TestableDotNetCoreNuGetProject project;
@@ -233,23 +234,24 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public async Task GetPackageSpecsAsync_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
-			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string projectFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms", "NetStandardXamarinForms.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
 
-			PackageSpec spec = await GetPackageSpecsAsync ();
+				dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+				var nugetProject = new DotNetCoreNuGetProject (project);
+				var specs = await nugetProject.GetPackageSpecsAsync (dependencyGraphCacheContext);
+				var spec = specs.Single ();
 
-			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.FilePath);
-			Assert.AreEqual ("MyProject", spec.Name);
-			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
-			Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
-			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
-			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectPath);
-			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectUniqueName);
-			Assert.AreEqual (dotNetProject.BaseIntermediateOutputPath.ToString (), spec.RestoreMetadata.OutputPath);
-			Assert.AreSame (spec, dependencyGraphCacheContext.PackageSpecCache[dotNetProject.FileName.ToString ()]);
-
-			// Cannot currently test this - needs the target framework to be available in the 
-			// MSBuild.EvaluatedProperties
-			//Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+				Assert.AreEqual (projectFile, spec.FilePath);
+				Assert.AreEqual ("NetStandardXamarinForms", spec.Name);
+				Assert.AreEqual ("1.0.0", spec.Version.ToString ());
+				Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
+				Assert.AreEqual ("NetStandardXamarinForms", spec.RestoreMetadata.ProjectName);
+				Assert.AreEqual (projectFile, spec.RestoreMetadata.ProjectPath);
+				Assert.AreEqual (projectFile, spec.RestoreMetadata.ProjectUniqueName);
+				Assert.AreSame (spec, dependencyGraphCacheContext.PackageSpecCache[projectFile]);
+				Assert.AreEqual ("netstandard1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+			}
 		}
 
 		[Test]

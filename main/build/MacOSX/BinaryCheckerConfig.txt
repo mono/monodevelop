@@ -11,6 +11,6 @@
 !Contents/Resources/lib/monodevelop/AddIns/Xamarin.Ide.Identity
 !Contents/Resources/lib/monodevelop/AddIns/Xamarin.Interactive.XS/Xamarin Inspector.app
 !Contents/Resources/lib/monodevelop/bin/Microsoft.VisualStudio.Imaging.dll
-!Contents/Resources/lib/monodevelop/bin/ServiceHub/Services/IdentityService/Microsoft.VisualStudio.Services.Client.Interactive.dll
+!Contents/Resources/lib/monodevelop/bin/ServiceHub
 Contents/Resources/lib/monodevelop/AddIns/FSharpBinding/MonoDevelop.FSharpInteractive.Service.exe.config
 Contents/Resources/lib/monodevelop/bin/VisualStudio.exe.config

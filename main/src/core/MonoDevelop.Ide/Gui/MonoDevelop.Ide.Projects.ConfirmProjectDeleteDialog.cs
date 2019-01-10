@@ -72,7 +72,6 @@ namespace MonoDevelop.Ide.Projects
 			this.labelProjectDir = new global::Gtk.Label ();
 			this.labelProjectDir.Name = "labelProjectDir";
 			this.labelProjectDir.Xalign = 0F;
-			this.labelProjectDir.LabelProp = "label2";
 			this.alignment1.Add (this.labelProjectDir);
 			this.vbox2.Add (this.alignment1);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment1]));

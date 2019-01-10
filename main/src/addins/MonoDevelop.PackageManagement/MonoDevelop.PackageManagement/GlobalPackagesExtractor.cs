@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 			Solution solution,
 			PackageIdentity packageIdentity,
 			DownloadResourceResult downloadResult,
+			INuGetProjectContext context,
 			CancellationToken token)
 		{
 			string globalPackagesFolder = await GetPackagesDirectory (solution);
@@ -60,12 +61,13 @@ namespace MonoDevelop.PackageManagement
 			if (File.Exists (hashPath))
 				return;
 
+			var logger = new LoggerAdapter (context);
 			var signedPackageVerifier = new PackageSignatureVerifier (SignatureVerificationProviderFactory.GetSignatureVerificationProviders ());
 
 			var packageExtractionContext = new PackageExtractionContext (
 				PackageSaveMode.Defaultv3,
 				PackageExtractionBehavior.XmlDocFileSaveMode,
-				NullLogger.Instance,
+				logger,
 				signedPackageVerifier,
 				SignedPackageVerifierSettings.GetDefault ());
 

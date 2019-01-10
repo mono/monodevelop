@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using NuGet.Configuration;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
+using NuGet.Common;
 using NuGet.Credentials;
 
 namespace MonoDevelop.PackageManagement
@@ -84,7 +86,8 @@ namespace MonoDevelop.PackageManagement
 			if (existingCredentialService != null) {
 				return existingCredentialService.CreateNonInteractive ();
 			}
-			return new CredentialService (new ICredentialProvider[0], nonInteractive: true);
+			var lazyProvider = AsyncLazy.New (() => Enumerable.Empty<ICredentialProvider> ());
+			return new CredentialService (lazyProvider, nonInteractive: true, handlesDefaultCredentials: false);
 		}
 	}
 }

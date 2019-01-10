@@ -304,7 +304,7 @@ namespace MonoDevelop.MacInterop
 				attrs[n++] = new SecKeychainAttribute (SecItemAttr.AuthType, (uint) 4,            (IntPtr) authPtr);
 				attrs[n++] = new SecKeychainAttribute (SecItemAttr.Server,   (uint) host.Length,  (IntPtr) hostPtr);
 				attrs[n++] = new SecKeychainAttribute (SecItemAttr.Port,     (uint) 4,            (IntPtr) portPtr);
-				attrs[n++] = new SecKeychainAttribute (SecItemAttr.Path,     (uint) path.Length,  (IntPtr) pathPtr);
+				attrs[n++] = new SecKeychainAttribute (SecItemAttr.Path,     (uint) Math.Max (path.Length - 1, 0),  (IntPtr) pathPtr);
 
 				SecKeychainAttributeList attrList = new SecKeychainAttributeList (n, (IntPtr) attrs);
 

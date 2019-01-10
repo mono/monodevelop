@@ -54,13 +54,19 @@ namespace MacPlatform.Tests
 
 		const string site = "http://google.com";
 		const string siteWithUser = "http://user@google.com";
+		const string siteWithPath = site + "/path";
+		const string siteWithUserAndPath = siteWithUser + "/path";
 
 		[TestCase(site, site, "", null)]
 		[TestCase(site, site, "user", "user")]
 		[TestCase(site, site, null, null)]
+		[TestCase(siteWithPath, siteWithPath, "", null)]
+		[TestCase(siteWithPath, siteWithPath, "user", "user")]
+		[TestCase(siteWithPath, siteWithPath, null, null)]
 		[TestCase(siteWithUser, siteWithUser, null, "user")]
 		[TestCase(siteWithUser, siteWithUser, "user", "user")]
-		//[TestCase(siteWithUser, "http://user2@google.com", "user2", "user2")] Need to figure this one out first
+		[TestCase(siteWithUserAndPath, siteWithUserAndPath, null, "user")]
+		[TestCase(siteWithUserAndPath, siteWithUserAndPath, "user", "user")]
 		public void InternetPassword_AddFindRemove (string url, string probeUrl, string user, string expectedUsername)
 		{
 			var uri = new Uri (url);

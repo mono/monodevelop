@@ -26,8 +26,11 @@
 
 using System;
 using System.Xml.Linq;
+using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
+using NuGet.Packaging.PackageExtraction;
+using NuGet.Packaging.Signing;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -36,9 +39,11 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementEvents packageManagementEvents;
 		IDEExecutionContext executionContext;
+		ISettings settings;
 
-		public NuGetProjectContext ()
+		public NuGetProjectContext (ISettings settings)
 		{
+			this.settings = settings;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 			var commonOperations = new MonoDevelopCommonOperations ();
 			executionContext = new IDEExecutionContext (commonOperations);
@@ -50,7 +55,6 @@ namespace MonoDevelop.PackageManagement
 
 		public NuGetActionType ActionType { get; set; }
 		public XDocument OriginalPackagesConfig { get; set; }
-		public PackageExtractionContext PackageExtractionContext { get; set; }
 		public Guid OperationId { get; set; }
 
 		public ISourceControlManagerProvider SourceControlManagerProvider {
@@ -76,6 +80,8 @@ namespace MonoDevelop.PackageManagement
 
 			return packageManagementEvents.OnResolveFileConflict (message);
 		}
+
+		public PackageExtractionContext PackageExtractionContext { get; set; }
 	}
 }
 

@@ -63,7 +63,6 @@
     <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />

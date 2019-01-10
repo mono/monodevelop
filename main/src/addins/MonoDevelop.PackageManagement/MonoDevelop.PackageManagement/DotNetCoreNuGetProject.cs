@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -45,29 +46,38 @@ namespace MonoDevelop.PackageManagement
 	class DotNetCoreNuGetProject : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject, IHasDotNetProject
 	{
 		DotNetProject project;
+		ConfigurationSelector configuration;
 		IPackageManagementEvents packageManagementEvents;
 		string msbuildProjectPath;
 		string projectName;
 		bool restoreRequired;
 
 		public DotNetCoreNuGetProject (DotNetProject project)
-			: this (project, project.GetDotNetCoreTargetFrameworks ())
+			: this (project, ConfigurationSelector.Default)
 		{
 		}
 
-		public DotNetCoreNuGetProject (
-			DotNetProject project,
-			IEnumerable<string> targetFrameworks)
-			: this (project, targetFrameworks, PackageManagementServices.PackageManagementEvents)
+		public DotNetCoreNuGetProject (DotNetProject project, ConfigurationSelector configuration)
+			: this (project, project.GetDotNetCoreTargetFrameworks (), configuration)
 		{
 		}
 
 		public DotNetCoreNuGetProject (
 			DotNetProject project,
 			IEnumerable<string> targetFrameworks,
+			ConfigurationSelector configuration)
+			: this (project, targetFrameworks, configuration, PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public DotNetCoreNuGetProject (
+			DotNetProject project,
+			IEnumerable<string> targetFrameworks,
+			ConfigurationSelector configuration,
 			IPackageManagementEvents packageManagementEvents)
 		{
 			this.project = project;
+			this.configuration = configuration;
 			this.packageManagementEvents = packageManagementEvents;
 
 			var targetFramework = NuGetFramework.UnsupportedFramework;
@@ -103,8 +113,13 @@ namespace MonoDevelop.PackageManagement
 
 		public static NuGetProject Create (DotNetProject project)
 		{
+			return Create (project, ConfigurationSelector.Default);
+		}
+
+		public static NuGetProject Create (DotNetProject project, ConfigurationSelector configuration)
+		{
 			if (CanCreate (project))
-				return new DotNetCoreNuGetProject (project);
+				return new DotNetCoreNuGetProject (project, configuration);
 
 			return null;
 		}
@@ -219,60 +234,26 @@ namespace MonoDevelop.PackageManagement
 
 		public override async Task<IReadOnlyList<PackageSpec>> GetPackageSpecsAsync (DependencyGraphCacheContext context)
 		{
-			PackageSpec existingPackageSpec = GetExistingProjectPackageSpec (context);
+			PackageSpec existingPackageSpec = context.GetExistingProjectPackageSpec (MSBuildProjectPath);
 			if (existingPackageSpec != null) {
 				return new [] { existingPackageSpec };
 			}
 
 			PackageSpec packageSpec = await CreateProjectPackageSpec (context);
-
-			if (context != null) {
-				AddToCache (context, packageSpec);
-			}
-
 			return new [] { packageSpec };
-		}
-
-		PackageSpec GetExistingProjectPackageSpec (DependencyGraphCacheContext context)
-		{
-			PackageSpec packageSpec = null;
-			if (context != null) {
-				if (context.PackageSpecCache.TryGetValue (MSBuildProjectPath, out packageSpec)) {
-					return packageSpec;
-				}
-			}
-			return packageSpec;
 		}
 
 		async Task<PackageSpec> CreateProjectPackageSpec (DependencyGraphCacheContext context)
 		{
-			PackageSpec packageSpec = await Runtime.RunInMainThread (() => CreateProjectPackageSpec (project, context));
-			return packageSpec;
-		}
+			DependencyGraphSpec dependencySpec = await MSBuildPackageSpecCreator.GetDependencyGraphSpec (project, configuration, context?.Logger);
 
-		static PackageSpec CreateProjectPackageSpec (DotNetProject project, DependencyGraphCacheContext context)
-		{
-			PackageSpec packageSpec = PackageSpecCreator.CreatePackageSpec (project, context);
-			return packageSpec;
-		}
+			context.AddToCache (dependencySpec);
 
-		void AddToCache (DependencyGraphCacheContext context, PackageSpec projectPackageSpec)
-		{
-			if (IsMissingFromCache (context, projectPackageSpec)) {
-				context.PackageSpecCache.Add (
-					projectPackageSpec.RestoreMetadata.ProjectUniqueName, 
-					projectPackageSpec);
-			}
-		}
+			PackageSpec spec = dependencySpec.GetProjectSpec (project.FileName);
+			if (spec != null)
+				return spec;
 
-		bool IsMissingFromCache (
-			DependencyGraphCacheContext context,
-			PackageSpec packageSpec)
-		{
-			PackageSpec ignore;
-			return !context.PackageSpecCache.TryGetValue (
-				packageSpec.RestoreMetadata.ProjectUniqueName,
-				out ignore);
+			throw new InvalidOperationException (GettextCatalog.GetString ("Unable to create package spec for project. '{0}'", project.FileName));
 		}
 
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
@@ -351,6 +332,13 @@ namespace MonoDevelop.PackageManagement
 		public bool ProjectRequiresReloadAfterRestore ()
 		{
 			return true;
+		}
+
+		public Task AddFileToProjectAsync (string filePath)
+		{
+			// NuGet does nothing here for .NET Core sdk projects so we also do nothing.
+			// This method is called when adding the packages lock file to the project.
+			return Task.CompletedTask;
 		}
 	}
 }

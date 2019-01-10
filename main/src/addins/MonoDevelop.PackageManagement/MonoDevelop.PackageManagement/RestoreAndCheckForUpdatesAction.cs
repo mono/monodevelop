@@ -180,7 +180,7 @@ namespace MonoDevelop.PackageManagement
 						await restoreManager.RestoreMissingPackagesAsync (
 							solutionManager.SolutionDirectory,
 							packagesToRestore,
-							new NuGetProjectContext (),
+							new NuGetProjectContext (solutionManager.Settings),
 							downloadContext,
 							cancellationToken);
 					}
@@ -194,7 +194,7 @@ namespace MonoDevelop.PackageManagement
 			if (nugetAwareRestorer != null) {
 				await nugetAwareRestorer.RestoreMissingPackagesAsync (
 					nugetAwareProjectsToBeRestored,
-					new NuGetProjectContext (),
+					new NuGetProjectContext (solutionManager.Settings),
 					cancellationToken);
 			}
 

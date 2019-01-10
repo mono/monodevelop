@@ -23,29 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.IO;
+
 using System.Threading.Tasks;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using UnitTests;
+
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
 	class NuGetSdkResolverTests : TestBase
 	{
-		[TestFixtureSetUp]
-		public void SetUp ()
-		{
-			ConfigureNuGetSdkResolver ();
-		}
-
-		static void ConfigureNuGetSdkResolver ()
-		{
-			string directory = Path.GetDirectoryName (typeof (PackageManagementServices).Assembly.Location);
-			Environment.SetEnvironmentVariable ("MSBUILD_NUGET_PATH", directory);
-		}
-
 		[Test]
 		public async Task ProjectUsingMSBuildSdkFromNuGet ()
 		{

@@ -81,7 +81,7 @@ namespace MonoDevelop.Debugger
 
 			if (DebuggingService.HasValueVisualizers (val)) {
 				var openButton = new Button ();
-				openButton.Label = "Open";
+				openButton.Label = GettextCatalog.GetString ("Open");
 				openButton.Relief = ReliefStyle.Half;
 				openButton.Clicked += delegate {
 					PreviewWindowManager.DestroyWindow ();

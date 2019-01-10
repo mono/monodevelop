@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
@@ -44,7 +45,7 @@ namespace MonoDevelop.FSW
 
 			if (!Platform.IsWindows) {
 				node = node.FirstChild;
-				Assert.AreEqual ("/", node.FullPath);
+				Assert.AreEqual ("", node.GetPath ().ToString ());
 			}
 
 			Assert.IsNull (node.FirstChild);
@@ -416,6 +417,56 @@ namespace MonoDevelop.FSW
 			nodes = tree.Normalize (7).ToArray ();
 			Assert.AreEqual (1, nodes.Length);
 			Assert.AreEqual ("a", nodes [0].Segment);
+		}
+
+		/// <summary>
+		/// Parent 'lib' directory was being dropped since the PathTree considered it to be a child of the mmp directory.
+		/// </summary>
+		[Test]
+		[Platform (Exclude = "Win")]
+		public void NormalizeTwoDirectories_FirstIsChildOfSecondDirectoryAdded ()
+		{
+			var tree = new PathTree ();
+			var id1 = new object ();
+
+			tree.AddNode ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mmp", id1);
+			tree.AddNode ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib", id1);
+
+			var folders = tree.Normalize (10).Select (node => (FilePath)node.GetPath ().ToString ());
+			var set = new HashSet <FilePath> (folders);
+
+			Assert.IsTrue (set.Contains ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib"), "Set: " + string.Join ("\n", set));
+		}
+
+		/// <summary>
+		/// All /Library/Frameworks/Mono.framework/Versions/5.18.0/lib/mono/gac/System.* subdirectories are
+		/// being ignored. The PathTree considers them children of the gac/System directory.
+		/// </summary>
+		[Test]
+		[Platform(Exclude="Win")]
+		public void NormalizeSeveralDirectories_CommonBaseDirectory ()
+		{
+			var tree = new PathTree ();
+			var id1 = new object ();
+
+			var paths = new string[] {
+				"/Library/Frameworks/Mono.framework/Versions/5.18.0/lib/mono/4.5",
+				"/Library/Frameworks/Mono.framework/Versions/5.18.0/lib/mono/gac/System/4.0.0.0__b77a5c561934e089",
+				"/Library/Frameworks/Mono.framework/Versions/5.18.0/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089",
+				"/Library/Frameworks/Mono.framework/Versions/5.18.0/lib/mono/gac/System.Data/4.0.0.0__b77a5c561934e089",
+				"/Library/Frameworks/Mono.framework/Versions/5.18.0/lib/mono/gac/System.Xml/4.0.0.0__b77a5c561934e089"
+			};
+
+			foreach (var path in paths) {
+				tree.AddNode (path, id1);
+			}
+
+			var folders = tree.Normalize (10).Select (node => (FilePath)node.GetPath ().ToString ());
+			var set = new HashSet<FilePath> (folders);
+
+			foreach (var path in paths) {
+				Assert.IsTrue (set.Contains (path), "Set: " + string.Join ("\n", set));
+			}
 		}
 
 		[Test]

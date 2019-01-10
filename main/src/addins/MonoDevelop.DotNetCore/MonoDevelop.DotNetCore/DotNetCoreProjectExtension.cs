@@ -37,6 +37,7 @@ using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.DotNetCore
 {
@@ -51,39 +52,6 @@ namespace MonoDevelop.DotNetCore
 		public DotNetCoreProjectExtension ()
 		{
 			DotNetCoreProjectReloadMonitor.Initialize ();
-			if (IsDotNetCoreSdk22Installed ())
-				DotNetProjectProxy.ModifyImplicitPackageReferenceVersion = ModifyImplicitPackageReference;
-		}
-
-		static bool IsDotNetCoreSdk22Installed ()
-		{
-			return DotNetCoreSdk.Versions.Any (version => version.Major == 2 && version.Minor == 2);
-		}
-
-		/// <summary>
-		/// HACK: Handle implicit package versions defined by .NET Core 2.2 SDK.
-		/// </summary>
-		static void ModifyImplicitPackageReference (ProjectPackageReference packageReference, DotNetProject project)
-		{
-			bool targetLatestRuntimePatch = project.MSBuildProject.EvaluatedProperties.GetValue ("TargetLatestRuntimePatch", false);
-			string targetFrameworkVersion = project.TargetFramework.Id.Version;
-
-			foreach (IMSBuildItemEvaluated item in project.MSBuildProject.EvaluatedItems) {
-				if (!IsImplicitPackageReferenceMatch (item, packageReference, targetFrameworkVersion))
-					continue;
-
-				string versionProperty = targetLatestRuntimePatch ? "LatestVersion" : "DefaultVersion";
-				string version = item.Metadata.GetValue (versionProperty) ?? string.Empty;
-				packageReference.Metadata.SetValue ("Version", version);
-				return;
-			}
-		}
-
-		static bool IsImplicitPackageReferenceMatch (IMSBuildItemEvaluated item, ProjectPackageReference packageReference, string targetFrameworkVersion)
-		{
-			return item.Name == "ImplicitPackageReferenceVersion" &&
-				StringComparer.OrdinalIgnoreCase.Equals (item.Include, packageReference.Include) &&
-				targetFrameworkVersion == item.Metadata.GetValue ("TargetFrameworkVersion");
 		}
 
 		protected override bool SupportsObject (WorkspaceObject item)
@@ -469,29 +437,54 @@ namespace MonoDevelop.DotNetCore
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
 		}
 
-		protected override async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
 
-			return AddMissingProjectFiles (sourceFiles);
+			return AddMissingProjectFiles (sourceFiles, configuration);
 		}
 
-		ProjectFile[] AddMissingProjectFiles (ProjectFile[] files)
+		ImmutableArray<ProjectFile> AddMissingProjectFiles (ImmutableArray<ProjectFile> files, ConfigurationSelector configuration)
 		{
-			List<ProjectFile> missingFiles = null;
+			ImmutableArray<ProjectFile>.Builder missingFiles = null;
 			foreach (ProjectFile existingFile in Project.Files.Where (file => file.BuildAction == BuildAction.Compile)) {
 				if (!files.Any (file => file.FilePath == existingFile.FilePath)) {
 					if (missingFiles == null)
-						missingFiles = new List<ProjectFile> ();
+						missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
 					missingFiles.Add (existingFile);
 				}
+			}
+
+			// Ensure generated assembly info file is available to type system. It is created in the obj
+			// directory and is excluded from the project with a wildcard exclude but the type system needs it to
+			// ensure the project's assembly information is correct to prevent diagnostic errors.
+			var generatedAssemblyInfoFile = GetGeneratedAssemblyInfoFile (configuration);
+			if (generatedAssemblyInfoFile != null) {
+				if (missingFiles == null)
+					missingFiles = ImmutableArray.CreateBuilder<ProjectFile> ();
+				missingFiles.Add (generatedAssemblyInfoFile);
 			}
 
 			if (missingFiles == null)
 				return files;
 
+			missingFiles.Capacity = missingFiles.Count + files.Length;
 			missingFiles.AddRange (files);
-			return missingFiles.ToArray ();
+			return missingFiles.MoveToImmutable ();
+		}
+
+		ProjectFile GetGeneratedAssemblyInfoFile (ConfigurationSelector configuration)
+		{
+			var projectConfig = configuration.GetConfiguration (Project) as ProjectConfiguration;
+			if (projectConfig == null)
+				return null;
+
+			bool generateAssemblyInfo = projectConfig.Properties.GetValue ("GenerateAssemblyInfo", true);
+			FilePath assemblyInfoFile = projectConfig.Properties.GetPathValue ("GeneratedAssemblyInfoFile");
+
+			if (generateAssemblyInfo && assemblyInfoFile.IsNotNull)
+				return new ProjectFile (assemblyInfoFile, BuildAction.Compile);
+			return null;
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)

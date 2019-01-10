@@ -74,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 
 			var installPackageActions = new List<InstallNuGetPackageAction> ();
 
-			var context = new NuGetProjectContext {
+			var context = new NuGetProjectContext (solutionManager.Settings) {
 				FileConflictResolution = FileConflictAction.IgnoreAll
 			};
 

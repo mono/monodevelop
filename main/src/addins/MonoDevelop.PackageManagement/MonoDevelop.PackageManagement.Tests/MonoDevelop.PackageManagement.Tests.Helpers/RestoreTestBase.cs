@@ -24,14 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NUnit.Framework;
+using NuGet.Configuration;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
+using NuGet.Packaging.PackageExtraction;
+using NuGet.Packaging.Signing;
+using NuGet.ProjectManagement;
+using NUnit.Framework;
 using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -87,10 +93,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		protected static Task RestoreDotNetCoreNuGetPackages (Solution solution)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (solution);
-			var context = new FakeNuGetProjectContext {
-				LogToConsole = true
-			};
-
 			var restoreManager = new MonoDevelopBuildIntegratedRestorer (solutionManager);
 
 			var projects = solution.GetAllDotNetProjects ().Select (p => new DotNetCoreNuGetProject (p));
@@ -98,6 +100,40 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return restoreManager.RestorePackages (
 				projects,
 				CancellationToken.None);
+		}
+
+		protected INuGetProjectContext CreateNuGetProjectContext (ISettings settings)
+		{
+			var context = new FakeNuGetProjectContext {
+				LogToConsole = true
+			};
+
+			var logger = new LoggerAdapter (context);
+			//context.PackageExtractionContext = new PackageExtractionContext (
+				//PackageSaveMode.Defaultv2,
+				//PackageExtractionBehavior.XmlDocFileSaveMode,
+				//ClientPolicyContext.GetClientPolicy (settings, logger),
+				//logger);
+
+			return context;
+		}
+
+		protected class PackagManagementEventsConsoleLogger : IDisposable
+		{
+			public PackagManagementEventsConsoleLogger ()
+			{
+				PackageManagementServices.PackageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
+			}
+
+			public void Dispose ()
+			{
+				PackageManagementServices.PackageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
+			}
+
+			void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
+			{
+				Console.WriteLine (e.Message.ToString ());
+			}
 		}
 	}
 }

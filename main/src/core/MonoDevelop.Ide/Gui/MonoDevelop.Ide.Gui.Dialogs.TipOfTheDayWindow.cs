@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			MonoDevelop.Components.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow";
-			this.Title = "Tip of the Day";
+			this.Title = global::Mono.Unix.Catalog.GetString ("Tip of the Day");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(1));
 			this.BorderWidth = ((uint)(6));
 			// Container child MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.Gtk.Container+ContainerChild
