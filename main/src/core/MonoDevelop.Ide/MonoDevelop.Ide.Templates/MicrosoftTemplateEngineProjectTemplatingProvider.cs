@@ -80,12 +80,24 @@ namespace MonoDevelop.Ide.Templates
 
 			var filesBeforeCreation = Directory.GetFiles (config.ProjectLocation, "*", SearchOption.AllDirectories);
 
+			var stopwatch = new System.Diagnostics.Stopwatch ();
+
+			Console.WriteLine ("MicrosoftTemplateEngine.InstantiateAsync");
+			stopwatch.Start ();
+
 			var result = await MicrosoftTemplateEngine.InstantiateAsync (templateInfo, config, parameters);
+
+			stopwatch.Stop ();
+			Console.WriteLine ("MicrosoftTemplateEngine.InstantiateAsync: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
 
 			if (result.Status != CreationResultStatus.Success) {
 				string message = string.Format ("Could not create template. Id='{0}' {1} {2}", template.Id, result.Status, result.Message);
 				throw new InvalidOperationException (message);
 			}
+
+			Console.WriteLine ("filesToOpen.Add");
+			stopwatch.Start ();
 
 			var filesToOpen = new List<string> ();
 			foreach (var postAction in result.ResultInfo.PostActions) {
@@ -102,12 +114,23 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 
+			stopwatch.Stop ();
+			Console.WriteLine ("filesToOpen.Add: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("ReadSolutionItem");
+			stopwatch.Start ();
+
 			//TODO: Once templates support "D396686C-DE0E-4DE6-906D-291CD29FC5DE" use that to load projects
 			foreach (var path in result.ResultInfo.PrimaryOutputs) {
 				var fullPath = Path.Combine (config.ProjectLocation, GetPath (path));
 				if (Services.ProjectService.IsSolutionItemFile (fullPath))
 					workspaceItems.Add (await MonoDevelop.Projects.Services.ProjectService.ReadSolutionItem (new Core.ProgressMonitor (), fullPath));
 			}
+
+			stopwatch.Stop ();
+			Console.WriteLine ("ReadSolutionItem: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
 
 			var metadata = new TemplateMetadata {
 				Id = templateInfo.Identity,
@@ -118,6 +141,9 @@ namespace MonoDevelop.Ide.Templates
 			TemplateCounter.Inc (1, null, metadata);
 
 			MicrosoftTemplateEngineProcessedTemplateResult processResult;
+
+			Console.WriteLine ("MicrosoftTemplateEngineProcessedTemplateResult");
+			stopwatch.Start ();
 
 			if (parentFolder == null) {
 				var solution = new Solution ();
@@ -142,6 +168,13 @@ namespace MonoDevelop.Ide.Templates
 				processResult = new MicrosoftTemplateEngineProcessedTemplateResult (workspaceItems.ToArray (), parentFolder.ParentSolution.FileName, config.ProjectLocation);
 			}
 
+			stopwatch.Stop ();
+			Console.WriteLine ("ReadSolutionItem: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("MicrosoftTemplateEngine.FormatFile");
+			stopwatch.Start ();
+
 			// Format all source files generated during the project creation
 			foreach (var p in workspaceItems.OfType<Project> ()) {
 				foreach (var file in p.Files) {
@@ -152,6 +185,11 @@ namespace MonoDevelop.Ide.Templates
 					}
 				}
 			}
+
+			stopwatch.Stop ();
+			Console.WriteLine ("MicrosoftTemplateEngine.FormatFile: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
 			processResult.SetFilesToOpen (filesToOpen);
 			return processResult;
 		}

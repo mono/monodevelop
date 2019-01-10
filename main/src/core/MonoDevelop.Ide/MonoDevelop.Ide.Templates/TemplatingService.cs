@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -173,7 +174,16 @@ namespace MonoDevelop.Ide.Templates
 		{
 			IProjectTemplatingProvider provider = GetTemplatingProviderForTemplate (template);
 			if (provider != null) {
+				var stopwatch = new Stopwatch ();
+				Console.WriteLine ("ProcessTemplate");
+				stopwatch.Start ();
+
 				var result = await provider.ProcessTemplate (template, config, parentFolder);
+
+				stopwatch.Stop ();
+				Console.WriteLine ("ProcessTemplate: {0}", stopwatch.Elapsed);
+				stopwatch.Reset ();
+
 				if (result.WorkspaceItems.Any ())
 					RecentTemplates.AddTemplate (template);
 				return result;

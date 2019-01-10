@@ -44,6 +44,7 @@ using MonoDevelop.Projects;
 using Xwt.Drawing;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -613,13 +614,32 @@ namespace MonoDevelop.Ide.Projects
 
 		public async Task Create ()
 		{
+			var stopwatch = new Stopwatch ();
+
+			Console.WriteLine ("BeforeProjectIsCreated");
+			stopwatch.Start ();
+
 			if (wizardProvider.HasWizard)
 				wizardProvider.BeforeProjectIsCreated ();
+
+			stopwatch.Stop ();
+			Console.WriteLine ("BeforeProjectIsCreated time elapsed: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("CreateProject");
+			stopwatch.Start ();
 
 			if (!await CreateProject ()) {
 				ProjectCreationFailed?.Invoke (this, EventArgs.Empty);
 				return;
 			}
+
+			stopwatch.Stop ();
+			Console.WriteLine ("CreateProject time elapsed: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("Identify parent solution");
+			stopwatch.Start ();
 
 			Solution parentSolution = null;
 
@@ -635,6 +655,13 @@ namespace MonoDevelop.Ide.Projects
 				parentSolution = ParentFolder.ParentSolution;
 				currentEntries = processedTemplate.WorkspaceItems.OfType<SolutionItem> ().ToList ();
 			}
+
+			stopwatch.Stop ();
+			Console.WriteLine ("Identify time elapsed: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("Add entries to solution");
+			stopwatch.Start ();
 
 			// New combines (not added to parent combines) already have the project as child.
 			if (!projectConfiguration.CreateSolution) {
@@ -674,12 +701,33 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
+			stopwatch.Stop ();
+			Console.WriteLine ("Add entries to solution: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("Save solution");
+			stopwatch.Start ();
+
 			if (ParentFolder != null)
 				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
 			else
 				await IdeApp.ProjectOperations.SaveAsync (processedTemplate.WorkspaceItems);
 
+			stopwatch.Stop ();
+			Console.WriteLine ("Save solution: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("CreateVersionControlItems");
+			stopwatch.Start ();
+
 			CreateVersionControlItems ();
+
+			stopwatch.Stop ();
+			Console.WriteLine ("CreateVersionControlItems: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
+			Console.WriteLine ("Install Nuget packages");
+			stopwatch.Start ();
 
 			if (OpenSolution) {
 				DisposeExistingNewItems ();
@@ -702,6 +750,10 @@ namespace MonoDevelop.Ide.Projects
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
+
+			stopwatch.Stop ();
+			Console.WriteLine ("Install Nuget packages: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
 
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
@@ -757,6 +809,11 @@ namespace MonoDevelop.Ide.Projects
 
 			ProcessedTemplateResult result = null;
 
+			var stopwatch = new Stopwatch ();
+
+			Console.WriteLine ("CreateDirectory");
+			stopwatch.Start ();
+
 			try {
 				if (Directory.Exists (projectConfiguration.ProjectLocation)) {
 					var question = GettextCatalog.GetString ("Directory {0} already exists.\nDo you want to continue creating the project?", projectConfiguration.ProjectLocation);
@@ -774,7 +831,14 @@ namespace MonoDevelop.Ide.Projects
 				return false;
 			}
 
+			stopwatch.Stop ();
+			Console.WriteLine ("CreateDirectory: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
 			DisposeExistingNewItems ();
+
+			Console.WriteLine ("ProcessTemplate");
+			stopwatch.Start ();
 
 			try {
 				result = await TemplatingService.ProcessTemplate (template, projectConfiguration, ParentFolder);
@@ -787,7 +851,12 @@ namespace MonoDevelop.Ide.Projects
 			} catch (Exception ex) {
 				MessageService.ShowError (GettextCatalog.GetString ("The project could not be created"), ex);
 				return false;
-			}	
+			}
+
+			stopwatch.Stop ();
+			Console.WriteLine ("ProcessTemplate: {0}", stopwatch.Elapsed);
+			stopwatch.Reset ();
+
 			processedTemplate = result;
 			return true;
 		}
