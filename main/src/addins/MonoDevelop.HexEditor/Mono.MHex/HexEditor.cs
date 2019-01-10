@@ -99,6 +99,8 @@ namespace Mono.MHex
 			}
 		}
 
+		public bool IsReadOnly { get; set; }
+
 		public HexEditor ()
 		{
 			BackgroundColor = Color.FromBytes (0, 0, 0);
