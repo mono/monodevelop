@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.MSBuildLocator;
+using Microsoft.Build.Locator;
 using Microsoft.Win32;
 using MonoDevelop.Core.Execution;
 
