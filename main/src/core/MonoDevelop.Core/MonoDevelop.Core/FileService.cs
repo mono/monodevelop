@@ -938,7 +938,7 @@ namespace MonoDevelop.Core
 		public void Thaw ()
 		{
 			List<EventData> pendingEvents;
-			lock (events) {
+			lock (lockObject) {
 				if (--frozen != 0 || events.Count == 0)
 					return;
 
