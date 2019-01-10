@@ -61,6 +61,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public MSBuildProject Project;
 			public List<MSBuildItemEvaluated> EvaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
 			public List<MSBuildItemEvaluated> EvaluatedItems = new List<MSBuildItemEvaluated> ();
+			public List<MSBuildItemEvaluated> EvaluatedItemDefinitions = new List<MSBuildItemEvaluated> ();
 			public Dictionary<string,PropertyInfo> Properties = new Dictionary<string, PropertyInfo> (StringComparer.OrdinalIgnoreCase);
 			public Dictionary<MSBuildImport,string> Imports = new Dictionary<MSBuildImport, string> ();
 			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
@@ -211,6 +212,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			pi.EvaluatedItemsIgnoringCondition.Clear ();
 			pi.EvaluatedItems.Clear ();
+			pi.EvaluatedItemDefinitions.Clear ();
 			pi.Properties.Clear ();
 			pi.Imports.Clear ();
 			pi.Targets.Clear ();
@@ -313,6 +315,8 @@ namespace MonoDevelop.Projects.MSBuild
 						Evaluate (pi, context, (MSBuildItemGroup)ob);
 					else if (ob is MSBuildTarget)
 						Evaluate (pi, context, (MSBuildTarget)ob);
+					else if (ob is MSBuildItemDefinitionGroup)
+						Evaluate (pi, context, (MSBuildItemDefinitionGroup)ob);
 				} else {
 					if (ob is MSBuildPropertyGroup)
 						Evaluate (pi, context, (MSBuildPropertyGroup)ob);
@@ -1076,6 +1080,9 @@ namespace MonoDevelop.Projects.MSBuild
 						it.IsImported = true;
 						project.EvaluatedItemsIgnoringCondition.Add (it);
 					}
+					foreach (var it in p.EvaluatedItemDefinitions) {
+						project.EvaluatedItemDefinitions.Add (it);
+					}
 					foreach (var t in p.Targets) {
 						t.IsImported = true;
 						project.Targets.Add (t);
@@ -1247,6 +1254,23 @@ namespace MonoDevelop.Projects.MSBuild
 			project.TargetsIgnoringCondition.Add (newTarget);
 			if (condIsTrue)
 				project.Targets.Add (newTarget);
+		}
+
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItemDefinitionGroup items)
+		{
+			bool conditionIsTrue = true;
+
+			if (!string.IsNullOrEmpty (items.Condition))
+				conditionIsTrue = SafeParseAndEvaluate (project, context, items.Condition);
+
+			foreach (var item in items.Items) {
+				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (item.Condition) || SafeParseAndEvaluate (project, context, item.Condition));
+				if (trueCond) {
+					var it = CreateEvaluatedItem (context, project, project.Project, item, string.Empty);
+					((MSBuildPropertyGroupEvaluated)it.Metadata).ItemName = null;
+					project.EvaluatedItemDefinitions.Add (it);
+				}
+			}
 		}
 
 		ImmutableDictionary<string, ConditionExpression> conditionCache = ImmutableDictionary<string, ConditionExpression>.Empty;
@@ -1496,6 +1520,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			return false;
+		}
+
+		internal override IEnumerable<object> GetEvaluatedItemDefinitions (object projectInstance)
+		{
+			return ((ProjectInfo)projectInstance).EvaluatedItemDefinitions;
 		}
 
 		#endregion

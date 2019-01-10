@@ -881,6 +881,20 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ItemDefinitionGroup ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.IsTrue (projectItem.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.IsTrue (projectItem.Metadata.HasProperty ("BoolProperty"));
+				Assert.AreEqual (FileCopyMode.PreserveNewest, projectItem.CopyToOutputDirectory);
+			}
+		}
+
+		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
 			if (!Platform.IsMac) {

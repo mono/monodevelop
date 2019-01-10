@@ -35,5 +35,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <MyItem Include="Test.myitem">
+      <OverriddenProperty>NewValue</OverriddenProperty>
+    </MyItem>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
