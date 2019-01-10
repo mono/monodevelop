@@ -1,5 +1,5 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\build\Microsoft.Build.MSBuildLocator.props" Condition="Exists('..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\build\Microsoft.Build.MSBuildLocator.props')" />
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
@@ -56,6 +56,9 @@
   <ItemGroup>
     <Reference Include="Humanizer.Core">
       <HintPath>..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Locator, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9dff12846e04bfbd, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Build.Locator.1.1.2\lib\net46\Microsoft.Build.Locator.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
@@ -161,16 +164,13 @@
     <Reference Include="Microsoft.VisualStudio.CodingConventions">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.CodingConventions.1.1.20180503.2\lib\netstandard1.3\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build.MSBuildLocator">
-      <HintPath>..\..\..\packages\Microsoft.Build.MSBuildLocator.1.0.1-preview-g6cd9a57801\lib\net46\Microsoft.Build.MSBuildLocator.dll</HintPath>
-    </Reference>
-	<Reference Include="System.Buffers">
+    <Reference Include="System.Buffers">
       <HintPath>..\..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics.Vectors">
       <HintPath>..\..\..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-	<Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
       <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
