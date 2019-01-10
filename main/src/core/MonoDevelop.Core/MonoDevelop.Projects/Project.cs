@@ -3853,7 +3853,14 @@ namespace MonoDevelop.Projects
 					item.Write (this, buildItem);
 					PurgeUpdatePropertiesSetInSourceItems (buildItem, item.BackingEvalItem.SourceItems, propertiesAlreadySet);
 				} else {
-					item.Write (this, buildItem);
+					var itemDefinitionProps = msproject.GetEvaluatedItemDefinitionProperties (buildItem.Name);
+					if (itemDefinitionProps != null) {
+						var propertiesAlreadySet = new HashSet<string> (buildItem.Metadata.GetProperties ().Select (p => p.Name));
+						item.Write (this, buildItem);
+						PurgeItemDefinitionProperties (buildItem, itemDefinitionProps, propertiesAlreadySet);
+					} else {
+						item.Write (this, buildItem);
+					}
 					if (buildItem.Include != include)
 						buildItem.Include = include;
 				}
@@ -3900,6 +3907,27 @@ namespace MonoDevelop.Projects
 							propsToRemove.Add (p.Name);
 						}
 						break;
+					}
+				}
+			}
+			if (propsToRemove != null) {
+				foreach (var name in propsToRemove)
+					buildItem.Metadata.RemoveProperty (name);
+			}
+		}
+
+		void PurgeItemDefinitionProperties (MSBuildItem buildItem, IMSBuildPropertyGroupEvaluated itemDefinitionProps, HashSet<string> propertiesAlreadySet)
+		{
+			List<string> propsToRemove = null;
+
+			foreach (var p in buildItem.Metadata.GetProperties ().Where (pr => !propertiesAlreadySet.Contains (pr.Name))) {
+				var prop = itemDefinitionProps.GetProperty (p.Name);
+				if (prop != null) {
+					if (p.ValueType.Equals (p.Value, prop.Value)) {
+						// This item definition defines the same metadata, so that metadata does not need to be set in the MSBuild item
+						if (propsToRemove == null)
+							propsToRemove = new List<string> ();
+						propsToRemove.Add (p.Name);
 					}
 				}
 			}
