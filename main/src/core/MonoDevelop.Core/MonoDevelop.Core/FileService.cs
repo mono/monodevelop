@@ -800,7 +800,7 @@ namespace MonoDevelop.Core
 		static void OnFileChanged (FileEventArgs args)
 		{
 			Counters.FileChangeNotifications++;
-			eventQueue.RaiseEvent (FileChanged, null, args);
+			eventQueue.RaiseEvent (FileChanged, args);
 		}
 
 		public static async Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
@@ -879,19 +879,17 @@ namespace MonoDevelop.Core
 		{
 			public EventHandler<TArgs> Delegate;
 			public TArgs Args;
-			public object ThisObject;
 
 			public override void Invoke ()
 			{
-				Delegate?.Invoke (ThisObject, Args);
+				Delegate?.Invoke (null, Args);
 			}
 
 			public override bool ShouldMerge (EventData other)
 			{
-				var next = other as EventData<TArgs>;
-				if (next == null)
+				if (!(other is EventData<TArgs> next))
 					return false;
-				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate && next.ThisObject == ThisObject;
+				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate;
 			}
 
 			public override bool IsChainArgs ()
@@ -918,16 +916,6 @@ namespace MonoDevelop.Core
 		readonly object lockObject = new object ();
 
 		int frozen;
-		object defaultSourceObject;
-
-		public EventQueue ()
-		{
-		}
-
-		public EventQueue (object defaultSourceObject)
-		{
-			this.defaultSourceObject = defaultSourceObject;
-		}
 
 		public void Freeze ()
 		{
@@ -964,16 +952,10 @@ namespace MonoDevelop.Core
 
 		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
 		{
-			RaiseEvent (del, defaultSourceObject, args);
-		}
-
-		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, object thisObj, TArgs args) where TArgs:EventArgs
-		{
 			lock (lockObject) {
 				if (frozen > 0) {
 					var ed = new EventData<TArgs> ();
 					ed.Delegate = del;
-					ed.ThisObject = thisObj;
 					ed.Args = args;
 					events.Add (ed);
 					return;
@@ -981,12 +963,12 @@ namespace MonoDevelop.Core
 			}
 			if (del != null) {
 				if (Runtime.IsMainThread) {
-					del.Invoke (thisObj, args);
+					del.Invoke (null, args);
 				} else {
 					Runtime.MainSynchronizationContext.Post (state => {
-						var (del1, thisObj1, args1) = (ValueTuple<EventHandler<TArgs>, object, TArgs>)state;
-						del1.Invoke (thisObj1, args1);
-					}, (del, thisObj, args));
+						var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
+						del1.Invoke (null, args1);
+					}, (del, args));
 				}
 			}
 		}
