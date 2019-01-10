@@ -895,6 +895,22 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ItemDefinitionGroup_ItemDefinedMultipleTimes ()
+		{
+			string projFile = Util.GetSampleProject ("project-with-item-def-group", "multiple-item-definitions-same-item.csproj");
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Test.myitem");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.IsTrue (projectItem.Metadata.HasProperty ("BoolProperty"));
+				Assert.IsTrue (projectItem.Metadata.GetValue<bool> ("BoolProperty"));
+				Assert.AreEqual (FileCopyMode.Always, projectItem.CopyToOutputDirectory);
+				Assert.AreEqual ("First", projectItem.Metadata.GetValue ("FirstItemDefinitionProperty"));
+				Assert.AreEqual ("Second", projectItem.Metadata.GetValue ("SecondItemDefinitionProperty"));
+			}
+		}
+
+		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
 			if (!Platform.IsMac) {

@@ -729,15 +729,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal IMSBuildPropertyGroupEvaluated GetEvaluatedItemDefinitionProperties (string itemName)
 		{
-			if (itemName == null)
-				return null;
-
-			foreach (var it in mainProjectInstance.EvaluatedItemDefinitions) {
-				if (it.Name == itemName) {
-					return it.Metadata;
-				}
-			}
-			return null;
+			return mainProjectInstance.GetEvaluatedItemDefinitionProperties (itemName);
 		}
 
 		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItems

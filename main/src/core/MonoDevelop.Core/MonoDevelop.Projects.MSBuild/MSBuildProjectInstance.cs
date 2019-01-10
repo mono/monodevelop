@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.MSBuild
 		MSBuildProject msproject;
 		List<IMSBuildItemEvaluated> evaluatedItems = new List<IMSBuildItemEvaluated> ();
 		List<IMSBuildItemEvaluated> evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
-		List<IMSBuildItemEvaluated> evaluatedItemDefinitions = new List<IMSBuildItemEvaluated> ();
+		Dictionary<string, MSBuildPropertyGroupEvaluated> evaluatedItemDefinitions;
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
 		MSBuildTarget[] targets = new MSBuildTarget[0];
 		MSBuildTarget[] targetsIgnoringCondition = new MSBuildTarget[0];
@@ -125,13 +125,20 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			evaluatedItemsIgnoringCondition.Clear ();
 			evaluatedItems.Clear ();
-			evaluatedItemDefinitions.Clear ();
+			evaluatedItemDefinitions?.Clear ();
 
 			if (!OnlyEvaluateProperties) {
 				foreach (var it in e.GetEvaluatedItemDefinitions (project)) {
 					var xit = it as MSBuildItemEvaluated;
 					if (xit != null) {
-						evaluatedItemDefinitions.Add (xit);
+						if (evaluatedItemDefinitions == null)
+							evaluatedItemDefinitions = new Dictionary<string, MSBuildPropertyGroupEvaluated> ();
+						MSBuildPropertyGroupEvaluated evalItemDefProps = null;
+						if (!evaluatedItemDefinitions.TryGetValue (xit.Name, out evalItemDefProps)) {
+							evalItemDefProps = new MSBuildPropertyGroupEvaluated (msproject);
+							evaluatedItemDefinitions [xit.Name] = evalItemDefProps;
+						}
+						evalItemDefProps.Sync (engine, xit, clearProperties: false);
 					}
 				}
 
@@ -209,10 +216,6 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return evaluatedProperties; }
 		}
 
-		internal IEnumerable<IMSBuildItemEvaluated> EvaluatedItemDefinitions {
-			get { return evaluatedItemDefinitions; }
-		}
-
 		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItems {
 			get { return evaluatedItems; }
 		}
@@ -269,6 +272,16 @@ namespace MonoDevelop.Projects.MSBuild
 		internal void SetPropertyValueStale (string name)
 		{
 			evaluatedProperties.SetPropertyValueStale (name);
+		}
+
+		internal IMSBuildPropertyGroupEvaluated GetEvaluatedItemDefinitionProperties (string itemName)
+		{
+			if (itemName == null || evaluatedItemDefinitions == null)
+				return null;
+
+			MSBuildPropertyGroupEvaluated evalItemDefProps = null;
+			evaluatedItemDefinitions.TryGetValue (itemName, out evalItemDefProps);
+			return evalItemDefProps;
 		}
 	}
 
