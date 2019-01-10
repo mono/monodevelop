@@ -289,7 +289,7 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			this.include = include;
 			this.evaluatedInclude = evaluatedInclude;
-			metadata = new MSBuildPropertyGroupEvaluated (parent, name);
+			metadata = new MSBuildPropertyGroupEvaluated (parent);
 			Name = name;
 		}
 

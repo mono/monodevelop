@@ -1267,7 +1267,6 @@ namespace MonoDevelop.Projects.MSBuild
 				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (item.Condition) || SafeParseAndEvaluate (project, context, item.Condition));
 				if (trueCond) {
 					var it = CreateEvaluatedItem (context, project, project.Project, item, string.Empty);
-					((MSBuildPropertyGroupEvaluated)it.Metadata).ItemName = null;
 					project.EvaluatedItemDefinitions.Add (it);
 				}
 			}
