@@ -183,6 +183,7 @@ namespace MonoDevelop.Projects.MSBuild
 							evalItemsNoCond [key] = xit;
 						}
 					}
+					UpdateMetadata (xit);
 					evaluatedItemsIgnoringCondition.Add (xit);
 				}
 
@@ -199,6 +200,21 @@ namespace MonoDevelop.Projects.MSBuild
 			props.SyncCollection (e, project);
 
 			conditionedProperties = engine.GetConditionedProperties (project);
+		}
+
+		void UpdateMetadata (MSBuildItemEvaluated it)
+		{
+			if (evaluatedItemDefinitions == null)
+				return;
+
+			if (!evaluatedItemDefinitions.TryGetValue (it.Name, out MSBuildPropertyGroupEvaluated itemDefProps))
+				return;
+
+			var props = (MSBuildPropertyGroupEvaluated)it.Metadata;
+			foreach (var evaluatedProp in itemDefProps.GetProperties ()) {
+				if (!props.HasProperty (evaluatedProp.Name))
+					props.SetProperty (evaluatedProp.Name, evaluatedProp);
+			}
 		}
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)

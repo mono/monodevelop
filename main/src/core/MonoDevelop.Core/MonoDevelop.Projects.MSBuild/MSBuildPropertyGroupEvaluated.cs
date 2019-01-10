@@ -40,14 +40,6 @@ namespace MonoDevelop.Projects.MSBuild
 			ParentProject = parent;
 		}
 
-		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent, string itemName)
-		{
-			ParentProject = parent;
-			ItemName = itemName;
-		}
-
-		internal string ItemName { get; set; }
-
 		internal void Sync (MSBuildEngine engine, object item, bool clearProperties = true)
 		{
 			if (clearProperties)
@@ -67,14 +59,8 @@ namespace MonoDevelop.Projects.MSBuild
 		public IMSBuildPropertyEvaluated GetProperty (string name)
 		{
 			IMSBuildPropertyEvaluated prop;
-			if (properties.TryGetValue (name, out prop))
-				return prop;
-
-			if (ParentProject == null)
-				return null;
-
-			var itemDefinitionProps = ParentProject.GetEvaluatedItemDefinitionProperties (ItemName);
-			return itemDefinitionProps?.GetProperty (name);
+			properties.TryGetValue (name, out prop);
+			return prop;
 		}
 
 		internal void SetProperty (string key, IMSBuildPropertyEvaluated value)
@@ -89,18 +75,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IEnumerable<IMSBuildPropertyEvaluated> GetProperties ()
 		{
-			foreach (var prop in properties.Values) {
-				yield return prop;
-			}
-
-			var itemDefinitionProps = ParentProject?.GetEvaluatedItemDefinitionProperties (ItemName);
-			if (itemDefinitionProps != null) {
-				foreach (var prop in itemDefinitionProps.GetProperties ()) {
-					if (!properties.ContainsKey (prop.Name)) {
-						yield return prop;
-					}
-				}
-			}
+			return properties.Values;
 		}
 
 		internal bool RemoveProperty (string name)
