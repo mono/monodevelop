@@ -131,8 +131,8 @@ namespace MonoDevelop.Components
 
 					if (HasFocus) {
 						ctx.SetSourceColor (Styles.BaseSelectionBackgroundColor.ToCairoColor ());
-						ctx.LineWidth = 1.0;
-						ctx.Rectangle (x - Xpad, y - Ypad, image.Width + Xpad, Image.Height + Ypad);
+						ctx.LineWidth = 2.0;
+						ctx.RoundedRectangle (x, y, image.Width, Image.Height, 4.0);
 						ctx.Stroke ();
 					}
 				}
