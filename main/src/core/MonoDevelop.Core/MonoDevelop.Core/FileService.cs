@@ -977,15 +977,14 @@ namespace MonoDevelop.Core
 					return;
 				}
 			}
-			if (del != null) {
-				if (Runtime.IsMainThread) {
-					del.Invoke (null, args);
-				} else {
-					Runtime.MainSynchronizationContext.Post (state => {
-						var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
-						del1.Invoke (null, args1);
-					}, (del, args));
-				}
+
+			if (Runtime.IsMainThread) {
+				del.Invoke (null, args);
+			} else {
+				Runtime.MainSynchronizationContext.Post (state => {
+					var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
+					del1.Invoke (null, args1);
+				}, (del, args));
 			}
 		}
 	}
