@@ -539,5 +539,48 @@ namespace MonoDevelop.Projects
 				Assert.AreEqual (projectXml, savedProjectXml);
 			}
 		}
+
+		[Test]
+		public async Task ItemDefinitionGroup ()
+		{
+			FilePath projFile = Util.GetSampleProject ("project-with-item-def-group", "netstandard-sdk.csproj");
+			RunMSBuildRestore (projFile);
+
+			using (var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile)) {
+				var projectItem = p.Files.Single (f => f.Include == "Class1.cs");
+
+				Assert.AreEqual ("NewValue", projectItem.Metadata.GetValue ("OverriddenProperty"));
+				Assert.AreEqual ("Test", projectItem.Metadata.GetValue ("TestProperty"));
+				Assert.AreEqual (FileCopyMode.PreserveNewest, projectItem.CopyToOutputDirectory);
+			}
+		}
+
+		static void RunMSBuildRestore (FilePath fileName)
+		{
+			CreateNuGetConfigFile (fileName.ParentDirectory);
+
+			var process = Process.Start ("msbuild", $"/t:Restore \"{fileName}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+		}
+
+		/// <summary>
+		/// Clear all other package sources and just use the main NuGet package source when
+		/// restoring the packages for the project tests.
+		/// </summary>
+		static void CreateNuGetConfigFile (FilePath directory)
+		{
+			var fileName = directory.Combine ("NuGet.Config");
+
+			string xml =
+				"<configuration>\r\n" +
+				"  <packageSources>\r\n" +
+				"    <clear />\r\n" +
+				"    <add key=\"NuGet v3 Official\" value=\"https://api.nuget.org/v3/index.json\" />\r\n" +
+				"  </packageSources>\r\n" +
+				"</configuration>";
+
+			File.WriteAllText (fileName, xml);
+		}
 	}
 }
