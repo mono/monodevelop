@@ -31,6 +31,8 @@
 		<Assembly file="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
 		<Assembly file="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.Language.Implementation.dll" />
+		<Assembly file="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
