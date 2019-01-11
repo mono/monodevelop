@@ -149,22 +149,14 @@
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting.Tests" />
   </ItemGroup>
   <ItemGroup>
-    <VsTestConsole Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\**\*.*">
-      <Visible>false</Visible>
-    </VsTestConsole>
-    <VsTestConsole Remove="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\Extensions\**\*.*" />
+    <DownloadNupkg Include="Microsoft.TestPlatform" Version="$(NuGetVersionMicrosoftTestPlatform)" />
+    <ExtensionContent
+      Include="..\..\..\packages\Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*"
+      Exclude="..\..\..\packages\Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
+      Link="VsTestConsole\Extensions\%(RecursiveDir)%(Filename)%(Extension)" />
+    <ExtensionContent
+      Include="..\..\..\packages\Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
+      Link="VsTestConsole\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
-  <ItemGroup>
-    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
-      <Visible>false</Visible>
-    </VsTestConsoleExtensions>
-    <VsTestConsoleExtensions Include="..\..\..\packages\Microsoft.TestPlatform.15.5.0-preview-20170919-04\tools\net451\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
-      <Visible>false</Visible>
-    </VsTestConsoleExtensions>
-  </ItemGroup>
-  <Target Name="CopyTestAdapters" BeforeTargets="Build">
-    <Copy SourceFiles="@(VsTestConsole)" DestinationFolder="$(OutputPath)\VsTestConsole\%(RecursiveDir)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(VsTestConsoleExtensions)" DestinationFolder="$(OutputPath)\VsTestConsole\Extensions\" SkipUnchangedFiles="true" />
-  </Target>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
