@@ -5,4 +5,5 @@
 	</PropertyGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)\GenerateInternalsVisibleTo.targets" />
+	<Import Project="$(MSBuildThisFileDirectory)\MDBuildTasks.targets" />
 </Project>

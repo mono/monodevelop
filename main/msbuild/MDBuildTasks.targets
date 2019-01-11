@@ -1,4 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!--
 		the one built into MSBuild 15.98+ is broken:
@@ -7,7 +11,7 @@
 		<PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
 	</ItemGroup>
 	<UsingTask
-		TaskName="MDDownloadFiles"
+		TaskName="DownloadFiles"
 		TaskFactory="CodeTaskFactory"
 		AssemblyFile="$(RoslynCodeTaskFactory)"
 		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
@@ -15,18 +19,15 @@
 		TaskFactory="RoslynCodeTaskFactory"
 		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
 		-->
-		<ParameterGroup>
-			<Downloads ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-		</ParameterGroup>
 		<Task>
 			<Reference Include="System.IO.Compression" />
 			<Reference Include="System.IO.Compression.FileSystem" />
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/MDDownloadFiles.cs" />
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/DownloadFiles.cs" />
 		</Task>
 	</UsingTask>
 
 	<UsingTask
-		TaskName="MDDownloadNupkg"
+		TaskName="DownloadNupkg"
 		TaskFactory="CodeTaskFactory"
 		AssemblyFile="$(RoslynCodeTaskFactory)"
 		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
@@ -34,52 +35,163 @@
 		TaskFactory="RoslynCodeTaskFactory"
 		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
 		-->
-		<!--
-		this causes a RoslynCodeTaskFactory warning
-		but it's useful to uncomment for msbuild intellisense
-		-->
-		<!--
-		<ParameterGroup>
-			<Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-			<PackagesDirectory ParameterType="System.String" Required="true" />
-			<StampFile ParameterType="System.String" Required="true" />
-			<PackagesConfigFile ParameterType="System.String" Required="true" />
-		</ParameterGroup>
-		-->
 		<Task>
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/MDDownloadNupkg.cs" />
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/DownloadNupkg.cs" />
 		</Task>
 	</UsingTask>
 
-	<Target Name="MDDownloadFiles" Condition="'@(MDDownload)' != ''" AfterTargets="Build">
-		<MDDownloadFiles Downloads="@(MDDownload)" />
+	<UsingTask
+		TaskName="GenerateExtensionContentManifest"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(RoslynCodeTaskFactory)"
+		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+		<!--
+		TaskFactory="RoslynCodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		-->
+		<Task>
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Xml.Linq" />
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/GenerateExtensionContentManifest.cs" />
+		</Task>
+	</UsingTask>
+
+	<UsingTask
+		TaskName="CollectExtensionContent"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(RoslynCodeTaskFactory)"
+		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+		<!--
+		TaskFactory="RoslynCodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		-->
+		<Task>
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/CollectExtensionContent.cs" />
+		</Task>
+	</UsingTask>
+
+	<!--
+	=================================================================
+	File download logic adapted from Xamarin.Build.Download
+	Files can be downloaded with <Download Include="url" />
+
+	 * Hashes may be included in SHA1 or SHA2 metadata, and will be verified.
+	 * By default the file will be downloaded to the project folder,
+	   but this can be overridden with DownloadFolder.
+	 * By default the file will use the filename from the URL, but this can
+	  be overridden with DownloadName.
+	* If the file is a zip file, it can be unpacked by setting Unpack to
+	  true.
+
+	=================================================================
+	-->
+
+	<Target Name="DownloadFiles" Condition="'@(Download)' != ''" AfterTargets="Build">
+		<DownloadFiles Downloads="@(Download)" />
 	</Target>
 
-	<Target Name="MDDownloadNupkg" Condition="'@(MDDownloadNupkg)' != ''" BeforeTargets="Build" DependsOnTargets="_MDDownloadNupkgGather;_MDDownloadNupkgIfNeeded">
-		<Message Text="Downloaded nupkgs: @(MDDownloadedNupkg)" />
+	<!--
+	=================================================================
+	NuGet download logic
+	NuGets specified with <DownloadNupkg Include="id" Version="version">
+	items will be downloaded, and DownloadedNupkg items will be created
+	that point to the downloaded nupkgs
+	=================================================================
+	-->
+
+	<Target Name="DownloadNupkg" Condition="'@(DownloadNupkg)' != ''" DependsOnTargets="_DownloadNupkgGather;_DownloadNupkgIfNeeded">
+		<Message Text="Downloaded nupkgs: @(DownloadedNupkg)" />
 	</Target>
 
-	<Target Name="_MDDownloadNupkgGather">
+	<Target Name="_DownloadNupkgGather">
 		<PropertyGroup>
-			<MDDownloadNupkgDirectory Condition="'$(MDDownloadNupkgDirectory)'==''">$(SolutionDir)packages\</MDDownloadNupkgDirectory>
-			<MDDownloadNupkgDirectory Condition="!HasTrailingSlash('$(MDDownloadNupkgDirectory)')">$(MDDownloadNupkgDirectory)\</MDDownloadNupkgDirectory>
-			<_MDDownloadNupkgStamp>$(IntermediateOutputPath)MDDownloadFiles\stamp</_MDDownloadNupkgStamp>
-			<_MDDownloadNupkgPkgCfg>$(IntermediateOutputPath)MDDownloadFiles\packages.config</_MDDownloadNupkgPkgCfg>
+			<DownloadNupkgDirectory Condition="'$(DownloadNupkgDirectory)'==''">$(SolutionDir)packages\</DownloadNupkgDirectory>
+			<DownloadNupkgDirectory Condition="!HasTrailingSlash('$(DownloadNupkgDirectory)')">$(DownloadNupkgDirectory)\</DownloadNupkgDirectory>
+			<_DownloadNupkgStamp>$(IntermediateOutputPath)MDDownloadFiles\stamp</_DownloadNupkgStamp>
+			<_DownloadNupkgPkgCfg>$(IntermediateOutputPath)MDDownloadFiles\packages.config</_DownloadNupkgPkgCfg>
 		</PropertyGroup>
 		<ItemGroup>
-			<MDDownloadedNupkg Include="@(MDDownloadNupkg->'$(MDDownloadNupkgDirectory)%(Identity).%(Version)\%(Identity).%(Version).nupkg')" />
-			<FileWrites Include="$(_MDDownloadNupkgStamp);$(_MDDownloadNupkgPkgCfg)" />
+			<DownloadedNupkg Include="@(DownloadNupkg->'$(DownloadNupkgDirectory)%(Identity).%(Version)\%(Identity).%(Version).nupkg')" />
+			<FileWrites Include="$(_DownloadNupkgStamp);$(_DownloadNupkgPkgCfg)" />
+		</ItemGroup>
+		<ItemGroup>
+			<ExtensionContent
+				Include="@(DownloadedNupkg->HasMetadata('ExtensionPath'))"
+				Link="$([MSBuild]::EnsureTrailingSlash('%(ExtensionPath)'))%(Filename)%(Extension)" />
+			<ExtensionContent
+				Include="@(DownloadedNupkg->HasMetadata('ExtensionPath'))"
+				Link="%(ExtensionPath)" />
 		</ItemGroup>
 	</Target>
 
-	<Target Name="_MDDownloadNupkgIfNeeded" Inputs="$(MSBuildAllProjects)" Outputs="@(MDDownloadedNupkg);$(_MDDownloadNupkgStamp)" >
-		<MDDownloadNupkg
+	<Target Name="_DownloadNupkgIfNeeded" Inputs="$(MSBuildAllProjects)" Outputs="@(DownloadedNupkg);$(_DownloadNupkgStamp)" >
+		<DownloadNupkg
 			ToolPath="$(MSBuildThisFileDirectory)\..\external\nuget-binary"
 			ToolExe="nuget.exe"
-			Packages="@(MDDownloadNupkg)"
-			PackagesDirectory="$(MDDownloadNupkgDirectory)"
-			StampFile="$(_MDDownloadNupkgStamp)"
-			PackagesConfigFile="$(_MDDownloadNupkgPkgCfg)"
+			Packages="@(DownloadNupkg)"
+			PackagesDirectory="$(DownloadNupkgDirectory)"
+			StampFile="$(_DownloadNupkgStamp)"
+			PackagesConfigFile="$(_DownloadNupkgPkgCfg)"
 		/>
 	</Target>
+
+	<!--
+	=================================================================
+	ExtensionContent logic from AddinMaker
+	ExtensionContent items are copied into the output directory and
+	automatically included in the extension using a generated manifest
+	=================================================================
+	-->
+
+	<!--
+  beforetargets is kinda messy. We can't just go before PrepareResources, because that's _empty_ and actually
+  just depends on a bunch of other targets that do the real work, and we need to go before _those_.
+  SplitResourcesByCulture seems to be the first.
+  -->
+  <Target
+		Name="_PrepareExtensionResources"
+		BeforeTargets="SplitResourcesByCulture"
+		DependsOnTargets="DownloadNupkg;_CollectExtensionOutputFiles;_GenerateExtensionContentManifest" />
+
+	<Target Name="_CollectExtensionOutputFiles">
+    <!--declare this here instead of toplevel so that IntermediateOutputPath has a value w/SDK style projects-->
+    <PropertyGroup>
+      <_ExtensionContentManifest>$(IntermediateOutputPath)_Manifest.addin.xml</_ExtensionContentManifest>
+    </PropertyGroup>
+
+    <CollectExtensionContent ExtensionContent="@(ExtensionContent)">
+      <Output TaskParameter="ExtensionContentWithLinkMetadata" ItemName="_ExtensionContentWithLinkMetadata" />
+    </CollectExtensionContent>
+
+    <ItemGroup>
+      <FileWrites Include="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')" />
+      <FileWrites Include="$(_ExtensionContentManifest)" />
+      <EmbeddedResource Include="$(_ExtensionContentManifest)">
+        <LogicalName>_Manifest.addin.xml</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+
+  </Target>
+
+  <Target Name="_CopyExtensionOutputFiles"
+    Inputs="@(_ExtensionContentWithLinkMetadata)"
+    Outputs="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')"
+    BeforeTargets="PrepareForRun">
+    <Copy
+      SkipUnchangedFiles="True"
+      SourceFiles="@(_ExtensionContentWithLinkMetadata)"
+      DestinationFiles="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')" />
+  </Target>
+
+  <Target Name="_GenerateExtensionContentManifest"
+    Inputs="$(MSBuildAllProjects);@(ExtensionContent)"
+    Outputs="$(_ExtensionContentManifest)">
+    <GenerateExtensionContentManifest
+      ManifestFile="$(_ExtensionContentManifest)"
+      ExtensionContentWithLinkMetadata="@(_ExtensionContentWithLinkMetadata)" />
+			<!-- disable these for now, they need fixup
+      ReferenceCopyLocalPaths="@(ReferenceCopyLocalPaths)"
+      ExtensionDependencies="@(_ResolvedExtension)"
+			-->
+  </Target>
 </Project>
