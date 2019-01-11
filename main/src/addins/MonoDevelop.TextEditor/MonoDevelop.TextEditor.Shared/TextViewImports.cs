@@ -31,7 +31,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MonoDevelop.Ide.Text
 {
-    [Export]
+	[Export]
 	class TextViewImports
 	{
 		[Import]
@@ -66,5 +66,8 @@ namespace MonoDevelop.Ide.Text
 
 		[Import]
 		internal IEditorCommandHandlerServiceFactory EditorCommandHandlerServiceFactory { get; set; }
+
+		[Import]
+		internal EditorContentProviderService EditorContentProviderService { get; set; }
 	}
 }

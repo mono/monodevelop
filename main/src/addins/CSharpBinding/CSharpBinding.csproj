@@ -303,6 +303,7 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.TextPasteUtils.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormattingPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.OptionProvider\StyleViewModel.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />

@@ -702,10 +702,13 @@ namespace MonoDevelop.Ide.Gui
 		void InitializeExtensionChain ()
 		{
 			Editor.InitializeExtensionChain (this);
+		}
 
-			if (window is SdiWorkspaceWindow)
+		void AttachPathedDocument ()
+		{
+			if (window is SdiWorkspaceWindow) {
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
-
+			}
 		}
 
 		void InitializeEditor ()
@@ -741,7 +744,14 @@ namespace MonoDevelop.Ide.Gui
 				InitializeEditor ();
 				RunWhenRealized (delegate { ListenToProjectLoad (Project); });
 			}
-			
+			AttachPathedDocument ();
+
+			// this is used by TextViewExtensions.TryGetParentDocument
+			var textView = GetContent<Microsoft.VisualStudio.Text.Editor.ITextView> ();
+			if (textView != null) {
+				textView.Properties.AddProperty (typeof(Document), this);
+			}
+
 			window.Document = this;
 		}
 		
@@ -790,6 +800,7 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
+			AttachPathedDocument ();
 			ListenToProjectLoad (project);
 		}
 

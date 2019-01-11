@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 #if MAC
 using AppKit;
@@ -32,9 +33,9 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using Xwt;
 
 namespace MonoDevelop.Ide.Text
 {
@@ -54,12 +55,13 @@ namespace MonoDevelop.Ide.Text
 		public IWpfTextView TextView { get; private set; }
 		private IWpfTextViewHost textViewHost;
 #elif MAC
-		private ICocoaTextViewHost textViewHost;
+		ICocoaTextViewHost textViewHost;
 		public ICocoaTextView TextView { get; private set; }
 #endif
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
-		private IEditorCommandHandlerService _editorCommandHandlerService;
+		IEditorCommandHandlerService _editorCommandHandlerService;
+		List<IEditorContentProvider> contentProviders;
 
 		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
@@ -73,6 +75,7 @@ namespace MonoDevelop.Ide.Text
 				DefaultTextViewHostOptions.LineNumberMarginId,
 				Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin);
 
+			//TODO: this can change when the file is renamed
 			var contentType = (mimeType == null) ? imports.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (fileName, mimeType);
 
 			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
@@ -95,21 +98,51 @@ namespace MonoDevelop.Ide.Text
 			control = new EmbeddedNSViewControl (CreateControl ());
 #endif
 			ContentName = fileName;
-			TextView.Properties [typeof (Ide.Text.TextViewContent)] = this;
+			TextView.Properties [typeof (TextViewContent)] = this;
 			_editorCommandHandlerService = imports.EditorCommandHandlerServiceFactory.GetService (TextView);
+
+			contentProviders = imports.EditorContentProviderService.GetContentProvidersForView (TextView).ToList ();
+		}
+
+		protected override object OnGetContent (Type type)
+		{
+			foreach (var provider in contentProviders) {
+				var content = provider.GetContent (TextView, type);
+				if (content != null) {
+					return content;
+				}
+			}
+			return GetIntrinsicType (type);
 		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			if (type == typeof(ITextBuffer)) {
-				return new[] { TextBuffer };
-			} else if (type == typeof(ITextDocument)) {
-				return new[] { TextDocument };
-			} else if (type == typeof (ITextView)) {
-				return new [] { TextView };
-			}
+			foreach (var provider in contentProviders) {
+				var contents = provider.GetContents (TextView, type);
+				if (contents != null) {
+					foreach (var content in contents) {
+						yield return content;
 
-			return Array.Empty<object> ();
+					}
+				}
+			}
+			var intrinsicType = GetIntrinsicType (type);
+			if (intrinsicType != null) {
+				yield return intrinsicType;
+			}
+		}
+
+		object GetIntrinsicType (Type type)
+		{
+			if (type.IsInstanceOfType (TextBuffer))
+				return TextBuffer;
+			if (type.IsInstanceOfType (TextDocument))
+				return TextDocument;
+			if (type.IsInstanceOfType (TextView))
+				return TextView;
+			if (type.IsInstanceOfType (this))
+				return this;
+			return null;
 		}
 
 		public override Task Save ()
@@ -129,14 +162,14 @@ namespace MonoDevelop.Ide.Text
 			get => TextDocument.IsDirty;
 		}
 
-		private void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
+		void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
 		{
 			OnDirtyChanged ();
 		}
 
 		static readonly string[] textContentType = { "text" };
 
-		private IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
 		{
 			if (filePath != null) {
 				var contentTypeFromPath = imports.FileToContentTypeService.GetContentTypeForFilePath (filePath);
@@ -161,9 +194,9 @@ namespace MonoDevelop.Ide.Text
 		}
 
 #if WINDOWS
-		private Widget GetXwtWidget (RootWpfWidget widget)
+		private Xwt.Widget GetXwtWidget (RootWpfWidget widget)
 		{
-			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, NativeWidgetSizing.External);
+			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, Xwt.NativeWidgetSizing.External);
 		}
 
 		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
@@ -183,24 +216,24 @@ namespace MonoDevelop.Ide.Text
 			return textViewHost.HostControl;
 		}
 
-		public override Widget Widget => xwtWidget;
+		public override Xwt.Widget Widget => xwtWidget;
 #elif MAC
 		class EmbeddedNSViewControl : Control
 		{
-			private AppKit.NSView nSView;
+			readonly NSView nsView;
 
-			public EmbeddedNSViewControl (AppKit.NSView nSView)
+			public EmbeddedNSViewControl (NSView nsView)
 			{
-				this.nSView = nSView;
+				this.nsView = nsView;
 			}
 
 			protected override object CreateNativeWidget<T> ()
 			{
-				return nSView;
+				return nsView;
 			}
 		}
 
-		private AppKit.NSView CreateControl ()
+		NSView CreateControl ()
 		{
 			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
 			ITextDataModel dataModel = new VacuousTextDataModel (TextBuffer);
@@ -216,8 +249,10 @@ namespace MonoDevelop.Ide.Text
 			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			return textViewHost.HostControl;
 		}
+
 		Control control;
 		public override Control Control { get => control; }
+
 #endif
 		public override void Dispose ()
 		{
