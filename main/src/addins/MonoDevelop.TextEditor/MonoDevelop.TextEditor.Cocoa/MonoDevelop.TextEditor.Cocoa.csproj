@@ -173,6 +173,10 @@
 		  <Project>{B5C85F1D-38B8-4A57-A763-F390D58BD4D5}</Project>
 		  <Name>TextModelImpl</Name>
 		</ProjectReference>
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj">
+		  <Project>{6EB6CADC-4EDF-570A-9670-0FF3BACA7015}</Project>
+		  <Name>ToolTipAdornmentImpl</Name>
+		</ProjectReference>
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextSearch\TextSearchImpl.csproj">
 		  <Project>{F713D37D-70A4-49BB-ADAE-B7007C880E57}</Project>
 		  <Name>TextSearchImpl</Name>
