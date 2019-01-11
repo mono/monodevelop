@@ -38,6 +38,7 @@ using Mono.MHex.Data;
 using Mono.MHex.Rendering;
 using Xwt.Drawing;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 
 namespace Mono.MHex
 {
@@ -529,10 +530,9 @@ namespace Mono.MHex
 			try {
 				var character = HexEditorData.Bytes [HexEditorData.Caret.Offset];
 				var data = Convert.ToString (character, 16);
-				var message = string.Format ("Selected '{0}' char:'{1}'", data[HexEditorData.Caret.SubPosition], (char)character);
+				var message = GettextCatalog.GetString ("Selected '{0}' char:'{1}'", data [HexEditorData.Caret.SubPosition], (char)character);
 				hexWidget.Accessible.MakeAccessibilityAnnouncement (message);
-			} catch (Exception ex) {
-
+			} catch {
 			}
 		}
 
