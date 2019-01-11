@@ -178,7 +178,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							solution,
 							streamingProgresses [i],
 							null,
-							FindReferencesSearchOptions.Default,
+							FindReferencesSearchOptions.GetFeatureOptionsForStartingSymbol (symbolAndProjectIds [i].Symbol),
 							monitor.CancellationToken
 						);
 					}
