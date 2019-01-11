@@ -447,6 +447,33 @@ namespace MonoDevelop.Components.Commands
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
+			// Handle the GDK key via MD commanding
+			if (ProcessKeyEventCore (ev))
+				return true;
+
+#if MAC
+			// Otherwise if we have a native first responder that is not the GdkQuartzView
+			// that contains the entire GTK shell, dispatch the key directly to the native
+			// NSResponder and tell GTK to get out of our way.
+
+			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
+			var window = currentEvent?.Window;
+			var firstResponder = window?.FirstResponder;
+
+			if (currentEvent != null &&
+				currentEvent.Type == AppKit.NSEventType.KeyDown &&
+				firstResponder != null &&
+				firstResponder != window.ContentView) {
+				firstResponder.KeyDown (currentEvent);
+				return true;
+			}
+#endif
+
+			return false;
+		}
+
+		bool ProcessKeyEventCore (Gdk.EventKey ev)
+		{
 			if (!IsEnabled)
 				return true;
 
