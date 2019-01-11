@@ -5,6 +5,7 @@ open Mono.Addins
   Namespace = "MonoDevelop",
   Version = MonoDevelop.BuildInfo.Version,
   Url = "http://github.com/fsharp/xamarin-monodevelop-fsharp-addin/",
+  EnabledByDefault = false,
   Category = "Language bindings")>]
 
 [<AddinName ("F# Language Binding")>]
