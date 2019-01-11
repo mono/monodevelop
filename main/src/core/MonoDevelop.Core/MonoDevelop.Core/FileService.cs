@@ -995,7 +995,7 @@ namespace MonoDevelop.Core
 						continue;
 
 					previous.MergeArgs (current);
-					pendingEvents [n] = EmptyEventData.Instance;
+					pendingEvents [n - 1] = EmptyEventData.Instance;
 				}
 			}
 		}
