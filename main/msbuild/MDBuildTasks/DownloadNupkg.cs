@@ -26,7 +26,7 @@ using System.Text;
 
 namespace MDBuildTasks
 {
-	public class MDDownloadNupkg : ToolTask
+	public class DownloadNupkg : ToolTask
 	{
 		[Required]
 		public ITaskItem[] Packages { get; set; }

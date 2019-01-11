@@ -109,11 +109,11 @@
 		</ItemGroup>
 		<ItemGroup>
 			<ExtensionContent
-				Include="@(DownloadedNupkg->HasMetadata('ExtensionPath'))"
-				Link="$([MSBuild]::EnsureTrailingSlash('%(ExtensionPath)'))%(Filename)%(Extension)" />
+				Include="@(DownloadedNupkg->HasMetadata('ExtensionDir'))"
+				Link="$([MSBuild]::EnsureTrailingSlash('%(DownloadedNupkg.ExtensionDir)'))%(Filename)%(Extension)" />
 			<ExtensionContent
 				Include="@(DownloadedNupkg->HasMetadata('ExtensionPath'))"
-				Link="%(ExtensionPath)" />
+				Link="%(DownloadedNupkg.ExtensionPath)" />
 		</ItemGroup>
 	</Target>
 

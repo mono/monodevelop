@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MDBuildTasks</RootNamespace>
     <AssemblyName>MDBuildTasks</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,13 +29,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll" />
-    <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Utilities.Core.dll" />
-    <Reference Include="$(MSBuildBinPath)\Microsoft.Build.Framework.dll" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.9.20" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.9.20" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.9.20" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
