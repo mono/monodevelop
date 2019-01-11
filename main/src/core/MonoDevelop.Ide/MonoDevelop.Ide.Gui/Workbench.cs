@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
-		public event EventHandler ActiveDocumentChanged;
+		public event EventHandler<DocumentEventArgs> ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
 		public event EventHandler GuiLocked;
 		public event EventHandler GuiUnlocked;
@@ -864,10 +864,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnDocumentChanged (object s, EventArgs a)
 		{
-			if (ActiveDocumentChanged != null)
-				ActiveDocumentChanged (s, a);
-			if (ActiveDocument != null)
-				ActiveDocument.LastTimeActive = DateTime.Now;
+			var activeDoc = ActiveDocument;
+
+			ActiveDocumentChanged?.Invoke (s, new DocumentEventArgs (activeDoc));
+
+			if (activeDoc != null)
+				activeDoc.LastTimeActive = DateTime.Now;
 		}
 		
 		internal Document WrapDocument (IWorkbenchWindow window)
