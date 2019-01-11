@@ -98,7 +98,7 @@
 	-->
 	<Target Name="DownloadNupkg"
 		Condition="'@(DownloadNupkg)' != ''"
-		BeforeTargets="Build"
+		BeforeTargets="ResolveAssemblyReferences"
 		DependsOnTargets="_DownloadNupkgPrepare;_DownloadNupkgIfNeeded" />
 
 	<Target Name="_DownloadNupkgPrepare">
