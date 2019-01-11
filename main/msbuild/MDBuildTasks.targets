@@ -92,17 +92,32 @@
 	=================================================================
 	-->
 
-	<Target Name="DownloadNupkg" Condition="'@(DownloadNupkg)' != ''" DependsOnTargets="_DownloadNupkgGather;_DownloadNupkgIfNeeded">
-		<Message Text="Downloaded nupkgs: @(DownloadedNupkg)" />
-	</Target>
+	<Target Name="DownloadNupkg"
+		Condition="'@(DownloadNupkg)' != ''"
+		AfterTargets="Restore"
+		DependsOnTargets="_DownloadNupkgPrepare;_DownloadNupkgIfNeeded" />
 
-	<Target Name="_DownloadNupkgGather">
+	<Target Name="_DownloadNupkgPrepare">
 		<PropertyGroup>
 			<DownloadNupkgDirectory Condition="'$(DownloadNupkgDirectory)'==''">$(SolutionDir)packages\</DownloadNupkgDirectory>
 			<DownloadNupkgDirectory Condition="!HasTrailingSlash('$(DownloadNupkgDirectory)')">$(DownloadNupkgDirectory)\</DownloadNupkgDirectory>
 			<_DownloadNupkgStamp>$(IntermediateOutputPath)MDDownloadFiles\stamp</_DownloadNupkgStamp>
 			<_DownloadNupkgPkgCfg>$(IntermediateOutputPath)MDDownloadFiles\packages.config</_DownloadNupkgPkgCfg>
 		</PropertyGroup>
+	</Target>
+
+	<Target Name="_DownloadNupkgIfNeeded" Inputs="$(MSBuildAllProjects)" Outputs="@(DownloadedNupkg);$(_DownloadNupkgStamp)" >
+		<DownloadNupkg
+			ToolPath="$(MSBuildThisFileDirectory)\..\external\nuget-binary"
+			ToolExe="nuget.exe"
+			Packages="@(DownloadNupkg)"
+			PackagesDirectory="$(DownloadNupkgDirectory)"
+			StampFile="$(_DownloadNupkgStamp)"
+			PackagesConfigFile="$(_DownloadNupkgPkgCfg)"
+		/>
+	</Target>
+
+	<Target Name="_DownloadNupkgGatherOutput" DependsOnTargets="DownloadNupkg">
 		<ItemGroup>
 			<DownloadedNupkg Include="@(DownloadNupkg->'$(DownloadNupkgDirectory)%(Identity).%(Version)\%(Identity).%(Version).nupkg')" />
 			<FileWrites Include="$(_DownloadNupkgStamp);$(_DownloadNupkgPkgCfg)" />
@@ -115,17 +130,6 @@
 				Include="@(DownloadedNupkg->HasMetadata('ExtensionPath'))"
 				Link="%(DownloadedNupkg.ExtensionPath)" />
 		</ItemGroup>
-	</Target>
-
-	<Target Name="_DownloadNupkgIfNeeded" Inputs="$(MSBuildAllProjects)" Outputs="@(DownloadedNupkg);$(_DownloadNupkgStamp)" >
-		<DownloadNupkg
-			ToolPath="$(MSBuildThisFileDirectory)\..\external\nuget-binary"
-			ToolExe="nuget.exe"
-			Packages="@(DownloadNupkg)"
-			PackagesDirectory="$(DownloadNupkgDirectory)"
-			StampFile="$(_DownloadNupkgStamp)"
-			PackagesConfigFile="$(_DownloadNupkgPkgCfg)"
-		/>
 	</Target>
 
 	<!--
@@ -144,7 +148,7 @@
   <Target
 		Name="_PrepareExtensionResources"
 		BeforeTargets="SplitResourcesByCulture"
-		DependsOnTargets="DownloadNupkg;_CollectExtensionOutputFiles;_GenerateExtensionContentManifest" />
+		DependsOnTargets="_DownloadNupkgGatherOutput;_CollectExtensionOutputFiles;_GenerateExtensionContentManifest" />
 
 	<Target Name="_CollectExtensionOutputFiles">
     <!--declare this here instead of toplevel so that IntermediateOutputPath has a value w/SDK style projects-->
