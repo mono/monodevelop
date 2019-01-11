@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.Cecil;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.TypeSystem;
 using System.Threading.Tasks;
@@ -32,10 +31,14 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using ICSharpCode.Decompiler.Metadata;
+using System.Reflection.Metadata;
+using System.Linq;
+
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyLoader : IAssemblyResolver, IDisposable
+	class AssemblyLoader : IDisposable
 	{
 		readonly CancellationTokenSource src = new CancellationTokenSource ();
 		readonly AssemblyBrowserWidget widget;
@@ -45,10 +48,10 @@ namespace MonoDevelop.AssemblyBrowser
 			private set;
 		}
 
-		Task<AssemblyDefinition> assemblyLoaderTask;
-		TaskCompletionSource<AssemblyDefinition> assemblyDefinitionTaskSource;
+		Task<PEFile> assemblyLoaderTask;
+		TaskCompletionSource<PEFile> assemblyDefinitionTaskSource;
 
-		public Task<AssemblyDefinition> LoadingTask {
+		public Task<PEFile> LoadingTask {
 			get {
 				return assemblyLoaderTask;
 			}
@@ -57,12 +60,12 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		public AssemblyDefinition Assembly => AssemblyTask.Result;
-		public Task<AssemblyDefinition> AssemblyTask => assemblyDefinitionTaskSource.Task;
+		public PEFile Assembly => AssemblyTask.Result;
+		public Task<PEFile> AssemblyTask => assemblyDefinitionTaskSource.Task;
 
-		public ModuleDefinition ModuleDefinition {
+		public MetadataReader ModuleDefinition {
 			get {
-				return assemblyLoaderTask.Result.MainModule;
+				return assemblyLoaderTask.Result.Metadata;
 			}
 		}
 
@@ -82,8 +85,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public DecompilerTypeSystem DecompilerTypeSystem { 
 			get { 
 				if (decompilerTypeSystem == null) {
-					decompilerTypeSystem = new DecompilerTypeSystem (Assembly.MainModule);
-
+					decompilerTypeSystem = new DecompilerTypeSystem (Assembly, new AssemblyResolver (widget));
 				}
 				return decompilerTypeSystem; 
 			}
@@ -102,15 +104,13 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
 
-			assemblyDefinitionTaskSource = new TaskCompletionSource<AssemblyDefinition> ();
+			assemblyDefinitionTaskSource = new TaskCompletionSource<PEFile> ();
 
 			assemblyLoaderTask = Task.Run (() => {
 				try {
-					var assemblyDefinition = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
-						AssemblyResolver = this
-					});
-					assemblyDefinitionTaskSource.SetResult (assemblyDefinition);
-					return assemblyDefinition;
+					var peFile = new PEFile (FileName, System.Reflection.PortableExecutable.PEStreamOptions.PrefetchEntireImage);
+					assemblyDefinitionTaskSource.SetResult (peFile);
+					return peFile;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					Error = new Error(e.Message);
@@ -118,6 +118,27 @@ namespace MonoDevelop.AssemblyBrowser
 					return null;
 				}
 			});
+		}
+
+		class AssemblyResolver : IAssemblyResolver
+		{
+			readonly AssemblyBrowserWidget widget;
+			public AssemblyResolver (AssemblyBrowserWidget widget)
+			{
+				this.widget = widget;
+			}
+
+			public PEFile Resolve (IAssemblyReference reference)
+			{
+				var loader = widget.AddReferenceByAssemblyName (reference.FullName);
+				return loader != null ? loader.Assembly : null;
+			}
+
+			public PEFile ResolveModule (PEFile mainModule, string moduleName)
+			{
+				var loader = widget.AddReferenceByFileName (mainModule.FileName);
+				return loader != null ? loader.Assembly : null;
+			}
 		}
 
 		class FastNonInterningProvider : InterningProvider
@@ -151,20 +172,6 @@ namespace MonoDevelop.AssemblyBrowser
 				return obj;
 			}
 		}
-
-		#region IAssemblyResolver implementation
-		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name)
-		{
-			var loader = widget.AddReferenceByAssemblyName (name);
-			return loader != null ? loader.Assembly : null;
-		}
-
-		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name, ReaderParameters parameters)
-		{
-			var loader = widget.AddReferenceByAssemblyName (name);
-			return loader != null ? loader.Assembly : null;
-		}
-		#endregion
 
 		public string LookupAssembly (string fullAssemblyName)
 		{

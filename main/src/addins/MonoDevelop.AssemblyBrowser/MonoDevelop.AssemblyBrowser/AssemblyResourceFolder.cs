@@ -27,26 +27,24 @@
 //
 
 using System;
-using Mono.Cecil;
 using System.Collections.Generic;
+using ICSharpCode.Decompiler.Metadata;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyResourceFolder
 	{
-		AssemblyDefinition definition;
+		PEFile definition;
 		
 		public IEnumerable<Resource> Resources {
 			get {
-				return definition.MainModule.Resources;
+				return definition.Resources;
 			}
 		}
 		
-		public AssemblyResourceFolder (AssemblyDefinition definition)
+		public AssemblyResourceFolder (PEFile definition)
 		{
-			if (definition == null)
-				throw new ArgumentNullException ("definition");
-			this.definition = definition;
+			this.definition = definition ?? throw new ArgumentNullException (nameof (definition));
 		}
 	}
 }

@@ -39,21 +39,18 @@ using ICSharpCode.Decompiler.CSharp.TypeSystem;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.ILSpy;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class MethodDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(MethodDefinition); }
+			get { return typeof(IMethod); }
 		}
 		
 		public MethodDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -62,7 +59,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var method = (MethodDefinition)dataObject;
+			var method = (IMethod)dataObject;
 			if (method.IsConstructor)
 				return method.DeclaringType.Name;
 			return method.Name;
@@ -75,7 +72,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var method = (MethodDefinition)dataObject;
+			var method = (IMethod)dataObject;
 
 			var ambience = new CSharpAmbience ();
 			try {
@@ -84,39 +81,19 @@ namespace MonoDevelop.AssemblyBrowser
 				nodeInfo.Label = method.Name;
 			}
 
-			if (method.IsPrivate || method.IsAssembly)
+			if (method.IsPrivate ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon (method));
 		}
 
-		public static IconId GetStockIcon (MethodDefinition method)
+		public static IconId GetStockIcon (IMethod method)
 		{
-			var isStatic = (method.Attributes & MethodAttributes.Static) != 0;
-			var global = isStatic ? "static-" : "";
-			return "md-" + GetAccess (method.Attributes) + global + "method";
+			var global = method.IsStatic ? "static-" : "";
+			return "md-" + method.Accessibility.GetStockIcon () + global + "method";
 		}
 
-		internal static string GetAccess (MethodAttributes attributes)
-		{
-			switch (attributes & MethodAttributes.MemberAccessMask) {
-			case MethodAttributes.Private:
-				return "private-";
-			case MethodAttributes.Public:
-				return "";
-			case MethodAttributes.Family:
-				return "protected-";
-			case MethodAttributes.Assembly:
-				return "internal-";
-			case MethodAttributes.FamORAssem:
-			case MethodAttributes.FamANDAssem:
-				return "ProtectedOrInternal-";
-			default:
-				return "";
-			}
-		}
-
-		public static string GetText (MethodDefinition method)
+		public static string GetText (IMethod method)
 		{
 			var b = StringBuilderCache.Allocate ();
 			try {
@@ -124,20 +101,25 @@ namespace MonoDevelop.AssemblyBrowser
 				for (int i = 0; i < method.Parameters.Count; i++) {
 					if (i > 0)
 						b.Append (", ");
-					b.Append (CSharpLanguage.Instance.TypeToString (method.Parameters [i].ParameterType, false, method.Parameters [i]));
+					// TODO: Fix this.
+					//b.Append (CSharpLanguage.Instance.TypeToString (method.Parameters [i].ParameterType, false, method.Parameters [i]));
+					b.Append (method.Parameters [i].Type.Name);
 				}
-				if (method.CallingConvention == MethodCallingConvention.VarArg) {
-					if (method.HasParameters)
-						b.Append (", ");
-					b.Append ("...");
-				}
+				//if (method.CallingConvention == MethodCallingConvention.VarArg) {
+				//	if (method.HasParameters)
+				//		b.Append (", ");
+				//	b.Append ("...");
+				//}
 				if (method.IsConstructor) {
 					b.Append (')');
 				} else {
 					b.Append (") : ");
-					b.Append (CSharpLanguage.Instance.TypeToString (method.ReturnType, false, method.MethodReturnType));
+					//b.Append (CSharpLanguage.Instance.TypeToString (method.ReturnType, false, method.MethodReturnType));
+					b.Append (method.ReturnType.Name);
 				}
-				return CSharpLanguage.Instance.FormatMethodName (method) + b;
+
+				//return CSharpLanguage.Instance.FormatMethodName (method) + b;
+				return method.Name + b;
 			} finally {
 				StringBuilderCache.Free (b);
 			}
@@ -152,11 +134,6 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			result.Append (GettextCatalog.GetString ("<b>Declaring Type:</b>\t{0}", type.FullName));
 			result.AppendLine ();
-		}
-		
-		static string GetInstructionOffset (Instruction instruction)
-		{
-			return String.Format ("IL_{0:X4}", instruction.Offset);
 		}
 		
 		public static AssemblyLoader GetAssemblyLoader (ITreeNavigator navigator)
@@ -223,10 +200,10 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = (MethodDefinition)navigator.DataItem;
+			var cecilMethod = (IMethod)navigator.DataItem;
 			if (cecilMethod == null)
 				return null;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod), flags: flags);
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (cecilMethod.MetadataToken), flags: flags);
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -265,10 +242,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = (MethodDefinition)navigator.DataItem;
-			if (cecilMethod == null)
+			if (!(navigator.DataItem is IMethod cecilMethod))
 				return null;
-			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod));
+			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod.ParentModule.PEFile, (System.Reflection.Metadata.MethodDefinitionHandle)cecilMethod.MetadataToken));
 		}
 
 		#endregion

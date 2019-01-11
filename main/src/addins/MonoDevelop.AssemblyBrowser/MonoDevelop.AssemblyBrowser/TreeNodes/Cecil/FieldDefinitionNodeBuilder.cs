@@ -28,8 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.ILSpy;
-using Mono.Cecil;
+using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Components;
@@ -39,7 +38,7 @@ namespace MonoDevelop.AssemblyBrowser
 	class FieldDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(FieldDefinition); }
+			get { return typeof(IField); }
 		}
 		
 		public FieldDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -49,45 +48,28 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var field = (FieldDefinition)dataObject;
+			var field = (IField)dataObject;
 			return field.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var field = (FieldDefinition)dataObject;
-			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field));
+			var field = (IField)dataObject;
+			// FIXME?
+			//nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.Name + " : " + CSharpLanguage.Instance.TypeToString (field.FieldType, false, field));
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (field.Name + " : " + field.ReturnType.Name);
 
-			if (!field.IsPublic)
+			if (!field.IsPublic ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon(field));
 		}
 
-		public static IconId GetStockIcon (FieldDefinition field)
+		public static IconId GetStockIcon (IField field)
 		{
-			var isStatic = (field.Attributes & FieldAttributes.Static) != 0;
-			var source = field.HasConstant ? "literal" : "field";
-			var global = field.HasConstant ? "" : (isStatic ? "static-" : "");
-			return "md-" + GetAccess (field.Attributes) + global + source;
-		}
-
-		static string GetAccess (FieldAttributes attributes)
-		{
-			switch (attributes & FieldAttributes.FieldAccessMask) {
-			case FieldAttributes.Private:
-				return "private-";
-			case FieldAttributes.Public:
-				return "";
-			case FieldAttributes.Family:
-				return "protected-";
-			case FieldAttributes.Assembly:
-				return "internal-";
-			case FieldAttributes.FamORAssem:
-			case FieldAttributes.FamANDAssem:
-				return "ProtectedOrInternal-";
-			default:
-				return "";
-			}
+			var isStatic = field.IsStatic;
+			var source = field.IsConst ? "literal" : "field";
+			var global = field.IsConst ? "" : (isStatic ? "static-" : "");
+			return "md-" + field.Accessibility.GetStockIcon () + global + source;
 		}
 
 		#region IAssemblyBrowserNodeBuilder
@@ -96,20 +78,20 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var field = (FieldDefinition)navigator.DataItem;
+			var field = (IField)navigator.DataItem;
 			if (field == null)
 				return null;
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
+			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field.ParentModule.PEFile, (System.Reflection.Metadata.FieldDefinitionHandle)field.MetadataToken));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var field = (FieldDefinition)navigator.DataItem;
+			var field = (IField)navigator.DataItem;
 			if (field == null)
 				return null;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (field), flags: flags);
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (field.MetadataToken), flags: flags);
 		}
 
 		#endregion

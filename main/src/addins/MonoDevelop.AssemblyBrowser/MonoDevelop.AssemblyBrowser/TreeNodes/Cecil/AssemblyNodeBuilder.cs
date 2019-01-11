@@ -30,8 +30,6 @@ using System;
 using System.Linq;
 using System.Text;
 
-using Mono.Cecil;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
@@ -39,6 +37,7 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.Decompiler.Metadata;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -86,19 +85,19 @@ namespace MonoDevelop.AssemblyBrowser
 			var namespaces = new Dictionary<string, NamespaceData> ();
 			bool publicOnly = Widget.PublicApiOnly;
 			
-			foreach (var type in compilationUnit.ModuleDefinition.Types) {
+			foreach (var type in compilationUnit.DecompilerTypeSystem.MainModule.TypeDefinitions) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
 					namespaces [namespaceName] = new NamespaceData (namespaceName);
 				
 				var ns = namespaces [namespaceName];
-				ns.Types.Add ((type.IsPublic,  type));
+				ns.Types.Add ((type.IsPublic (),  type));
 			}
 
 			treeBuilder.AddChildren (namespaces.Where (ns => ns.Key != "" && (!publicOnly || ns.Value.Types.Any (t => t.isPublic))).Select (n => n.Value));
 			if (namespaces.ContainsKey ("")) {
 				foreach (var child in namespaces [""].Types) {
-					if (((TypeDefinition)child.typeObject).Name == "<Module>")
+					if (((INamedElement)child.typeObject).Name == "<Module>")
 						continue;
 					treeBuilder.AddChild (child);
 				}
@@ -108,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			return compilationUnit.Assembly?.MainModule.HasTypes == true || compilationUnit.Error != null;
+			return compilationUnit.DecompilerTypeSystem?.MainModule.TypeDefinitions.Any () == true || compilationUnit.Error != null;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -126,7 +125,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null || e2.Assembly == null)
 					return -1;
 				
-				return string.Compare (e1.Assembly.Name.Name, e2.Assembly.Name.Name, StringComparison.Ordinal);
+				return string.Compare (e1.Assembly.Name, e2.Assembly.Name, StringComparison.Ordinal);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in assembly browser sort function.", e);
 				return -1;
@@ -134,28 +133,15 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-		void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
+		void PrintAssemblyHeader (StringBuilder result, PEFile assemblyDefinition)
 		{
 			result.Append ("<span style=\"comment\">");
 			result.Append ("// ");
 			result.Append (string.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
-			                              assemblyDefinition.Name.Name,
-			                              assemblyDefinition.Name.Version));
+			                              assemblyDefinition.Name,
+			                              assemblyDefinition.Metadata.MetadataVersion));
 			result.Append ("</span>");
 			result.AppendLine ();
-		}
-		
-		static string GetTypeString (ModuleKind kind)
-		{
-			switch (kind) {
-			case ModuleKind.Console:
-				return GettextCatalog.GetString ("Console application");
-			case ModuleKind.Dll:
-				return GettextCatalog.GetString ("Library");
-			case ModuleKind.Windows:
-				return GettextCatalog.GetString ("Application");
-			}
-			return GettextCatalog.GetString ("Unknown");
 		}
 		
 		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
