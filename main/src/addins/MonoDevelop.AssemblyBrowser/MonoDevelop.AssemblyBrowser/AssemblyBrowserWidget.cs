@@ -1154,9 +1154,9 @@ namespace MonoDevelop.AssemblyBrowser
 		ImmutableList<AssemblyLoader> definitions = ImmutableList<AssemblyLoader>.Empty;
 		List<Project> projects = new List<Project> ();
 		
-		internal AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool expand = false)
+		internal AssemblyLoader AddReferenceByAssemblyName (PEFile reference, bool expand = false)
 		{
-			return AddReferenceByAssemblyName (reference.Name, expand, querySearch: false);
+			return AddReferenceByAssemblyName (reference.FullName, expand, querySearch: false);
 		}
 		
 		internal AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool expand = false, bool querySearch = true)
