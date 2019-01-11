@@ -49,6 +49,10 @@
       <Name>TextUIUtil</Name>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj">
+      <Name>ToolTipAdornmentImpl</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj">
       <Name>CocoaViewImpl</Name>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
