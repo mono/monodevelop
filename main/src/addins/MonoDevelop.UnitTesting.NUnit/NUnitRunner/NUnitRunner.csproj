@@ -17,7 +17,7 @@
     <PackageReference Include="NUnitV2.Core" Version="$(NuGetVersionNUnit2)" PrivateAssets="runtime" />
     <!-- this is hacky but there is no package that exposes nunit.util.dll as a lib assembly -->
     <DownloadNupkg Include="NUnit.Runners" Version="$(NuGetVersionNUnit2)" />
-    <Reference Include="nunit.util" HintPath="..\..\..\..\packages\NUnit.Runners.$(NuGetVersionNUnit2)\tools\lib\nunit.util.dll" />
+    <Reference Include="nunit.util" HintPath="$(DownloadNupkgDirectory)NUnit.Runners.$(NuGetVersionNUnit2)\tools\lib\nunit.util.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NUnitTestRunner.cs" />

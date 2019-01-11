@@ -19,7 +19,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<MDBuildTasks>$(MSBuildThisFileDirectory)</MDBuildTasks>
+		<DownloadNupkgDirectory>$(MSBuildThisFileDirectory)..\packages\</DownloadNupkgDirectory>
 	</PropertyGroup>
 
 	<!-- set a bunch of default value the project can override -->

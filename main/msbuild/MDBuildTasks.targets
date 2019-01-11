@@ -94,12 +94,12 @@
 
 	<Target Name="DownloadNupkg"
 		Condition="'@(DownloadNupkg)' != ''"
-		AfterTargets="Restore"
+		BeforeTargets="Build"
 		DependsOnTargets="_DownloadNupkgPrepare;_DownloadNupkgIfNeeded" />
 
 	<Target Name="_DownloadNupkgPrepare">
 		<PropertyGroup>
-			<DownloadNupkgDirectory Condition="'$(DownloadNupkgDirectory)'==''">$(SolutionDir)packages\</DownloadNupkgDirectory>
+			<DownloadNupkgDirectory Condition="'$(DownloadNupkgDirectory)'==''">packages\</DownloadNupkgDirectory>
 			<DownloadNupkgDirectory Condition="!HasTrailingSlash('$(DownloadNupkgDirectory)')">$(DownloadNupkgDirectory)\</DownloadNupkgDirectory>
 			<_DownloadNupkgStamp>$(IntermediateOutputPath)MDDownloadFiles\stamp</_DownloadNupkgStamp>
 			<_DownloadNupkgPkgCfg>$(IntermediateOutputPath)MDDownloadFiles\packages.config</_DownloadNupkgPkgCfg>

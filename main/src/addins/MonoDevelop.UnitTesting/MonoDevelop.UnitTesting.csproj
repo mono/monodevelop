@@ -151,11 +151,11 @@
   <ItemGroup>
     <DownloadNupkg Include="Microsoft.TestPlatform" Version="$(NuGetVersionMicrosoftTestPlatform)" />
     <ExtensionContent
-      Include="..\..\..\packages\Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*"
-      Exclude="..\..\..\packages\Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
+      Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*"
+      Exclude="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
       Link="VsTestConsole\Extensions\%(RecursiveDir)%(Filename)%(Extension)" />
     <ExtensionContent
-      Include="..\..\..\packages\Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
+      Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
       Link="VsTestConsole\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

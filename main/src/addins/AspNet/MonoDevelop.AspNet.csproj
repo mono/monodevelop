@@ -238,13 +238,13 @@
   </ItemGroup>
   <ItemGroup>
     <DownloadNupkg Include="Microsoft.AspNet.Mvc" Version="5.2.3" />
-    <ExtensionContent Include="..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll" />
+    <ExtensionContent Include="$(DownloadNupkgDirectory)Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll" />
     <DownloadNupkg Include="Microsoft.AspNet.Razor" Version="3.2.3" />
-    <ExtensionContent Include="..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll" />
+    <ExtensionContent Include="$(DownloadNupkgDirectory)Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll" />
     <DownloadNupkg Include="Microsoft.AspNet.WebPages" Version="3.2.3" />
-    <ExtensionContent Include="..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\*.dll" />
+    <ExtensionContent Include="$(DownloadNupkgDirectory)Microsoft.AspNet.WebPages.3.2.3\lib\net45\*.dll" />
     <DownloadNupkg Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
-    <ExtensionContent Include="..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll" />
+    <ExtensionContent Include="$(DownloadNupkgDirectory)Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll" />
     <ExtensionContent Include="Razor\Razor-templates.xml" />
     <ExtensionContent Include="CodeTemplates\**\*.*" />
     <ExtensionContent Include="Templates\**\*.*" />
