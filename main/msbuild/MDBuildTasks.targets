@@ -92,6 +92,10 @@
 	=================================================================
 	-->
 
+	<!--
+	FIXME: wire this into Restore when RoslynCodeTaskFactory works
+	and we no longer get it via a PackageReference
+	-->
 	<Target Name="DownloadNupkg"
 		Condition="'@(DownloadNupkg)' != ''"
 		BeforeTargets="Build"
