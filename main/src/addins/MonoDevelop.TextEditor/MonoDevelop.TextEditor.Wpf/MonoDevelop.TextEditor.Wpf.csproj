@@ -72,11 +72,6 @@
       <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
       <Private>true</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Threading.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
@@ -84,28 +79,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="WindowsFormsIntegration" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Reference Include="Microsoft.VisualStudio.Composition">
-      <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
