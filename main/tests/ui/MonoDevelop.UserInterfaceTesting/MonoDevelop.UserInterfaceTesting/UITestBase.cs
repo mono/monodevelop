@@ -107,7 +107,7 @@ namespace MonoDevelop.UserInterfaceTesting
 			currentWorkingDirectory = Directory.GetCurrentDirectory ();
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public virtual void FixtureSetup ()
 		{
 			testResultFolder = Path.Combine (currentWorkingDirectory, "TestResults");
