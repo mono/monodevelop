@@ -3,13 +3,6 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<!--
-		the one built into MSBuild 15.98+ is broken:
-		https://github.com/Microsoft/msbuild/issues/3726
-		-->
-		<PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
-	</ItemGroup>
 	<UsingTask
 		TaskName="DownloadFiles"
 		TaskFactory="CodeTaskFactory"
