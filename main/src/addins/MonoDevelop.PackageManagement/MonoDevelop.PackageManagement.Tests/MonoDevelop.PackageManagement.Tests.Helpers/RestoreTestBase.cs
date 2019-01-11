@@ -118,9 +118,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return context;
 		}
 
-		protected class PackagManagementEventsConsoleLogger : IDisposable
+		protected class PackageManagementEventsConsoleLogger : IDisposable
 		{
-			public PackagManagementEventsConsoleLogger ()
+			public PackageManagementEventsConsoleLogger ()
 			{
 				PackageManagementServices.PackageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			}

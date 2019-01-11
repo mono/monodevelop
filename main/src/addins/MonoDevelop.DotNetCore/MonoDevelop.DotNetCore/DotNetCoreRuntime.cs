@@ -119,6 +119,12 @@ namespace MonoDevelop.DotNetCore
 			return Versions.Any (version => version.Major == 2);
 		}
 
+		internal static bool IsNetCore30Installed ()
+		{
+			return Versions.Any (version => version.Major == 3 && version.Minor == 0);
+		}
+
+
 		/// <summary>
 		/// Used by unit tests to fake having different .NET Core sdks installed.
 		/// </summary>

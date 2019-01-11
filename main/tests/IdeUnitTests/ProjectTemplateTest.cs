@@ -99,9 +99,16 @@ namespace IdeUnitTests
 
 		void RunMSBuild (string arguments)
 		{
-			var process = Process.Start ("msbuild", arguments);
+			var process = new Process ();
+			process.StartInfo = new ProcessStartInfo ("msbuild", arguments) {
+				RedirectStandardOutput = true,
+				UseShellExecute = false
+			};
+			process.Start ();
+			var standardError = $"Error: {process.StandardOutput.ReadToEnd ()}";
+
 			Assert.IsTrue (process.WaitForExit (240000), "Timed out waiting for MSBuild.");
-			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed");
+			Assert.AreEqual (0, process.ExitCode, $"msbuild {arguments} failed. Exit code: {process.ExitCode}. {standardError}");
 		}
 
 		static void CreateNuGetConfigFile (FilePath directory)

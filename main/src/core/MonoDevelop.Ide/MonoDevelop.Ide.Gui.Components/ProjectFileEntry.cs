@@ -29,6 +29,7 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -43,7 +44,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			entry = new Entry ();
 			PackStart (entry, true, true, 0);
 			
-			button = new Button () { Label = "..." };
+			button = new Button { Label = "…" };
+			button.SetCommonAccessibilityAttributes ("ProjectFileEntry.button",
+				GettextCatalog.GetString ("Select a Project File"),
+				GettextCatalog.GetString ("Click to select a project file"));
 			button.Clicked += ButtonClicked;
 			PackStart (button, false, false, 2);
 			entry.Changed += delegate {
