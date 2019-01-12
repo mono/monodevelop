@@ -566,7 +566,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-#if MAC
 		public void QueuePostLayoutAction (Action action)
 		{
 			throw new NotImplementedException ();
@@ -582,6 +581,7 @@ namespace Mono.TextEditor
 			throw new NotImplementedException ();
 		}
 
+#if MAC
 		ISpaceReservationManager ITextView.GetSpaceReservationManager (string name)
 		{
 			throw new NotImplementedException ();

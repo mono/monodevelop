@@ -9,4 +9,17 @@
     <PackageReference Include="Microsoft.VisualStudio.Platform.VSEditor" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" />
   </ItemGroup>
 
+  <!-- The consolidated package is authored in a way to avoid adding it to the C# compiler (ref\net46 is empty).
+       However we do reference quite a few of the types from the package on Windows, so we need to be able to 
+       reference it. Currently it gets added to ReferenceCopyLocalPaths but not to _ReferencesFromNuGetPackages.-->
+  <ItemGroup>
+    <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll" />
+  </ItemGroup>
+
+  <Target Name="FixReferences" AfterTargets="ResolveNuGetPackageAssets" BeforeTargets="CoreCompile" Condition="$(OS) == 'Windows_NT'">
+    <ItemGroup>
+      <Reference Remove="Accessibility" />
+    </ItemGroup>
+  </Target>
+
 </Project>
