@@ -62,19 +62,19 @@ namespace MDBuildTasks
 			{
 				AppendSpace ();
 				builder.Append ('"');
-				builder.Append (text.Replace ("\"", "\\\""));
+				builder.Append (text.Replace ("\"", "\\\"").TrimEnd ('\\'));
 				builder.Append ('"');
 			}
 
 			Append ("restore");
+
+			AppendQuoted (PackagesConfigFile);
 
 			Append ("-PackagesDirectory");
 			AppendQuoted (PackagesDirectory);
 
 			//Append ("-PackageSaveMode");
 			//Append ("nuspec;nupkg");
-
-			AppendQuoted (PackagesConfigFile);
 
 			return builder.ToString ();
 		}
