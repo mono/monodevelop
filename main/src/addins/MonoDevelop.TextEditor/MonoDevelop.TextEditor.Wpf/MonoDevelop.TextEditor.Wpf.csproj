@@ -60,18 +60,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf">
-      <HintPath>$(PackagesDirectory)\Microsoft.CodeAnalysis.EditorFeatures.Wpf.$(NuGetVersionRoslyn)\lib\net46\Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Platform.VSEditor.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
-      <HintPath>$(PackagesDirectory)\Microsoft.VisualStudio.Text.UI.Wpf.$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="$(NuGetVersionRoslyn)" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="$(NuGetVersionVSEditor)" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />
