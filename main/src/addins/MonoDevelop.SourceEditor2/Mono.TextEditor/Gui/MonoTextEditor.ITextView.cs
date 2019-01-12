@@ -419,6 +419,11 @@ namespace Mono.TextEditor
 				IdeApp.Workbench.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
 		}
 
+		static readonly string[] allowedTextViewCreationListeners = {
+			"MonoDevelop.SourceEditor.Braces.BraceCompletionManagerFactory",
+			"Microsoft.VisualStudio.Language.Intellisense.Implementation.CurrentLineSpaceReservationAgent.CurrentLineSpaceReservationAgent_ViewCreationListener"
+		};
+
 		private void BindContentTypeSpecificAssets (IContentType beforeContentType, IContentType afterContentType)
 		{
 			// Notify the Text view creation listeners
@@ -439,7 +444,7 @@ namespace Mono.TextEditor
 				}
 
 				var instantiatedExtension = factoryService.GuardedOperations.InstantiateExtension (extension, extension);
-				if (instantiatedExtension != null) {
+				if (instantiatedExtension != null && allowedTextViewCreationListeners.Contains(instantiatedExtension.ToString())) {
 					factoryService.GuardedOperations.CallExtensionPoint (instantiatedExtension,
 						() => instantiatedExtension.TextViewCreated (this));
 				}
