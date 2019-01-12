@@ -16,10 +16,4 @@
     <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll" />
   </ItemGroup>
 
-  <Target Name="FixReferences" AfterTargets="ResolveNuGetPackageAssets" BeforeTargets="CoreCompile" Condition="$(OS) == 'Windows_NT'">
-    <ItemGroup>
-      <Reference Remove="Accessibility" />
-    </ItemGroup>
-  </Target>
-
 </Project>
