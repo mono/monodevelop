@@ -33,6 +33,9 @@
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml" />
   </ItemGroup>
   <ItemGroup>
+    <IncludeCopyLocal Include="UIThreadMonitorDaemon.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
@@ -51,6 +54,7 @@
     <ProjectReference Include="..\UIThreadMonitorDaemon\UIThreadMonitorDaemon.csproj">
       <Project>{3FDB97B5-916E-4817-8098-41659687A8FF}</Project>
       <Name>UIThreadMonitorDaemon</Name>
+      <Private>true</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
