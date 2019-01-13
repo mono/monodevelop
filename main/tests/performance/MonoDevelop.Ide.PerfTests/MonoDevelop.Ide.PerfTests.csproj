@@ -14,7 +14,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Baseline_MonoDevelop.Ide.PerfTests.xml">
