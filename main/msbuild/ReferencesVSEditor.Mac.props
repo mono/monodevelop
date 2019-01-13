@@ -87,6 +87,11 @@
       <FPFOutputPath>$(RootDirectory)external\vs-editor-core\bin\FPF\$(FPFConfiguration)\net472\</FPFOutputPath>
     </PropertyGroup>
     <ItemGroup>
+      <FPFOutputFiles Include="$(FPFOutputPath)PresentationCore.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)PresentationFramework.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)UIAutomationClient.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)UIAutomationProvider.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)UIAutomationTypes.*" />
       <FPFOutputFiles Include="$(FPFOutputPath)WindowsBase.*" />
       <FileWrites Include="@(FPFOutputFiles)" />
     </ItemGroup>
