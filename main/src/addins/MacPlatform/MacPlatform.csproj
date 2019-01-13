@@ -21,7 +21,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="Xamarin.Mac">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
-      <Private>true</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
