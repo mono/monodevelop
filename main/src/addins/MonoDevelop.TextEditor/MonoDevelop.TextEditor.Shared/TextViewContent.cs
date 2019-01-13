@@ -21,16 +21,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+
 #if MAC
 using AppKit;
 #endif
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
+
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
@@ -41,29 +43,49 @@ namespace MonoDevelop.Ide.Text
 {
 #if WINDOWS
 	partial class TextViewContent : AbstractXwtViewContent
+	{
 #elif MAC
 	partial class TextViewContent : ViewContent
-#endif
 	{
-		TextViewImports imports;
-		FilePath fileName;
-		string mimeType;
-		Project ownerProject;
-#if WINDOWS
-		RootWpfWidget widget;
-		Xwt.Widget xwtWidget;
-		public IWpfTextView TextView { get; private set; }
-		private IWpfTextViewHost textViewHost;
-#elif MAC
-		ICocoaTextViewHost textViewHost;
-		public ICocoaTextView TextView { get; private set; }
+		sealed class EmbeddedNSViewControl : Control
+		{
+			readonly NSView nsView;
+
+			public EmbeddedNSViewControl (NSView nsView)
+				=> this.nsView = nsView;
+
+			protected override object CreateNativeWidget<T> ()
+				=> nsView;
+		}
 #endif
+
+		readonly TextViewImports imports;
+		readonly FilePath fileName;
+		readonly string mimeType;
+		readonly Project ownerProject;
+		readonly Control control;
+		readonly IEditorCommandHandlerService commandService;
+		readonly List<IEditorContentProvider> contentProviders;
+
+#if WINDOWS
+		readonly Xwt.Widget xwtWidget;
+		public override Xwt.Widget Widget => xwtWidget;
+
+		public IWpfTextView TextView { get; }
+#elif MAC
+		public ICocoaTextView TextView { get; }
+#endif
+
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
-		IEditorCommandHandlerService _editorCommandHandlerService;
-		List<IEditorContentProvider> contentProviders;
 
-		public TextViewContent (TextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
+		public override Control Control => control;
+
+		public TextViewContent (
+			TextViewImports imports,
+			FilePath fileName,
+			string mimeType,
+			Project ownerProject)
 		{
 			this.imports = imports;
 			this.fileName = fileName;
@@ -76,14 +98,33 @@ namespace MonoDevelop.Ide.Text
 				Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin);
 
 			//TODO: this can change when the file is renamed
-			var contentType = (mimeType == null) ? imports.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (fileName, mimeType);
+			var contentType = mimeType == null
+				? imports.TextBufferFactoryService.InertContentType
+				: GetContentTypeFromMimeType (fileName, mimeType);
 
 			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
 			TextBuffer = TextDocument.TextBuffer;
 			TextDocument.DirtyStateChanged += OnTextDocumentDirtyStateChanged;
-#if WINDOWS
-			var control = CreateControl (imports);
-			this.widget = new RootWpfWidget (control);
+
+			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
+			var dataModel = new VacuousTextDataModel (TextBuffer);
+			var viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
+				imports.TextViewModelProviders,
+				dataModel.ContentType,
+				roles,
+				provider => provider.CreateTextViewModel (dataModel, roles),
+				imports.ContentTypeRegistryService,
+				imports.GuardedOperations,
+				this) ?? new VacuousTextViewModel (dataModel);
+
+#if MAC
+			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
+			control = new EmbeddedNSViewControl (imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl);
+#elif WINDOWS
+			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
+			control = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl;
+
+			var widget = new RootWpfWidget (control);
 			widget.HeightRequest = 50;
 			widget.WidthRequest = 100;
 
@@ -92,16 +133,21 @@ namespace MonoDevelop.Ide.Text
 				Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
 			};
 
-			this.xwtWidget = GetXwtWidget (widget);
+			xwtWidget = Xwt.Toolkit.CurrentEngine.WrapWidget (widget, Xwt.NativeWidgetSizing.External);
 			xwtWidget.Show ();
-#elif MAC
-			control = new EmbeddedNSViewControl (CreateControl ());
 #endif
-			ContentName = fileName;
-			TextView.Properties [typeof (TextViewContent)] = this;
-			_editorCommandHandlerService = imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 
-			contentProviders = imports.EditorContentProviderService.GetContentProvidersForView (TextView).ToList ();
+			commandService = imports.EditorCommandHandlerServiceFactory.GetService (TextView);
+			contentProviders = new List<IEditorContentProvider> (imports.EditorContentProviderService.GetContentProvidersForView (TextView));
+
+			TextView.Properties [typeof (TextViewContent)] = this;
+			ContentName = fileName;
+		}
+
+		public override void Dispose ()
+		{
+			TextDocument.Dispose ();
+			base.Dispose ();
 		}
 
 		protected override object OnGetContent (Type type)
@@ -120,12 +166,11 @@ namespace MonoDevelop.Ide.Text
 			foreach (var provider in contentProviders) {
 				var contents = provider.GetContents (TextView, type);
 				if (contents != null) {
-					foreach (var content in contents) {
+					foreach (var content in contents)
 						yield return content;
-
-					}
 				}
 			}
+
 			var intrinsicType = GetIntrinsicType (type);
 			if (intrinsicType != null) {
 				yield return intrinsicType;
@@ -157,15 +202,10 @@ namespace MonoDevelop.Ide.Text
 			return Task.CompletedTask;
 		}
 
-		public override bool IsDirty 
-		{
-			get => TextDocument.IsDirty;
-		}
+		public override bool IsDirty => TextDocument.IsDirty;
 
 		void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
-		{
-			OnDirtyChanged ();
-		}
+			=> OnDirtyChanged ();
 
 		static readonly string[] textContentType = { "text" };
 
@@ -191,73 +231,6 @@ namespace MonoDevelop.Ide.Text
 			}
 
 			return contentType;
-		}
-
-#if WINDOWS
-		private Xwt.Widget GetXwtWidget (RootWpfWidget widget)
-		{
-			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget, Xwt.NativeWidgetSizing.External);
-		}
-
-		private System.Windows.Controls.Control CreateControl (TextViewImports imports)
-		{
-			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
-			ITextDataModel dataModel = new VacuousTextDataModel (TextBuffer);
-			ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory(
-				imports.TextViewModelProviders,
-				dataModel.ContentType,
-				roles,
-				(provider) => (provider.CreateTextViewModel (dataModel, roles)),
-				imports.ContentTypeRegistryService,
-				imports.GuardedOperations,
-				this) ?? new VacuousTextViewModel (dataModel);
-			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
-			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost ((IWpfTextView)TextView, setFocus: true);
-			return textViewHost.HostControl;
-		}
-
-		public override Xwt.Widget Widget => xwtWidget;
-#elif MAC
-		class EmbeddedNSViewControl : Control
-		{
-			readonly NSView nsView;
-
-			public EmbeddedNSViewControl (NSView nsView)
-			{
-				this.nsView = nsView;
-			}
-
-			protected override object CreateNativeWidget<T> ()
-			{
-				return nsView;
-			}
-		}
-
-		NSView CreateControl ()
-		{
-			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
-			ITextDataModel dataModel = new VacuousTextDataModel (TextBuffer);
-			ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
-				imports.TextViewModelProviders,
-				dataModel.ContentType,
-				roles,
-				(provider) => (provider.CreateTextViewModel (dataModel, roles)),
-				imports.ContentTypeRegistryService,
-				imports.GuardedOperations,
-				this) ?? new VacuousTextViewModel (dataModel);
-			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
-			textViewHost = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
-			return textViewHost.HostControl;
-		}
-
-		Control control;
-		public override Control Control { get => control; }
-
-#endif
-		public override void Dispose ()
-		{
-			TextDocument.Dispose ();
-			base.Dispose ();
 		}
 	}
 }
