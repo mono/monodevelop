@@ -258,6 +258,8 @@
 			<Content Remove="@(Content->WithMetadataValue('Filename', 'e_sqlite3'))" />
 			<!-- for some reason it also shows up in ReferenceCopyLocalPaths in some projects, suppress the FilterLocalCopyReferences warning -->
 			<SuppressCopyLocal Include="e_sqlite3.dll" />
+			<SuppressCopyLocal Include="libe_sqlite3.dylib" />
+			<SuppressCopyLocal Include="libe_sqlite3.so" />
 		</ItemGroup>
 	</Target>
 </Project>
