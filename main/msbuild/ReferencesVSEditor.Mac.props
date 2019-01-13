@@ -9,12 +9,36 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(ReferencesVSEditorCopyToOutput)' == 'true' ">
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
+
+    <!-- These seem to not be referenced by projects -->
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +84,10 @@
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
       <Name>TextUIUtil</Name>
+      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj">
+      <Name>CoreUtilityImpl</Name>
       <Private>$(ReferencesVSEditorCopyToOutput)</Private>
     </ProjectReference>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj">
