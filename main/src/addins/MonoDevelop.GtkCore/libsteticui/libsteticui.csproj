@@ -17,6 +17,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <PackageReference Include="Mono.Cecil" Version="0.10.1" />
+    <SuppressCopyLocal Include="Mono.Cecil.Mdb.dll" />
+    <SuppressCopyLocal Include="Mono.Cecil.Pdb.dll" />
+    <SuppressCopyLocal Include="Mono.Cecil.Rocks.dll" />
+    <SuppressCopyLocal Include="Mono.Cecil.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libstetic\libstetic.csproj">

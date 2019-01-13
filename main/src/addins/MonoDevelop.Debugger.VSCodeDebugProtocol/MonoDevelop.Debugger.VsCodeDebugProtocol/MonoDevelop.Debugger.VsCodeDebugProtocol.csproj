@@ -40,6 +40,7 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddinInfo.cs" />

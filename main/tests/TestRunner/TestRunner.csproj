@@ -19,6 +19,12 @@
     <DownloadNupkg Include="NUnit.Runners" Version="$(NuGetVersionNUnit2)" />
     <Reference Include="nunit.util" HintPath="$(DownloadNupkgDirectory)NUnit.Runners.$(NuGetVersionNUnit2)\tools\lib\nunit.util.dll" />
     <Reference Include="nunit-console-runner" HintPath="$(DownloadNupkgDirectory)NUnit.Runners.$(NuGetVersionNUnit2)\tools\lib\nunit-console-runner.dll" />
+    <IncludeCopyLocal Include="nunit.framework.dll" />
+    <IncludeCopyLocal Include="nunit.core.dll" />
+    <IncludeCopyLocal Include="nunit.core.interfaces.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.SharpZipLib.dll" />
+    <IncludeCopyLocal Include="nunit-console-runner.dll" />
+    <IncludeCopyLocal Include="nunit.util.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

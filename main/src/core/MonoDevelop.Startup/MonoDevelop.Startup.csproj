@@ -48,6 +48,7 @@
       <Project>{42D1CE65-A14B-4218-B787-58AD7AA68513}</Project>
       <Name>Mono.Addins.CecilReflector</Name>
     </ProjectReference>
+    <IncludeCopyLocal Include="Mono.Addins.CecilReflector.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

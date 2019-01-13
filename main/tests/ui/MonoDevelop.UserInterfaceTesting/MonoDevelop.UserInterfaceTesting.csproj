@@ -49,6 +49,8 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
+    <!-- FIXME we need a canonical owner for copying nunit into build\tests  -->
+    <IncludeCopyLocal Include="nunit.framework.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

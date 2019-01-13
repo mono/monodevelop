@@ -58,6 +58,10 @@
       <Project>{C93D746E-1586-4D4F-B411-BF5A966E6A08}</Project>
       <Name>Xwt.WPF</Name>
     </ProjectReference>
+    <IncludeCopyLocal Include="Microsoft.WindowsAPICodePack.dll" />
+    <IncludeCopyLocal Include="Microsoft.WindowsAPICodePack.Shell.dll" />
+    <IncludeCopyLocal Include="Xwt.Gtk.Windows.dll" />
+    <IncludeCopyLocal Include="Xwt.WPF.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialogs\AddFileDialogHandler.cs" />

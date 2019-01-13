@@ -87,6 +87,13 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Runtime.Serialization" />
     <PackageReference Include="Microsoft.AspNet.Mvc" version="5.2.7" PrivateAssets="runtime" />
+    <IncludeCopyLocal Include="System.Web.Mvc.dll" />
+    <IncludeCopyLocal Include="System.Web.Razor.dll" />
+    <IncludeCopyLocal Include="System.Web.Helpers.dll" />
+    <IncludeCopyLocal Include="System.Web.WebPages.Deployment.dll" />
+    <IncludeCopyLocal Include="System.Web.WebPages.Razor.dll" />
+    <IncludeCopyLocal Include="System.Web.WebPages.dll" />
+    <IncludeCopyLocal Include="Microsoft.Web.Infrastructure.dll" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml" />

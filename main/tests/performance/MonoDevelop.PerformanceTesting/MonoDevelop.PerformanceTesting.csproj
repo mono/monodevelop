@@ -16,6 +16,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" />
+    <IncludeCopyLocal Include="nunit.framework.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

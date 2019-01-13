@@ -95,13 +95,93 @@
     <PackageReference Include="MonoDevelopDev.Analyzers" Version="$(NuGetVersionMonoDevelopAnalyzers)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" PrivateAssets="runtime" />
     <PackageReference Include="JetBrains.SharpZipLib.Stripped" Version="0.87.20170615.10" PrivateAssets="runtime" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.11" PrivateAssets="runtime" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.11" PrivateAssets="runtime,build" />
     <PackageReference Include="StreamJsonRpc" Version="1.5.43" PrivateAssets="runtime" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" PrivateAssets="runtime" />
     <!-- remove this as it conflicts with the one in mscorlib. mono bug? -->
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" ExcludeAssets="all" />
     <!-- update this to a version that doesn't crash -->
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" ExcludeAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="Humanizer.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.Decompiler.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.SharpZipLib.dll" />
+    <IncludeCopyLocal Include="Microsoft.Build.MSBuildLocator.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Text.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Elfie.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.ExternalAccess.MonoDevelop.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
+    <IncludeCopyLocal Include="Microsoft.Microsoft.CodeAnalysis.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtility.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.ImageCatalog.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Intellisense.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.OLE.Interop.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Platform.VSEditor.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.10.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.11.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.12.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Threading.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Validation.dll" />
+    <IncludeCopyLocal Include="Mono.Addins.dll" />
+    <IncludeCopyLocal Include="Mono.Addins.Setup.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.Mdb.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.Pdb.dll" />
+    <IncludeCopyLocal Include="Mono.Cecil.Rocks.dll" />
+    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.batteries_e_sqlite3.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.batteries_v2.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.core.dll" />
+    <IncludeCopyLocal Include="SQLitePCLRaw.provider.e_sqlite3.dll" />
+    <IncludeCopyLocal Include="StreamJsonRpc.dll" />
+    <IncludeCopyLocal Include="System.Buffers.dll" />
+    <IncludeCopyLocal Include="System.Collections.Immutable.dll" />
+    <IncludeCopyLocal Include="System.Composition.AttributedModel.dll" />
+    <IncludeCopyLocal Include="System.Composition.Convention.dll" />
+    <IncludeCopyLocal Include="System.Composition.Hosting.dll" />
+    <IncludeCopyLocal Include="System.Composition.Runtime.dll" />
+    <IncludeCopyLocal Include="System.Composition.TypedParts.dll" />
+    <IncludeCopyLocal Include="System.Memory.dll" />
+    <IncludeCopyLocal Include="System.Numerics.Vectors.dll" />
+    <IncludeCopyLocal Include="System.Reflection.Metadata.dll" />
+    <IncludeCopyLocal Include="System.Runtime.CompilerServices.Unsafe.dll" />
+    <IncludeCopyLocal Include="System.Text.Encoding.CodePages.dll" />
+    <IncludeCopyLocal Include="System.Threading.Tasks.Dataflow.dll" />
+    <IncludeCopyLocal Include="System.Threading.Tasks.Extensions.dll" />
+    <IncludeCopyLocal Include="System.ValueTuple.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />

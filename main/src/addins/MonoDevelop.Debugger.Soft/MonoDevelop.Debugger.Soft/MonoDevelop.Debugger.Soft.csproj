@@ -57,6 +57,8 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
+    <IncludeCopyLocal Include="Mono.Debugger.Soft.dll" />
+    <IncludeCopyLocal Include="Mono.Debugging.Soft.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

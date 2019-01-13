@@ -63,6 +63,20 @@
     <PackageReference Include="Microsoft.TemplateEngine.Edge" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
     <PackageReference Include="YamlDotNet.Signed" Version="5.2.1" />
+    <IncludeCopyLocal Include="ICSharpCode.NRefactory.Cecil.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.NRefactory.CSharp.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.NRefactory.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Abstractions.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Core.Contracts.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Core.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Edge.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Utils.dll" />
+    <IncludeCopyLocal Include="Mono.Addins.Gui.dll" />
+    <IncludeCopyLocal Include="Mono.Debugging.dll" />
+    <IncludeCopyLocal Include="Xwt.dll" />
+    <IncludeCopyLocal Include="Xwt.Gtk.dll" />
+    <IncludeCopyLocal Include="YamlDotNet.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">

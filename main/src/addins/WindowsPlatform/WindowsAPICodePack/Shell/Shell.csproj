@@ -26,6 +26,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="System.Xaml" />
+    <SuppressCopyLocal Include="Microsoft.WindowsAPICodePack.dll" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.WindowsAPICodePack.ShellExtensions" />

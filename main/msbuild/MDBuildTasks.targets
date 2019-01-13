@@ -63,6 +63,20 @@
 		</Task>
 	</UsingTask>
 
+	<UsingTask
+		TaskName="FilterLocalCopyReferences"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(RoslynCodeTaskFactory)"
+		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
+		<!--
+		TaskFactory="RoslynCodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		-->
+		<Task>
+			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/FilterLocalCopyReferences.cs" />
+		</Task>
+	</UsingTask>
+
 	<!--
 	=================================================================
 	File download logic adapted from Xamarin.Build.Download
@@ -195,4 +209,55 @@
       ExtensionDependencies="@(_ResolvedExtension)"
 			-->
   </Target>
+
+	<!--
+	=================================================================
+	Remove CopyLocal items from references unless thir filenames
+	match an IncludeCopyLocal item.
+
+	This works around a NuGet issue where PrivateAssets="runtime"
+	doesn't work. It also prevents accidental unwanted local copying.
+
+  Additional diagnostic information can be printed by setting the
+	property -p:DebugFilterCopyReferences=true. This will print
+	which files are being removed, which are being kept, and
+	a list of probable IncludeCopyLocal items. Search the log
+	for "<IncludeCopyLocal Include=" and audit each occurrence. These
+	can be suppressed with corresponding SuppressCopyLocal items.
+
+	=================================================================
+	-->
+
+	<Target Name="_NuGetPrivateAssetsWorkaround_FilterLocalCopyReferences" BeforeTargets="_CopyFilesMarkedCopyLocal">
+		<FilterLocalCopyReferences
+			ReferenceCopyLocalPaths="@(ReferenceCopyLocalPaths)"
+			IncludeList="@(IncludeCopyLocal)"
+			SuppressList="@(SuppressCopyLocal)"
+			ReferencedProjects="@(_MSBuildProjectReferenceExistent)"
+			Configuration="$(Configuration)"
+			Platform="$(Platform)"
+			ProjectDir="$(MSBuildProjectDirectory)"
+			ProjectName="$(MSBuildProjectName)"
+			DebugCopies="$(DebugFilterCopyReferences)">
+			<Output TaskParameter="ItemsToRemove" ItemName="_ReferenceCopyLocalPathsRemove" />
+		</FilterLocalCopyReferences>
+		<ItemGroup>
+		  <ReferenceCopyLocalPaths Remove="@(_ReferenceCopyLocalPathsRemove)" />
+			<_ReferenceCopyLocalPathsRemove Remove="@(_ReferenceCopyLocalPathsRemove)" />
+		</ItemGroup>
+	</Target>
+
+	<!--
+	HACK: Another workaround for broken PrivateAssets.
+	This is injected directly into the project by a target from the package as a Content+CopyToOutputDirectory
+	item. Unlike the items added by NuGet itself there  isn't any way we can generically identify things like
+	this so we have to resort to horrible hacks.
+	-->
+	<Target Name="_NuGetPrivateAssetsWorkaround_RemoveSquiteInjectedContent" Condition="'$(MSBuildProjectName)' != 'MonoDevelop.Core'" AfterTargets="ResolveAssemblyReferences">
+		<ItemGroup>
+			<Content Remove="@(Content->WithMetadataValue('Filename', 'e_sqlite3'))" />
+			<!-- for some reason it also shows up in ReferenceCopyLocalPaths in some projects, suppress the FilterLocalCopyReferences warning -->
+			<SuppressCopyLocal Include="e_sqlite3.dll" />
+		</ItemGroup>
+	</Target>
 </Project>

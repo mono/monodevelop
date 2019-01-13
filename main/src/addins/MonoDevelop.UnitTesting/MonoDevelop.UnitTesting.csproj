@@ -20,6 +20,12 @@
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Serialization" />
     <PackageReference Include="Microsoft.TestPlatform.TranslationLayer" Version="$(NuGetVersionMicrosoftTestPlatform)" />
+    <IncludeCopyLocal Include="Microsoft.TestPlatform.CoreUtilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.TestPlatform.PlatformAbstractions.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TestPlatform.ObjectModel.dll" />
+    <IncludeCopyLocal Include="Microsoft.TestPlatform.CommunicationUtilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.TestPlatform.VsTestConsole.TranslationLayer.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.TestPlatform.Common.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
