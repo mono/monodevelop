@@ -205,7 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="ExtCore.dll" />
-    <IncludeCopyLocal Include="FantomasLib.dll" />
+    <IncludeCopyLocal Include="Fantomas.dll" />
     <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
     <IncludeCopyLocal Include="FSharp.Compiler.Interactive.Settings.dll" />
     <IncludeCopyLocal Include="FSharp.Compiler.Service.dll" />

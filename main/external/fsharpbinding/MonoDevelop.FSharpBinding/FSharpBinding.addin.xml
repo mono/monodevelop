@@ -5,7 +5,7 @@
     <Import assembly="FSharpBinding.Gui.dll" />
     <Import assembly="MonoDevelop.FSharp.Shared.dll" />
     <Import file="FSharp.Compiler.Service.dll" />
-    <Import assembly="FantomasLib.dll" />
+    <Import assembly="Fantomas.dll" />
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
     <Import assembly="ExtCore.dll" />
     <Import file="MonoDevelop.FSharpInteractive.Service.exe" />
