@@ -31,7 +31,7 @@ using Microsoft.Build.Utilities;
 
 namespace MDBuildTasks
 {
-	public class MDDownloadFiles : Task
+	public class DownloadFiles : Task
 	{
 		[Required]
 		public ITaskItem [] Downloads { get; set; }
