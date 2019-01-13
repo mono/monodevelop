@@ -104,7 +104,6 @@ namespace MonoDevelop.Ide.Text
 
 			TextDocument = imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
 			TextBuffer = TextDocument.TextBuffer;
-			TextDocument.DirtyStateChanged += OnTextDocumentDirtyStateChanged;
 
 			var roles = imports.TextEditorFactoryService.AllPredefinedRoles;
 			var dataModel = new VacuousTextDataModel (TextBuffer);
@@ -129,9 +128,6 @@ namespace MonoDevelop.Ide.Text
 			widget.WidthRequest = 100;
 
 			TextView.VisualElement.Tag = widget;
-			TextView.VisualElement.LostKeyboardFocus += (s, e) => {
-				Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
-			};
 
 			xwtWidget = Xwt.Toolkit.CurrentEngine.WrapWidget (widget, Xwt.NativeWidgetSizing.External);
 			xwtWidget.Show ();
@@ -146,9 +142,33 @@ namespace MonoDevelop.Ide.Text
 
 		public override void Dispose ()
 		{
+			UnsubscribeFromEvents ();
 			TextDocument.Dispose ();
 			base.Dispose ();
 		}
+
+		void SubscribeToEvents ()
+		{
+			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
+
+#if WINDOWS
+			TextView.VisualElement.LostKeyboardFocus += HandleWpfLostKeyboardFocus;
+#endif
+		}
+
+		void UnsubscribeFromEvents ()
+		{
+			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+
+#if WINDOWS
+			TextView.VisualElement.LostKeyboardFocus -= HandleWpfLostKeyboardFocus;
+#endif
+		}
+
+#if WINDOWS
+		void HandleWpfLostKeyboardFocus (object sender, KeyboardFocusChangedEventArgs e)
+			=> Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
+#endif
 
 		protected override object OnGetContent (Type type)
 		{
@@ -204,7 +224,7 @@ namespace MonoDevelop.Ide.Text
 
 		public override bool IsDirty => TextDocument.IsDirty;
 
-		void OnTextDocumentDirtyStateChanged (object sender, EventArgs e)
+		void HandleTextDocumentDirtyStateChanged (object sender, EventArgs e)
 			=> OnDirtyChanged ();
 
 		static readonly string[] textContentType = { "text" };
