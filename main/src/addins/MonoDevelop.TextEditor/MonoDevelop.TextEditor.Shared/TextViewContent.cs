@@ -25,6 +25,8 @@ using System.Threading.Tasks;
 
 #if MAC
 using AppKit;
+#elif WINDOWS
+using System.Windows.Input;
 #endif
 
 using Microsoft.VisualStudio.Text;
@@ -63,7 +65,6 @@ namespace MonoDevelop.Ide.Text
 		readonly FilePath fileName;
 		readonly string mimeType;
 		readonly Project ownerProject;
-		readonly Control control;
 		readonly IEditorCommandHandlerService commandService;
 		readonly List<IEditorContentProvider> contentProviders;
 
@@ -73,13 +74,14 @@ namespace MonoDevelop.Ide.Text
 
 		public IWpfTextView TextView { get; }
 #elif MAC
+		readonly Control control;
 		public ICocoaTextView TextView { get; }
+
+		public override Control Control => control;
 #endif
 
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
-
-		public override Control Control => control;
 
 		public TextViewContent (
 			TextViewImports imports,
@@ -121,9 +123,9 @@ namespace MonoDevelop.Ide.Text
 			control = new EmbeddedNSViewControl (imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl);
 #elif WINDOWS
 			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
-			control = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl;
+			var wpfControl = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl;
 
-			var widget = new RootWpfWidget (control);
+			var widget = new RootWpfWidget (wpfControl);
 			widget.HeightRequest = 50;
 			widget.WidthRequest = 100;
 
