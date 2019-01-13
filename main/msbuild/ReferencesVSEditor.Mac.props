@@ -16,8 +16,6 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
-
-    <!-- These seem to not be referenced by projects -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
@@ -41,84 +39,8 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Core\Def\CoreUtility.csproj">
-      <Name>CoreUtility</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\Intellisense\IntellisenseDef.csproj">
-      <Name>IntellisenseDef</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\Language\LanguageDef.csproj">
-      <Name>LanguageDef</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Language\Def\StandardClassification\StandardClassification.csproj">
-      <Name>StandardClassification</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\Internal\Internal.csproj">
-      <Name>Internal</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextData\TextData.csproj">
-      <Name>TextData</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextLogic\TextLogic.csproj">
-      <Name>TextLogic</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextUI\TextUI.csproj">
-      <Name>TextUI</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Def\TextUIWpf\TextUIWpf.csproj">
-      <Name>TextUIWpf</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj">
-      <Name>TextDataUtil</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
-      <Name>TextUIUtil</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj">
-      <Name>CoreUtilityImpl</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj">
-      <Name>ToolTipAdornmentImpl</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj">
-      <Name>CocoaViewImpl</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\PresentationCore\PresentationCore.csproj">
-      <Name>PresentationCore</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\PresentationFramework\PresentationFramework.csproj">
-      <Name>PresentationFramework</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\WindowsBase\WindowsBase.csproj">
-      <Name>WindowsBase</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\UIAutomationProvider\UIAutomationProvider.csproj">
-      <Name>UIAutomationProvider</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj">
-      <Name>UIAutomationTypes</Name>
-      <Private>$(ReferencesVSEditorCopyToOutput)</Private>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="$(RootDirectory)external\vs-editor-core\build\Environment.props" />
+  <Import Project="$(RootDirectory)external\vs-editor-core\src\Editor\Consolidated\Consolidated.projitems" />
 
   <!-- MSBuild doesn't copy the FPF references as they match BCL assembly names -->
   <Target Name="CopyFPFAssemblies" AfterTargets="_CopyFilesMarkedCopyLocal" Condition="'$(ReferencesVSEditorCopyToOutput)'=='true'">
