@@ -2,7 +2,20 @@
 
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
+    <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">runtime</ReferencesVSEditorPrivateAssets>
+    <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) != 'true'">none</ReferencesVSEditorPrivateAssets>
+    <ReferencesVSEditorExcludeAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">none</ReferencesVSEditorExcludeAssets>
+    <ReferencesVSEditorExcludeAssets Condition="$(ReferencesVSEditorCopyToOutput) != 'true'">runtime</ReferencesVSEditorExcludeAssets>
   </PropertyGroup>
+
+  <ItemGroup Condition=" '$(ReferencesVSEditorCopyToOutput)' == 'true' ">
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(RootDirectory)external\vs-editor-core\src\Editor\Core\Def\CoreUtility.csproj">
