@@ -25,6 +25,9 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <IncludeCopyLocal Include="FSharp.Compiler.Interactive.Settings.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
       <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
       <Name>MonoDevelop.FSharp.Shared</Name>
