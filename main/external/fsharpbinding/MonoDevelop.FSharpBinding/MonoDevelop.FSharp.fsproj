@@ -203,6 +203,15 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="ExtCore.dll" />
+    <IncludeCopyLocal Include="FantomasLib.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Interactive.Settings.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Service.dll" />
+    <IncludeCopyLocal Include="FSharp.Core.dll" />
+    <IncludeCopyLocal Include="MonoDevelop.FSharp.Shared.dll" />
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
