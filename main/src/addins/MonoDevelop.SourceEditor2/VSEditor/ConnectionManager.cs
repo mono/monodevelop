@@ -15,6 +15,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Utilities;
     using Microsoft.VisualStudio.Text.Projection;
     using Microsoft.VisualStudio.Text.Utilities;
+    using System.Linq;
 
     internal class ConnectionManager
     {
@@ -52,6 +53,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         List<Listener> listeners = new List<Listener>();
         IGuardedOperations _guardedOperations;
 
+        static readonly string[] allowedTextViewConnectionListeners = {
+            "Microsoft.CodeAnalysis.Editor.TextBufferAssociatedViewService",
+            //"Microsoft.VisualStudio.Language.Intellisense.Implementation.IntellisenseManagerConnectionListener"
+        };
+
         public ConnectionManager(ITextView textView, 
                                  ICollection<Lazy<ITextViewConnectionListener, IContentTypeAndTextViewRoleMetadata>> textViewConnectionListeners,
                                  IGuardedOperations guardedOperations)
@@ -79,6 +85,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 foreach (var listenerExport in filteredListeners)
                 {
+                    if (!allowedTextViewConnectionListeners.Contains(listenerExport.Value.ToString()))
+                    {
+                        continue;
+                    }
+
                     Listener listener = new Listener(listenerExport, guardedOperations);
                     this.listeners.Add(listener);
 
@@ -95,8 +106,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                         }
                     }
                 }
-                textView.BufferGraph.GraphBuffersChanged += OnGraphBuffersChanged;
-                textView.BufferGraph.GraphBufferContentTypeChanged += OnGraphBufferContentTypeChanged;
+
+                if (listeners.Count > 0)
+                {
+                    textView.BufferGraph.GraphBuffersChanged += OnGraphBuffersChanged;
+                    textView.BufferGraph.GraphBufferContentTypeChanged += OnGraphBufferContentTypeChanged;
+                }
             }
         }
 
