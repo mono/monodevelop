@@ -60,10 +60,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="$(NuGetVersionRoslyn)" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="$(NuGetVersionVSEditor)" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
     <Reference Include="WindowsBase" Condition=" '$(OS)' == 'Windows_NT' " />

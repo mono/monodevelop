@@ -3,17 +3,24 @@
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
     <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">runtime</ReferencesVSEditorPrivateAssets>
+    <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) != 'true'">none</ReferencesVSEditorPrivateAssets>
+    <ReferencesVSEditorExcludeAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">none</ReferencesVSEditorExcludeAssets>
+    <ReferencesVSEditorExcludeAssets Condition="$(ReferencesVSEditorCopyToOutput) != 'true'">runtime</ReferencesVSEditorExcludeAssets>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Platform.VSEditor" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" />
+    <PackageReference Include="Microsoft.VisualStudio.Platform.VSEditor" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="$(NuGetVersionRoslyn)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="$(NuGetVersionVSEditor)" PrivateAssets="$(ReferencesVSEditorPrivateAssets)" ExcludeAssets="$(ReferencesVSEditorExcludeAssets)" />
   </ItemGroup>
 
   <!-- The consolidated package is authored in a way to avoid adding it to the C# compiler (ref\net46 is empty).
        However we do reference quite a few of the types from the package on Windows, so we need to be able to 
        reference it. Currently it gets added to ReferenceCopyLocalPaths but not to _ReferencesFromNuGetPackages.-->
   <ItemGroup>
-    <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll" />
+    <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll">
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>
