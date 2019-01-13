@@ -146,11 +146,11 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" Condition="$(OS) == 'Windows_NT'"/>
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" Condition="$(Configuration.Contains('Mac'))" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" Condition="$(OS) == 'Windows_NT'" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Threading.dll" />
