@@ -10,6 +10,7 @@
 
   <ItemGroup Condition=" '$(ReferencesVSEditorCopyToOutput)' == 'true' ">
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
@@ -22,6 +23,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
