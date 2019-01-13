@@ -40,9 +40,6 @@
 		<Compile Include="EditorCommandHandlers.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
-	</ItemGroup>
-	<ItemGroup>
 		<EmbeddedResource Include="MonoDevelop.TextEditor.Cocoa.addin.xml" />
 	</ItemGroup>
 	<ItemGroup>

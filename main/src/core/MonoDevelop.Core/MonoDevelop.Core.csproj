@@ -149,6 +149,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" Condition="$(Configuration.Contains('Mac'))" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" Condition="$(Configuration.Contains('Windows'))" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.dll" />
