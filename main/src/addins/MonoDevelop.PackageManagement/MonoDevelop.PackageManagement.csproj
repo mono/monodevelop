@@ -28,6 +28,7 @@
     <Reference Include="WindowsBase" />
     <PackageReference Include="NuGet.PackageManagement" Version="4.8.0" PrivateAssets="runtime" />
     <PackageReference Include="NuGet.Indexing" Version="4.8.0" PrivateAssets="runtime" />
+    <PackageReference Include="SharpZipLib" Version="0.86.0" PrivateAssets="all" ExcludeAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
