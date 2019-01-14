@@ -84,6 +84,10 @@ namespace MonoDevelop.DotNetCore.Gui
 				"DotNetCoreSdkLocationWidget.Location",
 				locationLabel.Text,
 				GettextCatalog.GetString ("Enter the .NET Core SDK location"));
+			locationFileSelector.BrowseButton.SetCommonAccessibilityAttributes (
+				"DotNetCoreSdkLocationWidget.Browse",
+				GettextCatalog.GetString ("Browse"),
+				GettextCatalog.GetString ("Select a folder for the .NET Core SDK location"));
 			locationBox.PackStart (locationFileSelector, true, true);
 
 			// .NET Core SDK section.
@@ -175,6 +179,7 @@ namespace MonoDevelop.DotNetCore.Gui
 		class CustomFileSelector : Widget
 		{
 			TextEntry entry;
+			Button browseButton;
 			FileDialog dialog;
 			string currentFolder;
 			string title;
@@ -186,7 +191,7 @@ namespace MonoDevelop.DotNetCore.Gui
 				entry.Changed += EntryChanged;
 				box.PackStart (entry, true);
 
-				var browseButton = new Button ("…");
+				browseButton = new Button ("…");
 				box.PackStart (browseButton);
 				browseButton.Clicked += BrowseButtonClicked;
 
@@ -195,6 +200,10 @@ namespace MonoDevelop.DotNetCore.Gui
 
 			internal TextEntry TextEntry {
 				get { return entry; }
+			}
+
+			internal Button BrowseButton {
+				get { return browseButton; }
 			}
 
 			public string CurrentFolder {
