@@ -42,8 +42,15 @@ namespace MonoDevelop.Ide.Text.Cocoa
 			//return Xwt.Toolkit.NativeEngine.GetNativeImage (xwtImage);
 
 			var stockId = GetStockIconId (imageId);
-			if (stockId == null)
-				return null;
+			if (stockId == null) {
+				// Try to return based on the ID directly
+				var nativeIcon = MDImageService.GetImage (imageId);
+				if (nativeIcon == null) {
+					LoggingService.LogInfo ("ImageService missing image with id: {0} , guid: {1}", imageId.Id, imageId.Guid);
+					return null;
+				}
+				return Xwt.Toolkit.NativeEngine.GetNativeImage (nativeIcon);
+			}
 			return Xwt.Toolkit.NativeEngine.GetNativeImage (MDImageService.GetIcon (stockId));
 		}
 
@@ -173,7 +180,6 @@ namespace MonoDevelop.Ide.Text.Cocoa
 			case KnownImageIds.Snippet:
 				return "md-template"; // TODO: Differentiate surrounds-with?
 			default:
-				LoggingService.LogInfo ("ImageService missing image with id: {0} , guid: {1}", imageId.Id, imageId.Guid);
 				return null;
 			}
 		}
