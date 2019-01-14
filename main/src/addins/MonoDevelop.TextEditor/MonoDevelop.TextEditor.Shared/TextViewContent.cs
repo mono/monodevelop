@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
 #if MAC
@@ -29,7 +30,9 @@ using AppKit;
 using System.Windows.Input;
 #endif
 
+using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Utilities;
@@ -43,6 +46,36 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Text
 {
+	[Export (typeof (EditorFormatDefinition))]
+	[ClassificationType (ClassificationTypeNames = ClassificationTypeNames.Text)]
+	[Name (ClassificationTypeNames.Text)]
+	[Order (After = Priority.Default, Before = Priority.High)]
+	[UserVisible (true)]
+	internal class ClassificationFormatDefinitionFromPreferences : ClassificationFormatDefinition
+	{
+		internal ClassificationFormatDefinitionFromPreferences ()
+		{
+			nfloat fontSize = -1;
+			var fontName = Editor.DefaultSourceEditorOptions.Instance.FontName;
+
+			if (!string.IsNullOrEmpty (fontName)) {
+				var sizeStartOffset = fontName.LastIndexOf (' ');
+				if (sizeStartOffset >= 0) {
+					nfloat.TryParse (fontName.Substring (sizeStartOffset + 1), out fontSize);
+					fontName = fontName.Substring (0, sizeStartOffset);
+				}
+			}
+
+			if (string.IsNullOrEmpty (fontName))
+				fontName = "Menlo";
+
+			if (fontSize <= 1)
+				fontSize = 12;
+
+			FontTypeface = NSFont.FromFontName (fontName, fontSize);
+		}
+	}
+
 #if WINDOWS
 	partial class TextViewContent : AbstractXwtViewContent
 	{
@@ -67,6 +100,7 @@ namespace MonoDevelop.Ide.Text
 		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
 		readonly List<IEditorContentProvider> contentProviders;
+		readonly Editor.DefaultSourceEditorOptions sourceEditorOptions;
 
 #if WINDOWS
 		readonly Xwt.Widget xwtWidget;
@@ -93,11 +127,10 @@ namespace MonoDevelop.Ide.Text
 			this.fileName = fileName;
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;
+			this.sourceEditorOptions = Editor.DefaultSourceEditorOptions.Instance;
 
-			//TODO: HACK, this needs to be moved elsewhere and updated when MonoDevelop settings change.
-			imports.EditorOptionsFactoryService.GlobalOptions.SetOptionValue (
-				DefaultTextViewHostOptions.LineNumberMarginId,
-				Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin);
+			// FIXME: move this to the end of the .ctor after fixing margin options responsiveness
+			HandleSourceEditorOptionsChanged (this, EventArgs.Empty);
 
 			//TODO: this can change when the file is renamed
 			var contentType = mimeType == null
@@ -140,6 +173,8 @@ namespace MonoDevelop.Ide.Text
 
 			TextView.Properties [typeof (TextViewContent)] = this;
 			ContentName = fileName;
+
+			SubscribeToEvents ();
 		}
 
 		public override void Dispose ()
@@ -151,6 +186,7 @@ namespace MonoDevelop.Ide.Text
 
 		void SubscribeToEvents ()
 		{
+			sourceEditorOptions.Changed += HandleSourceEditorOptionsChanged;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
 
 #if WINDOWS
@@ -160,6 +196,7 @@ namespace MonoDevelop.Ide.Text
 
 		void UnsubscribeFromEvents ()
 		{
+			sourceEditorOptions.Changed -= HandleSourceEditorOptionsChanged;
 			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
 
 #if WINDOWS
@@ -171,6 +208,13 @@ namespace MonoDevelop.Ide.Text
 		void HandleWpfLostKeyboardFocus (object sender, KeyboardFocusChangedEventArgs e)
 			=> Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
 #endif
+
+		void HandleSourceEditorOptionsChanged (object sender, EventArgs e)
+		{
+			imports.EditorOptionsFactoryService.GlobalOptions.SetOptionValue (
+				DefaultTextViewHostOptions.LineNumberMarginId,
+				sourceEditorOptions.ShowLineNumberMargin);
+		}
 
 		protected override object OnGetContent (Type type)
 		{
