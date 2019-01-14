@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7D3073E9-F52D-4E14-B988-5316DC6FD0BF}</ProjectGuid>
+    <ProjectGuid>{44FFFDDA-156F-49F9-AE6A-BA640C198B33}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
