@@ -467,6 +467,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolTipAdornmentImpl", "ext
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems*{29d34ea6-d312-4690-9fe9-1ea1f2ebac2e}*SharedItemsImports = 4
+		external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\BaseViewImpl.projitems*{47d57f5a-0693-4768-a970-5491d4f5574c}*SharedItemsImports = 13
+		src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems*{503a27bd-d74c-4edd-818c-0a0f06d9c672}*SharedItemsImports = 13
+		src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems*{5feedf49-0493-411c-b4f3-fab7543499d2}*SharedItemsImports = 4
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{fbaad910-f29b-4ac5-9fc0-27f6eb36c495}*SharedItemsImports = 13
 	EndGlobalSection
