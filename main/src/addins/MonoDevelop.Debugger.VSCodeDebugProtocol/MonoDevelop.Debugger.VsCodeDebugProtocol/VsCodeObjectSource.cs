@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Mono.Debugging.Backend;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			string val = null;
 			using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
-				val = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName, frameId)).Result;
+				val = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName) { FrameId = frameId }).Result;
 				timer.Success = true;
 			}
 			if (val.StartsWith ("\"", StringComparison.Ordinal))

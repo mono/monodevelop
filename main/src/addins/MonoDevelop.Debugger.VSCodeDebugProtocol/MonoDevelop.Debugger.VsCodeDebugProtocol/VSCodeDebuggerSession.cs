@@ -1,4 +1,4 @@
-﻿//
+//
 // VSCodeDebuggerSession.cs
 //
 // Author:
@@ -267,7 +267,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				if (j == -1)
 					break;
 				string se = exp.Substring(i + 1, j - i - 1);
-				se = protocolClient.SendRequestSync(new EvaluateRequest(se, frameId)).Result;
+				se = protocolClient.SendRequestSync(new EvaluateRequest (se) { FrameId = frameId }).Result;
 				sb.Append(exp, last, i - last);
 				sb.Append(se);
 				last = j + 1;
@@ -377,18 +377,23 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
 
 			foreach (var path in filesForRemoval)
-				protocolClient.SendRequest (new SetBreakpointsRequest (new Source (Path.GetFileName (path), path), new List<SourceBreakpoint> ()), null);
+				protocolClient.SendRequest (
+					new SetBreakpointsRequest (
+						new Source { Name = Path.GetFileName (path), Path = path }) {
+						Breakpoints = new List<SourceBreakpoint> () },
+					null);
 
 			foreach (var sourceFile in bks) {
-				var source = new Source (Path.GetFileName (sourceFile.Key), sourceFile.Key);
-				protocolClient.SendRequest (new SetBreakpointsRequest (
-					source,
-					sourceFile.Select (b => new SourceBreakpoint {
-						Line = b.OriginalLine,
-						Column = b.OriginalColumn,
-						Condition = b.ConditionExpression
-						//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
-					}).ToList ()), (obj) => {
+				var source = new Source { Name = Path.GetFileName (sourceFile.Key), Path = sourceFile.Key };
+				protocolClient.SendRequest (
+					new SetBreakpointsRequest (source) {
+						Breakpoints = sourceFile.Select (b => new SourceBreakpoint {
+							Line = b.OriginalLine,
+							Column = b.OriginalColumn,
+							Condition = b.ConditionExpression
+							//TODO: HitCondition = b.HitCountMode + b.HitCount, wait for .Net Core Debugger
+						}).ToList ()
+					}, (obj) => {
 						Task.Run (() => {
 							for (int i = 0; i < obj.Breakpoints.Count; i++) {
 								breakpoints [sourceFile.ElementAt (i)].SetStatus (obj.Breakpoints [i].Line != -1 ? BreakEventStatus.Bound : BreakEventStatus.NotBound, "");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Mono.Debugging.Client;
@@ -10,15 +10,14 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 	{
 		public static VsFormat GetStackFrameFormat (EvaluationOptions evalOptions)
 		{
-			return new VsFormat (
-				evalOptions.StackFrameFormat.ParameterTypes ||
-				evalOptions.StackFrameFormat.ParameterNames ||
-				evalOptions.StackFrameFormat.ParameterValues,
-				evalOptions.StackFrameFormat.ParameterTypes,
-				evalOptions.StackFrameFormat.ParameterNames,
-				evalOptions.StackFrameFormat.ParameterValues,
-				evalOptions.StackFrameFormat.Line,
-				evalOptions.StackFrameFormat.Module);
+			return new VsFormat {
+				Parameters = evalOptions.StackFrameFormat.ParameterTypes || evalOptions.StackFrameFormat.ParameterNames || evalOptions.StackFrameFormat.ParameterValues,
+				ParameterTypes = evalOptions.StackFrameFormat.ParameterTypes,
+				ParameterNames = evalOptions.StackFrameFormat.ParameterNames,
+				ParameterValues = evalOptions.StackFrameFormat.ParameterValues,
+				Line = evalOptions.StackFrameFormat.Line,
+				Module = evalOptions.StackFrameFormat.Module
+			};
 		}
 
 		static string GetLanguage (string path)
@@ -83,7 +82,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					currentFormat.ParameterTypes != format.ParameterTypes ||
 					currentFormat.ParameterValues != format.ParameterValues) {
 					format = currentFormat;
-					var body = ((VSCodeDebuggerSession)DebuggerSession).protocolClient.SendRequestSync (new StackTraceRequest (threadId, frameIndex, 1, currentFormat));
+					var body = ((VSCodeDebuggerSession)DebuggerSession).protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = frameIndex, Levels = 1, Format = currentFormat });
 					fullStackframeText = body.StackFrames [0].Name;
 				}
 				return fullStackframeText;
