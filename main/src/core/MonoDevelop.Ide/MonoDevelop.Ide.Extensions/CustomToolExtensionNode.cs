@@ -26,7 +26,7 @@ namespace MonoDevelop.Ide.Extensions
 {
 	public class CustomToolExtensionNode : TypeExtensionNode
 	{
-		[NodeAttribute (Description="Custom tool name.", Required=true)]
+		[NodeAttribute ("name", Description="Custom tool name.", Required=true)]
 		public string Name { get; private set; }
 
 		public SingleProjectFileCustomTool Tool {
