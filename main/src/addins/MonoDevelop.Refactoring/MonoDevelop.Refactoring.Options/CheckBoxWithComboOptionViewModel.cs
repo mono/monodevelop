@@ -1,4 +1,4 @@
-﻿//
+//
 // CheckBoxWithComboOptionViewModel.cs
 //
 // Author:
@@ -56,7 +56,7 @@ namespace MonoDevelop.Refactoring.Options
 			var codeStyleOption = ((CodeStyleOption<bool>)options.GetOption (new OptionKey (option, option.IsPerLanguage ? info.Language : null)));
 			SetProperty (ref _isChecked, codeStyleOption.Value);
 
-			var notificationViewModel = items.Where (i => i.Notification.Value == codeStyleOption.Notification.Value).Single ();
+			var notificationViewModel = items.Where (i => i.Notification.Severity == codeStyleOption.Notification.Severity).Single ();
 			SetProperty (ref _selectedNotificationOption, notificationViewModel);
 		}
 
