@@ -24,26 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Components;
-using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor
 {
 	sealed class TooltipExtensionNode : TypeExtensionNode
 	{
-		[NodeAttribute("mimeType", false, "The mimetype that this tooltip provider can handle.")]
-		string mimeType;
+		[NodeAttribute ("mimeType", false, "The mimetype that this tooltip provider can handle.")]
+		public string MimeType { get; private set; }
 
-		public string MimeType {
-			get { return mimeType; }
-		}
-
-		internal bool IsValidFor (string mimeType)
-		{
-			return string.IsNullOrEmpty (this.mimeType) || this.mimeType == mimeType;
-		}
+		internal bool IsValidFor (string mimeType) => string.IsNullOrEmpty (MimeType) || MimeType == mimeType;
 	}
 }

@@ -28,8 +28,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Components.Commands.ExtensionNodes
@@ -38,12 +36,6 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	internal class CommandCategoryCodon : ExtensionNode
 	{
 		[NodeAttribute ("_name", true, "Name", Localizable=true)]
-		string name;
-		
-		public string Name {
-			get {
-				return name;
-			}
-		}
+		public string Name { get; private set; }
 	}
 }

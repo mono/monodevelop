@@ -28,7 +28,6 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Extensions
 {
@@ -37,6 +36,9 @@ namespace MonoDevelop.Ide.Extensions
 	[ExtensionNode ("Section")]
 	class OptionsDialogSection: OptionsPanelNode, ICloneable
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string icon;
 		
@@ -45,6 +47,8 @@ namespace MonoDevelop.Ide.Extensions
 
 		[NodeAttribute]
 		string headerFillerImageResource;
+
+		#pragma warning restore 649
 
 		public OptionsDialogSection ()
 		{
@@ -55,12 +59,8 @@ namespace MonoDevelop.Ide.Extensions
 		}
 		
 		public IconId Icon {
-			get {
-				return icon;
-			}
-			set {
-				icon = value;
-			}
+			get => icon;
+			set => icon = value;
 		}
 
 		public Xwt.Drawing.Image HeaderImage { get; set; }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
@@ -281,10 +281,6 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			public SdkReference Sdk { get; }
-
-			public string Path { get; }
-
-			public string Version { get; }
 
 			public IEnumerable<string> Errors { get; }
 

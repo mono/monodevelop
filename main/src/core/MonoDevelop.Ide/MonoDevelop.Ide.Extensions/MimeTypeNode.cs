@@ -27,12 +27,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Mono.Addins;
 using MonoDevelop.Core;
-using System.Linq;
 
 
 namespace MonoDevelop.Ide.Extensions
@@ -40,11 +38,14 @@ namespace MonoDevelop.Ide.Extensions
 	[ExtensionNodeChild (typeof(MimeTypeFileNode), "File")]
 	class MimeTypeNode: ExtensionNode
 	{
+		[NodeAttribute ("_description", Localizable=true)]
+		public string Description { get; private set; }
+
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string icon;
-		
-		[NodeAttribute ("_description", Localizable=true)]
-		string description;
 		
 		[NodeAttribute (Required=false)]
 		string baseType;
@@ -52,26 +53,21 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute (Required=false)]
 		protected bool isText;
 
+		#pragma warning restore 649
+
+		/// <summary>
+		/// The name used by Roslyn to identify this language.
+		/// </summary>
+		[NodeAttribute ("roslynName", "The name used by Roslyn to identify this language", Required=false)]
+		public string RoslynName { get; private set; }
+
 		IFileNameEvaluator regex;
 		
 		public IconId Icon {
-			get {
-				return icon;
-			}
-			set {
-				icon = value;
-			}
+			get => icon;
+			set => icon = value;
 		}
 
-		public string Description {
-			get {
-				return description;
-			}
-			set {
-				description = value;
-			}
-		}
-		
 		public string BaseType {
 			get {
 				if (string.IsNullOrEmpty (baseType))
@@ -81,12 +77,6 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 
-		/// <summary>
-		/// The name used by Roslyn to identify this language.
-		/// </summary>
-		[NodeAttribute ("roslynName", "The name used by Roslyn to identify this language", Required=false)]
-		public string RoslynName { get; private set; }
-		
 		interface IFileNameEvaluator
 		{
 			bool SupportsFile (string fileName);
@@ -193,6 +183,9 @@ namespace MonoDevelop.Ide.Extensions
 	
 	class MimeTypeFileNode: ExtensionNode
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string pattern;
 		

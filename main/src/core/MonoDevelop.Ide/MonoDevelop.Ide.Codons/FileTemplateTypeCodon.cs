@@ -26,12 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.ComponentModel;
-
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
@@ -39,11 +33,7 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A file template type. The specified class must be a subclass of MonoDevelop.Ide.Templates.FileDescriptionTemplate")]
 	internal class FileTemplateTypeCodon : TypeExtensionNode
 	{
-		[NodeAttribute("name", true, "Name to use to reference this template type in a file template.")]
-		string name;
-		
-		public string ElementName {
-			get { return name; }
-		}
+		[NodeAttribute ("name", true, "Name to use to reference this template type in a file template.")]
+		public string ElementName { get; private set; }
 	}
 }

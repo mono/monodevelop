@@ -31,7 +31,6 @@
 using System;
 using System.IO;
 using System.Xml;
-
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
@@ -39,12 +38,17 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A project template.")]
 	internal class ProjectTemplateCodon : ExtensionNode
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
 		string resource;
 		
 		[NodeAttribute("file", "Name of the file where the template is stored.")]
 		string file;
-		
+
+		#pragma warning restore 649
+
 		public XmlDocument GetTemplate ()
 		{
 			Stream stream;

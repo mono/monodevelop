@@ -69,11 +69,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		CompletionListWindow listWindow;
 
 		/// <summary>
-		/// Completion context provided by the completion widget. Has information about the location of the caret.
-		/// </summary>
-		CodeCompletionContext context;
-
-		/// <summary>
 		/// The widget for which the completion window is shown
 		/// </summary>
 		ICompletionWidget completionWidget;
@@ -1139,7 +1134,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					item.InsertCompletionText (listWindow, ref ka, descriptor);
 				}
 				cache.CommitCompletionData (item);
-				OnWordCompleted (new CodeCompletionContextEventArgs (completionWidget, context, item.DisplayText));
+				OnWordCompleted (new CodeCompletionContextEventArgs (completionWidget, item.DisplayText));
 			} finally {
 				IsInCompletion = false;
 				HideWindow ();

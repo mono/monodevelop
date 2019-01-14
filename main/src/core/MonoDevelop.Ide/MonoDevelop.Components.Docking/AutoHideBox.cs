@@ -54,8 +54,6 @@ namespace MonoDevelop.Components.Docking
 		DockFrame frame;
 		bool animating;
 		int targetSize;
-		int targetPos;
-		ScrollableContainer scrollable;
 		Gtk.PositionType position;
 		bool disposed;
 		bool insideGrip;
@@ -213,7 +211,7 @@ namespace MonoDevelop.Components.Docking
 				break;
 			case PositionType.Right:
 				Width += 1 + (targetSize - Width) / 3;
-				X = targetPos - Width;
+				X = - Width;
 				if (Width < targetSize)
 					return true;
 				break;
@@ -224,13 +222,12 @@ namespace MonoDevelop.Components.Docking
 				break;
 			case PositionType.Bottom:
 				Height += 1 + (targetSize - Height) / 3;
-				Y = targetPos - Height;
+				Y = - Height;
 				if (Height < targetSize)
 					return true;
 				break;
 			}
-			
-			scrollable.ScrollMode = false;
+
 			if (horiz)
 				Width = targetSize;
 			else
@@ -257,7 +254,7 @@ namespace MonoDevelop.Components.Docking
 				int ns = Width - 1 - Width / 3;
 				if (ns > 0) {
 					Width = ns;
-					X = targetPos - ns;
+					X = - ns;
 					return true;
 				}
 				break;
@@ -274,7 +271,7 @@ namespace MonoDevelop.Components.Docking
 				int ns = Height - 1 - Height / 3;
 				if (ns > 0) {
 					Height = ns;
-					Y = targetPos - ns;
+					Y = - ns;
 					return true;
 				}
 				break;

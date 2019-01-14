@@ -1,4 +1,4 @@
-﻿//
+//
 // ItemTemplateExtensionNode.cs
 //
 // Author:
@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
@@ -32,49 +31,27 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description = "A file template")]
 	class ItemTemplateExtensionNode : ExtensionNode
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute ("path", "A .nupkg file or a folder.")]
 		string path;
-
-		public string ScanPath {
-			get {
-				return Addin.GetFilePath (path);
-			}
-		}
 
 		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
 		string templateId;
 
-		public string TemplateId {
-			get {
-				return templateId ?? Id;
-			}
-		}
+		#pragma warning restore 649
 
 		[NodeAttribute ("_overrideName", "Override name used in template.json file.", Localizable = true)]
-		string overrideName;
-
-		public string OverrideName {
-			get {
-				return overrideName;
-			}
-		}
+		public string OverrideName { get; private set; }
 
 		[NodeAttribute ("defaultParameters", "Default parameters for template.")]
-		string defaultParameters;
-
-		public string DefaultParameters {
-			get {
-				return defaultParameters;
-			}
-		}
+		public string DefaultParameters { get; private set; }
 
 		[NodeAttribute ("supportedParameters", "Parameters supported by the template.")]
-		string supportedParameters;
+		public string SupportedParameters { get; private set; }
 
-		public string SupportedParameters {
-			get {
-				return supportedParameters;
-			}
-		}
+		public string ScanPath => Addin.GetFilePath (path);
+		public string TemplateId => templateId ?? Id;
 	}
 }

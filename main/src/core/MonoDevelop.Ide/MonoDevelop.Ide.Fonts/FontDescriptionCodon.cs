@@ -31,21 +31,14 @@ namespace MonoDevelop.Ide.Fonts
 	public class FontDescriptionCodon : ExtensionNode
 	{
 		[NodeAttribute("name", "Name of the font.")]
-		string name;
-		public string Name {
-			get {
-				return this.name;
-			}
-		}
-		
+		public string Name { get; private set; }
+
 		[NodeAttribute("_displayName", "Name of the font displayed to the user.", Localizable=true)]
-		string displayName;
-		public string DisplayName {
-			get {
-				return this.displayName;
-			}
-		}
-		
+		public string DisplayName { get; private set; }
+
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute("default", "Default font to use.")]
 		string fontDescription;
 
@@ -58,12 +51,14 @@ namespace MonoDevelop.Ide.Fonts
 		[NodeAttribute("defaultWindows", "Default windows font to use.")]
 		string fontDescriptionWindows;
 
+		#pragma warning restore 649
+
 		public string FontDescription {
 			get {
-				if (MonoDevelop.Core.Platform.IsWindows)
+				if (Core.Platform.IsWindows)
 					return string.IsNullOrEmpty (fontDescriptionWindows) ? fontDescription : fontDescriptionWindows;
-				if (MonoDevelop.Core.Platform.IsMac) {
-					if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+				if (Core.Platform.IsMac) {
+					if (Core.Platform.OSVersion >= Core.MacSystemInformation.Yosemite) {
 						if (!string.IsNullOrEmpty (fontDescriptionMacYosemite)) {
 							return fontDescriptionMacYosemite;
 						}

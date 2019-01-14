@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMatePlistFormat.cs
 //
 // Author:
@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var uuid = (PString)dictionary ["uuid"];
 
+			#pragma warning disable CS0618 // Type or member is obsolete
 			var methodDecl = GetSetting (settings, EditorThemeColors.UserMethodDeclaration);
 			var methodUsage = GetSetting (settings, EditorThemeColors.UserMethodUsage);
 			if (methodUsage == null && methodDecl != null) {
@@ -73,6 +74,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					settings [0].Settings
 				));
 			}
+			#pragma warning restore CS0618 // Type or member is obsolete
+
 			ConvertSetting (settings, "storage.type", EditorThemeColors.UserTypesInterfaces);
 			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypes);
 			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesEnums);
@@ -93,6 +96,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				EditorThemeColors.UserTypesTypeParameters,
 				EditorThemeColors.UserTypesDelegates,
 				EditorThemeColors.UserTypesMutable,
+				#pragma warning disable CS0618 // Type or member is obsolete
 				EditorThemeColors.UserFieldDeclaration,
 				EditorThemeColors.UserFieldUsage,
 				EditorThemeColors.UserPropertyDeclaration,
@@ -105,6 +109,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				EditorThemeColors.UserParameterUsage,
 				EditorThemeColors.UserVariableDeclaration,
 				EditorThemeColors.UserVariableUsage
+				#pragma warning restore CS0618 // Type or member is obsolete
 			};
 			foreach (var semanticColor in semanticColors) {
 				if (GetSetting (settings, semanticColor) == null) {

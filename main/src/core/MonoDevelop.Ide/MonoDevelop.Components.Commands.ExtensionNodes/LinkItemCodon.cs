@@ -4,8 +4,6 @@
 // Author:
 //   Lluis Sanchez Gual
 //
-
-//
 // Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -15,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -28,28 +26,24 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-using System;
-using System.Collections;
-using System.ComponentModel;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 using Mono.Addins;
 
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	[ExtensionNode (Description="A menu or toolbar item that opens an URL when activated")]
-	internal class LinkItemCodon : InstanceExtensionNode
+	class LinkItemCodon : InstanceExtensionNode
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute ("_label", "Label of the item.", Localizable=true)]
 		string label;
 		
 		[NodeAttribute ("link", "URL to open.")]
 		string link;
-		
-//		[XmlMemberAttribute("description")]
-//		string description;
-		
+
+		#pragma warning restore 649
+
 		public override object CreateInstance ()
 		{
 			// FIXME: Use internal resource

@@ -23,15 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	[ExtensionNode (Description="Defines the behaviour of the code completion commit chars.")]
-	public class CompletionCharacterCodon : ExtensionNode
+	class CompletionCharacterCodon : ExtensionNode
 	{
-		[NodeAttribute("language", "The language.")]
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
+		[NodeAttribute ("language", "The language.")]
 		string language;
 
 		[NodeAttribute("commitOnSpace", "Commit completion on space.")]
@@ -40,11 +43,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		[NodeAttribute("commitChars", "The chars used for commit.")]
 		string commitChars;
 
+		#pragma warning restore 649
+
 		public CompletionCharacters CreateCompletionChar ()
 		{
 			return new CompletionCharacters (language, commitOnSpace, commitChars);
 		}
 	}
-
 }
 

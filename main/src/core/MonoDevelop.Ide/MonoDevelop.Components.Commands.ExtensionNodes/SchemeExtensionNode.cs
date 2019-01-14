@@ -23,58 +23,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-//
 
 using System;
 using System.IO;
-using Mono.Addins;
 using System.Xml;
+using Mono.Addins;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
-	internal class SchemeExtensionNode: ExtensionNode, KeyBindingScheme
+	class SchemeExtensionNode: ExtensionNode, KeyBindingScheme
 	{
-		[NodeAttribute ("_name", "Name of the key bindings scheme", Localizable=true)]
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
+		[NodeAttribute ("_name", "Name of the key bindings scheme", Localizable = true)]
 		string name;
 
+		#pragma warning restore 649
+
 		[NodeAttribute ("file", "Name of the key bindings file")]
-		string file;
-		
+		public string File { get; private set; }
+
 		[NodeAttribute ("forMac", "Whether the keybinding file is for Macs.")]
-		bool isForMac;
+		public bool IsForMac { get; private set; }
 
 		[NodeAttribute ("resource", "Name of the resource containing the key bindings file.")]
-		string resource;
+		public string Resource { get; private set; }
 
 		KeyBindingSet cachedSet;
 		
-		public string Name {
-			get { return name ?? Id; }
-		}
-		
-		public string File {
-			get {
-				return file;
-			}
-		}
-
-		public string Resource {
-			get {
-				return resource;
-			}
-		}
-		
-		public bool IsForMac {
-			get { return isForMac; }
-		}
+		public string Name => name ?? Id;
 		
 		public Stream GetKeyBindingsSchemeStream ()
 		{
-			if (!string.IsNullOrEmpty (file))
-				return System.IO.File.OpenRead (Addin.GetFilePath (file));
-			if (!string.IsNullOrEmpty (resource))
-				return Addin.GetResource (resource, true);
+			if (!string.IsNullOrEmpty (File))
+				return System.IO.File.OpenRead (Addin.GetFilePath (File));
+			if (!string.IsNullOrEmpty (Resource))
+				return Addin.GetResource (Resource, true);
 			throw new InvalidOperationException ("File or resource name not specified");
 		}
 
@@ -96,7 +82,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error reading keybindings definition '{0}' in addin '{1}'.\n {2}",
-				                         file ?? resource, Addin.Id,  e.ToString ());
+				                         File ?? Resource, Addin.Id,  e.ToString ());
 			} finally {
 				if (reader != null)
 					reader.Close ();
