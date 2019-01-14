@@ -46,6 +46,8 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Text
 {
+
+#if MAC
 	[Export (typeof (EditorFormatDefinition))]
 	[ClassificationType (ClassificationTypeNames = ClassificationTypeNames.Text)]
 	[Name (ClassificationTypeNames.Text)]
@@ -75,6 +77,7 @@ namespace MonoDevelop.Ide.Text
 			FontTypeface = NSFont.FromFontName (fontName, fontSize);
 		}
 	}
+#endif
 
 #if WINDOWS
 	partial class TextViewContent : AbstractXwtViewContent
