@@ -106,7 +106,7 @@
     <IncludeCopyLocal Include="Humanizer.dll" />
     <IncludeCopyLocal Include="ICSharpCode.Decompiler.dll" />
     <IncludeCopyLocal Include="ICSharpCode.SharpZipLib.dll" />
-    <IncludeCopyLocal Include="Microsoft.Build.MSBuildLocator.dll" />
+    <IncludeCopyLocal Include="Microsoft.Build.Locator.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.Features.dll" />
