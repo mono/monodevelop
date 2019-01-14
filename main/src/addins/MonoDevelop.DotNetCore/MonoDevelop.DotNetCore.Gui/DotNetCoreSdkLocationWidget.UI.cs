@@ -156,7 +156,7 @@ namespace MonoDevelop.DotNetCore.Gui
 
 		void UpdateCommandLineIconAccessibility (bool found)
 		{
-			sdkFoundIcon.SetCommonAccessibilityAttributes (
+			commandLineFoundIcon.SetCommonAccessibilityAttributes (
 				"DotNetCoreCommandLineFoundImage",
 				found ? GettextCatalog.GetString ("A Tick") : GettextCatalog.GetString ("A Cross"),
 				found ? GettextCatalog.GetString ("The .NET Core command line was found") : GettextCatalog.GetString ("The .NET Core command line was not found"));
