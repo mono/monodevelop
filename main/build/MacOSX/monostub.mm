@@ -88,7 +88,7 @@ exit_with_message (const char *reason, char *argv0)
 
 	NSString *fmt = @"%s\n\nPlease download and install the latest version of Mono.";
 	NSString *msg = [NSString stringWithFormat:fmt, reason];
-	NSString *mono_download_url = @"https://go.microsoft.com/fwlink/?linkid=835346";
+	NSString *mono_download_url = @"https://xamarin-downloads.azureedge.net/dynamic/InternalPreview/964ebddd-1ffe-47e7-8128-5ce17ffffb05/MonoFramework-MDK-5.18.0.237.macos10.xamarin.universal.pkg"; //@"https://go.microsoft.com/fwlink/?linkid=835346";
 
 	show_alert(msg, appName, mono_download_url);
 	exit (1);
