@@ -50,4 +50,16 @@
 	<ItemGroup>
 		<Analyzer Include="$(MonoDevelopDevAnalyzer)" Condition="Exists('$(MonoDevelopDevAnalyzer)')" />
 	</ItemGroup>
+
+	<ItemDefinitionGroup>
+		<IncludeCopyLocal>
+			<Visible>False</Visible>
+		</IncludeCopyLocal>
+		<SuppressCopyLocal>
+			<Visible>False</Visible>
+		</SuppressCopyLocal>
+		<DownloadNupkg>
+			<Visible>False</Visible>
+		</DownloadNupkg>
+	</ItemDefinitionGroup>
 </Project>
