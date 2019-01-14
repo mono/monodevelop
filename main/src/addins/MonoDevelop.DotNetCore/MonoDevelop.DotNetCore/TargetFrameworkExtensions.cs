@@ -31,75 +31,67 @@ namespace MonoDevelop.DotNetCore
 {
 	static class TargetFrameworkExtensions
 	{
-		public static bool IsNetStandard (this TargetFramework framework)
+		public static string GetParameterName (this TargetFramework framework)
 		{
-			return framework.Id.IsNetStandard ();
+			var parameter = framework.Id.Version;
+
+			//special case for 1.x
+			if (framework.IsVersion1x ())
+				parameter = "1x";
+
+			parameter = parameter.Replace (".", string.Empty);
+
+			if (framework.IsNetCoreApp ()) {
+				return $"UseNetCore{parameter}";
+			} 
+
+			if (framework.IsNetStandard ())
+				return $"UseNetStandard{parameter}";
+
+			return string.Empty;
 		}
 
-		public static bool IsNetStandard20 (this TargetFramework framework)
-		{
-			return framework.IsNetStandard () &&
-				framework.Id.Version == "2.0";
-		}
+		public static bool IsNetStandard (this TargetFramework framework) => framework.Id.IsNetStandard ();
 
-		public static bool IsNetStandard1x (this TargetFramework framework)
+		public static bool IsNetStandard (this TargetFramework framework, string version)
 		{
-			return framework.IsNetStandard () &&
-				framework.IsVersion1x ();
+			return framework.Id.IsNetStandard () && framework.Id.Version.IndexOf (version, StringComparison.InvariantCulture) == 0;
 		}
 
 		public static bool IsLowerThanNetStandard16 (this TargetFramework framework)
 		{
-			if (framework.IsNetStandard20 ())
+			if (framework.IsNetStandard ("2.0"))
 				return false;
 
-			return framework.IsNetStandard1x () &&
-				framework.Id.Version != "1.6"; 
+			return framework.IsNetStandard1x () && framework.Id.Version != "1.6"; 
 		}
 
-		static bool IsVersion1x (this TargetFramework framework)
+		public static bool IsNetStandard1x (this TargetFramework framework) => framework.IsNetStandard() && framework.IsVersion1x();
+
+		public static bool IsNetCoreApp1x (this TargetFramework framework) => framework.IsNetCoreApp () && framework.IsVersion1x ();
+
+		static bool IsVersion1x (this TargetFramework framework) => framework.Id.Version.StartsWith ("1.", StringComparison.Ordinal);
+
+		public static bool IsNetCoreApp (this TargetFramework framework) => framework.Id.IsNetCoreApp ();
+
+		public static bool IsNetCoreApp (this TargetFramework framework, string version)
 		{
-			return framework.Id.Version.StartsWith ("1.", StringComparison.Ordinal);
+			return framework.Id.IsNetCoreApp () && framework.Id.Version.IndexOf (version, StringComparison.InvariantCulture) == 0;
 		}
 
-		public static bool IsNetCoreApp (this TargetFramework framework)
+		public static bool IsNetCoreAppOrHigher (this TargetFramework framework, DotNetCoreVersion version)
 		{
-			return framework.Id.IsNetCoreApp ();
+			DotNetCoreVersion dotNetCoreVersion;
+			DotNetCoreVersion.TryParse (framework.Id.Version, out dotNetCoreVersion);
+			if (dotNetCoreVersion == null)
+				return false;
+
+			return framework.Id.IsNetCoreApp () && dotNetCoreVersion >= version;
 		}
 
-		public static bool IsNetCoreApp22 (this TargetFramework framework)
-		{
-			return framework.IsNetCoreApp () &&
-				framework.Id.Version == "2.2";
-		}
+		public static bool IsNetFramework (this TargetFramework framework) => framework.Id.IsNetFramework ();
 
-		public static bool IsNetCoreApp21 (this TargetFramework framework)
-		{
-			return framework.IsNetCoreApp () &&
-				framework.Id.Version == "2.1";
-		}
-
-		public static bool IsNetCoreApp20 (this TargetFramework framework)
-		{
-			return framework.IsNetCoreApp () &&
-				framework.Id.Version == "2.0";
-		}
-
-		public static bool IsNetCoreApp1x (this TargetFramework framework)
-		{
-			return framework.IsNetCoreApp () &&
-				framework.IsVersion1x ();
-		}
-
-		public static bool IsNetFramework (this TargetFramework framework)
-		{
-			return framework.Id.IsNetFramework ();
-		}
-
-		public static bool IsNetStandard20OrNetCore20 (this TargetFramework framework)
-		{
-			return framework.IsNetStandard20 () || framework.IsNetCoreApp20 ();
-		}
+		public static bool IsNetStandard20OrNetCore20 (this TargetFramework framework) => framework.IsNetStandard ("2.0") || framework.IsNetCoreApp ("2.0");
 
 		public static string GetDisplayName (this TargetFramework framework)
 		{

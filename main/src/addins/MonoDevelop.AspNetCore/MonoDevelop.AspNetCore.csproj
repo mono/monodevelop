@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
+    <InternalsVisibleTo Include="MonoDevelop.AspNetCore.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

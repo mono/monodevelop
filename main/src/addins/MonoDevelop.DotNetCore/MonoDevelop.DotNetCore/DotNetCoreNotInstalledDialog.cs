@@ -33,16 +33,30 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledDialog : IDisposable
 	{
-		public static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore";
-		public static readonly string DotNetCore20DownloadUrl = "https://aka.ms/vs/mac/install-netcore2";
-		public static readonly string DotNetCore21DownloadUrl = "https://aka.ms/vs/mac/install-netcore21";
-		public static readonly string DotNetCore22DownloadUrl = "https://aka.ms/vs/mac/install-netcore22";
+		static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore{0}";
+
+		//FIXME: aka.ms is not available yet for netcore30 (https://dotnet.microsoft.com/download/dotnet-core/3.0)
+		public static string GetDotNetCoreDownloadUrl (string version = "")
+		{
+			if (string.IsNullOrEmpty (version))
+				return string.Format (DotNetCoreDownloadUrl, string.Empty);
+
+			//special case for 2.0, 3.0, ..
+			if (version.EndsWith (".0", StringComparison.InvariantCulture))
+				version = version.Replace (".0", string.Empty);
+
+			return string.Format (DotNetCoreDownloadUrl, version.Replace (".", string.Empty));
+		}
 
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
 		static readonly string unsupportedMessage = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
-		static readonly string dotNetCore20Message = GettextCatalog.GetString (".NET Core 2.0 SDK is not installed. This is required to build and run .NET Core 2.0 projects.");
-		static readonly string dotNetCore21Message = GettextCatalog.GetString (".NET Core 2.1 SDK is not installed. This is required to build and run .NET Core 2.1 projects.");
-		static readonly string dotNetCore22Message = GettextCatalog.GetString (".NET Core 2.2 SDK is not installed. This is required to build and run .NET Core 2.2 projects.");
+		public static string GetDotNetCoreMessage (string version = "")
+		{
+			if (string.IsNullOrEmpty (version))
+				return unsupportedMessage;
+
+			return GettextCatalog.GetString (".NET Core {0} SDK is not installed. This is required to build and run .NET Core {0} projects.", version);
+		}
 
 		GenericMessage message;
 		AlertButton downloadButton;
@@ -81,17 +95,11 @@ namespace MonoDevelop.DotNetCore
 
 		public void Show ()
 		{
-			if (IsUnsupportedVersion)
-				Message = unsupportedMessage;
-			else if (RequiresDotNetCore20) {
-				Message = dotNetCore20Message;
-				downloadUrl = DotNetCore20DownloadUrl;
-			} else if (RequiresDotNetCore21) {
-				Message = dotNetCore21Message;
-				downloadUrl = DotNetCore21DownloadUrl;
-			} else if (RequiresDotNetCore22) {
-				Message = dotNetCore22Message;
-				downloadUrl = DotNetCore22DownloadUrl;
+			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
+				Message = GetDotNetCoreMessage ();
+			else {
+				Message = GetDotNetCoreMessage (RequiredDotNetCoreVersion.OriginalString);
+				downloadUrl = GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion.OriginalString);
 			}
 
 			MessageService.GenericAlert (message);
@@ -103,8 +111,7 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		public bool IsUnsupportedVersion { get; set; }
-		public bool RequiresDotNetCore20 { get; set; }
-		public bool RequiresDotNetCore21 { get; set; }
-		public bool RequiresDotNetCore22 { get; set; }
+		public bool IsNetStandard { get; set; }
+		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
 	}
 }

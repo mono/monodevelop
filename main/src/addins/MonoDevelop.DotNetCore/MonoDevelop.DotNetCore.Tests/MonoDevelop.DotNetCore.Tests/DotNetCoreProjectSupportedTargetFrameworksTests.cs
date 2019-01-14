@@ -81,6 +81,17 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void GetNetCoreAppTargetFrameworks_NetCore30RuntimeInstalled ()
+		{
+			DotNetCoreRuntimesInstalled ("3.0.0");
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+			Assert.AreEqual (".NETCoreApp,Version=v3.0", frameworks [0].Id.ToString ());
+			Assert.AreEqual (1, frameworks.Count);
+		}
+
+		[Test]
 		public void GetNetCoreAppTargetFrameworks_NetCore22RuntimeInstalled ()
 		{
 			DotNetCoreRuntimesInstalled ("2.2.0");

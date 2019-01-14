@@ -33,6 +33,9 @@ namespace MonoDevelop.DotNetCore.Templating
 {
 	class DotNetCoreProjectTemplateWizard : TemplateWizard
 	{
+		const string defaultParameterNetCore20 = "UseNetCore20";
+		const string defaultParameterNetCore1x = "UseNetCore1x";
+
 		List<TargetFramework> targetFrameworks;
 
 		public override WizardPage GetPage (int pageNumber)
@@ -42,17 +45,11 @@ namespace MonoDevelop.DotNetCore.Templating
 			return page;
 		}
 
-		public override int TotalPages {
-			get { return GetTotalPages (); }
-		}
+		public override int TotalPages => GetTotalPages ();
 
-		public override string Id {
-			get { return "MonoDevelop.DotNetCore.ProjectTemplateWizard"; }
-		}
+		public override string Id => "MonoDevelop.DotNetCore.ProjectTemplateWizard";
 
-		internal IList<TargetFramework> TargetFrameworks {
-			get { return targetFrameworks; }
-		}
+		internal IList<TargetFramework> TargetFrameworks => targetFrameworks;
 
 		/// <summary>
 		/// When only .NET Core 2.0 is installed there is only one option in the drop down
@@ -120,39 +117,27 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (IsSupportedParameter ("NetStandard")) {
 				var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetStandardTargetFrameworks ().FirstOrDefault ();
 
-				if (highestFramework != null && highestFramework.IsNetStandard20 ()) {
-					Parameters ["UseNetStandard20"] = "true";
-				} else {
-					Parameters ["UseNetStandard1x"] = "true";
-				}
+				var parameter = highestFramework.GetParameterName ();
+				if (!string.IsNullOrEmpty (parameter))
+					Parameters [parameter] = "true";
 			} else {
 				if (!SupportsNetCore1x ()) {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
-					if (highestFramework != null) {
-						if (highestFramework.IsNetCoreApp22 ()) {
-							Parameters ["UseNetCore22"] = "true";
-						} else if (highestFramework != null && highestFramework.IsNetCoreApp21 ()) {
-							Parameters ["UseNetCore21"] = "true";
-						} else {
-							Parameters ["UseNetCore20"] = "true";
-						}
+					if (highestFramework != null && highestFramework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("2.0"))) {
+						var parameter = highestFramework.GetParameterName ();
+						if (!string.IsNullOrEmpty (parameter))
+							Parameters [parameter] = "true";
 					} else {
-						Parameters ["UseNetCore20"] = "true";
+						Parameters [defaultParameterNetCore20] = "true";
 					}
 				} else {
 					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
 					if (highestFramework != null) {
-						if (highestFramework.IsNetCoreApp22 ()) {
-							Parameters["UseNetCore22"] = "true";
-						} else if (highestFramework.IsNetCoreApp21 ()) {
-							Parameters ["UseNetCore21"] = "true";
-						} else if (highestFramework.IsNetCoreApp20 ()) {
-							Parameters ["UseNetCore20"] = "true";
-						} else {
-							Parameters ["UseNetCore1x"] = "true";
-						}
+						var parameter = highestFramework.GetParameterName ();
+						if (!string.IsNullOrEmpty (parameter))
+							Parameters [parameter] = "true";
 					} else {
-						Parameters ["UseNetCore1x"] = "true";
+						Parameters [defaultParameterNetCore1x] = "true";
 					}
 				}
 				ConfigureDefaultNetCoreAppFramework ();

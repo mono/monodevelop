@@ -324,7 +324,7 @@ namespace MonoDevelop.Core
 			try {
 				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
 					fsFiles.Key.NotifyFilesChanged (fsFiles);
-				OnFileChanged (new FileEventArgs (files, false, autoReload));
+				OnFileChanged (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File change notification failed", ex);
 			}
@@ -800,7 +800,7 @@ namespace MonoDevelop.Core
 		static void OnFileChanged (FileEventArgs args)
 		{
 			Counters.FileChangeNotifications++;
-			eventQueue.RaiseEvent (FileChanged, null, args);
+			eventQueue.RaiseEvent (FileChanged, args);
 		}
 
 		public static async Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
@@ -879,19 +879,17 @@ namespace MonoDevelop.Core
 		{
 			public EventHandler<TArgs> Delegate;
 			public TArgs Args;
-			public object ThisObject;
 
 			public override void Invoke ()
 			{
-				Delegate?.Invoke (ThisObject, Args);
+				Delegate?.Invoke (null, Args);
 			}
 
 			public override bool ShouldMerge (EventData other)
 			{
-				var next = other as EventData<TArgs>;
-				if (next == null)
+				if (!(other is EventData<TArgs> next))
 					return false;
-				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate && next.ThisObject == ThisObject;
+				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate;
 			}
 
 			public override bool IsChainArgs ()
@@ -906,6 +904,16 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		sealed class EmptyEventData : EventData
+		{
+			public static EmptyEventData Instance = new EmptyEventData ();
+
+			public override void Invoke () { }
+			public override bool ShouldMerge (EventData other) => false;
+			public override void MergeArgs (EventData other) { }
+			public override bool IsChainArgs () => false;
+		}
+
 		abstract class EventData
 		{
 			public abstract void Invoke ();
@@ -916,18 +924,9 @@ namespace MonoDevelop.Core
 
 		List<EventData> events = new List<EventData> ();
 		readonly object lockObject = new object ();
+		readonly Processor processor = new Processor ();
 
 		int frozen;
-		object defaultSourceObject;
-
-		public EventQueue ()
-		{
-		}
-
-		public EventQueue (object defaultSourceObject)
-		{
-			this.defaultSourceObject = defaultSourceObject;
-		}
 
 		public void Freeze ()
 		{
@@ -938,55 +937,65 @@ namespace MonoDevelop.Core
 
 		public void Thaw ()
 		{
-			List<EventData> pendingEvents = null;
-			lock (events) {
-				if (--frozen == 0) {
-					pendingEvents = events;
-					events = new List<EventData> ();
-				}
+			List<EventData> pendingEvents;
+			lock (lockObject) {
+				if (--frozen != 0 || events.Count == 0)
+					return;
+
+				pendingEvents = events;
+				events = new List<EventData> ();
 			}
-			if (pendingEvents != null) {
-				Runtime.RunInMainThread (() => {
-					for (int n=0; n<pendingEvents.Count; n++) {
-						EventData ev = pendingEvents [n];
-						if (ev.IsChainArgs ()) {
-							EventData next = n < pendingEvents.Count - 1 ? pendingEvents [n + 1] : null;
-							if (next != null && ev.ShouldMerge (next)) {
-								ev.MergeArgs (next);
-								continue;
-							}
-						}
-						ev.Invoke ();
-					}
-				}).Ignore ();
-			}
+
+			processor.Process (pendingEvents);
+
+			// Trigger notifications
+			Runtime.RunInMainThread (() => {
+				foreach (var ev in pendingEvents)
+					ev.Invoke ();
+			}).Ignore ();
 		}
 
 		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
 		{
-			RaiseEvent (del, defaultSourceObject, args);
-		}
+			if (del == null)
+				return;
 
-		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, object thisObj, TArgs args) where TArgs:EventArgs
-		{
 			lock (lockObject) {
 				if (frozen > 0) {
 					var ed = new EventData<TArgs> ();
 					ed.Delegate = del;
-					ed.ThisObject = thisObj;
 					ed.Args = args;
 					events.Add (ed);
 					return;
 				}
 			}
-			if (del != null) {
-				if (Runtime.IsMainThread) {
-					del.Invoke (thisObj, args);
-				} else {
-					Runtime.MainSynchronizationContext.Post (state => {
-						var (del1, thisObj1, args1) = (ValueTuple<EventHandler<TArgs>, object, TArgs>)state;
-						del1.Invoke (thisObj1, args1);
-					}, (del, thisObj, args));
+
+			if (Runtime.IsMainThread) {
+				del.Invoke (null, args);
+			} else {
+				Runtime.MainSynchronizationContext.Post (state => {
+					var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
+					del1.Invoke (null, args1);
+				}, (del, args));
+			}
+		}
+
+		class Processor
+		{
+			public void Process (List<EventData> pendingEvents)
+			{
+				var previous = pendingEvents.Count > 0 ? pendingEvents [0] : null;
+				EventData current = null;
+
+				// Merge similar events to trigger fewer notifications.
+				for (int n = 1; n < pendingEvents.Count; n++, previous = current) {
+					current = pendingEvents [n];
+
+					if (!previous.IsChainArgs () || !previous.ShouldMerge (current))
+						continue;
+
+					previous.MergeArgs (current);
+					pendingEvents [n - 1] = EmptyEventData.Instance;
 				}
 			}
 		}

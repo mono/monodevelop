@@ -231,17 +231,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var other = (NSWindow)notification.Object;
 
 				if (notification.Object == Window) {
-					if (LostFocus != null)
-						LostFocus (this, null);
+					if (IsFirstResponderOfWindow (Window)) {
+						if (LostFocus != null)
+							LostFocus (this, null);
+					}
 				}
 			}));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 				if (notification.Object == Window) {
-					if (LostFocus != null)
-						LostFocus (this, null);
+					if (IsFirstResponderOfWindow (Window)) {
+						if (LostFocus != null)
+							LostFocus (this, null);
+					}
 				}
 			}));
+		}
+
+		bool IsFirstResponderOfWindow (NSWindow window)
+		{
+			if (window.FirstResponder is NSTextView tv) {
+				var field = tv.WeakDelegate;
+				if (field == this)
+					return true;
+			}
+
+			return false;
 		}
 
 		bool SendKeyPressed (Xwt.KeyEventArgs kargs)

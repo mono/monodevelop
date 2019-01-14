@@ -63,7 +63,7 @@ namespace MonoDevelop.AspNetCore
 				return false;
 			}
 
-			return project.TargetFramework.IsNetCoreApp21 () &&
+			return project.TargetFramework.IsNetCoreApp ("2.1") &&
 				IsNetCoreSdk21Installed () &&
 				UsingHttps (runConfiguration);
 		}
