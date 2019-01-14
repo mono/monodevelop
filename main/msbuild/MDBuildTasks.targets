@@ -253,7 +253,7 @@
 	item. Unlike the items added by NuGet itself there  isn't any way we can generically identify things like
 	this so we have to resort to horrible hacks.
 	-->
-	<Target Name="_NuGetPrivateAssetsWorkaround_RemoveSquiteInjectedContent" Condition="'$(MSBuildProjectName)' != 'MonoDevelop.Core'" AfterTargets="ResolveAssemblyReferences">
+	<Target Name="_NuGetPrivateAssetsWorkaround_RemoveSqliteInjectedContent" Condition="'$(MSBuildProjectName)' != 'MonoDevelop.Core'" AfterTargets="ResolveAssemblyReferences">
 		<ItemGroup>
 			<Content Remove="@(Content->WithMetadataValue('Filename', 'e_sqlite3'))" />
 			<!-- for some reason it also shows up in ReferenceCopyLocalPaths in some projects, suppress the FilterLocalCopyReferences warning -->
