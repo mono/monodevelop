@@ -157,6 +157,10 @@ namespace MonoDevelop.Ide.Text
 #if MAC
 			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
 			control = new EmbeddedNSViewControl (imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl);
+			control.GetNativeWidget<Gtk.Widget> ().CanFocus = true;
+			TextView.GotAggregateFocus += (sender, e) => {
+				control.GetNativeWidget<Gtk.Widget> ().GrabFocus ();
+			};
 #elif WINDOWS
 			TextView = imports.TextEditorFactoryService.CreateTextView (viewModel, roles, imports.EditorOptionsFactoryService.GlobalOptions);
 			var wpfControl = imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl;
