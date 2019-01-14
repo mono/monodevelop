@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Projects
 			Content = box;
 
 			box.PackStart (
-				new Label (GettextCatalog.GetString ("Solution run configurations let you run multiple projects at once. Please provide a name to\n be shown in the toolbar for this Solution run configuration.")),
+				new Label (GettextCatalog.GetString ("Solution run configurations let you run multiple projects at once. Please provide a name to\nbe shown in the toolbar for this Solution run configuration.")),
 				true,
 				true
 			);
