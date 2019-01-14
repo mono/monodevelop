@@ -35,19 +35,25 @@ namespace MonoDevelop.Core.Assemblies
 	[TestFixture]
 	public class SystemAssemblyServiceTests
 	{
-		[TestCase(true, "System.Collections.Immutable.dll")]
+		static string GetDllPath(string dllName)
+		{
+			var directory = Path.GetDirectoryName (typeof(Runtime).Assembly.Location);
+			return Path.Combine (directory, dllName);
+		}
+
+		[TestCase(true, "Humanizer.dll")]
 		[TestCase(false, "MonoDevelop.Core.dll")]
 		public void ImmutableCollectionsContainReferenceToSystemRuntime (bool withSystemRuntime, string relativeDllPath)
 		{
-			var result = SystemAssemblyService.ContainsReferenceToSystemRuntime(relativeDllPath);
+			var result = SystemAssemblyService.ContainsReferenceToSystemRuntime(GetDllPath (relativeDllPath));
 			Assert.That(result, Is.EqualTo(withSystemRuntime));
 		}
 
-		[TestCase(true, "System.Collections.Immutable.dll")]
+		[TestCase(true, "Humanizer.dll")]
 		[TestCase(false, "MonoDevelop.Core.dll")]
 		public async Task ImmutableCollectionsContainReferenceToSystemRuntimeAsync (bool withSystemRuntime, string relativeDllPath)
 		{
-			var result = await SystemAssemblyService.ContainsReferenceToSystemRuntimeAsync(relativeDllPath);
+			var result = await SystemAssemblyService.ContainsReferenceToSystemRuntimeAsync(GetDllPath (relativeDllPath));
 			Assert.That(result, Is.EqualTo(withSystemRuntime));
 		}
 
@@ -55,7 +61,7 @@ namespace MonoDevelop.Core.Assemblies
 		[TestCase (false, "MonoDevelop.Core.dll")]
 		public void RequiresFacadeAssemblies (bool addFacades, string relativeDllPath)
 		{
-			var result = SystemAssemblyService.RequiresFacadeAssemblies (relativeDllPath);
+			var result = SystemAssemblyService.RequiresFacadeAssemblies (GetDllPath (relativeDllPath));
 			Assert.That (result, Is.EqualTo (addFacades));
 		}
 
@@ -63,7 +69,7 @@ namespace MonoDevelop.Core.Assemblies
 		[TestCase (false, "MonoDevelop.Core.dll")]
 		public async Task RequiresFacadeAssembliesAsync (bool addFacades, string relativeDllPath)
 		{
-			var result = await SystemAssemblyService.RequiresFacadeAssembliesAsync (relativeDllPath);
+			var result = await SystemAssemblyService.RequiresFacadeAssembliesAsync (GetDllPath (relativeDllPath));
 			Assert.That (result, Is.EqualTo (addFacades));
 		}
 
@@ -76,7 +82,8 @@ namespace MonoDevelop.Core.Assemblies
 				"System"
 			};
 
-			var references = SystemAssemblyService.GetAssemblyReferences(Path.Combine(Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Cecil.dll"));
+			var cecilPath = GetDllPath ("Mono.Cecil.dll");
+			var references = SystemAssemblyService.GetAssemblyReferences(cecilPath);
 			Assert.That(references, Is.EquivalentTo(names));
 		}
 	}
