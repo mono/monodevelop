@@ -160,11 +160,11 @@ namespace MonoDevelop.Ide.Text
 
 		[CommandUpdateHandler (EditCommands.DeleteKey)]
 		void UpdateDeleteKeyCommand (CommandInfo info)
-			 => UpdateCommand (info, (textView, textBuffer) => new DeleteKeyCommandArgs (textView, textBuffer));
+			 => UpdateCommand (info, (textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer));
 
 		[CommandHandler (EditCommands.DeleteKey)]
 		void ExecDeleteKeyCommand ()
-			 => ExecCommand ((textView, textBuffer) => new DeleteKeyCommandArgs (textView, textBuffer));
+			 => ExecCommand ((textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer));
 
 		#endregion
 
