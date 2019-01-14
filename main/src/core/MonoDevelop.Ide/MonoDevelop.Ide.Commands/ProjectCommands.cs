@@ -149,6 +149,7 @@ namespace MonoDevelop.Ide.Commands
 						if (dlg.Run ().Id == "create") {
 							config = new MultiItemSolutionRunConfiguration (dlg.RunConfigurationName, dlg.RunConfigurationName);
 							sol.MultiStartupRunConfigurations.Add (config);
+							sol.StartupConfiguration = config;
 						}
 					}
 				} else {
