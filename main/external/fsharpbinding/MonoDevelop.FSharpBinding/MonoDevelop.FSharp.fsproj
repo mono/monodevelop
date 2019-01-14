@@ -29,26 +29,11 @@
   </Target>
   <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets" />
-  <Target Name="BeforeBuild">
-    <ItemGroup>
-      <NuGetPackage Include="FSharp.Core">
-        <Name>fsharp.core</Name>
-        <Version>4.5.4</Version>
-      </NuGetPackage>
-      <NuGetPackage Include="System.ValueTuple">
-        <Name>system.valuetuple</Name>
-        <Version>4.5.0</Version>
-      </NuGetPackage>
-    </ItemGroup>
-    <Copy SourceFiles="..\packages\%(NuGetPackage.Identity)\%(NuGetPackage.Name).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)/Packages" SkipUnchangedFiles="true" />
-  </Target>
-  <Target Name="AfterBuild"></Target>
-  <Target Name="AfterClean">
-    <RemoveDir Directories="$(OutputPath)\packages" />
-  </Target>
   <Import Project="..\.paket\paket.targets" />
   <Import Project="templates.targets" />
   <ItemGroup>
+    <DownloadNupkg Include="FSharp.Core" Version="4.5.4" ExtensionDir="Packages" />
+    <DownloadNupkg Include="System.ValueTuple" Version="4.5.0" ExtensionDir="Packages" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -89,10 +74,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="VS\" />
-    <Folder Include="CodeFix\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Services\Extensions.fs" />
