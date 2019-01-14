@@ -112,7 +112,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
 		TextViewMargin textViewMargin;
-		int caretLine = -1;
 
 		public Mono.TextEditor.MonoTextEditor TextEditor {
 			get;

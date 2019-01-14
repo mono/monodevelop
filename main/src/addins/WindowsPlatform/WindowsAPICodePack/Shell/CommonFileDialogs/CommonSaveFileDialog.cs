@@ -153,7 +153,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
             // The string we pass to PSGetPropertyDescriptionListFromString must
             // start with "prop:", followed a list of canonical names for each 
             // property that is to collected.
-            if (propertyList != null && propertyList.Length > 0 && propertyList[0] != null)
+            if (propertyList != null && propertyList.Length > 0)
             {
                 StringBuilder sb = new StringBuilder("prop:");
                 foreach (PropertyKey key in propertyList)
