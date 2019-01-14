@@ -13,6 +13,8 @@
 		<OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
 		<DefineConstants>$(DefineConstants);MAC</DefineConstants>
 	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
 	  <StartAction>Program</StartAction>
 	  <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
