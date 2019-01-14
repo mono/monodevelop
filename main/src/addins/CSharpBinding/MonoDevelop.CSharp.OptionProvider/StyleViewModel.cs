@@ -1,4 +1,4 @@
-﻿//
+//
 // StyleViewModel.cs
 //
 // Author:
@@ -27,12 +27,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeStyle;
 using Microsoft.CodeAnalysis.CSharp.CodeStyle;
 using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.Refactoring.Options;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring.Options;
