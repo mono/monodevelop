@@ -1105,12 +1105,19 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 	{
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
+			if (DebuggingService.ExceptionCaughtMessage != null &&
 				!DebuggingService.ExceptionCaughtMessage.IsMinimized &&
 				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath (DocumentContext.Name).CanonicalPath) {
 
-				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
-				return true;
+				if (descriptor.SpecialKey == SpecialKey.Escape) {
+					DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
+					return true;
+				}
+
+				if (descriptor.SpecialKey == SpecialKey.Return) {
+					DebuggingService.ExceptionCaughtMessage.ShowDialog ();
+					return false;
+				}
 			}
 
 			return base.KeyPress (descriptor);
