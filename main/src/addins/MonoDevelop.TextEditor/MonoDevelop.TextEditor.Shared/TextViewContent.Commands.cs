@@ -182,11 +182,11 @@ namespace MonoDevelop.Ide.Text
 
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]
 		void UpdateGotoDeclarationCommand (CommandInfo info)
-			 => UpdateCommand (info, (textView, textBuffer) => new GoToContainingDeclarationCommandArgs (textView, textBuffer));
+ 			 => UpdateCommand (info, (textView, textBuffer) => new GoToDefinitionCommandArgs (textView, textBuffer));
 
 		[CommandHandler (RefactoryCommands.GotoDeclaration)]
 		void ExecGotoDeclarationCommand ()
-			 => ExecCommand ((textView, textBuffer) => new GoToContainingDeclarationCommandArgs (textView, textBuffer));
+			 => ExecCommand ((textView, textBuffer) => new GoToDefinitionCommandArgs (textView, textBuffer));
 
 		[CommandUpdateHandler (RefactoryCommands.FindReferences)]
 		void UpdateFindReferencesCommand (CommandInfo info)
