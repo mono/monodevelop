@@ -1,21 +1,17 @@
-// 
-// PathedDocumentTextEditorExtension.cs
-//  
-// Author:
-//       Mike Krüger <mkrueger@novell.com>
-// 
-// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
-// 
+//
+// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,54 +22,39 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.CodeAnalysis.Editor;
-using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.CSharp
 {
-	[Export(typeof(IEditorContentProvider))]
-	[ContentType(ContentTypeNames.CSharpContentType)]
-	[TextViewRole(PredefinedTextViewRoles.PrimaryDocument)]
-	[Order(Before="Default")]
-	class CSharpPathedDocumentExtensionProvider : EditorContentInstanceProvider<CSharpPathedDocumentExtension>
-	{
-		protected override CSharpPathedDocumentExtension CreateInstance (ITextView view) => new CSharpPathedDocumentExtension (view);
-	}
-
 	//FIXME: this cannot be functional until we have document parse events
-	class CSharpPathedDocumentExtension : IPathedDocument
+	sealed partial class CSharpPathedDocumentExtension : IPathedDocument, IDisposable
 	{
 		readonly ITextView textView;
-		readonly Projects.Project ownerProject;
 		readonly List<DotNetProject> ownerProjects = new List<DotNetProject> ();
+		bool disposed;
 
 		public CSharpPathedDocumentExtension (ITextView view)
 		{
-			this.textView = view;
+			textView = view;
 
 			var roslynDocument = view.TextBuffer.CurrentSnapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
 
+			//FIXME track the active owner project(s)
 			var document = view.TryGetParentDocument ();
 			var project = document?.Project;
 			if (project is DotNetProject dnp) {
@@ -81,9 +62,55 @@ namespace MonoDevelop.CSharp
 			}
 
 			CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
+
+			view.Caret.PositionChanged += CaretPositionChanged;
+			view.TextBuffer.Changed += TextBufferChanged;
+		}
+
+		public void Dispose ()
+		{
+			if (disposed) {
+				return;
+			}
+			disposed = true;
+
+			textView.Caret.PositionChanged -= CaretPositionChanged;
+			textView.TextBuffer.Changed -= TextBufferChanged;
+		}
+
+		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
+		{
+			Update (textView.Caret.Position);
+		}
+
+		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
+		{
+			Update (e.NewPosition);
+		}
+
+		ITextSnapshot lastSnapshot;
+		int lastOffset;
+
+		void Update (CaretPosition position)
+		{
+			var snapshot = position.BufferPosition.Snapshot;
+			int offset = position.BufferPosition.Position;
+
+			if (lastSnapshot == snapshot && lastOffset == offset) {
+				return;
+			}
+			lastSnapshot = snapshot;
+			lastOffset = offset;
+
+			var roslynDocument = snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+			if (roslynDocument != null) {
+				Update (roslynDocument, position.BufferPosition.Position);
+			}
 		}
 
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
+
+		void OnPathChanged (DocumentPathChangedEventArgs e) => PathChanged?.Invoke (this, e);
 
 		public Control CreatePathWidget (int index)
 		{
@@ -121,219 +148,6 @@ namespace MonoDevelop.CSharp
 			if (amb == null || node == null)
 				return "";
 			return amb.Value.GetEntityMarkup (node);
-		}
-
-		class DataProvider : DropDownBoxListWindow.IListDataProvider
-		{
-			readonly CSharpPathedDocumentExtension ext;
-			object tag;
-			List<SyntaxNode> memberList = new List<SyntaxNode> ();
-
-			public DataProvider (CSharpPathedDocumentExtension ext, object tag)
-			{
-				this.ext = ext ?? throw new ArgumentNullException (nameof (ext));
-				this.tag = tag;
-				Reset ();
-			}
-
-			#region IListDataProvider implementation
-
-			void AddTypeToMemberList (BaseTypeDeclarationSyntax btype)
-			{
-				if (btype is EnumDeclarationSyntax e) {
-					foreach (var member in e.Members) {
-						memberList.Add (member);
-					}
-					return;
-				}
-				var type = (TypeDeclarationSyntax)btype;
-				foreach (var member in type.Members) {
-					if (member is FieldDeclarationSyntax) {
-						foreach (var variable in ((FieldDeclarationSyntax)member).Declaration.Variables)
-							memberList.Add (variable);
-					} else if (member is EventFieldDeclarationSyntax) {
-						foreach (var variable in ((EventFieldDeclarationSyntax)member).Declaration.Variables)
-							memberList.Add (variable);
-					} else {
-						memberList.Add (member);
-					}
-				}
-			}
-
-			public void Reset ()
-			{
-				memberList.Clear ();
-				if (tag is SyntaxTree) {
-					var unit = tag as SyntaxTree;
-					memberList.AddRange (unit.GetRoot ().DescendantNodes ().Where (IsType));
-				} else if (tag is AccessorDeclarationSyntax acc) {
-					var parent = (MemberDeclarationSyntax)acc.Parent;
-					memberList.AddRange (parent.ChildNodes ().OfType<AccessorDeclarationSyntax> ());
-				} else if (tag is SyntaxNode entity) {
-					var type = entity.AncestorsAndSelf ().OfType<BaseTypeDeclarationSyntax> ().FirstOrDefault ();
-					if (type != null) {
-						AddTypeToMemberList (type);
-					}
-				}
-
-				memberList.Sort ((x, y) => {
-					var result = string.Compare (GetName (x), GetName (y), StringComparison.OrdinalIgnoreCase);
-					if (result == 0)
-						result = GetTypeParameters (x).CompareTo (GetTypeParameters (y));
-					if (result == 0)
-						result = GetParameters (x).CompareTo (GetParameters (y));
-
-					// partial methods without body should come last
-					if (result == 0 && x is MethodDeclarationSyntax && y is MethodDeclarationSyntax) {
-						var mx = x as MethodDeclarationSyntax;
-						var my = y as MethodDeclarationSyntax;
-						if (mx.Body == null && my.Body != null)
-							return 1;
-						if (mx.Body != null && my.Body == null)
-							return -1;
-					}
-					return result;
-				});
-			}
-
-			static int GetTypeParameters (SyntaxNode x)
-			{
-				return 0; //x.GetChildrenByRole (Roles.TypeParameter).Count ();
-			}
-
-			static int GetParameters (SyntaxNode x)
-			{
-				return 0; // x.GetChildrenByRole (Roles.Parameter).Count ();
-			}
-
-			string GetName (SyntaxNode node)
-			{
-				if (tag is SyntaxTree) {
-					var type = node;
-					if (type != null) {
-						var sb = StringBuilderCache.Allocate ();
-						sb.Append (ext.GetEntityMarkup (type));
-						while (type.Parent is BaseTypeDeclarationSyntax) {
-							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
-							type = type.Parent;
-						}
-						return StringBuilderCache.ReturnAndFree (sb);
-					}
-				}
-				if (node is AccessorDeclarationSyntax accessor) {
-					if (accessor.Kind () == SyntaxKind.GetAccessorDeclaration)
-						return "get";
-					if (accessor.Kind () == SyntaxKind.SetAccessorDeclaration)
-						return "set";
-					if (accessor.Kind () == SyntaxKind.AddAccessorDeclaration)
-						return "add";
-					if (accessor.Kind () == SyntaxKind.RemoveAccessorDeclaration)
-						return "remove";
-					return node.ToString ();
-				}
-				if (node is OperatorDeclarationSyntax)
-					return "operator";
-				if (node is PropertyDeclarationSyntax)
-					return ((PropertyDeclarationSyntax)node).Identifier.ToString ();
-				if (node is MethodDeclarationSyntax)
-					return ((MethodDeclarationSyntax)node).Identifier.ToString ();
-				if (node is ConstructorDeclarationSyntax)
-					return ((ConstructorDeclarationSyntax)node).Identifier.ToString ();
-				if (node is DestructorDeclarationSyntax)
-					return ((DestructorDeclarationSyntax)node).Identifier.ToString ();
-				if (node is BaseTypeDeclarationSyntax)
-					return ((BaseTypeDeclarationSyntax)node).Identifier.ToString ();
-
-				//				if (node is fixeds) {
-				//					return ((FixedVariableInitializer)node).Name;
-				//				}
-				if (node is VariableDeclaratorSyntax)
-					return ((VariableDeclaratorSyntax)node).Identifier.ToString ();
-				return node.ToString ();
-			}
-
-			public string GetMarkup (int n)
-			{
-				if (tag is DotNetProject) {
-					return GLib.Markup.EscapeText (ext.ownerProjects [n].Name);
-				}
-
-				var node = memberList [n];
-				if (tag is SyntaxTree) {
-					var type = node;
-					if (type != null) {
-						var sb = StringBuilderCache.Allocate ();
-						sb.Append (ext.GetEntityMarkup (type));
-						while (type.Parent is BaseTypeDeclarationSyntax) {
-							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
-							type = type.Parent;
-						}
-						return StringBuilderCache.ReturnAndFree (sb);
-					}
-				}
-				return ext.GetEntityMarkup (node);
-			}
-
-			public Xwt.Drawing.Image GetIcon (int n)
-			{
-				string icon;
-				if (tag is DotNetProject) {
-					icon = ext.ownerProjects [n].StockIcon;
-				} else {
-					var node = memberList [n];
-					if (node is MemberDeclarationSyntax) {
-						icon = ((MemberDeclarationSyntax)node).GetStockIcon ();
-					} else if (node is VariableDeclaratorSyntax) {
-						icon = node.Parent.Parent.GetStockIcon ();
-					} else {
-						icon = node.Parent.GetStockIcon ();
-					}
-				}
-				return ImageService.GetIcon (icon, Gtk.IconSize.Menu);
-			}
-
-			public object GetTag (int n)
-			{
-				if (tag is DotNetProject) {
-					return ext.ownerProjects [n];
-				}
-				return memberList [n];
-			}
-
-			public void ActivateItem (int n)
-			{
-				if (tag is DotNetProject) {
-					var document = ext.textView.TryGetParentDocument ();
-					document.AttachToProject (ext.ownerProjects [n]);
-					return;
-				}
-
-				var node = memberList [n];
-				var editor = ext.textView;
-				int offset;
-				if (node is OperatorDeclarationSyntax) {
-					offset = Math.Max (1, ((OperatorDeclarationSyntax)node).OperatorToken.SpanStart);
-				} else if (node is MemberDeclarationSyntax && !(node is AccessorDeclarationSyntax)) {
-					offset = Math.Max (1, ((MemberDeclarationSyntax)node).SpanStart);
-				} else {
-					offset = node.SpanStart;
-				}
-
-				//FIXME: use the snapshot that the nodes came from
-				editor.Caret.MoveTo (new SnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset));
-			}
-
-			public int IconCount {
-				get {
-					if (tag is DotNetProject) {
-						return ext.ownerProjects.Count;
-					}
-					return memberList.Count;
-				}
-			}
-
-			#endregion
-
 		}
 
 		static bool IsType (SyntaxNode m)
@@ -383,7 +197,6 @@ namespace MonoDevelop.CSharp
 		public override void Dispose ()
 		{
 			CancelDocumentParsedUpdate ();
-			CancelUpdatePathTimeout ();
 			CancelUpdatePath ();
 			Editor.TextChanging -= Editor_TextChanging;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed; 
@@ -436,13 +249,7 @@ namespace MonoDevelop.CSharp
 			SubscribeCaretPositionChange ();
 		}
 
-		void CancelUpdatePathTimeout ()
-		{
-			if (updatePathTimeoutId == 0)
-				return;
-			GLib.Source.Remove (updatePathTimeoutId);
-			updatePathTimeoutId = 0;
-		}
+		
 
 		CancellationTokenSource documentParsedCancellationTokenSource = new CancellationTokenSource ();
 
@@ -522,18 +329,6 @@ namespace MonoDevelop.CSharp
 		{
 			UpdateOwnerProjects ();
 			Editor_CaretPositionChanged (null, null);
-		}
-
-		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => {
-				CancelUpdatePathTimeout ();
-				updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
-					Update ();
-					updatePathTimeoutId = 0;
-					return false;
-				});
-			});
 		}
 
 		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
@@ -638,15 +433,6 @@ namespace MonoDevelop.CSharp
 
 		#region IPathedDocument implementation
 
-		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
-		protected virtual void OnPathChanged (DocumentPathChangedEventArgs e)
-		{
-			EventHandler<DocumentPathChangedEventArgs> handler = this.PathChanged;
-			if (handler != null)
-				handler (this, e);
-		}
-
-
 		class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
 			TextEditor editor;
@@ -710,8 +496,6 @@ namespace MonoDevelop.CSharp
 
 		}
 
-
-
 		async static Task<PathEntry> GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
@@ -738,49 +522,27 @@ namespace MonoDevelop.CSharp
 			return entry;
 		}
 
-		void ClearPath ()
-		{
-			var prev = CurrentPath;
-			CurrentPath = new PathEntry[0];
-			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
-		}
+		bool caretPositionChangedSubscribed;
+		*/
 
+		Projects.Project lastProject;
 		SyntaxNode lastType;
 		string lastTypeMarkup;
 		SyntaxNode lastMember;
 		string lastMemberMarkup;
-		MonoDevelop.Projects.Project lastProject;
-		AstAmbience? amb;
+
 		CancellationTokenSource src = new CancellationTokenSource ();
-		bool caretPositionChangedSubscribed;
-		uint updatePathTimeoutId;
-		uint updatePathTimeout = 147;
-		private ITextView view;
 
-		void Editor_CaretPositionChanged (object sender, EventArgs e)
+		async void Update(Document document, int caretOffset)
 		{
-			CancelUpdatePathTimeout ();
-			Update ();
-		}
-
-		async void Update()
-		{
-			if (DocumentContext == null)
-				return;
-			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null)
-				return;
-
-			var caretOffset = Editor.CaretOffset;
-			var loc = Editor.CaretLocation;
-
-			var model = await analysisDocument.GetSemanticModelAsync ().ConfigureAwait (false);
-			if (model == null)
+			var oldToken = src.Token;
+			var model = await document.GetSemanticModelAsync (oldToken).ConfigureAwait (false);
+			if (model == null || oldToken.IsCancellationRequested)
 				return;
 
 			CancelUpdatePath ();
-
 			var cancellationToken = src.Token;
+
 			amb = new AstAmbience(TypeSystemService.Workspace.Options);
 
 			var unit = model.SyntaxTree;
@@ -801,14 +563,14 @@ namespace MonoDevelop.CSharp
 				if (node.SpanStart != caretOffset)
 					node = root.SyntaxTree.FindTokenOnLeftOfPosition(caretOffset, cancellationToken).Parent;
 			} catch (Exception ex ) {
-				Console.WriteLine (ex);
+				LoggingService.LogError ("Error updating C# breadcrumbs", ex);
 				return;
 			}
 
-			var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax && m.Parent != null && !(m.Parent.Parent is LocalDeclarationStatementSyntax) || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
+			var curMember = node?.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax && m.Parent != null && !(m.Parent.Parent is LocalDeclarationStatementSyntax) || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax)));
 			var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
 
-			var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
+			var curProject = ownerProjects != null && ownerProjects.Count > 1 ? ownerProjects[0] : null;
 			if (curType == curMember || curType is DelegateDeclarationSyntax)
 				curMember = null;
 			if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject) {
@@ -821,7 +583,7 @@ namespace MonoDevelop.CSharp
 				return;
 			}
 
-			var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
+//			var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
 
 			await Runtime.RunInMainThread (() => {
 				var result = new List<PathEntry>();
@@ -876,8 +638,8 @@ namespace MonoDevelop.CSharp
 					}
 				}
 
-				if (regionEntry != null)
-					result.Add(regionEntry);
+//				if (regionEntry != null)
+//					result.Add(regionEntry);
 
 				PathEntry noSelection = null;
 				if (curType == null) {
@@ -915,14 +677,10 @@ namespace MonoDevelop.CSharp
 			});
 		}
 
-
-
 		void CancelUpdatePath ()
 		{
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 		}
-		#endregion
-		*/
 	}
 }

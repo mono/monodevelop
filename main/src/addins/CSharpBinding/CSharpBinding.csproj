@@ -127,6 +127,8 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtension.DataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtensionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
