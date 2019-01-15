@@ -55,6 +55,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         static readonly string[] allowedTextViewConnectionListeners = {
             "Microsoft.CodeAnalysis.Editor.TextBufferAssociatedViewService",
+            "Microsoft.CodeAnalysis.Editor.TypeScript.ScriptContexts.ScriptBlockConnectionListener",
+            "Microsoft.VisualStudio.JSON.Package.Commands.VsJSONTextViewConnectionListener",
+            "Microsoft.CodeAnalysis.Editor.TextBufferAssociatedViewService",
+            "Microsoft.VisualStudio.Editor.Razor.RazorTextViewConnectionListener",
+            "Microsoft.VisualStudio.Html.Package.Commands.Html.VsHtmlTextViewConnectionListener",
+            "Microsoft.VisualStudio.Html.Package.Commands.CSS.VsCssTextViewConnectionListener",
+            "WebToolingAddin.IntellisenseManagerConnectionListener"
             //"Microsoft.VisualStudio.Language.Intellisense.Implementation.IntellisenseManagerConnectionListener"
         };
 
