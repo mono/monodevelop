@@ -33,7 +33,7 @@
     <EmbeddedResource Include="Properties\PerformanceDiagnostics.addin.xml" />
   </ItemGroup>
   <ItemGroup>
-    <IncludeCopyLocal Include="UIThreadMonitorDaemon.dll" />
+    <IncludeCopyLocal Include="UIThreadMonitorDaemon.exe" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
