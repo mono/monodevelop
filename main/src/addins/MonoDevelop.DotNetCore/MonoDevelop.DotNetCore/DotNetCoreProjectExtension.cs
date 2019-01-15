@@ -409,7 +409,7 @@ namespace MonoDevelop.DotNetCore
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
 			}
-			if ((HasSdk && !IsDotNetCoreSdkInstalled ()) || sdkPaths.IsUnsupportedSdkVersion) {
+			if ((HasSdk && !IsDotNetCoreSdkInstalled ()) || (HasSdk && sdkPaths.IsUnsupportedSdkVersion)) {
 				return CreateDotNetCoreSdkRequiredBuildResult ();
 			}
 			return null;
