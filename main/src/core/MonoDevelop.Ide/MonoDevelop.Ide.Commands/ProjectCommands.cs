@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Commands
 
 				// Show run configurations dialog
 				if (config != null) {
-					IdeApp.ProjectOperations.ShowOptions (sol, "Run");
+					IdeApp.ProjectOperations.ShowRunConfiguration (sol, config);
 				}
 			}
 		}
