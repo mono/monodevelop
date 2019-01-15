@@ -95,6 +95,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			foreach (var queue in markers) {
 				foreach (var marker in queue.Value)
 					Editor.RemoveMarker (marker);
+				queue.Value.Clear ();
 			}
 			disposed = true;
 			base.Dispose ();
@@ -341,8 +342,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
 			{
-				if (cancellationToken.IsCancellationRequested)
-					return false;
 				var editor = ext.Editor;
 				if (editor == null)
 					return false;
@@ -354,26 +353,34 @@ namespace MonoDevelop.AnalysisCore.Gui
 						PutBackCachedList (markerQueue.Value);
 					}
 					ext.markers.Clear ();
-				}
-
-				if (id == null) {
 					lock (ext.tasks)
 						ext.tasks.Clear ();
 					ext.OnTasksUpdated (EventArgs.Empty);
 					return false;
 				}
 
+				if (cancellationToken.IsCancellationRequested) {
+					FinishUpdateRun ();
+					return false;
+				}
+
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkerIndex < oldMarkers.Count && i < UPDATE_COUNT; i++) {
-					if (cancellationToken.IsCancellationRequested)
-						return false;
 					var oldMarker = oldMarkers [oldMarkerIndex++];
 
-					if (curResult < results.Count && results [curResult].Equals ((Result)oldMarker.Tag, oldMarker.Offset)) {
-						oldMarker.Tag = results [curResult];
-						newMarkers.Add (oldMarker);
-						curResult++;
-						continue;
+					var oldResult = (Result)oldMarker.Tag;
+					if (curResult < results.Count) {
+						Result currentResult = results [curResult];
+						if (currentResult.Equals (oldResult, oldMarker.Offset)) {
+							oldMarker.Tag = currentResult;
+							newMarkers.Add (oldMarker);
+							if (oldResult.QuickTask != null) {
+								currentResult.QuickTask = oldResult.QuickTask;
+								builder.Add (currentResult.QuickTask);
+							}
+							curResult++;
+							continue;
+						}
 					}
 					editor.RemoveMarker (oldMarker);
 				}
@@ -381,23 +388,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 				//add in the new markers
 				for (int i = 0; i < UPDATE_COUNT; i++) {
 					if (curResult >= results.Count) {
-						lock (ext.tasks)
-							ext.tasks [id] = builder.ToImmutable ();
-						ext.OnTasksUpdated (EventArgs.Empty);
-						// remove remaining old markers
-						while (oldMarkerIndex < oldMarkers.Count) {
-							editor.RemoveMarker (oldMarkers[oldMarkerIndex]);
-							oldMarkerIndex++;
-						}
-
-						PutBackCachedList (ext.markers [id]);
-						ext.markers [id] = newMarkers;
-
+						FinishUpdateRun ();
 						return false;
 					}
-
-					if (cancellationToken.IsCancellationRequested)
-						return false;
 					var currentResult = results [curResult++];
 					if (currentResult.InspectionMark != IssueMarker.None) {
 						int start = currentResult.Region.Start;
@@ -420,9 +413,24 @@ namespace MonoDevelop.AnalysisCore.Gui
 						editor.AddMarker (marker);
 						newMarkers.Add (marker);
 					}
-					builder.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
+					builder.Add (currentResult.QuickTask = new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
 				}
 				return true;
+			}
+
+			void FinishUpdateRun ()
+			{
+				var editor = ext.Editor;
+				// remove remaining old markers
+				while (oldMarkerIndex < oldMarkers.Count) {
+					editor.RemoveMarker (oldMarkers [oldMarkerIndex]);
+					oldMarkerIndex++;
+				}
+				PutBackCachedList (oldMarkers);
+				ext.markers [id] = newMarkers;
+				lock (ext.tasks)
+					ext.tasks [id] = builder.ToImmutable ();
+				ext.OnTasksUpdated (EventArgs.Empty);
 			}
 		}
 
