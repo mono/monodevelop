@@ -566,13 +566,25 @@ namespace MonoDevelop.Ide.Projects
 		[GLib.Property ("text-markup")]
 		public string TextMarkup {
 			get { return markup; }
-			set { markup = value; }
+			set {
+				markup = value;
+				if (!string.IsNullOrEmpty (secondarymarkup))
+					Markup = markup + " " + secondarymarkup;
+				else
+					Markup = markup;
+			}
 		}
 
 		[GLib.Property ("secondary-text-markup")]
 		public string SecondaryTextMarkup {
 			get { return secondarymarkup; }
-			set { secondarymarkup = value; }
+			set {
+				secondarymarkup = value;
+				if (!string.IsNullOrEmpty (secondarymarkup))
+					Markup = markup + " " + secondarymarkup;
+				else
+					Markup = markup;
+			}
 		}
 
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
