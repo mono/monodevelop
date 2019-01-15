@@ -41,7 +41,6 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp
 {
-	//FIXME: this cannot be functional until we have document parse events
 	sealed partial class CSharpPathedDocumentExtension : IPathedDocument, IDisposable
 	{
 		readonly ITextView textView;
@@ -51,8 +50,6 @@ namespace MonoDevelop.CSharp
 		public CSharpPathedDocumentExtension (ITextView view)
 		{
 			textView = view;
-
-			var roslynDocument = view.TextBuffer.CurrentSnapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
 
 			//FIXME track the active owner project(s)
 			var document = view.TryGetParentDocument ();
@@ -65,6 +62,12 @@ namespace MonoDevelop.CSharp
 
 			view.Caret.PositionChanged += CaretPositionChanged;
 			view.TextBuffer.Changed += TextBufferChanged;
+
+			//FIXME: this currently doesn't work as it gets initialized before roslyn is informed about the document being opened
+			var roslynDocument = view.TextBuffer.CurrentSnapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+			if (roslynDocument != null) {
+				Update (roslynDocument, textView.Caret.Position.BufferPosition);
+			}
 		}
 
 		public void Dispose ()
@@ -156,71 +159,6 @@ namespace MonoDevelop.CSharp
 		}
 
 		/*
-		static PathedDocumentTextEditorExtension ()
-		{
-			MonoDevelopWorkspace.GetInsertionPoints = async delegate (TextEditor editor, int offset) {
-				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc == null || doc.AnalysisDocument == null)
-					return new List<InsertionPoint> ();
-				var semanticModel = await doc.AnalysisDocument.GetSemanticModelAsync ();
-				var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (offset, default(CancellationToken));
-				if (declaringType == null)
-					return new List<InsertionPoint> ();
-				return MonoDevelop.Refactoring.InsertionPointService.GetInsertionPoints (
-					editor,
-					semanticModel,
-					declaringType,
-					offset
-				);
-			};
-			MonoDevelopWorkspace.StartRenameSession = async (TextEditor editor, DocumentContext ctx, Core.Text.ITextSourceVersion version, SyntaxToken? token) => {
-				var latestDocument = ctx.AnalysisDocument;
-				var cancellationToken = default (CancellationToken);
-				var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
-				var latestRoot = await latestDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-				await Runtime.RunInMainThread (async delegate {
-					try {
-						var node = latestRoot.FindNode (token.Value.Parent.Span, false, false);
-						if (node == null)
-							return;
-						var info = latestModel.GetSymbolInfo (node);
-						var sym = info.Symbol ?? latestModel.GetDeclaredSymbol (node);
-						if (sym != null)
-							await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error while renaming " + token.Value.Parent, ex);
-					}
-				});
-			};
-		}
-		
-		public override void Dispose ()
-		{
-			CancelDocumentParsedUpdate ();
-			CancelUpdatePath ();
-			Editor.TextChanging -= Editor_TextChanging;
-			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed; 
-			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
-			UntrackStartupProjectChanges ();
-
-			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
-			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
-			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
-			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;
-			IdeApp.Workspace.ItemAddedToSolution -= HandleProjectChanged;
-			IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
-
-			if (ext != null) {
-				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
-				ext = null;
-			}
-
-			currentPath = null;
-			lastType = null;
-			lastMember = null;
-			base.Dispose ();
-		}
-
 		bool isPathSet;
 		CSharpCompletionTextEditorExtension ext;
 
@@ -270,28 +208,6 @@ namespace MonoDevelop.CSharp
 					}
 				});
 			}
-		}
-
-		void CancelDocumentParsedUpdate ()
-		{
-			documentParsedCancellationTokenSource.Cancel ();
-			documentParsedCancellationTokenSource = new CancellationTokenSource ();
-		}
-
-		void SubscribeCaretPositionChange ()
-		{
-			if (caretPositionChangedSubscribed)
-				return;
-			caretPositionChangedSubscribed = true;
-			Editor.CaretPositionChanged += Editor_CaretPositionChanged;
-		}
-
-		void Editor_TextChanging (object sender, EventArgs e)
-		{
-			if (!caretPositionChangedSubscribed)
-				return;
-			caretPositionChangedSubscribed = false;
-			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
 		}
 
 		void HandleActiveConfigurationChanged (object sender, EventArgs e)
