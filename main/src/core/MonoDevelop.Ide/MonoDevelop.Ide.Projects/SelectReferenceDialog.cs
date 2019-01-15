@@ -604,8 +604,9 @@ namespace MonoDevelop.Ide.Projects
 			int w, h;
 			layout.GetPixelSize (out w, out h);
 
+			const int textXOffset = 2; // Shift text up slightly in the row.
 			int tx = cell_area.X + (int)Xpad;
-			int ty = cell_area.Y + (cell_area.Height - h) / 2;
+			int ty = cell_area.Y + (cell_area.Height - h) / 2 - textXOffset;
 
 			int textPixelWidth = cell_area.Width - ((int)Xpad * 2) ;
 			layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
