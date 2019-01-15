@@ -1,10 +1,9 @@
 // 
-// NavigationHistoryService.cs
-// 
 // Author:
-//   Michael Hutchinson <mhutchinson@novell.com>
+//   Mikayla Hutchinson <m.j.hutchinson@gmail.com>
 //   Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
+// Copyright (C) Microsoft. All rights reserved.
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -29,12 +28,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -79,9 +75,6 @@ namespace MonoDevelop.Ide.Navigation
 			};
 
 			//keep nav points up to date
-			TextEditorService.LineCountChanged += LineCountChanged;
-			TextEditorService.LineCountChangesCommitted += CommitCountChanges;
-			TextEditorService.LineCountChangesReset += ResetCountChanges;
 			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
 			
 			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
@@ -340,21 +333,6 @@ namespace MonoDevelop.Ide.Navigation
 		#endregion
 		
 		#region Text file line number and snippet updating
-		
-		static void LineCountChanged (object sender, LineCountEventArgs args)
-		{
-//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-		
-		static void CommitCountChanges (object sender, TextFileEventArgs args)
-		{
-//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-		
-		static void ResetCountChanges (object sender, TextFileEventArgs args)
-		{
-//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
 		
 		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
