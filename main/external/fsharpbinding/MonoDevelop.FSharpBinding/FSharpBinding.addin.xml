@@ -1,6 +1,6 @@
 ﻿<ExtensionModel>
   <Runtime>
-    <Import file="FSharp.Core.dll" />
+    <Import assembly="FSharp.Core.dll" />
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
     <Import assembly="MonoDevelop.FSharp.Shared.dll" />
