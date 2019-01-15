@@ -76,25 +76,31 @@ namespace MonoDevelop.Ide.Navigation
 
 			//keep nav points up to date
 			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
-			
 			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
 		}
-		
-		public static void LogActiveDocument ()
-		{
-			LogActiveDocument (false);
-		}
-		
-		public static void LogActiveDocument (bool transient)
+
+		public static void LogActiveDocument (bool transient = false)
 		{
 			if (switching)
 				return;
-			
-			NavigationPoint point = GetNavPointForActiveDoc (false);
-			if (point == null)
+
+			var point = GetNavPointForActiveDoc ();
+			if (point != null) {
+				LogNavigationPoint (point, transient);
+			}
+		}
+
+		public static void LogNavigationPoint (NavigationPoint point, bool transient = false)
+		{
+			if (point == null) {
+				throw new ArgumentNullException (nameof (point));
+			}
+
+			if (Current != null && point.Equals (Current.NavigationPoint)) {
 				return;
-			
-			NavigationHistoryItem item = new NavigationHistoryItem (point);
+			}
+
+			var item = new NavigationHistoryItem (point);
 			
 			//if the current node's transient but has been around for a while, consider making it permanent
 			if (Current == null ||
@@ -107,7 +113,7 @@ namespace MonoDevelop.Ide.Navigation
 			if (currentIsTransient)
 			{
 				//collapse down possible extra point in history
-				NavigationHistoryItem backOne = history[-1];
+				var backOne = history[-1];
 				if (backOne != null && point.ShouldReplace (backOne.NavigationPoint)) {
 					// The new node is the same as the last permanent, so we can discard it
 					history.RemoveCurrent ();
@@ -140,9 +146,9 @@ namespace MonoDevelop.Ide.Navigation
 			OnHistoryChanged ();
 		}
 		
-		static NavigationPoint GetNavPointForActiveDoc (bool forClosedHistory)
+		static NavigationPoint GetNavPointForActiveDoc ()
 		{
-			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, forClosedHistory);
+			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, false);
 		}
 		
 		static NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
