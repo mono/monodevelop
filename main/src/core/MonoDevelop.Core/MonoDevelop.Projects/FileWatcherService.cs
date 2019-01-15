@@ -78,48 +78,47 @@ namespace MonoDevelop.Projects
 
 			return Task.Run (() => UpdateWatchers (token));
 		}
+		static HashSet<FilePath> newWatchers = new HashSet<FilePath>();
 
 		static void UpdateWatchers (CancellationToken token)
 		{
 			if (token.IsCancellationRequested)
 				return;
-
 			lock (watchers) {
 				if (token.IsCancellationRequested)
 					return;
-
-				var newPathsToWatch = tree.Normalize (maxWatchers).Select (node => (FilePath)node.GetPath ().ToString ());
-				var newWatchers = new HashSet<FilePath> (newPathsToWatch.Where (dir => Directory.Exists (dir)));
+				newWatchers.Clear ();
+				foreach (var node in tree.Normalize (maxWatchers)) {
+					if (token.IsCancellationRequested)
+						return;
+					var dir = node.GetPath ().ToString ();
+					if (Directory.Exists (dir))
+						newWatchers.Add (dir);
+				}
 				if (newWatchers.Count == 0 && watchers.Count == 0) {
 					// Unchanged.
 					return;
 				}
 
-				List<FilePath> toRemove;
-				if (newWatchers.Count == 0)
-					toRemove = watchers.Keys.ToList ();
-				else {
-					toRemove = new List<FilePath> ();
-					foreach (var kvp in watchers) {
-						var directory = kvp.Key;
-						if (!newWatchers.Contains (directory))
-							toRemove.Add (directory);
-					}
-				}
-
 				// After this point, the watcher update is real and a destructive operation, so do not use the token.
 				if (token.IsCancellationRequested)
 					return;
-				
+
 				// First remove the watchers, so we don't spin too many threads.
-				foreach (var directory in toRemove) {
-					RemoveWatcher_NoLock (directory);
+				if (newWatchers.Count == 0) {
+					foreach (var kvp in watchers) {
+						RemoveWatcher_NoLock (kvp.Key);
+					}
+					return;
+				}
+
+				foreach (var kvp in watchers) {
+					var directory = kvp.Key;
+					if (!newWatchers.Contains (directory))
+						RemoveWatcher_NoLock (directory);
 				}
 
 				// Add the new ones.
-				if (newWatchers.Count == 0)
-					return;
-
 				foreach (var path in newWatchers) {
 					// Don't modify a watcher that already exists.
 					if (watchers.ContainsKey (path)) {
