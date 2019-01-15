@@ -15,7 +15,7 @@ base_color: #fff
 text_color: #272727
 link_color: #175fde
 dim_color: #767676
-selected_bg_color: #5189ed
+selected_bg_color: #2862d9
 selected_fg_color: #fff
 tooltip_bg_color: #f2f2f2
 tooltip_fg_color: #272727
