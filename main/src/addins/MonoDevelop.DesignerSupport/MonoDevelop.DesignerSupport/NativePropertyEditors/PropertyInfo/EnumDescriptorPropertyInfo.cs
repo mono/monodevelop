@@ -101,7 +101,7 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult (result);
 		}
 
-		public bool IsConstrainedToPredefined => true;
+		public bool IsConstrainedToPredefined => false;
 
 		public bool IsValueCombinable {
 			get;
