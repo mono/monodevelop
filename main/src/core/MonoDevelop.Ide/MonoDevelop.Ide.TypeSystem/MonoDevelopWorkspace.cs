@@ -499,7 +499,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 			if (IsDocumentOpen (id)) {
-				var textBuffer = document.GetTextAsync (CancellationToken.None).WaitAndGetResult (CancellationToken.None).Container.TryGetTextBuffer ();
+				var textBuffer = (await document.GetTextAsync (CancellationToken.None)).Container.TryGetTextBuffer ();
 
 				if (textBuffer != null) {
 					UpdateText (text, textBuffer, Microsoft.VisualStudio.Text.EditOptions.DefaultMinimalChange);
