@@ -125,6 +125,8 @@ namespace MonoDevelop.DesignerSupport
 #if !MAC
 			grid.Changed -= Grid_Changed;
 #else
+			container.PadContentShown -= Window_PadContentShown;
+			grid.Focused -= PropertyGrid_Focused;
 			gtkWidget.Focused -= Widget_Focused;
 			grid.Dispose ();
 #endif
