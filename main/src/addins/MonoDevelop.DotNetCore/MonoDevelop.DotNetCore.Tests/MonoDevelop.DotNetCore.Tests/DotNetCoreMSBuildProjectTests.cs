@@ -115,6 +115,24 @@ namespace MonoDevelop.DotNetCore.Tests
 		}
 
 		[Test]
+		public void ReadProject_ExplicityReferences ()
+		{
+			CreateMSBuildProject (
+				"<Project ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				" <Import Sdk=\"Microsoft.NET.Sdk\" Project=\"Sdk.targets\" />" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+
+			ReadProject ();
+
+			Assert.That (msbuildProject.GetReferencedSDKs (), Is.Not.Empty);
+		}
+
+		[Test]
 		public void WriteProject_ProjectGuidAddedAndToolsVersionChanged_ProjectGuidIsRemovedAndToolsVersionReset ()
 		{
 			CreateMSBuildProject (
