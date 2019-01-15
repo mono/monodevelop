@@ -42,6 +42,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Text
@@ -80,10 +81,10 @@ namespace MonoDevelop.Ide.Text
 #endif
 
 #if WINDOWS
-	partial class TextViewContent : AbstractXwtViewContent
+	partial class TextViewContent : AbstractXwtViewContent, Gui.Content.INavigable
 	{
 #elif MAC
-	partial class TextViewContent : ViewContent
+	partial class TextViewContent : ViewContent, Gui.Content.INavigable
 	{
 		sealed class EmbeddedNSViewControl : Control
 		{
@@ -195,6 +196,8 @@ namespace MonoDevelop.Ide.Text
 		{
 			sourceEditorOptions.Changed += HandleSourceEditorOptionsChanged;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
+			TextView.Caret.PositionChanged += CaretPositionChanged;
+			TextView.TextBuffer.Changed += TextBufferChanged;
 
 #if WINDOWS
 			TextView.VisualElement.LostKeyboardFocus += HandleWpfLostKeyboardFocus;
@@ -205,6 +208,8 @@ namespace MonoDevelop.Ide.Text
 		{
 			sourceEditorOptions.Changed -= HandleSourceEditorOptionsChanged;
 			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+			TextView.Caret.PositionChanged -= CaretPositionChanged;
+			TextView.TextBuffer.Changed -= TextBufferChanged;
 
 #if WINDOWS
 			TextView.VisualElement.LostKeyboardFocus -= HandleWpfLostKeyboardFocus;
@@ -304,6 +309,28 @@ namespace MonoDevelop.Ide.Text
 			}
 
 			return contentType;
+		}
+
+		public NavigationPoint BuildNavigationPoint ()
+		{
+			return new TextViewNavigationPoint (Editor.TextViewExtensions.TryGetParentDocument (TextView), TextView);
+		}
+
+		void TryLogNavPoint (bool transient)
+		{
+			if (TextView.Properties.TryGetProperty<Document> (typeof (Document), out var doc) && doc == IdeApp.Workbench.ActiveDocument) {
+				NavigationHistoryService.LogNavigationPoint (new TextViewNavigationPoint (doc, TextView), transient);
+			}
+		}
+
+		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
+		{
+			TryLogNavPoint (true);
+		}
+
+		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
+		{
+			TryLogNavPoint (false);
 		}
 	}
 }

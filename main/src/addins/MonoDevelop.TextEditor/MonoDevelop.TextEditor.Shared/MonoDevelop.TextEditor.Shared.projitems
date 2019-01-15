@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)TextViewContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TextViewContent.TextViewNavigationPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextViewDisplayBinding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextViewImports.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextViewContent.Commands.cs" />
