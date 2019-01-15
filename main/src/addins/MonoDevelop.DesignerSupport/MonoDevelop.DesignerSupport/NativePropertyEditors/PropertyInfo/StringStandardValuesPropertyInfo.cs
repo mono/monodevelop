@@ -43,7 +43,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		public bool IsConstrainedToPredefined => true;
+		public bool IsConstrainedToPredefined => false;
 
 		public bool IsValueCombinable {
 			get;
