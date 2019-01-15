@@ -35,6 +35,9 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
         public ICompletionPresenterSession CreateSession (ITextView textView, ITextBuffer subjectBuffer, ICompletionSession sessionOpt)
         {
+            if (!(textView is IMdTextView))
+                return null;
+
             foreach (var completionDataProviderHandle in _completionDataProviders) {
                 foreach (string contentTypeName in completionDataProviderHandle.Metadata.ContentTypes) {
                     if (string.Compare (subjectBuffer.ContentType.TypeName, contentTypeName, StringComparison.OrdinalIgnoreCase) == 0) {
