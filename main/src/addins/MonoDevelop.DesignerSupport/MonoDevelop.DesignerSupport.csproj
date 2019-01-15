@@ -157,7 +157,7 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetFlowLayoutDelegate.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Styles.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\MacPropertyPad.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\MacPropertyGrid.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadObjectEditor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadEditorProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyProviderTypeInfo.cs" />

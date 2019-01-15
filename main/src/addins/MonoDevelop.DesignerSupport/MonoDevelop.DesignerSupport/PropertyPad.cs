@@ -30,8 +30,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if !MAC
-
 using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.DesignerSupport;
@@ -51,22 +49,39 @@ namespace MonoDevelop.DesignerSupport
 	{
 		public event EventHandler PropertyGridChanged;
 
+#if MAC
+		MacPropertyGrid grid;
+		Gtk.Widget gtkWidget;
+#else
 		pg.PropertyGrid grid;
+#endif
+
 		InvisibleFrame frame;
 		bool customWidget;
 		IPadWindow container;
 		DockToolbarProvider toolbarProvider = new DockToolbarProvider ();
 
 		internal object CommandRouteOrigin { get; set; }
-		
+
 		public PropertyPad ()
 		{
+			frame = new InvisibleFrame ();
+
+#if !MAC
 			grid = new pg.PropertyGrid ();
 			grid.Changed += Grid_Changed;
-
-			frame = new InvisibleFrame ();
 			frame.Add (grid);
-			
+#else
+			grid = new MacPropertyGrid ();
+			gtkWidget = Components.Mac.GtkMacInterop.NSViewToGtkWidget (grid);
+			gtkWidget.CanFocus = true;
+			gtkWidget.Sensitive = true;
+			gtkWidget.Focused += Widget_Focused;
+
+			grid.Focused += PropertyGrid_Focused;
+			frame.Add (gtkWidget);
+#endif
+
 			frame.ShowAll ();
 		}
 
@@ -75,11 +90,22 @@ namespace MonoDevelop.DesignerSupport
 			PropertyGridChanged?.Invoke (this, e);
 		}
 
+#if MAC
+		void Widget_Focused (object o, Gtk.FocusedArgs args)
+		{
+			grid.BecomeFirstResponder ();
+		}
+#endif
+
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
 			grid.SetToolbarProvider (toolbarProvider);
+
+#if MAC
+			container.PadContentShown += Window_PadContentShown;
+#endif
 			this.container = container;
 			DesignerSupport.Service.SetPad (this);
 		}
@@ -96,7 +122,12 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Dispose()
 		{
+#if !MAC
 			grid.Changed -= Grid_Changed;
+#else
+			gtkWidget.Focused -= Widget_Focused;
+			grid.Dispose ();
+#endif
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
 		}
@@ -117,14 +148,17 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 #endregion
-		
+
+		public bool IsPropertyGridEditing => grid.IsEditing;
+
+#if !MAC
 		//Grid consumers must call this when they lose focus!
 		public void BlankPad ()
 		{
 			PropertyGrid.CurrentObject = null;
 			CommandRouteOrigin = null;
 		}
-		
+
 		internal pg.PropertyGrid PropertyGrid {
 			get {
 				if (customWidget) {
@@ -137,8 +171,27 @@ namespace MonoDevelop.DesignerSupport
 				return grid;
 			}
 		}
+#else
 
-		public bool IsPropertyGridEditing => grid.IsEditing;
+		public void BlankPad ()
+		{
+			grid.BlankPad ();
+			CommandRouteOrigin = null;
+		}
+
+		void Window_PadContentShown (object sender, EventArgs e)
+		{
+			grid.OnPadContentShown ();
+		}
+
+		void PropertyGrid_Focused (object sender, EventArgs e)
+		{
+			if (!gtkWidget.HasFocus) {
+				gtkWidget.HasFocus = true;
+			}
+		}
+
+#endif
 
 		internal void UseCustomWidget (Gtk.Widget widget)
 		{
@@ -257,4 +310,3 @@ namespace MonoDevelop.DesignerSupport
 	}
 
 }
-#endif
