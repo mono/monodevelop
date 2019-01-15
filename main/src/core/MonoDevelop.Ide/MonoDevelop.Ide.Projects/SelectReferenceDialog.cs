@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.Projects
 			header.Add (w);
 			selectedHeader.Add (header);
 			
-			RemoveReferenceButton.CanFocus = false;
+			RemoveReferenceButton.CanFocus = true;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			Child.ShowAll ();
 			OnChanged (null, null);

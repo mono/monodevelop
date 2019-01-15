@@ -53,7 +53,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			signAssemblyCheckbutton.SetCommonAccessibilityAttributes ("SigningOptions.Sign", "",
 			                                                          GettextCatalog.GetString ("Check to enable assembly signing"));
 			strongNameFileEntry.EntryAccessible.Name = "SigningOptions.NameFile";
-			strongNameFileEntry.EntryAccessible.SetLabel (GettextCatalog.GetString ("Strong Name File"));
 			strongNameFileEntry.EntryAccessible.Description = GettextCatalog.GetString ("Enter the Strong Name File");
 			strongNameFileEntry.EntryAccessible.SetTitleUIElement (strongNameFileLabel.Accessible);
 			strongNameFileLabel.Accessible.SetTitleFor (strongNameFileEntry.EntryAccessible);

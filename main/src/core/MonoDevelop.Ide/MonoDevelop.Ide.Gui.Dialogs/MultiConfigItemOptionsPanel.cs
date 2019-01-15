@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
@@ -104,7 +105,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Gtk.VBox cbox = new Gtk.VBox (false, 6);
 			Gtk.HBox combosBox = new Gtk.HBox (false, 6) { Name = "panelWidgetCombosBox" };
 			cbox.PackStart (combosBox, false, false, 0);
-			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Configuration:")), false, false, 0);
+			var configurationLabel = new Gtk.Label (GettextCatalog.GetString ("Configuration:"));
+			combosBox.PackStart (configurationLabel, false, false, 0);
 			configListStore = new Gtk.ListStore (typeof(string), typeof(string));
 			configCombo = new Gtk.ComboBox (configListStore) { Name = "panelWidgetConfigurationCombo" };
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("configListStore__DisplayName", "configListStore__ConfigName");
@@ -113,12 +115,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			configCombo.PackStart (cell, true);
 			configCombo.AddAttribute (cell, "text", 0);
 			combosBox.PackStart (configCombo, false, false, 0);
-			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Platform:")), false, false, 0);
+			var platformLabel = new Gtk.Label (GettextCatalog.GetString ("Platform:"));
+			combosBox.PackStart (platformLabel, false, false, 0);
 			platformCombo = Gtk.ComboBox.NewText ();
 			platformCombo.Name = "panelWidgetPlatformCombo";
 			combosBox.PackStart (platformCombo, false, false, 0);
 			cbox.PackStart (new Gtk.HSeparator (), false, false, 0);
 			cbox.ShowAll ();
+
+			configCombo.SetCommonAccessibilityAttributes (
+				configCombo.Name,
+				configurationLabel,
+				GettextCatalog.GetString ("Select a configuration"));
+
+			platformCombo.SetCommonAccessibilityAttributes (
+				platformCombo.Name,
+				platformLabel,
+				GettextCatalog.GetString ("Select a platform"));
 
 			cbox.Hidden += OnPageHidden;
 			cbox.Shown += OnPageShown;

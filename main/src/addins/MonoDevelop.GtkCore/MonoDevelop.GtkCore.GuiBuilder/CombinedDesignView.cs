@@ -63,7 +63,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			crc.Show ();
 			control = crc;
 			
-			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
+			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 		}
 		
 		public virtual Stetic.Designer Designer {
@@ -171,7 +171,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
-			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
+			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
 			content.Dispose ();
 			
 			content = null;
