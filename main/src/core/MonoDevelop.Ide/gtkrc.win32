@@ -1,5 +1,5 @@
 # Xamarin Studio Light Windows GTK Theme
-# Copyright 2012-2016 Xamarin Inc.
+# Copyright 2012-2019 Xamarin Inc.
 # Authors:
 #   Christian Kellner <christian.kellner@lanedo.com>
 #   Carlos Garnacho <carlos.garnacho@lanedo.com>
@@ -14,6 +14,7 @@ fg_color: #000
 base_color: #fff
 text_color: #000
 link_color: #175fde
+dim_color: #767676
 selected_bg_color: #cce8ff
 selected_fg_color: #000
 tooltip_bg_color: #f2f2f2
@@ -48,13 +49,13 @@ style "default" {
     fg[NORMAL] = @fg_color
     fg[PRELIGHT] = @fg_color
     fg[SELECTED] = @selected_fg_color
-    fg[INSENSITIVE] = darker (@bg_color)
+    fg[INSENSITIVE] = @dim_color
     fg[ACTIVE] = @fg_color
 
     text[NORMAL] = @fg_color
     text[PRELIGHT] = @fg_color
     text[SELECTED] = @selected_fg_color
-    text[INSENSITIVE] = darker (@bg_color)
+    text[INSENSITIVE] = @dim_color
     text[ACTIVE] = @fg_color
 
     base[NORMAL] = @base_color
