@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			tree_view.AppendColumn ("name_col", tree_view.TextRenderer, "text", 0);
 			tree_view.RowExpanded += new Gtk.RowExpandedHandler (RowExpanded);
-			tree_view.Selection.Changed += new EventHandler (RowActivated);
+			tree_view.RowActivated += RowActivated;
 			
 			store = new TreeStore (typeof (string), typeof (Node));
 			tree_view.Model = store;
@@ -110,10 +110,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.TreeIter iter;
 			Gtk.TreeModel model;
-
+				
 			if (tree_view.Selection.GetSelected (out model, out iter)) {
+				var path = store.GetPath (iter);
+					
+				if (path.Equals (store.GetPath (root_iter))) return;
 
-				if (store.GetPath (iter).Equals (store.GetPath (root_iter))) return;
+				if (store.IterHasChild (iter)) {
+					tree_view.ExpandRow (path, false);
+					return;
+				}
 
 				Node n = (Node)store.GetValue (iter, 1);
 				
