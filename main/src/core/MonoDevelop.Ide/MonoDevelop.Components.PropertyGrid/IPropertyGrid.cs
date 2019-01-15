@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  * PropertyGrid.cs - A Gtk# widget that displays and allows 
  * editing of all of an object's public properties 
  *

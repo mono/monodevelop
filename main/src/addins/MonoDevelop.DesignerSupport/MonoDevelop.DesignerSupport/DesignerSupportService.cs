@@ -78,14 +78,13 @@ namespace MonoDevelop.DesignerSupport
 					propertyPad.PropertyGridChanged += OnPropertyGridChanged;		
 				}
 				else if (lastCustomProvider != null) {
-#if !MAC
 					if (propertyPad is PropertyPad ppad) {
 						ppad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
-
+#if !MAC
 						if (lastCustomProvider is IPropertyPadCustomizer customizer)
 							customizer.Customize (ppad.PadWindow, null);
-					}
 #endif
+					}
 				}
 			}
 		}
