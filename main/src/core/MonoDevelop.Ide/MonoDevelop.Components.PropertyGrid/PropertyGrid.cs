@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.PropertyGrid
 {
 	[System.ComponentModel.Category("MonoDevelop.Components")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class PropertyGrid: Gtk.VBox
+	public class PropertyGrid: Gtk.VBox, IPropertyGrid
 	{
 		object currentObject;
 		object[] propertyProviders;

@@ -78,21 +78,22 @@ namespace MonoDevelop.DesignerSupport
 					propertyPad.PropertyGridChanged += OnPropertyGridChanged;		
 				}
 				else if (lastCustomProvider != null) {
-#if !MAC
 					if (propertyPad is PropertyPad ppad) {
+
 						try {
 							var currentCustomWidget = lastCustomProvider.GetCustomPropertyWidget ();
 							if (currentCustomWidget != null) {
 								ppad.UseCustomWidget (currentCustomWidget);
+#if !MAC								
 								if (lastCustomProvider is IPropertyPadCustomizer customizer)
 									customizer.Customize (pad.PadWindow, null);
+#endif	
 							}
 						} catch (Exception ex) {
 							LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
 							ReSetPad ();
 						}
 					}
-#endif
 				}
 			}
 		}

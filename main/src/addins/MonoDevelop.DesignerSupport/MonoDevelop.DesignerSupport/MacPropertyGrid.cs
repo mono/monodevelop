@@ -46,48 +46,28 @@ using Foundation;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class VerticalStackView : NSStackView
+	class MacPropertyGrid : NSStackView, IPropertyGrid
 	{
-		public event EventHandler SizeChanged;
+		MacPropertyEditorPanel propertyEditorPanel;
 
-		public VerticalStackView ()
+		PropertyPadEditorProvider editorProvider;
+
+		NSScrollView scrollView;
+
+		public event EventHandler Focused;
+
+		public bool IsEditing => false;
+
+		public event EventHandler PropertyGridChanged;
+
+		public MacPropertyGrid () 
 		{
 			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
 			Alignment = NSLayoutAttribute.Leading;
 			Spacing = 10;
 			Distribution = NSStackViewDistribution.Fill;
 
-		}
-
-		public override void SetFrameSize (CGSize newSize)
-		{
-			base.SetFrameSize (newSize);
-			SizeChanged?.Invoke (this, EventArgs.Empty);
-		}
-	}
-
-	class PropertyPad : PadContent, ICommandDelegator, IPropertyPad
-	{
-		Gtk.Widget widget;
-
-		VerticalStackView verticalContainer;
-		MacPropertyGrid propertyEditorPanel;
-
-		PropertyPadEditorProvider editorProvider;
-
-		NSScrollView scrollView;
-
-		public bool IsPropertyGridEditing => false;
-
-		public event EventHandler PropertyGridChanged;
-
-		protected override void Initialize (IPadWindow window)
-		{
-			base.Initialize (window);
-
-			verticalContainer = new VerticalStackView ();
-
-			propertyEditorPanel = new MacPropertyGrid ();
+			propertyEditorPanel = new MacPropertyEditorPanel ();
 
 			scrollView = new NSScrollView () {
 				HasVerticalScroller = true,
@@ -97,26 +77,11 @@ namespace MonoDevelop.DesignerSupport
 			scrollView.BackgroundColor = Styles.HeaderBackgroundColor;
 			scrollView.DocumentView = propertyEditorPanel;
 
-			verticalContainer.AddArrangedSubview (scrollView);
+			AddArrangedSubview (scrollView);
 		
-			widget = GtkMacInterop.NSViewToGtkWidget (verticalContainer);
-			widget.CanFocus = true;
-			widget.Sensitive = true;
-			widget.KeyPressEvent += Widget_KeyPressEvent;
-			widget.KeyReleaseEvent += Widget_KeyReleaseEvent;
-			widget.Focused += Widget_Focused;
-
 			propertyEditorPanel.Focused += PropertyEditorPanel_Focused;
 
-			window.PadContentShown += Window_PadContentShown;
-
-			verticalContainer.SizeChanged += VerticalContainer_Resized;
-
 			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
-
-			DesignerSupport.Service.SetPad (this);
-
-			widget.ShowAll ();
 		}
 
 		void Widget_Focused (object o, Gtk.FocusedArgs args)
@@ -124,32 +89,23 @@ namespace MonoDevelop.DesignerSupport
 			propertyEditorPanel.BecomeFirstResponder ();
 		}
 
-		void PropertyEditorPanel_Focused (object sender, EventArgs e)
+		void PropertyEditorPanel_Focused (object sender, EventArgs e) => Focused?.Invoke (this, EventArgs.Empty);
+
+		public override void SetFrameSize (CGSize newSize)
 		{
-			if (!widget.HasFocus) {
-				widget.HasFocus = true;
-				Widget_Focused (null, null);
-			}
-		}
-
-		void Widget_KeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
-		{
-
-		}
-
-		void Widget_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
-		{
-
-		}
-
-		void VerticalContainer_Resized (object sender, EventArgs e)
-		{
-			scrollView.SetFrameSize (verticalContainer.Frame.Size);
+			scrollView.SetFrameSize (newSize);
+			base.SetFrameSize (newSize);
 		}
 
 		void PropertyEditorPanel_PropertiesChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
 
-		void Window_PadContentShown (object sender, EventArgs e)
+		public void BlankPad ()
+		{
+			propertyEditorPanel.SelectedItems.Clear ();
+			currentSelectedObject = null;
+		}
+
+		internal void OnPadContentShown ()
 		{
 			if (editorProvider == null) {
 				editorProvider = new PropertyPadEditorProvider ();
@@ -157,35 +113,6 @@ namespace MonoDevelop.DesignerSupport
 					AutoExpandGroups = new string [] { "Build", "Misc", "NuGet", "Reference" }
 				};
 			}
-		}
-
-		public void BlankPad ()
-		{
-			propertyEditorPanel.SelectedItems.Clear ();
-			currentSelectedObject = null;
-			CommandRouteOrigin = null;
-		}
-
-		#region ICommandDelegatorRouter implementation
-
-		internal object CommandRouteOrigin { get; set; }
-
-		object ICommandDelegator.GetDelegatedCommandTarget ()
-		{
-			// Route the save command to the object for which we are inspecting the properties,
-			// so pressing the Save shortcut when doing changes in the property pad will save
-			// the document we are changing
-			if (IdeApp.CommandService.CurrentCommand == IdeApp.CommandService.GetCommand (FileCommands.Save))
-				return CommandRouteOrigin;
-			else
-				return null;
-		}
-
-		#endregion
-
-		public void PopulateGrid (bool saveEditSession)
-		{
-
 		}
 
 		Tuple<object, object []> currentSelectedObject;
@@ -202,36 +129,24 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		#region AbstractPadContent implementations
-
-		public override Control Control {
-			get { return widget; }
-		}
-
-		#endregion
-
-		public override void Dispose ()
+		protected override void Dispose (bool disposing)
 		{
-			//propertyEditorPanel.PropertiesChanged -= PropertyEditorPanel_PropertiesChanged;
-
-			widget.Focused -= Widget_Focused;
-			widget.KeyPressEvent -= Widget_KeyPressEvent;
-			widget.KeyReleaseEvent -= Widget_KeyReleaseEvent;
-
 			propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
-
-			verticalContainer.SizeChanged -= VerticalContainer_Resized;
-
-			Window.PadContentShown -= Window_PadContentShown;
-
-			DesignerSupport.Service.SetPad (null);
-
-			base.Dispose ();
+			base.Dispose (disposing);
 		}
 
+		internal void Populate (bool saveEditSession)
+		{
+			//not implemented
+		}
+
+		public void SetToolbarProvider (Components.PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider)
+		{
+			//not implemented
+		}
 	}
 
-	class MacPropertyGrid : PropertyEditorPanel
+	class MacPropertyEditorPanel : PropertyEditorPanel
 	{
 		public EventHandler Focused;
 
