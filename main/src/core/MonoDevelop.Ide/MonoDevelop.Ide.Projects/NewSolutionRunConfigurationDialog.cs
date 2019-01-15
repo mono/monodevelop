@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Projects
 			createButton = new DialogButton (new Command ("create", GettextCatalog.GetString ("Create Run Configuration")));
 			Buttons.Add (Command.Cancel);
 			Buttons.Add (createButton);
+			DefaultCommand = createButton.Command;
 		}
 
 		public string RunConfigurationName => runConfigNameEntry.Text;
