@@ -198,10 +198,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				} else
 					cmd.Type = supportedTypes [comboType.Active];
 				UpdateControls ();
-				if (cmd.Type == CustomCommandType.Custom)
-					entryName.GrabFocus ();
-				else
-					entryCommand.GrabFocus ();
 			}
 		}
 
