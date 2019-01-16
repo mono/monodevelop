@@ -191,6 +191,7 @@
   <Target Name="_CopyExtensionOutputFiles"
     Inputs="@(_ExtensionContentWithLinkMetadata)"
     Outputs="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')"
+		Condition="'@(_ExtensionContentWithLinkMetadata)' != ''"
     BeforeTargets="PrepareForRun">
     <Copy
       SkipUnchangedFiles="True"
