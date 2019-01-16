@@ -84,7 +84,7 @@ namespace MonoDevelop.TextEditor.Cocoa
         }
 
         /// <summary>
-        /// Returns<see cref="CommandState.Available"/> if <paramref name = "textView" /> has < see cref="PredefinedTextViewRoles.Editable"/>
+        /// Returns<see cref="CommandState.Available"/> if <paramref name = "textView" /> has <see cref="PredefinedTextViewRoles.Editable"/>
         /// among <see cref="ITextView.Roles"/>, or <see cref="CommandState.Unavailable"/> otherwise.
         /// </summary>
         private static CommandState AvailableInEditableView(ITextView textView)

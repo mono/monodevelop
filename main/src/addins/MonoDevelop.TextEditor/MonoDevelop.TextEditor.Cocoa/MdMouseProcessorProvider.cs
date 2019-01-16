@@ -46,10 +46,10 @@ namespace MonoDevelop.TextEditor.Cocoa
 	class MdMouseProcessorProvider : ICocoaMouseProcessorProvider
 	{
 		[Import]
-		public ITextDocumentFactoryService TextDocumentFactory;
+		public ITextDocumentFactoryService TextDocumentFactory { get; private set; }
 
 		[Import]
-		public IEditorCommandHandlerServiceFactory CommandServiceFactory;
+		public IEditorCommandHandlerServiceFactory CommandServiceFactory { get; private set; }
 
 		public ICocoaMouseProcessor GetAssociatedProcessor (ICocoaTextView cocoaTextView)
 		{
