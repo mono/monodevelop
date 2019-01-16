@@ -152,11 +152,9 @@ namespace MonoDevelop.DesignerSupport
 				if (provs.Length > 0) {
 					propertyPad.SetCurrentObject (comp, provs);
 
-#if !MAC
 					if (propertyPad is PropertyPad propPad) {
 						propPad.CommandRouteOrigin = commandRouteOrigin;
 					}
-#endif
 				}
 				else
 					propertyPad.BlankPad ();
