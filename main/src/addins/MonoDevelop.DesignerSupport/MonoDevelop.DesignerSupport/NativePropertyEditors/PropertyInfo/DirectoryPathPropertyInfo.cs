@@ -30,6 +30,7 @@ using System;
 using System.Threading.Tasks;
 using Xamarin.PropertyEditing;
 using System.ComponentModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -47,7 +48,7 @@ namespace MonoDevelop.DesignerSupport
 			if (value is DirectoryPath directoryPath) {
 				PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (directoryPath.Source));
 			} else {
-				Console.WriteLine ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ());
+				throw new Exception (string.Format ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ()));
 			}
 		}
 
@@ -58,9 +59,9 @@ namespace MonoDevelop.DesignerSupport
 					T result = (T)(object)new DirectoryPath (directoryPath.FullPath);
 					return Task.FromResult (result);
 				}
-				Console.WriteLine ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
+				LoggingService.LogWarning (string.Format ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ()));
 			} catch (Exception e) {
-				Console.WriteLine (e);
+				LogGetValueAsyncError (e);
 			}
 			return base.GetValueAsync<T> (target);
 		}

@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -67,18 +68,13 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			try {
-				var tc = PropertyDescriptor.Converter;
-				if (tc.CanConvertFrom (typeof (T))) {
-
-					if (int.TryParse ((string)(object)value, out var index)) {
-						PropertyDescriptor.SetValue (PropertyProvider, values.GetValue (index));
-					} else {
-						Console.WriteLine ("Error setting de value and parsing {0} as integer in {1} (enum descriptor)", value, PropertyDescriptor.DisplayName);
-					}
+			var tc = PropertyDescriptor.Converter;
+			if (tc.CanConvertFrom (typeof (T))) {
+				if (int.TryParse ((string)(object)value, out var index)) {
+					PropertyDescriptor.SetValue (PropertyProvider, values.GetValue (index));
+				} else {
+					throw new Exception (string.Format ("Error in SetValue<T> parsing {0} as integer in {1} (enum descriptor)", value, PropertyDescriptor.DisplayName));
 				}
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
 			}
 		}
 
@@ -93,10 +89,10 @@ namespace MonoDevelop.DesignerSupport
 				if (index > -1) {
 					result = (T)(object) index.ToString ();
 				} else {
-					Console.WriteLine ("Error getting and parsing the value {0} as integer in {1} (enum descriptor)", index, PropertyDescriptor.DisplayName);
+					LoggingService.LogError ("Error in GetValueAsync<T> parsing {0} as integer in {1} (enum descriptor)", index, PropertyDescriptor.DisplayName);
 				}
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				LogGetValueAsyncError (ex);
 			}
 			return Task.FromResult (result);
 		}

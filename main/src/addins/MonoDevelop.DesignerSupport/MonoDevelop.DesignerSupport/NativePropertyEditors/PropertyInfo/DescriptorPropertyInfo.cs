@@ -35,6 +35,7 @@ using Xamarin.PropertyEditing.Reflection;
 using System.Reflection;
 using System.ComponentModel;
 using System.Collections;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -117,6 +118,9 @@ namespace MonoDevelop.DesignerSupport
 			return new PropertyProviderTypeInfo (propertyDescriptor, propertyProvider, new AssemblyInfo (asm, isRelevant), type.Namespace, type.Name);
 		}
 
+		const string ErrorOnGetValueMessage = "Error in GetValueAsync<T> using property descriptor converter";
+		protected void LogGetValueAsyncError (Exception ex) => LoggingService.LogError (ErrorOnGetValueMessage, ex);
+
 		internal virtual Task<T> GetValueAsync<T> (object target)
 		{
 			object value = null;
@@ -129,7 +133,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 				return Task.FromResult ((T)value);
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				LogGetValueAsyncError (ex);
 			}
 
 			T converted = default;
@@ -143,18 +147,14 @@ namespace MonoDevelop.DesignerSupport
 				}
 				return Task.FromResult ((T)value);
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				LogGetValueAsyncError (ex);
 			}
 			return Task.FromResult (converted);
 		}
 
 		internal virtual void SetValue<T> (object target, T value)
 		{
-			try {
-				PropertyDescriptor.SetValue (PropertyProvider, value);
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-			}
+			PropertyDescriptor.SetValue (PropertyProvider, value);
 		}
 	}
 }
