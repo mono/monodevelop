@@ -85,6 +85,10 @@
 			<Name>Xwt.Gtk</Name>
 			<Private>False</Private>
 		</ProjectReference>
+		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\CocoaControls\CocoaControls.csproj">
+		  <Project>{253A619C-4F7E-5962-A7E6-58E906F3093E}</Project>
+		  <Name>CocoaControls</Name>
+		</ProjectReference>
 		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj">
 		  <Project>{063241E2-CBDA-4A95-9B8E-914AD6D6D242}</Project>
 		  <Name>CoreUtilityImpl</Name>

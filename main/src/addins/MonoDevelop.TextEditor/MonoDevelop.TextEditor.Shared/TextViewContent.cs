@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Text
 			if (fontSize <= 1)
 				fontSize = 12;
 
-			FontTypeface = NSFont.FromFontName (fontName, fontSize);
+			FontTypeface = NSFontWorkarounds.FromFontName (fontName, fontSize);
 		}
 	}
 #endif
