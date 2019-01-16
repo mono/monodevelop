@@ -94,7 +94,7 @@
     <PackageReference Include="MonoDevelopDev.Analyzers" Version="$(NuGetVersionMonoDevelopAnalyzers)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" PrivateAssets="runtime" />
     <PackageReference Include="SharpZipLib" Version="1.1.0" PrivateAssets="runtime" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.11" PrivateAssets="runtime,build" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.12" PrivateAssets="runtime,build" />
     <PackageReference Include="StreamJsonRpc" Version="1.5.43" PrivateAssets="runtime" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" PrivateAssets="runtime" />
     <!-- remove this as it conflicts with the one in mscorlib. mono bug? -->
