@@ -22,7 +22,6 @@
     <IncludeCopyLocal Include="nunit.framework.dll" />
     <IncludeCopyLocal Include="nunit.core.dll" />
     <IncludeCopyLocal Include="nunit.core.interfaces.dll" />
-    <IncludeCopyLocal Include="ICSharpCode.SharpZipLib.dll" />
     <IncludeCopyLocal Include="nunit-console-runner.dll" />
     <IncludeCopyLocal Include="nunit.util.dll" />
   </ItemGroup>
