@@ -42,6 +42,8 @@ namespace MonoDevelop.Packaging.Gui
 		NuGetPackageMetadata metadata;
 		bool projectOriginallyHadMetadata;
 		bool hasPackageId;
+		List<string> languages;
+		ListStore languagesListStore;
 
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
 		{
@@ -168,7 +170,7 @@ namespace MonoDevelop.Packaging.Gui
 			packageCopyrightTextBox.Text = GetTextBoxText (metadata.Copyright);
 			packageDevelopmentDependencyCheckBox.Active = metadata.DevelopmentDependency;
 			packageIconUrlTextBox.Text = GetTextBoxText (metadata.IconUrl);
-			packageLanguageComboBox.Entry.Text = GetTextBoxText (metadata.Language);
+			LoadLanguage (metadata.Language);
 			packageLicenseUrlTextBox.Text = GetTextBoxText (metadata.LicenseUrl);
 			packageOwnersTextBox.Text = GetTextBoxText (metadata.Owners);
 			packageProjectUrlTextBox.Text = GetTextBoxText (metadata.ProjectUrl);
@@ -182,6 +184,24 @@ namespace MonoDevelop.Packaging.Gui
 		static string GetTextBoxText (string text)
 		{
 			return text ?? string.Empty;
+		}
+
+		void LoadLanguage (string language)
+		{
+			if (string.IsNullOrEmpty (language)) {
+				packageLanguageComboBox.Active = 0;
+				return;
+			}
+
+			int index = languages.IndexOf (language);
+			if (index >= 0) {
+				packageLanguageComboBox.Active = index + 1;
+				return;
+			}
+
+			// Language does not match so we need to add it to the combo box.
+			TreeIter iter = languagesListStore.AppendValues (language);
+			packageLanguageComboBox.SetActiveIter (iter);
 		}
 
 		internal void Save (PackagingProject project)
@@ -220,7 +240,7 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Copyright = packageCopyrightTextBox.Text;
 			metadata.DevelopmentDependency = packageDevelopmentDependencyCheckBox.Active;
 			metadata.IconUrl = packageIconUrlTextBox.Text;
-			metadata.Language = packageLanguageComboBox.Entry.Text;
+			metadata.Language = GetSelectedLanguage ();
 			metadata.LicenseUrl = packageLicenseUrlTextBox.Text;
 			metadata.Owners = packageOwnersTextBox.Text;
 			metadata.ProjectUrl = packageProjectUrlTextBox.Text;
@@ -231,20 +251,34 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Title = packageTitleTextBox.Text;
 		}
 
+		string GetSelectedLanguage ()
+		{
+			if (packageLanguageComboBox.Active == 0) {
+				// 'None' selected.
+				return string.Empty;
+			}
+			return packageLanguageComboBox.ActiveText;
+		}
+
 		void PopulateLanguages ()
 		{
-			var languagesListStore = new ListStore (typeof (string));
+			languagesListStore = new ListStore (typeof (string));
 			packageLanguageComboBox.Model = languagesListStore;
 
-			List<string> languages = CultureInfo.GetCultures(CultureTypes.AllCultures)
+			languages = CultureInfo.GetCultures(CultureTypes.AllCultures)
+				.Where (c => !string.IsNullOrEmpty (c.Name))
 				.Select (c => c.Name)
 				.ToList ();
 
 			languages.Sort ();
 
+			languagesListStore.AppendValues (GettextCatalog.GetString ("None"));
+
 			foreach (string language in languages) {
 				languagesListStore.AppendValues (language);
 			}
+
+			packageLanguageComboBox.Active = 0;
 		}
 
 		bool ProjectHasMetadata ()
