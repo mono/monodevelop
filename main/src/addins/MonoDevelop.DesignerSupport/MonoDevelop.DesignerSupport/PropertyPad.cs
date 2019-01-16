@@ -151,32 +151,28 @@ namespace MonoDevelop.DesignerSupport
 
 #endregion
 
-		public bool IsPropertyGridEditing => grid.IsEditing;
+		public bool IsGridEditing {
+			get {
+				AttachToolbarIfCustomWidget ();
+				return grid.IsEditing;
+ 			}
+		}
+
 
 #if !MAC
 		//Grid consumers must call this when they lose focus!
 		public void BlankPad ()
 		{
-			PropertyGrid.CurrentObject = null;
+			AttachToolbarIfCustomWidget ();
+			grid.CurrentObject = null;
 			CommandRouteOrigin = null;
 		}
 
-		internal pg.PropertyGrid PropertyGrid {
-			get {
-				if (customWidget) {
-					customWidget = false;
-					frame.Remove (frame.Child);
-					frame.Add (grid);
-					toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
-				}
-				
-				return grid;
-			}
-		}
 #else
 
 		public void BlankPad ()
 		{
+			AttachToolbarIfCustomWidget ();
 			grid.BlankPad ();
 			CommandRouteOrigin = null;
 		}
@@ -194,6 +190,21 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 #endif
+
+		void AttachToolbarIfCustomWidget ()
+		{
+			if (customWidget) {
+				customWidget = false;
+				frame.Remove (frame.Child);
+
+#if !MAC
+				frame.Add (grid);
+#else
+				frame.Add (gtkWidget);
+#endif
+				toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
+			}
+		}
 
 		internal void UseCustomWidget (Gtk.Widget widget)
 		{

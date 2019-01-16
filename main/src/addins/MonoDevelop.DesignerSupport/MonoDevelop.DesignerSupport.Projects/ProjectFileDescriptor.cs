@@ -56,7 +56,7 @@ namespace MonoDevelop.DesignerSupport
 				return;
 
 			var propertyPad = (IPropertyPad)pad.Content;
-			if (propertyPad.IsPropertyGridEditing)
+			if (propertyPad.IsGridEditing)
 				return;
 
 			if (args.Any (arg => arg.ProjectFile == file))

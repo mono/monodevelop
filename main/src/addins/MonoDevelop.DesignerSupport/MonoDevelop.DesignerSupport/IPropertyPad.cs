@@ -5,7 +5,7 @@ namespace MonoDevelop.DesignerSupport
 {
 	public interface IPropertyPad
 	{
-		bool IsPropertyGridEditing { get; }
+		bool IsGridEditing { get; }
 
 		event EventHandler PropertyGridChanged;
 
