@@ -160,15 +160,30 @@ namespace MonoDevelop.DesignerSupport
 
 
 #if !MAC
+
+		internal pg.PropertyGrid PropertyGrid {
+			get {
+				AttachToolbarIfCustomWidget ();
+				return grid;
+			}
+		}
+
 		//Grid consumers must call this when they lose focus!
 		public void BlankPad ()
 		{
-			AttachToolbarIfCustomWidget ();
-			grid.CurrentObject = null;
+			PropertyGrid.CurrentObject = null;
 			CommandRouteOrigin = null;
 		}
 
 #else
+		//HACK: Mocked gtk property grid to satisfy for customizer.Customize call
+		readonly static pg.PropertyGrid pGrid = new pg.PropertyGrid ();
+		internal pg.PropertyGrid PropertyGrid {
+			get {
+				AttachToolbarIfCustomWidget ();
+				return pGrid;
+			}
+		}
 
 		public void BlankPad ()
 		{
