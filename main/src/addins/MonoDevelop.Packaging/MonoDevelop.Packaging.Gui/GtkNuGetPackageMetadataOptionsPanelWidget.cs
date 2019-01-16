@@ -60,85 +60,68 @@ namespace MonoDevelop.Packaging.Gui
 			packageReleaseNotesPaddingLabel.Accessible.Role = Atk.Role.Filler;
 
 			packageIdTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.ID",
-			                                                   GettextCatalog.GetString ("ID"),
-			                                                   GettextCatalog.GetString ("Enter the ID of the NuGet package"));
-			packageIdTextBox.SetAccessibilityLabelRelationship (packageIdLabel);
+				packageIdLabel,
+				GettextCatalog.GetString ("Enter the ID of the NuGet package"));
 
 			packageVersionTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Version",
-			                                                        GettextCatalog.GetString ("Version"),
-			                                                        GettextCatalog.GetString ("Enter the version of the NuGet package"));
-			packageVersionTextBox.SetAccessibilityLabelRelationship (packageVersionLabel);
+				packageVersionLabel,
+				GettextCatalog.GetString ("Enter the version of the NuGet package"));
 
 			packageAuthorsTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Authors",
-			                                                        GettextCatalog.GetString ("Authors"),
-			                                                        GettextCatalog.GetString ("Enter the authors of the NuGet package"));
-			packageAuthorsTextBox.SetAccessibilityLabelRelationship (packageAuthorsLabel);
+				packageAuthorsLabel,
+				GettextCatalog.GetString ("Enter the authors of the NuGet package"));
 
 			packageDescriptionTextView.SetCommonAccessibilityAttributes ("NuGetMetadata.Description",
-			                                                             GettextCatalog.GetString ("Description"),
-			                                                             GettextCatalog.GetString ("Enter the description of the NuGet package"));
-			packageDescriptionTextView.SetAccessibilityLabelRelationship (packageDescriptionLabel);
+				packageDescriptionLabel,
+				GettextCatalog.GetString ("Enter the description of the NuGet package"));
 
 			packageOwnersTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Owners",
-			                                                       GettextCatalog.GetString ("Owners"),
-			                                                       GettextCatalog.GetString ("Enter the owners of the NuGet package"));
-			packageOwnersTextBox.SetAccessibilityLabelRelationship (packageOwnersLabel);
+				packageOwnersLabel,
+				GettextCatalog.GetString ("Enter the owners of the NuGet package"));
 
 			packageCopyrightTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Copyright",
-			                                                          GettextCatalog.GetString ("Copyright"),
-			                                                          GettextCatalog.GetString ("Enter the copyright statement for the NuGet package"));
-			packageCopyrightTextBox.SetAccessibilityLabelRelationship (packageCopyrightLabel);
+				packageCopyrightLabel,
+				GettextCatalog.GetString ("Enter the copyright statement for the NuGet package"));
 
 			packageTitleTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Title",
-			                                                      GettextCatalog.GetString ("Title"),
-			                                                      GettextCatalog.GetString ("Enter the title of the NuGet package"));
-			packageTitleTextBox.SetAccessibilityLabelRelationship (packageTitleLabel);
+				packageTitleLabel,
+				GettextCatalog.GetString ("Enter the title of the NuGet package"));
 
 			packageSummaryTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Summary",
-			                                                        GettextCatalog.GetString ("Summary"),
-			                                                        GettextCatalog.GetString ("Enter the summary for the NuGet package"));
-			packageSummaryTextBox.SetAccessibilityLabelRelationship (packageSummaryLabel);
+				packageSummaryLabel,
+				GettextCatalog.GetString ("Enter the summary for the NuGet package"));
 
 			packageProjectUrlTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.URL",
-			                                                           GettextCatalog.GetString ("Project URL"),
-			                                                           GettextCatalog.GetString ("Enter the project URL for the NuGet package"));
-			packageProjectUrlTextBox.SetAccessibilityLabelRelationship (packageProjectUrlLabel);
+				packageProjectUrlLabel,
+				GettextCatalog.GetString ("Enter the project URL for the NuGet package"));
 
 			packageIconUrlTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Icon",
-			                                                        GettextCatalog.GetString ("Icon URL"),
-			                                                        GettextCatalog.GetString ("Enter the URL for the NuGet package's icon"));
-			packageIconUrlTextBox.SetAccessibilityLabelRelationship (packageIconUrlLabel);
+				packageIconUrlLabel,
+				GettextCatalog.GetString ("Enter the URL for the NuGet package's icon"));
 
 			packageLicenseUrlTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.licence",
-			                                                           GettextCatalog.GetString ("License URL"),
-			                                                           GettextCatalog.GetString ("Enter the URL for the NuGet package's license"));
-			packageLicenseUrlTextBox.SetAccessibilityLabelRelationship (packageLicenseUrlLabel);
+				packageLicenseUrlLabel,
+				GettextCatalog.GetString ("Enter the URL for the NuGet package's license"));
 
 			packageRequireLicenseAcceptanceCheckBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Acceptance",
-			                                                                          GettextCatalog.GetString ("Require License Acceptance"),
-			                                                                          GettextCatalog.GetString ("Check to require the user to accept the NuGet package's license"));
-			packageRequireLicenseAcceptanceCheckBox.SetAccessibilityLabelRelationship (packageRequireLicenseAcceptanceLabel);
+				packageRequireLicenseAcceptanceLabel,
+				GettextCatalog.GetString ("Check to require the user to accept the NuGet package's license"));
 
 			packageDevelopmentDependencyCheckBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Development",
-			                                                                       GettextCatalog.GetString ("Development Dependency"),
-			                                                                       GettextCatalog.GetString ("Check to indicate that this is a development dependency"));
-			packageDevelopmentDependencyCheckBox.SetAccessibilityLabelRelationship (packageDevelopmentDependencyLabel);
+				packageDevelopmentDependencyLabel,
+				GettextCatalog.GetString ("Check to indicate that this is a development dependency"));
 
 			packageTagsTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Tags",
-			                                                     GettextCatalog.GetString ("Tags"),
-			                                                     GettextCatalog.GetString ("Enter the tags for this NuGet package"));
-			packageTagsTextBox.SetAccessibilityLabelRelationship (packageTagsLabel);
+				packageTagsLabel,
+				GettextCatalog.GetString ("Enter the tags for this NuGet package"));
 
 			packageLanguageComboBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Language",
-			                                                          GettextCatalog.GetString ("Language"),
-			                                                          GettextCatalog.GetString ("Select the language for this NuGet package"));
-			packageLanguageComboBox.SetAccessibilityLabelRelationship (packageLanguageLabel);
+				packageLanguageLabel,
+				GettextCatalog.GetString ("Select the language for this NuGet package"));
 
 			packageReleaseNotesTextView.SetCommonAccessibilityAttributes ("NuGetMetadata.ReleaseNotes",
-			                                                              GettextCatalog.GetString ("Release Notes"),
-			                                                              GettextCatalog.GetString ("Enter the release notes for this NuGet package"));
-			packageReleaseNotesTextView.SetAccessibilityLabelRelationship (packageReleaseNotesLabel);
-
+				packageReleaseNotesLabel,
+				GettextCatalog.GetString ("Enter the release notes for this NuGet package"));
 		}
 
 		internal static System.Action<bool> OnProjectHasMetadataChanged;
