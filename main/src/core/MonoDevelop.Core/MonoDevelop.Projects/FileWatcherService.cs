@@ -105,13 +105,6 @@ namespace MonoDevelop.Projects
 					return;
 
 				// First remove the watchers, so we don't spin too many threads.
-				if (newWatchers.Count == 0) {
-					foreach (var kvp in watchers) {
-						RemoveWatcher_NoLock (kvp.Key);
-					}
-					return;
-				}
-
 				foreach (var kvp in watchers) {
 					var directory = kvp.Key;
 					if (!newWatchers.Contains (directory))
