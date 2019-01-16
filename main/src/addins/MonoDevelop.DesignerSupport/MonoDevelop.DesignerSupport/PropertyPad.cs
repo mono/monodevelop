@@ -242,6 +242,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
+			AttachToolbarIfCustomWidget ();
 			grid.SetCurrentObject (lastComponent, propertyProviders);
 		}
 
