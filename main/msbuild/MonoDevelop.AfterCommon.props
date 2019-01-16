@@ -5,8 +5,22 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<_IsSdkStyleProject>false</_IsSdkStyleProject>
+		<_IsSdkStyleProject Condition="'$(Configurations)' != '' and '$(Platforms)' != ''">true</_IsSdkStyleProject>
 		<!-- target framework for the core and addins -->
 		<MDFrameworkVersion>v4.7.2</MDFrameworkVersion>
+		<MDTargetFramework>net472</MDTargetFramework>
+		<!--
+		for sdk-style projects we can set the value directly.
+		old-style projects need to set it themselves or some IDE stuff breaks.
+		-->
+		<TargetFramework Condition="'$(_IsSdkStyleProject)'=='true'">$(MDTargetFramework)</TargetFramework>
+	</PropertyGroup>
+
+	<!-- set some common AssemblyInfo values so SDK-style projects don't have to set them -->
+	<PropertyGroup>
+		<AssemblyVersion>2.6.0</AssemblyVersion>
+		<AssemblyProduct>MonoDevelop</AssemblyProduct>
 	</PropertyGroup>
 
 	<!--
@@ -62,4 +76,16 @@
 			<Visible>False</Visible>
 		</DownloadNupkg>
 	</ItemDefinitionGroup>
+
+	<!-- default items -->
+	<ItemGroup Condition="'$(EnableDefaultItems)' == 'true'">
+		<EmbeddedResource Include="**\*.addin.xml" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+	</ItemGroup>
+
+	<!-- default refs. the TargetFramework check is to exclude RefactoringEssentials  -->
+	<ItemGroup Condition="'$(AddMonoDevelopCoreReferences)' == 'true'">
+		<ProjectReference Include="$(MonoDevelopRootDir)src\core\MonoDevelop.Core\MonoDevelop.Core.csproj" Private="False" />
+		<ProjectReference Include="$(MonoDevelopRootDir)src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj" Private="False" />
+		<ProjectReference Include="$(MonoDevelopRootDir)external\mono-addins\Mono.Addins\Mono.Addins.csproj" Private="False" />
+	</ItemGroup>
 </Project>
