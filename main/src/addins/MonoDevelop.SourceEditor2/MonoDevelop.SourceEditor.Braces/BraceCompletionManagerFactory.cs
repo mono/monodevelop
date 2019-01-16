@@ -12,7 +12,7 @@ namespace MonoDevelop.SourceEditor.Braces
 	using Microsoft.VisualStudio.Utilities;
 	using System.ComponentModel.Composition;
 
-	//[Export (typeof (ITextViewCreationListener))]
+	[Export (typeof (ITextViewCreationListener))]
 	[ContentType ("text")]
 	[TextViewRole (PredefinedTextViewRoles.Editable)]
 	[PartCreationPolicy (CreationPolicy.Shared)]
@@ -35,6 +35,10 @@ namespace MonoDevelop.SourceEditor.Braces
 
 		public void TextViewCreated (ITextView textView)
 		{
+			if (!(textView is IMdTextView)) {
+				return;
+			}
+
 			textView.Properties.AddProperty ("BraceCompletionManagerMD",
 				new BraceCompletionManager (textView,
 					new BraceCompletionStack (textView, _adornmentServiceFactory, _guardedOperations), _aggregatorFactory, _guardedOperations));
