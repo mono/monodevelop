@@ -83,38 +83,4 @@
 		-->
 		<PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
 	</ItemGroup>
-
-	<!--
-	HACK: For libraries, disable AutoUnifyAssemblyReferences, and instead use
-	the ResolveAssemblyReference.AppConfigFile for conflict resolution.
-
-	This works around the issue where the bad SharpZipLib 4.x.x.x in Mono's GAC
-	wins out over actual newer versions from NuGet.
-
-	As a bonus, this also means we get warnings from extensions when they
-	require binding redirects in the main app.config.
-	-->
-	<Target Name="_InjectAppConfigForResolveReferences"
-		BeforeTargets="ResolveAssemblyReferences"
-		Condition="'$(GenerateBindingRedirectsOutputType)' != 'true' And '@(AppConfigWithTargetPath)'==''">
-		<PropertyGroup>
-			<_InjectedAppConfigForResolveReferences>true</_InjectedAppConfigForResolveReferences>
-			<AutoUnifyAssemblyReferences>false</AutoUnifyAssemblyReferences>
-			<IgnoreVersionForFrameworkReferences>true</IgnoreVersionForFrameworkReferences>
-		</PropertyGroup>
-		<ItemGroup>
-			<AppConfigWithTargetPath Include="$(MSBuildThisFileDirectory)..\src\core\MonoDevelop.Startup\app.config" />
-		</ItemGroup>
-	</Target>
-
-	<!--
-	if we injected the app.config for conflict resolution, remove it so it doesn't get local copied
-	-->
-	<Target Name="_RemoveInjectedAppConfig"
-		AfterTargets="ResolveAssemblyReferences"
-		Condition="'$(_InjectedAppConfigForResolveReferences)'=='true'">
-		<ItemGroup>
-			<AppConfigWithTargetPath Remove="@(AppConfigWithTargetPath)" />
-		</ItemGroup>
-	</Target>
 </Project>
