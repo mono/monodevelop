@@ -47,7 +47,7 @@ namespace MonoDevelop.DesignerSupport
 			if (value is FilePath filePath) {
 				PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (filePath.Source));
 			} else {
-				Console.WriteLine ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ());
+				throw new Exception (string.Format ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ()));
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace MonoDevelop.DesignerSupport
 				T result = (T)(object)new FilePath (directoryPath.FullPath);
 				return Task.FromResult (result);
 			}
-			Console.WriteLine ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
+			Core.LoggingService.LogWarning ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
 			return base.GetValueAsync<T> (target);
 		}
 	}

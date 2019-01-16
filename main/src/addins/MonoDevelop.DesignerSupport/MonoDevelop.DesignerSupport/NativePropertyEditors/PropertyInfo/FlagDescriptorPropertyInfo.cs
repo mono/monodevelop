@@ -49,17 +49,12 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			try { 
-				var selectedValues = (System.String []) (object)value;
-				ulong result = default;
-				foreach (var selectedValue in selectedValues) {
-					result += Convert.ToUInt64 (selectedValue);
-				}
-				PropertyDescriptor.SetValue (PropertyProvider, Enum.ToObject (PropertyDescriptor.PropertyType, result));
-
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
+			var selectedValues = (System.String []) (object)value;
+			ulong result = default;
+			foreach (var selectedValue in selectedValues) {
+				result += Convert.ToUInt64 (selectedValue);
 			}
+			PropertyDescriptor.SetValue (PropertyProvider, Enum.ToObject (PropertyDescriptor.PropertyType, result));
 		}
 
 		internal override Task<T> GetValueAsync<T> (object target)
@@ -77,7 +72,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 				return Task.FromResult<T> ((T)(object)result);
 			} catch (Exception ex) {
-				Console.WriteLine (ex);
+				LogGetValueAsyncError (ex);
 			}
 			return Task.FromResult <T> (default);
 		}

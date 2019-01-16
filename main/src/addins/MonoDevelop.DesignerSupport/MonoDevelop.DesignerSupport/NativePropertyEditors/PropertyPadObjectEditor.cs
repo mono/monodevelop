@@ -34,6 +34,7 @@ using Xamarin.PropertyEditing.Reflection;
 using System.Linq;
 using System.ComponentModel;
 using System.Collections;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -213,7 +214,12 @@ namespace MonoDevelop.DesignerSupport
 				throw new ArgumentNullException (nameof (propertyInfo));
 
 			if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
-				info.SetValue (this.target, valueInfo.Value);
+				try {
+					info.SetValue (this.target, valueInfo.Value);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error setting the value", ex);
+				}
+
 				OnPropertyChanged (info);
 			}
 			return Task.CompletedTask;
