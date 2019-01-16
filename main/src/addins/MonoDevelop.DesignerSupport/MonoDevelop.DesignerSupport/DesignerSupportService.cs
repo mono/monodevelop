@@ -70,24 +70,20 @@ namespace MonoDevelop.DesignerSupport
 						propertyPad.SetCurrentObject (lastComponent, provs);
 					else
 						propertyPad.BlankPad ();
-#if !MAC
+
 					if (lastPadProvider is IPropertyPadCustomizer customizer && pad is PropertyPad ppad) {
 						customizer.Customize (ppad.PadWindow, ppad.PropertyGrid);
 					}
-#endif
 					propertyPad.PropertyGridChanged += OnPropertyGridChanged;		
 				}
 				else if (lastCustomProvider != null) {
 					if (propertyPad is PropertyPad ppad) {
-
 						try {
 							var currentCustomWidget = lastCustomProvider.GetCustomPropertyWidget ();
 							if (currentCustomWidget != null) {
 								ppad.UseCustomWidget (currentCustomWidget);
-#if !MAC								
 								if (lastCustomProvider is IPropertyPadCustomizer customizer)
 									customizer.Customize (pad.PadWindow, null);
-#endif	
 							}
 						} catch (Exception ex) {
 							LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
@@ -158,10 +154,10 @@ namespace MonoDevelop.DesignerSupport
 				}
 				else
 					propertyPad.BlankPad ();
-#if !MAC
+
 				if (provider is IPropertyPadCustomizer customizer && propertyPad is PropertyPad ppad)
 					customizer.Customize (ppad.PadWindow, ppad.PropertyGrid);
-#endif
+
 				propertyPad.PropertyGridChanged += OnPropertyGridChanged;
 			}
 			else {
@@ -193,11 +189,9 @@ namespace MonoDevelop.DesignerSupport
 						if (customWidget != null) {
 							ppad.UseCustomWidget (customWidget);
 							ppad.CommandRouteOrigin = commandRouteOrigin;
-#if !MAC
 							var customizer = provider as IPropertyPadCustomizer;
 							if (customizer != null)
 								customizer.Customize (ppad.PadWindow, null);
-#endif								
 						} else {
 							propertyPad?.BlankPad ();
 							return;
