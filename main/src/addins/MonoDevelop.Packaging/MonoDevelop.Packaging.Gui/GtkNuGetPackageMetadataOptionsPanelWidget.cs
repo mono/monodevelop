@@ -42,7 +42,7 @@ namespace MonoDevelop.Packaging.Gui
 		NuGetPackageMetadata metadata;
 		bool projectOriginallyHadMetadata;
 		bool hasPackageId;
-		List<string> languages;
+		List<CultureInfo> languages;
 		ListStore languagesListStore;
 
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
@@ -193,7 +193,7 @@ namespace MonoDevelop.Packaging.Gui
 				return;
 			}
 
-			int index = languages.IndexOf (language);
+			int index = GetLanguageIndex (language);
 			if (index >= 0) {
 				packageLanguageComboBox.Active = index + 1;
 				return;
@@ -202,6 +202,17 @@ namespace MonoDevelop.Packaging.Gui
 			// Language does not match so we need to add it to the combo box.
 			TreeIter iter = languagesListStore.AppendValues (language);
 			packageLanguageComboBox.SetActiveIter (iter);
+		}
+
+		int GetLanguageIndex (string language)
+		{
+			for (int i = 0; i < languages.Count; ++i) {
+				CultureInfo culture = languages [i];
+				if (string.Equals (culture.Name, language, StringComparison.OrdinalIgnoreCase)) {
+					return i;
+				}
+			}
+			return -1;
 		}
 
 		internal void Save (PackagingProject project)
@@ -257,6 +268,13 @@ namespace MonoDevelop.Packaging.Gui
 				// 'None' selected.
 				return string.Empty;
 			}
+
+			int languageIndex = packageLanguageComboBox.Active - 1;
+			if (languageIndex < languages.Count) {
+				return languages [languageIndex].Name;
+			}
+
+			// No match for language so just return the combo box text.
 			return packageLanguageComboBox.ActiveText;
 		}
 
@@ -265,20 +283,28 @@ namespace MonoDevelop.Packaging.Gui
 			languagesListStore = new ListStore (typeof (string));
 			packageLanguageComboBox.Model = languagesListStore;
 
-			languages = CultureInfo.GetCultures(CultureTypes.AllCultures)
-				.Where (c => !string.IsNullOrEmpty (c.Name))
-				.Select (c => c.Name)
-				.ToList ();
+			languages = new List<CultureInfo> ();
 
-			languages.Sort ();
+			foreach (CultureInfo culture in CultureInfo.GetCultures (CultureTypes.AllCultures)) {
+				if (!string.IsNullOrEmpty (culture.Name)) {
+					languages.Add (culture);
+				}
+			}
+
+			languages.Sort (CompareLanguages);
 
 			languagesListStore.AppendValues (GettextCatalog.GetString ("None"));
 
-			foreach (string language in languages) {
-				languagesListStore.AppendValues (language);
+			foreach (CultureInfo language in languages) {
+				languagesListStore.AppendValues (language.DisplayName);
 			}
 
 			packageLanguageComboBox.Active = 0;
+		}
+
+		static int CompareLanguages (CultureInfo x, CultureInfo y)
+		{
+			return string.Compare (x.DisplayName, y.DisplayName, StringComparison.CurrentCulture);
 		}
 
 		bool ProjectHasMetadata ()
