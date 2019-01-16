@@ -49,7 +49,6 @@ namespace MonoDevelop.DesignerSupport
 	{
 		public event EventHandler PropertyGridChanged;
 
-<<<<<<< HEAD
 		readonly bool isNative;
 		readonly IPropertyGrid propertyGrid;
 #if MAC
@@ -57,14 +56,6 @@ namespace MonoDevelop.DesignerSupport
 		Gtk.Widget gtkWidget;
 #endif
 		pg.PropertyGrid grid;
-=======
-#if MAC
-		MacPropertyGrid grid;
-		Gtk.Widget gtkWidget;
-#else
-		pg.PropertyGrid grid;
-#endif
->>>>>>> Changes in encapsulation to use Custom Property Widget
 
 		InvisibleFrame frame;
 		bool customWidget;
@@ -73,19 +64,8 @@ namespace MonoDevelop.DesignerSupport
 
 		internal object CommandRouteOrigin { get; set; }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> Changes in encapsulation to use Custom Property Widget
 		public PropertyPad ()
 		{
-			frame = new InvisibleFrame ();
-
-#if !MAC
-			grid = new pg.PropertyGrid ();
-			grid.Changed += Grid_Changed;
-<<<<<<< HEAD
-
 			frame = new InvisibleFrame ();
 
 #if MAC
@@ -112,20 +92,6 @@ namespace MonoDevelop.DesignerSupport
 #if MAC
 			}
 #endif
-=======
-			frame.Add (grid);
-#else
-			grid = new MacPropertyGrid ();
-			gtkWidget = Components.Mac.GtkMacInterop.NSViewToGtkWidget (grid);
-			gtkWidget.CanFocus = true;
-			gtkWidget.Sensitive = true;
-			gtkWidget.Focused += Widget_Focused;
-
-			grid.Focused += PropertyGrid_Focused;
-			frame.Add (gtkWidget);
-#endif
-
->>>>>>> Changes in encapsulation to use Custom Property Widget
 			frame.ShowAll ();
 		}
 
@@ -133,28 +99,16 @@ namespace MonoDevelop.DesignerSupport
 		{
 			PropertyGridChanged?.Invoke (this, e);
 		}
-<<<<<<< HEAD
 #if MAC
 		void Widget_Focused (object o, Gtk.FocusedArgs args)
 		{
 			nativeGrid.BecomeFirstResponder ();
 		}
 #endif
-=======
-
-#if MAC
-		void Widget_Focused (object o, Gtk.FocusedArgs args)
-		{
-			grid.BecomeFirstResponder ();
-		}
-#endif
-
->>>>>>> Changes in encapsulation to use Custom Property Widget
 		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
-<<<<<<< HEAD
 
 			propertyGrid.SetToolbarProvider (toolbarProvider);
 
@@ -162,13 +116,6 @@ namespace MonoDevelop.DesignerSupport
 			if (isNative) {
 				container.PadContentShown += Window_PadContentShown;
 			}
-=======
-			grid.SetToolbarProvider (toolbarProvider);
-
-#if MAC
-			container.PadContentShown += Window_PadContentShown;
-#endif
->>>>>>> Changes in encapsulation to use Custom Property Widget
 			this.container = container;
 			DesignerSupport.Service.SetPad (this);
 		}
@@ -185,12 +132,18 @@ namespace MonoDevelop.DesignerSupport
 		
 		public override void Dispose()
 		{
-#if !MAC
-			grid.Changed -= Grid_Changed;
-#else
-			gtkWidget.Focused -= Widget_Focused;
-			grid.Dispose ();
+#if MAC
+			if (isNative) {
+				container.PadContentShown -= Window_PadContentShown;
+				nativeGrid.Focused -= PropertyGrid_Focused;
+				gtkWidget.Focused -= Widget_Focused;
+			} else {
 #endif
+				grid.Changed -= Grid_Changed;
+#if MAC
+			}
+#endif
+			propertyGrid.Dispose ();
 			DesignerSupport.Service.SetPad (null);
 			base.Dispose ();
 		}
@@ -212,7 +165,6 @@ namespace MonoDevelop.DesignerSupport
 
 #endregion
 
-<<<<<<< HEAD
 		public bool IsGridEditing {
 			get {
 				AttachToolbarIfCustomWidget ();
@@ -229,12 +181,6 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-=======
-		public bool IsPropertyGridEditing => grid.IsEditing;
-
-#if !MAC
-		//Grid consumers must call this when they lose focus!
->>>>>>> Changes in encapsulation to use Custom Property Widget
 		public void BlankPad ()
 		{
 			if (isNative) {
@@ -244,7 +190,6 @@ namespace MonoDevelop.DesignerSupport
 			CommandRouteOrigin = null;
 		}
 
-<<<<<<< HEAD
 		void Window_PadContentShown (object sender, EventArgs e)
 		{
 			propertyGrid.OnPadContentShown ();
@@ -268,13 +213,6 @@ namespace MonoDevelop.DesignerSupport
 					frame.Add (gtkWidget);
 				} else {
 #endif
-=======
-		internal pg.PropertyGrid PropertyGrid {
-			get {
-				if (customWidget) {
-					customWidget = false;
-					frame.Remove (frame.Child);
->>>>>>> Changes in encapsulation to use Custom Property Widget
 					frame.Add (grid);
 #if MAC
 				}
@@ -282,31 +220,7 @@ namespace MonoDevelop.DesignerSupport
 				toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
 			}
 		}
-#else
-
-<<<<<<< HEAD
-=======
-		public void BlankPad ()
-		{
-			grid.BlankPad ();
-			CommandRouteOrigin = null;
-		}
-
-		void Window_PadContentShown (object sender, EventArgs e)
-		{
-			grid.OnPadContentShown ();
-		}
-
-		void PropertyGrid_Focused (object sender, EventArgs e)
-		{
-			if (!gtkWidget.HasFocus) {
-				gtkWidget.HasFocus = true;
-			}
-		}
-
-#endif
-
->>>>>>> Changes in encapsulation to use Custom Property Widget
+		
 		internal void UseCustomWidget (Gtk.Widget widget)
 		{
 			toolbarProvider.Attach (null);
@@ -424,8 +338,4 @@ namespace MonoDevelop.DesignerSupport
 		}
 	}
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> Changes in encapsulation to use Custom Property Widget

@@ -105,11 +105,7 @@ namespace MonoDevelop.DesignerSupport
 			currentSelectedObject = null;
 		}
 
-<<<<<<< HEAD:main/src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MacPropertyGrid.cs
 		public void OnPadContentShown ()
-=======
-		internal void OnPadContentShown ()
->>>>>>> Changes in encapsulation to use Custom Property Widget:main/src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MacPropertyGrid.cs
 		{
 			if (editorProvider == null) {
 				editorProvider = new PropertyPadEditorProvider ();
@@ -140,11 +136,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose (disposing);
 		}
 
-<<<<<<< HEAD:main/src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MacPropertyGrid.cs
 		public void Populate (bool saveEditSession)
-=======
-		internal void Populate (bool saveEditSession)
->>>>>>> Changes in encapsulation to use Custom Property Widget:main/src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MacPropertyGrid.cs
 		{
 			//not implemented
 		}
