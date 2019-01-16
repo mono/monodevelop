@@ -145,13 +145,15 @@ namespace MonoDevelop.Ide.Commands
 			if (sol != null) {
 				MultiItemSolutionRunConfiguration config = null;
 				if (!sol.MultiStartupRunConfigurations.Any ()) {
-					using (var dlg = new NewSolutionRunConfigurationDialog ()) {
-						if (dlg.Run ().Id == "create") {
-							config = new MultiItemSolutionRunConfiguration (dlg.RunConfigurationName, dlg.RunConfigurationName);
-							sol.MultiStartupRunConfigurations.Add (config);
-							sol.StartupConfiguration = config;
+					Xwt.Toolkit.NativeEngine.Invoke (() => {
+						using (var dlg = new NewSolutionRunConfigurationDialog ()) {
+							if (dlg.Run ().Id == "create") {
+								config = new MultiItemSolutionRunConfiguration (dlg.RunConfigurationName, dlg.RunConfigurationName);
+								sol.MultiStartupRunConfigurations.Add (config);
+								sol.StartupConfiguration = config;
+							}
 						}
-					}
+					});
 				} else {
 					config = sol.MultiStartupRunConfigurations.FirstOrDefault ();
 				}

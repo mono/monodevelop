@@ -37,18 +37,21 @@ namespace MonoDevelop.Ide.Projects
 		public NewSolutionRunConfigurationDialog ()
 		{
 			Title = GettextCatalog.GetString ("Create Solution Run Configuration");
+			Resizable = false;
 
 			var box = new VBox ();
 			Content = box;
 
-			box.PackStart (
-				new Label (GettextCatalog.GetString ("Solution run configurations let you run multiple projects at once. Please provide a name to\nbe shown in the toolbar for this Solution run configuration.")),
-				true,
-				true
-			);
+			var label = new Label (GettextCatalog.GetString ("Solution run configurations let you run multiple projects at once. Please provide a name to\nbe shown in the toolbar for this Solution run configuration.")) {
+				CanGetFocus = false,
+				Wrap = WrapMode.Word
+			};
+			box.PackStart (label, true, true);
 
 			var hbox = new HBox ();
-			hbox.PackStart (new Label (GettextCatalog.GetString ("Run configuration name:")));
+			hbox.PackStart (new Label (GettextCatalog.GetString ("Run configuration name:")) {
+				CanGetFocus = false
+			});
 
 			runConfigNameEntry = new TextEntry {
 				Text = GettextCatalog.GetString ("Multiple Projects")
@@ -78,6 +81,12 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			}
 			base.OnCommandActivated (cmd);
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			runConfigNameEntry.SetFocus ();
 		}
 
 		protected override void Dispose (bool disposing)
