@@ -100,6 +100,7 @@
 		<PropertyGroup>
 			<_InjectedAppConfigForResolveReferences>true</_InjectedAppConfigForResolveReferences>
 			<AutoUnifyAssemblyReferences>false</AutoUnifyAssemblyReferences>
+			<IgnoreVersionForFrameworkReferences>true</IgnoreVersionForFrameworkReferences>
 		</PropertyGroup>
 		<ItemGroup>
 			<AppConfigWithTargetPath Include="$(MSBuildThisFileDirectory)..\src\core\MonoDevelop.Startup\app.config" />
