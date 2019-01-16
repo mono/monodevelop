@@ -77,29 +77,22 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool Equals (DescriptorPropertyInfo other)
 		{
-			if (ReferenceEquals (null, other))
+			if (other is null)
 				return false;
 			if (ReferenceEquals (this, other))
 				return true;
 
-			return this.PropertyDescriptor.Equals (other.PropertyDescriptor);
+			return PropertyDescriptor.Equals (other.PropertyDescriptor);
 		}
 
 		public override bool Equals (object obj)
 		{
-			if (ReferenceEquals (null, obj))
-				return false;
-			if (ReferenceEquals (this, obj))
-				return true;
-			if (obj.GetType () != this.GetType ())
-				return false;
-
-			return Equals ((DescriptorPropertyInfo)obj);
+			return obj is DescriptorPropertyInfo info && Equals (info);
 		}
 
 		public override int GetHashCode ()
 		{
-			return this.PropertyDescriptor.GetHashCode ();
+			return PropertyDescriptor.GetHashCode ();
 		}
 
 		public static Type GetCollectionItemType (Type colType)

@@ -39,10 +39,7 @@ namespace MonoDevelop.DesignerSupport
 	{
 		public PropertyDescriptorEventInfo (EventInfo info)
 		{
-			if (info == null)
-				throw new ArgumentNullException (nameof (info));
-
-			this.info = info;
+			this.info = info ?? throw new ArgumentNullException (nameof (info));
 		}
 
 		public string Name => this.info.Name;
@@ -51,18 +48,18 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//TODO:
 			if (target == null)
-				return new string [0];
+				return Array.Empty<string> ();
 
 			Type targetType = target.GetType ();
 			FieldInfo field = targetType.GetField ($"Event{Name}", BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.IgnoreCase);
 			Delegate d = field?.GetValue (target) as Delegate;
 			if (d == null)
-				return new string [0];
+				return Array.Empty<string> ();
 
 			return d.GetInvocationList ().Select (i => i.Method.Name).ToList ();
 		}
 
-		private EventInfo info;
+		private readonly EventInfo info;
 	}
 }
 
