@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Projection;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -126,14 +127,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				ImmutableArray<MonoDevelop.Projects.ProjectFile> sourceFiles = ImmutableArray<MonoDevelop.Projects.ProjectFile>.Empty;
 				ImmutableArray<FilePath> analyzerFiles = ImmutableArray<FilePath>.Empty;
 
-				if (hackyCache.TryGetCachedItems (p, out string[] files, out string[] analyzers)) {
-					var builder = sourceFiles.ToBuilder ();
-					builder.Capacity = files.Length;
-
-					foreach (var file in files) {
-						builder.Add (p.GetProjectFile (file));
-					}
-					sourceFiles = builder.MoveToImmutable ();
+				if (hackyCache.TryGetCachedItems (p, out ProjectFile[] files, out string[] analyzers)) {
+					sourceFiles = files.ToImmutableArray ();
 
 					var builder2 = analyzerFiles.ToBuilder ();
 					builder2.Capacity = analyzers.Length;
@@ -150,7 +145,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
 
 					if (config != null)
-						hackyCache.Update (config, p, sourceFiles.Select (x => (string)x.FilePath).ToArray (), analyzerFiles.Select (x => (string)x).ToArray ());
+						hackyCache.Update (config, p, sourceFiles, analyzerFiles);
 				}
 
 				if (token.IsCancellationRequested)

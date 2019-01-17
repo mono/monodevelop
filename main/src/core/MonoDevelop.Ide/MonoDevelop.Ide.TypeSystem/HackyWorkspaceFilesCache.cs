@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
@@ -44,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public HackyWorkspaceFilesCache (Solution solution)
 		{
-			if (!IdeApp.IsInitialized || enabled == false)
+			if (!IdeApp.IsInitialized || enabled == false || solution == null)
 				return;
 
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("hacky-project-cache");
@@ -66,18 +67,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				var cacheFilePath = GetProjectCacheFile (project, config);
 
 				try {
+					if (!File.Exists (cacheFilePath))
+						continue;
+
 					using (var sr = File.OpenText (cacheFilePath)) {
 						var value = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
 
 						var cachedStamp = value.TimeStamp;
 						if (cachedStamp == File.GetLastWriteTimeUtc (projectFilePath))
-							cachedItems [projectFilePath] = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
+							cachedItems [projectFilePath] = value;
 
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not deserialize project cache", ex);
 					TryDeleteFile (cacheFilePath);
-					return;
+					continue;
 				}
 			}
 		}
@@ -96,11 +100,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void Update (ProjectConfiguration projConfig, Project proj, string[] files, string[] analyzers)
+		public void Update (ProjectConfiguration projConfig, Project proj, ImmutableArray<ProjectFile> files, ImmutableArray<FilePath> analyzers)
 		{
+			var paths = new string [files.Length];
+			var actions = new string [files.Length];
+
+			for (int i = 0; i < files.Length; ++i) {
+				paths [i] = files [i].FilePath;
+				actions [i] = files [i].BuildAction;
+			}
+
 			var item = new ProjectCache {
-				Analyzers = analyzers,
-				Files = files,
+				Analyzers = analyzers.Select(x => (string)x).ToArray (),
+				Files = paths,
+				BuildActions = actions,
 				TimeStamp = File.GetLastWriteTimeUtc (proj.FileName),
 			};
 			cachedItems [proj.FileName] = item;
@@ -114,18 +127,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public bool TryGetCachedItems (Project p, out string[] files, out string[] analyzers)
+		public bool TryGetCachedItems (Project p, out ProjectFile[] files, out string[] analyzers)
 		{
-			files = analyzers = null;
+			files = null;
+			analyzers = null;
 
 			if (!cachedItems.TryGetValue (p.FileName, out var cachedData)) {
 				return false;
 			}
 
+			cachedItems.Remove (p.FileName);
+
 			if (cachedData.TimeStamp != File.GetLastWriteTimeUtc (p.FileName))
 				return false;
 
-			files = cachedData.Files;
+			files = new ProjectFile [cachedData.Files.Length];
+			for (int i = 0; i < cachedData.Files.Length; ++i) {
+				files [i] = new ProjectFile (cachedData.Files [i], cachedData.BuildActions [i]) {
+					Project = p,
+				};
+			}
+
 			analyzers = cachedData.Analyzers;
 			return true;
 		}
@@ -136,6 +158,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public DateTime TimeStamp;
 
 			public string [] Files;
+			public string [] BuildActions;
 			public string [] Analyzers;
 		}
 	}
