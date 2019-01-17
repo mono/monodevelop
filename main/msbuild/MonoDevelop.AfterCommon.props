@@ -85,6 +85,7 @@
 
 	<!-- default refs. the TargetFramework check is to exclude RefactoringEssentials  -->
 	<ItemGroup Condition="'$(AddMonoDevelopCoreReferences)' == 'true'">
+		<Reference Include="System.ComponentModel.Composition" />
 		<ProjectReference Include="$(MonoDevelopRootDir)src\core\MonoDevelop.Core\MonoDevelop.Core.csproj" Private="False" />
 		<ProjectReference Include="$(MonoDevelopRootDir)src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj" Private="False" />
 		<ProjectReference Include="$(MonoDevelopRootDir)external\mono-addins\Mono.Addins\Mono.Addins.csproj" Private="False" />
