@@ -45,18 +45,26 @@ namespace MonoDevelop.Core.Execution
 		
 		public override ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
-			var dotcmd = (DotNetExecutionCommand) command;
-			
-			string runtimeArgs = string.IsNullOrEmpty (dotcmd.RuntimeArguments) ? "--debug" : dotcmd.RuntimeArguments;
+			var dotcmd = (DotNetExecutionCommand)command;
 
-			var monoRunner = runtime.GetMonoExecutableForAssembly (dotcmd.Command);
-			
+			string runtimeArgs = string.IsNullOrEmpty (dotcmd.RuntimeArguments) ? "--debug" : dotcmd.RuntimeArguments;
+			var monoRunner = GetExecutionRunner (command, dotcmd);
 			string args = string.Format ("{2} \"{0}\" {1}", dotcmd.Command, dotcmd.Arguments, runtimeArgs);
 			NativeExecutionCommand cmd = new NativeExecutionCommand (monoRunner, args, dotcmd.WorkingDirectory, dotcmd.EnvironmentVariables);
-			
+
 			return base.Execute (cmd, console);
 		}
-		
+
+		private string GetExecutionRunner (ExecutionCommand command, DotNetExecutionCommand dotcmd)
+		{
+			if (command is ProcessExecutionCommand processExecutionCommand) {
+				if (processExecutionCommand.EnvironmentVariables.TryGetValue ("MONO_USE64BIT", out var value) && bool.TryParse (value, out var use64Bit)) {
+					return runtime.GetMonoExecutable (use64Bit);
+				}
+			}
+			return runtime.GetMonoExecutableForAssembly (dotcmd.Command);
+		}
+
 		public override bool CanExecute (ExecutionCommand command)
 		{
 			return command is DotNetExecutionCommand;
