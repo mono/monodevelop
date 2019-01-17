@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Projects;
 using Newtonsoft.Json;
 
@@ -35,6 +36,8 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	class HackyWorkspaceFilesCache
 	{
+		readonly bool? enabled = FeatureSwitchService.IsFeatureEnabled ("HackyCache");
+
 		readonly FilePath cacheDir;
 		readonly FilePath mappingFile;
 
@@ -43,7 +46,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public HackyWorkspaceFilesCache (Solution solution, ConfigurationSelector configuration)
 		{
-			if (!IdeApp.IsInitialized)
+			if (!IdeApp.IsInitialized || enabled == false)
 				return;
 
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("project-cache");
