@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.TextEditor
 {
@@ -123,10 +124,9 @@ namespace MonoDevelop.TextEditor
 			CreateLineNumber (editorFormat, defaultSettings);
 			CreateOutlining(editorFormat, defaultSettings);
 			CreateCaret (editorFormat, defaultSettings);
+			CreateSelection (editorFormat, defaultSettings);
 			CreateResourceDictionary (editorFormat, defaultSettings, "text", EditorThemeColors.Foreground, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "TextView Background", EditorThemeColors.Background);
-			CreateResourceDictionary (editorFormat, defaultSettings, "Selected Text", EditorThemeColors.Selection);
-			CreateResourceDictionary (editorFormat, defaultSettings, "Inactive Selected Text", EditorThemeColors.InactiveSelection);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedReference", EditorThemeColors.UsagesRectangle);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedDefinition", EditorThemeColors.ChangingUsagesRectangle);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedWrittenReference", EditorThemeColors.ChangingUsagesRectangle);
@@ -146,6 +146,24 @@ namespace MonoDevelop.TextEditor
 					CreateResourceDictionary (editorFormat, mapping.Item1, setting);
 			}
 			editorFormat.EndBatchUpdate ();
+		}
+
+		private void CreateSelection (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		{
+			if (defaultSettings.TryGetColor (EditorThemeColors.Selection, out var selectionColor)) {
+				var (r, g, b, a) = selectionColor.ToRgba ();
+				var c = Color.FromArgb (a, r, g, b);
+				var resourceDictionary = editorFormat.GetProperties ("Selected Text");
+				resourceDictionary.Add (EditorFormatDefinition.BackgroundBrushId, new SolidColorBrush (c));
+				editorFormat.SetProperties ("Selected Text", resourceDictionary);
+			}
+			if (defaultSettings.TryGetColor (EditorThemeColors.InactiveSelection, out var inactiveSelectionColor)) {
+				var (r, g, b, a) = inactiveSelectionColor.ToRgba ();
+				var c = Color.FromArgb (a, r, g, b);
+				var resourceDictionary = editorFormat.GetProperties ("Inactive Selected Text");
+				resourceDictionary.Add (EditorFormatDefinition.BackgroundBrushId, new SolidColorBrush (c));
+				editorFormat.SetProperties ("Inactive Selected Text", resourceDictionary);
+			}
 		}
 
 		private void CreateCaret (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
