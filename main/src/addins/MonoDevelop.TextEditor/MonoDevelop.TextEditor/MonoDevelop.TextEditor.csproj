@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
+  <PropertyGroup>
+    <AssemblyTitle>MonoDevelop Text Editor</AssemblyTitle>
+    <AssemblyDescription>Integrates the Visual Studio Editor into MonoDevelop</AssemblyDescription>
+    <OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor</OutputPath>
+    <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
+  </ItemGroup>
+</Project>
