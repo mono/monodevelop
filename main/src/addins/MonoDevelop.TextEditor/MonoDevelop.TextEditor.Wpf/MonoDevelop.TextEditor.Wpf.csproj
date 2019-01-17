@@ -1,5 +1,4 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems')" />
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
@@ -89,6 +88,9 @@
     <Compile Include="KeyProcessor\DefaultKeyProcessor.cs" />
     <Compile Include="KeyProcessor\DefaultKeyProcessorProvider.cs" />
     <Compile Include="RootWpfWidget.cs" />
+    <Compile Include="WpfTextViewDisplayBinding.cs" />
+    <Compile Include="WpfTextViewImports.cs" />
+    <Compile Include="WpfTextViewContent.cs" />
     <Compile Include="Undo\UndoHistory.cs" />
     <Compile Include="Undo\UndoHistoryRegistry.cs" />
     <Compile Include="Undo\UndoTransaction.cs" />

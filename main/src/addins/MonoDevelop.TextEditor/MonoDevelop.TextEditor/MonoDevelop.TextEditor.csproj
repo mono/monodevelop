@@ -12,4 +12,12 @@
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj" Private="False" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="VacuousTextDataModel.cs" />
+    <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" Link="UIExtensionSelector.cs" />
+    <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="VacuousTextViewModel.cs" />
+  </ItemGroup>
 </Project>
