@@ -101,6 +101,11 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                                                                                      PredefinedTextViewRoles.Structured,
                                                                                      PredefinedTextViewRoles.Zoomable);
 
+        private static readonly string[] allowedTextViewModelProviders =
+        {
+            "WebToolingAddin.HtmlTextViewModelProvider" // for Razor
+        };
+
         public ITextView CreateTextView(MonoDevelop.Ide.Editor.TextEditor textEditor)
         {
             if (textEditor == null)
@@ -113,8 +118,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             ITextBuffer textBuffer = textEditor.GetContent<Mono.TextEditor.ITextEditorDataProvider>().GetTextEditorData().Document.TextBuffer;
             ITextDataModel dataModel = new VacuousTextDataModel(textBuffer);
 
+            var providers = TextViewModelProviders
+                .Where (t => allowedTextViewModelProviders.Contains (t.Value.ToString ()))
+                .ToArray ();
+
             ITextViewModel viewModel = UIExtensionSelector.InvokeBestMatchingFactory
-                            (TextViewModelProviders,
+                            (providers,
                              dataModel.ContentType,
                              roles,
                              (provider) => (provider.CreateTextViewModel(dataModel, roles)),
