@@ -477,7 +477,7 @@ namespace MonoDevelop.DotNetCore
 			base.OnBeginLoad ();
 		}
 
-		public bool HasSdk => Project.MSBuildProject.GetReferencedSDKs ().Any ();
+		public bool HasSdk => Project.MSBuildProject.GetReferencedSDKs ().Length > 0;
 
 		protected bool IsWebProject (DotNetProject project)
 		{
