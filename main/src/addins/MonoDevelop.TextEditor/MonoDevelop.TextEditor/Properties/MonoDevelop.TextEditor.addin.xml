@@ -99,6 +99,8 @@
 				type = "check"/>
 	</Extension>
 -->
+	<!-- this is the old menu -->
+	<!--
 	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
@@ -119,7 +121,21 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" _label = "Insert Template..."  />
 		<SeparatorItem id = "Separator5" />
 	</Extension>
-<!-->
+-->
+
+	<!-- temporary, need to align with old menu -->
+	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" />
+		<SeparatorItem id = "Separator3" />
+	</Extension>
+<!--
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top" />
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom" />

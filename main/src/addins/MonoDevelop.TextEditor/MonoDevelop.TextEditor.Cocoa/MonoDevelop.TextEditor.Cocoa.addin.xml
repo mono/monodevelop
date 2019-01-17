@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
-	<!-- Extension points -->
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />
@@ -35,24 +33,6 @@
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
-	</Extension>
-	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/Editor" name = "Editor context menu">
-		<Description>Context menu for the editor.</Description>;
-		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
-		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
-			<Description>Type of the file being edited.</Description>
-		</ConditionType>
-	</ExtensionPoint>
-	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
-		<SeparatorItem id = "Separator1" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
-		<SeparatorItem id = "Separator2" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" />
-		<SeparatorItem id = "Separator3" />
 		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.TextEditor.TextViewDisplayBinding" />
 	</Extension>
 </ExtensionModel>
