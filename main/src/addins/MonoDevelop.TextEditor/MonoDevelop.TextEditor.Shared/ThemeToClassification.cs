@@ -12,7 +12,7 @@ namespace MonoDevelop.TextEditor
 {
 	class ThemeToClassification : IDisposable
 	{
-		IEditorFormatMapService editorFormatMapService;
+		readonly IEditorFormatMapService editorFormatMapService;
 		public ThemeToClassification (IEditorFormatMapService editorFormatMapService)
 		{
 			this.editorFormatMapService = editorFormatMapService;
@@ -25,7 +25,7 @@ namespace MonoDevelop.TextEditor
 			Ide.Editor.DefaultSourceEditorOptions.Instance.Changed -= UpdateEditorFormatMap;
 		}
 
-		List<(string, string)> mappings = new List<(string, string)> {
+		List<(string EditorFormatName, string MDThemeSettingName)> mappings = new List<(string, string)> {
 			("preprocessor text", "Preprocessor region name"),
 			("punctuation", "punctuation"),
 			("string - verbatim", "String Verbatim"),
@@ -142,8 +142,8 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "returnstatement", EditorThemeColors.DebuggerStackLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Indicator Margin", EditorThemeColors.IndicatorMargin);
 			foreach (var mapping in mappings) {
-				if (settingsMap.TryGetValue (mapping.Item2, out var setting))
-					CreateResourceDictionary (editorFormat, mapping.Item1, setting);
+				if (settingsMap.TryGetValue (mapping.MDThemeSettingName, out var setting))
+					CreateResourceDictionary (editorFormat, mapping.EditorFormatName, setting);
 			}
 			editorFormat.EndBatchUpdate ();
 		}
@@ -190,8 +190,8 @@ namespace MonoDevelop.TextEditor
 			// There is EditorThemeColors.FoldCross and EditorThemeColors.FoldCrossBackground
 			// but old editor is using ForeGround and FoldLine colors...
 			var resourceDictionary = editorFormat.GetProperties ("outlining.square");
-			if (defaultSettings.TryGetColor (EditorThemeColors.Foreground, out var forgroundColor)) {
-				var (r, g, b, a) = forgroundColor.ToRgba ();
+			if (defaultSettings.TryGetColor (EditorThemeColors.Foreground, out var foregroundColor)) {
+				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary.Add (EditorFormatDefinition.ForegroundBrushId, new SolidColorBrush (c));
 			}
@@ -244,8 +244,8 @@ namespace MonoDevelop.TextEditor
 		private static void CreateLineNumber (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			var resourceDictionary = editorFormat.GetProperties ("Line Number");
-			if (defaultSettings.TryGetColor ("gutterForeground", out var forgroundColor)) {
-				var (r, g, b, a) = forgroundColor.ToRgba ();
+			if (defaultSettings.TryGetColor ("gutterForeground", out var foregroundColor)) {
+				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary.Add (EditorFormatDefinition.ForegroundColorId, c);
 			}
@@ -260,16 +260,19 @@ namespace MonoDevelop.TextEditor
 		private static void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			var resourceDictionary = editorFormat.GetProperties ("Plain Text");
-			if (defaultSettings.TryGetColor ("foreground", out var forgroundColor)) {
-				var (r, g, b, a) = forgroundColor.ToRgba ();
+			if (defaultSettings.TryGetColor ("foreground", out var foregroundColor)) {
+				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary.Add (EditorFormatDefinition.ForegroundColorId, c);
 			}
 			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
-			var fontSize = int.Parse (fontName.Substring (fontName.LastIndexOf (' ') + 1));
+			if (!int.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {
+				fontSize = 12;
+				LoggingService.LogError ($"Failed to parse font size from font name {fontName}");
+			}
 			fontName = fontName.Remove (fontName.LastIndexOf (' '));
 #if MAC
-			resourceDictionary [ClassificationFormatDefinition.TypefaceId] = AppKit.NSFont.FromFontName (fontName, fontSize);
+			resourceDictionary [ClassificationFormatDefinition.TypefaceId] = AppKit.NSFontWorkarounds.FromFontName (fontName, fontSize);
 #elif WINDOWS
 			resourceDictionary [ClassificationFormatDefinition.TypefaceId] = new Typeface (fontName);
 			resourceDictionary [ClassificationFormatDefinition.FontRenderingSizeId] = (double)(fontSize * 96 / 72);

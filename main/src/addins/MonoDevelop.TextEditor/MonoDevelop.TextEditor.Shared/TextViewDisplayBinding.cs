@@ -32,6 +32,8 @@ namespace MonoDevelop.TextEditor
 {
 	class TextViewDisplayBinding : IViewDisplayBinding, IDisposable
 	{
+		ThemeToClassification themeToClassification;
+
 		public string Name => GettextCatalog.GetString ("New Editor");
 
 		public bool CanUseAsDefault => true;
@@ -80,7 +82,7 @@ namespace MonoDevelop.TextEditor
 			var buildAction = ownerProject.GetProjectFile (fileName)?.BuildAction;
 			return string.Equals (buildAction, AndroidResourceBuildAction, System.StringComparison.Ordinal);
 		}
-		ThemeToClassification themeToClassification;
+
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			var imports = CompositionManager.GetExportedValue<TextViewImports> ();
