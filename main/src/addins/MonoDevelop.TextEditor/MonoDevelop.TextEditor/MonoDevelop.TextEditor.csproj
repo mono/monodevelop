@@ -5,7 +5,7 @@
   <PropertyGroup>
     <AssemblyTitle>MonoDevelop Text Editor</AssemblyTitle>
     <AssemblyDescription>Integrates the Visual Studio Editor into MonoDevelop</AssemblyDescription>
-    <OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor</OutputPath>
+    <OutDir>..\..\..\..\build\AddIns\DisplayBindings\TextEditor</OutDir>
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
   </PropertyGroup>
   <ItemGroup>

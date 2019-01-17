@@ -65,6 +65,7 @@
 		<Analyzer Include="$(MonoDevelopDevAnalyzer)" Condition="Exists('$(MonoDevelopDevAnalyzer)')" />
 	</ItemGroup>
 
+	<!-- hide these items from VS -->
 	<ItemDefinitionGroup>
 		<IncludeCopyLocal>
 			<Visible>False</Visible>

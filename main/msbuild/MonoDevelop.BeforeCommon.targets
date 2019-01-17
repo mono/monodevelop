@@ -21,7 +21,9 @@
 		<Deterministic>True</Deterministic>
 		<!-- always produce docs -->
 		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
-		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+		<OutDir Condition="'$(OutDir)'==''">$(OutputPath)</OutDir>
+		<OutDir Condition="!HasTrailingSlash('$(OutDir)')">$(OutDir)\</OutputPath>
+		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutDir)$(AssemblyName).xml</DocumentationFile>
 		<!-- don't warn about missing doc comments -->
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
 	</PropertyGroup>
