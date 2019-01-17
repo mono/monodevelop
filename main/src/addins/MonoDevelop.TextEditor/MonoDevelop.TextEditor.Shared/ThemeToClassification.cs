@@ -154,14 +154,14 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = selectionColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				var resourceDictionary = editorFormat.GetProperties ("Selected Text");
-				resourceDictionary.Add (EditorFormatDefinition.BackgroundBrushId, new SolidColorBrush (c));
+				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
 				editorFormat.SetProperties ("Selected Text", resourceDictionary);
 			}
 			if (defaultSettings.TryGetColor (EditorThemeColors.InactiveSelection, out var inactiveSelectionColor)) {
 				var (r, g, b, a) = inactiveSelectionColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				var resourceDictionary = editorFormat.GetProperties ("Inactive Selected Text");
-				resourceDictionary.Add (EditorFormatDefinition.BackgroundBrushId, new SolidColorBrush (c));
+				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
 				editorFormat.SetProperties ("Inactive Selected Text", resourceDictionary);
 			}
 		}
@@ -172,7 +172,7 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = primaryColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				var resourceDictionary = editorFormat.GetProperties ("Caret (Primary)");
-				resourceDictionary.Add (EditorFormatDefinition.ForegroundBrushId, new SolidColorBrush (c));
+				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 				editorFormat.SetProperties ("Caret (Primary)", resourceDictionary);
 			}
 			//TODO: Use different color for secondary caret
@@ -180,7 +180,7 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = secondaryColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				var resourceDictionary = editorFormat.GetProperties ("Caret (Secondary)");
-				resourceDictionary.Add (EditorFormatDefinition.ForegroundBrushId, new SolidColorBrush (c));
+				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 				editorFormat.SetProperties ("Caret (Secondary)", resourceDictionary);
 			}
 		}
@@ -193,19 +193,19 @@ namespace MonoDevelop.TextEditor
 			if (defaultSettings.TryGetColor (EditorThemeColors.Foreground, out var foregroundColor)) {
 				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (EditorFormatDefinition.ForegroundBrushId, new SolidColorBrush (c));
+				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 			}
 			if (defaultSettings.TryGetColor (EditorThemeColors.FoldLine, out var backgroundColor)) {
 				var (r, g, b, a) = backgroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (EditorFormatDefinition.BackgroundBrushId, new SolidColorBrush (c));
+				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
 			}
 			editorFormat.SetProperties ("outlining.square", resourceDictionary);
 			if (defaultSettings.TryGetColor (EditorThemeColors.CollapsedText, out var collapsedColor)) {
 				var (r, g, b, a) = collapsedColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				var collapsedResourceDictionary = editorFormat.GetProperties ("Collapsible Text (Collapsed)");
-				collapsedResourceDictionary.Add (EditorFormatDefinition.ForegroundBrushId, new SolidColorBrush (c));
+				collapsedResourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 				editorFormat.SetProperties ("Collapsible Text (Collapsed)", collapsedResourceDictionary);
 			}
 		}
@@ -217,15 +217,15 @@ namespace MonoDevelop.TextEditor
 			if (setting.TryGetColor (EditorThemeColors.Foreground, out color)) {
 				var (r, g, b, a) = color.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (EditorFormatDefinition.ForegroundColorId, c);
+				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
 			}
 			if (setting.TryGetColor (EditorThemeColors.Background, out color)) {
 				var (r, g, b, a) = color.ToRgba ();
-				resourceDictionary.Add (EditorFormatDefinition.BackgroundColorId, Color.FromArgb (a, r, g, b));
+				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = Color.FromArgb (a, r, g, b);
 			}
 
 			if (setting.TryGetSetting ("fontStyle", out var style)) {
-				resourceDictionary.Add (ClassificationFormatDefinition.IsBoldId, style.Contains ("bold"));
+				resourceDictionary [ClassificationFormatDefinition.IsBoldId] = style.Contains ("bold");
 			}
 			editorFormat.SetProperties (formatName, resourceDictionary);
 		}
@@ -236,7 +236,7 @@ namespace MonoDevelop.TextEditor
 			if (defaultSettings.TryGetColor (settingName, out var backgroundColor)) {
 				var (r, g, b, a) = backgroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (key, c);
+				resourceDictionary [key] = c;
 			}
 			editorFormat.SetProperties (vsName, resourceDictionary);
 		}
@@ -247,12 +247,12 @@ namespace MonoDevelop.TextEditor
 			if (defaultSettings.TryGetColor ("gutterForeground", out var foregroundColor)) {
 				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (EditorFormatDefinition.ForegroundColorId, c);
+				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
 			}
 			if (defaultSettings.TryGetColor ("gutter", out var backgroundColor)) {
 				var (r, g, b, a) = backgroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (EditorFormatDefinition.BackgroundColorId, c);
+				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
 			}
 			editorFormat.SetProperties ("Line Number", resourceDictionary);
 		}
@@ -263,7 +263,7 @@ namespace MonoDevelop.TextEditor
 			if (defaultSettings.TryGetColor ("foreground", out var foregroundColor)) {
 				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary.Add (EditorFormatDefinition.ForegroundColorId, c);
+				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
 			}
 			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
 			if (!int.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {
