@@ -188,6 +188,13 @@ namespace MonoDevelop.Components
 			return rv << 16 | gv << 8 | bv;
 		}
 
+		public (byte R, byte G, byte B, byte A) ToRgba ()
+		{
+			double r, g, b;
+			ToRgb (out r, out g, out b);
+			return ((byte)(r * 255), (byte)(g * 255), (byte) (b * 255), (byte)(Alpha * 255));
+		}
+
 		public static HslColor FromPixel (uint pixel)
 		{
 			var r = ((pixel >> 16) & 0xFF) / 255.0;

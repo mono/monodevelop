@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	class TextViewDisplayBinding : IViewDisplayBinding
+	class TextViewDisplayBinding : IViewDisplayBinding, IDisposable
 	{
 		public string Name => GettextCatalog.GetString ("New Editor");
 
@@ -80,12 +80,20 @@ namespace MonoDevelop.TextEditor
 			var buildAction = ownerProject.GetProjectFile (fileName)?.BuildAction;
 			return string.Equals (buildAction, AndroidResourceBuildAction, System.StringComparison.Ordinal);
 		}
-
+		ThemeToClassification themeToClassification;
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			var imports = CompositionManager.GetExportedValue<TextViewImports> ();
+			if (themeToClassification == null)
+				themeToClassification = new ThemeToClassification (imports.EditorFormatMapService);
 			var viewContent = new TextViewContent (imports, fileName, mimeType, ownerProject);
 			return viewContent;
+		}
+
+		public void Dispose ()
+		{
+			themeToClassification?.Dispose ();
+			themeToClassification = null;
 		}
 	}
 }
