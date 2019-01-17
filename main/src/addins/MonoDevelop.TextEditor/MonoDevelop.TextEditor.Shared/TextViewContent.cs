@@ -85,7 +85,7 @@ namespace MonoDevelop.TextEditor
 	partial class TextViewContent : AbstractXwtViewContent, INavigable
 	{
 #elif MAC
-	partial class TextViewContent : ViewContent, Gui.Content.INavigable
+	partial class TextViewContent : ViewContent, INavigable
 	{
 		sealed class EmbeddedNSViewControl : Control
 		{
