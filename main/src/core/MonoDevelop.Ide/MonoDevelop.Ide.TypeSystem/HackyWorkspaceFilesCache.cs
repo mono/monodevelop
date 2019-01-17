@@ -67,7 +67,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				try {
 					using (var sr = File.OpenText (cacheFilePath)) {
-						cachedItems [projectFilePath] = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
+						var value = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
+
+						var cachedStamp = value.TimeStamp;
+						if (cachedStamp == File.GetLastWriteTimeUtc (projectFilePath))
+							cachedItems [projectFilePath] = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
+
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not deserialize project cache", ex);
@@ -116,6 +121,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!cachedItems.TryGetValue (p.FileName, out var cachedData)) {
 				return false;
 			}
+
+			if (cachedData.TimeStamp != File.GetLastWriteTimeUtc (p.FileName))
+				return false;
 
 			files = cachedData.Files;
 			analyzers = cachedData.Analyzers;
