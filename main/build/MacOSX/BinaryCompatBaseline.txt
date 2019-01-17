@@ -6,10 +6,6 @@ In VisualStudio.exe.config: couldn't find assembly 'Microsoft.VisualStudio.Langu
 In VisualStudio.exe.config: System.Diagnostics.FileVersionInfo, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.0.1.0
 In VisualStudio.exe.config: System.Diagnostics.FileVersionInfo, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.0.1.0
 In VisualStudio.exe.config: couldn't find assembly 'System.Diagnostics.FileVersionInfo' with version 4.0.1.0. Found versions: 4.0.2.0
-In VisualStudio.exe.config: System.Diagnostics.Tracing, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Diagnostics.Tracing, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Diagnostics.Tracing, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Diagnostics.Tracing' with version 4.1.0.0. Found versions: 4.2.0.0
 In VisualStudio.exe.config: System.Linq.Expressions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
 In VisualStudio.exe.config: System.Linq.Expressions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
 In VisualStudio.exe.config: couldn't find assembly 'System.Linq.Expressions' with version 4.1.0.0. Found versions: 4.1.2.0
@@ -17,10 +13,6 @@ In VisualStudio.exe.config: System.Linq, Version=4.1.2.0, Culture=neutral, Publi
 In VisualStudio.exe.config: System.Linq, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
 In VisualStudio.exe.config: couldn't find assembly 'System.Linq' with version 4.1.0.0. Found versions: 4.1.2.0
 In VisualStudio.exe.config: couldn't find assembly 'System.Net.Http.Formatting' with version 5.2.3.0.
-In VisualStudio.exe.config: System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.1.2
-In VisualStudio.exe.config: System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.1.2
-In VisualStudio.exe.config: System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.1.2
-In VisualStudio.exe.config: couldn't find assembly 'System.Net.Http' with version 4.1.1.2. Found versions: 4.2.0.0
 In VisualStudio.exe.config: System.Reflection, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
 In VisualStudio.exe.config: System.Reflection, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
 In VisualStudio.exe.config: couldn't find assembly 'System.Reflection' with version 4.1.0.0. Found versions: 4.1.2.0
