@@ -102,6 +102,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public void Update (ProjectConfiguration projConfig, Project proj, ImmutableArray<ProjectFile> files, ImmutableArray<FilePath> analyzers)
 		{
+			if (enabled.GetValueOrDefault() == false)
+				return;
+
 			var paths = new string [files.Length];
 			var actions = new string [files.Length];
 
