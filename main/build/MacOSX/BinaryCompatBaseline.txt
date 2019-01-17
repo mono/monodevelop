@@ -1,34 +1,5 @@
-In VisualStudio.exe.config: FSharp.Compiler.Service, Version=25.0.1.0, Culture=neutral, PublicKeyToken=e33b67d3bb5581e4 version is higher than bindingRedirect range end 23.0.1.0
-In VisualStudio.exe.config: couldn't find assembly 'FSharp.Compiler.Service' with version 23.0.1.0. Found versions: 25.0.1.0
 In VisualStudio.exe.config: couldn't find assembly 'Microsoft.Build.Framework' with version 15.1.0.0.
 In VisualStudio.exe.config: couldn't find assembly 'Microsoft.Build' with version 15.1.0.0.
-In VisualStudio.exe.config: couldn't find assembly 'Microsoft.VisualStudio.Language.IntelliSense' with version 16.0.0.0.
-In VisualStudio.exe.config: System.Diagnostics.FileVersionInfo, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.0.1.0
-In VisualStudio.exe.config: System.Diagnostics.FileVersionInfo, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.0.1.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Diagnostics.FileVersionInfo' with version 4.0.1.0. Found versions: 4.0.2.0
-In VisualStudio.exe.config: System.Linq.Expressions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Linq.Expressions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Linq.Expressions' with version 4.1.0.0. Found versions: 4.1.2.0
-In VisualStudio.exe.config: System.Linq, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Linq, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Linq' with version 4.1.0.0. Found versions: 4.1.2.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Net.Http.Formatting' with version 5.2.3.0.
-In VisualStudio.exe.config: System.Reflection, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Reflection, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Reflection' with version 4.1.0.0. Found versions: 4.1.2.0
-In VisualStudio.exe.config: System.Runtime.Extensions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Runtime.Extensions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Runtime.Extensions' with version 4.1.0.0. Found versions: 4.1.2.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Runtime.InteropServices.RuntimeInformation' with version 4.0.0.0. Found versions: 4.0.2.0
-In VisualStudio.exe.config: System.Security.Cryptography.X509Certificates, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.1.0
-In VisualStudio.exe.config: System.Security.Cryptography.X509Certificates, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.1.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Security.Cryptography.X509Certificates' with version 4.1.1.0. Found versions: 4.1.2.0
-In VisualStudio.exe.config: System.Text.RegularExpressions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: System.Text.RegularExpressions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.1.0.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Text.RegularExpressions' with version 4.1.0.0. Found versions: 4.1.1.0
-In VisualStudio.exe.config: System.Threading.Thread, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.0.1.0
-In VisualStudio.exe.config: System.Threading.Thread, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a version is higher than bindingRedirect range end 4.0.1.0
-In VisualStudio.exe.config: couldn't find assembly 'System.Threading.Thread' with version 4.0.1.0. Found versions: 4.0.2.0
 Could not load file or assembly 'Android Device Manager, Version=1.2.0.11, Culture=neutral, PublicKeyToken=null' or one of its dependencies
 Could not load file or assembly 'INIFileParser, Version=2.4.0.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c' or one of its dependencies
 Could not load file or assembly 'Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
