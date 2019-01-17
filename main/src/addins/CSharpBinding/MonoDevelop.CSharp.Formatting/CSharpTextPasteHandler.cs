@@ -106,6 +106,8 @@ namespace MonoDevelop.CSharp.Formatting
 			  indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
 			var doc = indent.DocumentContext.AnalysisDocument;
+			if (doc == null)
+				return;
 			var options = await doc.GetOptionsAsync ();
 			if (!options.GetOption (FeatureOnOffOptions.FormatOnPaste, doc.Project.Language))
 				return;
