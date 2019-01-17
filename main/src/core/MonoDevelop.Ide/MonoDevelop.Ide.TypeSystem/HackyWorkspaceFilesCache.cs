@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void Update (SolutionConfiguration solConfig, Project proj, string[] files, string[] analyzers)
+		public void Update (ProjectConfiguration projConfig, Project proj, string[] files, string[] analyzers)
 		{
 			var item = new ProjectCache {
 				Analyzers = analyzers,
@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 			cachedItems [proj.FileName] = item;
 
-			var cacheFile = GetProjectCacheFile (proj, solConfig.GetMappedConfiguration (proj));
+			var cacheFile = GetProjectCacheFile (proj, projConfig.Id);
 
 			var serializer = new JsonSerializer ();
 			using (var fs = File.Open (cacheFile, FileMode.Create))

@@ -148,6 +148,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						return null;
 
 					analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+
+					if (config != null)
+						hackyCache.Update (config, p, sourceFiles.Select (x => (string)x.FilePath).ToArray (), analyzerFiles.Select (x => (string)x).ToArray ());
 				}
 
 				if (token.IsCancellationRequested)
