@@ -21,6 +21,11 @@
 		<Deterministic>True</Deterministic>
 	</PropertyGroup>
 
+	<!-- AddinBuildDir is shorthand for which subdir of build\Addins to build into -->
+	<PropertyGroup Condition="'$(AddinBuildDir)'!=''">
+		<OutDir>$(MonoDevelopRootDir)build\AddIns\$([MSBuild]::EnsureTrailingSlash('$(AddinBuildDir)'))</OutDir>
+	</PropertyGroup>
+
 	<!-- produce docs unless explicitly disabled -->
 	<PropertyGroup Condition="'$(SuppressDocs)'!='True'">
 		<DocsDir>$([MSBuild]::ValueOrDefault('$(OutDir)', '$(OutputPath)'))</DocsDir>
