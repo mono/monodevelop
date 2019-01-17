@@ -19,11 +19,12 @@
 		<DebugType>portable</DebugType>
 		<WarningLevel>4</WarningLevel>
 		<Deterministic>True</Deterministic>
-		<!-- always produce docs -->
-		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
-		<OutDir Condition="'$(OutDir)'==''">$(OutputPath)</OutDir>
-		<OutDir Condition="!HasTrailingSlash('$(OutDir)')">$(OutDir)\</OutputPath>
-		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutDir)$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<!-- produce docs unless explicitly disabled -->
+	<PropertyGroup Condition="'$(SuppressDocs)'!='True'">
+		<DocsDir>$([MSBuild]::ValueOrDefault('$(OutDir)', '$(OutputPath)'))</DocsDir>
+		<DocumentationFile Condition="'$(DocsDir)' !=''">$([MSBuild]::EnsureTrailingSlash('$(DocsDir)'))$(AssemblyName).xml</DocumentationFile>
 		<!-- don't warn about missing doc comments -->
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
 	</PropertyGroup>
