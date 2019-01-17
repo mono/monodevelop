@@ -341,7 +341,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.TextEditor", "M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Wpf", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Wpf\MonoDevelop.TextEditor.Wpf.csproj", "{29D34EA6-D312-4690-9FE9-1EA1F2EBAC2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj", "{3F5B5BDA-69D5-441A-8142-AA25C998A997}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoDevelop.TextEditor", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj", "{3F5B5BDA-69D5-441A-8142-AA25C998A997}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vs-editor-core", "vs-editor-core", "{669BD438-1BDC-40C6-83CA-CEC133D036A0}"
 EndProject
