@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public HackyWorkspaceFilesCache (Solution solution)
 		{
-			if (!IdeApp.IsInitialized || enabled == false || solution == null)
+			if (!IdeApp.IsInitialized || enabled.GetValueOrDefault() == false || solution == null)
 				return;
 
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("hacky-project-cache");
