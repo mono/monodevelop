@@ -60,7 +60,7 @@ namespace MonoDevelop.TextEditor
 		internal ClassificationFormatDefinitionFromPreferences ()
 		{
 			nfloat fontSize = -1;
-			var fontName = Editor.DefaultSourceEditorOptions.Instance.FontName;
+			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
 
 			if (!string.IsNullOrEmpty (fontName)) {
 				var sizeStartOffset = fontName.LastIndexOf (' ');
