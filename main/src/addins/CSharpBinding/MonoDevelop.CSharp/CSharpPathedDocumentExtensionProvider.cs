@@ -23,7 +23,7 @@ using System.ComponentModel.Composition;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.CSharp
 {

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
@@ -63,6 +63,10 @@
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
+      <Project>{3f5b5bda-69d5-441a-8142-aa25c998a997}</Project>
+      <Name>MonoDevelop.TextEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>

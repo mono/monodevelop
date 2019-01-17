@@ -25,7 +25,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MonoDevelop.Ide.Composition
+namespace MonoDevelop.TextEditor.Wpf
 {
     [Export(typeof(CodeLensPresenterStyle))]
     [Name("MonoDevelopCodeLensPresenterStyle")]

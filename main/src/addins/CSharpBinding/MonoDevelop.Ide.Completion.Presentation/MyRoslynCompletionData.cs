@@ -1,4 +1,4 @@
-﻿//
+//
 // RoslynCompletionData.cs
 //
 // Author:
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			}
 		}
 
-		protected abstract void Format (TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end);
+		protected abstract void Format (Ide.Editor.TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end);
 
 		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{

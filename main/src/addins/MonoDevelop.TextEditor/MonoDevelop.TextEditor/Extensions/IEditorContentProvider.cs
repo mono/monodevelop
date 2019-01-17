@@ -1,5 +1,4 @@
 //
-//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,9 +24,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.VisualStudio.Text;
 
-namespace MonoDevelop.Ide.Editor.Extension
+namespace MonoDevelop.TextEditor
 {
 	/// <summary>
 	/// MEF extension point to provide implementations of content interfaces on the text

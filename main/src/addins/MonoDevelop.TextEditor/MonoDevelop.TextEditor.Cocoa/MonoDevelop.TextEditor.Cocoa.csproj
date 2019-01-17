@@ -1,223 +1,227 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems')" />
-	<Import Project="..\..\..\..\MonoDevelop.props" />
-	<Import Project="$(ReferencesVSEditor)" />
-	<Import Project="$(ReferencesGtk)" />
-	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<ProjectGuid>{5FEEDF49-0493-411C-B4F3-FAB7543499D2}</ProjectGuid>
-		<OutputType>Library</OutputType>
-		<TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
-		<OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
-		<DefineConstants>$(DefineConstants);MAC</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-	<PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
-	  <StartAction>Program</StartAction>
-	  <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
-	  <StartArguments>--no-redirect</StartArguments>
-	  <StartWorkingDirectory>..\..\..\..\build\bin\</StartWorkingDirectory>
-	  <ConsolePause>false</ConsolePause>
-	</PropertyGroup>
-	<ItemGroup>
-		<Reference Include="System" />
-		<Reference Include="System.ComponentModel.Composition" />
-		<Reference Include="Microsoft.VisualStudio.Composition">
-			<HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Xamarin.Mac">
-			<HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="AssemblyInfo.cs" />
-		<Compile Include="AddinInfo.cs" />
-		<Compile Include="ImageService.cs" />
-		<Compile Include="MdMouseProcessorProvider.cs" />
-		<Compile Include="EditorCommandHandlers.cs" />
-	</ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="MonoDevelop.TextEditor.Cocoa.addin.xml" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-			<Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-			<Name>MonoDevelop.Core</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-			<Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-			<Name>MonoDevelop.Ide</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-			<Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
-			<Name>MonoDevelop.DesignerSupport</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
-			<Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
-			<Name>MonoDevelop.Debugger</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
-			<Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-			<Name>Mono.Addins</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
-			<Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-			<Name>Xwt</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
-			<Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
-			<Name>Mono.Debugging</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
-			<Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
-			<Name>Xwt.Gtk</Name>
-			<Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\CocoaControls\CocoaControls.csproj">
-		  <Project>{253A619C-4F7E-5962-A7E6-58E906F3093E}</Project>
-		  <Name>CocoaControls</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj">
-		  <Project>{063241E2-CBDA-4A95-9B8E-914AD6D6D242}</Project>
-		  <Name>CoreUtilityImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\Language\LanguageImpl.csproj">
-		  <Project>{C90CEE76-1A52-43EC-A28D-ABD25F95646B}</Project>
-		  <Name>LanguageImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\StandardClassification\StandardClassificationImpl.csproj">
-		  <Project>{0F03F84B-580B-4710-A5B9-616A66552A4F}</Project>
-		  <Name>StandardClassificationImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj">
-		  <Project>{9B0C6B46-52CA-42F5-83E1-C259F54EE5F5}</Project>
-		  <Name>LanguageUtil</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BraceCompletion\BraceCompletionImpl.csproj">
-		  <Project>{2471CB49-9952-43D4-A7AD-7C01BCEDC461}</Project>
-		  <Name>BraceCompletionImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationAggregator\ClassificationAggregatorImpl.csproj">
-		  <Project>{33DAC448-FBCB-4030-9939-01FA4B3EAE76}</Project>
-		  <Name>ClassificationAggregatorImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationFormat\ClassificationFormatMapImpl.csproj">
-		  <Project>{98330A6F-B813-4917-B324-BF8C381572FC}</Project>
-		  <Name>ClassificationFormatMapImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationType\ClassificationTypeImpl.csproj">
-		  <Project>{FB46DD61-12E4-42D0-A99C-0A79C412FDD5}</Project>
-		  <Name>ClassificationTypeImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj">
-		  <Project>{E397B9E6-BFF5-4BBB-B465-7CFE2AC96BF6}</Project>
-		  <Name>CocoaViewImpl</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Commanding\CommandingImpl.csproj">
-		  <Project>{E5AF4EB5-9E7F-40B6-8762-98FA45FACA06}</Project>
-		  <Name>CommandingImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\DifferenceAlgorithm\DifferenceAlgorithmImpl.csproj">
-		  <Project>{6154E851-B914-47D5-9CC0-3E7433047574}</Project>
-		  <Name>DifferenceAlgorithmImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOperations\EditorOperationsImpl.csproj">
-		  <Project>{E0561832-1C54-41A8-A30A-97E8E81DBCA7}</Project>
-		  <Name>EditorOperationsImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOptions\EditorOptionsImpl.csproj">
-		  <Project>{CB978906-1945-4BB6-AAA5-1FA2E60C22EF}</Project>
-		  <Name>EditorOptionsImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorPrimitives\EditorPrimitivesImpl.csproj">
-		  <Project>{9B8B470A-5455-45B5-A5D1-8619ED174257}</Project>
-		  <Name>EditorPrimitivesImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Navigation\NavigationImpl.csproj">
-		  <Project>{726E446E-2E8D-4B48-A47B-923C6CEC4556}</Project>
-		  <Name>NavigationImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Outlining\Outlining.csproj">
-		  <Project>{135FD888-1648-4721-A861-4F7503C44A3D}</Project>
-		  <Name>Outlining</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\RTF\RtfBuilderServiceImpl.csproj">
-		  <Project>{6B5B877B-102F-493E-B4A5-C5BA1A2D517C}</Project>
-		  <Name>RtfBuilderServiceImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\StandaloneUndo\StandaloneUndoImpl.csproj">
-		  <Project>{29E74860-17B2-47D3-B3D4-7BC7E77900CE}</Project>
-		  <Name>StandaloneUndoImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TagAggregator\TagAggregatorImpl.csproj">
-		  <Project>{3C354DFC-8768-4023-9977-B9C3B9FF81ED}</Project>
-		  <Name>TagAggregatorImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextAndAdornmentSequencer\TextAndAdornmentSequencerImpl.csproj">
-		  <Project>{EBDD3015-F38D-470F-8C55-82FD46019495}</Project>
-		  <Name>TextAndAdornmentSequencerImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextBufferUndoManager\TextBufferUndoManagerImpl.csproj">
-		  <Project>{72987C64-502B-4BBB-B9C9-B09F54C7B552}</Project>
-		  <Name>TextBufferUndoManagerImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextModel\TextModelImpl.csproj">
-		  <Project>{B5C85F1D-38B8-4A57-A763-F390D58BD4D5}</Project>
-		  <Name>TextModelImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj">
-		  <Project>{6EB6CADC-4EDF-570A-9670-0FF3BACA7015}</Project>
-		  <Name>ToolTipAdornmentImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextSearch\TextSearchImpl.csproj">
-		  <Project>{F713D37D-70A4-49BB-ADAE-B7007C880E57}</Project>
-		  <Name>TextSearchImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\XPlat\MultiCaretImpl\MultiCaretImpl.csproj">
-		  <Project>{547C3D7B-7DFF-4169-88A7-56245170FDB3}</Project>
-		  <Name>MultiCaretImpl</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj">
-		  <Project>{1206D585-670F-4951-A6BF-493C79C950E4}</Project>
-		  <Name>TextDataUtil</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextLogicUtil\TextLogicUtil.csproj">
-		  <Project>{69F195E1-A8C9-43B3-AE91-A8FC79393163}</Project>
-		  <Name>TextLogicUtil</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
-		  <Project>{B2B41590-92EF-4120-B9B8-E861F3903FDD}</Project>
-		  <Name>TextUIUtil</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj">
-		  <Project>{8858E6B0-8398-46A9-9022-358D10E5E394}</Project>
-		  <Name>UIAutomationClient</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-		  <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-		  <Name>MonoDevelop.Refactoring</Name>
-		  <Private>False</Private>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj">
-		  <Project>{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}</Project>
-		  <Name>PatternMatchingImpl</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems')" />
+  <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5FEEDF49-0493-411C-B4F3-FAB7543499D2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+    <OutputPath>..\..\..\..\build\AddIns\DisplayBindings\TextEditor.Cocoa</OutputPath>
+    <DefineConstants>$(DefineConstants);MAC</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <StartWorkingDirectory>..\..\..\..\build\bin\</StartWorkingDirectory>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="Microsoft.VisualStudio.Composition">
+      <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\..\external\Xamarin.Mac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="ImageService.cs" />
+    <Compile Include="MdMouseProcessorProvider.cs" />
+    <Compile Include="EditorCommandHandlers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonoDevelop.TextEditor.Cocoa.addin.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
+      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
+      <Name>Mono.Debugging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
+      <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
+      <Name>Xwt.Gtk</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\CocoaControls\CocoaControls.csproj">
+      <Project>{253A619C-4F7E-5962-A7E6-58E906F3093E}</Project>
+      <Name>CocoaControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj">
+      <Project>{063241E2-CBDA-4A95-9B8E-914AD6D6D242}</Project>
+      <Name>CoreUtilityImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\Language\LanguageImpl.csproj">
+      <Project>{C90CEE76-1A52-43EC-A28D-ABD25F95646B}</Project>
+      <Name>LanguageImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\StandardClassification\StandardClassificationImpl.csproj">
+      <Project>{0F03F84B-580B-4710-A5B9-616A66552A4F}</Project>
+      <Name>StandardClassificationImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj">
+      <Project>{9B0C6B46-52CA-42F5-83E1-C259F54EE5F5}</Project>
+      <Name>LanguageUtil</Name>
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BraceCompletion\BraceCompletionImpl.csproj">
+      <Project>{2471CB49-9952-43D4-A7AD-7C01BCEDC461}</Project>
+      <Name>BraceCompletionImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationAggregator\ClassificationAggregatorImpl.csproj">
+      <Project>{33DAC448-FBCB-4030-9939-01FA4B3EAE76}</Project>
+      <Name>ClassificationAggregatorImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationFormat\ClassificationFormatMapImpl.csproj">
+      <Project>{98330A6F-B813-4917-B324-BF8C381572FC}</Project>
+      <Name>ClassificationFormatMapImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationType\ClassificationTypeImpl.csproj">
+      <Project>{FB46DD61-12E4-42D0-A99C-0A79C412FDD5}</Project>
+      <Name>ClassificationTypeImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj">
+      <Project>{E397B9E6-BFF5-4BBB-B465-7CFE2AC96BF6}</Project>
+      <Name>CocoaViewImpl</Name>
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Commanding\CommandingImpl.csproj">
+      <Project>{E5AF4EB5-9E7F-40B6-8762-98FA45FACA06}</Project>
+      <Name>CommandingImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\DifferenceAlgorithm\DifferenceAlgorithmImpl.csproj">
+      <Project>{6154E851-B914-47D5-9CC0-3E7433047574}</Project>
+      <Name>DifferenceAlgorithmImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOperations\EditorOperationsImpl.csproj">
+      <Project>{E0561832-1C54-41A8-A30A-97E8E81DBCA7}</Project>
+      <Name>EditorOperationsImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOptions\EditorOptionsImpl.csproj">
+      <Project>{CB978906-1945-4BB6-AAA5-1FA2E60C22EF}</Project>
+      <Name>EditorOptionsImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorPrimitives\EditorPrimitivesImpl.csproj">
+      <Project>{9B8B470A-5455-45B5-A5D1-8619ED174257}</Project>
+      <Name>EditorPrimitivesImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Navigation\NavigationImpl.csproj">
+      <Project>{726E446E-2E8D-4B48-A47B-923C6CEC4556}</Project>
+      <Name>NavigationImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Outlining\Outlining.csproj">
+      <Project>{135FD888-1648-4721-A861-4F7503C44A3D}</Project>
+      <Name>Outlining</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\RTF\RtfBuilderServiceImpl.csproj">
+      <Project>{6B5B877B-102F-493E-B4A5-C5BA1A2D517C}</Project>
+      <Name>RtfBuilderServiceImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\StandaloneUndo\StandaloneUndoImpl.csproj">
+      <Project>{29E74860-17B2-47D3-B3D4-7BC7E77900CE}</Project>
+      <Name>StandaloneUndoImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TagAggregator\TagAggregatorImpl.csproj">
+      <Project>{3C354DFC-8768-4023-9977-B9C3B9FF81ED}</Project>
+      <Name>TagAggregatorImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextAndAdornmentSequencer\TextAndAdornmentSequencerImpl.csproj">
+      <Project>{EBDD3015-F38D-470F-8C55-82FD46019495}</Project>
+      <Name>TextAndAdornmentSequencerImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextBufferUndoManager\TextBufferUndoManagerImpl.csproj">
+      <Project>{72987C64-502B-4BBB-B9C9-B09F54C7B552}</Project>
+      <Name>TextBufferUndoManagerImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextModel\TextModelImpl.csproj">
+      <Project>{B5C85F1D-38B8-4A57-A763-F390D58BD4D5}</Project>
+      <Name>TextModelImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj">
+      <Project>{6EB6CADC-4EDF-570A-9670-0FF3BACA7015}</Project>
+      <Name>ToolTipAdornmentImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextSearch\TextSearchImpl.csproj">
+      <Project>{F713D37D-70A4-49BB-ADAE-B7007C880E57}</Project>
+      <Name>TextSearchImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\XPlat\MultiCaretImpl\MultiCaretImpl.csproj">
+      <Project>{547C3D7B-7DFF-4169-88A7-56245170FDB3}</Project>
+      <Name>MultiCaretImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj">
+      <Project>{1206D585-670F-4951-A6BF-493C79C950E4}</Project>
+      <Name>TextDataUtil</Name>
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextLogicUtil\TextLogicUtil.csproj">
+      <Project>{69F195E1-A8C9-43B3-AE91-A8FC79393163}</Project>
+      <Name>TextLogicUtil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj">
+      <Project>{B2B41590-92EF-4120-B9B8-E861F3903FDD}</Project>
+      <Name>TextUIUtil</Name>
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj">
+      <Project>{8858E6B0-8398-46A9-9022-358D10E5E394}</Project>
+      <Name>UIAutomationClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj">
+      <Project>{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}</Project>
+      <Name>PatternMatchingImpl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
+      <Project>{3f5b5bda-69d5-441a-8142-aa25c998a997}</Project>
+      <Name>MonoDevelop.TextEditor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

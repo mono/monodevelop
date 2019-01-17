@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 	[Export]
 	class TextViewImports

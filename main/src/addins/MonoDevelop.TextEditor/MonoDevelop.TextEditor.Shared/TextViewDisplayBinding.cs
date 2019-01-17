@@ -22,12 +22,13 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 	class TextViewDisplayBinding : IViewDisplayBinding
 	{

@@ -40,12 +40,13 @@ using Microsoft.VisualStudio.Utilities;
 
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 
 #if MAC
@@ -81,7 +82,7 @@ namespace MonoDevelop.Ide.Text
 #endif
 
 #if WINDOWS
-	partial class TextViewContent : AbstractXwtViewContent, Gui.Content.INavigable
+	partial class TextViewContent : AbstractXwtViewContent, INavigable
 	{
 #elif MAC
 	partial class TextViewContent : ViewContent, Gui.Content.INavigable
@@ -104,7 +105,7 @@ namespace MonoDevelop.Ide.Text
 		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
 		readonly List<IEditorContentProvider> contentProviders;
-		readonly Editor.DefaultSourceEditorOptions sourceEditorOptions;
+		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
 
 #if WINDOWS
 		readonly Xwt.Widget xwtWidget;
@@ -131,7 +132,7 @@ namespace MonoDevelop.Ide.Text
 			this.fileName = fileName;
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;
-			this.sourceEditorOptions = Editor.DefaultSourceEditorOptions.Instance;
+			this.sourceEditorOptions = Ide.Editor.DefaultSourceEditorOptions.Instance;
 
 			// FIXME: move this to the end of the .ctor after fixing margin options responsiveness
 			HandleSourceEditorOptionsChanged (this, EventArgs.Empty);
@@ -313,7 +314,7 @@ namespace MonoDevelop.Ide.Text
 
 		public NavigationPoint BuildNavigationPoint ()
 		{
-			return new TextViewNavigationPoint (Editor.TextViewExtensions.TryGetParentDocument (TextView), TextView);
+			return new TextViewNavigationPoint (Ide.Editor.TextViewExtensions.TryGetParentDocument (TextView), TextView);
 		}
 
 		void TryLogNavPoint (bool transient)

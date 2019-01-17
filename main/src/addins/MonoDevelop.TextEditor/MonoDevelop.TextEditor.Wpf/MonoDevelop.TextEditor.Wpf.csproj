@@ -60,6 +60,10 @@
       <Name>Xwt.Gtk</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
+      <Project>{3f5b5bda-69d5-441a-8142-aa25c998a997}</Project>
+      <Name>MonoDevelop.TextEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />

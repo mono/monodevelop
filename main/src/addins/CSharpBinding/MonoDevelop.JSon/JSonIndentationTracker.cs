@@ -33,7 +33,7 @@ namespace MonoDevelop.JSon
 {
 	class JSonIndentationTracker : IndentationTracker
 	{
-		readonly TextEditor data;
+		readonly Ide.Editor.TextEditor data;
 		readonly CacheIndentEngine stateTracker;
 
         public override IndentationTrackerFeatures SupportedFeatures { 
@@ -42,7 +42,7 @@ namespace MonoDevelop.JSon
             }
         }
 
-		public JSonIndentationTracker(TextEditor data, CacheIndentEngine stateTracker)
+		public JSonIndentationTracker(Ide.Editor.TextEditor data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;

@@ -33,7 +33,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 	partial class TextViewContent
 	{

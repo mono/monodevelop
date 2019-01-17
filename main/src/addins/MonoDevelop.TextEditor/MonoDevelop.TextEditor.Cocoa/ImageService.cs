@@ -27,7 +27,7 @@ using Microsoft.VisualStudio.Imaging;
 using MonoDevelop.Core;
 using MDImageService = MonoDevelop.Ide.ImageService;
 
-namespace MonoDevelop.Ide.Text.Cocoa
+namespace MonoDevelop.TextEditor.Cocoa
 {
 	// Import with AllowDefault:true
 	[Export (typeof(IImageService))]

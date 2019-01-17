@@ -745,7 +745,7 @@ namespace MonoDevelop.CSharp.Formatting
 		OptionSet optionSet;
 		bool completionWindowWasVisible;
 
-		public bool FixLineStart (TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
+		public bool FixLineStart (Ide.Editor.TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
 		{
 			if (lineNumber > 1) {
 				var line = textEditorData.GetLine (lineNumber);

@@ -36,7 +36,7 @@ namespace MonoDevelop.JSon
 {
 	class JSonIndentEngine : IStateMachineIndentEngine
 	{
-		TextEditor editor;
+		Ide.Editor.TextEditor editor;
 		DocumentContext ctx;
 		int offset, line, column;
 		internal int thisLineIndent, nextLineIndent;
@@ -46,7 +46,7 @@ namespace MonoDevelop.JSon
 		bool isLineStart;
 		bool isInString;
 
-		public JSonIndentEngine (TextEditor editor, DocumentContext ctx)
+		public JSonIndentEngine (Ide.Editor.TextEditor editor, DocumentContext ctx)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");

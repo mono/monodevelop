@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsPartialDocumentFormatting { get { return true; } }
 
-		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, Ide.Editor.TextEditor editor, int line)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Wait ();
 		}
 
-		protected async override Task CorrectIndentingImplementationAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
+		protected async override Task CorrectIndentingImplementationAsync (Ide.Editor.TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
 		{
 			if (editor.IndentationTracker == null)
 				return;
@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Formatting
 				LoggingService.LogError ("Error while indenting", e);
 			}
 		}
-		protected override async void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
+		protected override async void OnTheFlyFormatImplementation (Ide.Editor.TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
 			var doc = context.AnalysisDocument;
 

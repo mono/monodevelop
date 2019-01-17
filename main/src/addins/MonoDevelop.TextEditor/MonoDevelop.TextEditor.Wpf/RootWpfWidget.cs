@@ -22,7 +22,7 @@
 using MonoDevelop.Components.Windows;
 using System.Windows.Controls;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 	class RootWpfWidget : GtkWPFWidget
 	{

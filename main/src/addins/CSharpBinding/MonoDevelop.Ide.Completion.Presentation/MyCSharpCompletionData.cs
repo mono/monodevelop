@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 		protected override string MimeType => "text/csharp";
 
-		protected override void Format (TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end)
+		protected override void Format (Ide.Editor.TextEditor editor, Ide.Gui.Document document, SnapshotPoint start, SnapshotPoint end)
 		{
 			return;
 			//MonoDevelop.CSharp.Formatting.OnTheFlyFormatter.Format (editor, document, start, end);

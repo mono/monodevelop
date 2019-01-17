@@ -9,6 +9,7 @@
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.ComponentModel.Composition" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
   </ItemGroup>

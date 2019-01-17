@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 	partial class CSharpFormattingProfileDialog : Gtk.Dialog
 	{
-		readonly TextEditor texteditor = TextEditorFactory.CreateNewEditor ();
+		readonly Ide.Editor.TextEditor texteditor = TextEditorFactory.CreateNewEditor ();
 		readonly CSharpFormattingPolicy profile;
 		TreeStore indentationOptions, newLineOptions, spacingOptions, wrappingOptions;
 		static readonly Dictionary<Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions, string> labelPositionOptionsTranslationDictionary = new Dictionary<Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions, string> ();

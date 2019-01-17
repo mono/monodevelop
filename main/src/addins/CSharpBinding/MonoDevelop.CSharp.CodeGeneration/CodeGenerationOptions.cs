@@ -48,7 +48,7 @@ namespace MonoDevelop.CodeGeneration
 	{
 		readonly int offset;
 
-		public TextEditor Editor
+		public Ide.Editor.TextEditor Editor
 		{
 			get;
 			private set;
@@ -98,7 +98,7 @@ namespace MonoDevelop.CodeGeneration
 			private set;
 		}
 
-		internal CodeGenerationOptions (TextEditor editor, DocumentContext ctx)
+		internal CodeGenerationOptions (Ide.Editor.TextEditor editor, DocumentContext ctx)
 		{
 			Editor = editor;
 			DocumentContext = ctx;
@@ -127,7 +127,7 @@ namespace MonoDevelop.CodeGeneration
 			return CSharp.CSharpAmbience.SafeMinimalDisplayString (fullType, CurrentState, offset);
 		}
 
-		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)
+		public static CodeGenerationOptions CreateCodeGenerationOptions (Ide.Editor.TextEditor document, DocumentContext ctx)
 		{
 			return new CodeGenerationOptions (document, ctx);
 		}

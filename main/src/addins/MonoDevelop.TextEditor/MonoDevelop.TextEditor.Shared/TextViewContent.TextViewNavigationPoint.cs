@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 	partial class TextViewContent
 	{

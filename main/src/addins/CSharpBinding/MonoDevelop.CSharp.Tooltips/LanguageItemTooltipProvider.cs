@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 	class LanguageItemTooltipProvider : TooltipProvider, IDisposable
 	{
 		#region ITooltipProvider implementation 
-		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
+		public override async Task<TooltipItem> GetItem (Ide.Editor.TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default(CancellationToken))
 		{
 			if (ctx == null)
 				return null;
@@ -117,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 
 
-		public override Components.Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Components.Window CreateTooltipWindow (Ide.Editor.TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var doc = ctx;
 			if (doc == null)
@@ -156,7 +156,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override void GetRequiredPosition (TextEditor editor, Components.Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (Ide.Editor.TextEditor editor, Components.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (TooltipInformationWindow)tipWindow;
 			requiredWidth = (int)win.Width;

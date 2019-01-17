@@ -35,7 +35,6 @@
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.Ide.Text.TextViewDisplayBinding" />
 	</Extension>
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor.</Description>;
@@ -54,5 +53,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" />
 		<SeparatorItem id = "Separator3" />
+		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.TextEditor.TextViewDisplayBinding" />
 	</Extension>
 </ExtensionModel>

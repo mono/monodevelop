@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,10 +23,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace MonoDevelop.Ide.Text
+namespace MonoDevelop.TextEditor
 {
 	[Export (typeof (EditorContentProviderService))]
 	sealed class EditorContentProviderService
