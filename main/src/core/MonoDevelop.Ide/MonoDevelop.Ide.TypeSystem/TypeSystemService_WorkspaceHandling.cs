@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var project = e.Document.Project;
-			if (project == null) {
+			if (project == null || filePath == null || !project.IsCompileable (filePath)) {
 				return;
 			}
 
@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var filePath = e.Document.FileName;
 			var project = e.Document.Project;
-			if (project == null) {
+			if (project == null || filePath == null || !project.IsCompileable (filePath)) {
 				return;
 			}
 
