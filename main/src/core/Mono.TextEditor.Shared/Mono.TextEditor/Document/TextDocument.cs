@@ -1704,6 +1704,7 @@ namespace Mono.TextEditor
 					OnHeightChanged (EventArgs.Empty);
 				}
 			}
+			marker.parent = null;
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}
