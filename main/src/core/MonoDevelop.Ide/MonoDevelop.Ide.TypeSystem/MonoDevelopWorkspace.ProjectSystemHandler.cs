@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectionData projections;
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
+			readonly HackyWorkspaceFilesCache hackyCache;
 
 			bool added;
 			readonly object addLock = new object ();
@@ -59,6 +60,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.workspace = workspace;
 				this.projectMap = projectMap;
 				this.projections = projections;
+				this.hackyCache = new HackyWorkspaceFilesCache (workspace.MonoDevelopSolution);
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
@@ -121,11 +123,33 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (token.IsCancellationRequested)
 					return null;
 
-				var sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
-				if (token.IsCancellationRequested)
-					return null;
+				ImmutableArray<MonoDevelop.Projects.ProjectFile> sourceFiles = ImmutableArray<MonoDevelop.Projects.ProjectFile>.Empty;
+				ImmutableArray<FilePath> analyzerFiles = ImmutableArray<FilePath>.Empty;
 
-				var analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+				if (hackyCache.TryGetCachedItems (p, out string[] files, out string[] analyzers)) {
+					var builder = sourceFiles.ToBuilder ();
+					builder.Capacity = files.Length;
+
+					foreach (var file in files) {
+						builder.Add (p.GetProjectFile (file));
+					}
+					sourceFiles = builder.MoveToImmutable ();
+
+					var builder2 = analyzerFiles.ToBuilder ();
+					builder2.Capacity = analyzers.Length;
+
+					foreach (var analyzer in analyzers)
+						builder2.Add (analyzer);
+
+					analyzerFiles = builder2.MoveToImmutable ();
+				} else {
+					sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
+					if (token.IsCancellationRequested)
+						return null;
+
+					analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+				}
+
 				if (token.IsCancellationRequested)
 					return null;
 

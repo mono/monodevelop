@@ -42,12 +42,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		Dictionary<FilePath, ProjectCache> cachedItems = new Dictionary<FilePath, ProjectCache> ();
 
-		public HackyWorkspaceFilesCache (Solution solution, ConfigurationSelector configuration)
+		public HackyWorkspaceFilesCache (Solution solution)
 		{
 			if (!IdeApp.IsInitialized || enabled == false)
 				return;
 
-			cacheDir = solution.GetPreferencesDirectory ().Combine ("project-cache");
+			cacheDir = solution.GetPreferencesDirectory ().Combine ("hacky-project-cache");
 			Directory.CreateDirectory (cacheDir);
 
 			LoadCache (solution);
@@ -91,32 +91,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void Update (Project proj, string[] files, string[] analyzers)
+		public void Update (SolutionConfiguration solConfig, Project proj, string[] files, string[] analyzers)
 		{
-			cachedItems [proj.FileName] = new ProjectCache {
+			var item = new ProjectCache {
 				Analyzers = analyzers,
 				Files = files,
 				TimeStamp = File.GetLastWriteTimeUtc (proj.FileName),
 			};
-		}
+			cachedItems [proj.FileName] = item;
 
-		public void Write (Solution sol)
-		{
+			var cacheFile = GetProjectCacheFile (proj, solConfig.GetMappedConfiguration (proj));
+
 			var serializer = new JsonSerializer ();
-
-			// Write cache files
-			var solConfig = sol.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-			var allProjects = sol.GetAllProjects ().ToDictionary (x => x.FileName, x => x);
-
-			foreach (var item in cachedItems) {
-				var projectFile = item.Key;
-				var mdProject = allProjects [projectFile];
-				var cacheFile = GetProjectCacheFile (mdProject, solConfig.GetMappedConfiguration (mdProject));
-
-				using (var fs = File.Open (cacheFile, FileMode.Create))
-				using (var sw = new StreamWriter (fs)) {
-					serializer.Serialize (sw, item.Value);
-				}
+			using (var fs = File.Open (cacheFile, FileMode.Create))
+			using (var sw = new StreamWriter (fs)) {
+				serializer.Serialize (sw, item);
 			}
 		}
 
