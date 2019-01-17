@@ -65,8 +65,9 @@
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
-      <Project>{3f5b5bda-69d5-441a-8142-aa25c998a997}</Project>
+      <Project>{3F5B5BDA-69D5-441A-8142-AA25C998A997}</Project>
       <Name>MonoDevelop.TextEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
