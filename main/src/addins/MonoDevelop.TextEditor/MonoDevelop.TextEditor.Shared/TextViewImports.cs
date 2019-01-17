@@ -28,6 +28,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Classification;
 
 namespace MonoDevelop.TextEditor
 {
@@ -69,5 +70,8 @@ namespace MonoDevelop.TextEditor
 
 		[Import]
 		internal EditorContentProviderService EditorContentProviderService { get; set; }
+
+		[Import]
+		internal IEditorFormatMapService EditorFormatMapService { get; set; }
 	}
 }

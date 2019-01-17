@@ -30,8 +30,10 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	class TextViewDisplayBinding : IViewDisplayBinding
+	class TextViewDisplayBinding : IViewDisplayBinding, IDisposable
 	{
+		ThemeToClassification themeToClassification;
+
 		public string Name => GettextCatalog.GetString ("New Editor");
 
 		public bool CanUseAsDefault => true;
@@ -84,8 +86,16 @@ namespace MonoDevelop.TextEditor
 		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			var imports = CompositionManager.GetExportedValue<TextViewImports> ();
+			if (themeToClassification == null)
+				themeToClassification = new ThemeToClassification (imports.EditorFormatMapService);
 			var viewContent = new TextViewContent (imports, fileName, mimeType, ownerProject);
 			return viewContent;
+		}
+
+		public void Dispose ()
+		{
+			themeToClassification?.Dispose ();
+			themeToClassification = null;
 		}
 	}
 }

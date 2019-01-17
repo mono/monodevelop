@@ -192,6 +192,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Comment XML Doc Tag", new List<string> { "comment.line.documentation.tag" }, ConvertChunkStyle (colorScheme.CommentsForDocumentationTags)));
 
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
+			settings.Add (new ThemeSetting ("String Verbatim", new List<string> { "string.verbatim" }, ConvertChunkStyle (colorScheme.StringVerbatim)));
 			settings.Add (new ThemeSetting ("punctuation.definition.string", new List<string> { "punctuation.definition.string" }, ConvertChunkStyle (colorScheme.String)));
 
 			settings.Add (new ThemeSetting ("Number", new List<string> { "constant.numeric" }, ConvertChunkStyle (colorScheme.Number)));
@@ -226,6 +227,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Tag name", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("Preprocessor", new List<string> { "meta.preprocessor" }, ConvertChunkStyle (colorScheme.Preprocessor)));
 			settings.Add (new ThemeSetting ("Preprocessor region name", new List<string> { "meta.preprocessor.region.name" }, ConvertChunkStyle (colorScheme.PreprocessorRegionName)));
+			settings.Add (new ThemeSetting ("Excluded Code", new List<string> { "comment.excluded" }, ConvertChunkStyle (colorScheme.ExcludedCode)));
 
 			settings.Add (new ThemeSetting ("Tag attribute", new List<string> { "entity.other.attribute-name" }, ConvertChunkStyle (colorScheme.XmlAttribute)));
 			settings.Add (new ThemeSetting ("Function call", new List<string> { "variable.function" }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
