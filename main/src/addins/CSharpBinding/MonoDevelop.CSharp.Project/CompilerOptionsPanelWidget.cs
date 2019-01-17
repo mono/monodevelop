@@ -73,6 +73,8 @@ namespace MonoDevelop.CSharp.Project
 			
 				UpdateTarget ();
 			}
+
+			this.codePageMenuButton.ContextMenuRequested = CreateCodePageMenu;
 			
 			// Load the codepage. If it matches any of the supported encodigs, use the encoding name 			
 			string foundEncoding = null;
@@ -81,12 +83,11 @@ namespace MonoDevelop.CSharp.Project
 					continue;
 				if (e.CodePage == csproject.CodePage)
 					foundEncoding = e.Id;
-				codepageEntry.AppendText (e.Id);
 			}
 			if (foundEncoding != null)
-				codepageEntry.Entry.Text = foundEncoding;
+				codepageEntry.Text = foundEncoding;
 			else if (csproject.CodePage != 0)
-				codepageEntry.Entry.Text = csproject.CodePage.ToString ();
+				codepageEntry.Text = csproject.CodePage.ToString ();
 			
 			iconEntry.Path = csproject.Win32Icon;
 			iconEntry.DefaultPath = project.BaseDirectory;
@@ -113,6 +114,27 @@ namespace MonoDevelop.CSharp.Project
 			SetupAccessibility ();
 		}
 
+		ContextMenu CreateCodePageMenu (MenuButton button)
+		{
+			var menu = new ContextMenu ();
+			foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
+				if (e.CodePage == -1)
+					continue;
+				var item = new ContextMenuItem (e.Id);
+				string codePageText = e.Id;
+				item.Clicked += delegate {
+					OnCodePageSelected (codePageText);
+				};
+				menu.Add (item);
+			}
+			return menu;
+		}
+
+		void OnCodePageSelected (string codePage)
+		{
+			codepageEntry.Text = codePage;
+		}
+
 		void SetupAccessibility ()
 		{
 			label76.Accessible.Role = Atk.Role.Filler;
@@ -129,7 +151,10 @@ namespace MonoDevelop.CSharp.Project
 			iconEntry.SetAccessibilityLabelRelationship (label3);
 
 			codepageEntry.SetCommonAccessibilityAttributes ("CodeGeneration.CodePage", label1,
-			                                                GettextCatalog.GetString ("Select the compiler code page"));
+			                                                GettextCatalog.GetString ("Enter the compiler code page"));
+
+			codePageMenuButton.SetCommonAccessibilityAttributes ("CodeGeneration.CodePageList", label1,
+				GettextCatalog.GetString ("Select the compiler code page"));
 
 			noStdLibCheckButton.SetCommonAccessibilityAttributes ("CodeGeneration.NoStdLib", "", GettextCatalog.GetString ("Whether or not to include a reference to mscorlib.dll"));
 
@@ -142,18 +167,18 @@ namespace MonoDevelop.CSharp.Project
 
 		public bool ValidateChanges ()
 		{
-			if (codepageEntry.Entry.Text.Length > 0) {
+			if (codepageEntry.Text.Length > 0) {
 				// Get the codepage. If the user specified an encoding name, find it.
 				int trialCodePage = -1;
 				foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
-					if (e.Id == codepageEntry.Entry.Text) {
+					if (e.Id == codepageEntry.Text) {
 						trialCodePage = e.CodePage;
 						break;
 					}
 				}
 			
 				if (trialCodePage == -1) {
-					if (!int.TryParse (codepageEntry.Entry.Text, out trialCodePage)) {
+					if (!int.TryParse (codepageEntry.Text, out trialCodePage)) {
 						MessageService.ShowError (GettextCatalog.GetString ("Invalid code page number."));
 						return false;
 					}
@@ -172,11 +197,11 @@ namespace MonoDevelop.CSharp.Project
 				langVersion = (LanguageVersion)langVerCombo.Model.GetValue (iter, 1);
 			}
 
-			if (codepageEntry.Entry.Text.Length > 0) {
+			if (codepageEntry.Text.Length > 0) {
 				// Get the codepage. If the user specified an encoding name, find it.
 				int trialCodePage = -1;
 				foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
-					if (e.Id == codepageEntry.Entry.Text) {
+					if (e.Id == codepageEntry.Text) {
 						trialCodePage = e.CodePage;
 						break;
 					}
@@ -185,7 +210,7 @@ namespace MonoDevelop.CSharp.Project
 				if (trialCodePage != -1)
 					codePage = trialCodePage;
 				else {
-					if (!int.TryParse (codepageEntry.Entry.Text, out trialCodePage)) {
+					if (!int.TryParse (codepageEntry.Text, out trialCodePage)) {
 						return;
 					}
 					codePage = trialCodePage;
