@@ -587,11 +587,6 @@ namespace Mono.TextEditor
 		}
 
 #if MAC
-		ISpaceReservationManager ITextView.GetSpaceReservationManager (string name)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public IXPlatAdornmentLayer GetXPlatAdornmentLayer (string name)
 		{
 			return null;
