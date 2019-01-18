@@ -120,24 +120,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
 
-				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token);
-				if (token.IsCancellationRequested)
-					return null;
+				if (!hackyCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var sourceFiles, out var analyzerFiles, out var references, out var projectReferences)) {
+					(references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token);
+					if (token.IsCancellationRequested)
+						return null;
 
-				ImmutableArray<MonoDevelop.Projects.ProjectFile> sourceFiles = ImmutableArray<MonoDevelop.Projects.ProjectFile>.Empty;
-				ImmutableArray<FilePath> analyzerFiles = ImmutableArray<FilePath>.Empty;
-
-				if (hackyCache.TryGetCachedItems (p, out ProjectFile[] files, out string[] analyzers)) {
-					sourceFiles = files.ToImmutableArray ();
-
-					var builder2 = analyzerFiles.ToBuilder ();
-					builder2.Capacity = analyzers.Length;
-
-					foreach (var analyzer in analyzers)
-						builder2.Add (analyzer);
-
-					analyzerFiles = builder2.MoveToImmutable ();
-				} else {
 					sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
 					if (token.IsCancellationRequested)
 						return null;
@@ -145,7 +132,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
 
 					if (config != null)
-						hackyCache.Update (config, p, sourceFiles, analyzerFiles);
+						hackyCache.Update (config, p, projectMap, sourceFiles, analyzerFiles, references, projectReferences);
 				}
 
 				if (token.IsCancellationRequested)
