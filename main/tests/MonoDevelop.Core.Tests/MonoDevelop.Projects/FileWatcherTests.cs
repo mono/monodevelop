@@ -167,12 +167,6 @@ namespace MonoDevelop.Projects
 			FileService.FileChanged += OnFileChanged;
 		}
 
-		[Test]
-		public void IsNativeMacFileWatcher ()
-		{
-			Assert.AreEqual (Platform.IsMac, FSW.FileSystemWatcher.IsMac);
-		}
-
 		/// <summary>
 		/// Original code seems to generate the FileChanged event twice for the project file.
 		/// </summary>
