@@ -86,6 +86,18 @@ namespace MonoDevelop.TextEditor
 			("xml literal - name", "Xml Name"),
 			("xml literal - processing instruction", ""),
 			("xml literal - text", "Xml Text"),
+			("axml - attribute name", "Xml Attribute"),
+			("axml - attribute quotes", "Xml Attribute Quotes"),
+			("axml - attribute value", "Xml Attribute Value"),
+			("axml - cdata section", "Xml CData Section"),
+			("axml - comment", "Xml Comment"),
+			("axml - delimiter", "Xml Delimiter"),
+			("axml - embedded expression", ""),
+			("axml - entity reference", ""),
+			("axml - name", "Xml Name"),
+			("axml - processing instruction", ""),
+			("axml - text", "Xml Text"),
+			("axml - resource url", "Xml Name"),
 			("Peek Background", ""),
 			("Peek Background Unfocused", ""),
 			("Peek History Selected", ""),
@@ -96,7 +108,6 @@ namespace MonoDevelop.TextEditor
 			("Peek Highlighted Text Unfocused", ""),
 			("Comment", "Comment"),
 			("Excluded Code", "Excluded Code"),
-			("Identifier", "Entity name"),
 			("Keyword", "Keyword"),
 			("Preprocessor Keyword", "Preprocessor"),
 			("Operator", "Keyword (Operator)"),
@@ -147,6 +158,7 @@ namespace MonoDevelop.TextEditor
 			CreateCaret (editorFormat, defaultSettings);
 			CreateSelection (editorFormat, defaultSettings);
 			CreateResourceDictionary (editorFormat, defaultSettings, "text", EditorThemeColors.Foreground, EditorFormatDefinition.ForegroundColorId);
+			CreateResourceDictionary (editorFormat, defaultSettings, "Identifier", EditorThemeColors.Foreground, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "TextView Background", EditorThemeColors.Background);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedReference", EditorThemeColors.UsagesRectangle);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedDefinition", EditorThemeColors.ChangingUsagesRectangle);
