@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	class HackyWorkspaceFilesCache
 	{
-		readonly bool? enabled = FeatureSwitchService.IsFeatureEnabled ("HackyCache");
+		readonly bool enabled = FeatureSwitchService.IsFeatureEnabled ("HackyCache").GetValueOrDefault ();
 
 		readonly FilePath cacheDir;
 
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public HackyWorkspaceFilesCache (Solution solution)
 		{
-			if (!IdeApp.IsInitialized || enabled.GetValueOrDefault() == false || solution == null)
+			if (!IdeApp.IsInitialized || !enabled || solution == null)
 				return;
 
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("hacky-project-cache");
@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public void Update (ProjectConfiguration projConfig, Project proj, ImmutableArray<ProjectFile> files, ImmutableArray<FilePath> analyzers)
 		{
-			if (enabled.GetValueOrDefault() == false)
+			if (!enabled)
 				return;
 
 			var paths = new string [files.Length];
