@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	class HackyWorkspaceFilesCache
 	{
+		const int format = 1;
 		readonly bool enabled = FeatureSwitchService.IsFeatureEnabled ("HackyCache").GetValueOrDefault ();
 
 		readonly FilePath cacheDir;
@@ -73,9 +74,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					using (var sr = File.OpenText (cacheFilePath)) {
 						var value = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
 
-						var cachedStamp = value.TimeStamp;
-						if (cachedStamp == File.GetLastWriteTimeUtc (projectFilePath))
-							cachedItems [projectFilePath] = value;
+						if (format != value.Format || value.TimeStamp != File.GetLastWriteTimeUtc (projectFilePath))
+							continue;
+
+						cachedItems [projectFilePath] = value;
 
 					}
 				} catch (Exception ex) {
@@ -158,6 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		[Serializable]
 		class ProjectCache
 		{
+			public int Format;
 			public DateTime TimeStamp;
 
 			public string [] Files;
