@@ -67,18 +67,11 @@ namespace MonoDevelop.Ide
 		WorkspaceItem currentWorkspaceItem = null;
 		object currentItem;
 		
-		BuildResult lastResult = new BuildResult ();
-		
 		internal ProjectOperations ()
 		{
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			IdeApp.Workspace.ItemUnloading += IdeAppWorkspaceItemUnloading;
 			
-		}
-
-		[Obsolete ("This property will be removed.")]
-		public BuildResult LastCompilerResult {
-			get { return lastResult; }
 		}
 		
 		public Project CurrentSelectedProject {
@@ -1776,7 +1769,6 @@ namespace MonoDevelop.Ide
 			tt.Trace ("Begin reporting build result");
 			try {
 				if (result != null) {
-					lastResult = result;
 					monitor.Log.WriteLine ();
 
 					var msg = GettextCatalog.GetString (
@@ -1796,7 +1788,7 @@ namespace MonoDevelop.Ide
 
 					if (monitor.CancellationToken.IsCancellationRequested) {
 						monitor.ReportError (GettextCatalog.GetString ("Build canceled."), null);
-					} else if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
+					} else if (result.ErrorCount == 0 && result.WarningCount == 0 && result.FailedBuildCount == 0) {
 						monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
 					} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
 						monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
@@ -1806,7 +1798,7 @@ namespace MonoDevelop.Ide
 						monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 					}
 					tt.Trace ("End build event");
-					OnEndBuild (monitor, lastResult.FailedBuildCount == 0, lastResult, entry as SolutionFolderItem);
+					OnEndBuild (monitor, result.FailedBuildCount == 0, result, entry as SolutionFolderItem);
 				} else {
 					tt.Trace ("End build event");
 					OnEndBuild (monitor, false);
