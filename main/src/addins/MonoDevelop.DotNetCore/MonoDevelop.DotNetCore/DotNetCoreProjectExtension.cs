@@ -93,7 +93,7 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		bool IsSdkProject (DotNetProject project)
 		{
-			return project.MSBuildProject.GetReferencedSDKs ().Any ();
+			return project.MSBuildProject.GetReferencedSDKs ().Length > 0;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
@@ -473,7 +473,6 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnBeginLoad ()
 		{
-			dotNetCoreMSBuildProject.Sdk = Project.MSBuildProject.Sdk;
 			base.OnBeginLoad ();
 		}
 
@@ -497,11 +496,8 @@ namespace MonoDevelop.DotNetCore
 
 			var sdks = string.Join (";", Project.MSBuildProject.GetReferencedSDKs ());
 			sdkPaths = DotNetCoreSdk.FindSdkPaths (sdks);
-			if (string.IsNullOrEmpty (dotNetCoreMSBuildProject.Sdk)) {
-				dotNetCoreMSBuildProject.Sdk = sdks;
-			}
+			dotNetCoreMSBuildProject.HasSdk = sdkPaths.Exist;
 		}
-
 		protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
@@ -615,7 +611,14 @@ namespace MonoDevelop.DotNetCore
 
 		bool IsFSharpSdkProject ()
 		{
-			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
+			if (HasSdk) {
+				var sdks = Project.MSBuildProject.GetReferencedSDKs ();
+				for (var i = 0; i < sdks.Length; i++) {
+					if (sdks [i].Contains ("FSharp"))
+						return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>
