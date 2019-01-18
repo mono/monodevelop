@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects
 				CanGetFocus = false,
 				Wrap = WrapMode.Word
 			};
-			box.PackStart (label, true, true);
+			box.PackStart (label, expand: true, marginBottom: 12);
 
 			var hbox = new HBox ();
 			hbox.PackStart (new Label (GettextCatalog.GetString ("Run configuration name:")) {
