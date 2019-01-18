@@ -27,8 +27,8 @@ namespace MonoDevelop.TextEditor
 {
 	class WpfTextViewContent : TextViewContent<IWpfTextView, WpfTextViewImports>
 	{
-		public WpfTextViewContent (Core.FilePath fileName, string mimeType,	Projects.Project ownerProject)
-			: base (fileName, mimeType, ownerProject)
+		public WpfTextViewContent (WpfTextViewImports imports, Core.FilePath fileName, string mimeType, Projects.Project ownerProject)
+			: base (imports, fileName, mimeType, ownerProject)
 		{
 		}
 

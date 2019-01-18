@@ -51,11 +51,12 @@ namespace MonoDevelop.TextEditor
 		public ITextBuffer TextBuffer { get; }
 
 		public TextViewContent (
+			TImports imports,
 			FilePath fileName,
 			string mimeType,
 			Project ownerProject)
 		{
-			this.Imports = Ide.Composition.CompositionManager.GetExportedValue<TImports> ();
+			this.Imports = imports;
 			this.fileName = fileName;
 			this.mimeType = mimeType;
 			this.ownerProject = ownerProject;

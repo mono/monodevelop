@@ -11,6 +11,8 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj" Private="False" />

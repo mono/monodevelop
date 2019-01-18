@@ -1,4 +1,24 @@
-/*
+//
+// Copyright (c) Microsoft Corp. (https://www.microsoft.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -11,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.TextEditor
 {
-	class ThemeToClassification : IDisposable
+	abstract class ThemeToClassification : IDisposable
 	{
 		readonly IEditorFormatMapService editorFormatMapService;
 		public ThemeToClassification (IEditorFormatMapService editorFormatMapService)
@@ -116,14 +136,14 @@ namespace MonoDevelop.TextEditor
 			editorFormat.BeginBatchUpdate ();
 			var theme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme.Value);
 			var settingsMap = new Dictionary<string, ThemeSetting> ();
-			var defaultSettings = theme.Settings [0];
+			var defaultSettings = theme.Settings[0];
 			for (var i = 1; i < theme.Settings.Count; i++) {
-				var setting = theme.Settings [i];
-				settingsMap [setting.Name] = setting;
+				var setting = theme.Settings[i];
+				settingsMap[setting.Name] = setting;
 			}
 			CreatePlainText (editorFormat, defaultSettings);
 			CreateLineNumber (editorFormat, defaultSettings);
-			CreateOutlining(editorFormat, defaultSettings);
+			CreateOutlining (editorFormat, defaultSettings);
 			CreateCaret (editorFormat, defaultSettings);
 			CreateSelection (editorFormat, defaultSettings);
 			CreateResourceDictionary (editorFormat, defaultSettings, "text", EditorThemeColors.Foreground, EditorFormatDefinition.ForegroundColorId);
@@ -149,7 +169,7 @@ namespace MonoDevelop.TextEditor
 			editorFormat.EndBatchUpdate ();
 		}
 
-		private void CreateSelection (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreateSelection (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			if (defaultSettings.TryGetColor (EditorThemeColors.Selection, out var selectionColor)) {
 				var (r, g, b, a) = selectionColor.ToRgba ();
@@ -167,7 +187,7 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		private void CreateCaret (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreateCaret (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			if (defaultSettings.TryGetColor (EditorThemeColors.Caret, out var primaryColor)) {
 				var (r, g, b, a) = primaryColor.ToRgba ();
@@ -186,7 +206,7 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		private void CreateOutlining (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreateOutlining (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			// There is EditorThemeColors.FoldCross and EditorThemeColors.FoldCrossBackground
 			// but old editor is using ForeGround and FoldLine colors...
@@ -206,12 +226,13 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = collapsedColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				var collapsedResourceDictionary = editorFormat.GetProperties ("Collapsible Text (Collapsed)");
+
 				collapsedResourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 				editorFormat.SetProperties ("Collapsible Text (Collapsed)", collapsedResourceDictionary);
 			}
 		}
 
-		private void CreateResourceDictionary (IEditorFormatMap editorFormat, string formatName,  ThemeSetting setting)
+		void CreateResourceDictionary (IEditorFormatMap editorFormat, string formatName, ThemeSetting setting)
 		{
 			var resourceDictionary = editorFormat.GetProperties (formatName);
 			HslColor color;
@@ -231,7 +252,7 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties (formatName, resourceDictionary);
 		}
 
-		private static void CreateResourceDictionary (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string vsName, string settingName, string key = EditorFormatDefinition.BackgroundColorId)
+		static void CreateResourceDictionary (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string vsName, string settingName, string key = EditorFormatDefinition.BackgroundColorId)
 		{
 			ResourceDictionary resourceDictionary = editorFormat.GetProperties (vsName);
 			if (defaultSettings.TryGetColor (settingName, out var backgroundColor)) {
@@ -242,7 +263,7 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties (vsName, resourceDictionary);
 		}
 
-		private static void CreateLineNumber (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		static void CreateLineNumber (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			var resourceDictionary = editorFormat.GetProperties ("Line Number");
 			if (defaultSettings.TryGetColor ("gutterForeground", out var foregroundColor)) {
@@ -258,7 +279,7 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties ("Line Number", resourceDictionary);
 		}
 
-		private static void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			var resourceDictionary = editorFormat.GetProperties ("Plain Text");
 			if (defaultSettings.TryGetColor ("foreground", out var foregroundColor)) {
@@ -272,14 +293,12 @@ namespace MonoDevelop.TextEditor
 				LoggingService.LogError ($"Failed to parse font size from font name {fontName}");
 			}
 			fontName = fontName.Remove (fontName.LastIndexOf (' '));
-#if MAC
-			resourceDictionary [ClassificationFormatDefinition.TypefaceId] = AppKit.NSFontWorkarounds.FromFontName (fontName, fontSize);
-#elif WINDOWS
-			resourceDictionary [ClassificationFormatDefinition.TypefaceId] = new Typeface (fontName);
-			resourceDictionary [ClassificationFormatDefinition.FontRenderingSizeId] = (double)(fontSize * 96 / 72);
-#endif
+
+			AddFontToDictionary (resourceDictionary, fontName, fontSize);
+
 			editorFormat.SetProperties ("Plain Text", resourceDictionary);
 		}
+
+		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize);
 	}
 }
-*/

@@ -29,8 +29,11 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	abstract class TextViewDisplayBinding : IViewDisplayBinding
+	abstract class TextViewDisplayBinding<TImports> : IViewDisplayBinding, IDisposable
+		where TImports : TextViewImports
 	{
+		ThemeToClassification themeToClassification;
+
 		public string Name => GettextCatalog.GetString ("New Editor");
 
 		public bool CanUseAsDefault => true;
@@ -80,6 +83,23 @@ namespace MonoDevelop.TextEditor
 			return string.Equals (buildAction, AndroidResourceBuildAction, StringComparison.Ordinal);
 		}
 
-		public abstract ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		{
+			var imports = Ide.Composition.CompositionManager.GetExportedValue<TImports> ();
+			if (themeToClassification == null)
+				themeToClassification = CreateThemeToClassification (imports.EditorFormatMapService);
+
+			return CreateContent (imports, fileName, mimeType, ownerProject);
+		}
+
+		protected abstract ViewContent CreateContent (TImports imports, FilePath fileName, string mimeType, Project ownerProject);
+
+		protected abstract ThemeToClassification CreateThemeToClassification  (Microsoft.VisualStudio.Text.Classification.IEditorFormatMapService editorFormatMapService);
+
+		public void Dispose ()
+		{
+			themeToClassification?.Dispose ();
+			themeToClassification = null;
+		}
 	}
 }

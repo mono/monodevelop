@@ -19,17 +19,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Windows;
+using System.Windows.Media;
+using Microsoft.VisualStudio.Text.Classification;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	class WpfTextViewDisplayBinding : TextViewDisplayBinding
+	class WpfTextViewDisplayBinding : TextViewDisplayBinding<WpfTextViewImports>
 	{
-		public override ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		protected override ViewContent CreateContent (WpfTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return new WpfTextViewContent (fileName, mimeType, ownerProject);
+			return new WpfTextViewContent (imports, fileName, mimeType, ownerProject);
+		}
+
+		protected override ThemeToClassification CreateThemeToClassification (IEditorFormatMapService editorFormatMapService)
+			=> new WpfThemeToClassification (editorFormatMapService);
+	}
+
+	class WpfThemeToClassification : ThemeToClassification
+	{
+		public WpfThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) { }
+
+		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize)
+		{
+			resourceDictionary[ClassificationFormatDefinition.TypefaceId] = new Typeface (fontName);
+			resourceDictionary[ClassificationFormatDefinition.FontRenderingSizeId] = (double)(fontSize * 96 / 72);
 		}
 	}
 }

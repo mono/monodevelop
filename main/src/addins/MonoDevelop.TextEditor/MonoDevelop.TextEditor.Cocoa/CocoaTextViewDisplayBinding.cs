@@ -19,6 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Windows;
+using Microsoft.VisualStudio.Text.Classification;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -30,6 +32,17 @@ namespace MonoDevelop.TextEditor
 		public override ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new CocoaTextViewContent (fileName, mimeType, ownerProject);
+		}
+
+		protected override ThemeToClassification CreateThemeToClassification (IEditorFormatMapService editorFormatMapService)
+			=> new CocoaThemeToClassification (editorFormatMapService);
+
+		class CocoaThemeToClassification : ThemeToClassification
+		{
+			protected override AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize)
+			{
+				resourceDictionary[ClassificationFormatDefinition.TypefaceId] = AppKit.NSFontWorkarounds.FromFontName (fontName, fontSize);
+			}
 		}
 	}
 }
