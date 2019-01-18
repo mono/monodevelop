@@ -219,6 +219,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			foreach (string language in template.AvailableLanguages.OrderBy (item => item)) {
 				var menuItem = new Xwt.MenuItem (language);
+				menuItem.Accessible.Label = LanguageCellRenderer.GetAccessibleLanguageName (language);
 				menuItem.Clicked += (o, e) => {
 					languageCellRenderer.SelectedLanguage = language;
 					controller.SelectedLanguage = language;
