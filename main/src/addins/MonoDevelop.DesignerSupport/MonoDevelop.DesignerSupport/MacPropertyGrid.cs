@@ -112,6 +112,7 @@ namespace MonoDevelop.DesignerSupport
 				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
 					AutoExpandGroups = new string [] { "Build", "Misc", "NuGet", "Reference" }
 				};
+				propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
 			}
 		}
 
