@@ -58,7 +58,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void LoadCache (Solution sol)
 		{
 			var solConfig = sol.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-			var allProjects = sol.GetAllProjects ().ToDictionary (x => x.FileName, x => x);
 
 			var serializer = new JsonSerializer ();
 			foreach (var project in sol.GetAllProjects ()) {
@@ -102,7 +101,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void Update (ProjectConfiguration projConfig, Project proj, ImmutableArray<ProjectFile> files, ImmutableArray<FilePath> analyzers)
+		public void Update (ProjectConfiguration projConfig, Project proj, MonoDevelopWorkspace.ProjectDataMap projectMap,
+			ImmutableArray<ProjectFile> files,
+			ImmutableArray<FilePath> analyzers,
+			ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
+			ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> projectReferences)
 		{
 			if (!enabled)
 				return;
@@ -115,13 +118,31 @@ namespace MonoDevelop.Ide.TypeSystem
 				actions [i] = files [i].BuildAction;
 			}
 
+			var projectRefs = new ReferenceItem [projectReferences.Length];
+			for (int i = 0; i < projectReferences.Length; ++i) {
+				var pr = projectReferences [i];
+				var mdProject = projectMap.GetMonoProject (pr.ProjectId);
+				projectRefs [i] = new ReferenceItem {
+					FilePath = mdProject.FileName,
+					Aliases = pr.Aliases.ToArray (),
+				};
+			}
+
 			var item = new ProjectCache {
+				Format = format,
 				Analyzers = analyzers.Select(x => (string)x).ToArray (),
 				Files = paths,
 				BuildActions = actions,
 				TimeStamp = File.GetLastWriteTimeUtc (proj.FileName),
+				MetadataReferences = metadataReferences.Select(x => {
+					var ri = new ReferenceItem {
+						FilePath = x.FilePath,
+						Aliases = x.Properties.Aliases.ToArray (),
+					};
+					return ri;
+				}).ToArray (),
+				ProjectReferences = projectRefs,
 			};
-			cachedItems [proj.FileName] = item;
 
 			var cacheFile = GetProjectCacheFile (proj, projConfig.Id);
 
@@ -132,10 +153,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public bool TryGetCachedItems (Project p, out ProjectFile[] files, out string[] analyzers)
+
+		public bool TryGetCachedItems (Project p, MonoDevelopMetadataReferenceManager provider, MonoDevelopWorkspace.ProjectDataMap projectMap,
+			out ImmutableArray<ProjectFile> files,
+			out ImmutableArray<FilePath> analyzers,
+			out ImmutableArray<MonoDevelopMetadataReference> metadataReferences,
+			out ImmutableArray<Microsoft.CodeAnalysis.ProjectReference> projectReferences)
 		{
-			files = null;
-			analyzers = null;
+			files = ImmutableArray<ProjectFile>.Empty;
+			analyzers = ImmutableArray<FilePath>.Empty;
+			metadataReferences = ImmutableArray<MonoDevelopMetadataReference>.Empty;
+			projectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty;
 
 			if (!cachedItems.TryGetValue (p.FileName, out var cachedData)) {
 				return false;
@@ -146,14 +174,42 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (cachedData.TimeStamp != File.GetLastWriteTimeUtc (p.FileName))
 				return false;
 
-			files = new ProjectFile [cachedData.Files.Length];
+			var filesBuilder = ImmutableArray.CreateBuilder<ProjectFile> (cachedData.Files.Length);
 			for (int i = 0; i < cachedData.Files.Length; ++i) {
-				files [i] = new ProjectFile (cachedData.Files [i], cachedData.BuildActions [i]) {
+				filesBuilder.Add(new ProjectFile (cachedData.Files [i], cachedData.BuildActions [i]) {
 					Project = p,
-				};
+				});
 			}
 
-			analyzers = cachedData.Analyzers;
+			files = filesBuilder.MoveToImmutable ();
+
+			var analyzersBuilder = ImmutableArray.CreateBuilder<FilePath> (cachedData.Analyzers.Length);
+			foreach (var analyzer in cachedData.Analyzers)
+				analyzersBuilder.Add (analyzer);
+			analyzers = analyzersBuilder.MoveToImmutable ();
+
+			var mrBuilder = ImmutableArray.CreateBuilder<MonoDevelopMetadataReference> (cachedData.MetadataReferences.Length);
+			foreach (var item in cachedData.MetadataReferences) {
+				var aliases = item.Aliases != null ? item.Aliases.ToImmutableArray () : default;
+				var reference = provider.GetOrCreateMetadataReference (item.FilePath, new Microsoft.CodeAnalysis.MetadataReferenceProperties(aliases: aliases));
+				mrBuilder.Add (reference);
+			}
+			metadataReferences = mrBuilder.MoveToImmutable ();
+
+			var sol = p.ParentSolution;
+			var solConfig = sol.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			var allProjects = sol.GetAllProjects ().ToDictionary (x => x.FileName, x => x);
+
+			var prBuilder = ImmutableArray.CreateBuilder<Microsoft.CodeAnalysis.ProjectReference> (cachedData.ProjectReferences.Length);
+			foreach (var item in cachedData.ProjectReferences) {
+				if (!allProjects.TryGetValue (item.FilePath, out var mdProject))
+					return false;
+
+				var aliases = item.Aliases != null ? item.Aliases.ToImmutableArray () : default;
+				var pr = new Microsoft.CodeAnalysis.ProjectReference (projectMap.GetOrCreateId (mdProject, null), aliases.ToImmutableArray ());
+				prBuilder.Add (pr);
+			}
+			projectReferences = prBuilder.MoveToImmutable ();
 			return true;
 		}
 
@@ -163,9 +219,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			public int Format;
 			public DateTime TimeStamp;
 
+			public ReferenceItem [] ProjectReferences;
+			public ReferenceItem[] MetadataReferences;
 			public string [] Files;
 			public string [] BuildActions;
 			public string [] Analyzers;
+		}
+
+		[Serializable]
+		internal class ReferenceItem
+		{
+			public string FilePath;
+			public string [] Aliases = Array.Empty<string> ();
 		}
 	}
 }
