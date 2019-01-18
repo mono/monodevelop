@@ -79,6 +79,7 @@ namespace MonoDevelop.Projects
 			return Task.Run (() => UpdateWatchers (token));
 		}
 		static HashSet<FilePath> newWatchers = new HashSet<FilePath>();
+		static List<FilePath> toRemove = new List<FilePath> ();
 
 		static void UpdateWatchers (CancellationToken token)
 		{
@@ -99,16 +100,20 @@ namespace MonoDevelop.Projects
 					// Unchanged.
 					return;
 				}
+				toRemove.Clear ();
+				foreach (var kvp in watchers) {
+					var directory = kvp.Key;
+					if (!newWatchers.Contains (directory))
+						toRemove.Add (directory);
+				}
 
 				// After this point, the watcher update is real and a destructive operation, so do not use the token.
 				if (token.IsCancellationRequested)
 					return;
 
 				// First remove the watchers, so we don't spin too many threads.
-				foreach (var kvp in watchers) {
-					var directory = kvp.Key;
-					if (!newWatchers.Contains (directory))
-						RemoveWatcher_NoLock (directory);
+				foreach (var directory in toRemove) {
+					RemoveWatcher_NoLock (directory);
 				}
 
 				// Add the new ones.
