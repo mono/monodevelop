@@ -228,7 +228,6 @@
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationManager.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
-    <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
