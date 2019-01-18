@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement
 		TimeSpan searchDelayTimeSpan = TimeSpan.FromMilliseconds (500);
 		IDisposable searchTimer;
 		SourceRepositoryViewModel dummyPackageSourceRepresentingConfigureSettingsItem =
-			new SourceRepositoryViewModel (Catalog.GetString ("Configure Sources..."));
+			new SourceRepositoryViewModel (Catalog.GetString ("Configure Sources…"));
 		ImageLoader imageLoader = new ImageLoader ();
 		bool loadingMessageVisible;
 		bool ignorePackageVersionChanges;
@@ -174,9 +174,9 @@ namespace MonoDevelop.PackageManagement
 		void UpdateSpinnerLabel ()
 		{
 			if (String.IsNullOrWhiteSpace (packageSearchEntry.Text)) {
-				loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list...");
+				loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list…");
 			} else {
-				loadingSpinnerLabel.Text = Catalog.GetString ("Searching packages...");
+				loadingSpinnerLabel.Text = Catalog.GetString ("Searching packages…");
 			}
 		}
 

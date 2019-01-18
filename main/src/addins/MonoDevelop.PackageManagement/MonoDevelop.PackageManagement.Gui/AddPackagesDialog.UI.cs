@@ -83,11 +83,17 @@ namespace MonoDevelop.PackageManagement
 			packageSourceComboBox = new ComboBox ();
 			packageSourceComboBox.Name = "packageSourceComboBox";
 			packageSourceComboBox.MinWidth = 200;
+			packageSourceComboBox.Accessible.Identifier = packageSourceComboBox.Name;
+			packageSourceComboBox.Accessible.Label = GettextCatalog.GetString ("NuGet package source");
+			packageSourceComboBox.Accessible.Description = GettextCatalog.GetString ("Select NuGet package source");
 			topHBox.PackStart (packageSourceComboBox);
 
 			packageSearchEntry = new SearchTextEntry ();
 			packageSearchEntry.Name = "addPackagesDialogSearchEntry";
 			packageSearchEntry.WidthRequest = 187;
+			packageSearchEntry.Accessible.Identifier = packageSearchEntry.Name;
+			packageSearchEntry.Accessible.Label = GettextCatalog.GetString ("Search");
+			packageSearchEntry.Accessible.Description = GettextCatalog.GetString ("Search for NuGet packages");
 			topHBox.PackEnd (packageSearchEntry);
 
 			this.HeaderContent = topHBox;
@@ -140,7 +146,10 @@ namespace MonoDevelop.PackageManagement
 			loadingSpinnerHBox.PackStart (loadingSpinner);
 
 			loadingSpinnerLabel = new Label ();
-			loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list...");
+			loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list…");
+			loadingSpinner.Accessible.Identifier ="addPackagesDialogLoadingSpinner";
+			loadingSpinner.Accessible.LabelWidget = loadingSpinnerLabel;
+
 			loadingSpinnerHBox.PackEnd (loadingSpinnerLabel);
 
 			loadingSpinnerFrame = new FrameBox ();
@@ -332,6 +341,9 @@ namespace MonoDevelop.PackageManagement
 
 			packageVersionComboBox = new ComboBox ();
 			packageVersionComboBox.Name = "packageVersionComboBox";
+			packageVersionComboBox.Accessible.Identifier = packageVersionComboBox.Name;
+			packageVersionComboBox.Accessible.LabelWidget = packageVersionsLabel;
+			packageVersionComboBox.Accessible.Description = GettextCatalog.GetString ("Select a NuGet package version");
 			packageVersionsHBox.Spacing = 15;
 			packageVersionsHBox.PackStart (packageVersionComboBox, true, true);
 
