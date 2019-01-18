@@ -238,10 +238,14 @@ namespace MonoDevelop.DotNetCore
 			using (var r = new StreamReader (GlobalJsonPath)) {
 				try {
 					var token = JObject.Parse (r.ReadToEnd ());
-					if (token == null)
-						return string.Empty;
-					var version = (string)token.SelectToken ("sdk").SelectToken ("version");
-					return version;
+
+					if (token != null && token.TryGetValue ("sdk", out var sdkToken)) {
+						var version = sdkToken ["version"];
+						if (version != null)
+							return version.Value<string>();
+					}
+
+					return string.Empty;
 				} catch (Exception e) {
 					LoggingService.LogWarning ($"Unable to parse {GlobalJsonPath}.", e);
 					return string.Empty;
