@@ -341,88 +341,104 @@ namespace MonoDevelop.AnalysisCore.Gui
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
 			{
-				if (cancellationToken.IsCancellationRequested)
-					return false;
-				var editor = ext.Editor;
-				if (editor == null)
-					return false;
-				if (id == null) {
-					foreach (var markerQueue in ext.markers) {
-						foreach (var marker in markerQueue.Value) {
-							editor.RemoveMarker (marker);
-						}
-						PutBackCachedList (markerQueue.Value);
-					}
-					ext.markers.Clear ();
-				}
-
-				if (id == null) {
-					lock (ext.tasks)
-						ext.tasks.Clear ();
-					ext.OnTasksUpdated (EventArgs.Empty);
-					return false;
-				}
-
-				//clear the old results out at the same rate we add in the new ones
-				for (int i = 0; oldMarkerIndex < oldMarkers.Count && i < UPDATE_COUNT; i++) {
-					if (cancellationToken.IsCancellationRequested)
+				try {
+					var editor = ext.Editor;
+					if (editor == null)
 						return false;
-					var oldMarker = oldMarkers [oldMarkerIndex++];
-
-					if (curResult < results.Count && results [curResult].Equals ((Result)oldMarker.Tag, oldMarker.Offset)) {
-						oldMarker.Tag = results [curResult];
-						newMarkers.Add (oldMarker);
-						curResult++;
-						continue;
-					}
-					editor.RemoveMarker (oldMarker);
-				}
-
-				//add in the new markers
-				for (int i = 0; i < UPDATE_COUNT; i++) {
-					if (curResult >= results.Count) {
+					if (id == null) {
+						foreach (var markerQueue in ext.markers) {
+							foreach (var marker in markerQueue.Value) {
+								editor.RemoveMarker (marker);
+							}
+							PutBackCachedList (markerQueue.Value);
+						}
+						ext.markers.Clear ();
 						lock (ext.tasks)
-							ext.tasks [id] = builder.ToImmutable ();
+							ext.tasks.Clear ();
 						ext.OnTasksUpdated (EventArgs.Empty);
-						// remove remaining old markers
-						while (oldMarkerIndex < oldMarkers.Count) {
-							editor.RemoveMarker (oldMarkers[oldMarkerIndex]);
-							oldMarkerIndex++;
-						}
-
-						PutBackCachedList (ext.markers [id]);
-						ext.markers [id] = newMarkers;
-
 						return false;
 					}
 
-					if (cancellationToken.IsCancellationRequested)
+					if (cancellationToken.IsCancellationRequested) {
+						FinishUpdateRun ();
 						return false;
-					var currentResult = results [curResult++];
-					if (currentResult.InspectionMark != IssueMarker.None) {
-						int start = currentResult.Region.Start;
-						int end = currentResult.Region.End;
-						if (start > end)
-							continue;
-
-						// In case a diagnostic has a 0 length span, force it to 1.
-						if (start == end)
-							end = end + 1;
-						
-						var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, GetSegmentMarkerEffect (currentResult.InspectionMark), TextSegment.FromBounds (start, end));
-						marker.Tag = currentResult;
-						marker.IsVisible = currentResult.Underline;
-
-						if (currentResult.InspectionMark != IssueMarker.GrayOut) {
-							marker.Color = GetColor (editor, currentResult);
-							marker.IsVisible &= currentResult.Level != DiagnosticSeverity.Hidden;
-						}
-						editor.AddMarker (marker);
-						newMarkers.Add (marker);
 					}
-					builder.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
+
+					//clear the old results out at the same rate we add in the new ones
+					if (oldMarkers != null) {
+						for (int i = 0; oldMarkerIndex < oldMarkers.Count && i < UPDATE_COUNT; i++) {
+							var oldMarker = oldMarkers [oldMarkerIndex++];
+
+							var oldResult = (Result)oldMarker.Tag;
+							if (curResult < results.Count) {
+								Result currentResult = results [curResult];
+								if (currentResult.Equals (oldResult, oldMarker.Offset)) {
+									oldMarker.Tag = currentResult;
+									newMarkers.Add (oldMarker);
+									if (oldResult.QuickTask != null) {
+										currentResult.QuickTask = oldResult.QuickTask;
+										builder.Add (currentResult.QuickTask);
+									}
+									curResult++;
+									continue;
+								}
+							}
+							editor.RemoveMarker (oldMarker);
+						}
+					}
+
+					//add in the new markers
+					for (int i = 0; i < UPDATE_COUNT; i++) {
+						if (curResult >= results.Count) {
+							FinishUpdateRun ();
+							return false;
+						}
+						var currentResult = results [curResult++];
+						if (currentResult.InspectionMark != IssueMarker.None) {
+							int start = currentResult.Region.Start;
+							int end = currentResult.Region.End;
+							if (start > end)
+								continue;
+
+							// In case a diagnostic has a 0 length span, force it to 1.
+							if (start == end)
+								end = end + 1;
+
+							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, GetSegmentMarkerEffect (currentResult.InspectionMark), TextSegment.FromBounds (start, end));
+							marker.Tag = currentResult;
+							marker.IsVisible = currentResult.Underline;
+
+							if (currentResult.InspectionMark != IssueMarker.GrayOut) {
+								marker.Color = GetColor (editor, currentResult);
+								marker.IsVisible &= currentResult.Level != DiagnosticSeverity.Hidden;
+							}
+							editor.AddMarker (marker);
+							newMarkers.Add (marker);
+						}
+						builder.Add (currentResult.QuickTask = new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
+					}
+					return true;
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Error while ResutsUpdater.IdleHandler", ex);
+					return false;
 				}
-				return true;
+			}
+
+			void FinishUpdateRun ()
+			{
+				var editor = ext.Editor;
+				// remove remaining old markers
+				if (oldMarkers != null) {
+					while (oldMarkerIndex < oldMarkers.Count) {
+						editor.RemoveMarker (oldMarkers [oldMarkerIndex]);
+						oldMarkerIndex++;
+					}
+					PutBackCachedList (oldMarkers);
+				}
+				ext.markers [id] = newMarkers;
+				lock (ext.tasks)
+					ext.tasks [id] = builder.ToImmutable ();
+				ext.OnTasksUpdated (EventArgs.Empty);
 			}
 		}
 
