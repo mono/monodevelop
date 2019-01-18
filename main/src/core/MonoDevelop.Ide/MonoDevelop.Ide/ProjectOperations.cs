@@ -57,7 +57,8 @@ namespace MonoDevelop.Ide
 	/// </summary>
 	public partial class ProjectOperations
 	{
-		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
+		static AsyncOperation<BuildResult> DefaultBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
+		AsyncOperation<BuildResult> currentBuildOperation = DefaultBuildOperation;
 		MultipleAsyncOperation currentRunOperation = MultipleAsyncOperation.CompleteMultipleOperation;
 		IBuildTarget currentBuildOperationOwner;
 		List<IBuildTarget> currentRunOperationOwners = new List<IBuildTarget> ();
@@ -147,6 +148,12 @@ namespace MonoDevelop.Ide
 		public AsyncOperation CurrentRunOperation {
 			get { return currentRunOperation; }
 			set { AddRunOperation (value); }
+		}
+
+		void ResetCurrentBuildOperation ()
+		{
+			currentBuildOperation = DefaultBuildOperation;
+			currentBuildOperationOwner = null;
 		}
 
 		public void AddRunOperation (AsyncOperation runOperation)
@@ -1226,12 +1233,12 @@ namespace MonoDevelop.Ide
 
 				OnStartClean (monitor, tt);
 
-				var t = CleanAsync (entry, monitor, tt, false, operationContext);
-
-				t = t.ContinueWith (ta => {
-					currentBuildOperationOwner = null;
-					return ta.Result; 
-				});
+				var t = CleanAsync (entry, monitor, tt, false, operationContext)
+					.ContinueWith (ta => {
+						ResetCurrentBuildOperation ();
+						currentBuildOperationOwner = null;
+						return ta.Result;
+					});
 
 				var op = new AsyncOperation<BuildResult> (t, cs);
 				currentBuildOperation = op;
@@ -1365,14 +1372,14 @@ namespace MonoDevelop.Ide
 			var cs = new CancellationTokenSource ();
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRebuildProgressMonitor ().WithCancellationSource (cs);
 
-			var t = RebuildAsync (entry, monitor, operationContext);
-			t = t.ContinueWith (ta => {
-				currentBuildOperationOwner = null;
-				return ta.Result;
-			});
+			var t = RebuildAsync (entry, monitor, operationContext)
+				.ContinueWith (ta => {
+					ResetCurrentBuildOperation ();
+					return ta.Result;
+				});
 
 			var op = new AsyncOperation<BuildResult> (t, cs);
-
+			currentBuildOperationOwner = entry;
 			return currentBuildOperation = op;
 		}
 		
@@ -1664,10 +1671,13 @@ namespace MonoDevelop.Ide
 					cs = CancellationTokenSource.CreateLinkedTokenSource (cs.Token, cancellationToken.Value);
 				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ().WithCancellationSource (cs);
 				BeginBuild (monitor, tt, false);
-				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext);
+				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext)
+					.ContinueWith (ta => {
+						ResetCurrentBuildOperation ();
+						return ta.Result;
+					});
 				currentBuildOperation = new AsyncOperation<BuildResult> (t, cs);
 				currentBuildOperationOwner = entry;
-				t.ContinueWith ((ta) => currentBuildOperationOwner = null);
 			} catch {
 				tt.End ();
 				throw;
@@ -2609,13 +2619,14 @@ namespace MonoDevelop.Ide
 		public void AddOperation (AsyncOperation op)
 		{
 			Operations.Add (op);
-			op.Task.ContinueWith (CheckForCompletion);
+			op.Task.ContinueWith (t => CheckForCompletion (t));
 		}
 
 		void CheckForCompletion (Task obj)
 		{
-			if (Operations.All (op => op.IsCompleted))
+			if (Operations.All (op => op.IsCompleted)) {
 				TaskCompletionSource.SetResult (0);
+			}
 		}
 
 		void MultiCancel ()
