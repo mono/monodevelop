@@ -83,7 +83,8 @@ namespace MonoDevelop.Ide.Editor
 			base.OnContentNameChanged ();
 			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditor.FileName = ContentName;
+			if (ContentName != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
+				textEditor.FileName = ContentName;
 			if (this.WorkbenchWindow?.Document != null)
 				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
 			UpdateTextEditorOptions (null, null);
