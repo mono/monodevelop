@@ -20,30 +20,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Threading.Tasks;
-
-#if MAC
 using AppKit;
-#elif WINDOWS
-using System.Windows.Input;
-#endif
-
 using Microsoft.CodeAnalysis.Classification;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.Commanding;
-using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
-
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
@@ -53,9 +37,9 @@ namespace MonoDevelop.TextEditor
 	[Name (ClassificationTypeNames.Text)]
 	[Order (After = Priority.Default, Before = Priority.High)]
 	[UserVisible (true)]
-	internal class ClassificationFormatDefinitionFromPreferences : ClassificationFormatDefinition
+	class ClassificationFormatDefinitionFromPreferences : ClassificationFormatDefinition
 	{
-		internal ClassificationFormatDefinitionFromPreferences ()
+		public ClassificationFormatDefinitionFromPreferences ()
 		{
 			nfloat fontSize = -1;
 			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
@@ -91,8 +75,16 @@ namespace MonoDevelop.TextEditor
 				=> nsView;
 		}
 
+		public CocoaTextViewContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
+			: base (imports, fileName, mimeType, ownerProject)
+		{
+		}
+
 		protected override ICocoaTextView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles)
 			=> Imports.TextEditorFactoryService.CreateTextView (viewModel, roles, Imports.EditorOptionsFactoryService.GlobalOptions);
+
+		protected override ITextViewRoleSet GetAllPredefinedRoles ()
+			=> Imports.TextEditorFactoryService.AllPredefinedRoles;
 
 		protected override Control CreateControl ()
 		{

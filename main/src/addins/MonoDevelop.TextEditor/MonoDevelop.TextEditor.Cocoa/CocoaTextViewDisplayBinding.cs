@@ -20,6 +20,7 @@
 // THE SOFTWARE.
 
 using System.Windows;
+using AppKit;
 using Microsoft.VisualStudio.Text.Classification;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -27,11 +28,11 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	class CocoaTextViewDisplayBinding : TextViewDisplayBinding
+	class CocoaTextViewDisplayBinding : TextViewDisplayBinding<CocoaTextViewImports>
 	{
-		public override ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		protected override ViewContent CreateContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return new CocoaTextViewContent (fileName, mimeType, ownerProject);
+			return new CocoaTextViewContent (imports, fileName, mimeType, ownerProject);
 		}
 
 		protected override ThemeToClassification CreateThemeToClassification (IEditorFormatMapService editorFormatMapService)
@@ -39,9 +40,11 @@ namespace MonoDevelop.TextEditor
 
 		class CocoaThemeToClassification : ThemeToClassification
 		{
-			protected override AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize)
+			public CocoaThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) {}
+
+			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize)
 			{
-				resourceDictionary[ClassificationFormatDefinition.TypefaceId] = AppKit.NSFontWorkarounds.FromFontName (fontName, fontSize);
+				resourceDictionary[ClassificationFormatDefinition.TypefaceId] = NSFontWorkarounds.FromFontName (fontName, fontSize);
 			}
 		}
 	}
