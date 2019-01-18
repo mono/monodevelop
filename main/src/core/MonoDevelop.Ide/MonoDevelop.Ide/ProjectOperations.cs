@@ -48,6 +48,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
+using MonoDevelop.Ide.Projects.OptionPanels;
 
 namespace MonoDevelop.Ide
 {
@@ -690,6 +691,35 @@ namespace MonoDevelop.Ide
 					optionsDialog.Destroy ();
 					optionsDialog.Dispose ();
 				}
+			}
+		}
+
+		public async void ShowRunConfiguration (Solution solution, MultiItemSolutionRunConfiguration runConfiguration)
+		{
+			var optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, solution);
+			optionsDialog.CurrentConfig = IdeApp.Workspace.ActiveConfigurationId;
+			try {
+				optionsDialog.SelectPanel ("Run");
+				if (runConfiguration != null) {
+					void shownCallback (object sender, EventArgs args)
+					{
+						var panel = optionsDialog.GetPanel<SolutionRunConfigurationsPanel> ("General");
+						if (panel != null) {
+							panel.ShowConfiguration (runConfiguration);
+						}
+						optionsDialog.Shown -= shownCallback;
+					}
+
+					optionsDialog.Shown += shownCallback;
+				}
+
+				if (MessageService.RunCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
+					await SaveAsync (solution);
+					await IdeApp.Workspace.SavePreferences (solution);
+				}
+			} finally {
+				optionsDialog.Destroy ();
+				optionsDialog.Dispose ();
 			}
 		}
 
