@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems" Label="Shared" Condition="Exists('..\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems')" />
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
@@ -40,6 +39,9 @@
     <Compile Include="ImageService.cs" />
     <Compile Include="MdMouseProcessorProvider.cs" />
     <Compile Include="EditorCommandHandlers.cs" />
+    <Compile Include="CocoaTextViewContent.cs" />
+    <Compile Include="CocoaTextViewDisplayBinding.cs" />
+    <Compile Include="CocoaTextViewImports.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.TextEditor.Cocoa.addin.xml" />

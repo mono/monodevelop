@@ -32,8 +32,7 @@ using Microsoft.VisualStudio.Text.Classification;
 
 namespace MonoDevelop.TextEditor
 {
-	[Export]
-	class TextViewImports
+	abstract class TextViewImports
 	{
 		[Import]
 		public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
@@ -41,12 +40,6 @@ namespace MonoDevelop.TextEditor
 		[Import]
 		public ITextBufferFactoryService TextBufferFactoryService { get; set; }
 
-		[Import]
-#if WINDOWS
-		public ITextEditorFactoryService TextEditorFactoryService { get; set; }
-#elif MAC
-		public ICocoaTextEditorFactoryService TextEditorFactoryService { get; set; }
-#endif
 		[Import]
 		public IFileToContentTypeService FileToContentTypeService { get; set; }
 

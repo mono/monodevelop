@@ -24,17 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.ComponentModel.Composition;
+using AppKit;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
-using Microsoft.VisualStudio.Text;
-using MonoDevelop.Components.Commands;
-using Microsoft.VisualStudio.Text.Editor.Commanding;
-using MonoDevelop.Ide.Updater;
-using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
-using AppKit;
 
 namespace MonoDevelop.TextEditor.Cocoa
 {
@@ -59,9 +55,9 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 	class MdMouseProcessor : CocoaMouseProcessorBase
 	{
-		private ICocoaTextView cocoaTextView;
-		private IEditorCommandHandlerService commandServiceFactory;
-		string menuPath = "/MonoDevelop/TextEditor/ContextMenu/Editor";
+		ICocoaTextView cocoaTextView;
+		private readonly IEditorCommandHandlerService commandServiceFactory;
+		readonly string menuPath = "/MonoDevelop/TextEditor/ContextMenu/Editor";
 
 		public MdMouseProcessor (IEditorCommandHandlerService commandServiceFactory, ICocoaTextView cocoaTextView)
 		{
@@ -71,7 +67,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		public override void PreprocessMouseRightButtonUp (MouseEvent e)
 		{
-			var view = (TextViewContent)cocoaTextView.Properties [typeof (TextViewContent)];
+			var view = (CocoaTextViewContent)cocoaTextView.Properties [typeof (CocoaTextViewContent)];
 			var ctx = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
 			var cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 			var pt = ((NSEvent)e.Event).LocationInWindow;

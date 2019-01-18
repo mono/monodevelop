@@ -463,18 +463,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationTypes", "extern
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Cocoa", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Cocoa\MonoDevelop.TextEditor.Cocoa.csproj", "{5FEEDF49-0493-411C-B4F3-FAB7543499D2}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoDevelop.TextEditor.Shared", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.shproj", "{503A27BD-D74C-4EDD-818C-0A0F06D9C672}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternMatchingImpl", "external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj", "{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolTipAdornmentImpl", "external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj", "{1339C301-982F-4A37-BD71-1F104FCCE65D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolTipAdornmentImpl", "external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj", "{1339C301-982F-4A37-BD71-1F104FCCE65D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems*{29d34ea6-d312-4690-9fe9-1ea1f2ebac2e}*SharedItemsImports = 4
 		external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\BaseViewImpl.projitems*{47d57f5a-0693-4768-a970-5491d4f5574c}*SharedItemsImports = 13
-		src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems*{503a27bd-d74c-4edd-818c-0a0f06d9c672}*SharedItemsImports = 13
-		src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Shared\MonoDevelop.TextEditor.Shared.projitems*{5feedf49-0493-411c-b4f3-fab7543499d2}*SharedItemsImports = 4
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{fbaad910-f29b-4ac5-9fc0-27f6eb36c495}*SharedItemsImports = 13
 	EndGlobalSection
@@ -2914,7 +2909,6 @@ Global
 		{8EC74798-FED7-4F3C-A01B-25013317A90B} = {378D061D-D16E-408F-8E01-68B04D77258A}
 		{52BF10FD-66DF-430F-8A30-E5E63A93AE91} = {378D061D-D16E-408F-8E01-68B04D77258A}
 		{5FEEDF49-0493-411C-B4F3-FAB7543499D2} = {C14B06AC-905A-47AB-BAD9-652E3499CFE0}
-		{503A27BD-D74C-4EDD-818C-0A0F06D9C672} = {C14B06AC-905A-47AB-BAD9-652E3499CFE0}
 		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{1339C301-982F-4A37-BD71-1F104FCCE65D} = {32539734-6484-4451-9EF3-61610CA25BBF}
 	EndGlobalSection

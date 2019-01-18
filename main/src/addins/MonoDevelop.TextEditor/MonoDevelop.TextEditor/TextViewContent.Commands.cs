@@ -35,7 +35,7 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.TextEditor
 {
-	partial class TextViewContent
+	partial class TextViewContent<TView, TImports>
 	{
 		void UpdateCommand (CommandState commandState, CommandInfo commandInfo)
 		{
@@ -180,6 +180,7 @@ namespace MonoDevelop.TextEditor
 		//   QuickFix
 		//   QuickFixMenu
 
+		//FIXME these should move to the Refactoring extension
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]
 		void UpdateGotoDeclarationCommand (CommandInfo info)
  			 => UpdateCommand (info, (textView, textBuffer) => new GoToDefinitionCommandArgs (textView, textBuffer));

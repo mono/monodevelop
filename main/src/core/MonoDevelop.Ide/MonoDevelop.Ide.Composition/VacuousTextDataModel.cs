@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.Text.Editor
     using System.Collections.Generic;
     using Microsoft.VisualStudio.Utilities;
 
-    public class VacuousTextDataModel : ITextDataModel
+    class VacuousTextDataModel : ITextDataModel
     {
         private ITextBuffer documentBuffer;
 
