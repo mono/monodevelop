@@ -744,6 +744,7 @@
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
@@ -780,7 +781,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
-    <InternalsVisibleTo Include="MonoDevelop.UnitTesting.NUnit" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Utilities\" />

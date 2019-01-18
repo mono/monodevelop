@@ -334,7 +334,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				try {
 					if (File.Exists (ld.Path)) {
 						runner = new ExternalTestRunner (Path.GetDirectoryName (ld.Path));
-						runner.Use64Bit = MonoTargetRuntime.Use64BitForAssembly (ld.Path);
+						runner.ProcessExecutionArchitecture = AssemblyUtilities.GetProcessExecutionArchitectureForAssembly (ld.Path);
 						runner.Connect (ld.NUnitVersion).Wait ();
 						var supportAssemblies = new List<string> (ld.SupportAssemblies.Result);
 						ld.Info = runner.GetTestInfo (ld.Path, supportAssemblies).Result;
@@ -400,7 +400,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				OperationConsoleFactory.CreateConsoleOptions.Default.WithTitle (GettextCatalog.GetString ("Unit Tests")));
 
 			ExternalTestRunner runner = new ExternalTestRunner (Path.GetDirectoryName (AssemblyPath));
-			runner.Use64Bit = MonoTargetRuntime.Use64BitForAssembly (AssemblyPath);
+			runner.ProcessExecutionArchitecture = AssemblyUtilities.GetProcessExecutionArchitectureForAssembly (AssemblyPath);
 			runner.Connect (NUnitVersion, testContext.ExecutionContext.ExecutionHandler, console).Wait ();
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 

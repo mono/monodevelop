@@ -48,7 +48,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		IRemoteEventListener listener;
 		readonly string assemblyDirectory;
 
-		public bool? Use64Bit { get; set; }
+		public ProcessExecutionArchitecture ProcessExecutionArchitecture { get; set; }
 
 		public ExternalTestRunner ()
 		{
@@ -63,7 +63,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		{
 			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), version.ToString (), "NUnitRunner.exe");
 			connection = new RemoteProcessConnection (exePath, assemblyDirectory, executionHandler, console, Runtime.MainSynchronizationContext);
-			connection.Use64Bit = Use64Bit;
+			connection.ProcessExecutionArchitecture = ProcessExecutionArchitecture;
 			connection.AddListener (this);
 			return connection.Connect ();
 		}

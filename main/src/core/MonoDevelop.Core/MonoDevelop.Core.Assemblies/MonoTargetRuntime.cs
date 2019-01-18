@@ -294,13 +294,6 @@ namespace MonoDevelop.Core.Assemblies
 			return new ExecutionEnvironment (EnvironmentVariables);
 		}
 
-		static bool Is64BitPE (Mono.Cecil.TargetArchitecture machine)
-		{
-			return machine == Mono.Cecil.TargetArchitecture.AMD64 ||
-				   machine == Mono.Cecil.TargetArchitecture.IA64 ||
-				   machine == Mono.Cecil.TargetArchitecture.ARM64;
-		}
-
 		/// <summary>
 		/// Get the Mono executable best matching the assembly architecture flags.
 		/// </summary>
@@ -309,47 +302,25 @@ namespace MonoDevelop.Core.Assemblies
 		/// <param name="assemblyPath">Assembly path.</param>
 		public string GetMonoExecutableForAssembly (string assemblyPath)
 		{
-			return GetMonoExecutable (Use64BitForAssembly (assemblyPath));
+			return GetMonoExecutable (AssemblyUtilities.GetProcessExecutionArchitectureForAssembly (assemblyPath));
 		}
 
-		internal static bool? Use64BitForAssembly (string assemblyPath)
-		{
-			try {
-				Mono.Cecil.ModuleAttributes peKind;
-				Mono.Cecil.TargetArchitecture machine;
-				if (string.IsNullOrEmpty (assemblyPath) || !File.Exists (assemblyPath))
-					return null;
-				try {
-					using (var adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (assemblyPath)) {
-						peKind = adef.MainModule.Attributes;
-						machine = adef.MainModule.Architecture;
-					}
-				} catch {
-					peKind = Mono.Cecil.ModuleAttributes.ILOnly;
-					machine = Mono.Cecil.TargetArchitecture.I386;
-				}
-				if ((peKind & (Mono.Cecil.ModuleAttributes.Required32Bit | Mono.Cecil.ModuleAttributes.Preferred32Bit)) != 0)
-					return false;
-				if (Is64BitPE (machine))
-					return true;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while determining 64/32 bit assembly.", e);
-			}
-			return null;
-		}
-
-		internal string GetMonoExecutable (bool? use64Bit)
+		internal string GetMonoExecutable (ProcessExecutionArchitecture use64Bit)
 		{
 			string monoPath;
-			if (use64Bit == true) {
+			switch (use64Bit) {
+			case ProcessExecutionArchitecture.X64:
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
 				if (File.Exists (monoPath))
 					return monoPath;
-			} else if (use64Bit == false) {
+				break;
+			case ProcessExecutionArchitecture.X86:
 				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono32");
 				if (File.Exists (monoPath))
 					return monoPath;
+				break;
 			}
+
 			return monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono");
 		}
 

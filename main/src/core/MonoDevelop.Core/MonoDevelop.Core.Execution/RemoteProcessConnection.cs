@@ -285,7 +285,7 @@ namespace MonoDevelop.Core.Execution
 			SetStatus (ConnectionStatus.ConnectionFailed, ex.Message, ex);
 		}
 
-		public bool? Use64Bit { get; set; }
+		public ProcessExecutionArchitecture ProcessExecutionArchitecture { get; set; }
 
 		Task StartRemoteProcess ()
 		{
@@ -298,8 +298,7 @@ namespace MonoDevelop.Core.Execution
 				// Explicitly propagate the PATH var to the process. It ensures that tools required
 				// to run XS are also in the PATH for remote processes.
 				cmd.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
-				if (Use64Bit.HasValue)
-					cmd.EnvironmentVariables ["MONO_USE64BIT"] = Use64Bit.Value.ToString ();
+				cmd.ProcessExecutionArchitecture = ProcessExecutionArchitecture;
 				process = executionHandler.Execute (cmd, console);
 				process.Task.ContinueWith (t => ProcessExited ());
 			});

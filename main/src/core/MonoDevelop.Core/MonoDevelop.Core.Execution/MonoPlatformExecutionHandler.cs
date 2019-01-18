@@ -57,10 +57,8 @@ namespace MonoDevelop.Core.Execution
 
 		private string GetExecutionRunner (ExecutionCommand command, DotNetExecutionCommand dotcmd)
 		{
-			if (command is ProcessExecutionCommand processExecutionCommand) {
-				if (processExecutionCommand.EnvironmentVariables.TryGetValue ("MONO_USE64BIT", out var value) && bool.TryParse (value, out var use64Bit)) {
-					return runtime.GetMonoExecutable (use64Bit);
-				}
+			if (command is ProcessExecutionCommand processExecutionCommand && processExecutionCommand.ProcessExecutionArchitecture != ProcessExecutionArchitecture.Unspecified) {
+				return runtime.GetMonoExecutable (processExecutionCommand.ProcessExecutionArchitecture);
 			}
 			return runtime.GetMonoExecutableForAssembly (dotcmd.Command);
 		}
