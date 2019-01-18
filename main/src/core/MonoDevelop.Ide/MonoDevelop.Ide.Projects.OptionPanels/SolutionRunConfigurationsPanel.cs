@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		internal void ShowConfiguration (MultiItemSolutionRunConfiguration editedConfig)
 		{
-			var rc = configs.First (ci => ci.EditedConfig == editedConfig);
+			var rc = configs.First (ci => ci.EditedConfig.Name == editedConfig.Name);
 			var section = sections [rc];
 			ParentDialog.ShowPage (section);
 		}
