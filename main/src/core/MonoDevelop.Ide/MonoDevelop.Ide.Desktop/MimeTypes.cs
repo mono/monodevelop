@@ -28,11 +28,8 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.Platform;
-using Microsoft.VisualStudio.Utilities;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Desktop
@@ -41,8 +38,8 @@ namespace MonoDevelop.Ide.Desktop
 	{
 		public static MimeTypes Instance { get; } = new MimeTypes ();
 
-		MimeTypeNode textPlainNode = new MimeTypeNode ("text/plain", null, GettextCatalog.GetString ("Text document"), null, true);
-		MimeTypeNode xmlNode = new MimeTypeNode ("application/xml", null, GettextCatalog.GetString ("XML document"), null, true);
+		readonly MimeTypeNode textPlainNode = new MimeTypeNode ("text/plain", null, GettextCatalog.GetString ("Text document"), null, true, "text");
+		readonly MimeTypeNode xmlNode = new MimeTypeNode ("application/xml", null, GettextCatalog.GetString ("XML document"), null, true, null);
 
 		List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
 
@@ -73,29 +70,11 @@ namespace MonoDevelop.Ide.Desktop
 				if (mt.Id == type)
 					return mt;
 			}
-
-			return new MimeTypeNode (type, null, null, null, type.StartsWith ("text/", StringComparison.Ordinal));
+			return null;
 		}
-
-		Lazy<IFileToContentTypeService> fileToContentTypeService = CompositionManager.GetExport<IFileToContentTypeService> ();
 
 		public MimeTypeNode FindMimeTypeForFile (string fileName)
 		{
-			try {
-				IContentType contentType = fileToContentTypeService.Value.GetContentTypeForFilePath (fileName);
-				if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
-					string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType (contentType);
-					if (mimeType != null) {
-						MimeTypeNode mt = FindMimeType (mimeType);
-						if (mt != null) {
-							return mt;
-						}
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("IFilePathToContentTypeProvider query failed", ex);
-			}
-
 			foreach (MimeTypeNode mt in mimeTypeNodes) {
 				if (mt.SupportsFile (fileName))
 					return mt;
@@ -191,6 +170,32 @@ namespace MonoDevelop.Ide.Desktop
 			foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {
 				if (node.RoslynName != null) {
 					return node.RoslynName;
+				}
+			}
+			return null;
+		}
+
+		MimeTypeNode GetMimeTypeNodeForContentType (string contentType)
+		{
+			foreach (var mt in mimeTypeNodes) {
+				if (mt.ContentType == contentType)
+					return mt;
+			}
+			return null;
+		}
+
+		public string GetMimeTypeForContentType (string contentType)
+			=> GetMimeTypeNodeForContentType (contentType)?.Id;
+
+		public IEnumerable<string> GetMimeTypeInheritanceChainForContentType (string contentType)
+			=> GetMimeTypeInheritanceChain (GetMimeTypeNodeForContentType (contentType));
+
+		public string GetContentTypeForMimeType (string mimeType)
+		{
+			var node = FindMimeType (mimeType);
+			foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {
+				if (node.ContentType != null) {
+					return node.ContentType;
 				}
 			}
 			return null;
