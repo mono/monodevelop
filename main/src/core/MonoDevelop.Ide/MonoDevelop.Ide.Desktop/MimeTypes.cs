@@ -184,5 +184,16 @@ namespace MonoDevelop.Ide.Desktop
 
 		public IEnumerable<string> GetMimeTypeInheritanceChainForRoslynLanguage (string roslynLanguage)
 			=> GetMimeTypeInheritanceChain (GetMimeTypeForRoslynLanguage (roslynLanguage));
+
+		public string GetRoslynLanguageForMimeType (string mimeType)
+		{
+			var node = FindMimeType (mimeType);
+			foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {
+				if (node.RoslynName != null) {
+					return node.RoslynName;
+				}
+			}
+			return null;
+		}
 	}
 }
