@@ -72,16 +72,6 @@ namespace MonoDevelop.Platform
 			
 			return Gio.GetMimeTypeForUri (uri);
 		}
-		
-		protected override bool OnGetMimeTypeIsText (string mimeType)
-		{
-			// If gedit can open the file, this editor also can do it
-			foreach (DesktopApplication app in GetApplicationsForMimeType (mimeType))
-				if (app.Id == "gedit")
-					return true;
-			return base.OnGetMimeTypeIsText (mimeType);
-		}
-
 
 		public override void ShowUrl (string url)
 		{

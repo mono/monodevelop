@@ -154,18 +154,14 @@ namespace MonoDevelop.Ide
 			PlatformService.OpenFolder (folderPath, selectFiles);
 		}
 
-		public static string GetMimeTypeForRoslynLanguage (string language)
+		public static string GetMimeTypeForRoslynLanguage (string roslynLanguage)
 		{
-			return PlatformService.GetMimeTypeForRoslynLanguage (language);
+			return MimeTypes.Instance.GetMimeTypeForRoslynLanguage (roslynLanguage);
 		}
 
-		public static IEnumerable<string> GetMimeTypeInheritanceChainForRoslynLanguage (string language)
+		public static IEnumerable<string> GetMimeTypeInheritanceChainForRoslynLanguage (string roslynLanguage)
 		{
-			var mime = GetMimeTypeForRoslynLanguage (language);
-			if (mime == null) {
-				return null;
-			}
-			return GetMimeTypeInheritanceChain (mime);
+			return MimeTypes.Instance.GetMimeTypeInheritanceChainForRoslynLanguage (roslynLanguage);
 		}
 
 		public static string GetMimeTypeForUri (string uri)
@@ -180,7 +176,7 @@ namespace MonoDevelop.Ide
 
 		public static bool GetMimeTypeIsText (string mimeType)
 		{
-			return PlatformService.GetMimeTypeIsText (mimeType);
+			return MimeTypes.Instance.GetMimeTypeIsText (mimeType);
 		}
 
 		public static bool GetFileIsText (string file, string mimeType = null)
@@ -225,12 +221,12 @@ namespace MonoDevelop.Ide
 
 		public static bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)
 		{
-			return PlatformService.GetMimeTypeIsSubtype (subMimeType, baseMimeType);
+			return MimeTypes.Instance.GetMimeTypeIsSubtype (subMimeType, baseMimeType);
 		}
 
 		public static IEnumerable<string> GetMimeTypeInheritanceChain (string mimeType)
 		{
-			return PlatformService.GetMimeTypeInheritanceChain (mimeType);
+			return MimeTypes.Instance.GetMimeTypeInheritanceChain (mimeType);
 		}
 
 		public static IEnumerable<string> GetMimeTypeInheritanceChainForFile (string filename)
