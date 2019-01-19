@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Desktop
 		public string GetMimeTypeForUri (string uri)
 		{
 			if (!String.IsNullOrEmpty (uri)) {
-				MimeTypeNode mt = MimeTypes.Instance.FindMimeTypeForFile (uri);
+				MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeTypeForFile (uri);
 				if (mt != null)
 					return mt.Id;
 			}
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Desktop
 				return GettextCatalog.GetString ("Text file");
 			if (mimeType == "application/octet-stream")
 				return GettextCatalog.GetString ("Unknown");
-			MimeTypeNode mt = MimeTypes.Instance.FindMimeType (mimeType);
+			MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeType (mimeType);
 			if (mt != null && mt.Description != null)
 				return mt.Description;
 			else
@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Desktop
 			if (pic == null) {
 				string mtype = GetMimeTypeForUri (filename);
 				if (mtype != null) {
-					foreach (string mt in MimeTypes.Instance.GetMimeTypeInheritanceChain (mtype)) {
+					foreach (string mt in MimeTypeCatalog.Instance.GetMimeTypeInheritanceChain (mtype)) {
 						pic = GetIconForType (mt);
 						if (pic != null)
 							return pic;
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Desktop
 			if (bf != null)
 				return bf;
 
-			foreach (string type in MimeTypes.Instance.GetMimeTypeInheritanceChain (mimeType)) {
+			foreach (string type in MimeTypeCatalog.Instance.GetMimeTypeInheritanceChain (mimeType)) {
 				// Try getting an icon name for the type
 				string icon = GetIconIdForType (type);
 				if (icon != null) {
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Desktop
 
 		string GetIconIdForFile (string fileName)
 		{
-			MimeTypeNode mt = MimeTypes.Instance.FindMimeTypeForFile (fileName);
+			MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeTypeForFile (fileName);
 			if (mt != null)
 				return mt.Icon;
 			else
@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			if (type == "text/plain")
 				return "md-text-file-icon";
-			MimeTypeNode mt = MimeTypes.Instance.FindMimeType (type);
+			MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeType (type);
 			if (mt != null)
 				return mt.Icon;
 			else if (UsePlatformFileIcons)

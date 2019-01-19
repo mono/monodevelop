@@ -1,9 +1,5 @@
 //
-// PlatformService.cs
-//
-// Author:
-//   Geoff Norton  <gnorton@novell.com>
-//
+// Copyright (C) Microsoft Corp.
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -32,18 +28,18 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
 
-namespace MonoDevelop.Ide.Desktop
+namespace MonoDevelop.Ide
 {
-	class MimeTypes
+	class MimeTypeCatalog
 	{
-		public static MimeTypes Instance { get; } = new MimeTypes ();
+		public static MimeTypeCatalog Instance { get; } = new MimeTypeCatalog ();
 
 		readonly MimeTypeNode textPlainNode = new MimeTypeNode ("text/plain", null, GettextCatalog.GetString ("Text document"), null, true, "text");
 		readonly MimeTypeNode xmlNode = new MimeTypeNode ("application/xml", null, GettextCatalog.GetString ("XML document"), null, true, null);
 
 		List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
 
-		MimeTypes ()
+		MimeTypeCatalog ()
 		{
 			if (AddinManager.IsInitialized) {
 				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/MimeTypes", delegate (object sender, ExtensionNodeEventArgs args) {
