@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Extensions
 		public new string Id => overrideId ?? (overrideId = base.Id);
 
 		//deserialization
-		MimeTypeNode () { }
+		public MimeTypeNode () { }
 
 		public MimeTypeNode (string id, string baseType, string description, string icon, bool isText, string contentType)
 		{
