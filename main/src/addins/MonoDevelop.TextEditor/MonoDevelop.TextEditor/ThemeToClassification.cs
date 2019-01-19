@@ -34,7 +34,8 @@ namespace MonoDevelop.TextEditor
 	abstract class ThemeToClassification : IDisposable
 	{
 		readonly IEditorFormatMapService editorFormatMapService;
-		public ThemeToClassification (IEditorFormatMapService editorFormatMapService)
+
+		protected ThemeToClassification (IEditorFormatMapService editorFormatMapService)
 		{
 			this.editorFormatMapService = editorFormatMapService;
 			Ide.Editor.DefaultSourceEditorOptions.Instance.Changed += UpdateEditorFormatMap;
@@ -46,7 +47,7 @@ namespace MonoDevelop.TextEditor
 			Ide.Editor.DefaultSourceEditorOptions.Instance.Changed -= UpdateEditorFormatMap;
 		}
 
-		List<(string EditorFormatName, string MDThemeSettingName)> mappings = new List<(string, string)> {
+		static readonly List<(string EditorFormatName, string MDThemeSettingName)> mappings = new List<(string, string)> {
 			("preprocessor text", "Preprocessor region name"),
 			("punctuation", "punctuation"),
 			("string - verbatim", "String Verbatim"),
@@ -300,7 +301,7 @@ namespace MonoDevelop.TextEditor
 				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
 			}
 			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
-			if (!int.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {
+			if (!double.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {
 				fontSize = 12;
 				LoggingService.LogError ($"Failed to parse font size from font name {fontName}");
 			}
@@ -311,6 +312,6 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties ("Plain Text", resourceDictionary);
 		}
 
-		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize);
+		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize);
 	}
 }
