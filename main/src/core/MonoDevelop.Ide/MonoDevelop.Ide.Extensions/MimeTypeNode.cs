@@ -77,6 +77,21 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 
+		string overrideId;
+		public new string Id => overrideId ?? (overrideId = base.Id);
+
+		//deserialization
+		MimeTypeNode () { }
+
+		public MimeTypeNode (string id, string baseType, string description, string icon, bool isText)
+		{
+			overrideId = id;
+			this.baseType = baseType;
+			this.Description = description;
+			this.icon = icon;
+			this.isText = isText;
+		}
+
 		interface IFileNameEvaluator
 		{
 			bool SupportsFile (string fileName);

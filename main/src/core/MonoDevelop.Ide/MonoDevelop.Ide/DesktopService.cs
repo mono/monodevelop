@@ -155,14 +155,10 @@ namespace MonoDevelop.Ide
 		}
 
 		public static string GetMimeTypeForRoslynLanguage (string roslynLanguage)
-		{
-			return MimeTypes.Instance.GetMimeTypeForRoslynLanguage (roslynLanguage);
-		}
+			=> MimeTypes.Instance.GetMimeTypeForRoslynLanguage (roslynLanguage);
 
 		public static IEnumerable<string> GetMimeTypeInheritanceChainForRoslynLanguage (string roslynLanguage)
-		{
-			return MimeTypes.Instance.GetMimeTypeInheritanceChainForRoslynLanguage (roslynLanguage);
-		}
+			=> MimeTypes.Instance.GetMimeTypeInheritanceChainForRoslynLanguage (roslynLanguage);
 
 		public static string GetMimeTypeForUri (string uri)
 		{

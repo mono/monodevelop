@@ -41,6 +41,9 @@ namespace MonoDevelop.Ide.Desktop
 	{
 		public static MimeTypes Instance { get; } = new MimeTypes ();
 
+		MimeTypeNode textPlainNode = new MimeTypeNode ("text/plain", null, GettextCatalog.GetString ("Text document"), null, true);
+		MimeTypeNode xmlNode = new MimeTypeNode ("application/xml", null, GettextCatalog.GetString ("XML document"), null, true);
+
 		List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
 
 		MimeTypes ()
@@ -70,7 +73,8 @@ namespace MonoDevelop.Ide.Desktop
 				if (mt.Id == type)
 					return mt;
 			}
-			return null;
+
+			return new MimeTypeNode (type, null, null, null, type.StartsWith ("text/", StringComparison.Ordinal));
 		}
 
 		Lazy<IFileToContentTypeService> fileToContentTypeService = CompositionManager.GetExport<IFileToContentTypeService> ();
@@ -132,22 +136,53 @@ namespace MonoDevelop.Ide.Desktop
 			}
 		}
 
-		public string GetMimeTypeForRoslynLanguage (string roslynLanguage)
+		IEnumerable<string> GetMimeTypeInheritanceChain (MimeTypeNode node)
+		{
+			if (node == null) {
+				yield break;
+			}
+			foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {
+				yield return mt.Id;
+			}
+		}
+
+		IEnumerable<MimeTypeNode> GetMimeTypeNodeInheritanceChain (MimeTypeNode node)
+		{
+			while (node != null) {
+				yield return node;
+
+				if (node.Id == "application/octet-stream" || node.Id == "text/plain") {
+					yield break;
+				}
+
+				if (string.IsNullOrEmpty (node.BaseType)) {
+					if (node.Id.EndsWith ("+xml", StringComparison.Ordinal)) {
+						yield return xmlNode;
+						yield return textPlainNode;
+					}
+					if (node.Id.StartsWith ("text/", StringComparison.Ordinal)) {
+						yield return textPlainNode;
+					}
+					yield break;
+				}
+
+				node = FindMimeType (node.BaseType);
+			}
+		}
+
+		MimeTypeNode GetMimeTypeNodeForRoslynLanguage (string roslynLanguage)
 		{
 			foreach (var mt in mimeTypeNodes) {
 				if (mt.RoslynName == roslynLanguage)
-					return mt.Id;
+					return mt;
 			}
 			return null;
 		}
 
+		public string GetMimeTypeForRoslynLanguage (string roslynLanguage)
+			=> GetMimeTypeNodeForRoslynLanguage (roslynLanguage)?.Id;
+
 		public IEnumerable<string> GetMimeTypeInheritanceChainForRoslynLanguage (string roslynLanguage)
-		{
-			var mime = GetMimeTypeForRoslynLanguage (roslynLanguage);
-			if (mime == null) {
-				return null;
-			}
-			return GetMimeTypeInheritanceChain (mime);
-		}
+			=> GetMimeTypeInheritanceChain (GetMimeTypeForRoslynLanguage (roslynLanguage));
 	}
 }
