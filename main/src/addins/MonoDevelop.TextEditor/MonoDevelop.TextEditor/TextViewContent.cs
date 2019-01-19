@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Core;
@@ -42,6 +43,8 @@ namespace MonoDevelop.TextEditor
 		readonly string mimeType;
 		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
+		readonly IEditorOperations3 editorOperations;
+		readonly IEditorOptions editorOptions;
 		readonly List<IEditorContentProvider> contentProviders;
 		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
 
@@ -50,7 +53,7 @@ namespace MonoDevelop.TextEditor
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
 
-		public TextViewContent (
+		protected TextViewContent (
 			TImports imports,
 			FilePath fileName,
 			string mimeType,
@@ -86,6 +89,8 @@ namespace MonoDevelop.TextEditor
 			control = CreateControl ();
 
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
+			editorOperations = (IEditorOperations3)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
+			editorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
 			TextView.Properties [typeof(ViewContent)] = this;

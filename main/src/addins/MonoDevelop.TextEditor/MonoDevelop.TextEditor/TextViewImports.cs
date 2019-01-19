@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace MonoDevelop.TextEditor
 {
@@ -57,6 +58,9 @@ namespace MonoDevelop.TextEditor
 
 		[Import]
 		internal IEditorCommandHandlerServiceFactory EditorCommandHandlerServiceFactory { get; set; }
+
+		[Import]
+		internal IEditorOperationsFactoryService EditorOperationsProvider { get; set; }
 
 		[Import]
 		internal EditorContentProviderService EditorContentProviderService { get; set; }

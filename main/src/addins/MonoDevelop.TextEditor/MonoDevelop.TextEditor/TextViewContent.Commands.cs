@@ -28,8 +28,6 @@ using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Refactoring;
 
@@ -46,7 +44,7 @@ namespace MonoDevelop.TextEditor
 
 		CommandState UpdateCommand<T> (CommandInfo commandInfo, Func<ITextView, ITextBuffer, T> factory) where T : EditorCommandArgs
 		{
-			Console.WriteLine ("Update command: {0} -> {1}", typeof (T), commandInfo.Command.Id);
+			Console.WriteLine ("Update command: {0} -> {1}", commandInfo.Command.Id, typeof (T));
 			var commandState = commandService.GetCommandState (factory, null);
 			UpdateCommand (commandState, commandInfo);
 			return commandState;
@@ -54,21 +52,11 @@ namespace MonoDevelop.TextEditor
 
 		void ExecCommand<T> (Func<ITextView, ITextBuffer, T> factory) where T : EditorCommandArgs
 		{
-			Console.WriteLine ("Exec command: {0}", typeof (T));
+			Console.WriteLine ("Exec command: {0} -> {1}", Ide.IdeApp.CommandService.CurrentCommand.Id, typeof (T));
 			commandService.Execute (factory, null);
 		}
 
-		#region Code Formatting Commands
-
-		// Missing:
-		//   CodeFormattingCommands.FormatBuffer
-
-		#endregion
-
-		#region Edit Commands
-
-		// Missing:
-		//   Delete,
+		// Missing EditCommands:
 		//   ToggleCodeComment,
 		//   IndentSelection,
 		//   UnIndentSelection,
@@ -83,7 +71,6 @@ namespace MonoDevelop.TextEditor
 		//   ToggleFolding,
 		//   ToggleAllFoldings,
 		//   FoldDefinitions,
-		//   InsertGuid,
 		//   SortSelectedLines
 
 		[CommandUpdateHandler (EditCommands.Copy)]
@@ -158,19 +145,11 @@ namespace MonoDevelop.TextEditor
 		void ExecRemoveCodeCommentCommand ()
 			 => ExecCommand ((textView, textBuffer) => new UncommentSelectionCommandArgs (textView, textBuffer));
 
-		[CommandUpdateHandler (EditCommands.DeleteKey)]
-		void UpdateDeleteKeyCommand (CommandInfo info)
-			 => UpdateCommand (info, (textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer));
+		[CommandHandler (EditCommands.InsertGuid)]
+		void ExecInsertGuidCommand ()
+			=> editorOperations.InsertText (Guid.NewGuid ().ToString ());
 
-		[CommandHandler (EditCommands.DeleteKey)]
-		void ExecDeleteKeyCommand ()
-			 => ExecCommand ((textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer));
-
-		#endregion
-
-		#region Refactory Commands
-
-		// Missing:
+		// Missing RefactoryCommands:
 		//   CurrentRefactoryOperations
 		//   FindReferences
 		//   FindAllReferences
@@ -205,68 +184,182 @@ namespace MonoDevelop.TextEditor
 		void ExecFindAllReferencesCommand ()
 			 => ExecCommand ((textView, textBuffer) => new FindReferencesCommandArgs (textView, textBuffer));
 
-		#endregion
-
-		#region Editor Commands
-
-		// Missing:
+		// Missing TextEditorCommands
 		//   ShowCodeTemplateWindow
 		//   ShowCodeSurroundingsWindow
-		//   DeleteLeftChar
-		//   DeleteRightChar
-		//   ScrollLineUp
-		//   ScrollLineDown
-		//   ScrollPageUp
-		//   ScrollPageDown
-		//   ScrollTop
-		//   ScrollBottom
-		//   DeleteLine
-		//   DeleteToLineStart
-		//   DeleteToLineEnd
 		//   MoveBlockUp
 		//   MoveBlockDown
 		//   ShowParameterCompletionWindow
 		//   GotoMatchingBrace
-		//   SelectionMoveLeft
-		//   SelectionMoveRight
-		//   MovePrevWord
-		//   MoveNextWord
-		//   SelectionMovePrevWord
-		//   SelectionMoveNextWord
-		//   SelectionMoveUp
-		//   SelectionMoveDown
-		//   SelectionMoveHome
-		//   SelectionMoveEnd
-		//   SelectionMoveToDocumentStart
-		//   SelectionMoveToDocumentEnd
-		//   ExpandSelectionToLine
-		//   ExpandSelection
 		//   ShrinkSelection
-		//   SwitchCaretMode
-		//   InsertTab
-		//   RemoveTab
-		//   InsertNewLine
-		//   InsertNewLinePreserveCaretPosition
-		//   InsertNewLineAtEnd
 		//   CompleteStatement
-		//   DeletePrevWord
-		//   DeleteNextWord
-		//   SelectionPageDownAction
-		//   SelectionPageUpAction
 		//   MovePrevSubword
 		//   MoveNextSubword
 		//   SelectionMovePrevSubword
 		//   SelectionMoveNextSubword
 		//   DeletePrevSubword
 		//   DeleteNextSubword
-		//   TransposeCharacters
-		//   RecenterEditor
-		//   DuplicateLine
 		//   ToggleCompletionSuggestionMode
 		//   ToggleBlockSelectionMode
 		//   DynamicAbbrev
 		//   PulseCaret
 		//   ShowQuickInfo
+
+		[CommandHandler (TextEditorCommands.ScrollLineUp)]
+		void ExecScrollLineUpCommand ()
+			=> editorOperations.ScrollUpAndMoveCaretIfNecessary ();
+
+		[CommandHandler (TextEditorCommands.ScrollLineDown)]
+		void ExecScrollLineDownCommand ()
+			=> editorOperations.ScrollDownAndMoveCaretIfNecessary ();
+
+		[CommandHandler (TextEditorCommands.ScrollPageUp)]
+		void ExecScrollPageUpCommand ()
+			=> editorOperations.ScrollPageUp ();
+
+		[CommandHandler (TextEditorCommands.ScrollPageDown)]
+		void ExecScrollPageDownCommand ()
+			=> editorOperations.ScrollPageDown ();
+
+		[CommandHandler (TextEditorCommands.ScrollTop)]
+		void ExecScrollTopCommand ()
+			=> editorOperations.ScrollLineTop ();
+
+		[CommandHandler (TextEditorCommands.ScrollBottom)]
+		void ExecScrollBottomCommand ()
+			=> editorOperations.ScrollLineBottom ();
+
+		[CommandHandler (TextEditorCommands.InsertNewLine)]
+		void ExecInsertNewLineCommand ()
+			=> editorOperations.InsertNewLine ();
+
+		[CommandHandler (TextEditorCommands.InsertNewLineAtEnd)]
+		void ExecInsertNewLineAtEndCommand ()
+			=> editorOperations.InsertFinalNewLine ();
+
+		[CommandHandler (TextEditorCommands.InsertNewLinePreserveCaretPosition)]
+		void ExecInsertNewLinePreserveCaretPositionCommand ()
+			=> editorOperations.OpenLineAbove ();
+
+		[CommandHandler (TextEditorCommands.TransposeCharacters)]
+		void ExecTransposeCharactersCommand ()
+			=> editorOperations.TransposeCharacter ();
+
+		[CommandHandler (TextEditorCommands.DeleteLine)]
+		void ExecDeleteLineCommand ()
+			=> editorOperations.DeleteFullLine ();
+
+		[CommandHandler (TextEditorCommands.DeleteToLineStart)]
+		void ExecDeleteToLineStartCommand ()
+			=> editorOperations.DeleteToBeginningOfLine ();
+
+		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
+		void ExecDeleteToLineEndCommand ()
+			=> editorOperations.DeleteToBeginningOfLine ();
+
+		[CommandHandler (TextEditorCommands.DeletePrevWord)]
+		void ExecDeletePrevWordCommand ()
+			=> editorOperations.DeleteWordToLeft ();
+
+		[CommandHandler (TextEditorCommands.DeleteNextWord)]
+		void ExecDeleteNextWordCommand ()
+			=> editorOperations.DeleteWordToRight ();
+
+		[CommandHandler (TextEditorCommands.ExpandSelection)]
+		void ExecExpandSelectionCommand ()
+			=> editorOperations.SelectEnclosing ();
+
+		[CommandHandler (TextEditorCommands.ExpandSelectionToLine)]
+		void ExecExpandSelectionToLineCommand ()
+			=> editorOperations.MoveToEndOfLine (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.MovePrevWord)]
+		void ExecMovePrevWordCommand ()
+			=> editorOperations.MoveToNextWord (extendSelection: false);
+
+		[CommandHandler (TextEditorCommands.MoveNextWord)]
+		void ExecMoveNextWordCommand ()
+			=> editorOperations.MoveToPreviousWord (extendSelection: false);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveLeft)]
+		void ExecSelectionMoveLeftCommand ()
+			=> editorOperations.MoveToNextCharacter (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveRight)]
+		void ExecSelectionMoveRightCommand ()
+			=> editorOperations.MoveToPreviousCharacter (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMovePrevWord)]
+		void ExecSelectionMovePrevWordCommand ()
+			=> editorOperations.MoveToNextWord (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveNextWord)]
+		void ExecSelectionMoveNextWordCommand ()
+			=> editorOperations.MoveToPreviousWord (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveUp)]
+		void ExecSelectionMoveUpCommand ()
+			=> editorOperations.MoveLineUp (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveDown)]
+		void ExecSelectionMoveDownCommand ()
+			=> editorOperations.MoveLineDown (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveHome)]
+		void ExecSelectionMoveHomeCommand ()
+			=> editorOperations.MoveToHome (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveEnd)]
+		void ExecSelectionMoveEndCommand ()
+			=> editorOperations.MoveToEndOfLine (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveToDocumentStart)]
+		void ExecSelectionMoveToDocumentStartCommand ()
+			=> editorOperations.MoveToStartOfDocument (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionMoveToDocumentEnd)]
+		void ExecSelectionMoveToDocumentEndCommand ()
+			=> editorOperations.MoveToEndOfDocument (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionPageUpAction)]
+		void ExecSelectionPageUpActionStartCommand ()
+			=> editorOperations.PageUp (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.SelectionPageDownAction)]
+		void ExecSelectionPageDownActiondCommand ()
+			=> editorOperations.PageDown (extendSelection: true);
+
+		[CommandHandler (TextEditorCommands.RecenterEditor)]
+		[CommandHandler (ViewCommands.CenterAndFocusCurrentDocument)]
+		void ExecCenterAndFocusCurrentDocumentCommand ()
+			=> editorOperations.ScrollLineCenter ();
+
+		[CommandHandler (TextEditorCommands.DuplicateLine)]
+		void ExecDuplicateLineCommand ()
+			=> editorOperations.DuplicateSelection ();
+
+		[CommandHandler (TextEditorCommands.SwitchCaretMode)]
+		void ExecSwitchCaretMode ()
+		{
+			var overWriteMode = editorOptions.GetOptionValue (DefaultTextViewOptions.OverwriteModeId);
+			editorOptions.SetOptionValue (DefaultTextViewOptions.OverwriteModeId, !overWriteMode);
+		}
+
+		[CommandUpdateHandler (TextEditorCommands.InsertTab)]
+		void UpdateInsertTabCommand (CommandInfo info)
+			=> UpdateCommand (info, (textView, textBuffer) => new TabKeyCommandArgs (textView, textBuffer));
+
+		[CommandHandler (TextEditorCommands.InsertTab)]
+		void ExecInsertTabCommand ()
+			=> ExecCommand ((textView, textBuffer) => new TabKeyCommandArgs (textView, textBuffer));
+
+		[CommandUpdateHandler (TextEditorCommands.RemoveTab)]
+		void UpdateRemoveTabCommand (CommandInfo info)
+			=> UpdateCommand (info, (textView, textBuffer) => new BackTabKeyCommandArgs (textView, textBuffer));
+
+		[CommandHandler (TextEditorCommands.RemoveTab)]
+		void ExecRemoveTabCommand ()
+			=> ExecCommand ((textView, textBuffer) => new BackTabKeyCommandArgs (textView, textBuffer));
 
 		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
 		void UpdateShowCompletionWindowCommand (CommandInfo info)
@@ -275,6 +368,26 @@ namespace MonoDevelop.TextEditor
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		void ExecShowCompletionWindowCommand ()
 			=> ExecCommand ((textView, textBuffer) => new InvokeCompletionListCommandArgs (textView, textBuffer));
+
+		[CommandUpdateHandler (EditCommands.Delete)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteRightChar)]
+		void UpdateDeleteRightCharCommand (CommandInfo info)
+			=> UpdateCommand (info, (textView, textBuffer) => new DeleteKeyCommandArgs (textView, textBuffer));
+
+		[CommandHandler (EditCommands.Delete)]
+		[CommandHandler (TextEditorCommands.DeleteRightChar)]
+		void ExecDeleteRightCharCommand ()
+			=> ExecCommand ((textView, textBuffer) => new DeleteKeyCommandArgs (textView, textBuffer));
+
+		[CommandUpdateHandler (EditCommands.DeleteKey)]
+		[CommandUpdateHandler (TextEditorCommands.DeleteLeftChar)]
+		void UpdateDeleteLeftCharCommand (CommandInfo info)
+			=> UpdateCommand (info, (textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer));
+
+		[CommandHandler (EditCommands.DeleteKey)]
+		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
+		void ExecDeleteLeftCharCommand ()
+			=> ExecCommand ((textView, textBuffer) => new BackspaceKeyCommandArgs (textView, textBuffer));
 
 		[CommandUpdateHandler (TextEditorCommands.LineEnd)]
 		void UpdateLineEndCommand (CommandInfo info)
@@ -355,7 +468,5 @@ namespace MonoDevelop.TextEditor
 		[CommandHandler (TextEditorCommands.DocumentEnd)]
 		void ExecDocumentEndCommand ()
 			=> ExecCommand ((textView, textBuffer) => new DocumentEndCommandArgs (textView, textBuffer));
-
-		#endregion
 	}
 }
