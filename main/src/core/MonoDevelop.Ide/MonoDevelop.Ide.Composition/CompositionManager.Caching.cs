@@ -100,43 +100,41 @@ namespace MonoDevelop.Ide.Composition
 				if (!File.Exists (MefCacheControlFile) || !File.Exists (MefCacheFile))
 					return false;
 
-				using (var timer = Counters.CompositionCacheControl.BeginTiming ()) {
-					// Read the cache from disk
-					var serializer = new JsonSerializer ();
-					MefControlCache controlCache;
+				// Read the cache from disk
+				var serializer = new JsonSerializer ();
+				MefControlCache controlCache;
 
-					try {
-						using (var sr = File.OpenText (MefCacheControlFile)) {
-							controlCache = (MefControlCache)serializer.Deserialize (sr, typeof(MefControlCache));
-						}
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not deserialize MEF cache control", ex);
-						DeleteFiles ();
-						return false;
+				try {
+					using (var sr = File.OpenText (MefCacheControlFile)) {
+						controlCache = (MefControlCache)serializer.Deserialize (sr, typeof (MefControlCache));
 					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not deserialize MEF cache control", ex);
+					DeleteFiles ();
+					return false;
+				}
 
-					//this can return null (if the cache format changed?). clean up and start over.
-					if (controlCache == null) {
-						LoggingService.LogError ("MEF cache control deserialized as null");
-						DeleteFiles ();
+				//this can return null (if the cache format changed?). clean up and start over.
+				if (controlCache == null) {
+					LoggingService.LogError ("MEF cache control deserialized as null");
+					DeleteFiles ();
+					return false;
+				}
+
+				var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
+
+				// Short-circuit on number of assemblies change
+				if (controlCache.AssemblyInfos.Length != currentAssemblies.Count)
+					return false;
+
+				// Validate that the assemblies match and we have the same time stamps on them.
+				foreach (var assemblyInfo in controlCache.AssemblyInfos) {
+					cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
+					if (!currentAssemblies.Contains (assemblyInfo.Location))
 						return false;
-					}
 
-					var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
-
-					// Short-circuit on number of assemblies change
-					if (controlCache.AssemblyInfos.Length != currentAssemblies.Count)
+					if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
 						return false;
-
-					// Validate that the assemblies match and we have the same time stamps on them.
-					foreach (var assemblyInfo in controlCache.AssemblyInfos) {
-						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
-						if (!currentAssemblies.Contains (assemblyInfo.Location))
-							return false;
-
-						if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
-							return false;
-					}
 				}
 
 				return true;
