@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Platform;
+using Microsoft.VisualStudio.Utilities;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
@@ -34,9 +36,8 @@ namespace MonoDevelop.Ide
 	{
 		public static MimeTypeCatalog Instance { get; } = new MimeTypeCatalog ();
 
-		readonly MimeTypeNode textPlainNode = new MimeTypeNode ("text/plain", null, GettextCatalog.GetString ("Text document"), null, true, "text");
-		readonly MimeTypeNode xmlNode = new MimeTypeNode ("application/xml", null, GettextCatalog.GetString ("XML document"), null, true, null);
-
+		readonly MimeTypeNode textPlainNode = new MimeTypeNode (TextPlain, null, GettextCatalog.GetString ("Text document"), null, true, "text");
+		readonly MimeTypeNode xmlNode = new MimeTypeNode (ApplicationXml, null, GettextCatalog.GetString ("XML document"), null, true, null);
 		List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
 
 		MimeTypeCatalog ()
@@ -59,6 +60,10 @@ namespace MonoDevelop.Ide
 				});
 			}
 		}
+
+		public const string TextPlain = "text/plain";
+		public const string ApplicationXml = "application/xml";
+		public const string OctetStream = "application/octet-stream";
 
 		public MimeTypeNode FindMimeType (string type)
 		{
@@ -95,15 +100,15 @@ namespace MonoDevelop.Ide
 		{
 			yield return mimeType;
 
-			while (mimeType != null && mimeType != "text/plain" && mimeType != "application/octet-stream") {
+			while (mimeType != null && mimeType != TextPlain && mimeType != OctetStream) {
 				MimeTypeNode mt = FindMimeType (mimeType);
 				if (mt != null && !string.IsNullOrEmpty (mt.BaseType))
 					mimeType = mt.BaseType;
 				else {
 					if (mimeType.EndsWith ("+xml", StringComparison.Ordinal))
-						mimeType = "application/xml";
+						mimeType = ApplicationXml;
 					else if (mimeType.StartsWith ("text/", StringComparison.Ordinal))
-						mimeType = "text/plain";
+						mimeType = TextPlain;
 					else
 						break;
 				}
@@ -126,7 +131,7 @@ namespace MonoDevelop.Ide
 			while (node != null) {
 				yield return node;
 
-				if (node.Id == "application/octet-stream" || node.Id == "text/plain") {
+				if (node.Id == OctetStream || node.Id == TextPlain) {
 					yield break;
 				}
 
@@ -180,18 +185,20 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 
-		public string GetMimeTypeForContentType (string contentType)
-			=> GetMimeTypeNodeForContentType (contentType)?.Id;
+		public string GetMimeTypeForContentType (IContentType contentType)
+			=> GetMimeTypeNodeForContentType (contentType.TypeName)?.Id;
 
-		public IEnumerable<string> GetMimeTypeInheritanceChainForContentType (string contentType)
-			=> GetMimeTypeInheritanceChain (GetMimeTypeNodeForContentType (contentType));
+		public IEnumerable<string> GetMimeTypeInheritanceChainForContentType (IContentType contentType)
+			=> GetMimeTypeInheritanceChain (GetMimeTypeNodeForContentType (contentType.TypeName));
 
-		public string GetContentTypeForMimeType (string mimeType)
+		public IContentType GetContentTypeForMimeType (string mimeType)
 		{
-			var node = FindMimeType (mimeType);
-			foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {
-				if (node.ContentType != null) {
-					return node.ContentType;
+			if (mimeType != null) {
+				var node = FindMimeType (mimeType);
+				foreach (var mt in GetMimeTypeNodeInheritanceChain (node)) {
+					if (node.ContentType != null) {
+						return PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType (node.ContentType);
+					}
 				}
 			}
 			return null;

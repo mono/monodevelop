@@ -46,9 +46,6 @@ namespace MonoDevelop.TextEditor
 		[Import]
 		public IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
-		[Import]
-		public IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; set; }
-
 		[ImportMany]
 		public List<Lazy<ITextViewModelProvider, IContentTypeAndTextViewRoleMetadata>> TextViewModelProviders { get; set; }
 

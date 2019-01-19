@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	abstract partial class TextViewContent<TView,TImports> : ViewContent, INavigable
+	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable
 		where TView : ITextView
 		where TImports : TextViewImports
 	{
@@ -66,9 +66,7 @@ namespace MonoDevelop.TextEditor
 			HandleSourceEditorOptionsChanged (this, EventArgs.Empty);
 
 			//TODO: this can change when the file is renamed
-			var contentType = mimeType == null
-				? Imports.TextBufferFactoryService.InertContentType
-				: GetContentTypeFromMimeType (fileName, mimeType);
+			var contentType = GetContentTypeFromMimeType (fileName, mimeType);
 
 			TextDocument = Imports.TextDocumentFactoryService.CreateAndLoadTextDocument (fileName, contentType);
 			TextBuffer = TextDocument.TextBuffer;
@@ -90,7 +88,7 @@ namespace MonoDevelop.TextEditor
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
-			TextView.Properties [GetType ()] = this;
+			TextView.Properties[GetType ()] = this;
 			ContentName = fileName;
 
 			SubscribeToEvents ();
@@ -197,28 +195,9 @@ namespace MonoDevelop.TextEditor
 		static readonly string[] textContentType = { "text" };
 
 		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
-		{
-			if (filePath != null) {
-				var contentTypeFromPath = Imports.FileToContentTypeService.GetContentTypeForFilePath (filePath);
-				if (contentTypeFromPath != null &&
-					contentTypeFromPath != Imports.ContentTypeRegistryService.UnknownContentType) {
-					return contentTypeFromPath;
-				}
-			}
-
-			IContentType contentType = Imports.MimeToContentTypeRegistryService.GetContentType (mimeType);
-			if (contentType == null) {
-				// fallback 1: see if there is a content tyhpe with the same name
-				contentType = Imports.ContentTypeRegistryService.GetContentType (mimeType);
-				if (contentType == null) {
-					// No joy, create a content type that, by default, derives from text. This is strictly an error
-					// (there should be mappings between any mime type and any content type).
-					contentType = Imports.ContentTypeRegistryService.AddContentType (mimeType, textContentType);
-				}
-			}
-
-			return contentType;
-		}
+			=> Ide.MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
+				?? (fileName != null ? null : Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName))
+				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
 		{

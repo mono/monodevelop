@@ -26,14 +26,15 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Ide.Desktop;
-using MonoDevelop.Core;
 using System.IO;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Utilities;
+using Mono.Addins;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Ide.Fonts;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -163,13 +164,13 @@ namespace MonoDevelop.Ide
 		public static string GetRoslynLanguageForMimeType (string mimeType)
 			=> MimeTypeCatalog.Instance.GetRoslynLanguageForMimeType (mimeType);
 
-		public static string GetMimeTypeForContentType (string contentType)
+		public static string GetMimeTypeForContentType (IContentType contentType)
 			=> MimeTypeCatalog.Instance.GetMimeTypeForContentType (contentType);
 
-		public static IEnumerable<string> GetMimeTypeInheritanceChainForContentType (string contentType)
+		public static IEnumerable<string> GetMimeTypeInheritanceChainForContentType (IContentType contentType)
 			=> MimeTypeCatalog.Instance.GetMimeTypeInheritanceChainForContentType (contentType);
 
-		public static string GetContentTypeForMimeType (string mimeType)
+		public static IContentType GetContentTypeForMimeType (string mimeType)
 			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType);
 
 		public static string GetMimeTypeForUri (string uri)
