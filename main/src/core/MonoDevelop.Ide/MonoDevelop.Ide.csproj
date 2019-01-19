@@ -4178,7 +4178,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopFrameworkAssemblyPathResolver.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentNavigationService.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopSymbolNavigationService.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextViewExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.FileKey.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomeWindowProvider.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
