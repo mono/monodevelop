@@ -23,8 +23,8 @@ using System;
 using Mono.Addins;
 using Mono.Addins.Description;
 
-[assembly:Addin ("TextEditor.Wpf", 
-        Namespace = "MonoDevelop", 
+[assembly:Addin ("TextEditor.Wpf",
+        Namespace = "MonoDevelop",
         Version = MonoDevelop.BuildInfo.Version,
         Category = "MonoDevelop Core")]
 

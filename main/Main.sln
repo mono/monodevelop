@@ -339,7 +339,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNetCore.Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.TextEditor", "MonoDevelop.TextEditor", "{C14B06AC-905A-47AB-BAD9-652E3499CFE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Wpf", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Wpf\MonoDevelop.TextEditor.Wpf.csproj", "{29D34EA6-D312-4690-9FE9-1EA1F2EBAC2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoDevelop.TextEditor.Wpf", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Wpf\MonoDevelop.TextEditor.Wpf.csproj", "{29D34EA6-D312-4690-9FE9-1EA1F2EBAC2E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoDevelop.TextEditor", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj", "{3F5B5BDA-69D5-441A-8142-AA25C998A997}"
 EndProject
@@ -461,7 +461,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationProvider", "ext
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationTypes", "external\vs-editor-core\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj", "{52BF10FD-66DF-430F-8A30-E5E63A93AE91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Cocoa", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Cocoa\MonoDevelop.TextEditor.Cocoa.csproj", "{5FEEDF49-0493-411C-B4F3-FAB7543499D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoDevelop.TextEditor.Cocoa", "src\addins\MonoDevelop.TextEditor\MonoDevelop.TextEditor.Cocoa\MonoDevelop.TextEditor.Cocoa.csproj", "{5FEEDF49-0493-411C-B4F3-FAB7543499D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternMatchingImpl", "external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj", "{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}"
 EndProject
