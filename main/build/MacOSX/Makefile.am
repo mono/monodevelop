@@ -27,7 +27,7 @@ EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCES = monostub-utils.h
 
-all: monostub monostub-nogui monostub-test libsystemnative.dylib
+all: monostub monostub-nogui monostub-test
 
 render.exe: render.cs
 	mcs -r:System.Drawing render.cs
