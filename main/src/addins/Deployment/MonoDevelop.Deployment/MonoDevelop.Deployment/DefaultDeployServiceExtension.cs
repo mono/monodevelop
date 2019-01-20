@@ -26,7 +26,7 @@ namespace MonoDevelop.Deployment
 			evalCtx.ItemsToEvaluate.Add ("AllPublishItemsFullPathWithTargetPath");
 
 			if (project.MSBuildProject.UseMSBuildEngine) {
-				var result = project.RunTarget (null, "GetCopyToPublishDirectoryItems", configuration, evalCtx).Result;
+				var result = project.RunTarget (new ProgressMonitor (), "GetCopyToPublishDirectoryItems", configuration, evalCtx).Result;
 				foreach (var item in result.Items) {
 					if (item.Name == "AllPublishItemsFullPathWithTargetPath") {
 						var fromPath = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, item.Include);
