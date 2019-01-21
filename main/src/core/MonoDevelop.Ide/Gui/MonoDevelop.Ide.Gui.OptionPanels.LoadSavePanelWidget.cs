@@ -131,8 +131,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.hbox10.PackStart (this.vbox65, false, false, 0);
 			this.hbox14.PackStart (this.hbox10, false, false, 24);
 			this.vbox18.PackStart (this.hbox14, false, false, 0);
-			this.vbox17.PackStart (this.vbox18, false, false, 0);
 			this.vbox17.PackStart (startSectionVbox, false, false, 0);
+			this.vbox17.PackStart (this.vbox18, false, false, 0);
 
 			// Container child vbox17.Gtk.Box+BoxChild
 			this.vbox19 = new global::Gtk.VBox ();
