@@ -32,7 +32,6 @@ using System.Text.RegularExpressions;
 using Mono.Addins;
 using MonoDevelop.Core;
 
-
 namespace MonoDevelop.Ide.Extensions
 {
 	[ExtensionNodeChild (typeof(MimeTypeFileNode), "File")]
@@ -61,6 +60,9 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute ("roslynName", "The name used by Roslyn to identify this language", Required=false)]
 		public string RoslynName { get; private set; }
 
+		[NodeAttribute ("contentType", "The content type name used by the Visual Studio editor to identify this language", Required = false)]
+		public string ContentType { get; private set; }
+
 		IFileNameEvaluator regex;
 		
 		public IconId Icon {
@@ -75,6 +77,22 @@ namespace MonoDevelop.Ide.Extensions
 				else
 					return baseType;
 			}
+		}
+
+		string overrideId;
+		public new string Id => overrideId ?? (overrideId = base.Id);
+
+		//deserialization
+		public MimeTypeNode () { }
+
+		public MimeTypeNode (string id, string baseType, string description, string icon, bool isText, string contentType)
+		{
+			overrideId = id;
+			this.baseType = baseType;
+			Description = description;
+			this.icon = icon;
+			this.isText = isText;
+			ContentType = contentType;
 		}
 
 		interface IFileNameEvaluator

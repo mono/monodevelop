@@ -3042,6 +3042,7 @@
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\VacuousTextDataModel.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\VacuousTextViewModel.cs" />
+    <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
@@ -4280,6 +4281,7 @@
     <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />

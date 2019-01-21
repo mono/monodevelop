@@ -28,23 +28,20 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Mono.TextEditor.Highlighting;
-using Mono.TextEditor.Utils;
-using System.Linq;
-using System.ComponentModel;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using MonoDevelop.Ide.Composition;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Core;
 using System.IO;
-using MonoDevelop.Ide.Editor.Highlighting;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Platform;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Utilities;
+using Microsoft.VisualStudio.Utilities;
+using Mono.TextEditor.Utils;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -54,59 +51,25 @@ namespace Mono.TextEditor
 		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
 		Microsoft.VisualStudio.Text.ITextSnapshot currentSnapshot;
 
-		bool lineEndingMismatch;
-
 		//HACK ImmutableText buffer;
 		//HACK readonly ILineSplitter splitter;
 
 		ISyntaxHighlighting syntaxMode = null;
-
-		//HACK TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
-
-		bool   readOnly;
-		ReadOnlyCheckDelegate readOnlyCheckDelegate;
+		string mimeType;
 
 		public string MimeType {
 			get {
-				var snapshot = this.TextBuffer.CurrentSnapshot;
-				return PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType(snapshot.ContentType) ?? snapshot.ContentType.TypeName;
+				return mimeType ?? MimeTypeCatalog.TextPlain;
 			}
 			set {
-				var newContentType = value != null ? GetContentTypeFromMimeType(null, value) : PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
-
-				if (this.TextBuffer.CurrentSnapshot.ContentType != newContentType) {
-					this.TextBuffer.ChangeContentType(newContentType, null);
+				var newContentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (value) ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
+				if (TextBuffer.CurrentSnapshot.ContentType != newContentType) {
+					TextBuffer.ChangeContentType (newContentType, null);
+				}
+				if (mimeType != value) {
+					MimeTypeChanged?.Invoke (this, EventArgs.Empty);
 				}
 			}
-		}
-
-		private static IContentType GetContentTypeFromMimeType(string filePath, string mimeType)
-		{
-			if (filePath != null)
-			{
-				var fileToContentTypeService = CompositionManager.GetExportedValue<IFileToContentTypeService> ();
-				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
-				if (contentTypeFromPath != null && 
-					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
-				{
-					return contentTypeFromPath;
-				}
-			}
-
-			IContentType contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
-			if (contentType == null)
-			{
-				// fallback 1: see if there is a content tyhpe with the same name
-				contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType(mimeType);
-				if (contentType == null)
-				{
-					// No joy, create a content type that, by default, derives from text. This is strictly an error
-					// (there should be mappings between any mime type and any content type).
-					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType(mimeType, new string[] { "text" });
-				}
-			}
-
-			return contentType;
 		}
 
 		public event EventHandler MimeTypeChanged;
@@ -216,14 +179,7 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public bool HasLineEndingMismatchOnTextSet {
-			get {
-				return lineEndingMismatch;
-			}
-			set {
-				lineEndingMismatch = value;
-			}
-		}
+		public bool HasLineEndingMismatchOnTextSet { get; set; }
 
 		protected void Initialize()
 		{
@@ -273,7 +229,7 @@ namespace Mono.TextEditor
 			var textChange = new TextChangeEventArgs(changes);
 
 			InterruptFoldWorker();
-			TextChanging?.Invoke(this, textChange);           
+			TextChanging?.Invoke (this, textChange);
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
 		}
@@ -334,31 +290,31 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
-		public TextDocument (string fileName, string mimeType)
-		{
-			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
-			Encoding enc;
-			var text = TextFileUtility.GetText (fileName, out enc);
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
-			                                                                                 contentType);
-			
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
-			this.VsTextDocument.Encoding = enc;
-
-			this.Initialize();
-		}
+		public TextDocument (string fileName, string mimeType) : this (
+			TextFileUtility.GetText (fileName, out var enc),
+			fileName,
+			mimeType
+		) {}
 
 		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
-			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
-																							contentType);
+			VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (
+				PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (
+					text ?? string.Empty,
+					GetContentTypeFromMimeType (fileName, mimeType)
+				),
+				fileName ?? string.Empty
+			);
 
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, fileName ?? string.Empty);
-			this.VsTextDocument.Encoding = TextFileUtility.DefaultEncoding;
+			VsTextDocument.Encoding = TextFileUtility.DefaultEncoding;
 
-			this.Initialize();
+			Initialize();
 		}
+
+		IContentType GetContentTypeFromMimeType (string fileName, string mimeType)
+			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
+				?? (fileName != null ? MonoDevelop.Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
+				?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
@@ -1860,19 +1816,9 @@ namespace Mono.TextEditor
 		// Use CanEdit (int lineNumber) instead for getting a request
 		// if a part of a document can be read. ReadOnly should generally not be used
 		// for deciding, if a document is readonly or not.
-		public bool IsReadOnly {
-			get {
-				return readOnly;
-			}
-			set {
-				readOnly = value;
-			}
-		}
-		
-		public ReadOnlyCheckDelegate ReadOnlyCheckDelegate {
-			get { return readOnlyCheckDelegate; }
-			set { readOnlyCheckDelegate = value; }
-		}
+		public bool IsReadOnly { get; set; }
+
+		public ReadOnlyCheckDelegate ReadOnlyCheckDelegate { get; set; }
 
 
 		public void RequestUpdate (DocumentUpdateRequest request)
