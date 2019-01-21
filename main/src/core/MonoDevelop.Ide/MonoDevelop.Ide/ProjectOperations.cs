@@ -1233,23 +1233,22 @@ namespace MonoDevelop.Ide
 
 				OnStartClean (monitor, tt);
 
-				var t = CleanAsync (entry, monitor, tt, false, operationContext)
-					.ContinueWith (ta => {
-						ResetCurrentBuildOperation ();
-						currentBuildOperationOwner = null;
-						return ta.Result;
-					});
+				var t = CleanAsync (entry, monitor, tt, false, operationContext);
 
 				var op = new AsyncOperation<BuildResult> (t, cs);
 				currentBuildOperation = op;
 				currentBuildOperationOwner = entry;
+
+				t.ContinueWith (ta => {
+					ResetCurrentBuildOperation ();
+					return ta.Result;
+				});
+				return op;
 			}
 			catch {
 				tt.End ();
 				throw;
 			}
-			
-			return currentBuildOperation;
 		}
 		
 		async Task<BuildResult> CleanAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool isRebuilding, OperationContext operationContext)
@@ -1372,15 +1371,17 @@ namespace MonoDevelop.Ide
 			var cs = new CancellationTokenSource ();
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRebuildProgressMonitor ().WithCancellationSource (cs);
 
-			var t = RebuildAsync (entry, monitor, operationContext)
-				.ContinueWith (ta => {
-					ResetCurrentBuildOperation ();
-					return ta.Result;
-				});
+			var t = RebuildAsync (entry, monitor, operationContext);
 
 			var op = new AsyncOperation<BuildResult> (t, cs);
+			currentBuildOperation = op;
 			currentBuildOperationOwner = entry;
-			return currentBuildOperation = op;
+
+			t.ContinueWith (ta => {
+				ResetCurrentBuildOperation ();
+				return ta.Result;
+			});
+			return op;
 		}
 		
 		async Task<BuildResult> RebuildAsync (IBuildTarget entry, ProgressMonitor monitor, OperationContext operationContext)
@@ -1671,18 +1672,23 @@ namespace MonoDevelop.Ide
 					cs = CancellationTokenSource.CreateLinkedTokenSource (cs.Token, cancellationToken.Value);
 				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ().WithCancellationSource (cs);
 				BeginBuild (monitor, tt, false);
-				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext)
-					.ContinueWith (ta => {
-						ResetCurrentBuildOperation ();
-						return ta.Result;
-					});
-				currentBuildOperation = new AsyncOperation<BuildResult> (t, cs);
+
+				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext);
+
+				var op = new AsyncOperation<BuildResult> (t, cs);
+				currentBuildOperation = op;
 				currentBuildOperationOwner = entry;
+
+				t.ContinueWith (ta => {
+					ResetCurrentBuildOperation ();
+					return ta.Result;
+				});
+
+				return op;
 			} catch {
 				tt.End ();
 				throw;
 			}
-			return currentBuildOperation;
 		}
 		
 		async Task<BuildResult> BuildSolutionItemAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false, OperationContext operationContext = null)
