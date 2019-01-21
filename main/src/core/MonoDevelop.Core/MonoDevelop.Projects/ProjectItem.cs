@@ -49,7 +49,8 @@ namespace MonoDevelop.Projects
 			get {
 				return project;
 			}
-			internal set {
+			// HACK: internal
+			set {
 				project = value;
 				OnProjectSet ();
 			}
