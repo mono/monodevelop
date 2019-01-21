@@ -122,8 +122,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			policyCombo.Changed += HandlePolicyComboChanged;
-			
-			return vbox;
+
+			var widget = new PolicyOptionsWidgetContainer (vbox);
+			return widget;
 		}
 		
 		void LoadPolicy (T policy)
@@ -338,6 +339,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			} finally {
 				loading = false;
+			}
+		}
+
+		/// <summary>
+		/// Container for the VBox used to  display the options panel information.
+		/// This is needed since using just a VBox causes Voice Over on the Mac to
+		/// read out the UI widgets multiple times with using the arrow keys.
+		/// </summary>
+		class PolicyOptionsWidgetContainer : Bin
+		{
+			public PolicyOptionsWidgetContainer (VBox child)
+			{
+				BinContainer.Attach (this);
+
+				Add (child);
+				ShowAll ();
 			}
 		}
 	}

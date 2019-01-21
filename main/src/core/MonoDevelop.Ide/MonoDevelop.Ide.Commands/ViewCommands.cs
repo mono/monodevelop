@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Commands
 			pad.Visible = true;
 			pad.BringToFront (true);
 
-			Counters.PadShown.Inc (new Dictionary<string,string> {{ "Pad", pad.Id }});
+			Counters.PadShown.Inc (1, null, new Dictionary<string,object> {{ "Pad", pad.Id }});
 		}
 	}
 

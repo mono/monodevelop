@@ -58,7 +58,70 @@ namespace MonoDevelop.CSharp.Refactoring
 		SortAndRemoveImports,
 	}
 
-	sealed class CurrentRefactoryOperationsHandler : CommandHandler
+	abstract class RefactoringHandler : CommandHandler
+	{
+		protected bool TryGetDocument (out Document analysisDocument, out Ide.Gui.Document doc)
+		{
+			doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == null) {
+				analysisDocument = null;
+				return false;
+			}
+
+			analysisDocument = doc.AnalysisDocument;
+			return doc != null;
+		}
+	}
+
+	sealed class RemoveAndSortUsingsHandler : RefactoringHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = TryGetDocument (out var doc, out var _) && IsSortAndRemoveImportsSupported (doc);
+		}
+
+		protected override void Run ()
+		{
+			if (TryGetDocument (out var doc, out var _))
+				SortAndRemoveUnusedImports (doc, CancellationToken.None).Ignore ();
+		}
+
+		internal static bool IsSortAndRemoveImportsSupported (Document document)
+		{
+			var workspace = document.Project.Solution.Workspace;
+
+			if (!workspace.CanApplyChange (ApplyChangesKind.ChangeDocument)) {
+				return false;
+			}
+
+			if (workspace.Kind == WorkspaceKind.MiscellaneousFiles) {
+				return false;
+			}
+
+			return workspace.Services.GetService<IDocumentSupportsFeatureService> ().SupportsRefactorings (document);
+		}
+
+		internal static async Task SortAndRemoveUnusedImports (Document originalDocument, CancellationToken cancellationToken)
+		{
+			if (originalDocument == null)
+				return;
+
+			var workspace = originalDocument.Project.Solution.Workspace;
+
+			var unnecessaryImportsService = originalDocument.GetLanguageService<IRemoveUnnecessaryImportsService> ();
+
+			// Remove unnecessary imports and sort them
+			var removedImportsDocument = await unnecessaryImportsService.RemoveUnnecessaryImportsAsync (originalDocument, cancellationToken);
+			var resultDocument = await OrganizeImportsService.OrganizeImportsAsync (removedImportsDocument, cancellationToken);
+
+			// Apply the document change if needed
+			if (resultDocument != originalDocument) {
+				workspace.ApplyDocumentChanges (resultDocument, cancellationToken);
+			}
+		}
+	}
+
+	sealed class CurrentRefactoryOperationsHandler : RefactoringHandler
 	{
 		protected override void Run (object dataItem)
 		{
@@ -69,9 +132,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		protected override async Task UpdateAsync (CommandArrayInfo ainfo, CancellationToken cancelToken)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			var analysisDocument = doc.AnalysisDocument;
-			if (doc == null || doc.FileName == FilePath.Null || analysisDocument == null)
+			if (!TryGetDocument (out var analysisDocument, out var doc))
 				return;
 			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancelToken);
 			if (semanticModel == null)
@@ -87,12 +148,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				}));
 			}
 
-			bool isSortAndRemoveUsingsSupported = IsSortAndRemoveImportsSupported (analysisDocument);
+			bool isSortAndRemoveUsingsSupported = RemoveAndSortUsingsHandler.IsSortAndRemoveImportsSupported (analysisDocument);
 			if (isSortAndRemoveUsingsSupported) {
 				var sortAndRemoveImportsInfo = IdeApp.CommandService.GetCommandInfo (Commands.SortAndRemoveImports);
 				sortAndRemoveImportsInfo.Enabled = true;
 				ainfo.Add (sortAndRemoveImportsInfo, new Action (async delegate {
-					await SortAndRemoveUnusedImports (analysisDocument, cancelToken);
+					await RemoveAndSortUsingsHandler.SortAndRemoveUnusedImports (analysisDocument, cancelToken);
 				}));
 			}
 
@@ -137,40 +198,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				} catch (Exception) {
 					// silently ignore roslyn bug.
 				}
-			}
-		}
-
-		static bool IsSortAndRemoveImportsSupported (Document document)
-		{
-			var workspace = document.Project.Solution.Workspace;
-
-			if (!workspace.CanApplyChange (ApplyChangesKind.ChangeDocument)) {
-				return false;
-			}
-
-			if (workspace.Kind == WorkspaceKind.MiscellaneousFiles) {
-				return false;
-			}
-
-			return workspace.Services.GetService<IDocumentSupportsFeatureService> ().SupportsRefactorings (document);
-		}
-
-		static async Task SortAndRemoveUnusedImports (Document originalDocument, CancellationToken cancellationToken)
-		{
-			if (originalDocument == null)
-				return;
-
-			var workspace = originalDocument.Project.Solution.Workspace;
-
-			var unnecessaryImportsService = originalDocument.GetLanguageService<IRemoveUnnecessaryImportsService> ();
-
-			// Remove unnecessary imports and sort them
-			var removedImportsDocument = await unnecessaryImportsService.RemoveUnnecessaryImportsAsync (originalDocument, cancellationToken);
-			var resultDocument = await OrganizeImportsService.OrganizeImportsAsync (removedImportsDocument, cancellationToken);
-
-			// Apply the document change if needed
-			if (resultDocument != originalDocument) {
-				workspace.ApplyDocumentChanges (resultDocument, cancellationToken);
 			}
 		}
 
