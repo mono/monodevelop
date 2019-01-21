@@ -62,17 +62,21 @@ namespace MonoDevelop.Ide.Projects
 			UpdateContentLabels ();
 
 			combPolicies.Accessible.Name = "ApplyPolicyDialog.PolicyCombo";
-			combPolicies.Accessible.SetTitleUIElement (combPolicies.Accessible);
+			combPolicies.SetAccessibilityLabelRelationship (label2);
 			CombPolicies_Changed (null, null);
 			combPolicies.Changed += CombPolicies_Changed;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			combPolicies.Changed -= CombPolicies_Changed;
+			base.OnDestroyed ();
 		}
 
 		void CombPolicies_Changed (object sender, EventArgs e)
 		{
 			combPolicies.Accessible.Description = GettextCatalog.GetString ("Select policy, current: {0}", combPolicies.ActiveText);
-
 		}
-
 
 		protected void OnRadioCustomToggled (object sender, System.EventArgs e)
 		{
