@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	
-	public class CodeTemplateToolboxProvider : IToolboxDynamicProvider, IToolboxDynamicProviderDeleteSupport
+	public class CodeTemplateToolboxProvider : IToolboxDynamicProvider
 	{
 		static string category = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
 
@@ -57,10 +57,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				};
 			}
 		}
-
-		public bool DeleteDynamicItem (ItemToolboxNode node) => false;
-
-		public bool CanDeleteDynamicItem (ItemToolboxNode node) => false;
 
 		public event EventHandler ItemsChanged {
 			add { CodeTemplateService.TemplatesChanged += value; }
