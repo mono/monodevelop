@@ -1239,10 +1239,7 @@ namespace MonoDevelop.Ide
 				currentBuildOperation = op;
 				currentBuildOperationOwner = entry;
 
-				t.ContinueWith (ta => {
-					ResetCurrentBuildOperation ();
-					return ta.Result;
-				});
+				t.ContinueWith (ta => { ResetCurrentBuildOperation (); });
 				return op;
 			}
 			catch {
@@ -1377,10 +1374,7 @@ namespace MonoDevelop.Ide
 			currentBuildOperation = op;
 			currentBuildOperationOwner = entry;
 
-			t.ContinueWith (ta => {
-				ResetCurrentBuildOperation ();
-				return ta.Result;
-			});
+			t.ContinueWith (ta => { ResetCurrentBuildOperation (); });
 			return op;
 		}
 		
@@ -1679,11 +1673,7 @@ namespace MonoDevelop.Ide
 				currentBuildOperation = op;
 				currentBuildOperationOwner = entry;
 
-				t.ContinueWith (ta => {
-					ResetCurrentBuildOperation ();
-					return ta.Result;
-				});
-
+				t.ContinueWith (ta => { ResetCurrentBuildOperation (); });
 				return op;
 			} catch {
 				tt.End ();
