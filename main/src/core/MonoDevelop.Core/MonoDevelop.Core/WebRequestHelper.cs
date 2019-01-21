@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Core.Web;
 using Mono.Addins;
 using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace MonoDevelop.Core
 {
@@ -130,6 +132,82 @@ namespace MonoDevelop.Core
 			);
 
 			return handler.GetResponse (token);
+		}
+
+		/// <summary>
+		/// Downloads a URL as a string asynchronously.
+		/// </summary>
+		/// <returns>The content of the response as a string.</returns>
+		/// <param name="url">URL.</param>
+		/// <param name="token">Cancellation Token.</param>
+		public static async Task<string> DownloadStringAsync (string url, CancellationToken token)
+		{
+			try {
+				var response = await GetResponseAsync (
+					() => (HttpWebRequest)WebRequest.Create (url),
+					null,
+					token).ConfigureAwait (false);
+
+				if (response.StatusCode == HttpStatusCode.OK && !token.IsCancellationRequested) {
+					using (var reader = new StreamReader (response.GetResponseStream ())) {
+						return await reader.ReadToEndAsync ().ConfigureAwait (false);
+					}
+				}
+			} catch (WebException ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
+			return string.Empty;
+		}
+
+		/// <summary>
+		/// Downloads a file asynchronously.
+		/// </summary>
+		/// <returns>Whether the operation succeeded or not.</returns>
+		/// <param name="url">URL.</param>
+		/// <param name="destinationPath">Destination path.</param>
+		/// <param name="token">Cancellation Token.</param>
+		public static async Task<bool> DownloadFileAsync (string url, string destinationPath, CancellationToken token, Action<int> progressCb = null)
+		{
+			try {
+				var response = await GetResponseAsync (
+					() => (HttpWebRequest)WebRequest.Create (url),
+					null,
+					token).ConfigureAwait (false);
+
+				if (response.StatusCode == HttpStatusCode.OK && !token.IsCancellationRequested) {
+					using (var fs = File.Create (destinationPath)) {
+						byte [] buffer = new byte [4096];
+						long totalRead = 0;
+						long nr = -1;
+						var s = response.GetResponseStream ();
+						while ((nr = await s.ReadAsync (buffer, 0, buffer.Length)) > 0) {
+							if (token.IsCancellationRequested) {
+								fs.Close ();
+								File.Delete (destinationPath);
+								return false;
+							}
+
+							if (progressCb != null) {
+								totalRead += nr;
+								progressCb ((int) ((float) totalRead / (float) response.ContentLength * 100));
+							}
+
+							await fs.WriteAsync (buffer, 0, (int) nr).ConfigureAwait (false);
+						}
+						if (File.Exists (destinationPath)) {
+							return true;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+				if (File.Exists (destinationPath)) {
+					File.Delete (destinationPath);
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
