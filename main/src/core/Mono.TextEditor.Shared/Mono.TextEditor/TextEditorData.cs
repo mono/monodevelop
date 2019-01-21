@@ -488,12 +488,27 @@ namespace Mono.TextEditor
 
 		internal async Task<IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment>> GetChunks (DocumentLine line, int offset, int length)
 		{
-			var lineOffset = line.Offset;
-			return TextViewMargin.TrimChunks (
-				(await document.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).ConfigureAwait(false))
-				        .Segments
-				        .Select (c => c.WithOffset (c.Offset + lineOffset))
-				        .ToList (), offset, length);
+			if (line == null)
+				throw new ArgumentNullException (nameof (line));
+			if (document == null)
+				throw new InvalidOperationException ("TextEditorData was disposed.");
+			try {
+				var lineOffset = line.Offset;
+				var syntaxMode = document.SyntaxMode;
+				var highlightedLine = await syntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).ConfigureAwait (false);
+				var result = new List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> (highlightedLine.Segments.Count);
+				foreach (var segment in highlightedLine.Segments) {
+					if (segment == null) {
+						LoggingService.LogInternalError (new InvalidOperationException ("Segment== null insede highlighed line " + highlightedLine));
+						continue;
+					}
+					result.Add (segment.WithOffset (segment.Offset + lineOffset));
+				}
+				return TextViewMargin.TrimChunks (result, offset, length);
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Error while getting chunks.", e);
+				return new [] { new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (offset, length, ScopeStack.Empty) };
+			}
 		}
 	
 		public int Insert (int offset, string value)
