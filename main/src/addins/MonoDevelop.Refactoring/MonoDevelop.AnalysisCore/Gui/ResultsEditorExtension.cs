@@ -420,7 +420,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					}
 					return true;
 				} catch (Exception ex) {
-					LoggingService.LogError ("Error while ResutsUpdater.IdleHandler", ex);
+					LoggingService.LogInternalError ("Error while ResutsUpdater.IdleHandler", ex);
 					return false;
 				}
 			}
