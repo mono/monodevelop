@@ -61,8 +61,6 @@ namespace MonoDevelop.Ide.Projects
 			OnRadioCustomToggled (null, null);
 			UpdateContentLabels ();
 
-			CombPolicies_Changed (null, null);
-
 			combPolicies.Accessible.Name = "ApplyPolicyDialog.PolicyCombo";
 			combPolicies.Accessible.SetTitleUIElement (combPolicies.Accessible);
 			CombPolicies_Changed (null, null);
