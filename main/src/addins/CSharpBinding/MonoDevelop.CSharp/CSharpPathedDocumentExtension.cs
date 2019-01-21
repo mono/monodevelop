@@ -34,10 +34,10 @@ using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.CSharp
 {

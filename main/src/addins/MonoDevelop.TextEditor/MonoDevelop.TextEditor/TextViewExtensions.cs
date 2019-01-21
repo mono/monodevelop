@@ -1,4 +1,3 @@
-﻿//
 //
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
@@ -22,16 +21,16 @@
 
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.TextEditor
 {
 	public static class TextViewExtensions
 	{
 		/// <summary>
-		/// Gets the parent <see cref="Gui.Document"/> from an <see cref="ITextView"/>
+		/// Gets the parent <see cref="Ide.Gui.Document"/> from an <see cref="ITextView"/>
 		/// </summary>
-		public static Gui.Document TryGetParentDocument (this ITextView view)
+		public static Ide.Gui.Document TryGetParentDocument (this ITextView view)
 		{
-			if (view.Properties.TryGetProperty<Gui.Document> (typeof (Gui.Document), out var document)) {
+			if (view.Properties.TryGetProperty<Ide.Gui.Document> (typeof (Ide.Gui.Document), out var document)) {
 				return document;
 			}
 			return null;

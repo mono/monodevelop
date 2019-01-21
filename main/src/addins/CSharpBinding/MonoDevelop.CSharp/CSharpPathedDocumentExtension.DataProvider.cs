@@ -30,8 +30,8 @@ using Microsoft.VisualStudio.Text;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects;
+using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.CSharp
 {
