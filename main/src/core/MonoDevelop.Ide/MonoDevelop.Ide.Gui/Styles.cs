@@ -473,7 +473,7 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#e7eaee");
 			SecondaryBackgroundLighterColor = Color.FromName ("#f9f9fb");
-			SecondaryTextColorHexString = "#888888";
+			SecondaryTextColorHexString = "#767676";
 			SecondaryTextColor = Color.FromName (SecondaryTextColorHexString);
 			SecondarySelectionTextColor = Color.FromName ("#ffffff");
 			PadBackground = Color.FromName ("#fafafa");
@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.Gui
 			PrimaryBackgroundColor = BaseBackgroundColor;
 			SecondaryBackgroundDarkerColor = Color.FromName ("#484848");
 			SecondaryBackgroundLighterColor = SeparatorColor;
-			SecondaryTextColorHexString = "#777777";
+			SecondaryTextColorHexString = "#ababab";
 			SecondaryTextColor = Color.FromName (SecondaryTextColorHexString);
 			SecondarySelectionTextColor = Color.FromName ("#ffffff");
 			PadBackground = Color.FromName ("#525252");
