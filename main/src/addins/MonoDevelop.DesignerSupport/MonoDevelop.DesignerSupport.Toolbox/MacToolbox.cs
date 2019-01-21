@@ -447,7 +447,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			// Hack manually filter out gtk# widgets & container since they cannot be re added
 			// because they're missing the toolbox attributes.
-			info.Enabled = selectedNode != null
+			info.Enabled = selectedNode != null && toolboxService.CanRemoveUserItem (selectedNode)
 				&& (selectedNode.ItemDomain != GtkWidgetDomain
 					|| (selectedNode.Category != "Widgets" && selectedNode.Category != "Container"));
 		}
