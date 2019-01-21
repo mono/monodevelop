@@ -266,10 +266,8 @@ namespace MonoDevelop.Projects.MSBuild
 				builders.Add (builderKey, builder);
 				builder.ReferenceCount = 0;
 				builder.BuildSessionId = buildSessionId;
-				builder.Disconnected += async delegate {
-					using (await buildersLock.EnterAsync ().ConfigureAwait (false))
-						builders.Remove (builder);
-				};
+
+				builder.Disconnected += OnBuilderDisconnected;
 				if (setBusy)
 					builder.SetBusy ();
 				if (buildSessionId != null) {
@@ -280,6 +278,13 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 		}
 
+		// PERF: Avoid making this an instance method, as it will cause delegates to be retained.
+		static async Task OnBuilderDisconnected (object sender, EventArgs args)
+		{
+			var disconnectedBuilder = (RemoteBuildEngine)sender;
+			using (await buildersLock.EnterAsync ().ConfigureAwait (false))
+				builders.Remove (disconnectedBuilder);
+		}
 
 		/// <summary>
 		/// Unloads a project from all engines
