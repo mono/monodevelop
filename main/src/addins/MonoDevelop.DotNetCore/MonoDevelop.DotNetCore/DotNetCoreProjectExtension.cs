@@ -495,8 +495,7 @@ namespace MonoDevelop.DotNetCore
 				return;
 
 			var referencedSdks = project.GetReferencedSDKs ();
-			var sdks = string.Join (";", referencedSdks);
-			sdkPaths = DotNetCoreSdk.FindSdkPaths (sdks);
+			sdkPaths = DotNetCoreSdk.FindSdkPaths (referencedSdks);
 			dotNetCoreMSBuildProject.HasSdk = referencedSdks.Length > 0;
 		}
 		protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)

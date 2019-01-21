@@ -119,12 +119,12 @@ namespace MonoDevelop.DotNetCore
 			IsUnsupportedSdkVersion = false;
 		}
 
-		public void FindSdkPaths (string sdk)
+		public void FindSdkPaths (string [] sdks)
 		{
 			if (string.IsNullOrEmpty (MSBuildSDKsPath))
 				return;
 
-			Exist = CheckSdksExist (sdk);
+			Exist = CheckSdksExist (sdks);
 
 			if (Exist) {
 				IsUnsupportedSdkVersion = !CheckIsSupportedSdkVersion (SdksParentDirectory);
@@ -149,18 +149,13 @@ namespace MonoDevelop.DotNetCore
 
 		string SdksParentDirectory { get; set; }
 
-		static IEnumerable<string> SplitSdks (string sdk) => sdk.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-		bool CheckSdksExist (string sdk)
+		bool CheckSdksExist (string[] sdks)
 		{
-			if (sdk.Contains (';')) {
-				foreach (string sdkItem in SplitSdks (sdk)) {
-					if (!SdkPathExists (sdkItem))
-						return false;
-				}
-				return true;
+			foreach (string sdkItem in sdks) {
+				if (!SdkPathExists (sdkItem))
+					return false;
 			}
-			return SdkPathExists (sdk);
+			return true;
 		}
 
 		bool SdkPathExists (string sdk)

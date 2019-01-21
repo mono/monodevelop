@@ -82,9 +82,9 @@ namespace MonoDevelop.DotNetCore
 		{
 		}
 
-		internal static DotNetCoreSdkPaths FindSdkPaths (string sdk)
+		internal static DotNetCoreSdkPaths FindSdkPaths (string[] sdks)
 		{
-			sdkPaths.FindSdkPaths (sdk);
+			sdkPaths.FindSdkPaths (sdks);
 			return sdkPaths;
 		}
 
