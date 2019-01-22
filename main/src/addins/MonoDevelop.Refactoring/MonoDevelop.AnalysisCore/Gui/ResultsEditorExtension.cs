@@ -92,17 +92,24 @@ namespace MonoDevelop.AnalysisCore.Gui
 			diagService.DiagnosticsUpdated -= OnDiagnosticsUpdated;
 			CancelUpdateTimout ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
-			foreach (var queue in markers) {
-				foreach (var marker in queue.Value)
-					Editor.RemoveMarker (marker);
-				queue.Value.Clear ();
-			}
+			RemoveAllMarkers ();
 			disposed = true;
 			base.Dispose ();
 		}
+
+		void RemoveAllMarkers ()
+		{
+			foreach (var markerQueue in markers) {
+				foreach (var marker in markerQueue.Value) {
+					Editor.RemoveMarker (marker);
+				}
+				PutBackCachedList (markerQueue.Value);
+			}
+			markers.Clear ();
+		}
 		
 		bool enabled;
-		
+
 		public bool Enabled {
 			get { return enabled; }
 			set {
@@ -248,39 +255,38 @@ namespace MonoDevelop.AnalysisCore.Gui
 			}
 		}
 
+		const int MaxCacheSize = 10;
+		static Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
 
-		class ResultsUpdater 
+		List<IGenericTextSegmentMarker> GetCachedList ()
+		{
+			if (listCache.Count == 0)
+				return new List<IGenericTextSegmentMarker> ();
+			return listCache.Dequeue ();
+		}
+
+		void PutBackCachedList (List<IGenericTextSegmentMarker> list)
+		{
+			list.Clear ();
+			if (listCache.Count < MaxCacheSize)
+				listCache.Enqueue (list);
+		}
+
+		class ResultsUpdater
 		{
 			readonly ResultsEditorExtension ext;
 			readonly CancellationToken cancellationToken;
-			
+
 			//the number of markers at the head of the queue that need tp be removed
 			int oldMarkerIndex;
-			readonly List<IGenericTextSegmentMarker> oldMarkers;
+			List<IGenericTextSegmentMarker> oldMarkers;
 
 			int curResult = 0;
 			IReadOnlyList<Result> results;
 
-			private List<IGenericTextSegmentMarker> newMarkers;
+			List<IGenericTextSegmentMarker> newMarkers;
 			ImmutableArray<QuickTask>.Builder builder;
 			object id;
-
-			const int MaxCacheSize = 200;
-			readonly static Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
-
-			static List<IGenericTextSegmentMarker> GetCachedList ()
-			{
-				if (listCache.Count == 0)
-					return new List<IGenericTextSegmentMarker> ();
-				return listCache.Dequeue ();
-			}
-
-			static void PutBackCachedList (List<IGenericTextSegmentMarker> list)
-			{
-				list.Clear ();
-				if (listCache.Count < MaxCacheSize)
-					listCache.Enqueue (list);
-			}
 
 			public ResultsUpdater (ResultsEditorExtension ext, IReadOnlyList<Result> results, object resultsId, CancellationToken cancellationToken)
 			{
@@ -293,13 +299,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 				this.cancellationToken = cancellationToken;
 
 				if (resultsId != null) {
-					if (!ext.markers.TryGetValue (id, out oldMarkers))
-						ext.markers [id] = oldMarkers = GetCachedList ();
+					ext.markers.TryGetValue (id, out oldMarkers);
 				}
 				
 				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 				this.results = results;
-				newMarkers = GetCachedList ();
+				newMarkers = ext.GetCachedList ();
 			}
 
 			public void Update ()
@@ -347,13 +352,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (editor == null)
 						return false;
 					if (id == null) {
-						foreach (var markerQueue in ext.markers) {
-							foreach (var marker in markerQueue.Value) {
-								editor.RemoveMarker (marker);
-							}
-							PutBackCachedList (markerQueue.Value);
-						}
-						ext.markers.Clear ();
+						ext.RemoveAllMarkers ();
 						lock (ext.tasks)
 							ext.tasks.Clear ();
 						ext.OnTasksUpdated (EventArgs.Empty);
@@ -434,7 +433,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 						editor.RemoveMarker (oldMarkers [oldMarkerIndex]);
 						oldMarkerIndex++;
 					}
-					PutBackCachedList (oldMarkers);
+					ext.PutBackCachedList (oldMarkers);
+					oldMarkers = null;
 				}
 				ext.markers [id] = newMarkers;
 				lock (ext.tasks)
