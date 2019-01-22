@@ -256,7 +256,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		const int MaxCacheSize = 10;
-		static Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
+		Queue<List<IGenericTextSegmentMarker>> listCache = new Queue<List<IGenericTextSegmentMarker>> ();
 
 		List<IGenericTextSegmentMarker> GetCachedList ()
 		{
@@ -305,6 +305,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				builder = ImmutableArray<QuickTask>.Empty.ToBuilder ();
 				this.results = results;
 				newMarkers = ext.GetCachedList ();
+				Debug.Assert (newMarkers != null);
 			}
 
 			public void Update ()
@@ -370,7 +371,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 							var oldMarker = oldMarkers [oldMarkerIndex++];
 
 							var oldResult = (Result)oldMarker.Tag;
-							if (curResult < results.Count) {
+							if (oldResult != null && curResult < results.Count) {
 								Result currentResult = results [curResult];
 								if (currentResult.Equals (oldResult, oldMarker.Offset)) {
 									oldMarker.Tag = currentResult;
