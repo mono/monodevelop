@@ -196,7 +196,7 @@ namespace MonoDevelop.TextEditor
 
 		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
 			=> Ide.MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (fileName != null ? null : Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName))
+				?? (fileName != null ? Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
