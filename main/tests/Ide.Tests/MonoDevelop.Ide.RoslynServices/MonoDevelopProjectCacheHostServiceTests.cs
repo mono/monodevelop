@@ -134,6 +134,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		}
 
 		[Test]
+		[Ignore ("Disabled for now")]
 		public void TestCacheDoesNotKeepObjectsAliveAfterOwnerIsCollected2 ()
 		{
 			Test ((cacheService, projectId, owner, instance) => {
