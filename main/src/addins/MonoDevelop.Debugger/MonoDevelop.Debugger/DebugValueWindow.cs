@@ -26,21 +26,17 @@
 //
 
 using System;
-using System.Linq;
 using Mono.Debugging.Client;
-using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Gtk;
-using Mono.TextEditor;
 using Gdk;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Debugger
 {
-	class DebugValueWindow : PopoverWindow
+	public class DebugValueWindow : PopoverWindow
 	{
-		internal ObjectValueTreeView tree;
+		public ObjectValueTreeView tree;
 		ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
@@ -75,14 +71,14 @@ namespace MonoDevelop.SourceEditor
 			currentBgColor = bgColor;
 		}
 
-		public DebugValueWindow (TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
+		public DebugValueWindow (Gtk.Window transientFor, string pinnedWatchFileName, int pinnedWatchLine, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window) (editor.GetNativeWidget <Gtk.Widget> ()).Toplevel;
+			TransientFor = transientFor;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
 
@@ -105,9 +101,8 @@ namespace MonoDevelop.SourceEditor
 			tree.AllowPinning = true;
 			tree.RootPinAlwaysVisible = true;
 			tree.PinnedWatch = watch;
-			var location = editor.OffsetToLocation (offset);
-			tree.PinnedWatchLine = location.Line;
-			tree.PinnedWatchFile = editor.FileName;
+			tree.PinnedWatchLine = pinnedWatchLine;
+			tree.PinnedWatchFile = pinnedWatchFileName;
 
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();

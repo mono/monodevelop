@@ -31,6 +31,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.TextEditor.CocoaTextViewDisplayBinding" />

@@ -573,9 +573,9 @@ namespace MonoDevelop.Ide.Gui
 					} else {
 						var offset = info.Offset;
 						if (offset < 0) {
-							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line);
+							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
 							if (info.Column >= 1)
-								offset = line.Start + info.Column;
+								offset = line.Start + info.Column - 1;
 							else
 								offset = line.Start;
 						}

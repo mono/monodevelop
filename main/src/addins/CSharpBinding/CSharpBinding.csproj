@@ -283,6 +283,7 @@
     <Compile Include="MonoDevelop.CSharp.OptionProvider\StyleViewModel.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpPathedDocumentExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Completion.Presentation\RoslynExperimentationService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Debugger\RoslynDebugInfoProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
@@ -302,6 +303,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\" />
+    <Folder Include="MonoDevelop.CSharp.Debugger\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

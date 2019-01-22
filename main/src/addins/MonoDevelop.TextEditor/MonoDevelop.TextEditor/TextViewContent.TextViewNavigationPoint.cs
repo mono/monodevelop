@@ -23,6 +23,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
 
@@ -32,7 +33,7 @@ namespace MonoDevelop.TextEditor
 	{
 		public NavigationPoint BuildNavigationPoint ()
 		{
-			return new TextViewNavigationPoint (TextViewExtensions.TryGetParentDocument (TextView), TextView);
+			return new TextViewNavigationPoint (TextView.TryGetParentDocument(), TextView);
 		}
 
 		void TryLogNavPoint (bool transient)

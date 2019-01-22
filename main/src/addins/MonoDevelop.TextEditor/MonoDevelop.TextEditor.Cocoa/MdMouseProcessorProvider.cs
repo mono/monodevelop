@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.TextEditor.Cocoa
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		public override void PreprocessMouseRightButtonUp (MouseEvent e)
 		{
-			var view = (CocoaTextViewContent)cocoaTextView.Properties [typeof (CocoaTextViewContent)];
+			var view = (ViewContent)cocoaTextView.Properties [typeof (ViewContent)];
 			var ctx = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
 			var cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 			var pt = ((NSEvent)e.Event).LocationInWindow;
