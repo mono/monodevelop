@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Projection;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectionData projections;
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
+			readonly HackyWorkspaceFilesCache hackyCache;
 
 			bool added;
 			readonly object addLock = new object ();
@@ -59,6 +61,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.workspace = workspace;
 				this.projectMap = projectMap;
 				this.projections = projections;
+				this.hackyCache = new HackyWorkspaceFilesCache (workspace.MonoDevelopSolution);
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
@@ -117,15 +120,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
 
-				var (references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token);
-				if (token.IsCancellationRequested)
-					return null;
+				if (!hackyCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var sourceFiles, out var analyzerFiles, out var references, out var projectReferences)) {
+					(references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token);
+					if (token.IsCancellationRequested)
+						return null;
 
-				var sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
-				if (token.IsCancellationRequested)
-					return null;
+					sourceFiles = await p.GetSourceFilesAsync (config?.Selector).ConfigureAwait (false);
+					if (token.IsCancellationRequested)
+						return null;
 
-				var analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+					analyzerFiles = await p.GetAnalyzerFilesAsync (config?.Selector).ConfigureAwait (false);
+
+					if (config != null)
+						hackyCache.Update (config, p, projectMap, sourceFiles, analyzerFiles, references, projectReferences);
+				}
+
 				if (token.IsCancellationRequested)
 					return null;
 

@@ -66,7 +66,7 @@ using System.Collections.Immutable;
 namespace MonoDevelop.SourceEditor
 {
 	partial class SourceEditorView : ViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
-		ICompletionWidget2,  ISplittable, IFoldable, IToolboxDynamicProvider,
+		ICompletionWidget2,  ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxDynamicProviderDeleteSupport,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
 	ITextEditorImpl, ITextMarkerFactory, IUndoHandler
@@ -3392,6 +3392,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			return TextEditor.GetLineHeight (line);
 		}
+
+		public bool DeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.DeleteItem (node);
+
+		public bool CanDeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.GetToolboxItems ().Contains (node);
 
 		public bool HasFocus {
 			get {
