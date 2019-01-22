@@ -413,6 +413,11 @@ namespace Mono.TextEditor
 
 		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
+			return GetMarkupAsync (offset, length, removeIndent, useColors, replaceTabs, fitIdeStyle).WaitAndGetResult (default (CancellationToken));
+		}
+
+		public async Task<string> GetMarkupAsync (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false, CancellationToken cancellationToken = default)
+		{
 			var doc = Document;
 			var mode = doc.SyntaxMode;
 			var style = fitIdeStyle ? SyntaxHighlightingService.GetEditorTheme (Parent.GetIdeColorStyleName ()) : ColorStyle;
@@ -441,7 +446,7 @@ namespace Mono.TextEditor
 					}
 				}
 
-				foreach (var chunk in GetChunks (line, curOffset, toOffset - curOffset).WaitAndGetResult (default (CancellationToken))) {
+				foreach (var chunk in await GetChunks (line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
 						continue;
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
@@ -486,16 +491,17 @@ namespace Mono.TextEditor
 			return StringBuilderCache.ReturnAndFree (result);
 		}
 
-		internal async Task<IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment>> GetChunks (DocumentLine line, int offset, int length)
+		internal async Task<IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment>> GetChunks (DocumentLine line, int offset, int length, CancellationToken cancellationToken = default)
 		{
 			if (line == null)
 				throw new ArgumentNullException (nameof (line));
 			if (document == null)
 				throw new InvalidOperationException ("TextEditorData was disposed.");
+			Runtime.AssertMainThread ();
 			try {
 				var lineOffset = line.Offset;
 				var syntaxMode = document.SyntaxMode;
-				var highlightedLine = await syntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).ConfigureAwait (false);
+				var highlightedLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken).ConfigureAwait (false);
 				var result = new List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> (highlightedLine.Segments.Count);
 				foreach (var segment in highlightedLine.Segments) {
 					if (segment == null) {
