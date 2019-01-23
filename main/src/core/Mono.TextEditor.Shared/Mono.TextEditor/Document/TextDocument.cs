@@ -59,16 +59,23 @@ namespace Mono.TextEditor
 
 		public string MimeType {
 			get {
+				if (mimeType == null && TextBuffer != null) {
+					mimeType = MimeTypeCatalog.Instance.GetMimeTypeForContentType (TextBuffer.ContentType);
+				}
 				return mimeType ?? MimeTypeCatalog.TextPlain;
 			}
 			set {
+				if (mimeType == value) {
+					return;
+				}
+
+				mimeType = value;
 				var newContentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (value) ?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
-				if (TextBuffer.CurrentSnapshot.ContentType != newContentType) {
+				if (TextBuffer != null && TextBuffer.CurrentSnapshot.ContentType != newContentType) {
 					TextBuffer.ChangeContentType (newContentType, null);
 				}
-				if (mimeType != value) {
-					MimeTypeChanged?.Invoke (this, EventArgs.Empty);
-				}
+
+				MimeTypeChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 
@@ -298,6 +305,7 @@ namespace Mono.TextEditor
 
 		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
+			this.mimeType = mimeType;
 			VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (
 				PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (
 					text ?? string.Empty,
