@@ -1,4 +1,4 @@
-﻿// TextEditorData.cs
+// TextEditorData.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -446,7 +446,7 @@ namespace Mono.TextEditor
 					}
 				}
 
-				foreach (var chunk in await GetChunks (line, curOffset, toOffset - curOffset)) {
+				foreach (var chunk in await GetChunks (line, curOffset, toOffset - curOffset, cancellationToken)) {
 					if (chunk.Length == 0)
 						continue;
 					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
