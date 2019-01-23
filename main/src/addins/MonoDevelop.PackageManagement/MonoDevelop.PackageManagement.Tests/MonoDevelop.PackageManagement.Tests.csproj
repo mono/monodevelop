@@ -20,6 +20,25 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Security" />
+    <PackageReference Include="NuGet.PackageManagement" Version="4.8.0" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.Indexing" Version="4.8.0" PrivateAssets="runtime" />
+    <IncludeCopyLocal Include="Lucene.Net.dll" />
+    <IncludeCopyLocal Include="Microsoft.Web.XmlTransform.dll" />
+    <IncludeCopyLocal Include="NuGet.Commands.dll" />
+    <IncludeCopyLocal Include="NuGet.Common.dll" />
+    <IncludeCopyLocal Include="NuGet.Configuration.dll" />
+    <IncludeCopyLocal Include="NuGet.Credentials.dll" />
+    <IncludeCopyLocal Include="NuGet.DependencyResolver.Core.dll" />
+    <IncludeCopyLocal Include="NuGet.Frameworks.dll" />
+    <IncludeCopyLocal Include="NuGet.Indexing.dll" />
+    <IncludeCopyLocal Include="NuGet.LibraryModel.dll" />
+    <IncludeCopyLocal Include="NuGet.PackageManagement.dll" />
+    <IncludeCopyLocal Include="NuGet.Packaging.dll" />
+    <IncludeCopyLocal Include="NuGet.Packaging.Core.dll" />
+    <IncludeCopyLocal Include="NuGet.ProjectModel.dll" />
+    <IncludeCopyLocal Include="NuGet.Protocol.dll" />
+    <IncludeCopyLocal Include="NuGet.Resolver.dll" />
+    <IncludeCopyLocal Include="NuGet.Versioning.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
