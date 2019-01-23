@@ -32,8 +32,8 @@ namespace MonoDevelop.Ide.Tasks
 {
 	public enum TaskPriority
 	{
-		Low,
-		Normal,
-		High
+		High = 0,
+		Normal = 1,
+		Low = 2
 	}
 }

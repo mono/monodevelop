@@ -44,13 +44,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{	
 		ListStore tokensStore;
 		ComboBox comboPriority;
+		Array taskValues;
 
 		public TasksPanelWidget ()
 		{
 			Build ();
-			
+
+			taskValues = Enum.GetValues (typeof (TaskPriority));
 			comboPriority = ComboBox.NewText ();
-			foreach (TaskPriority priority in Enum.GetValues (typeof (TaskPriority)))
+			foreach (TaskPriority priority in taskValues)
 				comboPriority.AppendText (Enum.GetName (typeof (TaskPriority), priority));
 			comboPriority.Changed += new EventHandler (Validate);
 			comboPriority.Show ();
@@ -141,9 +143,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (selectedToken != String.Empty)
 			{
+				var priorityIndex = (int)taskValues.GetValue (comboPriority.Active);
 				buttonRemove.Sensitive = true;
 				buttonChange.Sensitive = ((entryToken.Text.Length > 1) && (entryToken.Text != selectedToken) && !found)
-										  || comboPriority.Active != selectedPriority ? true : false;
+										  || priorityIndex != selectedPriority;
 			} else
 			{
 				buttonRemove.Sensitive = buttonChange.Sensitive = false;
