@@ -124,22 +124,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		internal void OnSizeChanged ()
 		{
-			if (SizeChanged != null) {
-				SizeChanged (this, EventArgs.Empty);
-			}
+			SizeChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		public override bool BecomeFirstResponder()
-		{
-			if (Window.FirstResponder != RealSelectorView)
-				return Window.MakeFirstResponder(RealSelectorView);
-			return false;
-		}
-
-		public override bool AcceptsFirstResponder()
-		{
-			return Window.FirstResponder != RealSelectorView;
-		}
+		public override bool AcceptsFirstResponder () => false;
 
 		#region PathSelectorView
 		[Register]
@@ -584,29 +572,39 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// 0x30 is Tab
 				if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
-					if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
-						focusedCellIndex--;
-						if (focusedCellIndex < 0) {
-							if (PreviousKeyView != null) {
+
+					if (theEvent.KeyCode == (ushort)KeyCodes.Space) {
+						var item = Cells [focusedCellIndex].Cell;
+						PopupMenuForCell (item);
+						return;
+					}
+
+					// 0x30 is Tab
+					if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
+						if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
+							if (focusedCellIndex <= 0) {
+								if (PreviousKeyView != null) {
+									SetSelection ();
+									focusedCellIndex = 0;
+									focusedItem = null;
+								}
+							} else {
+								focusedCellIndex--;
 								SetSelection ();
-								focusedCellIndex = 0;
-								focusedItem = null;
+								return;
 							}
 						} else {
-							SetSelection ();
-							return;
-						}
-					} else {
-						focusedCellIndex++;
-						if (focusedCellIndex >= VisibleCellIds.Length) {
-							if (NextKeyView != null) {
+							if (focusedCellIndex >= VisibleCellIds.Length - 1) {
+								if (NextKeyView != null) {
+									SetSelection ();
+									focusedCellIndex = 0;
+									focusedItem = null;
+								}
+							} else {
+								focusedCellIndex++;
 								SetSelection ();
-								focusedCellIndex = 0;
-								focusedItem = null;
+								return;
 							}
-						} else {
-							SetSelection ();
-							return;
 						}
 					}
 				}
