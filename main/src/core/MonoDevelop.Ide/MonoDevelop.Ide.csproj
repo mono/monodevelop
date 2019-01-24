@@ -3015,6 +3015,7 @@
     <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~sel%402x.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.Components.Commands\ICustomCommandTarget.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\EditCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\FileCommands.cs" />
