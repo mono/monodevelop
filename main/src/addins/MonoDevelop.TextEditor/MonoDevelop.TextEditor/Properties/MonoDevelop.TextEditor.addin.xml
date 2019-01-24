@@ -57,8 +57,8 @@
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Cut" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CutCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Paste" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PasteCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Rename" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RenameCommandArgs" />
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.Undo" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UndoCommandArgs" />
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.Redo" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RedoCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Undo" argsType="@MonoDevelop.TextEditor.CommandArgsFactories.CreateUndoCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Redo" argsType="@MonoDevelop.TextEditor.CommandArgsFactories.CreateRedoCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.SelectAll" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SelectAllCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommentSelectionCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UncommentSelectionCommandArgs" />

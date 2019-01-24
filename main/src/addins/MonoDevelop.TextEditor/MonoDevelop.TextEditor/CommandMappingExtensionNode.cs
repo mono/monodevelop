@@ -44,11 +44,32 @@ namespace MonoDevelop.TextEditor
 
 		MappedEditorCommand CreateMappedCommand ()
 		{
-			var type = Addin.GetType (ArgsType, true);
-			var factory = CreateArgsFactory (type);
+			Type type;
+			Delegate factory;
+
+			// Hidden feature, if the first character of the type is @ it's really a static factory method
+			// and the actual type is determined from the method's return type.
+			// This is needed for Undo/Redo which have additional arguments in their ctors.
+			if (ArgsType[0] == '@') {
+				factory = GetDelegate (ArgsType.Substring (1));
+				type = factory.Method.ReturnType;
+			} else {
+				type = Addin.GetType (ArgsType, true);
+				factory = CreateArgsFactory (type);
+			}
 
 			var mapType = typeof (MappedEditorCommand<>).MakeGenericType (type);
 			return (MappedEditorCommand) Activator.CreateInstance (mapType, factory);
+		}
+
+		Delegate GetDelegate (string fullName)
+		{
+			var dotIdx = fullName.LastIndexOf ('.');
+			var factoryTypeName = fullName.Substring (0, dotIdx);
+			var factoryType = Addin.GetType (factoryTypeName, true);
+			var methodName = fullName.Substring (dotIdx + 1);
+			var methodInfo = factoryType.GetMethod (methodName);
+			return Delegate.CreateDelegate (typeof (Func<,,>).MakeGenericType (typeof (ITextView), typeof (ITextBuffer), methodInfo.ReturnType), methodInfo);
 		}
 
 		class MappedEditorCommand<T> : MappedEditorCommand
