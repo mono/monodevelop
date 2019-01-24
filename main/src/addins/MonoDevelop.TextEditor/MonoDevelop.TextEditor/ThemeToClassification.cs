@@ -185,6 +185,8 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "suggestion", EditorThemeColors.UnderlineSuggestion, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "hinted suggestion", EditorThemeColors.UnderlineSuggestion, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "breakpoint", EditorThemeColors.BreakpointMarker);
+			CreateResourceDictionary (editorFormat, defaultSettings, "breakpoint-disabled", EditorThemeColors.BreakpointMarkerDisabled);
+			CreateResourceDictionary (editorFormat, defaultSettings, "breakpoint-invalid", EditorThemeColors.BreakpointMarkerInvalid);
 			CreateResourceDictionary (editorFormat, defaultSettings, "currentstatement", EditorThemeColors.DebuggerCurrentLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "returnstatement", EditorThemeColors.DebuggerStackLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Indicator Margin", EditorThemeColors.IndicatorMargin);

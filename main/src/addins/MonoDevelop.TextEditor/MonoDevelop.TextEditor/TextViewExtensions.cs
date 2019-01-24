@@ -19,6 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.TextEditor
@@ -33,6 +34,15 @@ namespace MonoDevelop.TextEditor
 			if (view.Properties.TryGetProperty<Ide.Gui.Document> (typeof (Ide.Gui.Document), out var document)) {
 				return document;
 			}
+			return null;
+		}
+
+		public static string GetFilePathOrNull (this ITextBuffer textBuffer)
+		{
+			if (textBuffer.Properties.TryGetProperty (typeof (Microsoft.VisualStudio.Text.ITextDocument), out Microsoft.VisualStudio.Text.ITextDocument textDocument)) {
+				return textDocument.FilePath;
+			}
+
 			return null;
 		}
 	}

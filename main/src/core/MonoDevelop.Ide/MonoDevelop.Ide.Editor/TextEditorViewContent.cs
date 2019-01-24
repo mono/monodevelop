@@ -50,6 +50,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.CodingConventions;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -290,6 +291,10 @@ namespace MonoDevelop.Ide.Editor
 
 			if (type == typeof(ITextBuffer)) {
 				yield return textEditor.TextView.TextBuffer;
+				yield break;
+			}
+			if (type == typeof (ITextView)) {
+				yield return textEditor.TextView;
 				yield break;
 			}
 

@@ -88,7 +88,7 @@ namespace MonoDevelop.TextEditor
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
-			TextView.Properties[GetType ()] = this;
+			TextView.Properties [typeof(ViewContent)] = this;
 			ContentName = fileName;
 
 			SubscribeToEvents ();

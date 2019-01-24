@@ -27,6 +27,8 @@ namespace MonoDevelop.TextEditor
 {
 	class WpfTextViewContent : TextViewContent<IWpfTextView, WpfTextViewImports>
 	{
+		IWpfTextViewHost wpfTextViewHost;
+
 		public WpfTextViewContent (WpfTextViewImports imports, Core.FilePath fileName, string mimeType, Projects.Project ownerProject)
 			: base (imports, fileName, mimeType, ownerProject)
 		{
@@ -37,7 +39,8 @@ namespace MonoDevelop.TextEditor
 
 		protected override Control CreateControl ()
 		{
-			var wpfControl = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl;
+			wpfTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
+			var wpfControl = p.HostControl;
 
 			Gtk.Widget widget = new RootWpfWidget (wpfControl) {
 				HeightRequest = 50,
@@ -68,5 +71,14 @@ namespace MonoDevelop.TextEditor
 
 		void HandleWpfLostKeyboardFocus (object sender, KeyboardFocusChangedEventArgs e)
 			=> Components.Commands.CommandManager.LastFocusedWpfElement = TextView.VisualElement;
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (wpfTextViewHost != null) {
+				wpfTextViewHost.Close ();
+				wpfTextViewHost = null;
+			}
+		}
 	}
 }

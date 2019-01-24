@@ -37,6 +37,7 @@
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextLogicUtil\TextLogicUtil.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\GlyphMargin\GlyphMarginImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj" Private="False" />

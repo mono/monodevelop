@@ -64,6 +64,8 @@ namespace MonoDevelop.TextEditor
 
 	class CocoaTextViewContent : TextViewContent<ICocoaTextView, CocoaTextViewImports>
 	{
+		ICocoaTextViewHost cocoaTextViewHost;
+
 		sealed class EmbeddedNSViewControl : Control
 		{
 			readonly NSView nsView;
@@ -88,12 +90,23 @@ namespace MonoDevelop.TextEditor
 
 		protected override Control CreateControl ()
 		{
-			var control = new EmbeddedNSViewControl (Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true).HostControl);
+			cocoaTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
+			var control = new EmbeddedNSViewControl (cocoaTextViewHost.HostControl);
 			control.GetNativeWidget<Gtk.Widget> ().CanFocus = true;
 			TextView.GotAggregateFocus += (sender, e) => {
 				control.GetNativeWidget<Gtk.Widget> ().GrabFocus ();
 			};
+			TextView.Properties.AddProperty (typeof (Gtk.Widget), control.GetNativeWidget<Gtk.Widget> ());
 			return control;
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (cocoaTextViewHost != null) {
+				cocoaTextViewHost.Close ();
+				cocoaTextViewHost = null;
+			}
 		}
 	}
 }

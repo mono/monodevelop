@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (tooltip == null)
 				return;
-			var debuggerSession = tooltip.tree.Frame?.DebuggerSession;
+			var debuggerSession = tooltip.Tree.Frame?.DebuggerSession;
 			if (debuggerSession == null || debuggerSession == sender) {
 				tooltip.Destroy ();
 				tooltip = null;
@@ -130,7 +130,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
-			var window = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue)item.Item, null);
+			var window = new DebugValueWindow ((Gtk.Window)(editor.GetNativeWidget<Gtk.Widget> ()).Toplevel, editor.FileName, editor.OffsetToLocation (offset).Line, DebuggingService.CurrentFrame, (ObjectValue)item.Item, null);
 			IdeApp.CommandService.RegisterTopWindow (window);
 			return window;
 		}

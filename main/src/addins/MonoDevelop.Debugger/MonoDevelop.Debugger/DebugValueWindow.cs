@@ -26,21 +26,17 @@
 //
 
 using System;
-using System.Linq;
 using Mono.Debugging.Client;
-using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Gtk;
-using Mono.TextEditor;
 using Gdk;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Debugger
 {
 	class DebugValueWindow : PopoverWindow
 	{
-		internal ObjectValueTreeView tree;
+		public ObjectValueTreeView Tree { get; }
 		ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
@@ -75,14 +71,14 @@ namespace MonoDevelop.SourceEditor
 			currentBgColor = bgColor;
 		}
 
-		public DebugValueWindow (TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
+		public DebugValueWindow (Gtk.Window transientFor, string pinnedWatchFileName, int pinnedWatchLine, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window) (editor.GetNativeWidget <Gtk.Widget> ()).Toplevel;
+			TransientFor = transientFor;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
 
@@ -91,33 +87,32 @@ namespace MonoDevelop.SourceEditor
 			sw.VscrollbarPolicy = PolicyType.Never;
 
 			UpdateTreeStyle (Theme.BackgroundColor);
-			tree = new ObjectValueTreeView ();
-			tree.Name = innerTreeName;
+			Tree = new ObjectValueTreeView ();
+			Tree.Name = innerTreeName;
 
-			sw.Add (tree);
+			sw.Add (Tree);
 			ContentBox.Add (sw);
 
-			tree.Frame = frame;
-			tree.CompactView = true;
-			tree.AllowAdding = false;
-			tree.AllowEditing = true;
-			tree.HeadersVisible = false;
-			tree.AllowPinning = true;
-			tree.RootPinAlwaysVisible = true;
-			tree.PinnedWatch = watch;
-			var location = editor.OffsetToLocation (offset);
-			tree.PinnedWatchLine = location.Line;
-			tree.PinnedWatchFile = editor.FileName;
+			Tree.Frame = frame;
+			Tree.CompactView = true;
+			Tree.AllowAdding = false;
+			Tree.AllowEditing = true;
+			Tree.HeadersVisible = false;
+			Tree.AllowPinning = true;
+			Tree.RootPinAlwaysVisible = true;
+			Tree.PinnedWatch = watch;
+			Tree.PinnedWatchLine = pinnedWatchLine;
+			Tree.PinnedWatchFile = pinnedWatchFileName;
 
-			tree.AddValue (value);
-			tree.Selection.UnselectAll ();
-			tree.SizeAllocated += OnTreeSizeChanged;
-			tree.PinStatusChanged += OnPinStatusChanged;
+			Tree.AddValue (value);
+			Tree.Selection.UnselectAll ();
+			Tree.SizeAllocated += OnTreeSizeChanged;
+			Tree.PinStatusChanged += OnPinStatusChanged;
 
 			sw.ShowAll ();
 
-			tree.StartEditing += OnStartEditing;
-			tree.EndEditing += OnEndEditing;
+			Tree.StartEditing += OnStartEditing;
+			Tree.EndEditing += OnEndEditing;
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
@@ -141,10 +136,10 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
-			tree.StartEditing -= OnStartEditing;
-			tree.EndEditing -= OnEndEditing;
-			tree.PinStatusChanged -= OnPinStatusChanged;
-			tree.SizeAllocated -= OnTreeSizeChanged;
+			Tree.StartEditing -= OnStartEditing;
+			Tree.EndEditing -= OnEndEditing;
+			Tree.PinStatusChanged -= OnPinStatusChanged;
+			Tree.SizeAllocated -= OnTreeSizeChanged;
 			PreviewWindowManager.WindowClosed -= PreviewWindowManager_WindowClosed;
 
 			base.OnDestroyed ();
