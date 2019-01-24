@@ -338,5 +338,8 @@
     <Folder Include="MonoDevelop.Debugger.VSTextView\Tags\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\QuickInfo\" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

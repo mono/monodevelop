@@ -34,7 +34,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
-	public class DebugValueWindow : PopoverWindow
+	class DebugValueWindow : PopoverWindow
 	{
 		public ObjectValueTreeView Tree { get; }
 		ScrolledWindow sw;
