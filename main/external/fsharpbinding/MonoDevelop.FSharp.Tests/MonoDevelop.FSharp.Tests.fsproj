@@ -18,6 +18,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(MSBuildProjectDirectory)\..\..\..\build\bin\mdtool</StartProgram>
     <StartArguments>run-md-tests $(MSBuildProjectDirectory)\bin\Debug\MonoDevelop.FSharp.Tests.dll</StartArguments>
+    <StartArguments>run-md-tests $(MSBuildProjectDirectory)\..\..\..\build\tests\MonoDevelop.FSharp.Tests.dll</StartArguments>
+    <EnablePrivateAssetsLocalCopyWorkaround>false</EnablePrivateAssetsLocalCopyWorkaround>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

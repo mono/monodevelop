@@ -26,7 +26,7 @@ let mdtool args =
   result |> ignore
 
 let test() =
-  mdtool ("run-md-tests ../../external/fsharpbinding/MonoDevelop.FSharp.Tests/bin/" + config + "/MonoDevelop.FSharp.Tests.dll -labels")
+  mdtool ("run-md-tests ../../build/tests/MonoDevelop.FSharp.Tests.dll -labels")
 
 Target "Pack" (fun _ ->
   let dir = "pack/" + config
