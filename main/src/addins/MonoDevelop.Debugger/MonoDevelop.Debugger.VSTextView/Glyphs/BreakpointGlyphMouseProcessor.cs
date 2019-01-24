@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if MAC
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
@@ -19,31 +20,31 @@ namespace MonoDevelop.Debugger
 {
 	public class BreakpointGlyphMouseProcessor : CocoaMouseProcessorBase
 	{
-		private readonly ICocoaTextViewHost textViewHost;
-		private ITagAggregator<IGlyphTag> glyphTagAggregator;
-		private readonly ICocoaTextViewMargin glyphMargin;
-		private readonly IViewPrimitives viewPrimitives;
-		private IActiveGlyphDropHandler activeGlyphDropHandler;
+		readonly ICocoaTextViewHost textViewHost;
+		ITagAggregator<IGlyphTag> glyphTagAggregator;
+		readonly ICocoaTextViewMargin glyphMargin;
+		readonly IViewPrimitives viewPrimitives;
+		IActiveGlyphDropHandler activeGlyphDropHandler;
 
 		// Tooltip
 		//private readonly Popup popup;
 
 		// Hover members
-		private DispatcherTimer mouseHoverTimer = null;
-		private ITextViewLine lastHoverPosition;
-		private ITextViewLine currentlyHoveringLine;
+		DispatcherTimer mouseHoverTimer = null;
+		ITextViewLine lastHoverPosition;
+		ITextViewLine currentlyHoveringLine;
 
 		// Drag/drop members
-		private CGPoint clickLocation;
+		CGPoint clickLocation;
 		internal bool LastLeftButtonWasDoubleClick = true;  // internal for unit testing
-		private bool dragOccurred = false;
+		bool dragOccurred = false;
 
 		// Constants for scrolling tolerance (borrowed from \platform\text\dragdrop\DragDropMouseProcessor.cs).
-		private const double VerticalScrollTolerance = 15;
-		private const double HorizontalScrollTolerance = 15;
+		const double VerticalScrollTolerance = 15;
+		const double HorizontalScrollTolerance = 15;
 
 		// Delay before tooltips display
-		private const int ToolTipDelayMilliseconds = 150;
+		const int ToolTipDelayMilliseconds = 150;
 
 		public BreakpointGlyphMouseProcessor (
 			ICocoaTextViewHost wpfTextViewHost,
@@ -224,15 +225,15 @@ namespace MonoDevelop.Debugger
 				dragOccurred = true;
 			}
 
-			Tuple<int, int> lineAndColumn = GetLineNumberAndColumn (viewPoint);
+			var (line, column) = GetLineNumberAndColumn (viewPoint);
 
 			// If this line isn't in the data (surface) buffer, we can't use it
-			if (lineAndColumn.Item1 < 0) {
+			if (line < 0) {
 				return false;
 			}
 
 			// Query if we can drop here and set mouse cursor appropriately.
-			if (activeGlyphDropHandler.CanDrop (lineAndColumn.Item1, lineAndColumn.Item2)) {
+			if (activeGlyphDropHandler.CanDrop (line, column)) {
 				// We can drop here.  Use "hand" cursor.
 				//TODO:MAC
 				//Mouse.OverrideCursor = Cursors.Hand;
@@ -256,7 +257,7 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		private void EnsureCaretVisibleWithPadding ()
+		void EnsureCaretVisibleWithPadding ()
 		{
 			// ensure caret is visible with a little padding to all sides.
 			ITextViewLine caretLine = viewPrimitives.Caret.AdvancedCaret.ContainingTextViewLine;
@@ -266,8 +267,10 @@ namespace MonoDevelop.Debugger
 			double topSpace = caretLine.Top - (textViewHost.TextView.ViewportTop + VerticalScrollTolerance);
 			double bottomSpace = (textViewHost.TextView.ViewportBottom - VerticalScrollTolerance) - caretLine.Bottom;
 
-			if ((topSpace < 0.0) != (bottomSpace < 0.0)) {
-				if (topSpace < 0.0) {
+			var outsideTop = topSpace < 0.0;
+			var outsideBottom = bottomSpace < 0.0;
+			if (outsideTop != outsideBottom) {
+				if (outsideTop) {
 					textViewHost.TextView.DisplayTextLineContainingBufferPosition (caretLine.Start, Math.Min (VerticalScrollTolerance, padding), ViewRelativePosition.Top);
 				} else {
 					textViewHost.TextView.DisplayTextLineContainingBufferPosition (caretLine.Start, Math.Min (VerticalScrollTolerance, padding), ViewRelativePosition.Bottom);
@@ -278,8 +281,10 @@ namespace MonoDevelop.Debugger
 			double leftSpace = viewPrimitives.Caret.AdvancedCaret.Left - (textViewHost.TextView.ViewportLeft + HorizontalScrollTolerance);
 			double rightSpace = (textViewHost.TextView.ViewportRight - HorizontalScrollTolerance) - viewPrimitives.Caret.AdvancedCaret.Right;
 
-			if ((leftSpace < 0.0) != (rightSpace < 0.0)) {
-				if (leftSpace < 0.0) {
+			var outsideLeft = leftSpace < 0.0;
+			var outsideRight = rightSpace < 0.0;
+			if (outsideLeft != outsideRight) {
+				if (outsideLeft) {
 					textViewHost.TextView.ViewportLeft = viewPrimitives.Caret.AdvancedCaret.Left - Math.Min (HorizontalScrollTolerance, rightSpace);
 				} else {
 					textViewHost.TextView.ViewportLeft = (viewPrimitives.Caret.AdvancedCaret.Right + Math.Min (HorizontalScrollTolerance, leftSpace)) - textViewHost.TextView.ViewportWidth;
@@ -304,16 +309,16 @@ namespace MonoDevelop.Debugger
 			dragOccurred = false;
 
 			if (glyphDropHandler != null) {
-				Tuple<int, int> lineAndColumn = GetLineNumberAndColumn (viewPoint);
+				var (line, column) = GetLineNumberAndColumn (viewPoint);
 
 				// If this line isn't in the data (surface) buffer, we can't use it
-				if (lineAndColumn.Item1 < 0) {
+				if (line < 0) {
 					return false;
 				}
 
 				// Query if we can drop here.
-				if (glyphDropHandler.CanDrop (lineAndColumn.Item1, lineAndColumn.Item2)) {
-					glyphDropHandler.DropAtLocation (lineAndColumn.Item1, lineAndColumn.Item2);
+				if (glyphDropHandler.CanDrop (line, column)) {
+					glyphDropHandler.DropAtLocation (line, column);
 				}
 			}
 
@@ -321,7 +326,7 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		private bool HandleMarkerClick (MouseEvent e)
+		bool HandleMarkerClick (MouseEvent e)
 		{
 			// Raise MarkerCommandValues.mcvGlyphSingleClickCommand
 			if (ExecuteMarkerCommand (glyphMargin.VisualElement.ConvertPointFromView (e.Event.LocationInWindow, null),
@@ -331,15 +336,15 @@ namespace MonoDevelop.Debugger
 
 			// Also, make sure that this point in the margin maps to a line/column in the correct buffer.  In
 			// certain projection scenarios, this span may not be in the data buffer.
-			Tuple<int, int> lineCol = GetLineNumberAndColumn (GetMouseLocationInTextView (e));
-			if (lineCol.Item1 < 0) {
+			var (line, column) = GetLineNumberAndColumn (GetMouseLocationInTextView (e));
+			if (line < 0) {
 				return false;
 			}
 
-			return ToggleBreakpoint (lineCol.Item1, lineCol.Item2);
+			return ToggleBreakpoint (line, column);
 		}
 
-		private bool ToggleBreakpoint (int line, int column)
+		bool ToggleBreakpoint (int line, int column)
 		{
 			var buffer = textViewHost.TextView.TextBuffer;
 			var path = buffer.GetFilePathOrNull ();
@@ -353,7 +358,7 @@ namespace MonoDevelop.Debugger
 
 		#region Private Helpers
 
-		private CGPoint GetMouseLocationInTextView (MouseEvent e)
+		CGPoint GetMouseLocationInTextView (MouseEvent e)
 		{
 			ICocoaTextView textView = textViewHost.TextView;
 			var pt = textView.VisualElement.ConvertPointFromView (e.Event.LocationInWindow, null);
@@ -363,7 +368,7 @@ namespace MonoDevelop.Debugger
 			return pt;
 		}
 
-		private ITextViewLine GetTextViewLine (double y)
+		ITextViewLine GetTextViewLine (double y)
 		{
 			ICocoaTextView textView = textViewHost.TextView;
 
@@ -378,7 +383,7 @@ namespace MonoDevelop.Debugger
 			return textViewLine;
 		}
 
-		private static SnapshotPoint GetBufferPosition (ITextViewLine textViewLine, double x)
+		static SnapshotPoint GetBufferPosition (ITextViewLine textViewLine, double x)
 		{
 			SnapshotPoint? bufferPosition = textViewLine.GetBufferPositionFromXCoordinate (x);
 			if (!bufferPosition.HasValue) {
@@ -388,7 +393,7 @@ namespace MonoDevelop.Debugger
 			return bufferPosition.Value;
 		}
 
-		private Tuple<int, int> GetLineNumberAndColumn (CGPoint viewPoint)
+		(int line, int column) GetLineNumberAndColumn (CGPoint viewPoint)
 		{
 			int line = 0;
 			int col = 0;
@@ -402,7 +407,7 @@ namespace MonoDevelop.Debugger
 				// If this point doesn't map into the data buffer at all, then return line
 				// number of -1 to indicate failure
 				if (dataSpans.Count == 0) {
-					return Tuple.Create (-1, -1);
+					return (-1, -1);
 				}
 
 				line = dataSpans [0].Start.GetContainingLine ().LineNumber;
@@ -412,7 +417,7 @@ namespace MonoDevelop.Debugger
 			int bufferPosition = GetBufferPosition (textViewLine, viewPoint.X);
 			col = bufferPosition - textViewLine.Start;
 
-			return Tuple.Create (line, col);
+			return (line, col);
 		}
 
 		// Internal for unit testing
@@ -444,7 +449,7 @@ namespace MonoDevelop.Debugger
 			return commandHandled;
 		}
 
-		private void EnableToolTips ()
+		void EnableToolTips ()
 		{
 			if (mouseHoverTimer == null) {
 				mouseHoverTimer = new DispatcherTimer (
@@ -457,7 +462,7 @@ namespace MonoDevelop.Debugger
 			mouseHoverTimer.Start ();
 		}
 
-		private void DisableToolTips ()
+		void DisableToolTips ()
 		{
 			if (mouseHoverTimer != null) {
 				mouseHoverTimer.Stop ();
@@ -467,7 +472,7 @@ namespace MonoDevelop.Debugger
 			lastHoverPosition = null;
 		}
 
-		private void OnHoverTimer (object sender, EventArgs e)
+		void OnHoverTimer (object sender, EventArgs e)
 		{
 			// It's possible the view was closed before our timer triggered, in which case
 			// _glyphMargin is disposed and we can't touch it.
@@ -535,7 +540,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		private void HideTooltip ()
+		void HideTooltip ()
 		{
 			//TODO:MAC
 			//popup.Child = null;
@@ -544,7 +549,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		// helper method to get the text marker tags starting on a line.
-		private IEnumerable<IInteractiveGlyph> GetTextMarkerGlyphTagsStartingOnLine (ITextViewLine textViewLine)
+		IEnumerable<IInteractiveGlyph> GetTextMarkerGlyphTagsStartingOnLine (ITextViewLine textViewLine)
 		{
 			var visualBuffer = textViewHost.TextView.TextViewModel.VisualBuffer;
 			var editBuffer = textViewHost.TextView.TextBuffer;
@@ -581,3 +586,4 @@ namespace MonoDevelop.Debugger
 		#endregion
 	}
 }
+#endif

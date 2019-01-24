@@ -1,10 +1,8 @@
-﻿using AppKit;
-
-namespace MonoDevelop.Debugger
+﻿namespace MonoDevelop.Debugger
 {
 	public interface IInteractiveGlyph
 	{
-		NSCursor HoverCursor { get; }
+		object HoverCursor { get; }
 		IActiveGlyphDropHandler DropHandler { get; }
 		bool IsEnabled { get; }
 		bool ExecuteCommand (GlyphCommandType markerCommand);

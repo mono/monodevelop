@@ -34,7 +34,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		{
 			if (window == null)
 				return;
-			var debuggerSession = window.tree.Frame?.DebuggerSession;
+			var debuggerSession = window.Tree.Frame?.DebuggerSession;
 			if (debuggerSession == null || debuggerSession == sender) {
 				window.Destroy ();
 				window = null;
@@ -43,6 +43,8 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 		public void Dispose ()
 		{
+			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
+			DebuggingService.StoppedEvent -= TargetProcessExited;
 			if (window != null)
 				Runtime.RunInMainThread (() => {
 					window?.Destroy ();
@@ -68,8 +70,8 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			var point = triggerPoint.GetPoint (snapshot);
 
 			foreach (var debugInfoProvider in provider.debugInfoProviders) {
-				var debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (point);
-				if (debugInfo == null || debugInfo.Text == null) {
+				var debugInfo = await debugInfoProvider.Value.GetDebugInfoAsync (point, cancellationToken);
+				if (debugInfo.Text == null) {
 					continue;
 				}
 
@@ -97,10 +99,14 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
 				Ide.IdeApp.CommandService.RegisterTopWindow (window);
 				var bounds = view.TextViewLines.GetCharacterBounds (point);
+#if MAC
 				var cocoaView = ((ICocoaTextView)view);
 				var cgPoint = cocoaView.VisualElement.ConvertPointToView (new CoreGraphics.CGPoint (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop), cocoaView.VisualElement.Superview);
 				cgPoint.Y = cocoaView.VisualElement.Superview.Frame.Height - cgPoint.Y;
 				window.ShowPopup (gtkParent, new Gdk.Rectangle ((int)cgPoint.X, (int)cgPoint.Y, (int)bounds.Width, (int)bounds.Height), Components.PopupPosition.TopLeft);
+#else
+				throw new NotImplementedException ();
+#endif
 				return null;
 			}
 			return null;

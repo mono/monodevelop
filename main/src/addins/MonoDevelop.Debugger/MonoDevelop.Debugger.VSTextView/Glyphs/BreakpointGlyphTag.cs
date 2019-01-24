@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using AppKit;
 using Microsoft.VisualStudio.Text.Editor;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger;
@@ -53,7 +52,7 @@ namespace MonoDevelop.Debugger
 			this.breakpoint = breakpoint;
 		}
 
-		public NSCursor HoverCursor {
+		public object HoverCursor {
 			get {
 				return null;
 			}

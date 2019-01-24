@@ -39,6 +39,7 @@ using System.IO;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Commands;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Debugger
 {

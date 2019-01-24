@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (tooltip == null)
 				return;
-			var debuggerSession = tooltip.tree.Frame?.DebuggerSession;
+			var debuggerSession = tooltip.Tree.Frame?.DebuggerSession;
 			if (debuggerSession == null || debuggerSession == sender) {
 				tooltip.Destroy ();
 				tooltip = null;

@@ -90,8 +90,8 @@ namespace MonoDevelop.TextEditor
 
 		protected override Control CreateControl ()
 		{
-            cocoaTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost(TextView, setFocus: true);
-            var control = new EmbeddedNSViewControl (cocoaTextViewHost.HostControl);
+			cocoaTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
+			var control = new EmbeddedNSViewControl (cocoaTextViewHost.HostControl);
 			control.GetNativeWidget<Gtk.Widget> ().CanFocus = true;
 			TextView.GotAggregateFocus += (sender, e) => {
 				control.GetNativeWidget<Gtk.Widget> ().GrabFocus ();
@@ -103,11 +103,10 @@ namespace MonoDevelop.TextEditor
 		public override void Dispose ()
 		{
 			base.Dispose ();
-            if (cocoaTextViewHost != null)
-            {
-                cocoaTextViewHost.Close();
+			if (cocoaTextViewHost != null) {
+				cocoaTextViewHost.Close ();
 				cocoaTextViewHost = null;
 			}
-        }
+		}
 	}
 }

@@ -14,13 +14,13 @@ namespace MonoDevelop.CSharp.Debugger
 	[Export (typeof (IDebugInfoProvider))]
 	public class RoslynDebugInfoProvider : IDebugInfoProvider
 	{
-		public async Task<DataTipInfo> GetDebugInfoAsync (SnapshotPoint snapshotPoint)
+		public async Task<DataTipInfo> GetDebugInfoAsync (SnapshotPoint snapshotPoint, CancellationToken cancellationToken)
 		{
 			var document = snapshotPoint.Snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
 			if (document != null) {
 				var debugInfoService = document.Project.LanguageServices.GetService<ILanguageDebugInfoService> ();
 				if (debugInfoService != null) {
-					var debugInfo = await debugInfoService.GetDataTipInfoAsync (document, snapshotPoint.Position, CancellationToken.None);
+					var debugInfo = await debugInfoService.GetDataTipInfoAsync (document, snapshotPoint.Position, cancellationToken).ConfigureAwait (false);
 					if (!debugInfo.IsDefault) {
 						var span = debugInfo.Span;
 						return new DataTipInfo (
@@ -30,7 +30,7 @@ namespace MonoDevelop.CSharp.Debugger
 				}
 			}
 
-			return null;
+			return default(DataTipInfo);
 		}
 	}
 }

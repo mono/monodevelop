@@ -13,9 +13,13 @@ namespace MonoDevelop.Debugger
 	[TagType (typeof (BreakpointGlyphTag))]
 	internal class BreakpointGlyphFactoryProvider : IGlyphFactoryProvider
 	{
+		[Import]
+		private IImageService imageService = null;
+		private readonly ImageId imageId = new ImageId (new System.Guid ("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), 324);
+
 		public IGlyphFactory GetGlyphFactory (ICocoaTextView view, ICocoaTextViewMargin margin)
 		{
-			return new ImageSourceGlyphFactory<BreakpointGlyphTag> ("md-breakpoint");
+			return new ImageSourceGlyphFactory<BreakpointGlyphTag> (imageId, imageService);
 		}
 	}
 
@@ -25,9 +29,13 @@ namespace MonoDevelop.Debugger
 	[TagType (typeof (BreakpointDisabledGlyphTag))]
 	internal class BreakpointDisabledGlyphFactoryProvider : IGlyphFactoryProvider
 	{
+		[Import]
+		private IImageService imageService = null;
+		private readonly ImageId imageId = new ImageId (new System.Guid ("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), 323);
+
 		public IGlyphFactory GetGlyphFactory (ICocoaTextView view, ICocoaTextViewMargin margin)
 		{
-			return new ImageSourceGlyphFactory<BreakpointDisabledGlyphTag> ("md-breakpoint-disabled");
+			return new ImageSourceGlyphFactory<BreakpointDisabledGlyphTag> (imageId, imageService);
 		}
 	}
 
@@ -37,9 +45,13 @@ namespace MonoDevelop.Debugger
 	[TagType (typeof (BreakpointInvalidGlyphTag))]
 	internal class BreakpointInvalidGlyphFactoryProvider : IGlyphFactoryProvider
 	{
+		[Import]
+		private IImageService imageService = null;
+		private readonly ImageId imageId = new ImageId (new System.Guid ("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), 327);
+
 		public IGlyphFactory GetGlyphFactory (ICocoaTextView view, ICocoaTextViewMargin margin)
 		{
-			return new ImageSourceGlyphFactory<BreakpointInvalidGlyphTag> ("md-breakpoint-invalid");
+			return new ImageSourceGlyphFactory<BreakpointInvalidGlyphTag> (imageId, imageService);
 		}
 	}
 
@@ -49,9 +61,13 @@ namespace MonoDevelop.Debugger
 	[TagType (typeof (TracepointGlyphTag))]
 	internal class TracepointGlyphFactoryProvider : IGlyphFactoryProvider
 	{
+		[Import]
+		private IImageService imageService = null;
+		private readonly ImageId imageId = new ImageId (new System.Guid ("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), 3175);
+
 		public IGlyphFactory GetGlyphFactory (ICocoaTextView view, ICocoaTextViewMargin margin)
 		{
-			return new ImageSourceGlyphFactory<TracepointGlyphTag> ("md-gutter-tracepoint");
+			return new ImageSourceGlyphFactory<TracepointGlyphTag> (imageId, imageService);
 		}
 	}
 
@@ -61,9 +77,13 @@ namespace MonoDevelop.Debugger
 	[TagType (typeof (TracepointDisabledGlyphTag))]
 	internal class TracepointDisabledGlyphFactoryProvider : IGlyphFactoryProvider
 	{
+		[Import]
+		private IImageService imageService = null;
+		private readonly ImageId imageId = new ImageId (new System.Guid ("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), 3174);
+
 		public IGlyphFactory GetGlyphFactory (ICocoaTextView view, ICocoaTextViewMargin margin)
 		{
-			return new ImageSourceGlyphFactory<TracepointDisabledGlyphTag> ("md-gutter-tracepoint-disabled");
+			return new ImageSourceGlyphFactory<TracepointDisabledGlyphTag> (imageId, imageService);
 		}
 	}
 
@@ -73,9 +93,13 @@ namespace MonoDevelop.Debugger
 	[TagType (typeof (TracepointInvalidGlyphTag))]
 	internal class TracepointInvalidGlyphFactoryProvider : IGlyphFactoryProvider
 	{
+		[Import]
+		private IImageService imageService = null;
+		private readonly ImageId imageId = new ImageId (new System.Guid ("{ae27a6b0-e345-4288-96df-5eaf394ee369}"), 3178);
+
 		public IGlyphFactory GetGlyphFactory (ICocoaTextView view, ICocoaTextViewMargin margin)
 		{
-			return new ImageSourceGlyphFactory<TracepointInvalidGlyphTag> ("md-gutter-tracepoint-invalid");
+			return new ImageSourceGlyphFactory<TracepointInvalidGlyphTag> (imageId, imageService);
 		}
 	}
 }

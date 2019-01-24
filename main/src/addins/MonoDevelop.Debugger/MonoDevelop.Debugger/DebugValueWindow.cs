@@ -36,7 +36,7 @@ namespace MonoDevelop.Debugger
 {
 	public class DebugValueWindow : PopoverWindow
 	{
-		public ObjectValueTreeView tree;
+		public ObjectValueTreeView Tree { get; }
 		ScrolledWindow sw;
 
 		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
@@ -87,32 +87,32 @@ namespace MonoDevelop.Debugger
 			sw.VscrollbarPolicy = PolicyType.Never;
 
 			UpdateTreeStyle (Theme.BackgroundColor);
-			tree = new ObjectValueTreeView ();
-			tree.Name = innerTreeName;
+			Tree = new ObjectValueTreeView ();
+			Tree.Name = innerTreeName;
 
-			sw.Add (tree);
+			sw.Add (Tree);
 			ContentBox.Add (sw);
 
-			tree.Frame = frame;
-			tree.CompactView = true;
-			tree.AllowAdding = false;
-			tree.AllowEditing = true;
-			tree.HeadersVisible = false;
-			tree.AllowPinning = true;
-			tree.RootPinAlwaysVisible = true;
-			tree.PinnedWatch = watch;
-			tree.PinnedWatchLine = pinnedWatchLine;
-			tree.PinnedWatchFile = pinnedWatchFileName;
+			Tree.Frame = frame;
+			Tree.CompactView = true;
+			Tree.AllowAdding = false;
+			Tree.AllowEditing = true;
+			Tree.HeadersVisible = false;
+			Tree.AllowPinning = true;
+			Tree.RootPinAlwaysVisible = true;
+			Tree.PinnedWatch = watch;
+			Tree.PinnedWatchLine = pinnedWatchLine;
+			Tree.PinnedWatchFile = pinnedWatchFileName;
 
-			tree.AddValue (value);
-			tree.Selection.UnselectAll ();
-			tree.SizeAllocated += OnTreeSizeChanged;
-			tree.PinStatusChanged += OnPinStatusChanged;
+			Tree.AddValue (value);
+			Tree.Selection.UnselectAll ();
+			Tree.SizeAllocated += OnTreeSizeChanged;
+			Tree.PinStatusChanged += OnPinStatusChanged;
 
 			sw.ShowAll ();
 
-			tree.StartEditing += OnStartEditing;
-			tree.EndEditing += OnEndEditing;
+			Tree.StartEditing += OnStartEditing;
+			Tree.EndEditing += OnEndEditing;
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
@@ -136,10 +136,10 @@ namespace MonoDevelop.Debugger
 
 		protected override void OnDestroyed ()
 		{
-			tree.StartEditing -= OnStartEditing;
-			tree.EndEditing -= OnEndEditing;
-			tree.PinStatusChanged -= OnPinStatusChanged;
-			tree.SizeAllocated -= OnTreeSizeChanged;
+			Tree.StartEditing -= OnStartEditing;
+			Tree.EndEditing -= OnEndEditing;
+			Tree.PinStatusChanged -= OnPinStatusChanged;
+			Tree.SizeAllocated -= OnTreeSizeChanged;
 			PreviewWindowManager.WindowClosed -= PreviewWindowManager_WindowClosed;
 
 			base.OnDestroyed ();

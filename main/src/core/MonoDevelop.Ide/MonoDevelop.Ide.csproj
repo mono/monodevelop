@@ -4185,7 +4185,6 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\VisualStudioMefHostServices.cs" />
     <Compile Include="RoslynOutliningWorkaround\RoslynClassificationFormatDefinitions.cs" />
-    <Compile Include="MonoDevelop.Ide\TextViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs">

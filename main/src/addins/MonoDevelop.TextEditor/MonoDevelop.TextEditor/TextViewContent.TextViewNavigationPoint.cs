@@ -33,7 +33,10 @@ namespace MonoDevelop.TextEditor
 	{
 		public NavigationPoint BuildNavigationPoint ()
 		{
-			return new TextViewNavigationPoint (TextView.TryGetParentDocument(), TextView);
+			var document = TextView.TryGetParentDocument ();
+			if (document == null)
+				return null;
+			return new TextViewNavigationPoint (document, TextView);
 		}
 
 		void TryLogNavPoint (bool transient)

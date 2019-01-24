@@ -19,7 +19,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="Xamarin.Mac">
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -159,6 +159,7 @@
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSource.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\IDebugInfoProvider.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugValueWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml" />

@@ -39,8 +39,8 @@ namespace MonoDevelop.TextEditor
 
 		protected override Control CreateControl ()
 		{
-            wpfTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost(TextView, setFocus: true);
-            var wpfControl = p.HostControl;
+			wpfTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
+			var wpfControl = p.HostControl;
 
 			Gtk.Widget widget = new RootWpfWidget (wpfControl) {
 				HeightRequest = 50,
