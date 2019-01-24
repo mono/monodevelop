@@ -20,8 +20,7 @@
 // THE SOFTWARE.
 
 using System;
-	
-using Microsoft.VisualStudio.Commanding;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
@@ -35,25 +34,73 @@ namespace MonoDevelop.TextEditor
 {
 	partial class TextViewContent<TView, TImports>
 	{
-		void UpdateCommand (CommandState commandState, CommandInfo commandInfo)
+		Dictionary<object, Func<ITextView, ITextBuffer, EditorCommandArgs>> commandMaps = new Dictionary<object, Func<ITextView, ITextBuffer, EditorCommandArgs>> {
+			{ CommandManager.ToCommandId (EditCommands.Copy), (v, b) => new CopyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.Cut), (v, b) => new CutCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.Paste), (v, b) => new PasteCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.Rename), (v, b) => new RenameCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.Undo), (v, b) => new UndoCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.Redo), (v, b) => new RedoCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.SelectAll), (v, b) => new SelectAllCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.AddCodeComment), (v, b) => new CommentSelectionCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.RemoveCodeComment), (v, b) => new UncommentSelectionCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (EditCommands.DeleteKey), (v, b) => new BackspaceKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (RefactoryCommands.GotoDeclaration), (v, b) => new GoToDefinitionCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (RefactoryCommands.FindReferences), (v, b) => new FindReferencesCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (RefactoryCommands.FindAllReferences), (v, b) => new FindReferencesCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.ShowCompletionWindow), (v, b) => new InvokeCompletionListCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.LineEnd), (v, b) => new LineEndCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.LineStart), (v, b) => new LineStartCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.CharLeft), (v, b) => new LeftKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.CharRight), (v, b) => new RightKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.LineUp), (v, b) => new UpKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.LineDown), (v, b) => new DownKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.PageUp), (v, b) => new PageUpKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.PageDown), (v, b) => new PageDownKeyCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.DocumentStart), (v, b) => new DocumentStartCommandArgs (v, b) },
+			{ CommandManager.ToCommandId (TextEditorCommands.DocumentEnd), (v, b) => new DocumentEndCommandArgs (v, b) },
+		};
+
+		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
 		{
-			commandInfo.Enabled = commandState.IsAvailable;
-			commandInfo.Visible = !commandState.IsUnspecified;
-			commandInfo.Checked = commandState.IsChecked;
+			if (commandMaps.ContainsKey (commandId)) {
+				return this;
+			}
+			return null;
 		}
 
-		CommandState UpdateCommand<T> (CommandInfo commandInfo, Func<ITextView, ITextBuffer, T> factory) where T : EditorCommandArgs
+		ICommandUpdater ICustomCommandTarget.GetCommandUpdater (object commandId)
 		{
-			Console.WriteLine ("Update command: {0} -> {1}", commandInfo.Command.Id, typeof (T));
-			var commandState = commandService.GetCommandState (factory, null);
-			UpdateCommand (commandState, commandInfo);
-			return commandState;
+			if (commandMaps.ContainsKey (commandId)) {
+				return this;
+			}
+			return null;
 		}
 
-		void ExecCommand<T> (Func<ITextView, ITextBuffer, T> factory) where T : EditorCommandArgs
+		void ICommandHandler.Run (object cmdTarget, Command cmd)
 		{
-			Console.WriteLine ("Exec command: {0} -> {1}", Ide.IdeApp.CommandService.CurrentCommand.Id, typeof (T));
+			var factory = commandMaps[cmd.Id];
 			commandService.Execute (factory, null);
+		}
+
+		void ICommandHandler.Run (object cmdTarget, Command cmd, object dataItem)
+		{
+			throw new InvalidOperationException ("Array commands cannot be mapped to editor commands");
+		}
+
+		void ICommandUpdater.Run (object cmdTarget, CommandInfo info)
+		{
+			var factory = commandMaps[info.Command.Id];
+			var commandState = commandService.GetCommandState (factory, null);
+
+			info.Enabled = commandState.IsAvailable;
+			info.Visible = !commandState.IsUnspecified;
+			info.Checked = commandState.IsChecked;
+		}
+
+		void ICommandUpdater.Run (object cmdTarget, CommandArrayInfo info)
+		{
+			throw new InvalidOperationException ("Array commands cannot be mapped to editor commands");
 		}
 
 		// Missing EditCommands:
@@ -158,31 +205,6 @@ namespace MonoDevelop.TextEditor
 		//   ImportSymbol
 		//   QuickFix
 		//   QuickFixMenu
-
-		//FIXME these should move to the Refactoring extension
-		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]
-		void UpdateGotoDeclarationCommand (CommandInfo info)
- 			 => UpdateCommand (info, (textView, textBuffer) => new GoToDefinitionCommandArgs (textView, textBuffer));
-
-		[CommandHandler (RefactoryCommands.GotoDeclaration)]
-		void ExecGotoDeclarationCommand ()
-			 => ExecCommand ((textView, textBuffer) => new GoToDefinitionCommandArgs (textView, textBuffer));
-
-		[CommandUpdateHandler (RefactoryCommands.FindReferences)]
-		void UpdateFindReferencesCommand (CommandInfo info)
-			 => UpdateCommand (info, (textView, textBuffer) => new FindReferencesCommandArgs (textView, textBuffer));
-
-		[CommandHandler (RefactoryCommands.FindReferences)]
-		void ExecFindReferencesCommand ()
-			 => ExecCommand ((textView, textBuffer) => new FindReferencesCommandArgs (textView, textBuffer));
-
-		[CommandUpdateHandler (RefactoryCommands.FindAllReferences)]
-		void UpdateFindAllReferencesCommand (CommandInfo info)
-			 => UpdateCommand (info, (textView, textBuffer) => new FindReferencesCommandArgs (textView, textBuffer));
-
-		[CommandHandler (RefactoryCommands.FindAllReferences)]
-		void ExecFindAllReferencesCommand ()
-			 => ExecCommand ((textView, textBuffer) => new FindReferencesCommandArgs (textView, textBuffer));
 
 		// Missing TextEditorCommands
 		//   ShowCodeTemplateWindow
