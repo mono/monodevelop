@@ -8,6 +8,11 @@
 			<Description>Type of the file being edited.</Description>
 		</ConditionType>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/TextEditor/CommandMapping" name = "Maps MonoDevelop commands to Visual Studio EditorCommandArgs types">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNode name="Map" type="MonoDevelop.TextEditor.CommandMappingExtensionNode" />
+	</ExtensionPoint>
 <!--
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/NavigationBar" name = "Navigation bar context menu">
 		<Description>Context menu for the navigation bar.</Description>
@@ -45,6 +50,33 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		-->
 		<Assembly file="MonoDevelop.TextEditor.dll"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Copy" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CopyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Cut" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CutCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Paste" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PasteCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Rename" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RenameCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Undo" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UndoCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Redo" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RedoCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.SelectAll" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SelectAllCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommentSelectionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UncommentSelectionCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToDefinitionCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LineEndCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LineStartCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LeftKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.RightKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UpKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DownKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.PageUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PageUpKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PageDownKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentStartCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentEndCommandArgs" />
 	</Extension>
 
 	<!--

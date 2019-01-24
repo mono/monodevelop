@@ -20,50 +20,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.Commanding;
-using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
-
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.TextEditor
 {
+
 	partial class TextViewContent<TView, TImports>
 	{
-		Dictionary<object, Func<ITextView, ITextBuffer, EditorCommandArgs>> commandMaps = new Dictionary<object, Func<ITextView, ITextBuffer, EditorCommandArgs>> {
-			{ CommandManager.ToCommandId (EditCommands.Copy), (v, b) => new CopyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.Cut), (v, b) => new CutCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.Paste), (v, b) => new PasteCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.Rename), (v, b) => new RenameCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.Undo), (v, b) => new UndoCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.Redo), (v, b) => new RedoCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.SelectAll), (v, b) => new SelectAllCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.AddCodeComment), (v, b) => new CommentSelectionCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.RemoveCodeComment), (v, b) => new UncommentSelectionCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (EditCommands.DeleteKey), (v, b) => new BackspaceKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (RefactoryCommands.GotoDeclaration), (v, b) => new GoToDefinitionCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (RefactoryCommands.FindReferences), (v, b) => new FindReferencesCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (RefactoryCommands.FindAllReferences), (v, b) => new FindReferencesCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.ShowCompletionWindow), (v, b) => new InvokeCompletionListCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.LineEnd), (v, b) => new LineEndCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.LineStart), (v, b) => new LineStartCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.CharLeft), (v, b) => new LeftKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.CharRight), (v, b) => new RightKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.LineUp), (v, b) => new UpKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.LineDown), (v, b) => new DownKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.PageUp), (v, b) => new PageUpKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.PageDown), (v, b) => new PageDownKeyCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.DocumentStart), (v, b) => new DocumentStartCommandArgs (v, b) },
-			{ CommandManager.ToCommandId (TextEditorCommands.DocumentEnd), (v, b) => new DocumentEndCommandArgs (v, b) },
-		};
-
 		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
 		{
-			if (commandMaps.ContainsKey (commandId)) {
+			if (CommandMappings.Instance.HasMapping (commandId)) {
 				return this;
 			}
 			return null;
@@ -71,7 +37,7 @@ namespace MonoDevelop.TextEditor
 
 		ICommandUpdater ICustomCommandTarget.GetCommandUpdater (object commandId)
 		{
-			if (commandMaps.ContainsKey (commandId)) {
+			if (CommandMappings.Instance.HasMapping (commandId)) {
 				return this;
 			}
 			return null;
@@ -79,8 +45,10 @@ namespace MonoDevelop.TextEditor
 
 		void ICommandHandler.Run (object cmdTarget, Command cmd)
 		{
-			var factory = commandMaps[cmd.Id];
-			commandService.Execute (factory, null);
+			var factory = CommandMappings.Instance.GetMapping (cmd.Id);
+			if (factory != null) {
+				commandService.Execute (factory, null);
+			}
 		}
 
 		void ICommandHandler.Run (object cmdTarget, Command cmd, object dataItem)
@@ -90,12 +58,13 @@ namespace MonoDevelop.TextEditor
 
 		void ICommandUpdater.Run (object cmdTarget, CommandInfo info)
 		{
-			var factory = commandMaps[info.Command.Id];
-			var commandState = commandService.GetCommandState (factory, null);
-
-			info.Enabled = commandState.IsAvailable;
-			info.Visible = !commandState.IsUnspecified;
-			info.Checked = commandState.IsChecked;
+			var factory = CommandMappings.Instance.GetMapping (info.Command.Id);
+			if (factory != null) {
+				var commandState = commandService.GetCommandState (factory, null);
+				info.Enabled = commandState.IsAvailable;
+				info.Visible = !commandState.IsUnspecified;
+				info.Checked = commandState.IsChecked;
+			}
 		}
 
 		void ICommandUpdater.Run (object cmdTarget, CommandArrayInfo info)
