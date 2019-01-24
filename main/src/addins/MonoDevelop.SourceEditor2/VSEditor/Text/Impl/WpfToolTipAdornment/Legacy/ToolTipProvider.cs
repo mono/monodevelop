@@ -15,6 +15,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Text.Adornments;
     using Microsoft.VisualStudio.Text.Editor;
     using MonoDevelop.Components;
+    using MonoDevelop.SourceEditor;
 
     /// <summary>
     /// An adornment provider that can create and display ToolTips taking an arbitrary object as content.
@@ -23,8 +24,8 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     {
         #region Private Members
         private readonly IMdTextView _textView;
-        internal readonly ISpaceReservationManager _spaceReservationManager;
-        internal ISpaceReservationAgent _agent;
+        internal readonly IMDSpaceReservationManager _spaceReservationManager;
+        internal IMDSpaceReservationAgent _agent;
         #endregion
 
         internal ToolTipProvider(IMdTextView textView)
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
             _spaceReservationManager.AgentChanged += OnAgentChanged;
         }
 
-        void OnAgentChanged(object sender, SpaceReservationAgentChangedEventArgs e)
+        void OnAgentChanged(object sender, MDSpaceReservationAgentChangedEventArgs e)
         {
             if (_agent == e.OldAgent)
                 _agent = null;

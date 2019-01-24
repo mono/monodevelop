@@ -9,6 +9,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Utilities;
@@ -17,9 +18,9 @@ using MonoDevelop.Components;
 using Rect = Xwt.Rectangle;
 using Point = Xwt.Point;
 
-namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
+namespace MonoDevelop.SourceEditor
 {
-    internal class CurrentLineSpaceReservationAgent : ISpaceReservationAgent
+    internal class CurrentLineSpaceReservationAgent : IMDSpaceReservationAgent
     {
         internal const string CurrentLineSRManagerName = "currentline";
 
@@ -27,7 +28,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         private IIntellisenseSessionStack _sessionStack;
         private bool _isAttached = false;
 
-        //[Export(typeof(ITextViewCreationListener))]
+        [Export(typeof(ITextViewCreationListener))]
         [ContentType("Text")]
         [TextViewRole(PredefinedTextViewRoles.Editable)]
         internal class CurrentLineSpaceReservationAgent_ViewCreationListener : ITextViewCreationListener
@@ -37,6 +38,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
             public void TextViewCreated(ITextView textView)
             {
+                if (!(textView is IMdTextView))
+                {
+                    return;
+                }
+
                 var sessionStack = this.IntellisenseSessionStackMapService.GetStackForTextView(textView);
                 if (sessionStack != null)
                 {
@@ -122,7 +128,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        private void OnSRManager_AgentChanged(object sender, SpaceReservationAgentChangedEventArgs e)
+        private void OnSRManager_AgentChanged(object sender, MDSpaceReservationAgentChangedEventArgs e)
         {
             if (_isAttached && (e.OldAgent == this))
             {
@@ -203,8 +209,8 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             }
         }
 
-        private ISpaceReservationManager _currentLineSRManager;
-        private ISpaceReservationManager CurrentLineSRManager
+        private IMDSpaceReservationManager _currentLineSRManager;
+        private IMDSpaceReservationManager CurrentLineSRManager
         {
             get
             {

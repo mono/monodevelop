@@ -41,6 +41,7 @@ using MonoDevelop.Ide;
 using Microsoft.VisualStudio.Text.Classification;
 using System.Threading;
 using Microsoft.VisualStudio.Text.Operations;
+using MonoDevelop.SourceEditor;
 
 namespace Mono.TextEditor
 {
@@ -113,7 +114,7 @@ namespace Mono.TextEditor
 			this.roles = roles;
 			this.factoryService = factoryService;
             GuardedOperations = this.factoryService.GuardedOperations;
-            _spaceReservationStack = new SpaceReservationStack(this.factoryService.OrderedSpaceReservationManagerDefinitions, this);
+            _spaceReservationStack = new MDSpaceReservationStack(this.factoryService.OrderedSpaceReservationManagerDefinitions, this);
 
 			this.TextDataModel = textViewModel.DataModel;
 			this.TextViewModel = textViewModel;
@@ -421,7 +422,7 @@ namespace Mono.TextEditor
 
 		static readonly string[] allowedTextViewCreationListeners = {
 			"MonoDevelop.SourceEditor.Braces.BraceCompletionManagerFactory",
-			"Microsoft.VisualStudio.Language.Intellisense.Implementation.CurrentLineSpaceReservationAgent.CurrentLineSpaceReservationAgent_ViewCreationListener"
+			"MonoDevelop.SourceEditor.CurrentLineSpaceReservationAgent.CurrentLineSpaceReservationAgent_ViewCreationListener"
 		};
 
 		private void BindContentTypeSpecificAssets (IContentType beforeContentType, IContentType afterContentType)
@@ -533,9 +534,14 @@ namespace Mono.TextEditor
 		}
 
 		public IGuardedOperations GuardedOperations;
-		internal SpaceReservationStack _spaceReservationStack;
+		internal MDSpaceReservationStack _spaceReservationStack;
 
-		public ISpaceReservationManager GetSpaceReservationManager (string name)
+#if MAC
+		// on Mac ITextView has the extra member GetSpaceReservationManager that isn't there on Windows
+		ISpaceReservationManager ITextView.GetSpaceReservationManager (string name) => throw new NotImplementedException();
+#endif
+
+		public IMDSpaceReservationManager GetSpaceReservationManager (string name)
 		{
 			if (name == null)
 				throw new ArgumentNullException ("name");

@@ -21,7 +21,9 @@
 
 using System.Windows;
 using System.Windows.Media;
+
 using Microsoft.VisualStudio.Text.Classification;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -43,10 +45,10 @@ namespace MonoDevelop.TextEditor
 	{
 		public WpfThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) { }
 
-		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize)
+		protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
 		{
 			resourceDictionary[ClassificationFormatDefinition.TypefaceId] = new Typeface (fontName);
-			resourceDictionary[ClassificationFormatDefinition.FontRenderingSizeId] = (double)(fontSize * 96 / 72);
+			resourceDictionary[ClassificationFormatDefinition.FontRenderingSizeId] = fontSize * 96 / 72;
 		}
 	}
 }

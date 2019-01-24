@@ -18,10 +18,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+using System;
 using System.Windows;
+
 using AppKit;
+
 using Microsoft.VisualStudio.Text.Classification;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -42,9 +45,9 @@ namespace MonoDevelop.TextEditor
 		{
 			public CocoaThemeToClassification (IEditorFormatMapService editorFormatMapService) : base (editorFormatMapService) {}
 
-			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize)
+			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
 			{
-				resourceDictionary[ClassificationFormatDefinition.TypefaceId] = NSFontWorkarounds.FromFontName (fontName, fontSize);
+				resourceDictionary[ClassificationFormatDefinition.TypefaceId] = NSFontWorkarounds.FromFontName (fontName, (nfloat)fontSize);
 			}
 		}
 	}

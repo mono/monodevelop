@@ -7,9 +7,7 @@ namespace Microsoft.VisualStudio.Text.Editor
 		ITextView3
 #endif
     {
-#if WINDOWS
-        ISpaceReservationManager GetSpaceReservationManager(string name);
-#endif
+        MonoDevelop.SourceEditor.IMDSpaceReservationManager GetSpaceReservationManager(string name);
 
         Gtk.Container VisualElement
         {

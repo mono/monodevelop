@@ -34,7 +34,8 @@ namespace MonoDevelop.TextEditor
 	abstract class ThemeToClassification : IDisposable
 	{
 		readonly IEditorFormatMapService editorFormatMapService;
-		public ThemeToClassification (IEditorFormatMapService editorFormatMapService)
+
+		protected ThemeToClassification (IEditorFormatMapService editorFormatMapService)
 		{
 			this.editorFormatMapService = editorFormatMapService;
 			Ide.Editor.DefaultSourceEditorOptions.Instance.Changed += UpdateEditorFormatMap;
@@ -46,7 +47,7 @@ namespace MonoDevelop.TextEditor
 			Ide.Editor.DefaultSourceEditorOptions.Instance.Changed -= UpdateEditorFormatMap;
 		}
 
-		List<(string EditorFormatName, string MDThemeSettingName)> mappings = new List<(string, string)> {
+		static readonly List<(string EditorFormatName, string MDThemeSettingName)> mappings = new List<(string, string)> {
 			("preprocessor text", "Preprocessor region name"),
 			("punctuation", "punctuation"),
 			("string - verbatim", "String Verbatim"),
@@ -98,6 +99,19 @@ namespace MonoDevelop.TextEditor
 			("axml - processing instruction", ""),
 			("axml - text", "Xml Text"),
 			("axml - resource url", "Xml Name"),
+			("XAML Attribute", "Xml Attribute"),
+			("XAML Attribute Quotes", "Xml Attribute Quotes"),
+			("XAML Attribute Value", "Xml Attribute Value"),
+			("XAML CData Section", "Xml CData Section"),
+			("XAML Comment", "Xml Comment"),
+			("XAML Delimiter", "Xml Delimiter"),
+			("XAML Keyword", "Xml Name"),
+			("XAML Markup Extension Class", "Xml Name"),
+			("XAML Markup Extension Parameter Name", "Xml Name"),
+			("XAML Markup Extension Parameter Value", "Xml Name"),
+			("XAML Name", "Xml Name"),
+			("XAML Processing Instruction", ""),
+			("XAML Text", "Xml Text"),
 			("Peek Background", ""),
 			("Peek Background Unfocused", ""),
 			("Peek History Selected", ""),
@@ -302,7 +316,7 @@ namespace MonoDevelop.TextEditor
 				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
 			}
 			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
-			if (!int.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {
+			if (!double.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {
 				fontSize = 12;
 				LoggingService.LogError ($"Failed to parse font size from font name {fontName}");
 			}
@@ -313,6 +327,6 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties ("Plain Text", resourceDictionary);
 		}
 
-		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, int fontSize);
+		protected abstract void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize);
 	}
 }

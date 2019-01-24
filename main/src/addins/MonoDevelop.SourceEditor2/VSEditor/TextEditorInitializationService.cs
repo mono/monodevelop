@@ -26,6 +26,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text.Editor.Implementation;
     using Mono.TextEditor;
     using Microsoft.VisualStudio.Platform;
+    using MonoDevelop.SourceEditor;
 
     /// <summary>
     /// Provides a VisualStudio Service that aids in creation of Editor Views
@@ -175,12 +176,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
 
         [ImportMany]
-        private List<Lazy<SpaceReservationManagerDefinition, IOrderable>> _spaceReservationManagerDefinitions = null;
+        private List<Lazy<MDSpaceReservationManagerDefinition, IOrderable>> _spaceReservationManagerDefinitions = null;
         internal Dictionary<string, int> OrderedSpaceReservationManagerDefinitions = new Dictionary<string, int>();
 
         public void OnImportsSatisfied()
         {
-            IList<Lazy<SpaceReservationManagerDefinition, IOrderable>> orderedManagers = Orderer.Order(_spaceReservationManagerDefinitions);
+            IList<Lazy<MDSpaceReservationManagerDefinition, IOrderable>> orderedManagers = Orderer.Order(_spaceReservationManagerDefinitions);
             for (int i = 0; (i < orderedManagers.Count); ++i)
             {
                 this.OrderedSpaceReservationManagerDefinitions.Add(orderedManagers[i].Metadata.Name, i);

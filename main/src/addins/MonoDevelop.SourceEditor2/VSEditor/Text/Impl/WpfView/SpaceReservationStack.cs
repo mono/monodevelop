@@ -5,14 +5,14 @@
 // This file contain implementations details that are subject to change without notice.
 // Use at your own risk.
 //
-namespace Microsoft.VisualStudio.Text.Editor.Implementation
+namespace MonoDevelop.SourceEditor
 {
     using System;
     using System.Collections.Generic;
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text.Editor;
 
-    internal class SpaceReservationStack
+    internal class MDSpaceReservationStack
     {
         #region Private Members
         internal Dictionary<string, int> _orderedManagerDefinitions;
@@ -44,13 +44,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         #endregion // Private Members
 
-		public SpaceReservationStack(Dictionary<string, int> orderedManagerDefinitions, Mono.TextEditor.MonoTextEditor view)
+		public MDSpaceReservationStack(Dictionary<string, int> orderedManagerDefinitions, Mono.TextEditor.MonoTextEditor view)
         {
             _orderedManagerDefinitions = orderedManagerDefinitions;
             _view = view;
         }
 
-        public ISpaceReservationManager GetOrCreateManager(string name)
+        public IMDSpaceReservationManager GetOrCreateManager(string name)
         {
             foreach (SpaceReservationManager manager in _managers)
             {

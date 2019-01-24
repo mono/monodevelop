@@ -592,7 +592,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			var manager = ((IMdTextView)textView).GetSpaceReservationManager ("completion");
 			agent = manager.CreatePopupAgent (triggerSpan, Microsoft.VisualStudio.Text.Adornments.PopupStyles.None, Xwt.Toolkit.CurrentEngine.WrapWidget (box, Xwt.NativeWidgetSizing.DefaultPreferredSize));
 			//HACK...
-			//Theme = ((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent.PopUpContainer)((Microsoft.VisualStudio.Text.Editor.Implementation.PopupAgent)agent)._popup)._popup.Theme;
+			Theme = ((MonoDevelop.SourceEditor.PopupAgent.PopUpContainer)((MonoDevelop.SourceEditor.PopupAgent)agent)._popup)._popup.Theme;
 			Theme.CornerRadius = 0;
 			Theme.Padding = 0;
 			UpdateStyle ();
