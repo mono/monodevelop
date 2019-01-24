@@ -614,15 +614,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void SetSelection ()
 			{
-				if (focusedItem != null) {
-					focusedItem.HasFocus = false;
-				}
+				//ensures our cells are in the correct enabled state
 				if (focusedCellIndex >= 0 && focusedCellIndex < Cells.Length) {
-					var item = Cells [focusedCellIndex].Cell as NSPathComponentCellFocusable;
-					focusedItem = item;
-					if (item != null)
-						item.HasFocus = true;
+					focusedItem = Cells [focusedCellIndex].Cell as NSPathComponentCellFocusable;
+					if (focusedItem != null)
+						focusedItem.HasFocus = true;
 				}
+
+				//we want ensure our state is correct in other elements
+				for (int i = 0; i < Cells.Length; i++) {
+					if (i != focusedCellIndex && Cells [i].Cell is NSPathComponentCellFocusable focusable) {
+						focusable.HasFocus = false;
+					}
+				}
+
 				SetNeedsDisplay ();
 			}
 
