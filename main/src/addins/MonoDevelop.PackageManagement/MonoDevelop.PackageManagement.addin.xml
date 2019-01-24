@@ -9,6 +9,10 @@
 		<Import assembly="NuGet.Commands.dll" />
 		<Import assembly="NuGet.LibraryModel.dll" />
 		<Import assembly="NuGet.Common.dll" />
+		<Import assembly="NuGet.Protocol.dll" />
+		<Import assembly="NuGet.Configuration.dll" />
+		<Import assembly="NuGet.Packaging.Core.dll" />
+		<Import assembly="NuGet.ProjectModel.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
