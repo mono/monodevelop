@@ -21,8 +21,7 @@
 
 using System;
 using System.Collections.Immutable;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Commanding;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Mono.Addins;
 
@@ -51,10 +50,10 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		public Func<ITextView, ITextBuffer, EditorCommandArgs> GetMapping (object commandId)
+		public MappedEditorCommand GetMapping (object commandId)
 		{
 			if (commandId is string s && mappings.TryGetValue (s, out var node)) {
-				return node.GetArgsFactory ();
+				return node.GetMappedCommand ();
 			}
 			return null;
 		}
@@ -63,5 +62,11 @@ namespace MonoDevelop.TextEditor
 		{
 			return commandId is string s && mappings.ContainsKey (s);
 		}
+	}
+
+	abstract class MappedEditorCommand
+	{
+		public abstract void Execute (IEditorCommandHandlerService service, Action nextCommandHandler);
+		public abstract CommandState GetCommandState (IEditorCommandHandlerService service, Func<CommandState> nextCommandHandler);
 	}
 }

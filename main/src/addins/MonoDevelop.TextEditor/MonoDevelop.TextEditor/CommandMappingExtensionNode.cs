@@ -21,6 +21,7 @@
 
 using System;
 using System.Reflection.Emit;
+using Microsoft.VisualStudio.Commanding;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
@@ -33,28 +34,57 @@ namespace MonoDevelop.TextEditor
 		[NodeAttribute ("argsType", Required = true, Description = "The fully qualified type of the EditorCommandArgs subclass")]
 		public string ArgsType { get; private set; }
 
-		Func<ITextView, ITextBuffer, EditorCommandArgs> argsFactory;
+		MappedEditorCommand mappedCommand;
 
-		public Func<ITextView, ITextBuffer, EditorCommandArgs> GetArgsFactory ()
+		public MappedEditorCommand GetMappedCommand ()
 		{
-			return argsFactory ?? (argsFactory = CreateArgsFactory ());
+			return mappedCommand ?? (mappedCommand = CreateMappedCommand ());
+			throw new NotImplementedException ();
 		}
 
-		Func<ITextView, ITextBuffer, EditorCommandArgs> CreateArgsFactory ()
+		MappedEditorCommand CreateMappedCommand ()
 		{
 			var type = Addin.GetType (ArgsType, true);
+			var factory = CreateArgsFactory (type);
 
+			var mapType = typeof (MappedEditorCommand<>).MakeGenericType (type);
+			return (MappedEditorCommand) Activator.CreateInstance (mapType, factory);
+		}
+
+		class MappedEditorCommand<T> : MappedEditorCommand
+			where T : EditorCommandArgs
+		{
+			Func<ITextView, ITextBuffer, T> factory;
+
+			public MappedEditorCommand (Func<ITextView, ITextBuffer, T> factory)
+			{
+				this.factory = factory;
+			}
+
+			public override void Execute (IEditorCommandHandlerService service, Action nextCommandHandler)
+			{
+				service.Execute (factory, nextCommandHandler);
+			}
+
+			public override CommandState GetCommandState (IEditorCommandHandlerService service, Func<CommandState> nextCommandHandler)
+			{
+				return service.GetCommandState (factory, nextCommandHandler);
+			}
+		}
+
+		Delegate CreateArgsFactory (Type type)
+		{
 			var constructorArgTypes = new Type[] { typeof (ITextView), typeof (ITextBuffer) };
 			var ctor = type.GetConstructor (constructorArgTypes);
 
-			var method = new DynamicMethod ($"Create{type.Name}", typeof (EditorCommandArgs), constructorArgTypes);
+			var method = new DynamicMethod ($"Create{type.Name}", type, constructorArgTypes);
 			var il = method.GetILGenerator ();
 			il.Emit (OpCodes.Ldarg_0);
 			il.Emit (OpCodes.Ldarg_1);
 			il.Emit (OpCodes.Newobj, ctor);
 			il.Emit (OpCodes.Ret);
 
-			return (Func< ITextView, ITextBuffer, EditorCommandArgs>) method.CreateDelegate (typeof (Func<ITextView, ITextBuffer, EditorCommandArgs>));
+			return method.CreateDelegate (typeof (Func<,,>).MakeGenericType (typeof (ITextView), typeof (ITextBuffer), type));
 		}
 	}
 }

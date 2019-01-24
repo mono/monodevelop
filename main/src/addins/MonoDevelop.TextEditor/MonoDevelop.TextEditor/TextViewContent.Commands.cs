@@ -24,7 +24,6 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.TextEditor
 {
-
 	partial class TextViewContent<TView, TImports>
 	{
 		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
@@ -45,9 +44,9 @@ namespace MonoDevelop.TextEditor
 
 		void ICommandHandler.Run (object cmdTarget, Command cmd)
 		{
-			var factory = CommandMappings.Instance.GetMapping (cmd.Id);
-			if (factory != null) {
-				commandService.Execute (factory, null);
+			var mapping = CommandMappings.Instance.GetMapping (cmd.Id);
+			if (mapping != null) {
+				mapping.Execute (commandService, null);
 			}
 		}
 
@@ -58,9 +57,9 @@ namespace MonoDevelop.TextEditor
 
 		void ICommandUpdater.Run (object cmdTarget, CommandInfo info)
 		{
-			var factory = CommandMappings.Instance.GetMapping (info.Command.Id);
-			if (factory != null) {
-				var commandState = commandService.GetCommandState (factory, null);
+			var mapping = CommandMappings.Instance.GetMapping (info.Command.Id);
+			if (mapping != null) {
+				var commandState = mapping.GetCommandState (commandService, null);
 				info.Enabled = commandState.IsAvailable;
 				info.Visible = !commandState.IsUnspecified;
 				info.Checked = commandState.IsChecked;
