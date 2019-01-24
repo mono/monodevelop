@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
@@ -13,9 +13,6 @@
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationCore" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj" Private="False" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />

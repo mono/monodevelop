@@ -57,11 +57,11 @@ namespace MonoDevelop.CodeActions
 		readonly DataField<int> nodeOffset = new DataField<int> ();
 		readonly TreeView treeView;
 		readonly TreeStore store;
-		readonly TextEditor baseEditor, changedEditor;
+		readonly Ide.Editor.TextEditor baseEditor, changedEditor;
 		readonly ImmutableArray<CodeActionOperation> operations;
 		CheckBoxCellView checkBox;
 
-		public FixAllPreviewDialog (string diagnosticId, string scopeLabel, FixAllScope scope, ImmutableArray<CodeActionOperation> operations, TextEditor baseEditor)
+		public FixAllPreviewDialog (string diagnosticId, string scopeLabel, FixAllScope scope, ImmutableArray<CodeActionOperation> operations, Ide.Editor.TextEditor baseEditor)
 		{
 			Width = 800;
 			Height = 600;

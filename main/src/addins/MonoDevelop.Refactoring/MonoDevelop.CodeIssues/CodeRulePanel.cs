@@ -57,7 +57,7 @@ namespace MonoDevelop.CodeIssues
 			readonly Encoding encoding;
 			readonly bool loadingError;
 
-			public TextEditor TextEditor { get; private set; }
+			public Ide.Editor.TextEditor TextEditor { get; private set; }
 
 			public CodeRulePanelWidget ()
 			{

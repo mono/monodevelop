@@ -1,4 +1,4 @@
-﻿<ExtensionModel>
+<ExtensionModel>
 	<Runtime>
 		<Import assembly="RefactoringEssentials.dll" />
 	</Runtime>
@@ -175,4 +175,9 @@
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToDefinitionCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
+	</Extension>
 </ExtensionModel>

@@ -54,11 +54,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 {
 	class AnalysisDocument
 	{
-		public TextEditor Editor { get; private set; }
+		public Ide.Editor.TextEditor Editor { get; private set; }
 		public DocumentLocation CaretLocation { get; private set; }
 		public DocumentContext DocumentContext { get; private set; }
 
-		public AnalysisDocument (TextEditor editor, DocumentContext documentContext)
+		public AnalysisDocument (Ide.Editor.TextEditor editor, DocumentContext documentContext)
 		{
 			this.Editor = editor;
 			this.CaretLocation = editor.CaretLocation;
@@ -319,7 +319,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				GLib.Idle.Add (IdleHandler);
 			}
 
-			static Cairo.Color GetColor (TextEditor editor, Result result)
+			static Cairo.Color GetColor (Ide.Editor.TextEditor editor, Result result)
 			{
 				switch (result.Level) {
 				case DiagnosticSeverity.Hidden:

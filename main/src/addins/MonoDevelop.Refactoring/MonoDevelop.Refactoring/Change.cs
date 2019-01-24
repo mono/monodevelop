@@ -83,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		static List<TextEditor> textEditorDatas = new List<TextEditor> ();
+		static List<Ide.Editor.TextEditor> textEditorDatas = new List<Ide.Editor.TextEditor> ();
 		static List<IDisposable> undoGroups = new List<IDisposable> ();
 		
 		public static void FinishRefactoringOperation ()
@@ -93,7 +93,7 @@ namespace MonoDevelop.Refactoring
 			undoGroups.Clear ();
 		}
 		
-		internal static TextEditor GetTextEditorData (string fileName)
+		internal static Ide.Editor.TextEditor GetTextEditorData (string fileName)
 		{
 			if (IdeApp.Workbench == null)
 				return null;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return null;
 		}
-		protected virtual TextEditor TextEditorData {
+		protected virtual Ide.Editor.TextEditor TextEditorData {
 			get {
 				return GetTextEditorData (FileName);
 			}
