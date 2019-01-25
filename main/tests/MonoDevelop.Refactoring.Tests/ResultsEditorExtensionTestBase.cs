@@ -1,4 +1,4 @@
-﻿//
+//
 // ResultsEditorExtensionTests.cs
 //
 // Author:
@@ -111,18 +111,17 @@ namespace MonoDevelop.Refactoring.Tests
 		{
 			var ext = doc.GetContent<ResultsEditorExtension> ();
 
-			var actualDiagnostics = ext.QuickTasks;
-			var expectedDiagnostics = expected.ToArray ();
+			var actualDiagnostics = ext.QuickTasks.OrderBy (a => a.Location).ToArray ();
+			var expectedDiagnostics = expected.OrderBy (a => a.Location).ToArray ();
 			Assert.AreEqual (expectedDiagnostics.Length, actualDiagnostics.Length);
 
 			for (int i = 0; i < expectedDiagnostics.Length; ++i) {
-				AssertExpectedDiagnostic (expectedDiagnostics [i], ext, i);
+				AssertExpectedDiagnostic (expectedDiagnostics [i], actualDiagnostics [i]);
 			}
 		}
 
-		static void AssertExpectedDiagnostic (ExpectedDiagnostic expected, ResultsEditorExtension ext, int i)
+		static void AssertExpectedDiagnostic (ExpectedDiagnostic expected, QuickTask actual)
 		{
-			var actual = ext.QuickTasks [i];
 			Assert.AreEqual (expected.Location, actual.Location);
 			Assert.AreEqual (expected.Severity, actual.Severity);
 			Assert.AreEqual (expected.Description, actual.Description);
