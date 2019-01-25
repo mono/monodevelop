@@ -38,17 +38,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		Xwt.ListStore listStore;
 		Xwt.DataField<RunConfiguration> configCol = new Xwt.DataField<RunConfiguration> ();
 		Xwt.DataField<string> configNameCol = new Xwt.DataField<string> ();
+		Xwt.DataField<string> accessibleCol = new Xwt.DataField<string> ();
 		Xwt.DataField<Xwt.Drawing.Image> configIconCol = new Xwt.DataField<Xwt.Drawing.Image> ();
 
 		public RunConfigurationsList ()
 		{
-			listStore = new Xwt.ListStore (configCol, configNameCol, configIconCol);
+			listStore = new Xwt.ListStore (configCol, configNameCol, configIconCol, accessibleCol);
 			list = new Xwt.ListView (listStore);
 			list.HeadersVisible = false;
 
 			var imgCell = new ImageCellView { ImageField = configIconCol };
 			var textCell = new TextCellView { MarkupField = configNameCol };
 			list.Columns.Add (GettextCatalog.GetString ("Name"), imgCell, textCell);
+			textCell.AccessibleFields.Label = accessibleCol;
 
 			Content = list;
 
@@ -64,7 +66,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				var r = listStore.AddRow ();
 				var txt = "<b>" + c.Name + "</b>\n" + c.Summary;
 				var icon = !string.IsNullOrEmpty (c.IconId) ? ImageService.GetIcon (c.IconId) : ImageService.GetIcon ("md-prefs-play", Gtk.IconSize.Dnd);
-				listStore.SetValues (r, configCol, c, configNameCol, txt, configIconCol, icon);
+				listStore.SetValues (r, configCol, c, configNameCol, txt, configIconCol, icon, accessibleCol, c.Name + " " + c.Summary);
 			}
 			if (currentRow != -1) {
 				if (currentRow < listStore.RowCount)

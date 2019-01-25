@@ -4528,6 +4528,13 @@ namespace MonoDevelop.Projects
 
 		void OnFileCreatedExternally (FilePath fileName)
 		{
+			if (sourceProject == null) {
+				// sometimes this method is called after disposing this class. 
+				// (i.e. when quitting MD or creating a new project.)
+				LoggingService.LogWarning ("File created externally not processed. {0}", fileName);
+				return;
+			}
+
 			// Check file is inside the project directory. The file globs would exclude the file anyway
 			// if the relative path starts with "..\" but checking here avoids checking the file globs.
 			if (!fileName.IsChildPathOf (BaseDirectory))
