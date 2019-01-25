@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		Xwt.DataField<string> configNameCol = new Xwt.DataField<string> ();
 		Xwt.DataField<string> accessibleCol = new Xwt.DataField<string> ();
 		Xwt.DataField<Xwt.Drawing.Image> configIconCol = new Xwt.DataField<Xwt.Drawing.Image> ();
-		TextCellView textCell;
 
 		public RunConfigurationsList ()
 		{
@@ -49,7 +48,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			list.HeadersVisible = false;
 
 			var imgCell = new ImageCellView { ImageField = configIconCol };
-			textCell = new TextCellView { MarkupField = configNameCol };
+			var textCell = new TextCellView { MarkupField = configNameCol };
 			list.Columns.Add (GettextCatalog.GetString ("Name"), imgCell, textCell);
 			textCell.AccessibleFields.Label = accessibleCol;
 
