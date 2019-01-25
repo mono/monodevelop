@@ -516,6 +516,7 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.DiffWidget.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
+    <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
