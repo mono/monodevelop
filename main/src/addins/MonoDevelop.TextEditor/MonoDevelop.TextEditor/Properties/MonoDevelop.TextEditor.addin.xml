@@ -60,9 +60,13 @@
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Undo" argsType="@MonoDevelop.TextEditor.CommandArgsFactories.CreateUndoCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Redo" argsType="@MonoDevelop.TextEditor.CommandArgsFactories.CreateRedoCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.SelectAll" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.SelectAllCommandArgs" />
+
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommentSelectionCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.UncommentSelectionCommandArgs" />
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertTab" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.TabKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.RemoveTab" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackTabKeyCommandArgs" />
+
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LineEndCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LineStartCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.LeftKeyCommandArgs" />
@@ -73,6 +77,13 @@
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PageDownKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentStartCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentEndCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.Delete" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
 	</Extension>
 
 	<!--

@@ -97,6 +97,8 @@ namespace MonoDevelop.TextEditor
 			TextView.Properties [typeof(ViewContent)] = this;
 			ContentName = fileName;
 
+			InstallAdditionalEditorOperationsCommands ();
+
 			SubscribeToEvents ();
 		}
 
