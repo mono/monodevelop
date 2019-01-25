@@ -572,39 +572,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// 0x30 is Tab
 				if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
-
-					if (theEvent.KeyCode == (ushort)KeyCodes.Space) {
-						var item = Cells [focusedCellIndex].Cell;
-						PopupMenuForCell (item);
-						return;
-					}
-
-					// 0x30 is Tab
-					if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
-						if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
-							if (focusedCellIndex <= 0) {
-								if (PreviousKeyView != null) {
-									SetSelection ();
-									focusedCellIndex = 0;
-									focusedItem = null;
-								}
-							} else {
-								focusedCellIndex--;
+					if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
+						if (focusedCellIndex <= 0) {
+							if (PreviousKeyView != null) {
 								SetSelection ();
-								return;
+								focusedCellIndex = 0;
+								focusedItem = null;
 							}
 						} else {
-							if (focusedCellIndex >= VisibleCellIds.Length - 1) {
-								if (NextKeyView != null) {
-									SetSelection ();
-									focusedCellIndex = 0;
-									focusedItem = null;
-								}
-							} else {
-								focusedCellIndex++;
+							focusedCellIndex--;
+							SetSelection ();
+							return;
+						}
+					} else {
+						if (focusedCellIndex >= VisibleCellIds.Length - 1) {
+							if (NextKeyView != null) {
 								SetSelection ();
-								return;
+								focusedCellIndex = 0;
+								focusedItem = null;
 							}
+						} else {
+							focusedCellIndex++;
+							SetSelection ();
+							return;
 						}
 					}
 				}
