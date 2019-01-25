@@ -583,7 +583,7 @@ namespace MonoDevelop.VersionControl
 		// Commits changes in a set of files or directories into the repository
 		public void Commit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
-			var metadata = new CommitMetadata (VersionControlSystem) { PathsCount = changeSet.Count };
+			var metadata = new MultipathOperationMetadata (VersionControlSystem) { PathsCount = changeSet.Count };
 			using (var tracker = Instrumentation.CommitCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					ClearCachedVersionInfo (changeSet.BaseLocalPath);
@@ -605,7 +605,7 @@ namespace MonoDevelop.VersionControl
 
 		public void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
-			var metadata = new CheckoutMetadata (VersionControlSystem) { Recursive = recurse };
+			var metadata = new MultipathOperationMetadata (VersionControlSystem) { Recursive = recurse };
 			using (var tracker = Instrumentation.CheckoutCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					ClearCachedVersionInfo (targetLocalPath);
