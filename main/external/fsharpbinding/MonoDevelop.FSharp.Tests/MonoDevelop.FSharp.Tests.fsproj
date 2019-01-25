@@ -70,6 +70,7 @@
     </Reference>
     <Reference Include="FSharp.Compiler.Interactive.Settings">
       <HintPath>..\MonoDevelop.FSharpi.Service\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(CustomBeforeMicrosoftCommonTargets)" />
@@ -288,5 +289,16 @@
       </ItemGroup>
     </When>
   </Choose>
+  <ItemGroup>
+    <IncludeCopyLocal Include="System.Reactive.dll" />
+    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
+    <IncludeCopyLocal Include="ExtCore.dll" />
+    <IncludeCopyLocal Include="Fantomas.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Service.dll" />
+    <IncludeCopyLocal Include="FSharp.Core.dll" />
+    <IncludeCopyLocal Include="MonoDevelop.FSharp.Shared.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Interactive.Settings.dll" />
+  </ItemGroup>
   <Import Project="..\packages\StrongNamer\build\StrongNamer.targets" Condition="Exists('..\packages\StrongNamer\build\StrongNamer.targets')" Label="Paket" />
 </Project>

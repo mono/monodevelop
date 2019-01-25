@@ -179,6 +179,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <IncludeCopyLocal Include="System.Reactive.dll" />
+    <IncludeCopyLocal Include="System.Reactive.Linq.dll" />
+    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
     <IncludeCopyLocal Include="ExtCore.dll" />
     <IncludeCopyLocal Include="Fantomas.dll" />
     <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
