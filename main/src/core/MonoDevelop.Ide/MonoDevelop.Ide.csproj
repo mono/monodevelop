@@ -4193,8 +4193,8 @@
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\VisualStudioForMacStructureTaggerProvider.cs">
       <Link>RoslynOutliningWorkaround\VisualStudioForMacStructureTaggerProvider.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\RoslynOutliningRegionTag.cs">
-      <Link>RoslynOutliningWorkaround\RoslynOutliningRegionTag.cs</Link>
+    <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\RoslynBlockTag.cs">
+      <Link>RoslynOutliningWorkaround\RoslynBlockTag.cs</Link>
     </Compile>
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\BlockTagState.cs">
       <Link>RoslynOutliningWorkaround\BlockTagState.cs</Link>
