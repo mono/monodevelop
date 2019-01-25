@@ -154,6 +154,12 @@ namespace MonoDevelop.Components
 			pathEntry.SetCommonAccessibilityAttributes (name, label, help);
 		}
 
+
+		public void SetEntryAccessibleTitleUIElement (Atk.Object accessible)
+		{
+			pathEntry.Accessible.SetTitleUIElement (accessible);
+		}
+
 		public Atk.Object EntryAccessible {
 			get {
 				return pathEntry.Accessible;

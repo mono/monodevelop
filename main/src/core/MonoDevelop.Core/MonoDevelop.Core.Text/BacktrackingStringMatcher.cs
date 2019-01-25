@@ -250,6 +250,11 @@ namespace MonoDevelop.Core.Text
 			// clear cache
 			return result;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[BacktrackingStringMatcher: filterText={0}]", filterText);
+		}
 	}
 }
 

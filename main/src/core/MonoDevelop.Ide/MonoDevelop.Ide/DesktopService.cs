@@ -133,13 +133,6 @@ namespace MonoDevelop.Ide
 			get { return PlatformService.Name; }
 		}
 
-		[Obsolete]
-		public static string DefaultControlLeftRightBehavior {
-			get {
-				return PlatformService.DefaultControlLeftRightBehavior;
-			}
-		}
-
 		public static void ShowUrl (string url)
 		{
 			PlatformService.ShowUrl (url);

@@ -1,4 +1,4 @@
-//
+﻿//
 // ItemTemplateExtensionNode.cs
 //
 // Author:
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
@@ -36,6 +37,19 @@ namespace MonoDevelop.Ide.Codons
 
 		[NodeAttribute ("path", "A .nupkg file or a folder.")]
 		string path;
+
+		public string ScanPath {
+			get {
+				// If the path starts with '${' then the path contains a placeholder
+				// that the StringParserService will replace. The path is returned
+				// without calling Addin.GetFilePath to prevent the addin directory
+				// being prefixed to the path.
+				if (path != null && path.StartsWith ("${", StringComparison.Ordinal)) {
+					return path;
+				}
+				return Addin.GetFilePath (path);
+			}
+		}
 
 		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
 		string templateId;
@@ -51,7 +65,6 @@ namespace MonoDevelop.Ide.Codons
 		[NodeAttribute ("supportedParameters", "Parameters supported by the template.")]
 		public string SupportedParameters { get; private set; }
 
-		public string ScanPath => Addin.GetFilePath (path);
 		public string TemplateId => templateId ?? Id;
 	}
 }

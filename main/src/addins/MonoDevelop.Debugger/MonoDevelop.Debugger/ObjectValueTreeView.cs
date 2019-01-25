@@ -2190,9 +2190,12 @@ namespace MonoDevelop.Debugger
 			var val = (ObjectValue) store.GetValue (iter, ObjectColumn);
 			if (val != null && val.Name == DebuggingService.DebuggerSession.EvaluationOptions.CurrentExceptionTag)
 				DebuggingService.ShowExceptionCaughtDialog ();
+
+			if (val != null && DebuggingService.HasValueVisualizers (val))
+				DebuggingService.ShowValueVisualizer (val);
 		}
-		
-		
+
+
 		bool GetCellAtPos (int x, int y, out TreePath path, out TreeViewColumn col, out CellRenderer cellRenderer)
 		{
 			if (GetPathAtPos (x, y, out path, out col)) {

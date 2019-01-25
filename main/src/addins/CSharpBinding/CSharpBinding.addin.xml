@@ -60,6 +60,7 @@
 			type="array"
 			_label = "Refactory Operations" />
 		<Command id = "MonoDevelop.CSharp.Refactoring.Commands.SortAndRemoveImports"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.RemoveAndSortUsingsHandler"
 			_label = "R_emove and Sort Usings"
 			_displayName = "Remove Unused and Sort (Usings)"
 		/>

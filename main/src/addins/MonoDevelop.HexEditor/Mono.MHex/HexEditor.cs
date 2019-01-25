@@ -37,6 +37,8 @@ using Xwt;
 using Mono.MHex.Data;
 using Mono.MHex.Rendering;
 using Xwt.Drawing;
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 
 namespace Mono.MHex
 {
@@ -99,8 +101,14 @@ namespace Mono.MHex
 			}
 		}
 
+		public bool IsReadOnly { get; set; }
+
+		readonly Gtk.Widget hexWidget;
+
 		public HexEditor ()
 		{
+			hexWidget = (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (this);
+
 			BackgroundColor = Color.FromBytes (0, 0, 0);
 			CanGetFocus = true;
 			HexEditorData = new HexEditorData ();
@@ -112,6 +120,7 @@ namespace Mono.MHex
 				if (HexEditorData.Caret.AutoScrollToCaret)
 					ScrollToCaret ();
 				RepaintLine (HexEditorData.Caret.Line);
+				AnnounceCurrentSelection ();
 			};
 			HexEditorData.Caret.OffsetChanged += delegate(object sender, CaretLocationEventArgs e) {
 				if (!HexEditorData.Caret.PreserveSelection)
@@ -516,6 +525,17 @@ namespace Mono.MHex
 			requestResetCaretBlink = true;
 		}
 		
+		void AnnounceCurrentSelection ()
+		{
+			try {
+				var character = HexEditorData.Bytes [HexEditorData.Caret.Offset];
+				var data = Convert.ToString (character, 16);
+				var message = GettextCatalog.GetString ("Selected '{0}' char:'{1}'", data [HexEditorData.Caret.SubPosition], (char)character);
+				hexWidget.Accessible.MakeAccessibilityAnnouncement (message);
+			} catch {
+			}
+		}
+
 		public void DrawCaret (Context ctx, Rectangle area)
 		{
 			if (!caretBlink || HexEditorData.IsSomethingSelected) 

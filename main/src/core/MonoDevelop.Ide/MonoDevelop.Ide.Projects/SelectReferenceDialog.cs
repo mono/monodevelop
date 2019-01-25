@@ -67,10 +67,11 @@ namespace MonoDevelop.Ide.Projects
 		const int RecentFileListSize = 75;
 		
 		const int NameColumn = 0;
-		const int TypeNameColumn = 1;
-		const int LocationColumn = 2;
-		const int ProjectReferenceColumn = 3;
-		const int IconColumn = 4;
+		const int SecondaryNameColumn = 1;
+		const int TypeNameColumn = 2;
+		const int LocationColumn = 3;
+		const int ProjectReferenceColumn = 4;
+		const int IconColumn = 5;
 		
 		public ProjectReferenceCollection ReferenceInformations {
 			get {
@@ -127,9 +128,9 @@ namespace MonoDevelop.Ide.Projects
 
 		TreeIter AddAssemplyReference (ProjectReference refInfo)
 		{
-			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
-			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.HintPath)) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon ("md-empty-file-icon", IconSize.Dnd));
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference));
+			string secondaryTxt = GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.HintPath));
+			return refTreeStore.AppendValues (txt, secondaryTxt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon ("md-empty-file-icon", IconSize.Dnd));
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
@@ -139,19 +140,22 @@ namespace MonoDevelop.Ide.Projects
 
 			Project p = refInfo.ResolveProject (c);
 			if (p == null) return TreeIter.Zero;
-			
-			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
-			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetIcon ("md-project", IconSize.Dnd));
+
+			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference));
+			string secondaryTxt = GLib.Markup.EscapeText (p.BaseDirectory.ToString ());
+			return refTreeStore.AppendValues (txt, secondaryTxt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetIcon ("md-project", IconSize.Dnd));
 		}
 
 		TreeIter AddPackageReference (ProjectReference refInfo)
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference));
+			string secondaryTxt = string.Empty;
 			int i = refInfo.Reference.IndexOf (',');
-			if (i != -1)
-				txt = GLib.Markup.EscapeText (txt.Substring (0, i)) + "\n<span color='darkgrey'><small>" + GLib.Markup.EscapeText (refInfo.Reference.Substring (i+1).Trim()) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetIcon ("md-package", IconSize.Dnd));
+			if (i != -1) {
+				txt = GLib.Markup.EscapeText (txt.Substring (0, i));
+				secondaryTxt = GLib.Markup.EscapeText (refInfo.Reference.Substring (i + 1).Trim ());
+			}
+			return refTreeStore.AppendValues (txt, secondaryTxt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetIcon ("md-package", IconSize.Dnd));
 		}
 		
 		public SelectReferenceDialog ()
@@ -169,7 +173,7 @@ namespace MonoDevelop.Ide.Projects
 
 			boxRefs.WidthRequest = 200;
 			
-			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Xwt.Drawing.Image));
+			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Xwt.Drawing.Image));
 			ReferencesTreeView.Model = refTreeStore;
 
 			TreeViewColumn col = new TreeViewColumn ();
@@ -178,9 +182,10 @@ namespace MonoDevelop.Ide.Projects
 			crp.Yalign = 0f;
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "image", IconColumn);
-			CellRendererText text_render = new CellRendererText ();
+			var text_render = new CustomSelectedReferenceCellRenderer ();
 			col.PackStart (text_render, true);
-			col.AddAttribute (text_render, "markup", NameColumn);
+			col.AddAttribute (text_render, "text-markup", NameColumn);
+			col.AddAttribute (text_render, "secondary-text-markup", SecondaryNameColumn);
 			text_render.Ellipsize = Pango.EllipsizeMode.End;
 			
 			ReferencesTreeView.AppendColumn (col);
@@ -236,7 +241,7 @@ namespace MonoDevelop.Ide.Projects
 			header.Add (w);
 			selectedHeader.Add (header);
 			
-			RemoveReferenceButton.CanFocus = false;
+			RemoveReferenceButton.CanFocus = true;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			Child.ShowAll ();
 			OnChanged (null, null);
@@ -549,6 +554,100 @@ namespace MonoDevelop.Ide.Projects
 			int w = filterEntry.SizeRequest ().Width;
 			int h = filterEntry.SizeRequest ().Height;
 			filterEntry.SizeAllocate (new Gdk.Rectangle (Allocation.Width - w - 1, 0, w, h));
+		}
+	}
+
+	class CustomSelectedReferenceCellRenderer : CellRendererText
+	{
+		Pango.Layout layout;
+		string markup;
+		string secondarymarkup;
+
+		[GLib.Property ("text-markup")]
+		public string TextMarkup {
+			get { return markup; }
+			set {
+				markup = value;
+				if (!string.IsNullOrEmpty (secondarymarkup))
+					Markup = markup + " " + secondarymarkup;
+				else
+					Markup = markup;
+			}
+		}
+
+		[GLib.Property ("secondary-text-markup")]
+		public string SecondaryTextMarkup {
+			get { return secondarymarkup; }
+			set {
+				secondarymarkup = value;
+				if (!string.IsNullOrEmpty (secondarymarkup))
+					Markup = markup + " " + secondarymarkup;
+				else
+					Markup = markup;
+			}
+		}
+
+		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+		{
+			StateType st = StateType.Normal;
+			if ((flags & CellRendererState.Prelit) != 0)
+				st = StateType.Prelight;
+			if ((flags & CellRendererState.Focused) != 0)
+				st = StateType.Normal;
+			if ((flags & CellRendererState.Insensitive) != 0)
+				st = StateType.Insensitive;
+			if ((flags & CellRendererState.Selected) != 0)
+				st = widget.HasFocus ? StateType.Selected : Gtk.StateType.Active;
+
+			SetupLayout (widget, flags);
+
+			int w, h;
+			layout.GetPixelSize (out w, out h);
+
+			const int textXOffset = 2; // Shift text up slightly in the row.
+			int tx = cell_area.X + (int)Xpad;
+			int ty = cell_area.Y + (cell_area.Height - h) / 2 - textXOffset;
+
+			int textPixelWidth = cell_area.Width - ((int)Xpad * 2) ;
+			layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
+
+			window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
+		}
+
+		public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+		{
+			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+			SetupLayout (widget);
+
+			int layoutWidth = 0;
+			layout.GetPixelSize (out layoutWidth, out height);
+		}
+
+		void SetupLayout (Widget widget, CellRendererState flags = 0)
+		{
+			if (layout == null || layout.Context != widget.PangoContext) {
+				if (layout != null)
+					layout.Dispose ();
+				layout = new Pango.Layout (widget.PangoContext);
+				layout.Ellipsize = Ellipsize;
+			}
+
+			string newmarkup = TextMarkup;
+			if (!string.IsNullOrEmpty (SecondaryTextMarkup)) {
+				if (Platform.IsMac && flags.HasFlag (CellRendererState.Selected))
+					newmarkup += "\n<span foreground='" + Gui.Styles.SecondarySelectionTextColor.ToHexString (false) + "'><small>" + SecondaryTextMarkup + "</small></span>";
+				else
+					newmarkup += "\n<span foreground='" + Gui.Styles.SecondaryTextColor.ToHexString (false) + "'><small>" + SecondaryTextMarkup + "</small></span>";
+			}
+
+			layout.SetMarkup (newmarkup);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (layout != null)
+				layout.Dispose ();
 		}
 	}
 }

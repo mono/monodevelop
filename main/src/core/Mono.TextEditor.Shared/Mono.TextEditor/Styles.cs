@@ -55,7 +55,7 @@ namespace Mono.TextEditor.PopupWindow
 
 		public static void LoadStyles ()
 		{
-			var bgColor = Platform.IsMac ? Color.FromName ("#5189ed") : Color.FromName ("#cce8ff");
+			var bgColor = Platform.IsMac ? Color.FromName ("#2862d9") : Color.FromName ("#cce8ff");
 			var fgColor = Platform.IsMac ? Color.FromName ("#ffffff") : Color.FromName ("#000000");
 
 			ModeHelpWindowTokenOutlineColor = fgColor;

@@ -136,6 +136,7 @@ namespace MonoDevelop.Components
 				proxies [i] = tab.Accessible;
 				tab.Accessible.Index = i;
 				i++;
+				tab.Allocation = GetBounds (tab);
 			}
 
 			Accessible.SetTabs (proxies);
