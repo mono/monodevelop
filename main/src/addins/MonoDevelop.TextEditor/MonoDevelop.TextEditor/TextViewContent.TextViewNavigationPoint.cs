@@ -81,7 +81,7 @@ namespace MonoDevelop.TextEditor
 
 				// drop reference to the editor and snapshot so as not to leak them
 				textView = null;
-				position = new SnapshotPoint ();
+				position = default;
 			}
 
 			public int Line { get; private set; }
@@ -103,9 +103,9 @@ namespace MonoDevelop.TextEditor
 					return doc;
 				}
 
-				//FIXME scrolling?
 				var point = new SnapshotPoint (view.TextBuffer.CurrentSnapshot, Offset);
 				view.Caret.MoveTo (point);
+				view.Caret.EnsureVisible ();
 
 				return doc;
 			}
