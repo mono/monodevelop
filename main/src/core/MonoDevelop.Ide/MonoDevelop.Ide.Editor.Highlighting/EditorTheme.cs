@@ -332,5 +332,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 		EditorTheme IEditorThemeProvider.GetEditorTheme () => this;
+
+		public override string ToString ()
+		{
+			return string.Format ("[EditorTheme: Name={0}]", Name);
+		}
 	}
 }
