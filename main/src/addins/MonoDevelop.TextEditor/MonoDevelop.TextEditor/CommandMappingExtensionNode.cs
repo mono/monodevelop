@@ -39,7 +39,6 @@ namespace MonoDevelop.TextEditor
 		public MappedEditorCommand GetMappedCommand ()
 		{
 			return mappedCommand ?? (mappedCommand = CreateMappedCommand ());
-			throw new NotImplementedException ();
 		}
 
 		MappedEditorCommand CreateMappedCommand ()
@@ -51,7 +50,7 @@ namespace MonoDevelop.TextEditor
 			// and the actual type is determined from the method's return type.
 			// This is needed for Undo/Redo which have additional arguments in their ctors.
 			if (ArgsType[0] == '@') {
-				factory = GetDelegate (ArgsType.Substring (1));
+				factory = GetDelegate (ArgsType, 1);
 				type = factory.Method.ReturnType;
 			} else {
 				type = Addin.GetType (ArgsType, true);
@@ -62,10 +61,10 @@ namespace MonoDevelop.TextEditor
 			return (MappedEditorCommand) Activator.CreateInstance (mapType, factory);
 		}
 
-		Delegate GetDelegate (string fullName)
+		Delegate GetDelegate (string fullName, int offset = 0)
 		{
 			var dotIdx = fullName.LastIndexOf ('.');
-			var factoryTypeName = fullName.Substring (0, dotIdx);
+			var factoryTypeName = fullName.Substring (offset, dotIdx);
 			var factoryType = Addin.GetType (factoryTypeName, true);
 			var methodName = fullName.Substring (dotIdx + 1);
 			var methodInfo = factoryType.GetMethod (methodName);
@@ -99,7 +98,7 @@ namespace MonoDevelop.TextEditor
 			var ctor = type.GetConstructor (constructorArgTypes);
 
 			var method = new DynamicMethod ($"Create{type.Name}", type, constructorArgTypes);
-			var il = method.GetILGenerator ();
+			var il = method.GetILGenerator (8);
 			il.Emit (OpCodes.Ldarg_0);
 			il.Emit (OpCodes.Ldarg_1);
 			il.Emit (OpCodes.Newobj, ctor);
