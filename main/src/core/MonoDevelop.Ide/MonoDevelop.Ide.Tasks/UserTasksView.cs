@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Runtime.CompilerServices;
-
+using System.Text;
 
 namespace MonoDevelop.Ide.Tasks
 {	
@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Tasks
 		Xwt.ListView view;
 		Xwt.ListStore store;
 
-		Xwt.Drawing.Color highPrioColor, normalPrioColor, lowPrioColor;
+		string highPrioColor, normalPrioColor, lowPrioColor;
 		
 		Clipboard clipboard;
 		bool solutionLoaded = false;
@@ -54,12 +54,12 @@ namespace MonoDevelop.Ide.Tasks
 
 		Xwt.DataField<Xwt.ItemCollection> itemsField = new Xwt.DataField<Xwt.ItemCollection> ();
 		Xwt.DataField<int> priorityDataField = new Xwt.DataField<int> ();
+
 		Xwt.DataField<string> descriptionDataField = new Xwt.DataField<string> ();
+		Xwt.DataField<string> formatedDescriptionDataField = new Xwt.DataField<string> ();
+
 		Xwt.DataField<TaskListEntry> entryDataField = new Xwt.DataField<TaskListEntry> ();
 		Xwt.DataField<bool> completedDataField = new Xwt.DataField<bool> ();
-
-		Xwt.DataField<Xwt.Drawing.Color> foregroundColorDataField = new Xwt.DataField<Xwt.Drawing.Color> (); // foreground color
-		Xwt.DataField<int> fontStyleDataField = new Xwt.DataField<int> (); // font style
 
 		Gtk.Widget gtkWidget;
 
@@ -67,11 +67,11 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public UserTasksView ()
 		{
-			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
-			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
-			lowPrioColor = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
+			highPrioColor = ConfigurationStringToHex (IdeApp.Preferences.UserTasksHighPrioColor);
+			normalPrioColor = ConfigurationStringToHex (IdeApp.Preferences.UserTasksNormalPrioColor);
+			lowPrioColor = ConfigurationStringToHex (IdeApp.Preferences.UserTasksLowPrioColor);
 
-			store = new Xwt.ListStore (priorityDataField, itemsField, descriptionDataField, completedDataField, entryDataField, foregroundColorDataField, fontStyleDataField);
+			store = new Xwt.ListStore (priorityDataField, itemsField, descriptionDataField, completedDataField, entryDataField, formatedDescriptionDataField);
 
 			view = new Xwt.ListView ();
 			gtkWidget = view.ToGtkWidget ();
@@ -87,19 +87,20 @@ namespace MonoDevelop.Ide.Tasks
 			var completedCellView = new Xwt.CheckBoxCellView (completedDataField) { Editable = true };
 			view.Columns.Add (new Xwt.ListViewColumn ("", completedCellView) { CanResize = true });
 
-			descriptionCellView = new Xwt.TextCellView (descriptionDataField) { Editable = true };
+			descriptionCellView = new Xwt.TextCellView (descriptionDataField) { Editable = true, MarkupField = formatedDescriptionDataField };
 			view.Columns.Add (new Xwt.ListViewColumn ("Description", descriptionCellView) { CanResize = true, Expands = true });
 
 			view.SelectionChanged += SelectionChanged;
-			comboCellView.SelectionChanged += ComboCellView_SelectionChanged;
-			completedCellView.Toggled += CheckCellView_SelectionChanged;
-			descriptionCellView.TextChanged += ComboCellView_SelectionChanged;
+
+			comboCellView.EditingFinished += DescriptionCellView_EditingFinished;
+			completedCellView.EditingFinished += DescriptionCellView_EditingFinished;
+			descriptionCellView.EditingFinished += DescriptionCellView_EditingFinished;
 
 			newButton = new Button ();
 			newButton.Label = GettextCatalog.GetString ("New Task");
 			newButton.Image = new ImageView (Gtk.Stock.New, IconSize.Menu);
 			newButton.Image.Show ();
-			newButton.Clicked += new EventHandler (NewUserTaskClicked); 
+			newButton.Clicked += NewUserTaskClicked; 
 			newButton.TooltipText = GettextCatalog.GetString ("Create New Task");
 
 			copyButton = new Button ();
@@ -116,9 +117,9 @@ namespace MonoDevelop.Ide.Tasks
 			delButton.Clicked += DeleteUserTaskClicked; 
 			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");
 
-			TaskService.UserTasks.TasksChanged += UserTasksChanged;
-			TaskService.UserTasks.TasksAdded += UserTasksChanged;
-			TaskService.UserTasks.TasksRemoved += UserTasksChanged;
+			TaskService.UserTasks.TasksChanged += RaiseRefreshListView;
+			TaskService.UserTasks.TasksAdded += RaiseRefreshListView;
+			TaskService.UserTasks.TasksRemoved += RaiseRefreshListView;
 			
 			if (IdeApp.Workspace.IsOpen)
 				solutionLoaded = true;
@@ -132,7 +133,21 @@ namespace MonoDevelop.Ide.Tasks
 			ValidateButtons ();
 			
 			// Initialize with existing tags.
-			UserTasksChanged (this, null);
+			RaiseRefreshListView (this, null);
+		}
+
+		int lastSelectedIndex;
+		void DescriptionCellView_EditingFinished (object sender, EventArgs e)
+		{
+			lastSelectedIndex = view.SelectedRow;
+			var task = store.GetValue (lastSelectedIndex, entryDataField);
+			task.Description = store.GetValue (lastSelectedIndex, descriptionDataField);
+			task.Completed = store.GetValue (lastSelectedIndex, completedDataField);
+			task.Priority = (TaskPriority)store.GetValue (lastSelectedIndex, priorityDataField);
+			store.SetValue (lastSelectedIndex, entryDataField, task);
+			TaskService.SaveUserTasks (task.WorkspaceObject);
+
+			RaiseRefreshListView (this, null);
 		}
 
 		void CombineOpened (object sender, EventArgs e)
@@ -147,13 +162,10 @@ namespace MonoDevelop.Ide.Tasks
 			ValidateButtons ();
 		}
 		
-		void UserTasksChanged (object sender, TaskEventArgs e)
+		void RaiseRefreshListView (object sender, TaskEventArgs e)
 		{
 			if (updating)
 				return;
-
-			//if (view.IsRealized)
-				//view.ScrollToPoint (0, 0);
 
 			store.Clear ();
 			foreach (var task in TaskService.UserTasks) {
@@ -162,26 +174,44 @@ namespace MonoDevelop.Ide.Tasks
 				store.SetValue (r, priorityDataField, (int)task.Priority);
 				store.SetValue (r, completedDataField, task.Completed);
 				store.SetValue (r, entryDataField, task);
-
-				store.SetValue (r, foregroundColorDataField, GetColorByPriority (task.Priority));
-				store.SetValue (r, fontStyleDataField, task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
-				//store.AppendValues (text, task.Completed, task.Description, task, GetColorByPriority (task.Priority), );
+				store.SetValue (r, formatedDescriptionDataField, GetFormatedText (task));
 			}
+
+			if (lastSelectedIndex < store.RowCount) {
+				view.SelectRow (lastSelectedIndex);
+			}
+
 			ValidateButtons ();
 		}
-		
+
+		string GetFormatedText (TaskListEntry task)
+		{
+			var builder = new StringBuilder ();
+			if (task.Completed) {
+				builder.Append ("<b>");
+			}
+			builder.Append (string.Format ("<span color=\"{0}\"", GetColorByPriority (task.Priority)));
+			if (task.Completed) {
+				builder.Append (" strikethrough=\"true\"");
+			}
+			builder.Append (">");
+			builder.Append (task.Description);
+			builder.Append ("</span>");
+			if (task.Completed) {
+				builder.Append ("</b>");
+			}
+			return builder.ToString ();
+		}
+
 		void OnPropertyUpdated (object sender, EventArgs e)
 		{
-			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
-			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
-			lowPrioColor = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
+			highPrioColor = ConfigurationStringToHex (IdeApp.Preferences.UserTasksHighPrioColor);
+			normalPrioColor = ConfigurationStringToHex (IdeApp.Preferences.UserTasksNormalPrioColor);
+			lowPrioColor = ConfigurationStringToHex (IdeApp.Preferences.UserTasksLowPrioColor);
 
-			for (int i = 0; i < store.RowCount; i++) {
-				var task = store.GetValue (i, entryDataField);
-				store.SetValue (i, foregroundColorDataField, GetColorByPriority (task.Priority));
-			}
+			RaiseRefreshListView (null, null);
 		}
-		
+
 		void SelectionChanged (object sender, EventArgs e)
 		{
 			ValidateButtons ();
@@ -201,14 +231,15 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.UserTasks.Add (task);
 			updating = false;
 
-			var row =  store.AddRow ();
-			store.SetValue (row, descriptionDataField, task.Description);
-			store.SetValue (row, priorityDataField, (int)task.Priority);
-			store.SetValue (row, completedDataField, task.Completed);
-			store.SetValue (row, entryDataField, task);
+			var r =  store.AddRow ();
+			store.SetValue (r, descriptionDataField, task.Description);
+			store.SetValue (r, priorityDataField, (int)task.Priority);
+			store.SetValue (r, completedDataField, task.Completed);
+			store.SetValue (r, entryDataField, task);
+			store.SetValue (r, formatedDescriptionDataField, GetFormatedText (task));
 
-			view.SelectRow (row);
-			view.StartEditingCell (row, descriptionCellView);
+			view.SelectRow (r);
+			view.StartEditingCell (r, descriptionCellView);
 			TaskService.SaveUserTasks (task.WorkspaceObject);
 		}
 
@@ -239,19 +270,6 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.SaveUserTasks (task.WorkspaceObject);
 		}
 
-		void CheckCellView_SelectionChanged (object sender, Xwt.WidgetEventArgs e)
-		{
-			var index = view.SelectedRow;
-			if (index == -1) {
-				return;
-			}
-
-			var task = store.GetValue (index, entryDataField);
-			task.Completed = !store.GetValue (index, completedDataField);
-
-			TaskService.SaveUserTasks (task.WorkspaceObject);
-		}
-
 		void ComboCellView_SelectionChanged (object sender, Xwt.WidgetEventArgs e)
 		{
 			var index = view.SelectedRow;
@@ -263,13 +281,11 @@ namespace MonoDevelop.Ide.Tasks
 			task.Description = store.GetValue (index, descriptionDataField);
 			task.Completed = store.GetValue (index, completedDataField);
 			task.Priority = (TaskPriority)store.GetValue (index, priorityDataField);
-
-			store.SetValue (index, foregroundColorDataField, GetColorByPriority (task.Priority));
 			store.SetValue (index, entryDataField, task);
 			TaskService.SaveUserTasks (task.WorkspaceObject);
 		}
 
-		Xwt.Drawing.Color GetColorByPriority (TaskPriority prio)
+		string GetColorByPriority (TaskPriority prio)
 		{
 			switch (prio)
 			{
@@ -287,18 +303,14 @@ namespace MonoDevelop.Ide.Tasks
 			if (col.SortIndicator) {
 				if (col.SortOrder == SortType.Ascending)
 					return SortType.Descending;
-				else
-					return SortType.Ascending;
-			} else
-			{
-				return SortType.Ascending;
-			}
+			} 
+			return SortType.Ascending;
 		}
-		
-		static Xwt.Drawing.Color StringToColor (string colorStr)
+
+		static string ConfigurationStringToHex (string colorStr)
 		{
 			string[] rgb = colorStr.Substring (colorStr.IndexOf (':') + 1).Split ('/');
-			if (rgb.Length != 3) return new Xwt.Drawing.Color (0, 0, 0);
+			if (rgb.Length != 3) return "#000000";
 			var color = Gdk.Color.Zero;
 			try
 			{
@@ -311,9 +323,9 @@ namespace MonoDevelop.Ide.Tasks
 				// something went wrong, then use neutral black color
 				color = new Gdk.Color (0, 0, 0);
 			}
-			return color.ToXwtColor ();
+			return color.GetHex ();
 		}
-		
+
 		#region ITaskListView members
 		Control ITaskListView.Content { get { return gtkWidget; } }
 		Control[] ITaskListView.ToolBarItems { get { return new Control[] { newButton, delButton, copyButton }; } }
