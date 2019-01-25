@@ -255,7 +255,7 @@ namespace MonoDevelop.TextEditor
 
 		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
 		void ExecDeleteToLineEndCommand ()
-			=> editorOperations.DeleteToBeginningOfLine ();
+			=> editorOperations.DeleteToEndOfLine ();
 
 		[CommandHandler (TextEditorCommands.DeletePrevWord)]
 		void ExecDeletePrevWordCommand ()
@@ -275,27 +275,27 @@ namespace MonoDevelop.TextEditor
 
 		[CommandHandler (TextEditorCommands.MovePrevWord)]
 		void ExecMovePrevWordCommand ()
-			=> editorOperations.MoveToNextWord (extendSelection: false);
+			=> editorOperations.MoveToPreviousWord (extendSelection: false);
 
 		[CommandHandler (TextEditorCommands.MoveNextWord)]
 		void ExecMoveNextWordCommand ()
-			=> editorOperations.MoveToPreviousWord (extendSelection: false);
+			=> editorOperations.MoveToNextWord (extendSelection: false);
 
 		[CommandHandler (TextEditorCommands.SelectionMoveLeft)]
 		void ExecSelectionMoveLeftCommand ()
-			=> editorOperations.MoveToNextCharacter (extendSelection: true);
+			=> editorOperations.MoveToPreviousCharacter (extendSelection: true);
 
 		[CommandHandler (TextEditorCommands.SelectionMoveRight)]
 		void ExecSelectionMoveRightCommand ()
-			=> editorOperations.MoveToPreviousCharacter (extendSelection: true);
+			=> editorOperations.MoveToNextCharacter (extendSelection: true);
 
 		[CommandHandler (TextEditorCommands.SelectionMovePrevWord)]
 		void ExecSelectionMovePrevWordCommand ()
-			=> editorOperations.MoveToNextWord (extendSelection: true);
+			=> editorOperations.MoveToPreviousWord (extendSelection: true);
 
 		[CommandHandler (TextEditorCommands.SelectionMoveNextWord)]
 		void ExecSelectionMoveNextWordCommand ()
-			=> editorOperations.MoveToPreviousWord (extendSelection: true);
+			=> editorOperations.MoveToNextWord (extendSelection: true);
 
 		[CommandHandler (TextEditorCommands.SelectionMoveUp)]
 		void ExecSelectionMoveUpCommand ()
