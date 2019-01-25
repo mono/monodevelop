@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Execution;
 using MonoDevelop.Projects;
 using Xwt;
-using MonoDevelop.Core;
-using System.IO;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -78,6 +78,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		ComboBox runtimesCombo;
 		TextEntry monoSettingsEntry;
 		InformationPopoverWidget appEntryInfoIcon;
+		Label argumentsLabel;
+		Label workingDirLabel;
+		Label runtimesComboLabel;
+		Label monoSettingsLabel;
+
 
 		public DotNetRunConfigurationEditorWidget ()
 			: this (true)
@@ -105,12 +110,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
-			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
+			table.Add (argumentsLabel = new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
 
-			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
+			table.Add (workingDirLabel = new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
-		
+
 			mainBox.PackStart (table);
 
 			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
@@ -133,10 +138,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			adBox.Margin = 12;
 
 			table = new Table ();
-			table.Add (new Label (GettextCatalog.GetString ("Execute in .NET Runtime:")), 0, 0);
+			table.Add (runtimesComboLabel = new Label (GettextCatalog.GetString ("Execute in .NET Runtime:")), 0, 0);
 			table.Add (runtimesCombo = new ComboBox (), 1, 0, hexpand:true);
 
-			table.Add (new Label (GettextCatalog.GetString ("Mono runtime settings:")), 0, 1);
+			table.Add (monoSettingsLabel = new Label (GettextCatalog.GetString ("Mono runtime settings:")), 0, 1);
 
 			var box = new HBox ();
 			Button monoSettingsButton = new Button (GettextCatalog.GetString ("..."));
@@ -163,7 +168,24 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			pauseConsole.Toggled += (sender, e) => NotifyChanged ();
 			runtimesCombo.SelectionChanged += (sender, e) => NotifyChanged ();
 			monoSettingsEntry.Changed += (sender, e) => NotifyChanged ();
+			SetupAccessibility ();
+		}
 
+		void SetupAccessibility ()
+		{
+			argumentsEntry.SetCommonAccessibilityAttributes ("DotNetRunConfigurationEditorWidget.argumentsEntry",
+					  argumentsLabel.Text,
+					  GettextCatalog.GetString ("Enter the arguments  to run with"));
+
+			// TODO: workingDirLabel -> workingDir
+
+			// FIXME: Xwt.Combo accessiblity seems not to work correctly ? 
+			runtimesCombo.Name = "DotNetRunConfigurationEditorWidget.runtimesCombo";
+			runtimesCombo.SetCommonAccessibilityAttributes (runtimesCombo.Name,
+				runtimesComboLabel.Text,
+				GettextCatalog.GetString ("Select the .NET runtime to run with"));
+
+			// TODO: appEntry -> GettextCatalog.GetString ("Start external program:")
 		}
 
 		void LoadRuntimes ()
