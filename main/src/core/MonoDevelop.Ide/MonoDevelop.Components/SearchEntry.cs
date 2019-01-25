@@ -683,6 +683,13 @@ namespace MonoDevelop.Components
 
 		}
 
+		public void SetEntryAccessibilityAttributes (string name, string label, string help)
+		{
+			entry.SetCommonAccessibilityAttributes (name, label, help);
+		}
+
+		public Atk.Object EntryAccessible => entry.Accessible;
+
 		private class FramelessEntry : Entry
 		{
 			private SearchEntry parent;

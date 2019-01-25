@@ -178,7 +178,9 @@ namespace MonoDevelop.Ide.Editor
 
 		string GetMarkup (int offset, int length, MarkupOptions options);
 
-        IndentationTracker IndentationTracker { get; set; }
+		Task<string> GetMarkupAsync (int offset, int length, MarkupOptions options, CancellationToken cancellationToken);
+
+		IndentationTracker IndentationTracker { get; set; }
         void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
 		void SetTextPasteHandler (TextPasteHandler textPasteHandler);
 

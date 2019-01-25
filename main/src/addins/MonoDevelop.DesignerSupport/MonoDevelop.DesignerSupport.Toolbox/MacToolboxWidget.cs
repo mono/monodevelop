@@ -255,6 +255,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			base.SetFrameSize (newSize);
 			var frame = messageTextField.Frame;
 			messageTextField.Frame = new CGRect (frame.Location, newSize);
+			RedrawItems (true, false);
 		}
 
 		public override void MouseDown (NSEvent theEvent)
@@ -344,12 +345,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
 			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
 			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
-
-			NSNotificationCenter.DefaultCenter.AddObserver (FrameChangedNotification, (s => {
-				if (s.Object == this) {
-					RedrawItems (true, false);
-				}
-			}));
 		}
 
 		protected override void Dispose (bool disposing)

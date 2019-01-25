@@ -23,7 +23,6 @@
     <Compile Include="KeychainTests.cs" />
     <Compile Include="CredentialsProviderTests.cs" />
     <Compile Include="CoreFoundationTests.cs" />
-    <Compile Include="ProcessManagerTests.cs" />
     <Compile Include="LaunchServicesTests.cs" />
     <Compile Include="AppleScriptTests.cs" />
     <Compile Include="CarbonTests.cs" />

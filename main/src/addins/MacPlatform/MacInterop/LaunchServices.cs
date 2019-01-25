@@ -48,6 +48,7 @@ namespace MonoDevelop.MacInterop
 		public string[] Args { get; set; }
 		public bool Async { get; set; }
 		public bool NewInstance { get; set; }
+		public bool HideFromRecentApps { get; set; }
 	}
 
 	public class LaunchServicesException : Exception
@@ -144,6 +145,8 @@ namespace MonoDevelop.MacInterop
 				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchAsync;
 			if (application.NewInstance)
 				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchNewInstance;
+			if (application.HideFromRecentApps)
+				options |= (UInt32) LaunchOptions.NSWorkspaceLaunchWithoutAddingToRecents;
 
 			IntPtr error;
 			var appHandle = IntPtr_objc_msgSend_IntPtr_UInt32_IntPtr_IntPtr (NSWorkspace.SharedWorkspace.Handle, launchApplicationAtURLOptionsConfigurationErrorSelector, appUrl.Handle, options, config.Handle, out error);

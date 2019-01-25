@@ -451,7 +451,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			project.ParentSolution.StartupItem = project;
 			await project.ParentSolution.SaveUserProperties ();
 		}
-		
+
 		public override void DeleteItem ()
 		{
 			Project prj = CurrentNode.DataItem as Project;

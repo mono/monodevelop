@@ -80,6 +80,8 @@ namespace Mono.MHex
 			comboBox.Items.Add ("Hex 16");
 			comboBox.SelectedIndex = 0;
 			editor.Options.StringRepresentationType = StringRepresentationTypes.ASCII;
+			editor.Accessible.Label = GettextCatalog.GetString ("Hexadecimal Text Editor");
+
 			comboBox.SelectionChanged += delegate {
 				switch (comboBox.SelectedIndex) {
 				case 0:

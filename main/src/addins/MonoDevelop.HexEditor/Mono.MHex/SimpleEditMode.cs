@@ -184,8 +184,10 @@ namespace Mono.MHex
 				keyBindings [keyCode] (HexEditorData);
 				return;
 			}
-			
-			InsertCharacter (unicodeChar);
+
+			if (!Editor.IsReadOnly) {
+				InsertCharacter (unicodeChar);
+			}
 		}
 		
 		void InsertCharacter (uint unicodeChar)
