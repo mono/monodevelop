@@ -1493,13 +1493,12 @@ namespace MonoDevelop.Components.Commands
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
 
-				while (cmdTarget != null)
-				{
-					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
-					
+				while (cmdTarget != null) {
+					ICustomCommandTarget typeInfo = GetTypeHandlerInfo (cmdTarget);
+
 					bool bypass = false;
-					
-					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
+
+					ICommandUpdater cui = typeInfo.GetCommandUpdater (commandId);
 					if (cui != null) {
 						if (sourceUpdateInfo != null && cmdTarget == sourceUpdateInfo.SourceTarget && sourceUpdateInfo.IsUpdatingAsynchronously) {
 							// If the source update info was provided and it was part of an asynchronous command update, reuse it to avoid
@@ -1528,7 +1527,7 @@ namespace MonoDevelop.Components.Commands
 					}
 					
 					if (!bypass) {
-						CommandHandlerInfo chi = typeInfo.GetCommandHandler (commandId);
+						ICommandHandler chi = typeInfo.GetCommandHandler (commandId);
 						if (chi != null) {
 							object localTarget = cmdTarget;
 							if (cmd.CommandArray) {
@@ -1698,11 +1697,9 @@ namespace MonoDevelop.Components.Commands
 
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 
-				while (cmdTarget != null)
-				{
-					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
-					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
-					
+				while (cmdTarget != null) {
+					ICustomCommandTarget typeInfo = GetTypeHandlerInfo (cmdTarget);
+					ICommandUpdater cui = typeInfo.GetCommandUpdater (commandId);
 					bool bypass = false;
 					bool handlerFound = false;
 					
@@ -1909,11 +1906,14 @@ namespace MonoDevelop.Components.Commands
 				CommandDeselected (this, EventArgs.Empty);
 		}
 		
-		HandlerTypeInfo GetTypeHandlerInfo (object cmdTarget)
+		ICustomCommandTarget GetTypeHandlerInfo (object cmdTarget)
 		{
-			HandlerTypeInfo typeInfo = (HandlerTypeInfo) handlerInfo [cmdTarget.GetType ()];
+			if (cmdTarget is ICustomCommandTarget customtarget) {
+				return customtarget;
+			}
+
+			HandlerTypeInfo typeInfo = (HandlerTypeInfo)handlerInfo[cmdTarget.GetType ()];
 			if (typeInfo != null) return typeInfo;
-			
 			Type type = cmdTarget.GetType ();
 			typeInfo = new HandlerTypeInfo ();
 			
@@ -2571,12 +2571,12 @@ namespace MonoDevelop.Components.Commands
 		public Control NewActiveWidget { get; internal set; }
 	}
 
-	internal class HandlerTypeInfo
+	internal class HandlerTypeInfo : ICustomCommandTarget
 	{
 		public CommandHandlerInfo[] CommandHandlers;
 		public CommandUpdaterInfo[] CommandUpdaters;
 		
-		public CommandHandlerInfo GetCommandHandler (object commandId)
+		public ICommandHandler GetCommandHandler (object commandId)
 		{
 			if (CommandHandlers == null) return null;
 			foreach (CommandHandlerInfo cui in CommandHandlers)
@@ -2585,7 +2585,7 @@ namespace MonoDevelop.Components.Commands
 			return null;
 		}
 		
-		public CommandUpdaterInfo GetCommandUpdater (object commandId)
+		public ICommandUpdater GetCommandUpdater (object commandId)
 		{
 			if (CommandUpdaters == null) return null;
 			foreach (CommandUpdaterInfo cui in CommandUpdaters)
@@ -2621,7 +2621,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 	
-	internal class CommandHandlerInfo: CommandMethodInfo
+	internal class CommandHandlerInfo: CommandMethodInfo, ICommandHandler
 	{
 		ICommandTargetHandler  customHandlerChain;
 		ICommandArrayTargetHandler  customArrayHandlerChain;
@@ -2660,7 +2660,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 		
-	internal class CommandUpdaterInfo: CommandMethodInfo
+	internal class CommandUpdaterInfo: CommandMethodInfo, ICommandUpdater
 	{
 		ICommandUpdateHandler customHandlerChain;
 		ICommandArrayUpdateHandler customArrayHandlerChain;

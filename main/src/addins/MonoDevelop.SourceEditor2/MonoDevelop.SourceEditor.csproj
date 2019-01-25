@@ -79,6 +79,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
     <None Include="MonoDevelop.SourceEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

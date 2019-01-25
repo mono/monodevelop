@@ -28,6 +28,7 @@ using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -35,7 +36,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable
+	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
 		where TView : ITextView
 		where TImports : TextViewImports
 	{
@@ -95,6 +96,8 @@ namespace MonoDevelop.TextEditor
 
 			TextView.Properties [typeof(ViewContent)] = this;
 			ContentName = fileName;
+
+			InstallAdditionalEditorOperationsCommands ();
 
 			SubscribeToEvents ();
 		}

@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring.Options
 {
 	internal abstract class AbstractOptionPreviewViewModel : AbstractNotifyPropertyChanged, IDisposable
 	{
-		private TextEditor _textViewHost;
+		private Ide.Editor.TextEditor _textViewHost;
 		private PreviewWorkspace curWorkspace;
 		private Microsoft.CodeAnalysis.Project project;
 
@@ -110,7 +110,7 @@ namespace MonoDevelop.Refactoring.Options
 			UpdateDocument (preview);
 		}
 
-		public TextEditor TextViewHost {
+		public Ide.Editor.TextEditor TextViewHost {
 			get {
 				return _textViewHost;
 			}
