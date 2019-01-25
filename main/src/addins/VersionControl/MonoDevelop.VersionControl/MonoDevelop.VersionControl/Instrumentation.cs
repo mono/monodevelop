@@ -36,8 +36,8 @@ namespace MonoDevelop.VersionControl
 		const string Identifier = "VersionControl";
 
 		public static readonly Counter<RepositoryMetadata> Repositories = InstrumentationService.CreateCounter<RepositoryMetadata> ("VersionControl.RepositoryOpened", Category, id: $"{Identifier}.RepositoryOpened");
-		public static readonly TimerCounter<CheckoutMetadata> CheckoutCounter = InstrumentationService.CreateTimerCounter<CheckoutMetadata> ("Checkout", Category, id: $"{Identifier}.Checkout");
-		public static readonly TimerCounter<CommitMetadata> CommitCounter = InstrumentationService.CreateTimerCounter<CommitMetadata> ("Commit", Category, id: $"{Identifier}.Commit");
+		public static readonly TimerCounter<MultipathOperationMetadata> CheckoutCounter = InstrumentationService.CreateTimerCounter<MultipathOperationMetadata> ("Checkout", Category, id: $"{Identifier}.Checkout");
+		public static readonly TimerCounter<MultipathOperationMetadata> CommitCounter = InstrumentationService.CreateTimerCounter<MultipathOperationMetadata> ("Commit", Category, id: $"{Identifier}.Commit");
 		public static readonly TimerCounter<RevertMetadata> RevertCounter = InstrumentationService.CreateTimerCounter<RevertMetadata> ("Revert", Category, id: $"{Identifier}.Revert");
 		public static readonly TimerCounter<PublishMetadata> PublishCounter = InstrumentationService.CreateTimerCounter<PublishMetadata> ("Publish", Category, id: $"{Identifier}.Publish");
 		public static readonly TimerCounter<MultipathOperationMetadata> UpdateCounter = InstrumentationService.CreateTimerCounter<MultipathOperationMetadata> ("Update", Category, id: $"{Identifier}.Update");
@@ -74,38 +74,6 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class CheckoutMetadata : RepositoryMetadata
-	{
-		public CheckoutMetadata ()
-		{
-		}
-
-		public CheckoutMetadata (VersionControlSystem versionControl) : base (versionControl)
-		{
-		}
-
-		public bool Recursive {
-			get => GetProperty<bool> ();
-			set => SetProperty (value);
-		}
-	}
-
-	class CommitMetadata : RepositoryMetadata
-	{
-		public CommitMetadata ()
-		{
-		}
-
-		public CommitMetadata (VersionControlSystem versionControl) : base (versionControl)
-		{
-		}
-
-		public int PathsCount {
-			get => GetProperty<int> ();
-			set => SetProperty (value);
-		}
-	}
-
 	class RevertMetadata : MultipathOperationMetadata
 	{
 		public enum RevertType
@@ -129,7 +97,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class PublishMetadata : RepositoryMetadata
+	class PublishMetadata : MultipathOperationMetadata
 	{
 		public PublishMetadata ()
 		{
@@ -139,18 +107,13 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 
-		public int PathsCount {
-			get => GetProperty<int> ();
-			set => SetProperty (value);
-		}
-
 		public bool SubFolder {
 			get => GetProperty<bool> ();
 			set => SetProperty (value);
 		}
 	}
 
-	class DeleteMetadata : RepositoryMetadata
+	class DeleteMetadata : MultipathOperationMetadata
 	{
 		public DeleteMetadata ()
 		{
@@ -158,11 +121,6 @@ namespace MonoDevelop.VersionControl
 
 		public DeleteMetadata (VersionControlSystem versionControl) : base (versionControl)
 		{
-		}
-
-		public int PathsCount {
-			get => GetProperty<int> ();
-			set => SetProperty (value);
 		}
 
 		public bool Force {
