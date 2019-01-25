@@ -848,8 +848,8 @@ namespace MonoDevelop.VersionControl
 
 		public RepositoryMetadata (VersionControlSystem versionControl)
 		{
-			Type = versionControl.Name;
-			Version = versionControl.Version;
+			Type = versionControl?.Name;
+			Version = versionControl?.Version;
 		}
 
 		public string Type {
