@@ -469,6 +469,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolTipAdornmentImpl", "ext
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphMarginImpl", "external\vs-editor-core\src\Editor\Text\Impl\GlyphMargin\GlyphMarginImpl.csproj", "{EDC59664-4D54-473E-82E6-BB83FBD1C254}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructureImpl", "external\vs-editor-core\src\Editor\Text\Impl\Structure\StructureImpl.csproj", "{6C7ADE4D-2544-581E-918B-659243920781}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\BaseViewImpl.projitems*{47d57f5a-0693-4768-a970-5491d4f5574c}*SharedItemsImports = 13
@@ -2701,6 +2703,16 @@ Global
 		{EDC59664-4D54-473E-82E6-BB83FBD1C254}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{EDC59664-4D54-473E-82E6-BB83FBD1C254}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{EDC59664-4D54-473E-82E6-BB83FBD1C254}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{6C7ADE4D-2544-581E-918B-659243920781}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2918,6 +2930,7 @@ Global
 		{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{1339C301-982F-4A37-BD71-1F104FCCE65D} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{EDC59664-4D54-473E-82E6-BB83FBD1C254} = {32539734-6484-4451-9EF3-61610CA25BBF}
+		{6C7ADE4D-2544-581E-918B-659243920781} = {32539734-6484-4451-9EF3-61610CA25BBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}
