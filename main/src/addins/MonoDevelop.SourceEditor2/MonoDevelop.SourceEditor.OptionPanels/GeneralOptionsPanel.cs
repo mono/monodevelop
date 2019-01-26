@@ -57,8 +57,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			                                                         GettextCatalog.GetString ("Check to fold regions by default"));
 			foldCommentsCheckbutton.SetCommonAccessibilityAttributes ("SourceEditorGeneral.commens", "",
 			                                                          GettextCatalog.GetString ("Check to fold comments by default"));
-			newEditorCheckbutton.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor", "",
-			                                                          GettextCatalog.GetString ("Check to enable experimental new editor"));
 		}
 
 		public virtual Control CreatePanelWidget ()
@@ -66,7 +64,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.foldingCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
 			this.foldregionsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			this.foldCommentsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-			this.newEditorCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableNewEditor;
 			//			wordWrapCheckbutton.Active = DefaultSourceEditorOptions.Instance.WrapLines;
 			wordWrapCheckbutton.Visible = false;
 			antiAliasingCheckbutton.Visible = false;
@@ -78,7 +75,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableNewEditor = this.newEditorCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = (MonoDevelop.Ide.Editor.LineEndingConversion)this.comboboxLineEndings.Active;
 			if (DefaultSourceEditorOptions.Instance.ShowFoldMargin != this.foldingCheckbutton.Active) {
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;

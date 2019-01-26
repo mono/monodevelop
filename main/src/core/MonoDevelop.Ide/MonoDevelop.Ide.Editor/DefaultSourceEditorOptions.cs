@@ -1,4 +1,4 @@
-﻿//
+//
 // DefaultSourceEditorOptions.cs
 //
 // Author:
@@ -383,16 +383,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> enableNewEditor = ConfigurationProperty.Create ("EnableNewEditor", false);
-		public bool EnableNewEditor {
-			get {
-				return enableNewEditor;
-			}
-			set {
-				if (enableNewEditor.Set (value))
-					OnChanged (EventArgs.Empty);
-			}
-		}
+		public readonly bool EnableNewEditor = false;
 
 		ConfigurationProperty<bool> enableSemanticHighlighting = ConfigurationProperty.Create ("EnableSemanticHighlighting", true);
 		public bool EnableSemanticHighlighting {
