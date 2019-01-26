@@ -67,10 +67,5 @@ namespace MonoDevelop.FSW.Mono
 		{
 			base.OnRenamed (e);
 		}
-
-		protected internal new void Dispose (bool disposing)
-		{
-			base.Dispose (disposing);
-		}
 	}
 }
