@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=580ddadd1f6f2b595fd46433991506159da99cc6
+DEP_NEEDED_VERSION[0]=cde6a4ed7427954d5a7714543327de32614a069e
 DEP_BRANCH_AND_REMOTE[0]="roslyn-upgrade origin/roslyn-upgrade"
 
 # heap-shot

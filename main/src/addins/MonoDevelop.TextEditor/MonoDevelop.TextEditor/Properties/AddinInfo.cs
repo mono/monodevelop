@@ -36,4 +36,3 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Debugger", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
-[assembly:AddinDependency ("Refactoring", MonoDevelop.BuildInfo.Version)]

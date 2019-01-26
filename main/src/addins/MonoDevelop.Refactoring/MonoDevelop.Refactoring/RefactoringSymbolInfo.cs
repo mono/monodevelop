@@ -91,7 +91,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		public static Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, TextEditor editor, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, Ide.Editor.TextEditor editor, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (editor.IsSomethingSelected) {
 				var selectionRange = editor.SelectionRange;
