@@ -553,10 +553,10 @@ namespace MonoDevelop.FSW
 		{
 			switch (_platform) {
 			case Platform.Mono:
-				_monoFsw.Dispose (disposing);
+				_monoFsw.Dispose ();
 				break;
 			case Platform.OSX:
-				_osxFsw.Dispose (disposing);
+				_osxFsw.Dispose ();
 				break;
 			default:
 				throw new NotImplementedException ();

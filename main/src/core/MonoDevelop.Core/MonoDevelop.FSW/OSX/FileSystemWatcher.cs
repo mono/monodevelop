@@ -316,7 +316,7 @@ namespace MonoDevelop.FSW.OSX
 
 		/// <devdoc>
 		/// </devdoc>
-		protected internal new void Dispose (bool disposing)
+		protected override void Dispose (bool disposing)
 		{
 			try {
 				if (disposing) {

@@ -40,8 +40,8 @@ namespace MonoDevelop.FSW.OSX
 				return;
 			}
 
+			CancellationTokenSource cancellation = new CancellationTokenSource ();
 			try {
-				CancellationTokenSource cancellation = new CancellationTokenSource ();
 				RunningInstance instance = new RunningInstance (this, _directory, _includeSubdirectories, TranslateFlags (_notifyFilters), cancellation.Token);
 				_enabled = true;
 				_cancellation = cancellation;
@@ -51,6 +51,7 @@ namespace MonoDevelop.FSW.OSX
 					fileSystemWatchers.Add (this);
 			} catch {
 				_enabled = false;
+				cancellation?.Cancel ();
 				_cancellation = null;
 				throw;
 			}
