@@ -75,6 +75,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		const string IDisposableImplement = "class MyClass : System.IDisposable {}";
 
 		[Test]
+		[Ignore("https://github.com/mono/monodevelop/issues/6981")]
 		public async Task FixesAreReportedForCompilerErrors ()
 		{
 			var diagnostics = new ExpectedDiagnostic [] {
