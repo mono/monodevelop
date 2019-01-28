@@ -445,8 +445,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
-				// FIXME: Is this really needed?
-				OpenDocuments.Remove (analysisDocument);
 
 				if (document == null) {
 					var ad = this.GetAdditionalDocument (analysisDocument);
