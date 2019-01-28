@@ -68,6 +68,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		// by the compilations being freed out of memory due to only being weakly referenced, and recomputing them on
 		// a case by case basis.
 		BackgroundCompiler backgroundCompiler;
+
+		// Background parser is an optimized task queue for the roslyn use-case, where a parse that's already in-progress
+		// is not canceled, but used later on to help incremental parsing.
+		readonly BackgroundParser backgroundParser;
+
 		internal readonly WorkspaceId Id;
 
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -115,6 +120,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			backgroundCompiler = new BackgroundCompiler (this);
+			backgroundParser = new BackgroundParser (this);
+			backgroundParser.Start ();
 
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
 			if (cacheService != null)
@@ -478,6 +485,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				edit.Apply ();
 			}
+		}
+
+		protected override void OnDocumentTextChanged (Document document)
+		{
+			base.OnDocumentTextChanged (document);
+
+			backgroundParser.Parse (document);
 		}
 
 		//FIXME: this should NOT be async. our implementation is doing some very expensive things like formatting that it shouldn't need to do.
@@ -1094,7 +1108,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (docId != null) {
 						try {
 							if (this.GetDocument (docId) != null) {
-								base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+								OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							} else if (this.GetAdditionalDocument (docId) != null) {
 								base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							}
