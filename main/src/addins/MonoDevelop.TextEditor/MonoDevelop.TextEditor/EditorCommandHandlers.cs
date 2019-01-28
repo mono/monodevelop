@@ -35,7 +35,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 {
     [Name("Standalone Editor command handlers")]
     [ContentType("any")]
-    //[Export(typeof(ICommandHandler))]
+    [Export(typeof(ICommandHandler))]
     class EditorCommandHandlers :
         ICommandHandler<BackspaceKeyCommandArgs>,
         ICommandHandler<BackTabKeyCommandArgs>,
