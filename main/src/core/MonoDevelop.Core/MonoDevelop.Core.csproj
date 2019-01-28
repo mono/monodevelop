@@ -725,6 +725,8 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherService.Logic.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherService.WatcherRegistration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
