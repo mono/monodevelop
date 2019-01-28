@@ -727,6 +727,7 @@
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.Logic.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.WatcherRegistration.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherService.Logic.Linux.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
