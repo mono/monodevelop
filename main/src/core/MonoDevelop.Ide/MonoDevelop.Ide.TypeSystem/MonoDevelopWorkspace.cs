@@ -461,10 +461,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public override void CloseDocument (DocumentId documentId)
-		{
-		}
-
 		internal static void UpdateText (SourceText newText, Microsoft.VisualStudio.Text.ITextBuffer buffer, Microsoft.VisualStudio.Text.EditOptions options)
 		{
 			using (var edit = buffer.CreateEdit (options, reiteratedVersionNumber: null, editTag: null)) {

@@ -547,7 +547,6 @@ namespace MonoDevelop.Ide.Gui
 				else
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
-			TypeSystemService.RemoveSkippedfile (FileName);
 
 			// do actual save
 			Window.ViewContent.ContentName = filename;
@@ -589,7 +588,6 @@ namespace MonoDevelop.Ide.Gui
 //			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
-			TypeSystemService.RemoveSkippedfile (FileName);
 
 
 			try {
@@ -836,7 +834,6 @@ namespace MonoDevelop.Ide.Gui
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
-				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
 				var project = adhocProject ?? Project;
@@ -1085,7 +1082,6 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 				foreach (var project in projectsContainingFile) {
 					var projectFile = project?.GetProjectFile (currentParseFile);
-					TypeSystemService.AddSkippedFile (currentParseFile);
 					var options = new ParseOptions {
 						Project = project,
 						Content = currentParseText,
