@@ -37,7 +37,8 @@ namespace MonoDevelop.Projects
 {
 	public static partial class FileWatcherService
 	{
-#if MAC || WIN32
+// FIXME: Has a few quirks, regarding watching directories that do not exist.
+#if FSW_PERFORMANT_IMPLEMENTATION //MAC || WIN32
 		class Logic
 		{
 			readonly Dictionary<FileWatcherWrapper, HashSet<object>> refCountedWatchers = new Dictionary<FileWatcherWrapper, HashSet<object>> ();
