@@ -86,12 +86,12 @@ namespace MonoDevelop.Projects
 					}
 
 					refCountedWatchers [watcher] = objSet = new HashSet<object> ();
+					watchers.Add (path, watcher);
 				} else {
 					objSet = refCountedWatchers [watcher];
 				}
 
 				objSet.Add (id);
-				watchers.Add (path, watcher);
 			}
 
 			void UnrefWatcher (object id, FileWatcherWrapper watcher)
