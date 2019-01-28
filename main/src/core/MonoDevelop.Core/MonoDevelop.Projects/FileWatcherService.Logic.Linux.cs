@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 {
 	public static partial class FileWatcherService
 	{
-#if FSW_PERFORMANT_IMPLEMENTATION //!MAC && !WIN32
+#if !FSW_PERFORMANT_IMPLEMENTATION //!MAC && !WIN32
 		class Logic
 		{
 			// We don't want more than 8 threads for FileSystemWatchers.
