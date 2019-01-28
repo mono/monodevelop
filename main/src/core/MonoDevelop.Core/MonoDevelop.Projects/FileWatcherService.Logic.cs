@@ -40,22 +40,13 @@ namespace MonoDevelop.Projects
 #if MAC || WIN32
 		class Logic
 		{
-			// We don't want more than 8 threads for FileSystemWatchers.
-			const int maxWatchers = 8;
-
-			readonly PathTree tree = new PathTree ();
-			readonly Dictionary<object, HashSet<FilePath>> monitoredDirectories = new Dictionary<object, HashSet<FilePath>> ();
-
-			HashSet<FilePath> newWatchers = new HashSet<FilePath> ();
-			List<FilePath> toRemove = new List<FilePath> ();
+			readonly Dictionary<FileWatcherWrapper, HashSet<object>> refCountedWatchers = new Dictionary<FileWatcherWrapper, HashSet<object>> ();
+			readonly Dictionary<object, HashSet<FileWatcherWrapper>> monitoredDirectories = new Dictionary<object, HashSet<FileWatcherWrapper>> ();
 
 			internal Task UpdateWatchersAsync ()
 			{
-				cancellationTokenSource.Cancel ();
-				cancellationTokenSource = new CancellationTokenSource ();
-				CancellationToken token = cancellationTokenSource.Token;
-
-				return Task.Run (() => UpdateWatchers (token));
+				// NOP.
+				return Task.CompletedTask;
 			}
 
 			internal Task WatchDirectories_NoLock (object id, IEnumerable<FilePath> directories)
@@ -64,64 +55,8 @@ namespace MonoDevelop.Projects
 				if (directories != null)
 					set = new HashSet<FilePath> (directories.Where (x => !x.IsNullOrEmpty));
 
-				if (RegisterDirectoriesInTree_NoLock (id, set))
-					return UpdateWatchersAsync ();
+				RegisterDirectoriesInTree_NoLock (id, set);
 				return Task.CompletedTask;
-			}
-
-			void UpdateWatchers (CancellationToken token)
-			{
-				if (token.IsCancellationRequested)
-					return;
-				lock (watchers) {
-					if (token.IsCancellationRequested)
-						return;
-					newWatchers.Clear ();
-					foreach (var node in tree.Normalize (maxWatchers)) {
-						if (token.IsCancellationRequested)
-							return;
-						var dir = node.GetPath ().ToString ();
-						if (Directory.Exists (dir))
-							newWatchers.Add (dir);
-					}
-					if (newWatchers.Count == 0 && watchers.Count == 0) {
-						// Unchanged.
-						return;
-					}
-					toRemove.Clear ();
-					foreach (var kvp in watchers) {
-						var directory = kvp.Key;
-						if (!newWatchers.Contains (directory))
-							toRemove.Add (directory);
-					}
-
-					// After this point, the watcher update is real and a destructive operation, so do not use the token.
-					if (token.IsCancellationRequested)
-						return;
-
-					// First remove the watchers, so we don't spin too many threads.
-					foreach (var directory in toRemove) {
-						RemoveWatcher_NoLock (directory);
-					}
-
-					// Add the new ones.
-					foreach (var path in newWatchers) {
-						// Don't modify a watcher that already exists.
-						if (watchers.ContainsKey (path)) {
-							continue;
-						}
-						var watcher = new FileWatcherWrapper (path);
-						watchers.Add (path, watcher);
-						try {
-							watcher.EnableRaisingEvents = true;
-						} catch (UnauthorizedAccessException e) {
-							LoggingService.LogWarning ("Access to " + path + " denied. Stopping file watcher.", e);
-							watcher.Dispose ();
-							watchers.Remove (path);
-						}
-					}
-
-				}
 			}
 
 			static void RemoveWatcher_NoLock (FilePath directory)
@@ -135,55 +70,87 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			void RefWatcher (object id, FilePath path)
+			{
+				HashSet<object> objSet;
+				// We already have a watcher here.
+				if (!watchers.TryGetValue (path, out var watcher)) {
+					watcher = new FileWatcherWrapper (path);
 
-			bool RegisterDirectoriesInTree_NoLock (object id, HashSet<FilePath> set)
+					try {
+						watcher.EnableRaisingEvents = true;
+					} catch (UnauthorizedAccessException e) {
+						LoggingService.LogWarning ("Access to " + path + " denied. Stopping file watcher.", e);
+						watcher.Dispose ();
+						return;
+					}
+
+					refCountedWatchers [watcher] = objSet = new HashSet<object> ();
+				} else {
+					objSet = refCountedWatchers [watcher];
+				}
+
+				objSet.Add (id);
+				watchers.Add (path, watcher);
+			}
+
+			void UnrefWatcher (object id, FileWatcherWrapper watcher)
+			{
+				var objSet = refCountedWatchers [watcher];
+				if (!objSet.Remove (id))
+					return;
+
+				// The watcher refcount is zero.
+				if (objSet.Count == 0) {
+					RemoveWatcher_NoLock (watcher.Path);
+				}
+				return;
+			}
+
+			void ClearWatchers (object id)
+			{
+				if (!monitoredDirectories.TryGetValue (id, out var watchersForId))
+					return;
+
+				foreach (var watcher in watchersForId) {
+					UnrefWatcher (id, watcher);
+				}
+
+				// Remove the id mapping
+				monitoredDirectories.Remove (id);
+			}
+
+			void RegisterDirectoriesInTree_NoLock (object id, HashSet<FilePath> set)
 			{
 				Debug.Assert (Monitor.IsEntered (watchers));
 
-				// Remove paths subscribed for this id.
-
-				bool modified = false;
-
-				if (monitoredDirectories.TryGetValue (id, out var oldDirectories)) {
-					HashSet<FilePath> toRemove = null;
-					if (set != null) {
-						toRemove = new HashSet<FilePath> (oldDirectories);
-						// Remove the old ones which are not in the new set.
-						toRemove.ExceptWith (set);
-					} else
-						toRemove = oldDirectories;
-
-					foreach (var dir in toRemove) {
-						var node = tree.RemoveNode (dir, id);
-
-						bool wasRemoved = node != null && !node.IsLive;
-						modified |= wasRemoved;
-					}
+				// unsubscribe fast-path removal
+				if (set == null) {
+					ClearWatchers (id);
+					return;
 				}
 
-				// Remove the current registered directories
-				monitoredDirectories.Remove (id);
-				if (set == null)
-					return modified;
-
 				HashSet<FilePath> toAdd = null;
-				if (oldDirectories != null) {
+				if (monitoredDirectories.TryGetValue (id, out var oldWatchers)) {
+					var toRemove = new HashSet<FilePath> (oldWatchers.Select(x => x.Path));
+					// Remove the old ones which are not in the new set.
+					toRemove.ExceptWith (set);
+
+					foreach (var path in toRemove) {
+						var watcher = watchers [path];
+
+						UnrefWatcher (id, watcher);
+					}
+
 					toAdd = new HashSet<FilePath> (set);
-					toAdd.ExceptWith (oldDirectories);
+					toAdd.ExceptWith (oldWatchers.Select (x => x.Path));
 				} else
 					toAdd = set;
 
-				// Apply new ones if we have any
-				if (set.Count > 0) {
-					monitoredDirectories [id] = set;
-					foreach (var path in toAdd) {
-						tree.AddNode (path, id, out bool isNew);
-
-						// We have only modified the tree if there is any new pathtree node item added
-						modified |= isNew;
-					}
+				// Unchanged will not be in this set, so just add new ones, by refing one
+				foreach (var path in toAdd) {
+					RefWatcher (id, path);
 				}
-				return modified;
 			}
 		}
 #endif
