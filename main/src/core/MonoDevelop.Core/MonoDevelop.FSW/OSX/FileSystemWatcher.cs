@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -81,7 +82,7 @@ namespace MonoDevelop.FSW.OSX
 		public static void DisposeAll()
 		{
 			lock (fileSystemWatchers) {
-				foreach (var fsw in fileSystemWatchers) {
+				foreach (var fsw in fileSystemWatchers.ToArray ()) {
 					fsw.Dispose ();
 				}
 				fileSystemWatchers.Clear ();
