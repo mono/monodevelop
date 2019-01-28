@@ -32,19 +32,22 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Shared.TestHooks;
 using Microsoft.CodeAnalysis.Editor.Implementation.Workspaces;
 using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
-using Microsoft.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 using System.Threading;
-using MonoDevelop.Core;
+using Microsoft.VisualStudio.Threading;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
 	[ExportWorkspaceService(typeof(IWorkspaceTaskSchedulerFactory), ServiceLayer.Host), Shared]
 	class MonoDevelopTaskSchedulerFactory : EditorTaskSchedulerFactory
 	{
+		readonly IThreadingContext _threadingContext;
+
 		[ImportingConstructor]
-		public MonoDevelopTaskSchedulerFactory (IAsynchronousOperationListenerProvider listenerProvider) : base (listenerProvider)
+		[Obsolete (MefConstruction.ImportingConstructorMessage, error: true)]
+		public MonoDevelopTaskSchedulerFactory (IThreadingContext threadingContext, IAsynchronousOperationListenerProvider listenerProvider) : base (listenerProvider)
 		{
+			_threadingContext = threadingContext;
 		}
 
 		public override IWorkspaceTaskScheduler CreateEventingTaskQueue ()
@@ -60,9 +63,9 @@ namespace MonoDevelop.Ide.RoslynServices
 		class MonoDevelopTaskScheduler : IWorkspaceTaskScheduler
 		{
 			readonly Lazy<WorkspaceTaskQueue> _queue;
-			readonly WorkspaceTaskSchedulerFactory _factory;
+			readonly MonoDevelopTaskSchedulerFactory _factory;
 
-			public MonoDevelopTaskScheduler (WorkspaceTaskSchedulerFactory factory)
+			public MonoDevelopTaskScheduler (MonoDevelopTaskSchedulerFactory factory)
 			{
 				_factory = factory;
 				_queue = new Lazy<WorkspaceTaskQueue> (CreateQueue);
@@ -70,7 +73,9 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			WorkspaceTaskQueue CreateQueue ()
 			{
-				return new WorkspaceTaskQueue (_factory, Runtime.MainTaskScheduler ?? TaskScheduler.Default);
+				// At this point, we have to know what the UI thread is.
+				Contract.ThrowIfFalse (_factory._threadingContext.HasMainThread);
+				return new WorkspaceTaskQueue (_factory, new JoinableTaskFactoryTaskScheduler (_factory._threadingContext.JoinableTaskFactory));
 			}
 
 			public Task ScheduleTask (Action taskAction, string taskName, CancellationToken cancellationToken = default(CancellationToken))
@@ -91,6 +96,37 @@ namespace MonoDevelop.Ide.RoslynServices
 			public Task<T> ScheduleTask<T> (Func<Task<T>> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
+			}
+		}
+
+		class JoinableTaskFactoryTaskScheduler : TaskScheduler
+		{
+			readonly JoinableTaskFactory _joinableTaskFactory;
+
+			public JoinableTaskFactoryTaskScheduler (JoinableTaskFactory joinableTaskFactory)
+			{
+				_joinableTaskFactory = joinableTaskFactory;
+			}
+
+			public override int MaximumConcurrencyLevel => 1;
+
+			protected override IEnumerable<Task> GetScheduledTasks () => null;
+
+			protected override void QueueTask (Task task)
+			{
+				_joinableTaskFactory.RunAsync (async () => {
+					await _joinableTaskFactory.SwitchToMainThreadAsync (alwaysYield: true);
+					TryExecuteTask (task);
+				});
+			}
+
+			protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
+			{
+				if (_joinableTaskFactory.Context.IsOnMainThread) {
+					return TryExecuteTask (task);
+				}
+
+				return false;
 			}
 		}
 	}
