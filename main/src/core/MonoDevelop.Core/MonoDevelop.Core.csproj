@@ -52,7 +52,10 @@
   </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
   <ItemGroup>
     <Reference Include="Humanizer.Core">
       <HintPath>..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
@@ -727,6 +730,7 @@
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.Logic.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherService.WatcherRegistration.cs" />
+    <Compile Include="MonoDevelop.Projects\FileWatcherService.Logic.Linux.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />
