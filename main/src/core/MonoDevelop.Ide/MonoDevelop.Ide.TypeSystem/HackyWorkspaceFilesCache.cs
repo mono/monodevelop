@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!IdeApp.IsInitialized || !enabled || solution == null)
 				return;
 
+			LoggingService.LogDebug ("HackyWorkspaceCache enabled");
 			cacheDir = solution.GetPreferencesDirectory ().Combine ("hacky-project-cache");
 			Directory.CreateDirectory (cacheDir);
 
