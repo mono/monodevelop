@@ -256,10 +256,7 @@ namespace MonoDevelop.VersionControl
 				var repo = detectedVCS?.GetRepositoryReference (bestMatch, id);
 				if (repo != null) {
 					repositoryCache.Add (bestMatch, repo);
-					Instrumentation.Repositories.Inc (new RepositoryMetadata {
-						Type = detectedVCS.Name,
-						Version = detectedVCS.Version,
-					});
+					Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
 				}
 				return repo;
 			} catch (Exception e) {
@@ -840,10 +837,11 @@ namespace MonoDevelop.VersionControl
 		Other
 	}
 
-	public class RepositoryMetadata : CounterMetadata
+	class RepositoryMetadata : CounterMetadata
 	{
 		public RepositoryMetadata ()
 		{
+			throw new InvalidOperationException ();
 		}
 
 		public RepositoryMetadata (VersionControlSystem versionControl)
