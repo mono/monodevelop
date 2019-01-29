@@ -64,7 +64,7 @@ namespace MonoDevelop.TextEditor
 		Delegate GetDelegate (string fullName, int offset = 0)
 		{
 			var dotIdx = fullName.LastIndexOf ('.');
-			var factoryTypeName = fullName.Substring (offset, dotIdx);
+			var factoryTypeName = fullName.Substring (offset, dotIdx - offset);
 			var factoryType = Addin.GetType (factoryTypeName, true);
 			var methodName = fullName.Substring (dotIdx + 1);
 			var methodInfo = factoryType.GetMethod (methodName);
