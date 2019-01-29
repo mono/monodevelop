@@ -424,8 +424,7 @@ namespace MonoDevelop.Core.Assemblies
 		public static ImmutableArray<string> GetAssemblyReferences (string fileName)
 		{
 			try {
-				using (var stream = File.OpenRead (fileName))
-				using (var reader = new PEReader (stream, PEStreamOptions.Default)) {
+				using (var reader = new PEReader (File.OpenRead (fileName))) {
 					var mr = reader.GetMetadataReader ();
 					var assemblyReferences = reader.GetMetadataReader ().AssemblyReferences;
 
@@ -449,8 +448,7 @@ namespace MonoDevelop.Core.Assemblies
 				return result;
 
 			try {
-				using (var stream = File.OpenRead (fileName))
-				using (var reader = new PEReader (stream, PEStreamOptions.Default)) {
+				using (var reader = new PEReader (File.OpenRead (fileName))) {
 					var mr = reader.GetMetadataReader ();
 
 					foreach (var assemblyReferenceHandle in mr.AssemblyReferences) {
