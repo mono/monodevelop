@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -39,8 +40,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project> projectIdToMdProjectMap = ImmutableDictionary<ProjectId, MonoDevelop.Projects.Project>.Empty;
 			readonly Dictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new Dictionary<MonoDevelop.Projects.Project, ProjectId> ();
-			// FIXME: Make this private
-			internal readonly Dictionary<ProjectId, ProjectData> projectDataMap = new Dictionary<ProjectId, ProjectData> ();
+			readonly Dictionary<ProjectId, ProjectData> projectDataMap = new Dictionary<ProjectId, ProjectData> ();
+			readonly object updatingProjectDataLock = new object ();
 
 			public ProjectDataMap (MonoDevelopWorkspace workspace)
 			{
@@ -92,7 +93,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (val);
 				}
 
-				lock (Workspace.updatingProjectDataLock) {
+				lock (updatingProjectDataLock) {
 					projectDataMap.Remove (id);
 				}
 			}
@@ -106,14 +107,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal bool Contains (ProjectId projectId)
 			{
-				lock (Workspace.updatingProjectDataLock) {
+				lock (updatingProjectDataLock) {
 					return projectDataMap.ContainsKey (projectId);
 				}
 			}
 
 			internal ProjectData GetData (ProjectId id)
 			{
-				lock (Workspace.updatingProjectDataLock) {
+				lock (updatingProjectDataLock) {
 					projectDataMap.TryGetValue (id, out ProjectData result);
 					return result;
 				}
@@ -121,7 +122,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal ProjectData RemoveData (ProjectId id)
 			{
-				lock (Workspace.updatingProjectDataLock) {
+				lock (updatingProjectDataLock) {
 					if (projectDataMap.TryGetValue (id, out ProjectData result)) {
 						projectDataMap.Remove (id);
 						result.Disconnect ();
@@ -132,10 +133,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal ProjectData CreateData (ProjectId id, ImmutableArray<MonoDevelopMetadataReference> metadataReferences)
 			{
-				lock (Workspace.updatingProjectDataLock) {
+				lock (updatingProjectDataLock) {
 					var result = new ProjectData (id, metadataReferences, Workspace);
 					projectDataMap [id] = result;
 					return result;
+				}
+			}
+			internal ProjectId[] GetProjectIds ()
+			{
+				lock (updatingProjectDataLock) {
+					return projectDataMap.Keys.ToArray ();
 				}
 			}
 		}

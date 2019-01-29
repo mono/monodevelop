@@ -245,11 +245,16 @@ namespace MonoDevelop.Ide.TypeSystem
 						var projectFile = options.Project.GetProjectFile (options.FileName);
 						if (projectFile != null) {
 							ws.UpdateProjectionEntry (projectFile, result.Projections);
-							foreach (var projection in result.Projections) {
-								var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
-								if (docId != null) {
-									ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+							await ws.LoadLock.WaitAsync ();
+							try {
+								foreach (var projection in result.Projections) {
+									var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
+									if (docId != null) {
+										ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+									}
 								}
+							} finally {
+								ws.LoadLock.Release ();
 							}
 						}
 					}
