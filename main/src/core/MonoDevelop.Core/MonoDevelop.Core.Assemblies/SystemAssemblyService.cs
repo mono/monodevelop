@@ -505,24 +505,50 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
 		{
-			AssemblyDefinition assembly = null;
-			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					yield break;
-				}
-				foreach (var r in assembly.MainModule.Resources) {
-					if (r.ResourceType == ResourceType.Embedded) {
-						var er = (EmbeddedResource)r;
+			using (var reader = new PEReader (File.OpenRead (fileName))) {
+				var mr = reader.GetMetadataReader ();
 
-						// Explicitly create a capture and query it here so the stream isn't queried after the module is disposed.
-						var rs = er.GetResourceStream ();
-						yield return new ManifestResource (er.Name, () => rs);
+				var headers = reader.PEHeaders;
+				var resources = headers.CorHeader.ResourcesDirectory;
+				var sectionData = reader.GetSectionData (resources.RelativeVirtualAddress);
+				if (sectionData.Length == 0)
+					return Array.Empty<ManifestResource> (); // RVA could not be found in any section
+
+				var sectionReader = sectionData.GetReader ();
+				var manifestResources = mr.ManifestResources;
+				var result = new List<ManifestResource> (manifestResources.Count);
+
+				foreach (var manifestResourceHandle in manifestResources) {
+					var manifestResource = mr.GetManifestResource (manifestResourceHandle);
+
+					// This means the type is Embedded.
+					var isEmbeddedResource = manifestResource.Implementation.IsNil;
+					if (!isEmbeddedResource)
+						continue;
+
+					int offset = (int)manifestResource.Offset;
+					sectionReader.Offset += offset;
+					try {
+						int length = sectionReader.ReadInt32 ();
+						if ((uint)length > sectionReader.RemainingBytes) {
+							LoggingService.LogError ("Resource stream invalid length {0}", length.ToString ());
+							continue;
+						}
+
+						var name = mr.GetString (manifestResource.Name);
+						unsafe {
+							using (var unmanagedStream = new UnmanagedMemoryStream (sectionReader.CurrentPointer, length, length, FileAccess.Read)) {
+								var memoryStream = new MemoryStream (length);
+								unmanagedStream.CopyTo (memoryStream);
+								memoryStream.Position = 0;
+								result.Add (new ManifestResource (name, () => memoryStream));
+							}
+						}
+					} finally {
+						sectionReader.Offset -= offset;
 					}
 				}
-			} finally {
-				assembly?.Dispose ();
+				return result;
 			}
 		}
 

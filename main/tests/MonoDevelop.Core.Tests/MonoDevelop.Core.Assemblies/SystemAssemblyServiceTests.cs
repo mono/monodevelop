@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -67,6 +68,28 @@ namespace MonoDevelop.Core.Assemblies
 			Assert.That (result, Contains.Item ("System"));
 			Assert.That (result, Contains.Item ("System.Core"));
 			Assert.That (result, Contains.Item ("System.Xml"));
+		}
+
+		[Test]
+		public void GetManifestResources ()
+		{
+			var result = SystemAssemblyService.GetAssemblyManifestResources ("MonoDevelop.Core.dll").ToArray ();
+
+			Assert.That (result.Length, Is.GreaterThanOrEqualTo (1));
+
+			var addinXml = result.SingleOrDefault (x => x.Name == "MonoDevelop.Core.addin.xml");
+			Assert.IsNotNull (addinXml);
+
+			string fromReader, actual;
+
+			using (var streamReader = new StreamReader (addinXml.Open ())) {
+				fromReader = streamReader.ReadToEnd ();
+			}
+			using (var streamReader = new StreamReader (typeof (SystemAssemblyService).Assembly.GetManifestResourceStream ("MonoDevelop.Core.addin.xml"))) {
+				actual = streamReader.ReadToEnd ();
+			}
+
+			Assert.AreEqual (actual, fromReader);
 		}
 	}
 }
