@@ -37,6 +37,7 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		[TestCase (true, "System.Collections.Immutable.dll")]
 		[TestCase (false, "MonoDevelop.Core.dll")]
+		[TestCase (false, "NonExistingDll.dll")]
 		public async Task RequiresFacadeAssembliesAsync (bool addFacades, string relativeDllPath)
 		{
 			var result = await SystemAssemblyService.RequiresFacadeAssembliesAsync (relativeDllPath);

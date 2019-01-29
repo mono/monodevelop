@@ -33,10 +33,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Threading;
 using Mono.Addins;
 using Mono.Cecil;
 using MonoDevelop.Core.AddIns;
+
+using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -435,27 +439,29 @@ namespace MonoDevelop.Core.Assemblies
 
 		static bool RequiresFacadeAssembliesInternal (string fileName)
 		{
-			bool result;
-			if (facadeReferenceDict.TryGetValue (fileName, out result))
+			if (facadeReferenceDict.TryGetValue (fileName, out var result))
 				return result;
 
-			AssemblyDefinition assembly = null;
 			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return false;
-				}
-				foreach (var r in assembly.MainModule.AssemblyReferences) {
-					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name.Equals ("System.Runtime") || r.Name.Equals ("netstandard")) {
-						facadeReferenceDict [fileName] = true; ;
-						return true;
+				using (var stream = File.OpenRead (fileName))
+				using (var reader = new PEReader (stream, PEStreamOptions.Default)) {
+					var mr = reader.GetMetadataReader ();
+
+					foreach (var assemblyReferenceHandle in mr.AssemblyReferences) {
+						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+						var name = mr.GetString (assemblyReference.Name);
+
+						// Don't compare the version number since it may change depending on the version of .net standard
+						if (name.Equals ("System.Runtime") || name.Equals ("netstandard")) {
+							facadeReferenceDict [fileName] = true;
+							return true;
+						}
 					}
 				}
-			} finally {
-				assembly?.Dispose ();
+			} catch {
+				return false;
 			}
+
 			facadeReferenceDict [fileName] = false;
 			return false;
 		}
