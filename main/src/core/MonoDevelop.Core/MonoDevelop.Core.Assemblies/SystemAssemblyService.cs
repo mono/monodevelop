@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -420,18 +421,23 @@ namespace MonoDevelop.Core.Assemblies
 		/// <summary>
 		/// Simply get all assembly reference names from an assembly given it's file name.
 		/// </summary>
-		public static IEnumerable<string> GetAssemblyReferences (string fileName)
+		public static ImmutableArray<string> GetAssemblyReferences (string fileName)
 		{
-			AssemblyDefinition assembly = null;
 			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return Enumerable.Empty<string> ();
+				using (var stream = File.OpenRead (fileName))
+				using (var reader = new PEReader (stream, PEStreamOptions.Default)) {
+					var mr = reader.GetMetadataReader ();
+					var assemblyReferences = reader.GetMetadataReader ().AssemblyReferences;
+
+					var builder = ImmutableArray.CreateBuilder<string> (assemblyReferences.Count);
+					foreach (var assemblyReferenceHandle in assemblyReferences) {
+						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+						builder.Add (mr.GetString (assemblyReference.Name));
+					}
+					return builder.MoveToImmutable();
 				}
-				return assembly.MainModule.AssemblyReferences.Select (x => x.Name);
-			} finally {
-				assembly?.Dispose ();
+			} catch {
+				return ImmutableArray<string>.Empty;
 			}
 		}
 

@@ -56,5 +56,17 @@ namespace MonoDevelop.Core.Assemblies
 			var references = SystemAssemblyService.GetAssemblyReferences(Path.Combine(Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Cecil.dll"));
 			Assert.That(references, Is.EquivalentTo(names));
 		}
+
+		[Test]
+		public void CheckAssemblyReferences ()
+		{
+			var result = SystemAssemblyService.GetAssemblyReferences ("Mono.Addins.dll");
+
+			Assert.AreEqual (4, result.Length);
+			Assert.That (result, Contains.Item ("mscorlib"));
+			Assert.That (result, Contains.Item ("System"));
+			Assert.That (result, Contains.Item ("System.Core"));
+			Assert.That (result, Contains.Item ("System.Xml"));
+		}
 	}
 }
