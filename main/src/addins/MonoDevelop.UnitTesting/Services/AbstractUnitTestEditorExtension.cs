@@ -323,18 +323,6 @@ namespace MonoDevelop.UnitTesting
 				this.project = project;
 			}
 
-			bool TimeoutHandler ()
-			{
-				var test = UnitTestService.SearchTestByDocumentId (testCase);
-				if (test != null) {
-					RunTest (test);
-					timeoutHandler = 0;
-				} else {
-					return true;
-				}
-				return false;
-			}
-
 			internal async void Run (object sender, EventArgs e)
 			{
 				if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) ||
