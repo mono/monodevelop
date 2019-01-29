@@ -431,39 +431,6 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		static Dictionary<string, bool> referenceDict = new Dictionary<string, bool> ();
-
-		static bool ContainsReferenceToSystemRuntimeInternal (string fileName)
-		{
-			bool result;
-			if (referenceDict.TryGetValue (fileName, out result))
-				return result;
-
-			//const int cacheLimit = 4096;
-			//if (referenceDict.Count > cacheLimit)
-			//	referenceDict = ImmutableDictionary<string, bool>.Empty
-
-			AssemblyDefinition assembly = null;
-			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return false;
-				}
-				foreach (var r in assembly.MainModule.AssemblyReferences) {
-					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name.Equals ("System.Runtime")) {
-						referenceDict [fileName] = true; ;
-						return true;
-					}
-				}
-			} finally {
-				assembly?.Dispose ();
-			}
-			referenceDict [fileName] = false;
-			return false;
-		}
-
 		static Dictionary<string, bool> facadeReferenceDict = new Dictionary<string, bool> ();
 
 		static bool RequiresFacadeAssembliesInternal (string fileName)
@@ -493,37 +460,8 @@ namespace MonoDevelop.Core.Assemblies
 			return false;
 		}
 
-		static object referenceLock = new object ();
-
-		[Obsolete ("Use RequiresFacadeAssemblies (string fileName)")]
-		public static bool ContainsReferenceToSystemRuntime (string fileName)
-		{
-			lock (referenceLock) {
-				return ContainsReferenceToSystemRuntimeInternal (fileName);
-			}
-		}
-
-		static SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
-
-		[Obsolete ("Use RequiresFacadeAssembliesAsync (string fileName)")]
-		public static async System.Threading.Tasks.Task<bool> ContainsReferenceToSystemRuntimeAsync (string filename)
-		{
-			try {
-				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
-				return ContainsReferenceToSystemRuntimeInternal (filename);
-			} finally {
-				referenceLockAsync.Release ();
-			}
-		}
-
-		internal static bool RequiresFacadeAssemblies (string fileName)
-		{
-			lock (referenceLock) {
-				return RequiresFacadeAssembliesInternal (fileName);
-			}
-		}
-
-		internal static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
+		static readonly SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
+		public static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
 		{
 			try {
 				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);

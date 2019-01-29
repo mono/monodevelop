@@ -35,30 +35,6 @@ namespace MonoDevelop.Core.Assemblies
 	[TestFixture]
 	public class SystemAssemblyServiceTests
 	{
-		[TestCase(true, "System.Collections.Immutable.dll")]
-		[TestCase(false, "MonoDevelop.Core.dll")]
-		public void ImmutableCollectionsContainReferenceToSystemRuntime (bool withSystemRuntime, string relativeDllPath)
-		{
-			var result = SystemAssemblyService.ContainsReferenceToSystemRuntime(relativeDllPath);
-			Assert.That(result, Is.EqualTo(withSystemRuntime));
-		}
-
-		[TestCase(true, "System.Collections.Immutable.dll")]
-		[TestCase(false, "MonoDevelop.Core.dll")]
-		public async Task ImmutableCollectionsContainReferenceToSystemRuntimeAsync (bool withSystemRuntime, string relativeDllPath)
-		{
-			var result = await SystemAssemblyService.ContainsReferenceToSystemRuntimeAsync(relativeDllPath);
-			Assert.That(result, Is.EqualTo(withSystemRuntime));
-		}
-
-		[TestCase (true, "System.Collections.Immutable.dll")]
-		[TestCase (false, "MonoDevelop.Core.dll")]
-		public void RequiresFacadeAssemblies (bool addFacades, string relativeDllPath)
-		{
-			var result = SystemAssemblyService.RequiresFacadeAssemblies (relativeDllPath);
-			Assert.That (result, Is.EqualTo (addFacades));
-		}
-
 		[TestCase (true, "System.Collections.Immutable.dll")]
 		[TestCase (false, "MonoDevelop.Core.dll")]
 		public async Task RequiresFacadeAssembliesAsync (bool addFacades, string relativeDllPath)
