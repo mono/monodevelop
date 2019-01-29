@@ -411,12 +411,13 @@ namespace MonoDevelop.Projects
 				var file1 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 				var file2 = p.Files.First (f => f.FilePath.FileName == "AssemblyInfo.cs");
 
+				var removedFilesTask = WaitForFilesRemoved (new [] { file1.FilePath, file2.FilePath });
 				File.Delete (file1.FilePath);
 				File.Delete (file2.FilePath);
 
 				// Wait for second file so we can detect multiple delete events for the
 				// first file deleted.
-				await WaitForFileRemoved (file2.FilePath);
+				await removedFilesTask;
 
 				AssertFileRemoved (file1.FilePath);
 				AssertFileRemoved (file2.FilePath);
@@ -442,12 +443,13 @@ namespace MonoDevelop.Projects
 				var file1 = p.Files.First (f => f.FilePath.FileName == "MyClass.cs");
 				var file2 = p.Files.First (f => f.FilePath.FileName == "AssemblyInfo.cs");
 
+				var removedFilesTask = WaitForFilesRemoved (new [] { file1.FilePath, file2.FilePath });
 				File.Delete (file1.FilePath);
 				File.Delete (file2.FilePath);
 
 				// Wait for second file so we can detect multiple delete events for the
 				// first file deleted.
-				await WaitForFileRemoved (file2.FilePath);
+				await removedFilesTask;
 
 				AssertFileRemoved (file1.FilePath);
 				AssertFileRemoved (file2.FilePath);
