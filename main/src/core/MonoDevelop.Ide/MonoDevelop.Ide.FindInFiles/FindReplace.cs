@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length)) {
 						string replacement = match.Result (replacePattern);
 						results.Add (new SearchResult (provider, match.Index + delta, replacement.Length));
-						provider.Replace (match.Index + delta, match.Length, replacement);
+						provider.Replace (match.Index + delta, match.Index, match.Length, replacement);
 						delta += replacement.Length - match.Length;
 					}
 				}
@@ -355,7 +355,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			int delta = 0;
 			foreach (var sr in searchResult) {
-				provider.Replace (sr.Offset + delta, sr.Length, replacePattern);
+				provider.Replace (sr.Offset + delta, sr.Offset, sr.Length, replacePattern);
 				delta += replacePattern.Length - sr.Length;
 			}
 		}
