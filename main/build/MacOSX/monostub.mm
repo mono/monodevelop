@@ -326,8 +326,7 @@ int main (int argc, char **argv)
 	run_md_bundle_if_needed(appDir, argc, argv);
 
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"5.10.0.171";
-	NSString *req_mono_version_stable = @"5.8.0.130"; // remove this when not needed anymore
+	NSString *req_mono_version = @"5.18.0.244";
 
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
@@ -455,12 +454,8 @@ int main (int argc, char **argv)
 	// Check mono > 5.10 first, then check > 5.8 and < 5.9. Otherwise it falls
 	// into the broken range of [5.9.0 5.10.0.123]
 	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
-		if (check_mono_version (mono_version, [req_mono_version_stable UTF8String])) {
-			if (check_mono_version (mono_version, "5.9.0")) {
-				NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]];
-				exit_with_message ((char *)[msg UTF8String], argv[0]);
-			}
-		}
+		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]];
+		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
 
 	extra_argv = get_mono_env_options (&extra_argc);
