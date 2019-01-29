@@ -8,6 +8,12 @@
     <AddinBuildDir>DisplayBindings\TextEditor.Cocoa</AddinBuildDir>
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <ExternalConsole>false</ExternalConsole>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Mac" HintPath="..\..\..\..\external\Xamarin.Mac.dll" Private="False" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\CocoaControls\CocoaControls.csproj" />
