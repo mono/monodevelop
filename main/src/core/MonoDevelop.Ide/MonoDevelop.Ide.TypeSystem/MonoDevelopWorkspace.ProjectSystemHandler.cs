@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					fileName = new FilePath (p.Name + ".dll");
 
 				if (!hackyCache.TryGetCachedItems (p, workspace.MetadataReferenceManager, projectMap, out var sourceFiles, out var analyzerFiles, out var references, out var projectReferences)) {
-					(references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token);
+					(references, projectReferences) = await metadataHandler.Value.CreateReferences (p, token).ConfigureAwait (false);
 					if (token.IsCancellationRequested)
 						return null;
 
@@ -140,37 +140,45 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var loader = workspace.Services.GetService<IAnalyzerService> ().GetLoader ();
 
-				lock (workspace.updatingProjectDataLock) {
+				ProjectData projectData, oldProjectData;
+				List<DocumentInfo> mainDocuments, additionalDocuments;
+				try {
+					await workspace.LoadLock.WaitAsync ().ConfigureAwait (false);
 					//when reloading e.g. after a save, preserve document IDs
-					var oldProjectData = projectMap.RemoveData (projectId);
-					var projectData = projectMap.CreateData (projectId, references);
+					oldProjectData = projectMap.RemoveData (projectId);
+					projectData = projectMap.CreateData (projectId, references);
 
-					var documents = CreateDocuments (projectData, p, token, sourceFiles, oldProjectData);
+					var documents = await CreateDocuments (projectData, p, token, sourceFiles, oldProjectData).ConfigureAwait (false);
 					if (documents == null)
 						return null;
 
-					// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
-					var info = ProjectInfo.Create (
-						projectId,
-						VersionStamp.Create (),
-						p.Name,
-						fileName.FileNameWithoutExtension,
-						(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
-						p.FileName,
-						fileName,
-						cp?.CreateCompilationOptions (),
-						cp?.CreateParseOptions (config),
-						documents.Item1,
-						projectReferences,
-						references.Select (x => x.CurrentSnapshot),
-						analyzerReferences: analyzerFiles.SelectAsArray (x => {
-							var analyzer = new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp);
-							return analyzer.GetReference ();
-						}),
-						additionalDocuments: documents.Item2
-					);
-					return info;
+					mainDocuments = documents.Item1;
+					additionalDocuments = documents.Item2;
+				} finally {
+					workspace.LoadLock.Release ();
 				}
+
+				// TODO: Pass in the WorkspaceMetadataFileReferenceResolver
+				var info = ProjectInfo.Create (
+					projectId,
+					VersionStamp.Create (),
+					p.Name,
+					fileName.FileNameWithoutExtension,
+					(p as MonoDevelop.Projects.DotNetProject)?.RoslynLanguageName ?? LanguageNames.CSharp,
+					p.FileName,
+					fileName,
+					cp?.CreateCompilationOptions (),
+					cp?.CreateParseOptions (config),
+					mainDocuments,
+					projectReferences,
+					references.Select (x => x.CurrentSnapshot),
+					analyzerReferences: analyzerFiles.SelectAsArray (x => {
+						var analyzer = new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp);
+						return analyzer.GetReference ();
+					}),
+					additionalDocuments: additionalDocuments
+				);
+				return info;
 			}
 
 			async Task<ConcurrentBag<ProjectInfo>> CreateProjectInfos (IEnumerable<MonoDevelop.Projects.Project> mdProjects, CancellationToken token)
@@ -307,7 +315,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
 			}
 
-			Tuple<List<DocumentInfo>, List<DocumentInfo>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, ImmutableArray<MonoDevelop.Projects.ProjectFile> sourceFiles, ProjectData oldProjectData)
+			async Task<Tuple<List<DocumentInfo>, List<DocumentInfo>>> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token, ImmutableArray<MonoDevelop.Projects.ProjectFile> sourceFiles, ProjectData oldProjectData)
 			{
 				var documents = new List<DocumentInfo> ();
 				// We don' add additionalDocuments anymore because they were causing slowdown of compilation generation
@@ -328,7 +336,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						documents.Add (CreateDocumentInfo (solutionData, p.Name, projectData, f));
 					} else {
-						foreach (var projectedDocument in GenerateProjections (f, projectData.DocumentData, p, oldProjectData, null)) {
+						foreach (var projectedDocument in await GenerateProjections (f, projectData.DocumentData, p, token, oldProjectData, null)) {
 							var projectedId = projectData.DocumentData.GetOrCreate (projectedDocument.FilePath, oldProjectData?.DocumentData);
 							if (!duplicates.Add (projectedId))
 								continue;
@@ -346,41 +354,44 @@ namespace MonoDevelop.Ide.TypeSystem
 				return Tuple.Create (documents, additionalDocuments);
 			}
 
-			IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
+			async Task<List<DocumentInfo>> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, CancellationToken token, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
 			{
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
-					yield break;
+					return new List<DocumentInfo> ();
+
 				var options = new ParseOptions {
 					FileName = f.FilePath,
 					Project = p,
 					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (f.FilePath),
 				};
-				var generatedProjections = node.Parser.GenerateProjections (options);
+				var generatedProjections = await node.Parser.GenerateProjections (options, token);
 				var list = new List<Projection> ();
 				var entry = new ProjectionEntry {
 					File = f,
 					Projections = list,
 				};
 
-				foreach (var projection in generatedProjections.Result) {
+				var result = new List<DocumentInfo> (generatedProjections.Count);
+				foreach (var projection in generatedProjections) {
 					list.Add (projection);
 					if (duplicates != null && !duplicates.Add (documentMap.GetOrCreate (projection.Document.FileName, oldProjectData?.DocumentData)))
 						continue;
 					var plainName = projection.Document.FileName.FileName;
 					var folders = GetFolders (p.Name, f);
-					yield return DocumentInfo.Create (
+					result.Add(DocumentInfo.Create (
 						documentMap.GetOrCreate (projection.Document.FileName, oldProjectData?.DocumentData),
 						plainName,
 						folders,
 						SourceCodeKind.Regular,
 						TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Document), VersionStamp.Create (), projection.Document.FileName)),
 						projection.Document.FileName,
-						false
+						false)
 					);
 				}
 				projections.AddProjectionEntry (entry);
+				return result;
 			}
 
 			static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
