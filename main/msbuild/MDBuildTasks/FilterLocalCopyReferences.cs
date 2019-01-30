@@ -102,7 +102,8 @@ namespace MDBuildTasks
 				var includeKey = filename;
 				switch (Path.GetExtension (includeKey).ToLowerInvariant ()) {
 				case ".dll":
-					if (includeKey.EndsWith (".resources.dll", StringComparison.OrdinalIgnoreCase)) {
+					// Only make this change if the user hasn't explicitly put a *.resources.dll file in the include list (e.g. AndroidDeviceManager.Resources.dll should be treated like a normal DLL)
+					if (!includeKeyHash.Contains(includeKey) && includeKey.EndsWith (".resources.dll", StringComparison.OrdinalIgnoreCase)) {
 						includeKey = includeKey.Substring (0, includeKey.Length - ".resources.dll".Length) + ".dll";
 					}
 					break;
