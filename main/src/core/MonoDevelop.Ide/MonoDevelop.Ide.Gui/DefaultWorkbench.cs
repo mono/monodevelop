@@ -79,6 +79,7 @@ namespace MonoDevelop.Ide.Gui
 		IWorkbenchWindow lastActive;
 
 		bool closeAll;
+		bool? fullScreenState = null;
 
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
@@ -146,13 +147,20 @@ namespace MonoDevelop.Ide.Gui
 		public DockFrame DockFrame {
 			get { return dock; }
 		}
-		
+
 		public bool FullScreen {
 			get {
 				return DesktopService.GetIsFullscreen (this);
 			}
 			set {
-				DesktopService.SetIsFullscreen (this, value);
+				// If this window is not visible, don't set full screen mode
+				// until it is, as that would conflict with other windows we
+				// might be opening before (Start Window, for instance)
+				if (Visible) {
+					DesktopService.SetIsFullscreen (this, value);
+				} else {
+					fullScreenState = value;
+				}
 			}
 		}
 
@@ -735,6 +743,15 @@ namespace MonoDevelop.Ide.Gui
 						}
 					}
 				}
+			}
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			if (fullScreenState != null && fullScreenState != DesktopService.GetIsFullscreen (this)) {
+				DesktopService.SetIsFullscreen (this, (bool) fullScreenState);
+				fullScreenState = null;
 			}
 		}
 
