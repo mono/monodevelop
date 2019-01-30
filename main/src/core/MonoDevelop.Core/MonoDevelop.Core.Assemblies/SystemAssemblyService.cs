@@ -30,13 +30,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Threading;
 using Mono.Addins;
 using Mono.Cecil;
 using MonoDevelop.Core.AddIns;
+
+using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -416,114 +421,57 @@ namespace MonoDevelop.Core.Assemblies
 		/// <summary>
 		/// Simply get all assembly reference names from an assembly given it's file name.
 		/// </summary>
-		public static IEnumerable<string> GetAssemblyReferences (string fileName)
+		public static ImmutableArray<string> GetAssemblyReferences (string fileName)
 		{
-			AssemblyDefinition assembly = null;
 			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return Enumerable.Empty<string> ();
-				}
-				return assembly.MainModule.AssemblyReferences.Select (x => x.Name);
-			} finally {
-				assembly?.Dispose ();
-			}
-		}
+				using (var reader = new PEReader (File.OpenRead (fileName))) {
+					var mr = reader.GetMetadataReader ();
+					var assemblyReferences = reader.GetMetadataReader ().AssemblyReferences;
 
-		static Dictionary<string, bool> referenceDict = new Dictionary<string, bool> ();
-
-		static bool ContainsReferenceToSystemRuntimeInternal (string fileName)
-		{
-			bool result;
-			if (referenceDict.TryGetValue (fileName, out result))
-				return result;
-
-			//const int cacheLimit = 4096;
-			//if (referenceDict.Count > cacheLimit)
-			//	referenceDict = ImmutableDictionary<string, bool>.Empty
-
-			AssemblyDefinition assembly = null;
-			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return false;
-				}
-				foreach (var r in assembly.MainModule.AssemblyReferences) {
-					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name.Equals ("System.Runtime")) {
-						referenceDict [fileName] = true; ;
-						return true;
+					var builder = ImmutableArray.CreateBuilder<string> (assemblyReferences.Count);
+					foreach (var assemblyReferenceHandle in assemblyReferences) {
+						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+						builder.Add (mr.GetString (assemblyReference.Name));
 					}
+					return builder.MoveToImmutable();
 				}
-			} finally {
-				assembly?.Dispose ();
+			} catch {
+				return ImmutableArray<string>.Empty;
 			}
-			referenceDict [fileName] = false;
-			return false;
 		}
 
 		static Dictionary<string, bool> facadeReferenceDict = new Dictionary<string, bool> ();
 
 		static bool RequiresFacadeAssembliesInternal (string fileName)
 		{
-			bool result;
-			if (facadeReferenceDict.TryGetValue (fileName, out result))
+			if (facadeReferenceDict.TryGetValue (fileName, out var result))
 				return result;
 
-			AssemblyDefinition assembly = null;
 			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return false;
-				}
-				foreach (var r in assembly.MainModule.AssemblyReferences) {
-					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name.Equals ("System.Runtime") || r.Name.Equals ("netstandard")) {
-						facadeReferenceDict [fileName] = true; ;
-						return true;
+				using (var reader = new PEReader (File.OpenRead (fileName))) {
+					var mr = reader.GetMetadataReader ();
+
+					foreach (var assemblyReferenceHandle in mr.AssemblyReferences) {
+						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+						var name = mr.GetString (assemblyReference.Name);
+
+						// Don't compare the version number since it may change depending on the version of .net standard
+						if (name.Equals ("System.Runtime") || name.Equals ("netstandard")) {
+							facadeReferenceDict [fileName] = true;
+							return true;
+						}
 					}
 				}
-			} finally {
-				assembly?.Dispose ();
+			} catch {
+				return false;
 			}
+
 			facadeReferenceDict [fileName] = false;
 			return false;
 		}
 
-		static object referenceLock = new object ();
-
-		[Obsolete ("Use RequiresFacadeAssemblies (string fileName)")]
-		public static bool ContainsReferenceToSystemRuntime (string fileName)
-		{
-			lock (referenceLock) {
-				return ContainsReferenceToSystemRuntimeInternal (fileName);
-			}
-		}
-
-		static SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
-
-		[Obsolete ("Use RequiresFacadeAssembliesAsync (string fileName)")]
-		public static async System.Threading.Tasks.Task<bool> ContainsReferenceToSystemRuntimeAsync (string filename)
-		{
-			try {
-				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
-				return ContainsReferenceToSystemRuntimeInternal (filename);
-			} finally {
-				referenceLockAsync.Release ();
-			}
-		}
-
-		internal static bool RequiresFacadeAssemblies (string fileName)
-		{
-			lock (referenceLock) {
-				return RequiresFacadeAssembliesInternal (fileName);
-			}
-		}
-
-		internal static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
+		static readonly SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
+		public static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
 		{
 			try {
 				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
@@ -557,24 +505,50 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
 		{
-			AssemblyDefinition assembly = null;
-			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					yield break;
-				}
-				foreach (var r in assembly.MainModule.Resources) {
-					if (r.ResourceType == ResourceType.Embedded) {
-						var er = (EmbeddedResource)r;
+			using (var reader = new PEReader (File.OpenRead (fileName))) {
+				var mr = reader.GetMetadataReader ();
 
-						// Explicitly create a capture and query it here so the stream isn't queried after the module is disposed.
-						var rs = er.GetResourceStream ();
-						yield return new ManifestResource (er.Name, () => rs);
+				var headers = reader.PEHeaders;
+				var resources = headers.CorHeader.ResourcesDirectory;
+				var sectionData = reader.GetSectionData (resources.RelativeVirtualAddress);
+				if (sectionData.Length == 0)
+					return Array.Empty<ManifestResource> (); // RVA could not be found in any section
+
+				var sectionReader = sectionData.GetReader ();
+				var manifestResources = mr.ManifestResources;
+				var result = new List<ManifestResource> (manifestResources.Count);
+
+				foreach (var manifestResourceHandle in manifestResources) {
+					var manifestResource = mr.GetManifestResource (manifestResourceHandle);
+
+					// This means the type is Embedded.
+					var isEmbeddedResource = manifestResource.Implementation.IsNil;
+					if (!isEmbeddedResource)
+						continue;
+
+					int offset = (int)manifestResource.Offset;
+					sectionReader.Offset += offset;
+					try {
+						int length = sectionReader.ReadInt32 ();
+						if ((uint)length > sectionReader.RemainingBytes) {
+							LoggingService.LogError ("Resource stream invalid length {0}", length.ToString ());
+							continue;
+						}
+
+						var name = mr.GetString (manifestResource.Name);
+						unsafe {
+							using (var unmanagedStream = new UnmanagedMemoryStream (sectionReader.CurrentPointer, length, length, FileAccess.Read)) {
+								var memoryStream = new MemoryStream (length);
+								unmanagedStream.CopyTo (memoryStream);
+								memoryStream.Position = 0;
+								result.Add (new ManifestResource (name, () => memoryStream));
+							}
+						}
+					} finally {
+						sectionReader.Offset -= offset;
 					}
 				}
-			} finally {
-				assembly?.Dispose ();
+				return result;
 			}
 		}
 
