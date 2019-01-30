@@ -37,6 +37,8 @@ namespace MonoDevelop.TextEditor
 		protected override IWpfTextView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles)
 			=> Imports.TextEditorFactoryService.CreateTextView (viewModel, roles, Imports.EditorOptionsFactoryService.GlobalOptions);
 
+		public System.Windows.Controls.Control HostControl => wpfTextViewHost.HostControl;
+
 		protected override Control CreateControl ()
 		{
 			wpfTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
