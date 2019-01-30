@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MimeTypePolicyOptionsPanel.cs
 //  
 // Author:
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.policyContainer = policyContainer;
 			this.defaultPolicyContainer = defaultPolicyContainer;
 			this.isExactMimeType = isExactMimeType;
-			mimeTypeScopes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			mimeTypeScopes = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 		}
 		
 		void IMimeTypePolicyOptionsPanel.SetParentSection (MimeTypePolicyOptionsSection section)
@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			box.Spacing = 6;
 			
 			string baseType = mimeTypeScopes.ElementAt (1);
-			baseType = DesktopService.GetMimeTypeDescription (baseType);
+			baseType = IdeApp.DesktopService.GetMimeTypeDescription (baseType);
 			defaultSettingsButton = new CheckButton (GettextCatalog.GetString ("Use default settings from '{0}'", baseType));
 			defaultSettingsButton.Clicked += delegate {
 				if (defaultSettingsButton.Active) {

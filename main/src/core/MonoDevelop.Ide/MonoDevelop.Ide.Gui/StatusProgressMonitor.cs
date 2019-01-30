@@ -1,4 +1,4 @@
-//
+﻿//
 // StatusProgressMonitor.cs
 //
 // Author:
@@ -70,9 +70,9 @@ namespace MonoDevelop.Ide.Gui
 				statusBar.ShowMessage (icon, CurrentTaskName);
 			if (!ProgressIsUnknown) {
 				statusBar.SetProgressFraction (Progress);
-				DesktopService.SetGlobalProgress (Progress);
+				IdeApp.DesktopService.SetGlobalProgress (Progress);
 			} else
-				DesktopService.ShowGlobalProgressIndeterminate ();
+				IdeApp.DesktopService.ShowGlobalProgressIndeterminate ();
 		}
 		
 		public void UpdateStatusBar ()
@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Gui
 						statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
 					}
 
-					DesktopService.ShowGlobalProgressError ();
+					IdeApp.DesktopService.ShowGlobalProgressError ();
 
 					base.OnCompleted ();
 
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui
 				statusBar.Dispose ();
 			}
 
-			DesktopService.SetGlobalProgress (Progress);
+			IdeApp.DesktopService.SetGlobalProgress (Progress);
 
 			base.OnCompleted ();
 		}

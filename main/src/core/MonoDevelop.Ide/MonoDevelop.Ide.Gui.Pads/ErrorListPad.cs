@@ -1,4 +1,4 @@
-// ErrorListPad.cs
+﻿// ErrorListPad.cs
 //  
 // Author:
 //       Todd Berman <tberman@sevenl.net>
@@ -518,7 +518,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
-					OpenBuildOutputViewDocument ();
+					await OpenBuildOutputViewDocument ();
 					if (task.Severity == TaskSeverity.Error) {
 						await buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Warning) {
@@ -605,7 +605,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			string reference = null;
 			if (GetSelectedErrorReference (out reference) && reference != null)
-				DesktopService.ShowUrl (reference);
+				IdeApp.DesktopService.ShowUrl (reference);
 		}
 
 		bool GetSelectedErrorReference (out string reference)
@@ -1057,15 +1057,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void HandleBinLogClicked (object sender, EventArgs e)
 		{
 			if (BuildOutput.IsFeatureEnabled) {
-				OpenBuildOutputViewDocument ();
+				OpenBuildOutputViewDocument ().Ignore ();
 			}
 		}
 
-		void OpenBuildOutputViewDocument () 
+		async Task OpenBuildOutputViewDocument () 
 		{
 			if (buildOutputViewContent == null) {
 				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
-				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
+				buildOutputDoc = await IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 				buildOutputDoc.Closed += BuildOutputDocClosed;
 			} else if (buildOutputDoc != null) {
 				buildOutputDoc.Select ();

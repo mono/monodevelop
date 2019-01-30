@@ -1,4 +1,4 @@
-//
+﻿//
 // ITextEditor.cs
 //
 // Author:
@@ -1088,7 +1088,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		TextEditorViewContent viewContent;
-		internal ViewContent GetViewContent ()
+		internal TextEditorViewContent GetViewContent ()
 		{
 			if (viewContent == null) {
 				viewContent = new TextEditorViewContent (this, textEditorImpl);
@@ -1169,7 +1169,7 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+			var mimetypeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			var newExtensions = new List<TextEditorExtension> ();
 
 			foreach (TextEditorExtensionNode extNode in extensions) {

@@ -43,16 +43,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public abstract Control Control { get; }
 
-		public IWorkbenchWindow WorkbenchWindow {
-			get { return workbenchWindow; }
-			set {
-				if (workbenchWindow != value) {
-					workbenchWindow = value;
-					OnWorkbenchWindowChanged ();
-				}
-			}
-		}
-
 		public virtual string TabPageLabel {
 			get {
 				return GettextCatalog.GetString ("Content");

@@ -1,4 +1,4 @@
-//
+﻿//
 // MonoDevelopWorkspace.MetadataReferenceHandler.cs
 //
 // Author:
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (data.Token.IsCancellationRequested)
 							return false;
 
-						if (!(pr is MonoDevelop.Projects.DotNetProject referencedProject) || !TypeSystemService.IsOutputTrackedProject (referencedProject))
+						if (!(pr is MonoDevelop.Projects.DotNetProject referencedProject) || !IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
 							continue;
 
 						var fileName = referencedProject.GetOutputFileName (data.ConfigurationSelector);
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!addedProjects.Add (referencedProject))
 						continue;
 
-					if (TypeSystemService.IsOutputTrackedProject (referencedProject))
+					if (IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
 						continue;
 
 					var aliases = pr.EnumerateAliases ();

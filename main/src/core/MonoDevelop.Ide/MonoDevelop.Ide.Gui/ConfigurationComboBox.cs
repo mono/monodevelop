@@ -1,4 +1,4 @@
-//
+﻿//
 // ConfigurationComboBox.cs
 //
 // Author:
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui
 					fd = null;
 				}
 				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					fd = FontService.SansFont.CopyModified (Styles.FontScale11);
+					fd = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 				combo.ModifyLabelFont (fd);
 			}

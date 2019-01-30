@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TaskListEntry.cs
 //  
 // Author:
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ShowDocumentation ()
 		{
 			if (HasDocumentationLink ())
-				DesktopService.ShowUrl (DocumentationLink);
+				IdeApp.DesktopService.ShowUrl (DocumentationLink);
 		}
 
 		public virtual void JumpToPosition ()

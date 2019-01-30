@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide
 {

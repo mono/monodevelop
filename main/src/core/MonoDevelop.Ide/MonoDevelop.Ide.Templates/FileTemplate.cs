@@ -1,4 +1,4 @@
-// FileTemplate.cs
+﻿// FileTemplate.cs
 //
 // Author:
 //   Mike Krüger (mkrueger@novell.com)
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Templates
 			while (File.Exists (fn + n + ext))
 				n++;
 			FileService.MoveFile (fn, fn + n + ext);
-			string mimeType = DesktopService.GetMimeTypeForUri (fn + n + ext);
+			string mimeType = IdeApp.DesktopService.GetMimeTypeForUri (fn + n + ext);
 			FileService.DeleteFile (fn + n + ext);
 			if (string.IsNullOrEmpty (mimeType))
 				mimeType = "text";
@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.Templates
 				} else {
 					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
 					string mimeType = GuessMimeType (fileName);
-					return DisplayBindingService.GetDefaultViewBinding (null, mimeType, null) != null;
+					return IdeApp.Services.DisplayBindingService.GetDefaultViewBinding (null, mimeType, null) != null;
 				}
 			}
 		}

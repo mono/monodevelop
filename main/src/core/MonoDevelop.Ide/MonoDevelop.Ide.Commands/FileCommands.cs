@@ -1,4 +1,4 @@
-// NewFileCommands.cs
+﻿// NewFileCommands.cs
 //
 // Author:
 //   Carlo Kok (ck@remobjects.com)
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			try {
 				isRunning = true;
-				await IdeApp.Workbench.CloseAllDocumentsAsync (false);
+				await IdeApp.Workbench.CloseAllDocuments (false);
 			} finally {
 				isRunning = false;
 			}
@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var files = DesktopService.RecentFiles.GetFiles ();
+			var files = IdeApp.DesktopService.RecentFiles.GetFiles ();
 			if (files.Count == 0)
 				return;
 			
@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Commands
 				var cmd = new CommandInfo (commandText) {
 					Description = string.Format (descFormat, ri.FileName)
 				};
-/*				Gdk.Pixbuf icon = DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
+/*				Gdk.Pixbuf icon = IdeApp.DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
 				#pragma warning disable 618
 				if (icon != null)
 					cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.Commands
 					question,
 					AlertButton.No,
 					AlertButton.Yes) == AlertButton.Yes) {
-					DesktopService.RecentFiles.ClearFiles ();
+					IdeApp.DesktopService.RecentFiles.ClearFiles ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error clearing recent files list", ex);
@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DesktopService.RecentFiles.GetFiles ().Count > 0;
+			info.Enabled = IdeApp.DesktopService.RecentFiles.GetFiles ().Count > 0;
 		}
 	}
 	
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var projects = DesktopService.RecentFiles.GetProjects ();
+			var projects = IdeApp.DesktopService.RecentFiles.GetProjects ();
 			if (projects.Count == 0)
 				return;
 				
@@ -406,7 +406,7 @@ namespace MonoDevelop.Ide.Commands
 					question,
 					AlertButton.No,
 					AlertButton.Yes) == AlertButton.Yes) {
-					DesktopService.RecentFiles.ClearProjects ();
+					IdeApp.DesktopService.RecentFiles.ClearProjects ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error clearing recent projects list", ex);
@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Commands
 	
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DesktopService.RecentFiles.GetProjects ().Count > 0;
+			info.Enabled = IdeApp.DesktopService.RecentFiles.GetProjects ().Count > 0;
 		}
 	}
 	

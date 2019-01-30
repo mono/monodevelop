@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ListWidget.cs
 //  
 // Author:
@@ -154,9 +154,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (noMatchFont != null)
 				noMatchFont.Dispose ();
 
-			itemFont = FontService.MonospaceFont.Copy ();
-			categoryFont = FontService.SansFont.CopyModified (Styles.FontScale11);
-			noMatchFont = FontService.SansFont.CopyModified (Styles.FontScale11);
+			itemFont = IdeApp.FontService.MonospaceFont.Copy ();
+			categoryFont = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11);
+			noMatchFont = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11);
 
 			var newItemFontSize = itemFont.Size;
 			var newCategoryFontSize = categoryFont.Size;

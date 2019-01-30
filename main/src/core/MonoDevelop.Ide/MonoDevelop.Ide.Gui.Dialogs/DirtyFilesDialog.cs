@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			Accessible.Description = description;
 
-			tsFiles = new TreeStore (typeof(string), typeof(bool), typeof(SdiWorkspaceWindow), typeof(bool));
+			tsFiles = new TreeStore (typeof(string), typeof(bool), typeof(Document), typeof(bool));
 			tvFiles = new TreeView (tsFiles);
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
@@ -51,22 +51,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (!doc.IsDirty)
 					continue;
 				
-				ViewContent viewcontent = doc.Window.ViewContent;
-				 
-				if (groupByProject && viewcontent.Project != null) {
+				if (groupByProject && doc.Owner != null) {
 					TreeIter projIter = TreeIter.Zero;
-					if (projectIters.ContainsKey (viewcontent.Project))
-						projIter = (TreeIter)projectIters [viewcontent.Project];
+					if (projectIters.ContainsKey (doc.Owner))
+						projIter = (TreeIter)projectIters [doc.Owner];
 					else {
 						if (topCombineIter.Equals (TreeIter.Zero))
-							projIter = tsFiles.AppendValues (GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
+							projIter = tsFiles.AppendValues (GettextCatalog.GetString ("Project: {0}", doc.Owner.Name), true, null, false);
 						else
-							projIter = tsFiles.AppendValues (topCombineIter, GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
-						projectIters [viewcontent.Project] = projIter;
+							projIter = tsFiles.AppendValues (topCombineIter, GettextCatalog.GetString ("Project: {0}", doc.Owner.Name), true, null, false);
+						projectIters [doc.Owner] = projIter;
 					}
-					tsFiles.AppendValues (projIter, viewcontent.PathRelativeToProject, true, viewcontent.WorkbenchWindow);
+					var name = doc.FilePath.IsNullOrEmpty ? doc.Name : doc.FilePath.ToRelative (doc.Owner.BaseDirectory).ToString ();
+					tsFiles.AppendValues (projIter, name, true, doc);
 				} else {
-					tsFiles.AppendValues (GetContentFileName (viewcontent), true, viewcontent.WorkbenchWindow);
+					tsFiles.AppendValues (doc.Name, true, doc);
 				}
 			}
 			if (!topCombineIter.Equals (TreeIter.Zero)) {
@@ -166,13 +165,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			List<Task> saveTasks = new List<Task> ();
 			tsFiles.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
-				var window = tsFiles.GetValue (iter, 2) as SdiWorkspaceWindow;
-				if (window == null)
+				var doc = tsFiles.GetValue (iter, 2) as Document;
+				if (doc == null)
 					return false;
 				if ((bool)tsFiles.GetValue (iter, 1)) {
-					saveTasks.Add (window.ViewContent.Save (GetContentFileName(window.ViewContent)));
+					saveTasks.Add (doc.Save ());
 				} else {
-					window.ViewContent.DiscardChanges ();
+					doc.DiscardChanges ();
 				}
 				return false;
 			});
@@ -190,10 +189,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void Quit (object o, EventArgs e)
 		{
 			tsFiles.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
-				var window = tsFiles.GetValue (iter, 2) as SdiWorkspaceWindow;
-				if (window == null)
+				var doc = tsFiles.GetValue (iter, 2) as Document;
+				if (doc == null)
 					return false;
-				window.ViewContent.DiscardChanges ();
+				doc.DiscardChanges ();
 				return false;
 			});
 			

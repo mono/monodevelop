@@ -35,6 +35,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Commands
 {

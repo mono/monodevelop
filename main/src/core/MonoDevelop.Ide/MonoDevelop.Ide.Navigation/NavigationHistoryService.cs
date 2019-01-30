@@ -35,7 +35,8 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Navigation
 {
-	public class NavigationHistoryManager: IService
+	[DefaultServiceImplementation]
+	public class NavigationHistoryService: IService
 	{
 		HistoryList history = new HistoryList ();
 		List<Tuple<NavigationPoint, int>> closedHistory = new List<Tuple<NavigationPoint, int>> ();
@@ -55,7 +56,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		Document currentDoc;
 
-		async Task IService.Dispose ()
+		Task IService.Dispose ()
 		{
 			workspace.LastWorkspaceItemClosed -= Workspace_LastWorkspaceItemClosed;
 			workspace.FileRenamedInProject -= FileRenamed;
@@ -67,6 +68,7 @@ namespace MonoDevelop.Ide.Navigation
 			textEditorService.LineCountChanged -= LineCountChanged;
 			textEditorService.LineCountChangesCommitted -= CommitCountChanges;
 			textEditorService.LineCountChangesReset -= ResetCountChanges;
+			return Task.CompletedTask;
 		}
 
 		async Task IService.Initialize (ServiceProvider serviceProvider)
@@ -98,14 +100,15 @@ namespace MonoDevelop.Ide.Navigation
 			OnClosedHistoryChanged ();
 		}
 
-		void DocumentManager_DocumentClosing (object sender, DocumentEventArgs e)
+		Task DocumentManager_DocumentClosing (object sender, DocumentCloseEventArgs e)
 		{
 			NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
 			if (point == null)
-				return;
+				return Task.CompletedTask;
 
-			closedHistory.Add (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
+			closedHistory.Add (new Tuple<NavigationPoint, int> (point, documentManager.Documents.IndexOf (e.Document)));
 			OnClosedHistoryChanged ();
+			return Task.CompletedTask;
 		}
 
 		public void LogActiveDocument ()
@@ -173,7 +176,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		NavigationPoint GetNavPointForActiveDoc (bool forClosedHistory)
 		{
-			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, forClosedHistory);
+			return GetNavPointForDoc (documentManager.ActiveDocument, forClosedHistory);
 		}
 
 		NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
@@ -315,7 +318,7 @@ namespace MonoDevelop.Ide.Navigation
 		void ActiveDocChanged (object sender, EventArgs args)
 		{
 			LogActiveDocument (true);
-			AttachToDoc (IdeApp.Workbench.ActiveDocument);
+			AttachToDoc (documentManager.ActiveDocument);
 		}
 
 		void AttachToDoc (Document document)

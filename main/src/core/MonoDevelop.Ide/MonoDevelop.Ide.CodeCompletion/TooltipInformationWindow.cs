@@ -1,4 +1,4 @@
-// TooltipInformationWindow.cs
+﻿// TooltipInformationWindow.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -265,8 +265,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetSchemeColors (scheme);
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
-			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
+			headLabel.FontDescription = IdeApp.FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
+			Theme.Font = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
 			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
 			if (this.Visible)
 				ShowOverload ();

@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 
 			//check mimetypes, from most to least specific
-			var mimeChain = DesktopService.GetMimeTypeInheritanceChain (editor.MimeType);
+			var mimeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChain (editor.MimeType);
 			foreach (var mime in mimeChain) {
 				foreach (var node in nodes) {
 					if (!returned.Contains (node) && MatchAny (mime, node.MimeTypes)) {

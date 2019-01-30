@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using System;
 using System.Linq;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.Components.DockNotebook
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc == null)
 					return;
-				var rootWindow = doc.Window.ActiveViewContent.Control.GetNativeWidget<Gtk.Widget> ().Toplevel as DockWindow;
+				var rootWindow = (doc.Window as SdiWorkspaceWindow)?.Toplevel as DockWindow;
 				if (rootWindow == null)
 					return;
 				

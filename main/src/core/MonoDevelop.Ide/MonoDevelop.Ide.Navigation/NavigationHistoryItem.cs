@@ -56,8 +56,8 @@ namespace MonoDevelop.Ide.Navigation
 		public void Show ()
 		{
 			if (NavigationPoint is DocumentNavigationPoint) {
-				if (!NavigationHistoryService.IsCurrent (this))
-					NavigationHistoryService.MoveTo (this);
+				if (!IdeApp.Services.NavigationHistory.IsCurrent (this))
+					IdeApp.Services.NavigationHistory.MoveTo (this);
 			}
 			NavigationPoint.ShowDocument ();
 		}

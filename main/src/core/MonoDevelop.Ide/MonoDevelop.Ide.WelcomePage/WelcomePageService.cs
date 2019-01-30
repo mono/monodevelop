@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.WelcomePage
 {

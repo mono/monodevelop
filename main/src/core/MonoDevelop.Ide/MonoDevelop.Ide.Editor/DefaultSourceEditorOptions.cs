@@ -266,8 +266,8 @@ namespace MonoDevelop.Ide.Editor
 			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", WordNavigationStyle.Windows);
 			
 			UpdateStylePolicy (currentPolicy);
-			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
-			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+			IdeApp.FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
+			IdeApp.FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
 
 			IdeApp.Preferences.ColorScheme.Changed += OnColorSchemeChanged;
 		}
@@ -745,7 +745,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string FontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+				return IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -754,7 +754,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string GutterFontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+				return IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -848,7 +848,7 @@ namespace MonoDevelop.Ide.Editor
 		
 		public void Dispose ()
 		{
-			FontService.RemoveCallback (UpdateFont);
+			IdeApp.FontService.RemoveCallback (UpdateFont);
 			IdeApp.Preferences.ColorScheme.Changed -= OnColorSchemeChanged;
 			if (context != null)
 				context.CodingConventionsChangedAsync -= UpdateContextOptions;

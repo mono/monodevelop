@@ -70,8 +70,9 @@ namespace MonoDevelop.Ide.Tasks
 
 		Dictionary<ContextMenuItem, int> columnsActions;
 		Clipboard clipboard;
-		
-		TaskStore comments = new TaskStore ();
+
+		TaskStore comments = IdeApp.Services.TaskStore;
+
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 		HashSet<Solution> loadedSlns = new HashSet<Solution> ();
 
@@ -406,7 +407,7 @@ namespace MonoDevelop.Ide.Tasks
 			TaskListEntry task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
 				var doc = await IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
-				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
+				if (doc != null && doc.DocumentContext.HasProject && doc.Owner is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
 						doc.DisableAutoScroll ();

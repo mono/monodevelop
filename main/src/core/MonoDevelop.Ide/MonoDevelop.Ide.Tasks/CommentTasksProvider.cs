@@ -1,4 +1,4 @@
-//
+﻿//
 // CommentTasksProvider.cs
 //
 // Author:
@@ -154,14 +154,14 @@ namespace MonoDevelop.Ide.Tasks
 
 		static async void OnSolutionLoaded (object sender, SolutionEventArgs args)
 		{
-			var ws = await TypeSystemService.GetWorkspaceAsync (args.Solution);
+			var ws = await IdeApp.TypeSystemService.GetWorkspaceAsync (args.Solution);
 			UpdateWorkspaceOptions (ws);
 		}
 
 		static async void OnWorkspaceItemClosed (object sender, WorkspaceItemEventArgs args)
 		{
 			if (args.Item is MonoDevelop.Projects.Solution sol) {
-				var ws = await TypeSystemService.GetWorkspaceAsync (sol);
+				var ws = await IdeApp.TypeSystemService.GetWorkspaceAsync (sol);
 
 				lock (lockObject) {
 					if (cachedUntilViewCreated == null)
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		static void OnSpecialTagsChanged (object sender, EventArgs args)
 		{
-			foreach (var ws in TypeSystemService.AllWorkspaces)
+			foreach (var ws in IdeApp.TypeSystemService.AllWorkspaces)
 				UpdateWorkspaceOptions (ws);
 		}
 	}

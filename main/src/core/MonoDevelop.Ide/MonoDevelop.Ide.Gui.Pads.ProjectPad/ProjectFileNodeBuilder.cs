@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectFileNodeBuilder.cs
 //
 // Author:
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Label = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + nodeInfo.Label + "</span>";
 			}
 			
-			nodeInfo.Icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
+			nodeInfo.Icon = IdeApp.DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
 			
 			if (file.IsLink && nodeInfo.Icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay").WithSize (Xwt.IconSize.Small);
@@ -400,7 +400,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		internal static void PopulateOpenWithViewers (CommandArrayInfo info, Project project, string filePath)
 		{
-			var viewers = DisplayBindingService.GetFileViewers (filePath, project).ToList ();
+			var viewers = IdeApp.Services.DisplayBindingService.GetFileViewers (filePath, project).ToList ();
 			
 			//show the default viewer first
 			var def = viewers.FirstOrDefault (v => v.CanUseAsDefault) ?? viewers.FirstOrDefault (v => v.IsExternal);

@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 
 				var files = project.Files.Where (x => {
-					var mt = DesktopService.GetMimeTypeForUri (x.FilePath);
+					var mt = IdeApp.DesktopService.GetMimeTypeForUri (x.FilePath);
 					// FIXME: Handle all language services.
 
 					// Discard files with known IToDoCommentService implementations
@@ -121,12 +121,12 @@ namespace MonoDevelop.Ide.Tasks
 
 			static void WorkbenchDocumentClosed (object sender, DocumentEventArgs e)
 			{
-				e.Document.DocumentParsed -= HandleDocumentParsed;
+				e.Document.DocumentContext.DocumentParsed -= HandleDocumentParsed;
 			}
 
 			static void WorkbenchDocumentOpened (object sender, DocumentEventArgs e)
 			{
-				e.Document.DocumentParsed += HandleDocumentParsed;
+				e.Document.DocumentContext.DocumentParsed += HandleDocumentParsed;
 			}
 
 			static void HandleDocumentParsed (object sender, EventArgs e)
@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide.Tasks
 				if (doc.Editor.MimeType == "text/x-csharp")
 					return;
 
-				var pd = doc.ParsedDocument;
-				var project = doc.Project;
+				var pd = doc.DocumentContext.ParsedDocument;
+				var project = doc.Owner as Project;
 				if (pd == null || project == null)
 					return;
 				ProjectCommentTags tags;

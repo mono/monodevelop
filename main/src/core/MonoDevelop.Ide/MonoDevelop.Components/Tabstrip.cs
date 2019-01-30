@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Tabstrip.cs
 //  
 // Author:
@@ -34,6 +34,7 @@ using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
@@ -410,7 +411,7 @@ namespace MonoDevelop.Components
 			this.Label = label;
 
 			layout = PangoUtil.CreateLayout (parent);
-			layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+			layout.FontDescription = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11);
 			layout.SetText (label);
 			layout.Alignment = Pango.Alignment.Center;
 			layout.GetPixelSize (out w, out h);
@@ -467,10 +468,10 @@ namespace MonoDevelop.Components
 
 			if (Active) {
 				cr.SetSourceColor (Styles.SubTabBarActiveTextColor.ToCairoColor ());
-				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
+				layout.FontDescription = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
 			} else {
 				cr.SetSourceColor (Styles.SubTabBarTextColor.ToCairoColor ());
-				layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
+				layout.FontDescription = IdeApp.FontService.SansFont.CopyModified (Styles.FontScale11);
 			}
 
 			// Pango.Layout.Width is in pango units

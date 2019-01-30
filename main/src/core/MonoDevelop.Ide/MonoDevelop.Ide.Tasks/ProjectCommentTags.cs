@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectCommentTags.cs
 //  
 // Author:
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Tasks
 			foreach (var file in files) {
 				if (file.BuildAction == BuildAction.None)
 					continue;
-				var pd = await TypeSystemService.ParseFile (project, file.FilePath, token).ConfigureAwait (false);
+				var pd = await IdeApp.TypeSystemService.ParseFile (project, file.FilePath, token).ConfigureAwait (false);
 				if (pd != null) {
 					var commentTagList = await pd.GetTagCommentsAsync (token).ConfigureAwait (false);
 					changes.Add (new CommentTaskChange (file.FilePath, commentTagList, project));

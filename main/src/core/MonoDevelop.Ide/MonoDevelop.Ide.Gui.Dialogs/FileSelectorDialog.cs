@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				i++;
 			}
 			
-			foreach (FileViewer vw in DisplayBindingService.GetFileViewers (Filename, null)) {
+			foreach (FileViewer vw in IdeApp.Services.DisplayBindingService.GetFileViewers (Filename, null)) {
 				if (!vw.IsExternal) {
 					viewerSelector.AppendText (vw.Title);
 					currentViewers.Add (vw);

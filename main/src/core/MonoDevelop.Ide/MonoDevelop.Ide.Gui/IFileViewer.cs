@@ -23,10 +23,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Documents;
+
 namespace MonoDevelop.Ide.Gui
 {
 	public interface IFileViewer
 	{
+		/// <summary>
+		/// Whether this instance can handle the specified item. ownerProject may be null, and either 
+		/// fileName or mimeType may be null, but not both.
+		/// </summary>
+		bool CanHandle (FileDescriptor fileDescriptor);
+
+		/// <summary>
+		/// Whether the display binding can be used as the default handler for the content types
+		/// that it handles. If this is false, the binding is only used when the user explicitly picks it.
+		/// </summary>
+		bool CanUseAsDefault { get; }
+
+		/// <summary>
+		/// Name to show in visualizer selectors
+		/// </summary>
+		/// <value>The display name.</value>
+		string Name { get; }
 	}
 }

@@ -48,12 +48,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.MoveBack ();
+			IdeApp.Services.NavigationHistory.MoveBack ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.CanMoveBack;
+			info.Enabled = IdeApp.Services.NavigationHistory.CanMoveBack;
 		}
 	}
 	
@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.MoveForward ();
+			IdeApp.Services.NavigationHistory.MoveForward ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.CanMoveForward;
+			info.Enabled = IdeApp.Services.NavigationHistory.CanMoveForward;
 		}
 	}
 	
@@ -76,13 +76,13 @@ namespace MonoDevelop.Ide.Commands
 		{
 			NavigationHistoryItem nav = ob as NavigationHistoryItem;
 			if (nav != null)
-				NavigationHistoryService.MoveTo (nav);
+				IdeApp.Services.NavigationHistory.MoveTo (nav);
 		}
 		
 		protected override void Update (CommandArrayInfo info)
 		{
 			int currentIndex;
-			IList<NavigationHistoryItem> points = NavigationHistoryService.GetNavigationList (15, out currentIndex);
+			IList<NavigationHistoryItem> points = IdeApp.Services.NavigationHistory.GetNavigationList (15, out currentIndex);
 			
 			if (points.Count < 1) {
 				Document doc = IdeApp.Workbench.ActiveDocument;
@@ -104,12 +104,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.Clear ();
+			IdeApp.Services.NavigationHistory.Clear ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.CanMoveForward || NavigationHistoryService.CanMoveBack;
+			info.Enabled = IdeApp.Services.NavigationHistory.CanMoveForward || IdeApp.Services.NavigationHistory.CanMoveBack;
 		}
 	}
 }

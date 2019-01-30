@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		BuildOutputTreeCellView cellView;
 		MDSpinner loadingSpinner;
 
+		public FilePath FilePathLocation => filePathLocation;
 		public string ViewContentName { get; private set; }
 		public BuildOutput BuildOutput { get; private set; }
 		public PathEntry [] CurrentPath { get; set; }
@@ -328,8 +329,8 @@ namespace MonoDevelop.Ide.BuildOutputView
 
 				await BuildOutput.Save (outputFile);
 				ViewContentName = outputFile.FileName;
-				FileNameChanged?.Invoke (this, outputFile);
 				filePathLocation = outputFile;
+				FileNameChanged?.Invoke (this, outputFile);
 				IsDirty = false;
 			}
 		}

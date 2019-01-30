@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		/// <returns>The ID of the active document (if any)</returns>
 		public DocumentId GetActiveDocument ()
 		{
-			return activeDocument?.AnalysisDocument?.Id;
+			return activeDocument?.DocumentContext?.AnalysisDocument?.Id;
 		}
 
 		/// <summary>
@@ -110,8 +110,8 @@ namespace MonoDevelop.Ide.RoslynServices
 
 			var ids = ArrayBuilder<DocumentId>.GetInstance (docs.Count);
 			foreach (var doc in docs)
-				if (doc.AnalysisDocument != null)
-					ids.Add (doc.AnalysisDocument.Id);
+				if (doc.DocumentContext?.AnalysisDocument != null)
+					ids.Add (doc.DocumentContext?.AnalysisDocument.Id);
 
 			return ids.ToImmutableAndFree ();
 		}

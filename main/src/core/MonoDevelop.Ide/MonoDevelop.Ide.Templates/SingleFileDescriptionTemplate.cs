@@ -1,4 +1,4 @@
-//
+﻿//
 // SingleFileDescriptionTemplate.cs
 //
 // Author:
@@ -407,7 +407,7 @@ namespace MonoDevelop.Ide.Templates
 
 			content = ProcessContent (content, model);
 
-			string mime = DesktopService.GetMimeTypeForUri (fileName);
+			string mime = IdeApp.DesktopService.GetMimeTypeForUri (fileName);
 			var formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 
 			if (formatter != null) {
@@ -465,7 +465,7 @@ namespace MonoDevelop.Ide.Templates
 
 			content = ProcessContent (content, model);
 
-			string mime = DesktopService.GetMimeTypeForUri (fileName);
+			string mime = IdeApp.DesktopService.GetMimeTypeForUri (fileName);
 			var formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 
 			if (formatter != null) {
