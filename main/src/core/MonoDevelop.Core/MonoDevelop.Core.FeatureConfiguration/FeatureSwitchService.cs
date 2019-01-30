@@ -63,10 +63,17 @@ namespace MonoDevelop.Core.FeatureConfiguration
 					}
 				}
 
-				if (explicitlyDisabled) return false;
-				if (explicitlyEnabled) return true;
+				if (explicitlyDisabled) {
+					LoggingService.LogInfo ($"Feature {featureName} explicitly disabled");
+					return false;
+				}
+				if (explicitlyEnabled) {
+					LoggingService.LogInfo ($"Feature {featureName} explicitly enabled");
+					return true;
+				}
 			}
 
+			LoggingService.LogInfo ($"No idea about feature {featureName}");
 			return null;
 		}
 	}
