@@ -49,7 +49,7 @@ namespace MonoDevelop.TextEditor
 		static void LoadImageLibrary ()
 		{
 			try {
-
+				LoadImageCatalogCore ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load image catalog", ex);
 			}
@@ -57,7 +57,7 @@ namespace MonoDevelop.TextEditor
 
 		static void LoadImageCatalogCore ()
 		{
-			FilePath cacheDir = UserProfile.Current.CacheDir.Combine ("VSImageCatalog");
+			FilePath cacheDir = Path.Combine (Environment.CurrentDirectory, "VSImageCatalog");
 			string manifestFile = Path.Combine (cacheDir, "Manifest.xml");
 
 			//FIXME: invalidate the cached manifest
@@ -72,7 +72,8 @@ namespace MonoDevelop.TextEditor
 		static void BuildManifest (string manifestFile, FilePath cacheDir)
 		{
 			var manifest = new StringBuilder ();
-			manifest.AppendLine ("<ImageManifest>");
+			manifest.AppendLine ("<ImageManifest xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns='http://schemas.microsoft.com/VisualStudio/ImageManifestSchema/2014'>");
+			manifest.AppendLine ("<Images>");
 
 			var images = new Dictionary<ImageId, List<StockIconCodon>> ();
 
@@ -105,6 +106,7 @@ namespace MonoDevelop.TextEditor
 				manifest.AppendLine ("\t</Image>");
 			}
 
+			manifest.AppendLine ("</Images>");
 			manifest.AppendLine ("</ImageManifest>");
 
 			File.WriteAllText (manifestFile, manifest.ToString ());
@@ -147,19 +149,22 @@ namespace MonoDevelop.TextEditor
 					}
 				}
 			}
+
+			string MakeUrl (string s) => "pack://siteoforigin:,,," + FileService.AbsoluteToRelativePath (Environment.CurrentDirectory, s).Replace('\\', '/');
+
 			if (isWildcard) {
 				if (darkPath != null) {
-					manifest.AppendLine ($"\t\t<Source Uri='{path}' Background='Light'><SizeRange MinSize='1' MaxSize='1000' /></Source>");
-					manifest.AppendLine ($"\t\t<Source Uri='{darkPath}' Background='Dark'><SizeRange MinSize='1' MaxSize='1000' /></Source>");
+					manifest.AppendLine ($"\t\t<Source Uri='{MakeUrl(path)}' Background='Light'><SizeRange MinSize='1' MaxSize='1000' /></Source>");
+					manifest.AppendLine ($"\t\t<Source Uri='{MakeUrl(darkPath)}' Background='Dark'><SizeRange MinSize='1' MaxSize='1000' /></Source>");
 				} else {
-					manifest.AppendLine ($"\t\t<Source Uri='{path}' Background='Light'><SizeRange MinSize='1' MaxSize='1000' /></Source>");
+					manifest.AppendLine ($"\t\t<Source Uri='{MakeUrl(path)}' Background='Light'><SizeRange MinSize='1' MaxSize='1000' /></Source>");
 				}
 			} else {
 				if (darkPath != null) {
-					manifest.AppendLine ($"\t\t<Source Uri='{path}' Background='Light'><Size Value='{size}' /></Source>");
-					manifest.AppendLine ($"\t\t<Source Uri='{darkPath}' Background='Dark'><Size Value='{size}' /></Source>");
+					manifest.AppendLine ($"\t\t<Source Uri='{MakeUrl(path)}' Background='Light'><Size Value='{size}' /></Source>");
+					manifest.AppendLine ($"\t\t<Source Uri='{MakeUrl(darkPath)}' Background='Dark'><Size Value='{size}' /></Source>");
 				} else {
-					manifest.AppendLine ($"\t\t<Source Uri='{path}' Background='Light'><Size Value='{size}' /></Source>");
+					manifest.AppendLine ($"\t\t<Source Uri='{MakeUrl(path)}' Background='Light'><Size Value='{size}' /></Source>");
 				}
 			}
 		}
