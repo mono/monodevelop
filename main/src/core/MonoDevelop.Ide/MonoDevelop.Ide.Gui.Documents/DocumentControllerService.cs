@@ -23,13 +23,66 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Mono.Addins;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentControllerService
+	[DefaultServiceImplementation]
+	public class DocumentControllerService: Service
 	{
-		public DocumentControllerService ()
+		internal const string DocumentControllerFactoriesPath = "/MonoDevelop/Ide/DocumentControllers";
+
+		List<DocumentControllerFactory> registeredFactories = new List<DocumentControllerFactory> ();
+
+		/// <summary>
+		/// Checks if this factory can create a controller for the provided file, and returns the kind of
+		/// controller it can create.
+		/// </summary>
+		public IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
 		{
+			var result = new List<DocumentControllerDescription> ();
+			foreach (var factory in GetFactories (modelDescriptor)) {
+				foreach (var desc in factory.GetSupportedControllers (modelDescriptor)) {
+					desc.Factory = factory;
+					desc.ServiceProvider = ServiceProvider;
+					result.Add (desc);
+				}
+			}
+			return result;
+		}
+
+		IEnumerable<DocumentControllerFactory> GetFactories (ModelDescriptor modelDescriptor)
+		{
+			foreach (var node in AddinManager.GetExtensionNodes<TypeExtensionNode<ExportFileDocumentControllerAttribute>> (DocumentController.DocumentControllersPath))
+					yield return node.Data.Factory;
+
+			foreach (var node in AddinManager.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerFactoryAttribute>> (DocumentControllerFactoriesPath)) {
+				if (node.Data.CanHandle (modelDescriptor))
+					yield return node.Data.Factory;
+			}
+			foreach (var factory in registeredFactories)
+				yield return factory;
+		}
+
+		public void RegisterFactory (DocumentControllerFactory factory)
+		{
+			registeredFactories.Add (factory);
+		}
+
+		public void UnregisterFactory (DocumentControllerFactory factory)
+		{
+			registeredFactories.Remove (factory);
+		}
+
+		internal static IEnumerable<TypeExtensionNode<ExportDocumentControllerFactoryAttribute>> GetModelExtensions (ExtensionContext ctx)
+		{
+			return ctx.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerFactoryAttribute>> (DocumentControllerFactoriesPath);
 		}
 	}
 }

@@ -26,10 +26,10 @@
 using System;
 namespace MonoDevelop.Ide.Gui.Documents
 {
+	/// <summary>
+	/// A model descriptor has a set of properties that can be used to identify a model to be shown in a view
+	/// </summary>
 	public class ModelDescriptor
 	{
-		public ModelDescriptor ()
-		{
-		}
 	}
 }

@@ -24,12 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentControllerSupport
+	/// <summary>
+	/// Provides information about the capabilities of a document controller
+	/// </summary>
+	public class DocumentControllerDescription
 	{
 		/// <summary>
-		/// Whether the display binding can be used as the default handler for the content types
+		/// Whether the document controller can be used as the default handler for the content types
 		/// that it handles. If this is false, the factory is only used when the user explicitly picks it.
 		/// </summary>
 		public bool CanUseAsDefault { get; set; }
@@ -43,6 +49,30 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Name to show in visualizer selectors
 		/// </summary>
 		/// <value>The display name.</value>
-		public string DisplayName { get; set; }
+		public string Name { get; set; }
+
+		public DocumentControllerDescription ()
+		{
+		}
+
+		public DocumentControllerDescription (string name, bool canUseAsDefault = true, DocumentControllerRole role = DocumentControllerRole.Source)
+		{
+			Name = name;
+			CanUseAsDefault = canUseAsDefault;
+			Role = role;
+		}
+
+		/// <summary>
+		/// Creates a controller for editing the provided file
+		/// </summary>
+		public async Task<DocumentController> CreateController (ModelDescriptor modelDescriptor)
+		{
+			var controller = await Factory.CreateController (modelDescriptor, this);
+			controller.ServiceProvider = ServiceProvider;
+			return controller;
+		}
+
+		internal DocumentControllerFactory Factory { get; set; }
+		internal ServiceProvider ServiceProvider { get; set; }
 	}
 }

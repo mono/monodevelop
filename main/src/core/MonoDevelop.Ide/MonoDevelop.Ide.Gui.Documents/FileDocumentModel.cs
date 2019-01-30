@@ -28,23 +28,81 @@ using System.IO;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Platform;
+using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Ide.Composition;
+using MonoDevelop.Core.Text;
+using System.Threading;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class FileDocumentModel
+	/// <summary>
+	/// A document model for files
+	/// </summary>
+	public class FileDocumentModel: DocumentModel
 	{
-		ITextBuffer textBuffer;
+		class FileData : DocumentModelData
+		{
+			public ITextDocument TextDocument { get; set; }
+		}
 
 		public FileDocumentModel (FilePath filePath)
 		{
 			this.FilePath = filePath;
 		}
 
-		public FilePath FilePath { get; }
-
-		public Task<FileDocumentModel> SaveAs (FilePath filePath)
+		public FileDocumentModel ()
 		{
+			IsNewFile = true;
+		}
 
+		public string MimeType { get; set; }
+
+		public FilePath FilePath { get; private set; }
+
+		public bool IsNewFile { get; private set; }
+
+		public bool CanWrite {
+			get {
+				var attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
+				return (File.GetAttributes (FilePath) & attr) != 0;
+			}
+		}
+
+		public event EventHandler TextBufferChanged;
+
+		protected internal override DocumentModelData CreateDataObject ()
+		{
+			return new FileData ();
+		}
+
+		public void LinkToFile (FilePath filePath)
+		{
+			if (FilePath != filePath) {
+				FilePath = filePath;
+				Relink (filePath);
+			}
+		}
+
+		public void ConvertToUnsaved ()
+		{
+			UnlinkFromId ();
+			FilePath = FilePath.FileName; // Remove the path, keep only the file name
+			IsNewFile = true;
+		}
+
+		public Task SaveAs (FilePath filePath)
+		{
+			LinkToFile (filePath);
+			return Save ();
+		}
+
+		protected override Task OnSave ()
+		{
+			if (IsNewFile)
+				throw new InvalidOperationException ("SaveAs() must be used to save new files");
+
+			return base.OnSave ();
 		}
 
 		/// <summary>
@@ -53,6 +111,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <returns>The read.</returns>
 		public Task<Stream> GetContent () 
 		{
+			throw new NotImplementedException ();
 		}
 
 		/// <summary>
@@ -60,12 +119,58 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public Task SetContent (Stream content)
 		{
+			throw new NotImplementedException ();
 		}
 
-		public Task<ITextBuffer> GetTextBuffer ()
+		public async Task<ITextBuffer> GetTextBuffer ()
 		{
+			return (await GetTextDocument()).TextBuffer;
 		}
 
-		public event EventHandler TextBufferChanged;
+		public async Task<ITextDocument> GetTextDocument ()
+		{
+			var data = (FileData)Data;
+			if (data.TextDocument == null) {
+				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
+				if (IsNewFile) {
+					using (var reader = new StreamReader (await GetContent ())) {
+						var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (reader, contentType);
+						data.TextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
+						data.TextDocument.Encoding = TextFileUtility.DefaultEncoding;
+					}
+				} else {
+					var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
+					var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
+					data.TextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
+					data.TextDocument.Encoding = text.Encoding;
+				}
+			}
+			return data.TextDocument;
+		}
+
+		private static IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+		{
+			if (filePath != null) {
+				var fileToContentTypeService = CompositionManager.GetExportedValue<IFileToContentTypeService> ();
+				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
+				if (contentTypeFromPath != null &&
+					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
+					return contentTypeFromPath;
+				}
+			}
+
+			var contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
+			if (contentType == null) {
+				// fallback 1: see if there is a content tyhpe with the same name
+				contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType (mimeType);
+				if (contentType == null) {
+					// No joy, create a content type that, by default, derives from text. This is strictly an error
+					// (there should be mappings between any mime type and any content type).
+					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType (mimeType, new string [] { "text" });
+				}
+			}
+
+			return contentType;
+		}
 	}
 }

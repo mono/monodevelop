@@ -30,7 +30,11 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class ExportDocumentControllerAttribute: ExportDocumentControllerBaseAttribute
+	/// <summary>
+	/// Declares a file document controller. It is mandatory to provide a
+	/// file filter using the FileExtension, MimeType or FileName properties
+	/// </summary>
+	public class ExportFileDocumentControllerAttribute: ExportDocumentControllerBaseAttribute
 	{
 		DocumentControllerFactory factory;
 
@@ -55,15 +59,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Name to show in visualizer selectors
 		/// </summary>
 		/// <value>The display name.</value>
-		[NodeAttribute ("name")]
+		[NodeAttribute ("name", Localizable = true)]
 		public string Name { get; set; }
 	}
 
-	class DefaultDocumentControllerFactory : DocumentControllerFactory
+	class DefaultDocumentControllerFactory : FileDocumentControllerFactory
 	{
-		ExportDocumentControllerAttribute attribute;
+		ExportFileDocumentControllerAttribute attribute;
 
-		public DefaultDocumentControllerFactory (ExportDocumentControllerAttribute attribute)
+		public DefaultDocumentControllerFactory (ExportFileDocumentControllerAttribute attribute)
 		{
 			this.attribute = attribute;
 		}

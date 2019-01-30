@@ -24,21 +24,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using System.Linq;
+using System.Threading;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
-	class SingleViewDocumentControllerAdaptor : SingleViewDocumentController
+	class DocumentControllerViewAdaptorFactory : FileDocumentControllerFactory
+	{
+		public override Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
+		{
+			var binding = ((BindingDocumentControllerDescription)controllerDescription).Binding;
+			var content = binding.CreateContent (file.FilePath, file.MimeType, file.Owner as Project);
+			return Task.FromResult< DocumentController> (new SingleViewDocumentControllerAdaptor (binding, content));
+		}
+
+		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
+		{
+			foreach (var binding in IdeApp.Services.DisplayBindingService.GetDisplayBindings (file.FilePath, file.MimeType, file.Owner as Project).OfType<IViewDisplayBinding> ())
+				yield return new BindingDocumentControllerDescription {
+					CanUseAsDefault = binding.CanUseAsDefault,
+					Role = DocumentControllerRole.Tool,
+					Name = binding.Name,
+					Binding = binding
+				};
+		}
+	}
+
+	class BindingDocumentControllerDescription : DocumentControllerDescription
+	{
+		public IViewDisplayBinding Binding { get; set; }
+	}
+
+	class SingleViewDocumentControllerAdaptor : DocumentController
 	{
 		ViewContent content;
+		IViewDisplayBinding binding;
+		Control control;
 
-		public void InitializeFromView (ViewContent content)
+		public ViewContent Content {
+			get {
+				return content;
+			}
+		}
+
+		public SingleViewDocumentControllerAdaptor (IViewDisplayBinding binding, ViewContent content)
 		{
 			this.content = content;
+			this.binding = binding;
+
 			content.DirtyChanged += ContentDirtyChanged;
 
-			IsReadyOnly = content.IsReadOnly || content.IsViewOnly;
+			IsReadOnly = content.IsReadOnly;
 		}
 
 		void ContentDirtyChanged (object sender, EventArgs e)
@@ -46,10 +87,45 @@ namespace MonoDevelop.Ide.Gui
 			IsDirty = content.IsDirty;
 		}
 
+		protected override bool ControllerIsViewOnly => content.IsViewOnly;
 
-		protected override Task<Control> OnLoadView ()
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			return content.Control;
+		}
+
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			return base.OnInitialize (modelDescriptor, status);
+		}
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			var view = await base.OnInitializeView ();
+			view.ViewShown += (s,a) => {
+				IdeApp.Services.DisplayBindingService.AttachSubWindows (this, binding);
+			};
+			return view;
+		}
+
+		protected override Task<Control> OnGetViewControlAsync (CancellationToken cancellationToken, DocumentViewContent view)
 		{
 			return Task.FromResult (content.Control);
 		}
+
+		internal void InsertViewContent (int v, BaseViewContent subViewContent)
+		{
+			throw new NotImplementedException ();
+		}
+	}
+
+	class DocumentControllerExtensionAdaptor : DocumentControllerExtension
+	{
+		public DocumentControllerExtensionAdaptor (BaseViewContent content)
+		{
+			Content = content;
+		}
+
+		public BaseViewContent Content { get; }
 	}
 }

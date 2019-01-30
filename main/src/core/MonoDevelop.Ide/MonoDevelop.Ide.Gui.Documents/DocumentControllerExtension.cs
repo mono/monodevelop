@@ -24,11 +24,192 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
+using Mono.Addins;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentControllerExtension
+	/// <summary>
+	/// Controller extensions are bound to a document controller and can participate in the serialization
+	/// of the document, or implement additional commands, and can (optionally) provide additional views
+	/// for a model or controller.
+	/// </summary>
+	[TypeExtensionPoint (Path = DocumentController.DocumentControllerExtensionsPath, ExtensionAttributeType = typeof (ExportDocumentControllerExtensionAttribute), Name = "Document controller extensions")]
+	public class DocumentControllerExtension : ChainedExtension, IDisposable
 	{
-		public DocumentControllerExtension ()
+		DocumentView viewItem;
+
+		internal TypeExtensionNode<ExportDocumentControllerExtensionAttribute> SourceExtensionNode { get; set; }
+
+		/// <summary>
+		/// Raised when the content of the document changes, which means that GetContent() may return new content objects
+		/// </summary>
+		public event EventHandler ContentChanged;
+
+		/// <summary>
+		/// Gets the capability of this view for being reassigned a project
+		/// </summary>
+		public virtual ProjectReloadCapability ProjectReloadCapability { get; }
+
+		/// <summary>
+		/// Title shown in the document tab
+		/// </summary>
+		public virtual string DocumentTitle { get; }
+
+		/// <summary>
+		/// Icon of the document tab
+		/// </summary>
+		/// <value>The stock icon identifier.</value>
+		public virtual string DocumentIconId { get; }
+
+		/// <summary>
+		/// Controller to which this extension is bound
+		/// </summary>
+		/// <value>The controller.</value>
+		protected DocumentController Controller { get; private set; }
+
+		/// <summary>
+		/// Called to check if this controller extension is supported for the provided controller.
+		/// If the extension is supported, it will be attached to the controller. If it is not,
+		/// it will be disposed and discarded.
+		/// </summary>
+		/// <returns>True if the extension is supported</returns>
+		/// <param name="controller">Controller.</param>
+		public virtual Task<bool> SupportsController (DocumentController controller)
+		{
+			return Task.FromResult (SourceExtensionNode == null || SourceExtensionNode.Data.CanHandle (controller));
+		}
+
+		internal Task Init (DocumentController controller, Properties status)
+		{
+			Controller = controller;
+			return Initialize (status);
+		}
+
+		/// <summary>
+		/// Initializes the controller
+		/// </summary>
+		/// <returns>The initialize.</returns>
+		/// <param name="status">Status of the controller/view, returned by a GetDocumentStatus() call from a previous session</param>
+		public virtual Task Initialize (Properties status)
+		{
+			return Task.CompletedTask;
+		}
+
+		/// <summary>
+		/// Saves the document. If the controller has a model, the default implementation will save the model.
+		/// </summary>
+		public virtual Task OnSave ()
+		{
+			return Task.CompletedTask;
+		}
+
+		/// <summary>
+		/// Returns the current editing status of the controller.
+		/// </summary>
+		public virtual PropertyBag GetDocumentStatus ()
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Return true if the document has been modified
+		/// </summary>
+		public bool IsDirty { get; set; }
+
+
+		/// <summary>
+		/// Gets the view that will show the content of the extension.
+		/// </summary>
+		/// <returns>The view</returns>
+		public async Task<DocumentView> GetDocumentViewItem ()
+		{
+			if (viewItem == null) {
+				viewItem = new DocumentViewContainer ();
+				try {
+					viewItem = await OnInitializeView ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("View container initialization failed", ex);
+				}
+			}
+			return viewItem;
+		}
+
+		protected virtual Task<DocumentView> OnInitializeView ()
+		{
+			return Task.FromResult<DocumentView> (new DocumentViewContent (OnGetViewControlCallback));
+		}
+
+		Task<Control> OnGetViewControlCallback (CancellationToken token)
+		{
+			return OnGetViewControl (token, (DocumentViewContent)viewItem);
+		}
+
+		protected virtual Task<Control> OnGetViewControl (CancellationToken token, DocumentViewContent view)
+		{
+			return Task.FromResult<Control> (null);
+		}
+
+		internal void OnExtensionChainCreated ()
+		{
+		}
+
+		protected virtual void OnFocused ()
+		{
+		}
+
+		protected virtual void OnUnfocused ()
+		{
+		}
+
+		public object GetContent (Type type)
+		{
+			return GetContents (type).FirstOrDefault ();
+		}
+
+		public T GetContent<T> () where T : class
+		{
+			return GetContents<T> ().FirstOrDefault ();
+		}
+
+		public IEnumerable<T> GetContents<T> () where T : class
+		{
+			return OnGetContents (typeof (T)).Cast<T> ();
+		}
+
+		public IEnumerable<object> GetContents (Type type)
+		{
+			return OnGetContents (type);
+		}
+
+		protected virtual object OnGetContent (Type type)
+		{
+			if (type.IsInstanceOfType (this))
+				return this;
+			else
+				return null;
+		}
+
+		protected virtual IEnumerable<object> OnGetContents (Type type)
+		{
+			var c = OnGetContent (type);
+			if (c != null)
+				yield return c;
+		}
+
+		protected virtual void OnContentChanged ()
+		{
+			Controller?.NotifyContentChanged ();
+			ContentChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		protected virtual void OnOwnerChanged ()
 		{
 		}
 	}

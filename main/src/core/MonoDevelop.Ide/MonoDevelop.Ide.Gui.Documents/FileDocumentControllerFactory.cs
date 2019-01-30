@@ -23,13 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class FileDocumentControllerFactory
+	/// <summary>
+	/// A document controller factory specialized in creating file document controllers
+	/// </summary>
+	public abstract class FileDocumentControllerFactory: DocumentControllerFactory
 	{
-		public FileDocumentControllerFactory ()
+		public override Task<DocumentController> CreateController (ModelDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
 		{
+			return CreateController ((FileDescriptor)modelDescriptor, controllerDescription);
 		}
+
+		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		{
+			if (modelDescriptor is FileDescriptor file)
+				return GetSupportedControllers (file);
+			else
+				return Array.Empty<DocumentControllerDescription> ();
+		}
+
+		public abstract Task<DocumentController> CreateController (FileDescriptor modelDescriptor, DocumentControllerDescription controllerDescription);
+
+		public abstract IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor);
 	}
 }

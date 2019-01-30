@@ -30,13 +30,21 @@ using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentViewItem : ICommandDelegator, IDisposable
+	/// <summary>
+	/// Base type for views that can show the content of documents
+	/// </summary>
+	public class DocumentView : ICommandDelegator, IDisposable
 	{
 		string title;
 		string accessibilityDescription;
 		Xwt.Drawing.Image icon;
-		DocumentViewItem activeChildView;
+		DocumentView activeChildView;
 		IShellDocumentViewItem shellView;
+
+		/// <summary>
+		/// Raised when the active view in this hierarchy of views changes
+		/// </summary>
+		public EventHandler ActiveViewInHierarchyChanged;
 
 		/// <summary>
 		/// The controller that was used to create this view
@@ -46,7 +54,72 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public DocumentViewContentCollection AttachedViews { get; } = new DocumentViewContentCollection ();
 
-		public event EventHandler ViewShown;
+		/// <summary>
+		/// Title of the view. This is the text shown in tabs and selectors.
+		/// </summary>
+		public string Title {
+			get => title;
+			set {
+				title = value;
+				UpdateTitle ();
+			}
+		}
+
+		public string AccessibilityDescription {
+			get { return accessibilityDescription; }
+			set { accessibilityDescription = value; UpdateTitle (); }
+		}
+
+		public Xwt.Drawing.Image Icon {
+			get => icon;
+			set {
+				icon = value;
+				UpdateTitle ();
+			}
+		}
+
+		public DocumentView ActiveViewInHierarchy {
+			get => activeChildView;
+			set {
+				if (value != activeChildView) {
+					activeChildView = value;
+					ActiveViewInHierarchyChanged?.Invoke (this, EventArgs.Empty);
+					if (Parent?.ActiveView == this)
+						Parent.ActiveViewInHierarchy = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Container that contains this view
+		/// </summary>
+		/// <value>The parent.</value>
+		public DocumentViewContainer Parent { get; internal set; }
+
+		internal IShellDocumentViewItem ShellView {
+			get {
+				return shellView;
+			}
+		}
+
+		object ICommandDelegator.GetDelegatedCommandTarget () => SourceController;
+
+		public void SetActive ()
+		{
+			if (Parent != null)
+				Parent.ActiveView = this;
+		}
+
+		public void Dispose ()
+		{
+			OnDispose ();
+		}
+
+		void UpdateTitle ()
+		{
+			if (shellView != null)
+				shellView.SetTitle (title, icon, accessibilityDescription);
+		}
 
 		internal virtual void AttachToView (IShellDocumentViewItem shellView)
 		{
@@ -60,52 +133,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 			shellView = null;
 		}
 
-		public string Title {
-			get => title;
-			set {
-				title = value;
-				UpdateTitle ();
-			}
-		}
-
-		public Xwt.Drawing.Image Icon {
-			get => icon;
-			set {
-				icon = value;
-				UpdateTitle ();
-			}
-		}
-
-		internal IShellDocumentViewItem ShellView {
-			get {
-				return shellView;
-			}
-		}
-
-		public DocumentViewContainer Parent { get; internal set; }
-
-		public string AccessibilityDescription {
-			get { return accessibilityDescription; }
-			set { accessibilityDescription = value; UpdateTitle (); }
-		}
-
-		void UpdateTitle ()
-		{
-			if (shellView != null)
-				shellView.SetTitle (title, icon, accessibilityDescription);
-		}
-
-		public void SetActive ()
-		{
-			if (Parent != null)
-				Parent.ActiveView = this;
-		}
-
-		public void Dispose ()
-		{
-			OnDispose ();
-		}
-
 		protected virtual void OnDispose ()
 		{
 			if (Parent != null)
@@ -113,8 +140,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 			else if (shellView != null)
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
 		}
-
-		object ICommandDelegator.GetDelegatedCommandTarget () => SourceController;
 
 		internal virtual IEnumerable<DocumentController> GetActiveControllerHierarchy ()
 		{
@@ -127,19 +152,5 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (SourceController != null)
 				yield return SourceController;
 		}
-
-		public DocumentViewItem ActiveViewInHierarchy {
-			get => activeChildView;
-			set {
-				if (value != activeChildView) {
-					activeChildView = value;
-					ActiveViewInHierarchyChanged?.Invoke (this, EventArgs.Empty);
-					if (Parent?.ActiveView == this)
-						Parent.ActiveViewInHierarchy = value;
-				}
-			}
-		}
-
-		public EventHandler ActiveViewInHierarchyChanged;
 	}
 }

@@ -24,12 +24,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Mono.Addins;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class ExportDocumentControllerAttribute: ExportDocumentControllerBaseAttribute
+	/// <summary>
+	/// Declares a controller factory. Factories for file controllers must provide a
+	/// file filter using the FileExtension, MimeType or FileName properties
+	/// </summary>
+	public class ExportDocumentControllerFactoryAttribute: ExportDocumentControllerBaseAttribute
 	{
-		public ExportDocumentControllerAttribute ()
+		DocumentControllerFactory factory;
+
+		internal DocumentControllerFactory Factory {
+			get {
+				if (factory == null) {
+					factory = (DocumentControllerFactory)((TypeExtensionNode)ExtensionNode).CreateInstance (typeof (DocumentControllerFactory));
+					if ((factory is FileDocumentControllerFactory) && !HasFileFilter) {
+						LoggingService.LogError ("Document controller factories of type FileDocumentControllerFactory must have a file filter");
+						factory = new NopDocumentControllerFactory ();
+					}
+				}
+				return factory;
+			}
+		}
+
+		public bool CanHandle (ModelDescriptor modelDescriptor)
 		{
+			if (modelDescriptor is FileDescriptor file)
+				return CanHandle (file.FilePath, file.MimeType);
+			return true;
+		}
+	}
+
+	class NopDocumentControllerFactory : DocumentControllerFactory
+	{
+		public override Task<DocumentController> CreateController (ModelDescriptor modelDescriptor, DocumentControllerDescription controllerDescription)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		{
+			yield break;
 		}
 	}
 }

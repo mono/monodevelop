@@ -24,9 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
 	public enum DocumentControllerRole
 	{
+		Source,
+		VisualDesign,
+		Preview,
+		Tool
 	}
 }

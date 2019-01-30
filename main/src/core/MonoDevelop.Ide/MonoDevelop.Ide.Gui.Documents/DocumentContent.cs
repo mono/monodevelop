@@ -28,23 +28,16 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentViewContent//: ViewContent
+	class DocumentContent
 	{
 		internal DocumentController DocumentController { get; set; }
 		internal DocumentControllerDescription DocumentControllerDescription { get; set; }
-		public IWorkbenchWindow WorkbenchWindow { get; internal set; }
+		internal DocumentView DocumentView { get; set; }
 
-		public DocumentViewContent (DocumentController controller, DocumentControllerDescription controllerDescription)
+		public DocumentContent (DocumentController controller, DocumentControllerDescription controllerDescription)
 		{
 			DocumentController = controller;
 			DocumentControllerDescription = controllerDescription;
 		}
-
-		public object GetContent (Type type)
-		{
-			throw new NotImplementedException ();
-		}
-
-		//		public override Control Control => throw new NotImplementedException ();
 	}
 }

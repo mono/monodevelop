@@ -24,12 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Mono.Addins;
+
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentControllerFactory
+	/// <summary>
+	/// Controller factories are in charge of creating controllers
+	/// </summary>
+	[TypeExtensionPoint (ExtensionAttributeType = typeof(ExportDocumentControllerFactoryAttribute), Path = DocumentControllerService.DocumentControllerFactoriesPath)]
+	public abstract class DocumentControllerFactory
 	{
-		public DocumentControllerFactory ()
-		{
-		}
+		/// <summary>
+		/// Unique identifier of the controller factory.
+		/// </summary>
+		public virtual string Id => GetType ().FullName;
+
+		/// <summary>
+		/// Checks if this factory can create a controller for the provided file, and returns the kind of
+		/// controller it can create.
+		/// </summary>
+		public abstract IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor);
+
+		/// <summary>
+		/// Creates a controller for editing the provided file
+		/// </summary>
+		public abstract Task<DocumentController> CreateController (ModelDescriptor modelDescriptor, DocumentControllerDescription controllerDescription);
 	}
 }

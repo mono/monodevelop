@@ -26,25 +26,24 @@
 //
 
 using System.ComponentModel;
+using System.Threading.Tasks;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
+	/// <summary>
+	/// Arguments for the document close event
+	/// </summary>
 	public class DocumentCloseEventArgs : CancelEventArgs
 	{
-		private bool forced;
-		public bool Forced {
-			get { return forced; }
-		}
+		public Document Document { get; set; }
+		public bool Forced { get; }
+		public bool WasActive { get; }
 
-		private bool wasActive;
-		public bool WasActive {
-			get { return wasActive; }
-		}
-
-		public DocumentCloseEventArgs (bool forced, bool wasActive)
+		public DocumentCloseEventArgs (Document document, bool forced, bool wasActive)
 		{
-			this.forced = forced;
-			this.wasActive = wasActive;
+			Document = document;
+			Forced = forced;
+			WasActive = wasActive;
 		}
 	}
 

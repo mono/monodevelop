@@ -26,34 +26,111 @@
 using System;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Shell;
+using System.Threading;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public sealed class DocumentViewContent : DocumentViewItem
+	/// <summary>
+	/// A document view that shows the content in a control
+	/// </summary>
+	public sealed class DocumentViewContent : DocumentView
 	{
+		private Func<CancellationToken,Task<Control>> asyncContentLoader;
+		private Func<Control> contentLoader;
+		IShellDocumentViewContent shellContentView;
+		DocumentToolbar toolbar;
+		IPathedDocument pathDoc;
 		Control control;
-		private Func<Task<Control>> contentLoader;
+		bool controlCallbackChanged;
 
-		public DocumentViewContent (Func<Task<Control>> contentLoader)
+		public DocumentViewContent (Func<CancellationToken,Task<Control>> contentLoader)
 		{
-			this.contentLoader = contentLoader;
+			this.asyncContentLoader = contentLoader;
 		}
 
-		public Func<Task<Control>> ContentLoader {
-			get => contentLoader;
+		public DocumentViewContent (Func<Control> contentLoader)
+		{
+			ContentLoader = contentLoader;
+		}
+
+		/// <summary>
+		/// Async callback to be invoked to retrieve the control that the view will display
+		/// </summary>
+		public Func<CancellationToken,Task<Control>> AsyncContentLoader {
+			get => asyncContentLoader;
 			set {
-				contentLoader = value;
-				ContentChanged?.Invoke (this, EventArgs.Empty);
+				if (asyncContentLoader != value) {
+					asyncContentLoader = value;
+					if (shellContentView != null) {
+						var oldControl = control;
+						control = null;
+						shellContentView.SetContentLoader (asyncContentLoader);
+						if (oldControl != null) {
+							if (control == null)
+								shellContentView.ReloadContent (); // Make sure the shell view uses the new control
+							oldControl.Dispose ();
+						}
+					}
+				}
 			}
 		}
 
-		public async Task<Control> GetControl ()
-		{
-			if (control == null && ContentLoader != null)
-				control = await ContentLoader ();
-			return control;
+		/// <summary>
+		/// Callback to be invoked to retrieve the control that the view will display
+		/// </summary>
+		public Func<Control> ContentLoader {
+			get => contentLoader;
+			set {
+				if (contentLoader != value) {
+					contentLoader = value;
+					AsyncContentLoader = delegate (CancellationToken ct) {
+						return Task.FromResult<Control> (contentLoader ());
+					};
+				}
+			}
 		}
 
-		public event EventHandler ContentChanged;
+		public DocumentToolbar GetToolbar ()
+		{
+			if (shellContentView == null)
+				throw new InvalidOperationException ("Toolbar can't be requested before the view content is created");
+			if (toolbar == null)
+				toolbar = new DocumentToolbar (shellContentView.GetToolbar ());
+			return toolbar;
+		}
+
+		public void ShowPathBar (IPathedDocument pathDoc)
+		{
+			if (shellContentView == null)
+				this.pathDoc = pathDoc;
+			else
+				shellContentView.ShowPathBar (pathDoc);
+		}
+
+		public void HidePathBar ()
+		{
+			if (shellContentView == null)
+				this.pathDoc = null;
+			else
+				shellContentView.HidePathBar ();
+		}
+
+		internal override void AttachToView (IShellDocumentViewItem shellView)
+		{
+			base.AttachToView (shellView);
+			shellContentView = (IShellDocumentViewContent)shellView;
+			shellContentView.SetContentLoader (AsyncContentLoader);
+			if (pathDoc != null)
+				shellContentView.ShowPathBar (pathDoc);
+		}
+
+		protected override void OnDispose ()
+		{
+			if (control != null)
+				control.Dispose ();
+			base.OnDispose ();
+		}
 	}
 }

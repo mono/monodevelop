@@ -27,26 +27,54 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public sealed class DocumentViewContentCollection : Collection<DocumentViewItem>
+	public sealed class DocumentViewContentCollection : Collection<DocumentView>
 	{
+		IDocumentViewContentCollectionListener listener;
+
+		internal void AttachListener (IDocumentViewContentCollectionListener listener)
+		{
+			this.listener = listener;
+		}
+
+		internal void DetachListener ()
+		{
+			this.listener = null;
+		}
+
 		protected override void ClearItems ()
 		{
 			base.ClearItems ();
+			if (listener != null)
+				listener.ClearItems ();
 		}
 
-		protected override void InsertItem (int index, DocumentViewItem item)
+		protected override void InsertItem (int index, DocumentView item)
 		{
 			base.InsertItem (index, item);
+			if (listener != null)
+				listener.InsertItem (index, item);
 		}
 
 		protected override void RemoveItem (int index)
 		{
 			base.RemoveItem (index);
+			if (listener != null)
+				listener.RemoveItem (index);
 		}
 
-		protected override void SetItem (int index, DocumentViewItem item)
+		protected override void SetItem (int index, DocumentView item)
 		{
 			base.SetItem (index, item);
+			if (listener != null)
+				listener.SetItem (index, item);
 		}
+	}
+
+	interface IDocumentViewContentCollectionListener
+	{
+		void ClearItems ();
+		void InsertItem (int index, DocumentView item);
+		void RemoveItem (int index);
+		void SetItem (int index, DocumentView item);
 	}
 }
