@@ -24,6 +24,9 @@ using System.Windows.Input;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.Text.Operations;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.Ide.Text
 {
@@ -32,19 +35,33 @@ namespace MonoDevelop.Ide.Text
 		private readonly IWpfTextView _textView;
 		private readonly IEditorOperations _editorOperations;
 		private readonly ITextUndoHistoryRegistry _undoHistoryRegistry;
+		private readonly Microsoft.VisualStudio.Text.Editor.Commanding.CommandDispatcher commandDispatcher;
 
 		internal DefaultKeyProcessor (
 			IWpfTextView textView,
 			IEditorOperations editorOperations,
-			ITextUndoHistoryRegistry undoHistoryRegistry)
+			ITextUndoHistoryRegistry undoHistoryRegistry,
+			Microsoft.VisualStudio.Text.Editor.Commanding.IEditorCommandHandlerService editorCommandHandlerService)
 		{
 			this._textView = textView;
 			this._editorOperations = editorOperations;
 			this._undoHistoryRegistry = undoHistoryRegistry;
+			this.commandDispatcher = new Microsoft.VisualStudio.Text.Editor.Commanding.CommandDispatcher (editorCommandHandlerService, editorOperations);
+		}
+
+		ICommandHandler commandHandler;
+		ICommandHandler CommandHandler {
+			get {
+				return commandHandler ?? (commandHandler = _textView.Properties.GetProperty<ViewContent> (typeof (ViewContent)) as ICommandHandler);
+			}
 		}
 
 		public override void KeyDown (KeyEventArgs args)
 		{
+			if (args.Handled) {
+				return;
+			}
+
 			args.Handled = true;
 			switch (args.KeyboardDevice.Modifiers) {
 			case ModifierKeys.None:
@@ -263,6 +280,11 @@ namespace MonoDevelop.Ide.Text
 			}
 		}
 
+		private void ExecuteCommand(string command)
+		{
+			CommandHandler.Run (null, new ActionCommand (command, null));
+		}
+
 		private void HandleKey (KeyEventArgs args)
 		{
 			switch (args.Key) {
@@ -270,7 +292,8 @@ namespace MonoDevelop.Ide.Text
 				_editorOperations.MoveToNextCharacter (false);
 				break;
 			case Key.Left:
-				_editorOperations.MoveToPreviousCharacter (false);
+				//_editorOperations.MoveToPreviousCharacter (false);
+				ExecuteCommand ("MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft");
 				break;
 			case Key.Up:
 				_editorOperations.MoveLineUp (false);
@@ -317,14 +340,18 @@ namespace MonoDevelop.Ide.Text
 
 		public override void TextInput (TextCompositionEventArgs args)
 		{
+			if (args.Text.Length == 1) {
+				commandDispatcher.InsertChar (args.Text[0]);
+				args.Handled = true;
+			}
 			// The view will generate an text input event of length zero to flush the current provisional composition span.
 			// No one else should be doing that, so ignore zero length inputs unless there is provisional text to flush.
-			if ((args.Text.Length > 0) || (_editorOperations.ProvisionalCompositionSpan != null)) {
-				args.Handled = this.PerformEditAction (() => _editorOperations.InsertText (args.Text));
+			//if ((args.Text.Length > 0) || (_editorOperations.ProvisionalCompositionSpan != null)) {
+			//	args.Handled = this.PerformEditAction (() => _editorOperations.InsertText (args.Text));
 
-				if (args.Handled)
-					_textView.Caret.EnsureVisible ();
-			}
+			//	if (args.Handled)
+			//		_textView.Caret.EnsureVisible ();
+			//}
 		}
 
 		public override void TextInputStart (TextCompositionEventArgs args)

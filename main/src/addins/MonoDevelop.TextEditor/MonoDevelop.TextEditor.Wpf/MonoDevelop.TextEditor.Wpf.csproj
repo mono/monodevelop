@@ -18,4 +18,9 @@
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="System.Xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CommandDispatcher.cs">
+      <Link>KeyProcessor\CommandDispatcher.cs</Link>
+    </Compile>
+  </ItemGroup>
 </Project>
