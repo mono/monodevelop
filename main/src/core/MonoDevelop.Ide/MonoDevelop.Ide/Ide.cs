@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeApp.cs
 //
 // Author:
@@ -38,19 +38,20 @@ using Mono.Addins.Setup;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.CustomTools;
 using System.Linq;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Templates;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.RoslynServices.Options;
 using MonoDevelop.Ide.RoslynServices;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide
 {
@@ -63,9 +64,10 @@ namespace MonoDevelop.Ide
 		static CommandManager commandService;
 		static IdeServices ideServices;
 		static RootWorkspace workspace;
-		readonly static IdePreferences preferences;
+		static DesktopService desktopService;
+		static FontService fontsService;
+		static TypeSystemService typeSystemService;
 
-		static bool isMainRunning;
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
 		static Version upgradedFromVersion;
@@ -131,11 +133,6 @@ namespace MonoDevelop.Ide
 			get { return CommandService.ApplicationHasFocus; }
 		}
 
-		static IdeApp ()
-		{
-			preferences = new IdePreferences ();
-		}
-		
 		public static Workbench Workbench {
 			get { return workbench; }
 		}
@@ -155,12 +152,18 @@ namespace MonoDevelop.Ide
 		public static CommandManager CommandService {
 			get { return commandService; }
 		}
-		
+
+		public static DesktopService DesktopService => desktopService;
+
+		public static FontService FontService => fontsService;
+
+		public static TypeSystemService TypeSystemService => typeSystemService;
+
 		public static IdeServices Services {
 			get { return ideServices; }
 		}
 
-		public static IdePreferences Preferences => preferences;
+		public static IdePreferences Preferences { get; } = new IdePreferences ();
 
 		public static bool IsInitialized {
 			get {
@@ -203,22 +206,29 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static void Initialize (ProgressMonitor monitor) => Initialize (monitor, false);
+		public static Task Initialize (ProgressMonitor monitor) => Initialize (monitor, false);
 
-		internal static void Initialize (ProgressMonitor monitor, bool hideWelcomePage)
+		internal static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
 
+			commandService = await Runtime.GetService<CommandManager> ();
+			desktopService = await Runtime.GetService<DesktopService> ();
+			fontsService = await Runtime.GetService<FontService> ();
+			typeSystemService = await Runtime.GetService<TypeSystemService> ();
+
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
+
 			Counters.Initialization.Trace ("Creating Root Workspace");
-			workspace = new RootWorkspace ();
+			workspace = await Runtime.GetService<RootWorkspace> ();
+
 			Counters.Initialization.Trace ("Creating Services");
-			projectOperations = new ProjectOperations ();
+			projectOperations = await Runtime.GetService<ProjectOperations> ();
 			helpOperations = new HelpOperations ();
-			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
+			await ideServices.Initialize ();
 			CustomToolService.Init ();
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
@@ -246,7 +256,7 @@ namespace MonoDevelop.Ide
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Initializing Workbench");
-			workbench.Initialize (monitor);
+			await workbench.Initialize (monitor);
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Initializing WelcomePage service");
@@ -427,16 +437,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public static void Run ()
-		{
-			// finally run the workbench window ...
-			isMainRunning = true;
-			Gtk.Application.Run ();
-		}
-
-		public static bool IsRunning {
-			get { return isMainRunning; }
-		}
+		public static bool IsRunning { get; internal set; }
 
 		public static bool IsExiting { get; private set; }
 
@@ -448,7 +449,6 @@ namespace MonoDevelop.Ide
 			IsExiting = true;
 			if (await workbench.Close ()) {
 				Gtk.Application.Quit ();
-				isMainRunning = false;
 				return true;
 			}
 			IsExiting = false;
@@ -471,11 +471,11 @@ namespace MonoDevelop.Ide
 				PropertyService.Set ("MonoDevelop.Core.RestartRequested", true);
 
 				try {
-					DesktopService.RestartIde (reopenWorkspace);
+					IdeApp.DesktopService.RestartIde (reopenWorkspace);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Restarting IDE failed", ex);
 				}
-				// return true here even if DesktopService.RestartIde has failed,
+				// return true here even if IdeApp.DesktopService.RestartIde has failed,
 				// because the Ide has already been closed.
 				return true;
 			}
@@ -542,7 +542,7 @@ namespace MonoDevelop.Ide
 				return;
 
 			// If a modal dialog is open, try again later
-			if (DesktopService.IsModalDialogRunning ()) {
+			if (IdeApp.DesktopService.IsModalDialogRunning ()) {
 				DispatchIdleActions (1000);
 				return;
 			}
@@ -630,6 +630,27 @@ namespace MonoDevelop.Ide
 	
 	public class IdeServices
 	{
+		TaskStore taskStore;
+		TextEditorService textEditorService;
+		NavigationHistoryService navigationHistoryManager;
+		static DisplayBindingService displayBindingService;
+
+		internal async Task Initialize ()
+		{
+			taskStore = await Runtime.GetService<TaskStore> ();
+			textEditorService = await Runtime.GetService<TextEditorService> ();
+			navigationHistoryManager = await Runtime.GetService<NavigationHistoryService> ();
+			displayBindingService = await Runtime.GetService<DisplayBindingService> ();
+		}
+
+		public TaskStore TaskStore => taskStore;
+
+		public TextEditorService TextEditorService => textEditorService;
+
+		public NavigationHistoryService NavigationHistory => navigationHistoryManager;
+
+		public DisplayBindingService DisplayBindingService => displayBindingService;
+
 		readonly Lazy<TemplatingService> templatingService = new Lazy<TemplatingService> (() => new TemplatingService ());
 
 		public ProjectService ProjectService {

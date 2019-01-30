@@ -30,6 +30,7 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.FindInFiles;
 using System.Threading;
 
 namespace MonoDevelop.Ide.Gui
@@ -116,6 +117,17 @@ namespace MonoDevelop.Ide.Gui
 			return OnGetOutputProgressMonitor (id, title, icon, bringToFront, allowMonitorReuse, titleSuffix, visible);
 		}
 
+		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad = false, CancellationTokenSource cancellationTokenSource = null)
+		{
+			return OnGetSearchProgressMonitor (bringToFront, focusPad, cancellationTokenSource);
+		}
+
+		public OperationConsoleFactory ConsoleFactory {
+			get { return OnGetConsoleFactory (); }
+		}
+
+		protected abstract OperationConsoleFactory OnGetConsoleFactory ();
+
 		protected abstract ProgressMonitor OnGetBuildProgressMonitor ();
 
 		protected abstract ProgressMonitor OnGetCleanProgressMonitor ();
@@ -139,5 +151,7 @@ namespace MonoDevelop.Ide.Gui
 		protected abstract ProgressMonitor OnGetBackgroundProgressMonitor (string title, IconId icon);
 
 		protected abstract OutputProgressMonitor OnGetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, string titleSuffix, bool visible);
+
+		protected abstract SearchProgressMonitor OnGetSearchProgressMonitor (bool bringToFront, bool focusPad, CancellationTokenSource cancellationTokenSource);
 	}
 }

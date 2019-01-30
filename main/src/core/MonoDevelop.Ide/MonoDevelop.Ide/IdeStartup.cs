@@ -1,4 +1,4 @@
-//
+﻿//
 // IdeStartup.cs
 //
 // Author:
@@ -30,19 +30,12 @@
 
 using System;
 using System.IO;
-using System.Collections;
 using System.Reflection;
 using System.Threading;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
-
-using Microsoft.CodeAnalysis.Utilities;
-using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
-
-using Mono.Unix;
 
 using Mono.Addins;
 using MonoDevelop.Components.Commands;
@@ -58,15 +51,16 @@ using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide
 {
 	public class IdeStartup: IApplication
 	{
-		Socket listen_socket   = null;
+		static IdeInstanceConnection instanceConnection;
+
 		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
-		static readonly int ipcBasePort = 40000;
 		static Stopwatch startupTimer = new Stopwatch ();
 		static Stopwatch startupSectionTimer = new Stopwatch ();
 		static Stopwatch timeToCodeTimer = new Stopwatch ();
@@ -82,7 +76,7 @@ namespace MonoDevelop.Ide
 				return Task.FromResult (options.Error != null? -1 : 0);
 			return Task.FromResult (Run (options));
 		}
-		
+
 		int Run (MonoDevelopOptions options)
 		{
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
@@ -141,19 +135,19 @@ namespace MonoDevelop.Ide
 			var args = options.RemainingArgs.ToArray ();
 			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
 
-			sectionTimings["GtkInitialization"] = startupSectionTimer.ElapsedMilliseconds;
+			sectionTimings ["GtkInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
 			// XWT initialization
-			FilePath p = typeof(IdeStartup).Assembly.Location;
-			Runtime.LoadAssemblyFrom (p.ParentDirectory.Combine("Xwt.Gtk.dll"));
+			FilePath p = typeof (IdeStartup).Assembly.Location;
+			Runtime.LoadAssemblyFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
-			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
-			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend, GtkExtendedTitleBarWindowBackend> ();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend, GtkExtendedTitleBarDialogBackend> ();
 			IdeTheme.SetupXwtTheme ();
 
-			sectionTimings["XwtInitialization"] = startupSectionTimer.ElapsedMilliseconds;
+			sectionTimings ["XwtInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 
 			//default to Windows IME on Windows
@@ -163,34 +157,36 @@ namespace MonoDevelop.Ide
 				if (string.IsNullOrEmpty (val.Val as string))
 					GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
 			}
-			
-			string socket_filename = null;
-			EndPoint ep = null;
-			
+
 			DispatchService.Initialize ();
 
 			// Set a synchronization context for the main gtk thread
 			SynchronizationContext.SetSynchronizationContext (DispatchService.SynchronizationContext);
 			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
 
-			sectionTimings["DispatchInitialization"] = startupSectionTimer.ElapsedMilliseconds;
+			sectionTimings ["DispatchInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 
 			// Initialize Roslyn's synchronization context
 			RoslynServices.RoslynService.Initialize ();
 
-			sectionTimings["RoslynInitialization"] = startupSectionTimer.ElapsedMilliseconds;
+			sectionTimings ["RoslynInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 
 			AddinManager.AddinLoadError += OnAddinError;
+
+			Counters.Initialization.Trace ("Initializing Runtime");
+			Runtime.Initialize (true);
+
+			// Register services used by the IDE
+
+			RegisterServices ();
 
 			var startupInfo = new StartupInfo (args);
 
 			// If a combine was specified, force --newwindow.
 
 			if (!options.NewWindow && startupInfo.HasFiles) {
-				Counters.Initialization.Trace ("Pre-Initializing Runtime to load files in existing window");
-				Runtime.Initialize (true);
 				foreach (var file in startupInfo.RequestedFileList) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
 						options.NewWindow = true;
@@ -198,9 +194,13 @@ namespace MonoDevelop.Ide
 					}
 				}
 			}
-			
-			Counters.Initialization.Trace ("Initializing Runtime");
-			Runtime.Initialize (true);
+
+			instanceConnection = new IdeInstanceConnection ();
+			instanceConnection.Initialize (options.IpcTcp);
+
+			// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
+			if (!options.NewWindow && startupInfo.HasFiles && instanceConnection.TryConnect (startupInfo))
+				return 0;
 
 			sectionTimings ["RuntimeInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
@@ -215,48 +215,50 @@ namespace MonoDevelop.Ide
 
 			IdeTheme.SetupGtkTheme ();
 
-			sectionTimings["ThemeInitialized"] = startupSectionTimer.ElapsedMilliseconds;
+			sectionTimings ["ThemeInitialized"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 
+			IdeApp.IsRunning = true;
+
+			// Run the main loop
+			Gtk.Application.Invoke ((s, e) => {
+				MainLoop (options, startupInfo).Ignore ();
+			});
+			Gtk.Application.Run ();
+
+			IdeApp.IsRunning = false;
+
+			IdeApp.Customizer.OnIdeShutdown ();
+
+			instanceConnection.Dispose ();
+
+			lockupCheckRunning = false;
+			Runtime.Shutdown ();
+
+			IdeApp.Customizer.OnCoreShutdown ();
+
+			InstrumentationService.Stop ();
+
+			MonoDevelop.Components.GtkWorkarounds.Terminate ();
+
+			return 0;
+		}
+
+		async Task<int> MainLoop (MonoDevelopOptions options, StartupInfo startupInfo)
+		{
 			ProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
 			Counters.Initialization.Trace ("Initializing Platform Service");
-			DesktopService.Initialize ();
+			await Runtime.GetService<DesktopService> ();
 
 			sectionTimings["PlatformInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 
 			monitor.Step (1);
 
-			if (options.IpcTcp) {
-				listen_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSdbmBounded (Environment.UserName));
-			} else {
-				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
-				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
-				ep = new UnixEndPoint (socket_filename);
-			}
-				
-			// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
-			if (!options.NewWindow && startupInfo.HasFiles) {
-				try {
-					StringBuilder builder = new StringBuilder ();
-					foreach (var file in startupInfo.RequestedFileList) {
-						builder.AppendFormat ("{0};{1};{2}\n", file.FileName, file.Line, file.Column);
-					}
-					listen_socket.Connect (ep);
-					listen_socket.Send (Encoding.UTF8.GetBytes (builder.ToString ()));
-					return 0;
-				} catch {
-					// Reset the socket
-					if (null != socket_filename && File.Exists (socket_filename))
-						File.Delete (socket_filename);
-				}
-			}
-			
 			Counters.Initialization.Trace ("Checking System");
 
 			CheckFileWatcher ();
@@ -281,7 +283,7 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
 				hideWelcomePage = startupInfo.HasFiles;
-				IdeApp.Initialize (monitor, hideWelcomePage);
+				await IdeApp.Initialize (monitor, hideWelcomePage);
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
 
@@ -302,7 +304,7 @@ namespace MonoDevelop.Ide
 				// load previous combine
 				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					openedProject = DesktopService.RecentFiles.MostRecentlyUsedProject;
+					openedProject = IdeApp.DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
 						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ());
@@ -341,15 +343,12 @@ namespace MonoDevelop.Ide
 			sectionTimings["BasicInitializationCompleted"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
 
-			// FIXME: we should probably track the last 'selected' one
-			// and do this more cleanly
-			try {
-				listen_socket.Bind (ep);
-				listen_socket.Listen (5);
-				listen_socket.BeginAccept (new AsyncCallback (ListenCallback), listen_socket);
-			} catch {
-				// Socket already in use
-			}
+			instanceConnection.FileOpenRequested += (sender, a) => {
+				foreach (var e in a)
+					OpenFile (e.FileName);
+			};
+
+			instanceConnection.StartListening ();
 
 			sectionTimings["SocketInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
@@ -392,23 +391,14 @@ namespace MonoDevelop.Ide
 			CreateStartupMetadata (startupInfo, sectionTimings);
 
 			GLib.Idle.Add (OnIdle);
-			IdeApp.Run ();
 
-			IdeApp.Customizer.OnIdeShutdown ();
-			
-			// unloading services
-			if (null != socket_filename)
-				File.Delete (socket_filename);
-			lockupCheckRunning = false;
-			Runtime.Shutdown ();
-
-			IdeApp.Customizer.OnCoreShutdown ();
-
-			InstrumentationService.Stop ();
-
-			MonoDevelop.Components.GtkWorkarounds.Terminate ();
-			
 			return 0;
+		}
+
+		void RegisterServices ()
+		{
+			Runtime.RegisterServiceType<ProgressMonitorManager, IdeProgressMonitorManager> ();
+			Runtime.RegisterServiceType<IShell, DefaultWorkbench> ();
 		}
 
 		void FMOpenTimerExpired ()
@@ -476,7 +466,7 @@ namespace MonoDevelop.Ide
 
 		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
 		{
-			var result = DesktopService.PlatformTelemetry;
+			var result = IdeApp.DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
@@ -647,26 +637,6 @@ namespace MonoDevelop.Ide
 			if (errorsList != null)
 				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
 		}
-		
-		void ListenCallback (IAsyncResult state)
-		{
-			Socket sock = (Socket)state.AsyncState;
-
-			Socket client = sock.EndAccept (state);
-			((Socket)state.AsyncState).BeginAccept (new AsyncCallback (ListenCallback), sock);
-			byte[] buf = new byte[1024];
-			client.Receive (buf);
-			foreach (string filename in Encoding.UTF8.GetString (buf).Split ('\n')) {
-				string trimmed = filename.Trim ();
-				string file = "";
-				foreach (char c in trimmed) {
-					if (c == 0x0000)
-						continue;
-					file += c;
-				}
-				GLib.Idle.Add (() => OpenFile (file));
-			}
-		}
 
 		static bool OpenFile (string file) 
 		{
@@ -739,7 +709,7 @@ namespace MonoDevelop.Ide
 						return false;
 					}
 					if (res == info)
-						DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
+						IdeApp.DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
 					if (res == cont) {
 						bool exists = Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin");
 						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Continuing " + (exists ? "Installed." : "Uninstalled.")));
@@ -789,19 +759,6 @@ namespace MonoDevelop.Ide
 			} else {
 				LoggingService.LogInternalError (msg, ex);
 			}
-		}
-		
-		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
-		static int HashSdbmBounded (string input)
-		{
-			ulong hash = 0;
-			for (int i = 0; i < input.Length; i++) {
-				unchecked {
-					hash = ((ulong)input[i]) + (hash << 6) + (hash << 16) - hash;
-				}
-			}
-				
-			return (int)(hash % 1000);
 		}
 		
 		public static int Main (string[] args, IdeCustomizer customizer = null)
@@ -929,97 +886,6 @@ namespace MonoDevelop.Ide
 				OnStartup = true
 			};
 			return metadata;
-		}
-	}
-	
-	public class MonoDevelopOptions
-	{
-		MonoDevelopOptions ()
-		{
-			IpcTcp = (PlatformID.Unix != Environment.OSVersion.Platform);
-			RedirectOutput = true;
-		}
-		
-		Mono.Options.OptionSet GetOptionSet ()
-		{
-			return new Mono.Options.OptionSet {
-				{ "no-splash", "Do not display splash screen (deprecated).", s => {} },
-				{ "ipc-tcp", "Use the Tcp channel for inter-process communication.", s => IpcTcp = true },
-				{ "new-window", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => NewWindow = true },
-				{ "h|?|help", "Show help", s => ShowHelp = true },
-				{ "perf-log", "Enable performance counter logging", s => PerfLog = true },
-				{ "no-redirect", "Disable redirection of stdout/stderr to a log file", s => RedirectOutput = false },
-			};
-		}
-		
-		public static MonoDevelopOptions Parse (string[] args)
-		{
-			var opt = new MonoDevelopOptions ();
-			var optSet = opt.GetOptionSet ();
-			
-			try {
-				opt.RemainingArgs = optSet.Parse (args);
-			} catch (Mono.Options.OptionException ex) {
-				opt.Error = ex.ToString ();
-			}
-			
-			if (opt.Error != null) {
-				Console.WriteLine ("ERROR: {0}", opt.Error);
-				Console.WriteLine ("Pass --help for usage information.");
-			}
-			
-			if (opt.ShowHelp) {
-				Console.WriteLine (BrandingService.ApplicationName + " " + BuildInfo.VersionLabel);
-				Console.WriteLine ("Options:");
-				optSet.WriteOptionDescriptions (Console.Out);
-				const string openFileText = "      file.ext;line;column";
-				Console.Write (openFileText);
-				Console.Write (new string (' ', 29 - openFileText.Length));
-				Console.WriteLine ("Opens a file at specified integer line and column");
-			}
-			
-			return opt;
-		}
-		
-		public bool IpcTcp { get; set; }
-		public bool NewWindow { get; set; }
-		public bool ShowHelp { get; set; }
-		public bool PerfLog { get; set; }
-		public bool RedirectOutput { get; set; }
-		public string Error { get; set; }
-		public IList<string> RemainingArgs { get; set; }
-		public IdeCustomizer IdeCustomizer { get; set; }
-	}
-	
-	public class AddinError
-	{
-		string addinFile;
-		Exception exception;
-		bool fatal;
-		string message;
-		
-		public AddinError (string addin, string message, Exception exception, bool fatal)
-		{
-			this.addinFile = addin;
-			this.message = message;
-			this.exception = exception;
-			this.fatal = fatal;
-		}
-		
-		public string AddinFile {
-			get { return addinFile; }
-		}
-		
-		public string Message {
-			get { return message; }
-		}
-		
-		public Exception Exception {
-			get { return exception; }
-		}
-		
-		public bool Fatal {
-			get { return fatal; }
 		}
 	}
 }
