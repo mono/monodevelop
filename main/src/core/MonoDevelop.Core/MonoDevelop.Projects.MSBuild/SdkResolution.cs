@@ -294,10 +294,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			public SdkReference Sdk { get; }
 
-			public string Path { get; }
-
-			public string Version { get; }
-
 			public IEnumerable<string> Errors { get; }
 
 			public IEnumerable<string> Warnings { get; }
