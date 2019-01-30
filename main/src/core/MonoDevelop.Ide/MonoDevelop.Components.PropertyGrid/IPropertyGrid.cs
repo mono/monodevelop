@@ -33,11 +33,17 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+using System;
+
 namespace MonoDevelop.Components
 {
-	public interface IPropertyGrid
+	public interface IPropertyGrid : IDisposable
 	{
+		bool IsEditing { get; }
 		void SetToolbarProvider (PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider);
 		void SetCurrentObject (object obj, object [] propertyProviders);
+		void BlankPad ();
+		void OnPadContentShown ();
+		void Populate (bool saveEditSession);
 	}
 }

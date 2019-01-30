@@ -105,7 +105,7 @@ namespace MonoDevelop.DesignerSupport
 			currentSelectedObject = null;
 		}
 
-		internal void OnPadContentShown ()
+		public void OnPadContentShown ()
 		{
 			if (editorProvider == null) {
 				editorProvider = new PropertyPadEditorProvider ();
@@ -136,7 +136,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose (disposing);
 		}
 
-		internal void Populate (bool saveEditSession)
+		public void Populate (bool saveEditSession)
 		{
 			//not implemented
 		}
