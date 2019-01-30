@@ -83,7 +83,7 @@
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.3.0"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -95,7 +95,7 @@
 			<Template
 				id="Microsoft.Web.Empty.FSharp"
 				templateId="Microsoft.Web.Empty.FSharp.3.0"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -107,7 +107,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
 				templateId="Microsoft.Web.WebApi.CSharp.3.0"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -119,7 +119,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.FSharp"
 				templateId="Microsoft.Web.WebApi.FSharp.3.0"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -132,7 +132,7 @@
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp"
 				templateId="Microsoft.Web.RazorPages.CSharp.3.0"
-				_overrideName="ASP.NET Core Web App"
+				_overrideName="Web Application"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -146,7 +146,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
 				templateId="Microsoft.Web.Mvc.CSharp.3.0"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -159,7 +159,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
 				templateId="Microsoft.Web.Mvc.FSharp.3.0"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -174,7 +174,7 @@
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.2.2"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -186,7 +186,7 @@
 			<Template
 				id="Microsoft.Web.Empty.FSharp"
 				templateId="Microsoft.Web.Empty.FSharp.2.2"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -198,7 +198,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
 				templateId="Microsoft.Web.WebApi.CSharp.2.2"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -210,7 +210,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.FSharp"
 				templateId="Microsoft.Web.WebApi.FSharp.2.2"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -223,7 +223,7 @@
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp"
 				templateId="Microsoft.Web.RazorPages.CSharp.2.2"
-				_overrideName="ASP.NET Core Web App"
+				_overrideName="Web Application"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -237,7 +237,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
 				templateId="Microsoft.Web.Mvc.CSharp.2.2"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -250,7 +250,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
 				templateId="Microsoft.Web.Mvc.FSharp.2.2"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -265,7 +265,7 @@
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.2.1"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -277,7 +277,7 @@
 			<Template
 				id="Microsoft.Web.Empty.FSharp"
 				templateId="Microsoft.Web.Empty.FSharp.2.1"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -289,7 +289,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
 				templateId="Microsoft.Web.WebApi.CSharp.2.1"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -301,7 +301,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.FSharp"
 				templateId="Microsoft.Web.WebApi.FSharp.2.1"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -314,7 +314,7 @@
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp"
 				templateId="Microsoft.Web.RazorPages.CSharp.2.1"
-				_overrideName="ASP.NET Core Web App"
+				_overrideName="Web Application"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -328,7 +328,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
 				templateId="Microsoft.Web.Mvc.CSharp.2.1"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -341,7 +341,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
 				templateId="Microsoft.Web.Mvc.FSharp.2.1"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -356,7 +356,7 @@
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
 				templateId="Microsoft.Web.Empty.CSharp.2.0"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -368,7 +368,7 @@
 			<Template
 				id="Microsoft.Web.Empty.FSharp"
 				templateId="Microsoft.Web.Empty.FSharp.2.0"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -380,7 +380,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
 				templateId="Microsoft.Web.WebApi.CSharp.2.0"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -392,7 +392,7 @@
 			<Template
 				id="Microsoft.Web.WebApi.FSharp"
 				templateId="Microsoft.Web.WebApi.FSharp.2.0"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -405,7 +405,7 @@
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp"
 				templateId="Microsoft.Web.RazorPages.CSharp.2.0"
-				_overrideName="ASP.NET Core Web App"
+				_overrideName="Web Application"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -419,7 +419,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
 				templateId="Microsoft.Web.Mvc.CSharp.2.0"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -432,7 +432,7 @@
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
 				templateId="Microsoft.Web.Mvc.FSharp.2.0"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
@@ -446,7 +446,7 @@
 		<Condition id="AspNetCoreSdkInstalled" sdkVersion="1.*">
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -457,7 +457,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Empty.FSharp"
-				_overrideName="ASP.NET Core Empty"
+				_overrideName="Empty"
 				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -468,7 +468,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.WebApi.CSharp"
-				_overrideName="ASP.NET Core Web API"
+				_overrideName="API"
 				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -479,7 +479,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Mvc.CSharp"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
@@ -491,7 +491,7 @@
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Mvc.FSharp"
-				_overrideName="ASP.NET Core Web App (MVC)"
+				_overrideName="Web Application (Model-View-Controller)"
 				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
