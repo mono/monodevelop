@@ -132,16 +132,17 @@ namespace MonoDevelop.Ide.Composition
 				var fullTimer = System.Diagnostics.Stopwatch.StartNew ();
 				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
 
-				var (mefAssemblies, allAssemblies) = ReadAssembliesFromAddins (timer);
+				var mefAssemblies = ReadAssembliesFromAddins (timer);
 				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
-				var caching = new Caching (mefAssemblies, allAssemblies);
+				var caching = new Caching (mefAssemblies);
 
 				// Try to use cached MEF data
 
 				var canUse = metadata.ValidCache = caching.CanUse ();
 				if (canUse) {
+					LoggingService.LogInfo ("Creating MEF composition from cache");
 					RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);
 				}
 				timings ["LoadFromCache"] = stepTimer.ElapsedMilliseconds;
@@ -149,10 +150,12 @@ namespace MonoDevelop.Ide.Composition
 
 				// Otherwise fallback to runtime discovery.
 				if (RuntimeComposition == null) {
-					RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching, timer);
+					LoggingService.LogInfo ("Creating MEF composition from runtime");
+					var (runtimeComposition, catalog) = await CreateRuntimeCompositionFromDiscovery (caching, timer);
+					RuntimeComposition = runtimeComposition;
 
 					CachedComposition cacheManager = new CachedComposition ();
-					caching.Write (RuntimeComposition, cacheManager).Ignore ();
+					caching.Write (RuntimeComposition, catalog, cacheManager).Ignore ();
 				}
 				timings ["LoadRuntimeComposition"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
@@ -182,7 +185,7 @@ namespace MonoDevelop.Ide.Composition
 			return null;
 		}
 
-		internal static async Task<RuntimeComposition> CreateRuntimeCompositionFromDiscovery (Caching caching, ITimeTracker timer = null)
+		internal static async Task<(RuntimeComposition, ComposableCatalog)> CreateRuntimeCompositionFromDiscovery (Caching caching, ITimeTracker timer = null)
 		{
 			var parts = await Discovery.CreatePartsAsync (caching.MefAssemblies);
 			timer?.Trace ("Composition parts discovered");
@@ -218,23 +221,22 @@ namespace MonoDevelop.Ide.Composition
 			var runtimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
 			timer?.Trace ("Composition created");
 
-			return runtimeComposition;
+			return (runtimeComposition, catalog);
 		}
 
-		internal static (HashSet<Assembly> MefAssemblies, HashSet<Assembly> AllAssemblies) ReadAssembliesFromAddins (ITimeTracker<CompositionLoadMetadata> timer = null)
+		internal static HashSet<Assembly> ReadAssembliesFromAddins (ITimeTracker<CompositionLoadMetadata> timer = null)
 		{
 			var readAssemblies = new HashSet<Assembly> ();
-			var readAssembliesAndDependencies = new HashSet<Assembly> ();
 
 			timer?.Trace ("Start: reading assemblies");
-			ReadAssemblies (readAssemblies, readAssembliesAndDependencies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices");
-			ReadAssemblies (readAssemblies, readAssembliesAndDependencies, "/MonoDevelop/Ide/TypeService/MefHostServices");
-			ReadAssemblies (readAssemblies, readAssembliesAndDependencies, "/MonoDevelop/Ide/Composition");
+			ReadAssemblies (readAssemblies, "/MonoDevelop/Ide/TypeService/PlatformMefHostServices");
+			ReadAssemblies (readAssemblies, "/MonoDevelop/Ide/TypeService/MefHostServices");
+			ReadAssemblies (readAssemblies, "/MonoDevelop/Ide/Composition");
 			timer?.Trace ("Start: end reading assemblies");
 
-			return (readAssemblies, readAssembliesAndDependencies);
+			return readAssemblies;
 
-			void ReadAssemblies (HashSet<Assembly> assemblies, HashSet<Assembly> allAssemblies, string extensionPath)
+			void ReadAssemblies (HashSet<Assembly> assemblies, string extensionPath)
 			{
 				foreach (var node in AddinManager.GetExtensionNodes (extensionPath)) {
 					if (node is AssemblyExtensionNode assemblyNode) {
@@ -249,33 +251,8 @@ namespace MonoDevelop.Ide.Composition
 							var assemblyFilePath = assemblyNode.Addin.GetFilePath (assemblyNode.FileName);
 							var assembly = Runtime.LoadAssemblyFrom (assemblyFilePath);
 							assemblies.Add (assembly);
-							allAssemblies.Add (assembly);
 						} catch (Exception e) {
 							LoggingService.LogError ("Composition can't load assembly: " + assemblyNode.FileName, e);
-						}
-					}
-				}
-
-				// Load dependency trees for each root assembly.
-				foreach (var asm in assemblies) {
-					GatherDependencies (asm);
-				}
-
-				void GatherDependencies (Assembly currentAssembly)
-				{
-					foreach (var dependencyName in currentAssembly.GetReferencedAssemblies ()) {
-						try {
-							// Lookup loaded assembly or load GAC one.
-							var dependencyAssembly = Assembly.Load (dependencyName);
-							if (!allAssemblies.Add (dependencyAssembly))
-								continue;
-
-							GatherDependencies (dependencyAssembly);
-						} catch (FileNotFoundException) {
-							// Discard in case the assembly is not found, this will be reported by MEF discovery anyway.
-							LoggingService.LogInfo ("Could not find dependency '{0}' referenced by '{1}', possibly missing Runtime import", dependencyName.FullName, currentAssembly.FullName);
-						} catch (Exception e) {
-							LoggingService.LogError ("Could not load assembly for MEF", e);
 						}
 					}
 				}
