@@ -303,7 +303,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public IEnumerable<string> Warnings { get; }
 		}
 
-		class SdkResultFactoryImpl : SdkResultFactory
+		internal class SdkResultFactoryImpl : SdkResultFactory
 		{
 			readonly SdkReference _sdkReference;
 
