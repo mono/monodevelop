@@ -195,9 +195,12 @@ namespace MonoDevelop.Core.Text
 			return GetText (File.ReadAllBytes (fileName));
 		}
 
-		public static async Task<string> GetTextAsync (string fileName, CancellationToken token)
+		public static async Task<TextContent> GetTextAsync (string fileName, CancellationToken token)
 		{
-			return GetText (await ReadAllBytesAsync (fileName, token).ConfigureAwait (false));
+			var res = new TextContent ();
+			res.Text = GetText (await ReadAllBytesAsync (fileName, token).ConfigureAwait (false), out var encoding);
+			res.Encoding = encoding;
+			return res;
 		}
 
 		public static string GetText (string fileName, out Encoding encoding)

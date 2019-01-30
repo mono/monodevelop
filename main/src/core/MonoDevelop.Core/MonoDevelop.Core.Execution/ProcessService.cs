@@ -82,7 +82,7 @@ namespace MonoDevelop.Core.Execution
 		
 		public void SetExternalConsoleHandler (ExternalConsoleHandler handler)
 		{
-			if (externalConsoleHandler != null)
+			if (handler != null && externalConsoleHandler != null)
 				throw new InvalidOperationException ("External console handler already set");
 			externalConsoleHandler = handler;
 		}
