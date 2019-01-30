@@ -75,6 +75,9 @@
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowSuccessfulTests" _label = "Show successful tests" type="check"/>
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowFailedTests" _label = "Show failed tests" type="check"/>
 		<Command id = "MonoDevelop.UnitTesting.Commands.TestChartCommands.ShowIgnoredTests" _label = "Show ignored tests" type="check"/>
+		<Command id = "MonoDevelop.UnitTesting.Commands.TextEditorCommands.RunTestAtCaret" _label = "Run Test at Caret"/>
+		<Command id = "MonoDevelop.UnitTesting.Commands.TextEditorCommands.DebugTestAtCaret" _label = "Debug Test at Caret"/>
+		<Command id = "MonoDevelop.UnitTesting.Commands.TextEditorCommands.SelectTestAtCaret" _label = "Select Test at Caret"/>
 		</Category>
 	</Extension>
 
