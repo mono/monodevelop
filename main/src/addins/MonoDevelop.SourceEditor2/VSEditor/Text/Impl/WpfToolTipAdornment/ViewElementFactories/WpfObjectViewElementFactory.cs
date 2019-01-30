@@ -10,7 +10,7 @@
 	using Microsoft.VisualStudio.Utilities;
 	using UIElement = Xwt.Widget;
 
-	[Export (typeof (IViewElementFactory))]
+	//[Export (typeof (IViewElementFactory))]
 	[Name ("default object to Xwt.Widget")]
 	[TypeConversion (from: typeof (object), to: typeof (UIElement))]
 	[Order]
