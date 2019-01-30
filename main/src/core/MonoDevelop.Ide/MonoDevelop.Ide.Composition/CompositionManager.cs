@@ -132,16 +132,17 @@ namespace MonoDevelop.Ide.Composition
 				var fullTimer = System.Diagnostics.Stopwatch.StartNew ();
 				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
 
-				var assemblies = ReadAssembliesFromAddins (timer);
+				var mefAssemblies = ReadAssembliesFromAddins (timer);
 				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
-				var caching = new Caching (assemblies);
+				var caching = new Caching (mefAssemblies);
 
 				// Try to use cached MEF data
 
 				var canUse = metadata.ValidCache = caching.CanUse ();
 				if (canUse) {
+					LoggingService.LogInfo ("Creating MEF composition from cache");
 					RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);
 				}
 				timings ["LoadFromCache"] = stepTimer.ElapsedMilliseconds;
@@ -149,10 +150,12 @@ namespace MonoDevelop.Ide.Composition
 
 				// Otherwise fallback to runtime discovery.
 				if (RuntimeComposition == null) {
-					RuntimeComposition = await CreateRuntimeCompositionFromDiscovery (caching, timer);
+					LoggingService.LogInfo ("Creating MEF composition from runtime");
+					var (runtimeComposition, catalog) = await CreateRuntimeCompositionFromDiscovery (caching, timer);
+					RuntimeComposition = runtimeComposition;
 
 					CachedComposition cacheManager = new CachedComposition ();
-					caching.Write (RuntimeComposition, cacheManager).Ignore ();
+					caching.Write (RuntimeComposition, catalog, cacheManager).Ignore ();
 				}
 				timings ["LoadRuntimeComposition"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
@@ -169,7 +172,7 @@ namespace MonoDevelop.Ide.Composition
 
 		internal static async Task<RuntimeComposition> TryCreateRuntimeCompositionFromCache (Caching caching)
 		{
-			CachedComposition cacheManager = new CachedComposition ();
+			var cacheManager = new CachedComposition ();
 
 			try {
 				using (var cacheStream = caching.OpenCacheStream ()) {
@@ -182,9 +185,9 @@ namespace MonoDevelop.Ide.Composition
 			return null;
 		}
 
-		internal static async Task<RuntimeComposition> CreateRuntimeCompositionFromDiscovery (Caching caching, ITimeTracker timer = null)
+		internal static async Task<(RuntimeComposition, ComposableCatalog)> CreateRuntimeCompositionFromDiscovery (Caching caching, ITimeTracker timer = null)
 		{
-			var parts = await Discovery.CreatePartsAsync (caching.Assemblies);
+			var parts = await Discovery.CreatePartsAsync (caching.MefAssemblies);
 			timer?.Trace ("Composition parts discovered");
 
 			ComposableCatalog catalog = ComposableCatalog.Create (StandardResolver)
@@ -218,7 +221,7 @@ namespace MonoDevelop.Ide.Composition
 			var runtimeComposition = RuntimeComposition.CreateRuntimeComposition (configuration);
 			timer?.Trace ("Composition created");
 
-			return runtimeComposition;
+			return (runtimeComposition, catalog);
 		}
 
 		internal static HashSet<Assembly> ReadAssembliesFromAddins (ITimeTracker<CompositionLoadMetadata> timer = null)
@@ -242,6 +245,7 @@ namespace MonoDevelop.Ide.Composition
 							string assemblyName = assemblyNode.FileName;
 							// Make sure the add-in that registered the assembly is loaded, since it can bring other
 							// other assemblies required to load this one
+
 							AddinManager.LoadAddin (null, id);
 
 							var assemblyFilePath = assemblyNode.Addin.GetFilePath (assemblyNode.FileName);
