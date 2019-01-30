@@ -4284,6 +4284,7 @@
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
