@@ -673,7 +673,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			HslColor result;
 			if (!style.TryGetColor (key, out result)) {
-				DefaultColorStyle.TryGetColor (key, out result);
+				if (!DefaultColorStyle.TryGetColor (key, out result)) {
+					LoggingService.LogError ("SyntaxHighlightingService.GetColor color " + key + " not found in theme " + style);
+					return default;
+				}
 			}
 			return result;
 		}
