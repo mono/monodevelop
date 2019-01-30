@@ -226,7 +226,6 @@ namespace MonoDevelop.VersionControl
 			return repo;
 		}
 
-		readonly static Counter<RepositoryMetadata> Repositories = InstrumentationService.CreateCounter<RepositoryMetadata> ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
 		internal static readonly Dictionary<FilePath,Repository> repositoryCache = new Dictionary<FilePath,Repository> ();
 		public static Repository GetRepositoryReference (string path, string id)
 		{
@@ -257,7 +256,7 @@ namespace MonoDevelop.VersionControl
 				var repo = detectedVCS?.GetRepositoryReference (bestMatch, id);
 				if (repo != null) {
 					repositoryCache.Add (bestMatch, repo);
-					Repositories.Inc (new RepositoryMetadata {
+					Instrumentation.Repositories.Inc (new RepositoryMetadata {
 						Type = detectedVCS.Name,
 						Version = detectedVCS.Version,
 					});
@@ -845,6 +844,12 @@ namespace MonoDevelop.VersionControl
 	{
 		public RepositoryMetadata ()
 		{
+		}
+
+		public RepositoryMetadata (VersionControlSystem versionControl)
+		{
+			Type = versionControl?.Name;
+			Version = versionControl?.Version;
 		}
 
 		public string Type {
