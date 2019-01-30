@@ -744,6 +744,10 @@
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
+    <Compile Include="MonoDevelop.Core\Service.cs" />
+    <Compile Include="MonoDevelop.Core\ServiceProvider.cs" />
+    <Compile Include="MonoDevelop.Core\IService.cs" />
+    <Compile Include="MonoDevelop.Core\BasicServiceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

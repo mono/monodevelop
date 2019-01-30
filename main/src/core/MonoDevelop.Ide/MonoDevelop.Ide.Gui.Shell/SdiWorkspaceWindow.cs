@@ -40,13 +40,16 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {
 	internal class SdiWorkspaceWindow : EventBox, IWorkbenchWindow, ICommandDelegatorRouter
 	{
 		DefaultWorkbench workbench;
-		ViewContent content;
+		DocumentContent content;
+		DocumentController controller;
 		ExtensionContext extensionContext;
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 		
@@ -70,8 +73,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool show_notification = false;
 
-		ViewCommandHandlers commandHandler;
-
 		public event EventHandler ViewsChanged;
 		
 		public DockNotebook TabControl {
@@ -84,21 +85,25 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.tabControl = tabControl;
 			this.tab = tabLabel;
-			SetTitleEvent (false);
+			SetTitleEvent ();
 			SetDockNotebookTabTitle ();
 		}
 
-		public SdiWorkspaceWindow (DefaultWorkbench workbench, ViewContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, DocumentContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;
+			this.controller = content.DocumentController;
 			this.content = content;
 			this.tab = tabLabel;
 
-			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 			extensionContext = AddinManager.CreateExtensionContext ();
-			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
-			
+
+			if (controller.Model is FileDocumentModel fileModel) {
+				fileTypeCondition.SetFileName (fileModel.FilePath);
+				extensionContext.RegisterCondition ("FileType", fileTypeCondition);
+			}
+
 			box = new VBox ();
 			box.Accessible.SetShouldIgnore (true);
 
@@ -109,17 +114,12 @@ namespace MonoDevelop.Ide.Gui
 
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
-			content.ContentNameChanged += SetTitleEvent;
-			content.DirtyChanged       += HandleDirtyChanged;
+			controller.DocumentTitleChanged += SetTitleEvent;
+			controller.IsDirtyChanged += HandleDirtyChanged;
 			box.Show ();
 			Add (box);
 			
-			SetTitleEvent (false);
-		}
-
-		internal void CreateCommandHandler ()
-		{
-			commandHandler = new ViewCommandHandlers (this);
+			SetTitleEvent ();
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -194,16 +194,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string Title {
 			get {
-				//FIXME: This breaks, Why? --Todd
-				//_titleHolder = tabControl.GetTabLabelText (tabPage);
 				return _titleHolder;
 			}
 			set {
 				_titleHolder = value;
-				string fileName = content.ContentName;
-				if (fileName == null) {
-					fileName = content.UntitledName;
-				}
 				OnTitleChanged(null);
 			}
 		}
@@ -411,7 +405,7 @@ namespace MonoDevelop.Ide.Gui
 			return toolbar;
 		}
 
-		public ViewContent ViewContent {
+		public DocumentContent ViewContent {
 			get {
 				return content;
 			}
@@ -420,11 +414,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public MonoDevelop.Ide.Gui.ViewCommandHandlers CommandHandler {
-			get {
-				return commandHandler;
-			}
-		}
+		public object CommandHandler { get; set; }
 
 		public string DocumentType {
 			get {
@@ -440,27 +430,25 @@ namespace MonoDevelop.Ide.Gui
 			SetTitleEvent ();
 		}
 
-		void SetTitleEvent(bool allowMarkFileDirty = true)
+		void SetTitleEvent ()
 		{
 			if (content == null)
 				return;
-				
-			string newTitle = "";
-			if (content.ContentName == null) {
+
+			string newTitle;
+			if (controller.IsNewDocument && controller is FileDocumentController fileController) {
 				if (myUntitledTitle == null) {
-					string baseName  = System.IO.Path.GetFileNameWithoutExtension(content.UntitledName);
+					var fileName = fileController.FilePath;
+					string baseName = fileName.FileNameWithoutExtension;
 					int number = 1;
 					bool found = true;
-					myUntitledTitle = baseName + System.IO.Path.GetExtension (content.UntitledName);
+					myUntitledTitle = baseName + fileName.Extension;
 					while (found) {
 						found = false;
-						foreach (ViewContent windowContent in workbench.InternalViewContentCollection) {
+						foreach (var windowContent in workbench.InternalViewContentCollection) {
 							string title = windowContent.WorkbenchWindow.Title;
-							if (title.EndsWith("+")) {
-								title = title.Substring(0, title.Length - 1);
-							}
 							if (title == myUntitledTitle) {
-								myUntitledTitle = baseName + number + System.IO.Path.GetExtension (content.UntitledName);
+								myUntitledTitle = baseName + number + fileName.Extension;
 								found = true;
 								++number;
 								break;
@@ -469,19 +457,11 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				newTitle = myUntitledTitle;
-			} else {
-				newTitle = System.IO.Path.GetFileName(content.ContentName);
-			}
-			
-			if (content.IsDirty) {
-				if (allowMarkFileDirty && !String.IsNullOrEmpty (content.ContentName))
-					IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
-			} else if (content.IsReadOnly) {
-				newTitle += "+";
-			}
-			if (newTitle != Title) {
+			} else
+				newTitle = controller.DocumentTitle;
+
+			if (newTitle != Title)
 				Title = newTitle;
-			}
 		}
 		
 		public Task<bool> CloseWindow (bool force)
@@ -525,9 +505,10 @@ namespace MonoDevelop.Ide.Gui
 				viewContents = null;
 			}
 
+			controller.DocumentTitleChanged -= SetTitleEvent;
+			controller.IsDirtyChanged -= HandleDirtyChanged;
+
 			if (content != null) {
-				content.ContentNameChanged -= SetTitleEvent;
-				content.DirtyChanged       -= HandleDirtyChanged;
 				content.WorkbenchWindow     = null;
 				content.Dispose ();
 				content = null;
@@ -539,7 +520,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			DetachFromPathedDocument ();
-			commandHandler = null;
+			CommandHandler = null;
 			document = null;
 			extensionContext = null;
 			base.OnDestroyed ();
@@ -817,31 +798,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			tab.Text = Title;
 			tab.Notify = show_notification;
-			tab.Dirty = content.IsDirty;
-			if (content.ContentName != null && content.ContentName != "") {
-				tab.Tooltip = content.ContentName;
+			tab.Dirty = controller.IsDirty;
+			if (!string.IsNullOrEmpty (controller.DocumentTitle)) {
+				tab.Tooltip = controller.DocumentTitle;
 			}
-			try {
-				if (content.StockIconId != null) {
-					tab.Icon = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
-				}
-				else
-					if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] {
-						'*',
-						'+'
-					}) == -1) {
-						tab.Icon = DesktopService.GetIconForFile (content.ContentName, Gtk.IconSize.Menu);
-					}
-			}
-			catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
-			}
+			tab.Icon = controller.DocumentIcon.WithSize (IconSize.Menu);
 		}
 		
-		protected virtual void OnTitleChanged(EventArgs e)
+		void OnTitleChanged(EventArgs e)
 		{
-			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
+			if (controller.Model is FileDocumentModel fileModel)
+				fileTypeCondition.SetFileName (fileModel.FilePath);
+
 			SetDockNotebookTabTitle ();
 			if (TitleChanged != null) {
 				TitleChanged(this, e);
@@ -876,5 +844,85 @@ namespace MonoDevelop.Ide.Gui
 		public event WorkbenchWindowEventHandler Closed;
 		public event WorkbenchWindowAsyncEventHandler Closing;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
+	}
+
+	class WorkspaceViewItem : EventBox, IShellDocumentViewItem
+	{
+		public DocumentViewItem Item { get; set; }
+
+		public WorkspaceViewItem (DocumentViewItem item)
+		{
+			Item = item;
+		}
+
+		public static WorkspaceViewItem CreateWorkspaceView (DocumentViewItem item)
+		{
+
+		}
+	}
+
+	class WorkspaceContent : WorkspaceViewItem, IShellDocumentViewItem
+	{
+		DocumentToolbar toolbar;
+
+		public WorkspaceContent (DocumentViewContent item): base (item)
+		{
+		}
+	}
+
+	class WorkspaceViewContainer : WorkspaceViewItem, IShellDocumentViewContainer
+	{
+		DocumentViewContainerMode mode;
+		Notebook notebook;
+		Gtk.Paned paned;
+
+		public WorkspaceViewContainer (DocumentViewContainer item) : base (item)
+		{
+			this.container = item;
+		}
+
+		void SetupContainer ()
+		{
+		}
+
+		public void SetSupportedModes (DocumentViewContainerMode supportedModes)
+		{
+			mode = supportedModes;
+			if (notebook == null) {
+				notebook = new Notebook ();
+				notebook.Show ();
+				Add (notebook);
+			}
+		}
+
+		public IShellDocumentViewItem InsertView (int position, DocumentViewItem view)
+		{
+			var workbenchView = CreateWorkspaceView (item);
+			notebook.InsertPage (workbenchView, new Gtk.Label (), pos);
+			return workbenchView;
+		}
+
+		public IShellDocumentViewItem ReplaceView (int position, DocumentViewItem view)
+		{
+			notebook.RemovePage (position);
+			return InsertView (position, view);
+		}
+
+		public void RemoveView (int tabPos)
+		{
+			notebook.RemovePage (tabPos);
+		}
+
+		public void ReorderView (int currentIndex, int newIndex)
+		{
+			var child = (DocumentViewItem)notebook.Children [oldPosition];
+			notebook.ReorderChild (child, newPosition);
+		}
+
+		public void RemoveAllViews ()
+		{
+			while (notebook.NPages > 0)
+				notebook.RemovePage (notebook.NPages - 1);
+		}
 	}
 }

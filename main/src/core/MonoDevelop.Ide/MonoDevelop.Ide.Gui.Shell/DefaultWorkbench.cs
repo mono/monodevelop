@@ -48,6 +48,7 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -72,7 +73,7 @@ namespace MonoDevelop.Ide.Gui
 		List<string> layouts = new List<string> ();
 		
 		List<PadCodon> padContentCollection      = new List<PadCodon> ();
-		List<ViewContent> viewContentCollection = new List<ViewContent> ();
+		List<DocumentContent> viewContentCollection = new List<DocumentContent> ();
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
 		
@@ -197,7 +198,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal List<ViewContent> InternalViewContentCollection {
+		internal List<DocumentContent> InternalViewContentCollection {
 			get {
 				Debug.Assert(viewContentCollection != null);
 				return viewContentCollection;
@@ -355,11 +356,10 @@ namespace MonoDevelop.Ide.Gui
 			void OnDispose () => deduplicationMap.Remove (dedupId);
 		}
 		
-		public void CloseContent (ViewContent content)
+		public void CloseContent (DocumentContent content)
 		{
 			if (viewContentCollection.Contains(content)) {
-				if (content.Project != null)
-					content.Project.NameChanged -= HandleProjectNameChanged;
+				UnsubscribeControllerEvents (content.DocumentController);
 				viewContentCollection.Remove(content);
 			}
 		}
@@ -368,8 +368,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				closeAll = true;
-				List<ViewContent> fullList = new List<ViewContent>(viewContentCollection);
-				foreach (ViewContent content in fullList) {
+				foreach (var content in viewContentCollection.ToList ()) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
 					if (window != null)
 						window.CloseWindow(true);
@@ -380,60 +379,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		private Xwt.Drawing.Image PrepareShowView (ViewContent content)
+		private Xwt.Drawing.Image PrepareShowView (DocumentContent content)
 		{
 			viewContentCollection.Add (content);
-
-			if (IdeApp.Preferences.LoadDocumentUserProperties && content is IMementoCapable) {
-				try {
-					Properties memento = GetStoredMemento(content);
-					if (memento != null) {
-						((IMementoCapable)content).Memento = memento;
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't get/set memento : " + e.ToString());
-				}
-			}
-
-			Xwt.Drawing.Image mimeimage = null;
-
-			if (content.StockIconId != null ) {
-				mimeimage = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
-			}
-			else if (content.IsUntitled && content.UntitledName == null) {
-				mimeimage = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
-			} else {
-				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
-			}
-
-			return mimeimage;
+			return content.DocumentController.DocumentIcon.WithSize (Gtk.IconSize.Menu);
 		}
 
-		public virtual void ShowView (ViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
+		public void ShowView (DocumentContent content, bool bringToFront, IViewDisplayBinding binding, DockNotebook notebook, FileDescriptor fileDescriptor)
 		{
-			bool isFile = content.IsFile;
-			if (!isFile) {
-				try {
-					isFile = File.Exists (content.ContentName);
-				} catch { /*Ignore*/ }
-			}
-
 			string type;
-			if (isFile) {
-				type = System.IO.Path.GetExtension (content.ContentName);
-				var mt = DesktopService.GetMimeTypeForUri (content.ContentName);
+			if (fileDescriptor != null) {
+				type = System.IO.Path.GetExtension (fileDescriptor.FilePath);
+				var mt = !string.IsNullOrEmpty (fileDescriptor.MimeType) ? fileDescriptor.MimeType : DesktopService.GetMimeTypeForUri (fileDescriptor.FilePath);
 				if (!string.IsNullOrEmpty (mt))
 					type += " (" + mt + ")";
 			} else
 				type = "(not a file)";
 
-			var metadata = new Dictionary<string,string> () {
+			var metadata = new Dictionary<string,object> () {
 				{ "FileType", type },
-				{ "DisplayBinding", content.GetType ().FullName },
+				{ "DisplayBinding", content.DocumentController.GetType ().FullName },
 			};
 
-			if (isFile)
-				metadata ["DisplayBindingAndType"] = type + " | " + content.GetType ().FullName;
+			if (fileDescriptor != null)
+				metadata ["DisplayBindingAndType"] = type + " | " + content.DocumentController.GetType ().FullName;
 
 			Counters.DocumentOpened.Inc (metadata);
 
@@ -448,14 +417,13 @@ namespace MonoDevelop.Ide.Gui
 			if (binding != null)
 				DisplayBindingService.AttachSubWindows (sdiWorkspaceWindow, binding);
 
-			sdiWorkspaceWindow.CreateCommandHandler ();
+			sdiWorkspaceWindow.CommandHandler = content.ViewCommandHandler;
 
 			tab.Content = sdiWorkspaceWindow;
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
-			if (content.Project != null)
-				content.Project.NameChanged += HandleProjectNameChanged;
+			SubscribeControllerEvents (content.DocumentController);
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
 
@@ -467,7 +435,35 @@ namespace MonoDevelop.Ide.Gui
 		{
 			SetWorkbenchTitle ();
 		}
-		
+
+		void OwnerChanged (object sender, EventArgs e)
+		{
+			var controller = (DocumentController)sender;
+			SubscribeControllerEvents (controller);
+			SetWorkbenchTitle ();
+		}
+
+		Project subscribedProject;
+
+		void SubscribeControllerEvents (DocumentController controller)
+		{
+			UnsubscribeControllerEvents (controller);
+			controller.OwnerChanged += OwnerChanged;
+			subscribedProject = controller.Owner as Project;
+			if (subscribedProject != null)
+				subscribedProject.NameChanged += HandleProjectNameChanged;
+
+		}
+
+		void UnsubscribeControllerEvents (DocumentController controller)
+		{
+			controller.OwnerChanged -= OwnerChanged;
+			if (subscribedProject != null) {
+				subscribedProject.NameChanged -= HandleProjectNameChanged;
+				subscribedProject = null;
+			}
+		}
+
 		void ShowPadNode (ExtensionNode node)
 		{
 			if (node is PadCodon) {
@@ -565,28 +561,34 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal static string GetTitle (IWorkbenchWindow window)
 		{
-			if (window.ViewContent.IsUntitled)
+			var controller = window.ViewContent.DocumentController;
+			if (string.IsNullOrEmpty (controller.DocumentTitle))
 				return GetDefaultTitle ();
 			string post = String.Empty;
-			if (window.ViewContent.IsDirty) {
+			if (controller.IsDirty) {
 				post = "*";
 			}
-			if (window.ViewContent.Project != null) {
-				return window.ViewContent.Project.Name + " – " + window.ViewContent.PathRelativeToProject + post + " – " + BrandingService.ApplicationLongName;
+			if (controller.Owner is Project project) {
+				var fileModel = controller.Model as FileDocumentModel;
+				if (fileModel != null)
+					return project.Name + " – " + fileModel.FilePath.ToRelative (project.BaseDirectory) + post + " – " + BrandingService.ApplicationLongName;
+				else
+					return project.Name + " – " + controller.DocumentTitle + post + " – " + BrandingService.ApplicationLongName;
 			}
-			return window.ViewContent.ContentName + post + " – " + BrandingService.ApplicationLongName;
+			return controller.DocumentTitle + post + " – " + BrandingService.ApplicationLongName;
 		}
 
 		void SetAccessibilityDetails (IWorkbenchWindow window)
 		{
-			string documentUrl, filename;
-			if (window.ViewContent.Project != null) {
-				documentUrl = "file://" + window.ViewContent.Project.FileName;
-				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
-			} else {
-				documentUrl = string.Empty;
-				filename = string.Empty;
-			}
+			var controller = window.ViewContent.DocumentController;
+
+			string documentUrl = string.Empty, filename = string.Empty;
+
+			if (controller.Owner is Project project)
+				documentUrl = "file://" + project.FileName;
+
+			if (controller.Model is FileDocumentModel file)
+				filename = file.FilePath.FileName;
 
 			Accessible.SetDocument (documentUrl);
 			Accessible.SetFilename (filename);
@@ -688,13 +690,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (var e in args) {
 				if (e.IsDirectory) {
-					var views = new ViewContent [viewContentCollection.Count];
+					var views = new DocumentContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
 					foreach (var content in views) {
-						if (content.ContentName.StartsWith (e.FileName, StringComparison.CurrentCulture)) {
-							if (content.IsDirty) {
-								content.UntitledName = content.ContentName;
-								content.ContentName = null;
+						var fileModel = content.DocumentController.Model as FileDocumentModel;
+						if (fileModel == null || fileModel.IsNewFile)
+							continue;
+						if (fileModel.FilePath.IsChildPathOf (e.FileName)) {
+							if (content.DocumentController.IsDirty) {
+								fileModel.ConvertToUnsaved ();
 							} else {
 								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
 							}
@@ -702,11 +706,12 @@ namespace MonoDevelop.Ide.Gui
 					}
 				} else {
 					foreach (var content in viewContentCollection) {
-						if (content.ContentName != null &&
-							content.ContentName == e.FileName) {
-							if (content.IsDirty) {
-								content.UntitledName = content.ContentName;
-								content.ContentName = null;
+						var fileModel = content.DocumentController.Model as FileDocumentModel;
+						if (fileModel == null || fileModel.IsNewFile)
+							continue;
+						if (fileModel.FilePath == e.FileName) {
+							if (content.DocumentController.IsDirty) {
+								fileModel.ConvertToUnsaved ();
 							} else {
 								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
 							}
@@ -721,16 +726,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (FileCopyEventInfo e in args) {
 				if (e.IsDirectory) {
-					foreach (ViewContent content in viewContentCollection) {
-						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
-							content.ContentName = e.TargetFile.Combine (((FilePath) content.ContentName).FileName);
+					foreach (var content in viewContentCollection) {
+						var fileModel = content.DocumentController.Model as FileDocumentModel;
+						if (fileModel != null && !fileModel.IsNewFile && fileModel.FilePath.IsChildPathOf (e.SourceFile) && content.DocumentController.CanAssignModel (typeof(FileDocumentModel))) {
+							var newFile = e.TargetFile.Combine (fileModel.FilePath.ToRelative (e.SourceFile)).FullPath;
+							content.DocumentController.Model = IdeApp.Workbench.DocumentModelRegistry.CreateSharedModel<FileDocumentModel> (newFile);
 						}
 					}
 				} else {
-					foreach (ViewContent content in viewContentCollection) {
-						if (content.ContentName != null &&
-						    content.ContentName == e.SourceFile) {
-							content.ContentName = e.TargetFile;
+					foreach (var content in viewContentCollection) {
+						var fileModel = content.DocumentController.Model as FileDocumentModel;
+						if (fileModel != null && !fileModel.IsNewFile && fileModel.FilePath == e.SourceFile && content.DocumentController.CanAssignModel (typeof (FileDocumentModel))) {
+							content.DocumentController.Model = IdeApp.Workbench.DocumentModelRegistry.CreateSharedModel<FileDocumentModel> (e.TargetFile);
 							return;
 						}
 					}
@@ -787,16 +794,16 @@ namespace MonoDevelop.Ide.Gui
 
 			bool showDirtyDialog = false;
 
-			foreach (ViewContent content in viewContentCollection)
+			foreach (var content in viewContentCollection)
 			{
-				if (content.IsDirty) {
+				if (content.DocumentController.IsDirty) {
 					showDirtyDialog = true;
 					break;
 				}
 			}
 
 			if (showDirtyDialog) {
-				using (DirtyFilesDialog dlg = new DirtyFilesDialog ()) {
+				using (var dlg = new DirtyFilesDialog ()) {
 					dlg.Modal = true;
 					if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
 						return false;
@@ -1349,7 +1356,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
 			if (f.ViewContent != null)
-				CloseContent (f.ViewContent);
+				CloseContent ((DocumentContent) f.ViewContent);
 		}
 		
 		internal void CloseClicked (object o, TabEventArgs e)
