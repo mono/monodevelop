@@ -24,9 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.Ide.Gui.Documents
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Content;
+
+namespace MonoDevelop.Ide.Gui.Shell
 {
-	internal interface IShellDocumentViewContent : IWorkspaceViewItem
+	internal interface IShellDocumentViewContent : IShellDocumentViewItem
 	{
+		void SetContentLoader (Func<CancellationToken, Task<Control>> contentLoader);
+		void ReloadContent ();
+		IShellDocumentToolbar GetToolbar ();
+
+		void ShowPathBar (IPathedDocument pathedDocument);
+		void HidePathBar ();
 	}
 }

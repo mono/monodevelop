@@ -25,10 +25,18 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
-	interface IDocumentToolbar
+	interface IShellDocumentToolbar
 	{
+		void Add (Control control, bool fill, int padding);
+		void AddSpace ();
+		void Insert (Control w, int index);
+		void Remove (Control widget);
+		bool Visible { get; set; }
+		bool Sensitive { get; set; }
+		Control [] Children { get; }
 	}
 }

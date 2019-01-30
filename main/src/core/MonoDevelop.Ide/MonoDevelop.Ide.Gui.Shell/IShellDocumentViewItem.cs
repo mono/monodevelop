@@ -24,12 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.Ide.Gui.Documents
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+
+namespace MonoDevelop.Ide.Gui.Shell
 {
-	internal interface IWorkspaceViewItem
+	internal interface IShellDocumentViewItem
 	{
-		DocumentViewItem Item { get; set; }
-		void SetTitle (string title);
-		void SetIcon (Xwt.Drawing.Image icon);
+		DocumentView Item { get; set; }
+		void SetTitle (string label, Xwt.Drawing.Image icon, string accessibilityDescription);
+		void SetDelegatedCommandTarget (object target);
 	}
 }

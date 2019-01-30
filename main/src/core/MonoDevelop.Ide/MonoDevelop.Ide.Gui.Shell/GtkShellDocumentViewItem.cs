@@ -26,15 +26,92 @@
 
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Gui.Shell;
+using Xwt.Drawing;
+using Gtk;
+using System.Threading.Tasks;
+using System.Threading;
+using System;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Components.AtkCocoaHelper;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Shell
 {
-	class GtkShellDocumentViewItem : WorkspaceViewItem, IShellDocumentViewItem
+	class GtkShellDocumentViewItem : EventBox, IShellDocumentViewItem, ICommandDelegator
 	{
-		DocumentToolbar toolbar;
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
+		object delegatedCommandTarget;
+		Task loadTask;
 
-		public GtkShellDocumentViewItem (DocumentViewContent item) : base (item)
+		public GtkShellDocumentViewItem ()
 		{
+			Accessible.SetShouldIgnore (true);
+		}
+
+		public bool Loaded { get; private set; }
+
+		public DocumentView Item { get; set; }
+
+		public void SetTitle (string label, Xwt.Drawing.Image icon, string accessibilityDescription)
+		{
+		}
+
+		public static GtkShellDocumentViewItem CreateShellView (DocumentView item)
+		{
+			GtkShellDocumentViewItem view;
+
+			if (item is DocumentViewContent content) {
+				view = new GtkShellDocumentViewContent ();
+			} else if (item is DocumentViewContainer container) {
+				view = new GtkShellDocumentViewContainer ();
+			} else
+				throw new NotSupportedException ();
+
+			item.AttachToView (view);
+			return view;
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			Load ().Ignore ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			cancellationTokenSource.Cancel ();
+			base.OnDestroyed ();
+		}
+
+		public Task Load ()
+		{
+			return Load (cancellationTokenSource.Token);
+		}
+
+		public Task Load (CancellationToken cancellationToken)
+		{
+			if (loadTask == null)
+				loadTask = Load (cancellationToken);
+			return loadTask;
+		}
+
+		protected virtual Task OnLoad (CancellationToken cancellationToken)
+		{
+			return Task.CompletedTask;
+		}
+
+		public void SetDelegatedCommandTarget (object target)
+		{
+			delegatedCommandTarget = target;
+		}
+
+		public object GetDelegatedCommandTarget ()
+		{
+			return delegatedCommandTarget;
+		}
+
+		public virtual void DetachFromView ()
+		{
+			Item.DetachFromView ();
 		}
 	}
 }

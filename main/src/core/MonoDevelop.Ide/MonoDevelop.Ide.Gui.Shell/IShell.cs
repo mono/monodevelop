@@ -25,10 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Components.DockNotebook;
 using MonoDevelop.Ide.Gui.Documents;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Shell
 {
 	internal interface IShell
 	{
@@ -36,8 +37,23 @@ namespace MonoDevelop.Ide.Gui
 
 		event EventHandler ActiveWorkbenchWindowChanged;
 
-		void ShowView (DocumentContent content, bool bringToFront, IViewDisplayBinding binding, DockNotebook notebook, FileDescriptor fileDescriptor);
+		Task<IWorkbenchWindow> ShowView (DocumentContent content, IShellNotebook notebook, object viewCommandHandler);
+		void CloseView (IWorkbenchWindow window, bool animate);
 
 		void Present ();
+	
+		event EventHandler<WindowReorderedEventArgs> WindowReordered;
+		event EventHandler<NotebookEventArgs> NotebookClosed;
+	}
+
+	internal class WindowReorderedEventArgs: EventArgs
+	{
+		public int OldPosition { get; set; }
+		public int NewPosition { get; set; }
+	}
+
+	internal class NotebookEventArgs : EventArgs
+	{
+		public IShellNotebook Notebook { get; set; }
 	}
 }

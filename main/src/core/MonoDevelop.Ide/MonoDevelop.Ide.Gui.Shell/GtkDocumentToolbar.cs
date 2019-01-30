@@ -54,7 +54,17 @@ namespace MonoDevelop.Ide.Gui.Shell
 			get { return frame; }
 		}
 
-		public void Add (Control control, bool fill = false, int padding, int index)
+		public void Insert (Control w, int index)
+		{
+			Add (w, false, 0, index);
+		}
+
+		public void Add (Control control, bool fill, int padding)
+		{
+			Add (control, fill, padding, -1);
+		}
+
+		void Add (Control control, bool fill, int padding, int index)
 		{
 			int defaultPadding = 3;
 
@@ -112,11 +122,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 				foreach (var c in ((Gtk.Container)w).Children)
 					ChangeColor (c);
 			}
-		}
-
-		public void Insert (Control w, int index)
-		{
-			Add (w, false, 0, index);
 		}
 
 		public void Remove (Control widget)

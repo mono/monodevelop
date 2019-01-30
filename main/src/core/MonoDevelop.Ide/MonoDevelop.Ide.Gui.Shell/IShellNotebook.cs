@@ -26,7 +26,7 @@
 using System;
 namespace MonoDevelop.Ide.Gui.Shell
 {
-	public interface IShellNotebook
+	interface IShellNotebook
 	{
 	}
 }

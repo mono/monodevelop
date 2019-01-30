@@ -33,6 +33,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Xwt;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -143,7 +144,7 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotSupportedException ();
 		}
 
-		internal event EventHandler ContentNameChanged;
+		public event EventHandler ContentNameChanged;
 
 		public event EventHandler DirtyChanged;
 

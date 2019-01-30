@@ -34,10 +34,28 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.DockNotebook;
 using System.Text;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class FileOpenInformation
+	public class DocumentOpenInformation
+	{
+		public OpenDocumentOptions Options { get; set; } = OpenDocumentOptions.Default;
+
+		public WorkspaceObject Owner { get; set; }
+
+		/// <summary>
+		/// Is true when the file is already open and reload is requested.
+		/// </summary>
+		public bool IsReloadOperation { get; set; }
+
+		internal IShellNotebook DockNotebook { get; set; }
+
+		internal DocumentController DocumentController { get; set; }
+		internal DocumentControllerDescription DocumentControllerDescription { get; set; }
+	}
+
+	public class FileOpenInformation: DocumentOpenInformation
 	{
 		FilePath fileName;
 		public FilePath FileName {
@@ -53,8 +71,6 @@ namespace MonoDevelop.Ide.Gui
 
 		internal FilePath OriginalFileName { get; set; }
 
-		public OpenDocumentOptions Options { get; set; }
-
 		int offset = -1;
 		public int Offset {
 			get {
@@ -67,17 +83,6 @@ namespace MonoDevelop.Ide.Gui
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public Encoding Encoding { get; set; }
-		public Project Project { get; set; }
-
-		/// <summary>
-		/// Is true when the file is already open and reload is requested.
-		/// </summary>
-		public bool IsReloadOperation { get; set; }
-
-		internal DockNotebook DockNotebook { get; set; }
-
-		internal DocumentController DocumentController { get; set; }
-		internal DocumentControllerDescription DocumentControllerDescription { get; set; }
 
 		[Obsolete ("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
 		public FileOpenInformation (string fileName, int line, int column, OpenDocumentOptions options)
@@ -90,19 +95,18 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		public FileOpenInformation (FilePath filePath, Project project = null)
+		public FileOpenInformation (FilePath filePath, WorkspaceObject project = null)
 		{
 			this.OriginalFileName = filePath;
 			this.FileName = filePath;
-			this.Project = project;
-			this.Options = OpenDocumentOptions.Default;
+			this.Owner = project;
 		}
 
 		public FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)
 		{
 			this.OriginalFileName = filePath;
 			this.FileName = filePath;
-			this.Project = project;
+			this.Owner = project;
 			this.Line = line;
 			this.Column = column;
 			this.Options = options;
@@ -112,7 +116,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.OriginalFileName = filePath;
 			this.FileName = filePath;
-			this.Project = project;
+			this.Owner = project;
 			this.Options = OpenDocumentOptions.Default;
 			if (bringToFront) {
 				this.Options |= OpenDocumentOptions.BringToFront;

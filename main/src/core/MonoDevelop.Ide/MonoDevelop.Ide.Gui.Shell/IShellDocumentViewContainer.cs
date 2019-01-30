@@ -24,15 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.Ide.Gui.Documents
+using MonoDevelop.Ide.Gui.Documents;
+using System;
+
+namespace MonoDevelop.Ide.Gui.Shell
 {
-	internal interface IShellDocumentViewContainer : IWorkspaceViewItem
+	internal interface IShellDocumentViewContainer : IShellDocumentViewItem
 	{
-		IWorkspaceViewItem InsertView (int position, DocumentViewItem view);
-		IWorkspaceViewItem ReplaceView (int position, DocumentViewItem view);
+		IShellDocumentViewItem InsertView (int position, DocumentView view);
+		IShellDocumentViewItem ReplaceView (int position, DocumentView view);
 		void RemoveView (int tabPos);
 		void ReorderView (int currentIndex, int newIndex);
 		void SetSupportedModes (DocumentViewContainerMode supportedModes);
 		void RemoveAllViews ();
+		void SelectView (IShellDocumentViewItem view);
+		IShellDocumentViewItem ActiveView { get; set; }
+		event EventHandler ActiveViewChanged;
 	}
 }
