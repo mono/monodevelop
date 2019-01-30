@@ -19,6 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 
 using Microsoft.VisualStudio.Core.Imaging;
@@ -30,31 +31,89 @@ using MDImageService = MonoDevelop.Ide.ImageService;
 namespace MonoDevelop.TextEditor.Cocoa
 {
 	// Import with AllowDefault:true
-	[Export (typeof(IImageService))]
+	[Export (typeof (IImageService))]
 	public class ImageService : IImageService
 	{
-		public object GetImage (ImageId imageId)
+		static readonly Dictionary<ImageDescription, object> descriptionToImageMap = new Dictionary<ImageDescription, object> ();
+		static readonly Dictionary<ImageTags, string []> tagsToStylesMap = new Dictionary<ImageTags, string []> ();
+
+		public object GetImage (ImageDescription imageDescription)
 		{
 			// TODO: Add more image IDs (see https://github.com/mono/monodevelop/commit/15f864e5250dd89504f549ae0055622d48334e26 )
 			// TODO: May need to adjust StockIconCodon to support multiple ImageIds per StockIcon element. For now, using
 			//       giant switch statement for easier iteration back-and-forth with standalone.
-			//var xwtImage = MDImageService.GetImage (imageId);
-			//return Xwt.Toolkit.NativeEngine.GetNativeImage (xwtImage);
 
-			var stockId = GetStockIconId (imageId);
+			if (descriptionToImageMap.TryGetValue (imageDescription, out var nativeImage))
+				return nativeImage;
+
+			Xwt.Drawing.Image image = null;
+
+			var stockId = GetStockIconId (imageDescription.Id);
 			if (stockId == null) {
-				// Try to return based on the ID directly
-				var nativeIcon = MDImageService.GetImage (imageId);
-				if (nativeIcon == null) {
-					LoggingService.LogInfo ("ImageService missing image with id: {0} , guid: {1}", imageId.Id, imageId.Guid);
-					return null;
-				}
-				return Xwt.Toolkit.NativeEngine.GetNativeImage (nativeIcon);
+				if (!MDImageService.TryGetImage (imageDescription.Id, out image))
+					LoggingService.LogWarning ("ImageService missing ImageDescription: {0}", imageDescription);
+			} else {
+				image = MDImageService.GetIcon (stockId, false);
+				if (image == null)
+					LoggingService.LogWarning ("ImageService missing ImageDescription: {0} for stock ID '{1}'", imageDescription, stockId);
 			}
-			return Xwt.Toolkit.NativeEngine.GetNativeImage (MDImageService.GetIcon (stockId));
+
+			if (image == null)
+				return null;
+
+			if (imageDescription.Width > 0 && imageDescription.Height > 0)
+				image = image.WithSize (imageDescription.Width, imageDescription.Height);
+
+			if (imageDescription.Tags != ImageTags.None) {
+				if (!tagsToStylesMap.TryGetValue (imageDescription.Tags, out var styles)) {
+					var stylesList = new List<string> (8);
+
+					if (imageDescription.Tags.HasFlag (ImageTags.Dark))
+						stylesList.Add ("dark");
+
+					if (imageDescription.Tags.HasFlag (ImageTags.Disabled))
+						stylesList.Add ("disabled");
+
+					if (imageDescription.Tags.HasFlag (ImageTags.Error))
+						stylesList.Add ("error");
+
+					if (imageDescription.Tags.HasFlag (ImageTags.Hover))
+						stylesList.Add ("hover");
+
+					if (imageDescription.Tags.HasFlag (ImageTags.Pressed))
+						stylesList.Add ("pressed");
+
+					if (imageDescription.Tags.HasFlag (ImageTags.Selected))
+						stylesList.Add ("sel");
+
+					if (stylesList.Count > 0)
+						tagsToStylesMap [imageDescription.Tags] = styles = stylesList.ToArray ();
+				}
+
+				if (styles != null && styles.Length > 0)
+					image = image.WithStyles (styles);
+			}
+
+			if (image != null) {
+				nativeImage = Xwt.Toolkit.NativeEngine.GetNativeImage (image);
+				if (nativeImage is AppKit.NSImage nsImage) {
+					if (stockId != null)
+						nsImage.Name = stockId;
+					if (imageDescription.Tags.HasFlag (ImageTags.Template))
+						nsImage.Template = true;
+				}
+
+				descriptionToImageMap [imageDescription] = nativeImage;
+				return nativeImage;
+			}
+
+			return null;
 		}
 
-		string GetStockIconId (ImageId imageId)
+		public object GetImage (ImageId imageId)
+			=> GetImage (new ImageDescription (imageId, ImageTags.None));
+
+		static string GetStockIconId (ImageId imageId)
 		{
 			switch (imageId.Id) {
 			case KnownImageIds.Class:
