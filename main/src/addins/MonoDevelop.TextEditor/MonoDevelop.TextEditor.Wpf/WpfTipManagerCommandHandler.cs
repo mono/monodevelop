@@ -33,16 +33,20 @@ namespace MonoDevelop.TextEditor
 	[TextViewRole (PredefinedTextViewRoles.Interactive)]
 	[Export (typeof (ICommandHandler))]
 	[Order (Before = PredefinedCompletionNames.CompletionCommandHandler)]
-	internal sealed class WpfTipManagerCommandHandler :
+	sealed class WpfTipManagerCommandHandler :
 		ICommandHandler<EscapeKeyCommandArgs>
 		//FIXME: this is currently internal
 		//IDynamicCommandHandler<EscapeKeyCommandArgs>
 	{
-		[Import]
-		private IObscuringTipManager obscuringTipManager;
+		#pragma warning disable 649 //field not assigned
 
-		private WpfObscuringTipManager cocoaTipManager;
-		private WpfObscuringTipManager TipManager {
+		[Import]
+		IObscuringTipManager obscuringTipManager;
+
+		#pragma warning restore 649
+
+		WpfObscuringTipManager cocoaTipManager;
+		WpfObscuringTipManager TipManager {
 			get {
 				if (cocoaTipManager == null) {
 					cocoaTipManager = (WpfObscuringTipManager)obscuringTipManager;
