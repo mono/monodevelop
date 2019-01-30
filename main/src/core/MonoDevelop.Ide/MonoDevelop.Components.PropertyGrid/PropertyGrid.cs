@@ -287,11 +287,11 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueDraw ();
 		}
 
-		internal bool IsEditing {
+		public bool IsEditing {
 			get { return tree.IsEditing; } 
 		}
 		
-		internal void Populate (bool saveEditSession)
+		public void Populate (bool saveEditSession)
 		{
 			PropertyDescriptorCollection properties;
 			
@@ -421,7 +421,14 @@ namespace MonoDevelop.Components.PropertyGrid
 			descTitle = descText = null;
 			UpdateHelp ();
 		}
-		
+
+		public void BlankPad () => CurrentObject = null;
+
+		public void OnPadContentShown ()
+		{
+			//not implemented
+		}
+
 		public interface IToolbarProvider
 		{
 			void Insert (Widget w, int pos);
