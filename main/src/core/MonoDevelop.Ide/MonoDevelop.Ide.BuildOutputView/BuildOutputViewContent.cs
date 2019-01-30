@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using Xwt;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
@@ -43,78 +44,69 @@ namespace MonoDevelop.Ide.BuildOutputView
 		JumpTo
 	}
 
-	class BuildOutputViewContent : AbstractXwtViewContent
+	class BuildOutputViewContent : DocumentController
 	{
 		FilePath filename;
 		BuildOutputWidget control;
+		XwtControl xwtControl;
 		BuildOutput buildOutput;
 
-		public BuildOutputViewContent (FilePath filename)
+		BuildOutputViewContent ()
 		{
-			this.filename = filename;
-			this.ContentName = filename;
-			Counters.OpenedFromFile++;
 		}
 
-		public BuildOutputViewContent (BuildOutput buildOutput)
+		public BuildOutputViewContent (FilePath filename): this()
+		{
+			this.filename = filename;
+			Model = IdeApp.Workbench.DocumentModelRegistry.CreateSharedModel<FileDocumentModel> (filename);
+			Counters.OpenedFromFile++;
+			IsReadOnly = true;
+		}
+
+		public BuildOutputViewContent (BuildOutput buildOutput) : this ()
 		{
 			this.buildOutput = buildOutput;
-			ContentName = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
+			DocumentTitle = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
 			Counters.OpenedFromIDE++;
 		}
 
 		void FileNameChanged (object sender, string file)
 		{
-			ContentName = file;
+			var fileModel = (FileDocumentModel) Model;
+			fileModel.LinkToFile (file);
+			filename = file;
+			DocumentTitle = control.ViewContentName;
 		}
 
-		public override Widget Widget {
-			get {
-				if (control != null)
-					return control;
-				var toolbar = WorkbenchWindow.GetToolbar (this);
-				// TODO: enable native backend by default without checking NATIVE_BUILD_OUTPUT env
-				var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_BUILD_OUTPUT")?.ToLower () == "true";
-				// native mode on Mac only, until we support Wpf embedding
-				var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac && nativeEnabled ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
-				engine.Invoke (() => {
-					if (buildOutput != null)
-						control = new BuildOutputWidget (buildOutput, ContentName, toolbar);
-					else
-						control = new BuildOutputWidget (filename, toolbar);
-					control.FileNameChanged += FileNameChanged;
-				});
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			if (xwtControl == null)
+				xwtControl = new XwtControl (CreateWidget (view));
+			return (Control)xwtControl;
+		}
+
+		Widget CreateWidget (DocumentViewContent view)
+		{
+			if (control != null)
 				return control;
-			}
-		}
-
-		public override bool IsReadOnly {
-			get {
-				return true;
-			}
-		}
-
-		public override bool IsFile {
-			get {
-				return true;
-			}
-		}
-
-		public override bool IsViewOnly {
-			get {
-				return true;
-			}
-		}
-
-		public override string TabPageLabel {
-			get {
-				return filename.FileName ?? GettextCatalog.GetString ("Build Output");
-			}
+			var toolbar = view.GetToolbar ();
+			// TODO: enable native backend by default without checking NATIVE_BUILD_OUTPUT env
+			var nativeEnabled = Environment.GetEnvironmentVariable ("NATIVE_BUILD_OUTPUT")?.ToLower () == "true";
+			// native mode on Mac only, until we support Wpf embedding
+			var engine = Xwt.Toolkit.NativeEngine.Type == ToolkitType.XamMac && nativeEnabled ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+			engine.Invoke (() => {
+				if (buildOutput != null)
+					control = new BuildOutputWidget (buildOutput, DocumentTitle, toolbar);
+				else
+					control = new BuildOutputWidget (filename, toolbar);
+				control.FileNameChanged += FileNameChanged;
+			});
+			return control;
 		}
 
 		bool disposed = false;
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (!disposed) {
 				if (control != null) {
@@ -208,7 +200,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		}
 
 		[CommandHandler (FileCommands.Save)]
-		public override Task Save ()
+		protected override Task OnSave ()
 		{
 			Counters.SavedToFile++;
 			return control.SaveAs ();

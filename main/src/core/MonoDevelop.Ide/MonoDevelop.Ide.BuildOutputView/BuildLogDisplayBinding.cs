@@ -29,15 +29,15 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.BuildOutputView
 {
-	class BuildLogDisplayBinding : IViewDisplayBinding
+	[Mono.Addins.Extension]
+	class BuildLogDisplayBinding : FileDocumentControllerFactory
 	{
-		public BuildLogDisplayBinding ()
-		{
-		}
-
 		public string Name {
 			get {
 				return GettextCatalog.GetString ("Build Output");
@@ -55,9 +55,20 @@ namespace MonoDevelop.Ide.BuildOutputView
 			return fileName.IsNotNull && fileName.HasExtension (".binlog");
 		}
 
-		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public override Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
-			return new BuildOutputViewContent (fileName);
+			return Task.FromResult<DocumentController> (new BuildOutputViewContent (file.FilePath));
+		}
+
+		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
+		{
+			if (file.FilePath.IsNotNull && file.FilePath.HasExtension (".binlog")) {
+				yield return new DocumentControllerDescription {
+					CanUseAsDefault = true,
+					Role = DocumentControllerRole.Tool,
+					Name = GettextCatalog.GetString ("Build Output")
+				};
+			}
 		}
 	}
 }

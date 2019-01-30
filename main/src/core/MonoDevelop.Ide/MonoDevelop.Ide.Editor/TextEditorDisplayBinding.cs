@@ -30,10 +30,14 @@ using System.IO;
 using MonoDevelop.Projects;
 using System.ComponentModel;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextEditorDisplayBinding : IViewDisplayBinding
+	[ExportDocumentControllerFactory (MimeType = "*")]
+	public class TextEditorDisplayBinding : FileDocumentControllerFactory
 	{
 		static bool IsInitialized = false;
 
@@ -54,9 +58,7 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			IsInitialized = true;
 
-			// MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			DefaultSourceEditorOptions.Init ();
-			// SyntaxModeService.EnsureLoad ();
 			LoadCustomStylesAndModes ();
 		}
 
@@ -76,24 +78,26 @@ namespace MonoDevelop.Ide.Editor
 				SyntaxHighlightingService.LoadStylesAndModesInPath (SyntaxModePath);
 		}
 
-		public string Name {
-			get {
-				return GettextCatalog.GetString ("Source Code Editor");
-			}
-		}
-
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
 		{
-			if (fileName != null)
-				return DesktopService.GetFileIsText (fileName, mimeType);
+			if (!file.FilePath.IsNullOrEmpty) {
+				if (!IdeApp.DesktopService.GetFileIsText (file.FilePath, file.MimeType))
+					yield break;
+			}
 
-			if (!string.IsNullOrEmpty (mimeType))
-				return DesktopService.GetMimeTypeIsText (mimeType);
+			if (!string.IsNullOrEmpty (file.MimeType)) {
+				if (!IdeApp.DesktopService.GetMimeTypeIsText (file.MimeType))
+					yield break;
+			}
 
-			return false;
+			yield return new DocumentControllerDescription {
+				 Name = GettextCatalog.GetString ("Source Code Editor"),
+				 Role = DocumentControllerRole.Source,
+				 CanUseAsDefault = true
+			};
 		}
 
-		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public override Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
 			TextEditor editor;
 
@@ -102,19 +106,12 @@ namespace MonoDevelop.Ide.Editor
 			//
 			// That information could be added to FilePath but fileName is converted to a string below
 			// which means the information is lost.
-			editor = TextEditorFactory.CreateNewEditor(fileName, mimeType);
+			editor = TextEditorFactory.CreateNewEditor (file.FilePath, file.MimeType);
 
-			editor.GetViewContent ().Project = ownerProject;
-			return editor.GetViewContent (); 
+			editor.GetViewContent ().Owner = file.Owner;
+			return Task.FromResult< DocumentController> (editor.GetViewContent ());
 		}
 
-		public bool CanHandleFile (string fileName)
-		{
-			return DesktopService.GetFileIsText (fileName);
-		}
-
-		public bool CanUseAsDefault {
-			get { return true; }
-		}
+		public override string Id => "MonoDevelop.Ide.Editor.TextEditorDisplayBinding";
 	}
 }

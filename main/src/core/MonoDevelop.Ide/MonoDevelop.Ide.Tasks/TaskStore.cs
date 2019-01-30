@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TaskStore.cs
 //  
 // Author:
@@ -47,8 +47,12 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class TaskStore: IEnumerable<TaskListEntry>, ILocationList
+	[DefaultServiceImplementation]
+	public class TaskStore: IEnumerable<TaskListEntry>, ILocationList, IService
 	{
+		RootWorkspace workspace;
+		TextEditorService textEditorService;
+
 		int taskUpdateCount;
 		List<TaskListEntry> tasks = new List<TaskListEntry> ();
 		Dictionary<FilePath,TaskListEntry[]> taskIndex = new Dictionary<FilePath, TaskListEntry[]> ();
@@ -59,47 +63,63 @@ namespace MonoDevelop.Ide.Tasks
 		
 		List<TaskListEntry> tasksAdded;
 		List<TaskListEntry> tasksRemoved;
-		
-		public TaskStore ()
-		{
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.FileRenamedInProject += ProjectFileRenamed;
-				IdeApp.Workspace.FileRemovedFromProject += ProjectFileRemoved;
-			}
 
-			TextEditorService.LineCountChangesCommitted += delegate (object sender, TextFileEventArgs args) {
-				foreach (TaskListEntry task in GetFileTasks (args.TextFile.Name.FullPath))
-					task.SavedLine = -1;
-			};
-			
-			TextEditorService.LineCountChangesReset += delegate (object sender, TextFileEventArgs args) {
-				Runtime.AssertMainThread ();
-				TaskListEntry[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
-				foreach (TaskListEntry task in ctasks) {
-					if (task.SavedLine != -1) {
-						task.Line = task.SavedLine;
-						task.SavedLine = -1;
-					}
-				}
-				NotifyTasksChanged (ctasks);
-			};
-			
-			TextEditorService.LineCountChanged += delegate (object sender, LineCountEventArgs args) {
-				Runtime.AssertMainThread ();
-				if (args.TextFile == null || args.TextFile.Name.IsNullOrEmpty)
-					return;
-				TaskListEntry[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
-				foreach (TaskListEntry task in ctasks) {
-					if (task.Line > args.LineNumber || (task.Line == args.LineNumber && task.Column >= args.Column)) {
-						if (task.SavedLine == -1)
-							task.SavedLine = task.Line;
-						task.Line += args.LineCount;
-					}
-				}
-				NotifyTasksChanged (ctasks);
-			};
+		async Task IService.Initialize (ServiceProvider serviceProvider)
+		{
+			workspace = await serviceProvider.GetService<RootWorkspace> ();
+			workspace.FileRenamedInProject += ProjectFileRenamed;
+			workspace.FileRemovedFromProject += ProjectFileRemoved;
+
+			textEditorService = await serviceProvider.GetService<TextEditorService> ();
+			textEditorService.LineCountChangesCommitted += TextEditorService_LineCountChangesCommitted;
+			textEditorService.LineCountChangesReset += TextEditorService_LineCountChangesReset;
+			textEditorService.LineCountChanged += TextEditorService_LineCountChanged;
 		}
-		
+
+		async Task IService.Dispose ()
+		{
+			workspace.FileRenamedInProject -= ProjectFileRenamed;
+			workspace.FileRemovedFromProject -= ProjectFileRemoved;
+			textEditorService.LineCountChangesCommitted -= TextEditorService_LineCountChangesCommitted;
+			textEditorService.LineCountChangesReset -= TextEditorService_LineCountChangesReset;
+			textEditorService.LineCountChanged -= TextEditorService_LineCountChanged;
+		}
+
+		void TextEditorService_LineCountChangesCommitted (object sender, TextFileEventArgs args)
+		{
+			foreach (TaskListEntry task in GetFileTasks (args.TextFile.Name.FullPath))
+				task.SavedLine = -1;
+		}
+
+		void TextEditorService_LineCountChangesReset (object sender, TextFileEventArgs args)
+		{
+			Runtime.AssertMainThread ();
+			TaskListEntry [] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
+			foreach (TaskListEntry task in ctasks) {
+				if (task.SavedLine != -1) {
+					task.Line = task.SavedLine;
+					task.SavedLine = -1;
+				}
+			}
+			NotifyTasksChanged (ctasks);
+		}
+
+		void TextEditorService_LineCountChanged (object sender, LineCountEventArgs args)
+		{
+			Runtime.AssertMainThread ();
+			if (args.TextFile == null || args.TextFile.Name.IsNullOrEmpty)
+				return;
+			TaskListEntry [] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
+			foreach (TaskListEntry task in ctasks) {
+				if (task.Line > args.LineNumber || (task.Line == args.LineNumber && task.Column >= args.Column)) {
+					if (task.SavedLine == -1)
+						task.SavedLine = task.Line;
+					task.Line += args.LineCount;
+				}
+			}
+			NotifyTasksChanged (ctasks);
+		}
+
 		public void Add (TaskListEntry task)
 		{
 			Runtime.AssertMainThread ();
@@ -459,12 +479,12 @@ namespace MonoDevelop.Ide.Tasks
 				return false;
 
 			//only text files
-			var mimeType = DesktopService.GetMimeTypeForUri (t.FileName);
-			if (!DesktopService.GetMimeTypeIsText (mimeType))
+			var mimeType = IdeApp.DesktopService.GetMimeTypeForUri (t.FileName);
+			if (!IdeApp.DesktopService.GetMimeTypeIsText (mimeType))
 				return false;
 
 			//only files for which we have a default internal display binding
-			var binding = DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
+			var binding = IdeApp.Services.DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
 			if (binding == null || !binding.CanUseAsDefault || binding is IExternalDisplayBinding)
 				return false;
 
@@ -525,7 +545,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			return -1;
 		}
-		
+
 		public string ItemName {
 			get; set;
 		}

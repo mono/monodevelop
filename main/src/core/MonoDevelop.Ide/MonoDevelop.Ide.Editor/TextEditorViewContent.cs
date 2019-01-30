@@ -1,4 +1,4 @@
-//
+﻿//
 // TextEditorViewContent.cs
 //
 // Author:
@@ -24,31 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
-using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Ide.TypeSystem;
 using System.IO;
-using MonoDevelop.Core.Text;
-using System.Text;
-using Gtk;
-using ICSharpCode.NRefactory.TypeSystem;
-using System.Linq;
-using MonoDevelop.Ide.Editor.Extension;
-using ICSharpCode.NRefactory.Refactoring;
-using MonoDevelop.Components;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.CodeAnalysis;
-using Gdk;
-using MonoDevelop.Ide.CodeFormatting;
-using System.Collections.Immutable;
-using Microsoft.VisualStudio.CodingConventions;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -56,7 +46,7 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through BaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
-	class TextEditorViewContent : ViewContent, ICommandRouter
+	class TextEditorViewContent : FileDocumentController, ICommandRouter
 	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
@@ -71,37 +61,37 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException (nameof (textEditorImpl));
 			this.textEditor = textEditor;
 			this.textEditorImpl = textEditorImpl;
+			textEditorImpl.DocumentController = this;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			textEditorImpl.ViewContent.ContentNameChanged += ViewContent_ContentNameChanged;
-			textEditorImpl.ViewContent.DirtyChanged += ViewContent_DirtyChanged; 
+			textEditorImpl.DirtyChanged += ViewContent_DirtyChanged; 
 			textEditor.Options = DefaultSourceEditorOptions.Instance.Create ();
 		}
 
-		protected override void OnContentNameChanged ()
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
-			base.OnContentNameChanged ();
-			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
-				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditor.FileName = ContentName;
-			if (this.WorkbenchWindow?.Document != null)
-				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
-			UpdateTextEditorOptions (null, null);
+			return base.OnInitialize (modelDescriptor, status);
 		}
 
-		void ViewContent_ContentNameChanged (object sender, EventArgs e)
+		protected override void OnFileNameChanged ()
 		{
-			this.ContentName = textEditorImpl.ViewContent.ContentName;
+			base.OnFileNameChanged ();
+			if (FilePath != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
+				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
+			textEditor.FileName = FilePath;
+			if (this.WorkbenchWindow?.Document != null)
+				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document.DocumentContext);
+			UpdateTextEditorOptions (null, null);
 		}
 
 		void ViewContent_DirtyChanged (object sender, EventArgs e)
 		{
-			OnDirtyChanged ();
+			IsDirty = textEditorImpl.IsDirty;
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
 		{
-			IsDirty = textEditorImpl.ViewContent.IsDirty;
+			IsDirty = textEditorImpl.IsDirty;
 			InformAutoSave ();
 		}
 
@@ -112,7 +102,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void UpdateTextEditorOptions (object sender, EventArgs e)
 		{
-			UpdateStyleParent (Project, textEditor.MimeType).Ignore ();
+			UpdateStyleParent (Owner, textEditor.MimeType).Ignore ();
 		}
 
 		uint autoSaveTimer = 0;
@@ -147,14 +137,15 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		async Task UpdateStyleParent (MonoDevelop.Projects.Project styleParent, string mimeType)
+		async Task UpdateStyleParent (WorkspaceObject owner, string mimeType)
 		{
+			var styleParent = owner as IPolicyProvider;
 			RemovePolicyChangeHandler ();
 
 			if (string.IsNullOrEmpty (mimeType))
 				mimeType = "text/plain";
 
-			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var mimeTypes = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 
 			if (styleParent != null)
 				policyContainer = styleParent.Policies;
@@ -172,7 +163,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
-			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (textEditor.MimeType);
+			var mimeTypes = IdeApp.DesktopService.GetMimeTypeInheritanceChain (textEditor.MimeType);
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 			((DefaultSourceEditorOptions)textEditor.Options).UpdateStylePolicy (currentPolicy);
 		}
@@ -193,17 +184,17 @@ namespace MonoDevelop.Ide.Editor
 			try {
 				ParsedDocument parsedDocument = null;
 
-				var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
+				var foldingParser = IdeApp.TypeSystemService.GetFoldingParser (textEditor.MimeType);
 				if (foldingParser != null) {
 					parsedDocument = foldingParser.Parse (textEditor.FileName, text);
 				} else {
-					var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
+					var normalParser = IdeApp.TypeSystemService.GetParser (textEditor.MimeType);
 					if (normalParser != null) {
 						parsedDocument = await normalParser.Parse(
 							new TypeSystem.ParseOptions {
 								FileName = textEditor.FileName,
 								Content = new StringTextSource(text),
-								Project = Project
+								Project = Owner as Project
 							});
 					}
 				}
@@ -215,72 +206,56 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		#region IViewFContent implementation
-
-		public override async Task Load (FileOpenInformation fileOpenInformation)
+		async Task Load (bool reloading)
 		{
-			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
+			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
 			textEditor.TextChanged -= HandleTextChanged;
-			await textEditorImpl.ViewContent.Load (fileOpenInformation);
+			await textEditorImpl.Load (FilePath, Encoding, reloading);
 			await RunFirstTimeFoldUpdate (textEditor.Text);
 			textEditorImpl.InformLoadComplete ();
 			textEditor.TextChanged += HandleTextChanged;
-			textEditorImpl.ViewContent.DirtyChanged += HandleDirtyChanged;
+			textEditorImpl.DirtyChanged += HandleDirtyChanged;
 		}
 
-		public override async Task LoadNew (Stream content, string mimeType)
+		async Task LoadNew ()
 		{
-			textEditor.MimeType = mimeType;
+			textEditor.MimeType = MimeType;
 			string text = null;
-			if (content != null) {
-				var res = await TextFileUtility.GetTextAsync (content);
-				text = textEditor.Text = res.Text;
-				textEditor.Encoding = res.Encoding;
-			}
+			var res = await TextFileUtility.GetTextAsync (await FileModel.GetContent ());
+			text = textEditor.Text = res.Text;
+			textEditor.Encoding = res.Encoding;
 			await RunFirstTimeFoldUpdate (text);
 			textEditorImpl.InformLoadComplete ();
 		}
 
-		public override Task Save (FileSaveInformation fileSaveInformation)
-		{
-			if (!string.IsNullOrEmpty (fileSaveInformation.FileName))
-				AutoSave.RemoveAutoSaveFile (fileSaveInformation.FileName);
-			return textEditorImpl.ViewContent.Save (fileSaveInformation);
-		}
-
-		public override Task Save ()
+		protected override Task OnSave ()
 		{
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			return textEditorImpl.ViewContent.Save ();
+			return textEditorImpl.Save (new FileSaveInformation (FilePath, Encoding));
 		}
 
-		public override void DiscardChanges ()
+		protected override void OnDiscardChanges ()
 		{
 			if (autoSaveTask != null)
 				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
 			RemoveAutoSaveTimer ();
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditorImpl.ViewContent.DiscardChanges ();
+			textEditorImpl.DiscardChanges ();
 		}
 
-		protected override void OnSetProject (MonoDevelop.Projects.Project project)
+		protected override void OnOwnerChanged ()
 		{
-			base.OnSetProject (project);
-			textEditorImpl.ViewContent.Project = project;
+			base.OnOwnerChanged ();
+			textEditorImpl.Project = Owner as Project;
 			UpdateTextEditorOptions (null, null);
 		}
 
-		public override ProjectReloadCapability ProjectReloadCapability {
-			get {
-				return textEditorImpl.ViewContent.ProjectReloadCapability;
-			}
+		protected override ProjectReloadCapability OnGetProjectReloadCapability ()
+		{
+			return textEditorImpl.ProjectReloadCapability;
 		}
-
-		#endregion
-
-		#region BaseViewContent implementation
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
@@ -298,48 +273,35 @@ namespace MonoDevelop.Ide.Editor
 				ext = ext.Next;
 			}
 
-			foreach (var r in textEditorImpl.ViewContent.GetContents (type))
+			foreach (var r in textEditorImpl.GetContents (type))
 				yield return r;
 		}
 
-		protected override void OnWorkbenchWindowChanged ()
+		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
-			base.OnWorkbenchWindowChanged ();
-			textEditorImpl.ViewContent.WorkbenchWindow = WorkbenchWindow;
+			if (IsNewDocument)
+				await LoadNew ();
+			else
+				await Load (false);
+
+			IsDirty = textEditorImpl.IsDirty;
+			return textEditor;
 		}
 
-		public override Control Control {
+		public string TabPageLabel {
+			get { return GettextCatalog.GetString ("Source"); }
+		}
+
+		public string TabAccessibilityDescription {
 			get {
-				return textEditor;
+				return GettextCatalog.GetString ("The main source editor");
 			}
 		}
-
-		public override string TabPageLabel {
-			get {
-				return textEditorImpl.ViewContent.TabPageLabel;
-			}
-		}
-
-		public override string TabAccessibilityDescription {
-			get {
-				return textEditorImpl.ViewContent.TabAccessibilityDescription;
-			}
-		}
-
-		public override bool IsDirty {
-			get { return textEditorImpl.ViewContent.IsDirty; }
-			set {
-				textEditorImpl.ViewContent.IsDirty = value;
-			}
-		}
-
-
-		#endregion
 
 		#region IDisposable implementation
 		bool isDisposed;
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (isDisposed)
 				return;
@@ -349,11 +311,10 @@ namespace MonoDevelop.Ide.Editor
 			isDisposed = true;
 			EditorConfigService.RemoveEditConfigContext (textEditor.FileName).Ignore ();
 			CancelDocumentParsedUpdate ();
-			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
+			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
 			textEditor.TextChanged -= HandleTextChanged;
-			textEditorImpl.ViewContent.ContentNameChanged -= ViewContent_ContentNameChanged;
-			textEditorImpl.ViewContent.DirtyChanged -= ViewContent_DirtyChanged; ;
+			textEditorImpl.DirtyChanged -= ViewContent_DirtyChanged; ;
 
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
