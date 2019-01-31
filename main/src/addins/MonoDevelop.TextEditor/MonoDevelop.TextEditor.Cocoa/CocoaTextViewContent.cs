@@ -21,13 +21,19 @@
 
 using System;
 using System.ComponentModel.Composition;
+
 using AppKit;
+using ObjCRuntime;
+
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+
 using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
@@ -64,7 +70,8 @@ namespace MonoDevelop.TextEditor
 
 	class CocoaTextViewContent : TextViewContent<ICocoaTextView, CocoaTextViewImports>
 	{
-		ICocoaTextViewHost cocoaTextViewHost;
+		ICocoaTextViewHost textViewHost;
+		NSView textViewHostControl;
 
 		sealed class EmbeddedNSViewControl : Control
 		{
@@ -90,23 +97,80 @@ namespace MonoDevelop.TextEditor
 
 		protected override Control CreateControl ()
 		{
-			cocoaTextViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
-			var control = new EmbeddedNSViewControl (cocoaTextViewHost.HostControl);
+			textViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
+			textViewHostControl = textViewHost.HostControl;
+
+			var control = new EmbeddedNSViewControl (textViewHostControl);
 			control.GetNativeWidget<Gtk.Widget> ().CanFocus = true;
 			TextView.GotAggregateFocus += (sender, e) => {
 				control.GetNativeWidget<Gtk.Widget> ().GrabFocus ();
 			};
 			TextView.Properties.AddProperty (typeof (Gtk.Widget), control.GetNativeWidget<Gtk.Widget> ());
+
 			return control;
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			if (cocoaTextViewHost != null) {
-				cocoaTextViewHost.Close ();
-				cocoaTextViewHost = null;
+
+			if (textViewHost != null) {
+				textViewHost.Close ();
+				textViewHost = null;
 			}
+		}
+
+		protected override void InstallAdditionalEditorOperationsCommands ()
+		{
+			base.InstallAdditionalEditorOperationsCommands ();
+
+			EditorOperationCommands.Add (SearchCommands.Find, new EditorOperationCommand (
+				_ => HandleTextFinderAction (
+					TextFinderAction.ShowFindInterface,
+					perform: true),
+				(_, info) => info.Enabled = HandleTextFinderAction (
+					TextFinderAction.ShowFindInterface,
+					perform: false)));
+
+			EditorOperationCommands.Add (SearchCommands.Replace, new EditorOperationCommand (
+				_ => HandleTextFinderAction (
+					TextFinderAction.ShowReplaceInterface,
+					perform: true),
+				(_, info) => info.Enabled = HandleTextFinderAction (
+					TextFinderAction.ShowReplaceInterface,
+					perform: false)));
+
+			bool HandleTextFinderAction (TextFinderAction action, bool perform)
+			{
+				var responder = textViewHostControl?.Window?.FirstResponder;
+
+				if (responder != null && responder.RespondsToSelector (action.Action)) {
+					if (perform)
+						responder.PerformTextFinderAction (action);
+					return true;
+				}
+
+				return false;
+			}
+		}
+
+		sealed class TextFinderAction : Foundation.NSObject, INSValidatedUserInterfaceItem
+		{
+			public static readonly TextFinderAction ShowFindInterface
+				= new TextFinderAction (NSTextFinderAction.ShowFindInterface);
+
+			public static readonly TextFinderAction ShowReplaceInterface
+				= new TextFinderAction (NSTextFinderAction.ShowReplaceInterface);
+
+			public Selector Action { get; } = new Selector ("performTextFinderAction:");
+			public nint Tag { get; }
+
+			TextFinderAction (IntPtr handle) : base (handle)
+			{
+			}
+
+			TextFinderAction (NSTextFinderAction action)
+				=> Tag = (int)action;
 		}
 	}
 }

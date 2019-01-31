@@ -50,4 +50,40 @@
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj" Private="False" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="icons\vs-find-replace-close-16.png" />
+    <None Remove="icons\vs-find-replace-close-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
+    <None Remove="icons\vs-find-replace-search-16.png" />
+    <None Remove="icons\vs-find-replace-search-16%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-close-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-search-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-search-16%402x.png" />
+  </ItemGroup>
 </Project>
