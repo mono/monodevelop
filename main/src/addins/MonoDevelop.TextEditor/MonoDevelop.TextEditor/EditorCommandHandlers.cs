@@ -245,7 +245,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
         bool ICommandHandler<LineStartCommandArgs>.ExecuteCommand(LineStartCommandArgs args, CommandExecutionContext executionContext)
         {
-            GetOperations(args.TextView).MoveToStartOfLine(extendSelection: false);
+            GetOperations(args.TextView).MoveToHome(extendSelection: false);
             return true;
         }
 
