@@ -47,7 +47,7 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = master
+	branch = d16-0
 [submodule "main/external/vs-editor-core"]
 	path = main/external/vs-editor-core
 	url = ../../xamarin/vs-editor-core.git
