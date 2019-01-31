@@ -942,7 +942,7 @@ namespace MonoDevelop.Core
 					shouldMerge = true;
 
 					if (next.Args is FileCopyEventArgs nextArgs && Args is FileCopyEventArgs thisArgs)
-						shouldMerge &= nextArgs.IsExternal == thisArgs.IsReadOnly;
+						shouldMerge &= nextArgs.IsExternal == thisArgs.IsExternal;
 
 					if (shouldMerge)
 						next.Args.MergeWith (Args);
