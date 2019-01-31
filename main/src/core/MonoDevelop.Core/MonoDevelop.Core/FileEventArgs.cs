@@ -39,7 +39,7 @@ namespace MonoDevelop.Core
 		protected FileCopyEventInfo (string sourceFile, string targetFile, bool isDirectory)
 		{
 			SourceFile = sourceFile;
-			TargetFile = TargetFile;
+			TargetFile = targetFile;
 			IsDirectory = isDirectory;
 		}
 	}
