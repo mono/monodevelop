@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -32,23 +33,22 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	class MergeView : BaseView, IMergeView
+	class MergeView : DocumentController, IMergeView
 	{
 		VersionControlDocumentInfo info;
 		MergeWidget widget;
 
-		public override Control Control { 
-			get {
-				if (widget == null) {
-					widget = new MergeWidget ();
-					widget.Load (info);
-				}
-				
-				return widget;
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			if (widget == null) {
+				widget = new MergeWidget ();
+				widget.Load (info);
 			}
+
+			return widget;
 		}
 
-		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"))
+		public MergeView (VersionControlDocumentInfo info)
 		{
 			this.info = info;
 		}
@@ -58,7 +58,7 @@ namespace MonoDevelop.VersionControl.Views
 			widget.UpdateLocalText ();
 			widget.info.Start ();
 
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.DocumentController.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
 				int line = loc.Line < 1 ? 1 : loc.Line;

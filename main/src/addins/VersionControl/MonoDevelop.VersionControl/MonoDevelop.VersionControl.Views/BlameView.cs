@@ -27,6 +27,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -34,20 +35,19 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	internal class BlameView : BaseView, IBlameView, IClipboardHandler
+	internal class BlameView : DocumentController, IBlameView, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
-		
-		public override Control Control { 
-			get {
-				if (widget == null)
-					widget = new BlameWidget (info);
-				return widget;
-			}
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			if (widget == null)
+				widget = new BlameWidget (info);
+			return widget;
 		}
-		
-		public BlameView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"))
+
+		public BlameView (VersionControlDocumentInfo info)
 		{
 			this.info = info;
 		}
@@ -56,10 +56,9 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnSelected ()
 		{
 			info.Start ();
-			BlameWidget widget = Control.GetNativeWidget<BlameWidget> ();
 			widget.Reset ();
 
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.DocumentController.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
 				int line = loc.Line < 1 ? 1 : loc.Line;
@@ -70,9 +69,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void OnDeselected ()
 		{
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.DocumentController.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
-				BlameWidget widget = Control.GetNativeWidget<BlameWidget> ();
 				buffer.SetCaretLocation (widget.Editor.Caret.Line, widget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
 				buffer.ScrollTo (new Ide.Editor.DocumentLocation (widget.Editor.YToLine (widget.Editor.VAdjustment.Value), 1));
 			}

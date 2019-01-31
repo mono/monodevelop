@@ -1,4 +1,4 @@
-//
+﻿//
 // LogWidget.cs
 //
 // Author:
@@ -365,22 +365,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var proj = IdeApp.Workspace.GetProjectsContainingFile (fileName).FirstOrDefault ();
 			var doc = await IdeApp.Workbench.OpenDocument (fileName, proj, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-			int i = 1;
-			foreach (var content in doc.Window.SubViewContents) {
-				DiffView diffView = content as DiffView;
-				if (diffView != null) {
-					doc.Window.SwitchView (i);
-					diffView.ComparisonWidget.info.RunAfterUpdate (delegate {
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, SelectedRevision.GetPrevious ());
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, SelectedRevision);
-						
-						diffView.ComparisonWidget.DiffEditor.Caret.Location = new DocumentLocation (line, 1);
-						diffView.ComparisonWidget.DiffEditor.CenterToCaret ();
-					});
-					break;
-				}
-				i++;
-			}
+			doc?.GetContent<VersionControlDocumentController> ()?.ShowDiffView (SelectedRevision.GetPrevious (), SelectedRevision, line);
 		}
 
 		const int colOperation = 4;
@@ -487,7 +472,7 @@ namespace MonoDevelop.VersionControl.Views
 				string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
 				
 				Application.Invoke (delegate {
-					diffWidget.ComparisonWidget.MimeType = DesktopService.GetMimeTypeForUri (path);
+					diffWidget.ComparisonWidget.MimeType = IdeApp.DesktopService.GetMimeTypeForUri (path);
 					diffWidget.ComparisonWidget.OriginalEditor.Text = prevRevision;
 					diffWidget.ComparisonWidget.DiffEditor.Text = text;
 					diffWidget.ComparisonWidget.CreateDiff ();
@@ -693,7 +678,7 @@ namespace MonoDevelop.VersionControl.Views
 					action = rp.ActionDescription;
 					actionIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
-				Xwt.Drawing.Image fileIcon = DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
+				Xwt.Drawing.Image fileIcon = IdeApp.DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
 				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
 				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {

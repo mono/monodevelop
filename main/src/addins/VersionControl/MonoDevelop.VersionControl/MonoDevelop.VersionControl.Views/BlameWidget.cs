@@ -1,4 +1,4 @@
-//
+﻿//
 // BlameWidget.cs
 //
 // Author:
@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public Ide.Gui.Document Document {
 			get {
-				return info.Document.ParentDocument;
+				return info.Document;
 			}
 		}
 		public VersionControlItem VersionControlItem {
@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 			GtkWorkarounds.FixContainerLeak (this);
 			
 			this.info = info;
-			var sourceEditor = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			var sourceEditor = info.DocumentController.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			
 			vAdjustment = new Adjustment (
 				sourceEditor.TextEditor.VAdjustment.Value, 
@@ -376,7 +376,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void OptionsChanged ()
 			{
-				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+				layout.FontDescription = IdeApp.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 				UpdateWidth ();
 			}
 			
@@ -475,42 +475,26 @@ namespace MonoDevelop.VersionControl.Views
 			[CommandHandler (BlameCommands.ShowDiff)]
 			protected void OnShowDiff ()
 			{
-				if (menuAnnotation == null)
+				if (menuAnnotation?.Revision == null)
 					return;
-				foreach (var view in widget.info.Document.ParentDocument.Views) {
-					DiffView diffView = view.GetContent<DiffView> ();
-					if (diffView != null) {
-						view.Select ();
-						if (menuAnnotation.Revision == null)
-							return;
-						var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
-						if (rev == null)
-							return;
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev.GetPrevious ());
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, rev);
-						break;
-					}
-				}
+
+				var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
+				if (rev == null)
+					return;
+
+				widget.info.DocumentController.ShowDiffView (rev, rev.GetPrevious ());
 			}
-		
+
 			[CommandHandler (BlameCommands.ShowLog)]
 			protected void OnShowLog ()
 			{
-				if (menuAnnotation == null)
+				if (menuAnnotation?.Revision == null)
 					return;
-				foreach (var view in widget.info.Document.ParentDocument.Views) {
-					LogView logView = view.GetContent<LogView> ();
-					if (logView != null) {
-						view.Select ();
-						if (menuAnnotation.Revision == null)
-							return;
-						var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
-						if (rev == null)
-							return;
-						logView.LogWidget.SelectedRevision = rev;
-						break;
-					}
-				}
+				var rev = widget.info.History.FirstOrDefault (h => h == menuAnnotation.Revision);
+				if (rev == null)
+					return;
+
+				widget.info.DocumentController.ShowLogView (rev);
 			}
 
 			[CommandHandler (BlameCommands.ShowBlameBefore)]
@@ -716,7 +700,7 @@ namespace MonoDevelop.VersionControl.Views
 							}
 
 							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
-								authorLayout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+								authorLayout.FontDescription = IdeApp.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 								authorLayout.SetText (ann.Author);
 								authorLayout.GetPixelSize (out authorWidth, out h);
 

@@ -24,12 +24,120 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Projects;
+using MonoDevelop.VersionControl.Views;
+using System.Threading;
+
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlDocumentController
+	[ExportDocumentControllerExtension (MimeType = "*")]
+	public class VersionControlDocumentController: DocumentControllerExtension
 	{
-		public VersionControlDocumentController ()
+		WorkspaceObject project;
+		Repository repo;
+		VersionControlDocumentInfo vcInfo;
+
+		DocumentView diffView;
+		DocumentView blameView;
+		DocumentView logView;
+		DocumentView mergeView;
+
+		public override async Task<bool> SupportsController (DocumentController controller)
 		{
+			if (!(controller is FileDocumentController fileController))
+				return false;
+
+			project = controller.Owner;
+			if (project == null) {
+				// Fix for broken .csproj and .sln files not being seen as having a project.
+				foreach (var projItem in Ide.IdeApp.Workspace.GetAllItems<UnknownSolutionItem> ()) {
+					if (projItem.FileName == fileController.FilePath)
+						project = projItem;
+				}
+
+				if (project == null)
+					return false;
+			}
+
+			repo = VersionControlService.GetRepository (project);
+			if (repo == null)
+				return false;
+
+			var versionInfo = repo.GetVersionInfo (fileController.FilePath, VersionInfoQueryFlags.IgnoreCache);
+			if (!versionInfo.IsVersioned)
+				return false;
+
+			return true;
+		}
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			var controller = (FileDocumentController)Controller;
+			var item = new VersionControlItem (repo, project, controller.FilePath, false, null);
+			vcInfo = new VersionControlDocumentInfo (this, item, item.Repository);
+
+			var viewContainer = new DocumentViewContainer ();
+			diffView = await TryAttachView (viewContainer, vcInfo, DiffCommand.DiffViewHandlers, GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"));
+			blameView = await TryAttachView (viewContainer, vcInfo, BlameCommand.BlameViewHandlers, GettextCatalog.GetString ("Authors"), GettextCatalog.GetString ("Shows the authors of the current file"));
+			logView = await TryAttachView (viewContainer, vcInfo, LogCommand.LogViewHandlers, GettextCatalog.GetString ("Log"), GettextCatalog.GetString ("Shows the source control log for the current file"));
+			mergeView = await TryAttachView (viewContainer, vcInfo, MergeCommand.MergeViewHandlers, GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"));
+			return viewContainer;
+		}
+
+
+		async Task<DocumentView> TryAttachView (DocumentViewContainer viewContainer, VersionControlDocumentInfo info, string type, string title, string description)
+		{
+			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler> (type)
+				.FirstOrDefault (h => h.CanHandle (info.Item, info.Document));
+			if (handler != null) {
+				var controller = handler.CreateView (info);
+				var item = await controller.GetDocumentViewItem ();
+				item.Title = title;
+				item.AccessibilityDescription = description;
+				viewContainer.Views.Add (item);
+				return item;
+			}
+			return null;
+		}
+
+		internal void ShowDiffView (Revision originalRevision = null, Revision diffRevision = null, int line = -1)
+		{
+			if (originalRevision != null && diffRevision != null && diffView?.SourceController is DiffView content) {
+				content.ComparisonWidget.info.RunAfterUpdate (delegate {
+					content.ComparisonWidget.SetRevision (content.ComparisonWidget.DiffEditor, diffRevision);
+					content.ComparisonWidget.SetRevision (content.ComparisonWidget.OriginalEditor, originalRevision);
+					if (line != -1) {
+						content.ComparisonWidget.DiffEditor.Caret.Location = new Ide.Editor.DocumentLocation (line, 1);
+						content.ComparisonWidget.DiffEditor.CenterToCaret ();
+					}
+				});
+			}
+			diffView?.SetActive ();
+		}
+
+		internal void ShowBlameView ()
+		{
+			blameView?.SetActive ();
+		}
+
+		internal void ShowLogView (Revision revision = null)
+		{
+			if (revision != null && diffView?.SourceController is LogView content)
+				content.LogWidget.SelectedRevision = revision;
+
+			logView?.SetActive ();
+		}
+
+		internal void ShowMergeView ()
+		{
+			mergeView?.SetActive ();
 		}
 	}
 }
