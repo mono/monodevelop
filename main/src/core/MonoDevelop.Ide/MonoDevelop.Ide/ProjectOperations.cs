@@ -1,4 +1,4 @@
-//
+﻿//
 // ProjectOperations.cs
 //
 // Author:
@@ -379,17 +379,18 @@ namespace MonoDevelop.Ide
 		
 		public async void Export (IMSBuildFileObject item, MSBuildFileFormat format)
 		{
-			ExportSolutionDialog dlg = new ExportSolutionDialog (item, format);
-			
+			ExportSolutionDialog dlg = null;
 			try {
+				dlg = new ExportSolutionDialog (item, format);
+
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true)) {
 						await Services.ProjectService.Export (monitor, item.FileName, dlg.TargetFolder, dlg.Format);
 					}
 				}
 			} finally {
-				dlg.Destroy ();
-				dlg.Dispose ();
+				dlg?.Destroy ();
+				dlg?.Dispose ();
 			}
 		}
 		
