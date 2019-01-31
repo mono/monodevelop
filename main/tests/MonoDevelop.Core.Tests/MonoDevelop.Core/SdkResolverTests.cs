@@ -46,9 +46,12 @@ namespace MonoDevelop.Core
 		public void UnknownSdk_DotNetMSBuildSdkResolverDoesNotFatalReportError ()
 		{
 			var resolution = SdkResolution.GetResolver (Runtime.SystemAssemblyService.CurrentRuntime);
-			// Using a sdk with a version to avoid an ArgumentNullException from the NuGet sdk resolver since
-			// we are not specifying any project or solution paths.
-			var sdkReference = new SdkReference ("MonoDevelop.Unknown.Test.Sdk", "1.2", null);
+			// Using a sdk with an invalid version to prevent the NuGet sdk resolver causing a test crash.
+			// Invalid version numbers cause the NuGet sdk resolver to not try to resolve the sdk. The crash
+			// only seems to happen with this test - using the IDE does not trigger the crash. There is a
+			// separate NuGet sdk resolver test that runs the resolver. Crash error:
+			// NuGet.Configuration.NuGetPathContext doesn't implement interface NuGet.Common.INuGetPathContext
+			var sdkReference = new SdkReference ("MonoDevelop.Unknown.Test.Sdk", "InvalidVersion", null);
 			var logger = new TestLoggingService ();
 			var context = new MSBuildContext ();
 			var result = resolution.GetSdkPath (sdkReference, logger, context, null, null);
