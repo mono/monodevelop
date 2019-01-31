@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Composition
 						try {
 							await WriteMefCache (runtimeComposition, catalog, cacheManager);
 						} catch (Exception ex) {
-							LoggingService.LogError ("Failed to write MEF cache", ex);
+							LoggingService.LogInternalError ("Failed to write MEF cache", ex);
 						}
 					});
 					await saveTask;
