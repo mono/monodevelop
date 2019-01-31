@@ -909,6 +909,8 @@ namespace MonoDevelop.Core
 		static void RaiseSync (FileService.EventDataKind kind, FileEventArgs args)
 		{
 			var handler = FileService.GetHandler (kind);
+			if (handler == null)
+				return;
 
 			// Ugly, but it saves us the problem of having to deal with generic event handlers without covariance.
 			if (args is FileCopyEventArgs copyArgs) {
