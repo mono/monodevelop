@@ -27,18 +27,21 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide.Tasks;
 using Xwt;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	class NewFolderDialog : Dialog
+	class NewFolderDialog : Xwt.Dialog
 	{
 		readonly FilePath parentFolder;
 		TextEntry folderNameTextEntry;
 		DialogButton addButton;
+		InformationPopoverWidget warningPopover;
 
 		public NewFolderDialog (FilePath parentFolder)
 		{
@@ -58,6 +61,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Padding = 0;
 			Resizable = false;
+			Width = 320;
 			Title = GettextCatalog.GetString ("New Folder");
 
 			var mainVBox = new VBox ();
@@ -69,12 +73,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			folderNameHBox.PackStart (folderNameLabel);
 
 			folderNameTextEntry = new TextEntry ();
-			folderNameTextEntry.MinWidth = 200;
 			folderNameHBox.PackStart (folderNameTextEntry, true, true);
 			folderNameTextEntry.SetCommonAccessibilityAttributes (
 				"NewFolderDialog.FolderNameTextEntry",
 				folderNameLabel.Text,
 				GettextCatalog.GetString ("Enter the name for the new folder"));
+
+			warningPopover = new InformationPopoverWidget ();
+			warningPopover.Visible = false;
+			folderNameHBox.PackStart (warningPopover);
 
 			mainVBox.PackStart (folderNameHBox);
 
@@ -129,7 +136,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void FolderNameTextEntryChanged (object sender, EventArgs e)
 		{
-			addButton.Sensitive = folderNameTextEntry.Text.Length > 0;
+			FilePath directoryPath = GetNewFolderPath ();
+
+			if (folderNameTextEntry.Text.Length == 0) {
+				addButton.Sensitive = false;
+				HidePopoverMessage ();
+			} else if (!IsValidFolderName (directoryPath, folderNameTextEntry.Text)) {
+				ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
+				addButton.Sensitive = false;
+			} else if (Directory.Exists (directoryPath)) {
+				ShowWarning (GettextCatalog.GetString ("Folder name is already in use. Please choose a different name."));
+				addButton.Sensitive = false;
+			} else {
+				addButton.Sensitive = true;
+				HidePopoverMessage ();
+			}
 		}
 
 		void AddButtonClicked (object sender, EventArgs e)
@@ -140,13 +161,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					Close ();
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError (
-					TransientFor,
-					GettextCatalog.GetString ("An error occurred creating the new folder"),
-					null,
-					ex,
-					logError: true);
-				Present ();
+				LoggingService.LogError ("Could not create folder", ex);
+				ShowError (GettextCatalog.GetString ("An error occurred creating the folder. {0}", ex.Message));
 			}
 		}
 
@@ -159,28 +175,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			FilePath directoryPath = GetNewFolderPath ();
 
-			if (!IsValidFolderName (directoryPath, folderNameTextEntry.Text)) {
-				ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				return false;
-			}
-
-			if (Directory.Exists (directoryPath)) {
-				ShowWarning (GettextCatalog.GetString ("Folder name is already in use. Please choose a different name."));
-				return false;
-			}
-
 			Directory.CreateDirectory (directoryPath);
 			NewFolderCreated = directoryPath;
 
 			return true;
-		}
-
-		void ShowWarning (string message)
-		{
-			MessageService.ShowWarning (TransientFor, message);
-
-			// Give focus back to dialog.
-			Present ();
 		}
 
 		bool IsValidFolderName (FilePath folderPath, string folderName)
@@ -196,6 +194,28 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			}
 			base.OnCommandActivated (cmd);
+		}
+
+		void ShowWarning (string message)
+		{
+			ShowPopoverMessage (message, TaskSeverity.Warning);
+		}
+
+		void ShowError (string message)
+		{
+			ShowPopoverMessage (message, TaskSeverity.Error);
+		}
+
+		void ShowPopoverMessage (string message, TaskSeverity severity)
+		{
+			warningPopover.Message = message;
+			warningPopover.Severity = severity;
+			warningPopover.Show ();
+		}
+
+		void HidePopoverMessage ()
+		{
+			warningPopover.Hide ();
 		}
 	}
 }
