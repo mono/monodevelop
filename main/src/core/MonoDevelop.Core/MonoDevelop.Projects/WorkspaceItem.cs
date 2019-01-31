@@ -458,7 +458,7 @@ namespace MonoDevelop.Projects
 
 		public FilePath GetPreferencesDirectory ()
 		{
-			return FileName.ParentDirectory.Combine (".vs", Name, "xs");
+			return FileName.ParentDirectory.Combine (".vs", Name ?? string.Empty, "xs");
 		}
 
 		internal string GetPreferencesFileName ()
