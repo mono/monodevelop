@@ -727,7 +727,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CheckRenamedFile(object sender, FileCopyEventArgs args)
 		{
-			foreach (FileCopyEventInfo e in args) {
+			foreach (FileEventInfo e in args) {
 				if (e.IsDirectory) {
 					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {

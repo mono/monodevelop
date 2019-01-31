@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnSystemFileRenamed (object sender, FileCopyEventArgs args)
 		{
-			foreach (FileCopyEventInfo e in args) {
+			foreach (FileEventInfo e in args) {
 				Project project = GetProjectForFile (e.SourceFile);
 				if (project == null) return;
 				

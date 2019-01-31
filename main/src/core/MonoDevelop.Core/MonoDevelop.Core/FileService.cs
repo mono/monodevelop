@@ -773,7 +773,7 @@ namespace MonoDevelop.Core
 		{
 			AsyncEvents.OnFileRenamed (args);
 
-			foreach (FileCopyEventInfo fi in args) {
+			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
 					Counters.DirectoriesRenamed++;
 				else
