@@ -189,12 +189,12 @@ namespace MonoDevelop.DesignerSupport
 							if (customizer != null)
 								customizer.Customize (propertyPad.PadWindow, null);
 						} else {
-							ReSetPad ();
+							propertyPad?.BlankPad ();
 							return;
 						}
 					} catch (Exception ex) {
 						LoggingService.LogError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
-						ReSetPad ();
+						propertyPad?.BlankPad ();
 						return;
 					}
 				}
