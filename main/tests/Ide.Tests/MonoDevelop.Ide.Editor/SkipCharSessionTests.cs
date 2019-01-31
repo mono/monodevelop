@@ -24,6 +24,7 @@ using Mono.TextEditor;
 using Gdk;
 using System.Reflection;
 using MonoDevelop.SourceEditor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -31,18 +32,14 @@ namespace MonoDevelop.Ide.Editor
 	public class SkipCharSessionTests : IdeTestBase
 	{
 		[TestCase]
-		public void TestBug58764 ()
+		public async Task TestBug58764 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
-			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			tww.ViewContent = content;
 
-			var document = new Document (tww);
-
-			using (var testCase = new TextEditorExtensionTestCase (document, content, tww, null, false)) {
-
-				var editor = TextEditorFactory.CreateNewEditor (document);
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var document = testCase.Document;
+				var editor = TextEditorFactory.CreateNewEditor (document.DocumentContext);
 				editor.MimeType = "text/xml";
 				const string originalText = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -68,18 +65,15 @@ namespace MonoDevelop.Ide.Editor
 		/// Bug 615849: Automatic matching brace completion deletes `{` when `}` is deleted
 		/// </summary>
 		[TestCase]
-		public void TestVSTS615849 ()
+		public async Task TestVSTS615849 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 
-			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			tww.ViewContent = content;
 
-			var document = new Document (tww);
-
-			using (var testCase = new TextEditorExtensionTestCase (document, content, tww, null, false)) {
-				var editor = TextEditorFactory.CreateNewEditor (document);
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var document = testCase.Document;
+				var editor = TextEditorFactory.CreateNewEditor (document.DocumentContext);
 				editor.MimeType = "text/xml";
 				const string originalText = @"";
 				editor.Text = originalText;

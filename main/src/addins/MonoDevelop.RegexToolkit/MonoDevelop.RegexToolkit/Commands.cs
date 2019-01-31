@@ -34,6 +34,8 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -42,74 +44,66 @@ namespace MonoDevelop.RegexToolkit
 		ShowRegexToolkit
 	}
 	
-	class ViewOnlyContent : ViewContent
+	class RegexToolkitController : DocumentController
 	{
-		Widget widget;
+		RegexToolkitWidget regexToolkit;
 
-		public override Control Control {
+		public RegexToolkitWidget RegexToolkit {
 			get {
-				return widget;
+				if (regexToolkit == null)
+					regexToolkit = new RegexToolkitWidget ();
+				return regexToolkit;
 			}
 		}
-		
-		public ViewOnlyContent (Widget widget, string contentName)
+
+		public RegexToolkitController ()
 		{
-			this.widget = widget;
-			this.ContentName = contentName;
+			DocumentTitle = GettextCatalog.GetString ("Regex Toolkit");
 		}
 
-		public override bool IsViewOnly {
-			get {
-				return true;
-			}
-		}
-	}
-	
-	class DefaultAttachableViewContent : BaseViewContent
-	{
-		Widget widget;
-
-		public override Control Control {
-			get {
-				return widget;
-			}
-		}
-		string tabPageLabel;
-		public override string TabPageLabel {
-			get {
-				return tabPageLabel;
-			}
-		}
-		
-		public DefaultAttachableViewContent (Widget widget, string contentName)
+		protected override Task<DocumentView> OnInitializeView ()
 		{
-			this.widget = widget;
-			this.tabPageLabel = contentName;
+			var container = new DocumentViewContainer ();
+			container.SupportedModes = DocumentViewContainerMode.Tabs;
+
+			var regexView = new DocumentViewContent (() => RegexToolkit);
+			regexView.Title = GettextCatalog.GetString ("Regex Toolkit");
+
+			var elementHelpView = new DocumentViewContent (() => new ElementHelpWidget (regexView, RegexToolkit));
+			elementHelpView.Title = GettextCatalog.GetString ("Elements");
+
+			container.Views.Add (regexView);
+			container.Views.Add (elementHelpView);
+			return Task.FromResult<DocumentView> (container);
 		}
+
+		protected override bool ControllerIsViewOnly => true;
 	}
 	
 	class ShowRegexToolkitHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			RunRegexWindow ();
+			OpenToolkit ();
 		}
 
-		public static RegexToolkitWidget RunRegexWindow ()
+		public static async Task<RegexToolkitWidget> RunRegexWindow ()
+		{
+			var document = await OpenToolkit ();
+			var controller = document.GetContent<RegexToolkitController> ();
+			return controller.RegexToolkit;
+		}
+
+		public static async Task<Document> OpenToolkit ()
 		{
 			foreach (var document in IdeApp.Workbench.Documents) {
-				if (document.Window.ViewContent.Control.GetNativeWidget<Gtk.Widget> () is RegexToolkitWidget) {
-					document.Window.SelectWindow ();
-					return (RegexToolkitWidget)document.Window.ViewContent.Control;
+				var controller = document.GetContent<RegexToolkitController> ();
+				if (controller != null) {
+					document.Select ();
+					return document;
 				}
 			}
-			var regexToolkit = new RegexToolkitWidget ();
-			var newDocument = IdeApp.Workbench.OpenDocument (new ViewOnlyContent (regexToolkit, GettextCatalog.GetString ("Regex Toolkit")), true);
-
-			var elementHelp = new ElementHelpWidget (newDocument.Window, regexToolkit);
-
-			newDocument.Window.AttachViewContent (new DefaultAttachableViewContent (elementHelp, GettextCatalog.GetString ("Elements")));
-			return regexToolkit;
+			return await IdeApp.Workbench.OpenDocument (new RegexToolkitController (), true);
 		}
 	}
 	

@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			var pref = IdeApp.Preferences.Roslyn;
 			var perLanguagePref = pref.For (language);
 
-			using (var mdw = new MonoDevelopWorkspace (null)) {
+			using (var mdw = IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var key = new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language);
 
 				var old = mdw.Options.GetOption (key);

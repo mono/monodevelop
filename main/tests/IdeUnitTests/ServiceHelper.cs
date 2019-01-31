@@ -24,12 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Shell;
+
 namespace IdeUnitTests
 {
 	public class ServiceHelper
 	{
-		public ServiceHelper ()
+		public static BasicServiceProvider SetupMockShell ()
 		{
+			var serviceProvider = new BasicServiceProvider ();
+
+			serviceProvider.RegisterServiceType<IShell, MockShell> ();
+			serviceProvider.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager>();
+
+			return serviceProvider;
 		}
 	}
 }

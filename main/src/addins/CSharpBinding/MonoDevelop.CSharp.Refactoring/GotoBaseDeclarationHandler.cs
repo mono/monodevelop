@@ -93,25 +93,25 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			switch (symbol.Kind) {
 			case SymbolKind.NamedType:
-				return RefactoringService.RoslynJumpToDeclaration (((ITypeSymbol)symbol).BaseType, doc.Project);
+				return RefactoringService.RoslynJumpToDeclaration (((ITypeSymbol)symbol).BaseType, doc.Owner);
 			case SymbolKind.Property:
 				var property = (IPropertySymbol)symbol;
 				if (property.OverriddenProperty != null)
-					return RefactoringService.RoslynJumpToDeclaration (property.OverriddenProperty, doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (property.OverriddenProperty, doc.Owner);
 				else
-					return RefactoringService.RoslynJumpToDeclaration (property.ExplicitInterfaceImplementations.First (), doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (property.ExplicitInterfaceImplementations.First (), doc.Owner);
 			case SymbolKind.Event:
 				var evt = (IEventSymbol)symbol;
 				if (evt.OverriddenEvent != null)
-					return RefactoringService.RoslynJumpToDeclaration (evt.OverriddenEvent, doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (evt.OverriddenEvent, doc.Owner);
 				else
-					return RefactoringService.RoslynJumpToDeclaration (evt.ExplicitInterfaceImplementations.First (), doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (evt.ExplicitInterfaceImplementations.First (), doc.Owner);
 			case SymbolKind.Method:
 				var method = (IMethodSymbol)symbol;
 				if (method.OverriddenMethod != null)
-					return RefactoringService.RoslynJumpToDeclaration (method.OverriddenMethod, doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (method.OverriddenMethod, doc.Owner);
 				else
-					return RefactoringService.RoslynJumpToDeclaration (method.ExplicitInterfaceImplementations.First (), doc.Project);
+					return RefactoringService.RoslynJumpToDeclaration (method.ExplicitInterfaceImplementations.First (), doc.Owner);
 			default:
 				// CanGotoBase should prevent this from happening.
 				throw new ArgumentException (string.Format ("Invalid symbol.Kind {0}", symbol.Kind));

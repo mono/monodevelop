@@ -1,4 +1,4 @@
-//
+﻿//
 // GuiBuilderDisplayBinding.cs
 //
 // Author:
@@ -35,11 +35,14 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 using ICSharpCode.NRefactory6.CSharp;
-
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderDisplayBinding : IViewDisplayBinding
+	[ExportDocumentControllerFactory (FileExtension = ".cs")]
+	public class GuiBuilderDisplayBinding : FileDocumentControllerFactory
 	{
 		bool excludeThis = false;
 		
@@ -50,34 +53,42 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public bool CanUseAsDefault {
 			get { return true; }
 		}
-		
-		public bool CanHandle (MonoDevelop.Core.FilePath fileName, string mimeType, Project ownerProject)
+
+		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
 		{
 			if (excludeThis)
-				return false;
-			
-			if (fileName.IsNullOrEmpty)
-				return false;
-			
-			if (GetWindow (fileName, ownerProject) == null)
-				return false;
-			
+				yield break;
+
+			if (file.FilePath.IsNullOrEmpty || !(file.Owner is DotNetProject))
+				yield break;
+
+			if (!IdeApp.Workspace.IsOpen)
+				yield break;
+
+			if (GetWindow (file.FilePath, (DotNetProject)file.Owner) == null)
+				yield break;
+
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
+			var db = IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			excludeThis = false;
-			return db != null;
+			if (db != null) {
+				yield return new DocumentControllerDescription {
+					CanUseAsDefault = true,
+					Role = DocumentControllerRole.VisualDesign,
+					Name = MonoDevelop.Core.GettextCatalog.GetString ("Window Designer")
+				};
+			}
 		}
-		
-		public ViewContent CreateContent (MonoDevelop.Core.FilePath fileName, string mimeType, Project ownerProject)
+
+		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
-			var content = db.CreateContent (fileName, mimeType, ownerProject);
-			content.Binding = db;
-			var window = GetWindow (fileName, ownerProject);
+			var db = IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
+			var content = await db.CreateController (file);
+			var window = GetWindow (file.FilePath, (Project)file.Owner);
 			if (window == null)
 				throw new InvalidOperationException ("GetWindow == null");
-			GuiBuilderView view = new GuiBuilderView (content, window);
+			var view = new GuiBuilderView (content, window);
 			excludeThis = false;
 			return view;
 		}
@@ -91,10 +102,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
-			var docId = TypeSystemService.GetDocumentId (project, file);
+			var docId = IdeApp.TypeSystemService.GetDocumentId (project, file);
 			if (docId == null)
 				return null;
-			var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
+			var doc = IdeApp.TypeSystemService.GetCodeAnalysisDocument (docId);
 			if (doc == null)
 				return null;
 			Microsoft.CodeAnalysis.SemanticModel semanticModel;

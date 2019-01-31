@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger
 		static DebuggingService ()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
-			TextEditorService.LineCountChanged += OnLineCountChanged;
+			IdeApp.Services.TextEditorService.LineCountChanged += OnLineCountChanged;
 			IdeApp.Initialized += delegate {
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;

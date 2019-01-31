@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void TestSimpleCreation ()
 		{
 			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
 				var pid = map.GetId (project);
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void TestDataHandling ()
 		{
 			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
 				var pid = map.GetOrCreateId (project, null);
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			using (var project = Services.ProjectService.CreateDotNetProject ("C#"))
 			using (var project2 = Services.ProjectService.CreateDotNetProject ("C#"))
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var map = new MonoDevelopWorkspace.ProjectDataMap (workspace);
 
 				var pid = map.GetOrCreateId (project, null);

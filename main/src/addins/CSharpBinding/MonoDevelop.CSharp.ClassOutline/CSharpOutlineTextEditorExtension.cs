@@ -1,4 +1,4 @@
-//
+﻿//
 // ClassOutlineTextEditorExtension.cs
 //
 // Author:
@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
 			
 			settings = OutlineSettings.Load ();
-			comparer = new OutlineNodeComparer (new AstAmbience (TypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
+			comparer = new OutlineNodeComparer (new AstAmbience (IdeApp.TypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				using (var dialog = new OutlineSortingPreferencesDialog (settings)) {
 					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
 						dialog.SaveSettings ();
-						comparer = new OutlineNodeComparer (new AstAmbience (TypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
+						comparer = new OutlineNodeComparer (new AstAmbience (IdeApp.TypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
 				}
@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 
 		static void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var astAmbience = new AstAmbience (TypeSystemService.Workspace.Options);
+			var astAmbience = new AstAmbience (IdeApp.TypeSystemService.Workspace.Options);
 			var txtRenderer = (CellRendererText)cell;
 			object o = model.GetValue (iter, 0);
 			var syntaxNode = o as SyntaxNode;

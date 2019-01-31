@@ -33,6 +33,7 @@ using MonoDevelop.UnitTesting;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using System.Linq;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.UnitTesting.VsTest
 {
@@ -64,7 +65,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 			if (!string.IsNullOrEmpty (test.CodeFilePath))
 				sourceCodeLocation = new SourceCodeLocation (test.CodeFilePath, test.LineNumber, 0);
 			else {
-				TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
+				IdeApp.TypeSystemService.GetCompilationAsync (Project).ContinueWith ((t) => {
 					var dotIndex = test.FullyQualifiedName.LastIndexOf (".", StringComparison.Ordinal);
 					var className = test.FullyQualifiedName.Remove (dotIndex);
 					var methodName = test.FullyQualifiedName.Substring (dotIndex + 1);

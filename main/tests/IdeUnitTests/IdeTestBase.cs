@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using UnitTests;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -35,7 +37,6 @@ namespace MonoDevelop.Ide
 
 			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
 			Gtk.Application.Init();
-			DesktopService.Initialize();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// HighlightingPanel.cs
+﻿// HighlightingPanel.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -248,7 +248,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		internal static void UpdateActiveDocument ()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
+				IdeApp.Workbench.ActiveDocument.DocumentContext.UpdateParseDocument ();
 //				var editor = IdeApp.Workbench.ActiveDocument.Editor;
 //				if (editor != null) {
 //					editor.Parent.TextViewMargin.PurgeLayoutCache ();
@@ -285,7 +285,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void ButtonOpenFolder_Clicked (object sender, EventArgs e)
 		{
-			DesktopService.OpenFolder (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
+			IdeApp.DesktopService.OpenFolder (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
 		}
 	}
 }

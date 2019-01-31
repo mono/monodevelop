@@ -1,4 +1,4 @@
-//
+﻿//
 // PublishProfileTests.cs
 //
 // Author:
@@ -45,7 +45,6 @@ namespace MonoDevelop.AspNetCore.Tests
 		[SetUp]
 		public void SetUp ()
 		{
-			DesktopService.Initialize ();
 			if (!IdeApp.IsInitialized)
 				IdeApp.Initialize (new ProgressMonitor ());
 		}

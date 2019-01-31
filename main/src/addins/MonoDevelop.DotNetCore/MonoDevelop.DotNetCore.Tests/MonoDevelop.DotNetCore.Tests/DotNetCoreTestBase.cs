@@ -37,7 +37,6 @@ namespace MonoDevelop.DotNetCore.Tests
 		{
 			base.InternalSetup (rootDir);
 			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			DesktopService.Initialize ();
 		}
 
 		/// <summary>

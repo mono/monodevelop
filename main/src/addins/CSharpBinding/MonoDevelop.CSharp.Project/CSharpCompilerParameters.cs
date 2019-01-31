@@ -1,4 +1,4 @@
-//
+﻿//
 // CSharpCompilerParameters.cs
 //
 // Author:
@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp.Project
@@ -127,7 +128,7 @@ namespace MonoDevelop.CSharp.Project
 		public override CompilationOptions CreateCompilationOptions ()
 		{
 			var project = (CSharpProject)ParentProject;
-			var workspace = Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
+			var workspace = IdeApp.TypeSystemService.GetWorkspace (project.ParentSolution);
 			var metadataReferenceResolver = CreateMetadataReferenceResolver (
 					workspace.Services.GetService<IMetadataService> (),
 					project.BaseDirectory,
@@ -162,7 +163,7 @@ namespace MonoDevelop.CSharp.Project
 			foreach (var warning in GetSuppressedWarnings ())
 				result [warning] = ReportDiagnostic.Suppress;
 
-			var globalRuleSet = Ide.TypeSystem.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
+			var globalRuleSet = IdeApp.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
 			if (globalRuleSet != null) {
 				foreach (var kv in globalRuleSet.SpecificDiagnosticOptions) {
 					result [kv.Key] = kv.Value;

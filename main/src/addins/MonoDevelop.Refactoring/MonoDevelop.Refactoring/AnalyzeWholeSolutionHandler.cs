@@ -115,7 +115,7 @@ namespace MonoDevelop.Refactoring
 
 		internal static async void Execute ()
 		{
-			var workspace = TypeSystemService.Workspace;
+			var workspace = IdeApp.TypeSystemService.Workspace;
 			try {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false, true, false, null, true)) {
 					CancellationToken token = monitor.CancellationToken;
@@ -207,7 +207,7 @@ namespace MonoDevelop.Refactoring
 
 			public override Projects.Project Project {
 				get {
-					return TypeSystemService.GetMonoProject (project);
+					return IdeApp.TypeSystemService.GetMonoProject (project);
 				}
 			}
 

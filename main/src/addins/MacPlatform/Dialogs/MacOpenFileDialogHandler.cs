@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -108,7 +108,7 @@ namespace MonoDevelop.MacIntegration
 					};
 
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
-						DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+						IdeApp.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 						return false;
 					}
 					if (!pathAlreadySet)
@@ -124,7 +124,7 @@ namespace MonoDevelop.MacIntegration
 							state.CurrentViewers [(int)state.ViewerSelector.IndexOfSelectedItem] : null;
 					}
 
-					DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					IdeApp.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error in Open File dialog", ex);
@@ -220,7 +220,7 @@ namespace MonoDevelop.MacIntegration
 				i++;
 			}
 			
-			foreach (var vw in DisplayBindingService.GetFileViewers (filename, null)) {
+			foreach (var vw in IdeApp.Services.DisplayBindingService.GetFileViewers (filename, null)) {
 				if (!vw.IsExternal) {
 					button.Menu.AddItem (new NSMenuItem { Title = vw.Title });
 					currentViewers.Add (vw);

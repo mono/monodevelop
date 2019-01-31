@@ -21,12 +21,17 @@
     <Compile Include="IdeTestBase.cs" />
     <Compile Include="TextEditorExtensionTestBase.cs" />
     <Compile Include="TypeSystemServiceTestExtensions.cs" />
-    <Compile Include="TestDocument.cs" />
     <Compile Include="TestViewContent.cs" />
-    <Compile Include="TestWorkbenchWindow.cs" />
     <Compile Include="RoslynTestBase.cs" />
     <Compile Include="CompositionManagerTestHelpers.cs" />
     <Compile Include="ProjectTemplateTest.cs" />
+    <Compile Include="ServiceHelper.cs" />
+    <Compile Include="MockShell.cs" />
+    <Compile Include="MockShellWindow.cs" />
+    <Compile Include="MockProgressMonitorManager.cs" />
+    <Compile Include="MockOutputProgressMonitor.cs" />
+    <Compile Include="MockOperationConsole.cs" />
+    <Compile Include="MockShellNotebook.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

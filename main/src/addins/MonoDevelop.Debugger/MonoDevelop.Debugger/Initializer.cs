@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		void OnFrameChanged (object s, EventArgs a)
+		async void OnFrameChanged (object s, EventArgs a)
 		{
 			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
@@ -104,7 +104,7 @@ namespace MonoDevelop.Debugger
 				if (noSourceDoc == null) {
 					noSourceView = new NoSourceView ();
 					noSourceView.Update (disassemblyNotSupported);
-					noSourceDoc = IdeApp.Workbench.OpenDocument (noSourceView, true);
+					noSourceDoc = await IdeApp.Workbench.OpenDocument (noSourceView, true);
 					noSourceDoc.Closed += delegate {
 						noSourceDoc = null;
 						noSourceView = null;
@@ -118,11 +118,11 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		void OnShowDisassembly (object s, EventArgs a)
+		async void OnShowDisassembly (object s, EventArgs a)
 		{
 			if (disassemblyDoc == null) {
 				disassemblyView = new DisassemblyView ();
-				disassemblyDoc = IdeApp.Workbench.OpenDocument (disassemblyView, true);
+				disassemblyDoc = await IdeApp.Workbench.OpenDocument (disassemblyView, true);
 				disassemblyDoc.Closed += delegate {
 					disassemblyDoc = null;
 					disassemblyView = null;

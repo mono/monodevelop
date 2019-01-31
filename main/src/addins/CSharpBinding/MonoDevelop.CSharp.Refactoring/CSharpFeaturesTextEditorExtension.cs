@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RenameTextEditorExtension.cs
 //  
 // Author:
@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CSharpFeaturesTextEditorExtension ()
 		{
 			GoToDefinitionService.TryNavigateToSymbol = delegate (ISymbol symbol, Microsoft.CodeAnalysis.Project project, bool usePreviewTab) {
-				RefactoringService.RoslynJumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
+				RefactoringService.RoslynJumpToDeclaration (symbol, IdeApp.TypeSystemService.GetMonoProject (project));
 				return true;
 			};
 
@@ -59,11 +59,11 @@ namespace MonoDevelop.CSharp.Refactoring
 				var offset = textSpan.Start;
 				string projectedName;
 				int projectedOffset;
-				if (TypeSystemService.GetWorkspace (TypeSystemService.GetMonoProject(project).ParentSolution).TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+				if (IdeApp.TypeSystemService.GetWorkspace (IdeApp.TypeSystemService.GetMonoProject(project).ParentSolution).TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
 					fileName = projectedName;
 					offset = projectedOffset;
 				}
-				IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, TypeSystemService.GetMonoProject (project)) {
+				IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, IdeApp.TypeSystemService.GetMonoProject (project)) {
 					Offset = offset
 				});
 				return true;

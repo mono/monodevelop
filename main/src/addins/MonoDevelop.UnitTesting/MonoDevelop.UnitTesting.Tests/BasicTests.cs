@@ -38,7 +38,6 @@ namespace MonoDevelop.UnitTesting.Tests
 		[TestFixtureSetUp]
 		public void Start()
 		{
-			DesktopService.Initialize();
 			IdeApp.Initialize(new ProgressMonitor());
 			IdeApp.Workspace.ActiveConfigurationId = "Debug";
 		}

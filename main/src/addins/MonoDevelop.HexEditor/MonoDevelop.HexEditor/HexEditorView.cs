@@ -1,4 +1,4 @@
-// 
+﻿// 
 // HexEditorView.cs
 //  
 // Author:
@@ -34,22 +34,23 @@ using Xwt;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.HexEditor
 {
-	class HexEditorView : AbstractXwtViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
+	[ExportFileDocumentController (MimeType = "*", CanUseAsDefault = false, Name = "Hex Editor", Role = DocumentControllerRole.Tool)]
+	class HexEditorView : FileDocumentController, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
-		Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
-		ScrollView window ;
-		
-		public override Xwt.Widget Widget {
-			get {
-				return window;
-			}
-		}
-		
-		public HexEditorView ()
+		Mono.MHex.HexEditor hexEditor;
+		ScrollView window;
+
+		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
+			hexEditor = new Mono.MHex.HexEditor ();
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();
 			DefaultSourceEditorOptions.Instance.Changed += Instance_Changed;
@@ -57,13 +58,37 @@ namespace MonoDevelop.HexEditor
 				this.IsDirty = true;
 			};
 			window = new ScrollView (hexEditor);
+			await LoadContent ();
+
+			hexEditor.SetFocus ();
+
+			return new XwtControl (window);
 		}
 
-		public override void Dispose ()
+		public Task Load (FilePath filePath)
 		{
-			((MonoDevelopHexEditorStyle)hexEditor.HexEditorStyle).Dispose ();
-			DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
-			base.Dispose ();
+			return Initialize (new FileDescriptor (filePath, null, null));
+		}
+
+		async Task LoadContent ()
+		{
+			using (Stream stream = await FileModel.GetContent ()) {
+				hexEditor.HexEditorData.Buffer = await ArrayBuffer.LoadAsync (stream);
+			}
+		}
+
+		protected override void OnDispose ()
+		{
+			if (hexEditor != null) {
+				((MonoDevelopHexEditorStyle)hexEditor.HexEditorStyle).Dispose ();
+				DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
+			}
+			base.OnDispose ();
+		}
+
+		protected override void OnModelContentChanged ()
+		{
+			LoadContent ().Ignore ();
 		}
 
 		void Instance_Changed (object sender, EventArgs e)
@@ -73,32 +98,18 @@ namespace MonoDevelop.HexEditor
 
 		void SetOptions ()
 		{
-			var name = FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+			var name = IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
 			hexEditor.Options.FontName = name;
 			hexEditor.PurgeLayoutCaches ();
 			hexEditor.Repaint ();
 		}
 		
-		public override Task Save (FileSaveInformation fileSaveInformation)
+		protected override Task OnSave ()
 		{
-			File.WriteAllBytes (fileSaveInformation.FileName, hexEditor.HexEditorData.Bytes);
-			ContentName = fileSaveInformation.FileName;
+			File.WriteAllBytes (FilePath, hexEditor.HexEditorData.Bytes);
 			this.IsDirty = false;
 			return Task.FromResult (true);
 		}
-		
-		public override async Task Load (FileOpenInformation fileOpenInformation)
-		{
-			var fileName = fileOpenInformation.FileName;
-			using (Stream stream = File.OpenRead (fileName)) { 
-				hexEditor.HexEditorData.Buffer = await ArrayBuffer.LoadAsync (stream);
-			}
-			
-			ContentName = fileName;
-			this.IsDirty = false;
-			hexEditor.SetFocus ();
-		}
-
 		
 		#region IUndoHandler implementation
 		void IUndoHandler.Undo ()

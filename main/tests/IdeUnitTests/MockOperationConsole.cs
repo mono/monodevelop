@@ -24,12 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
+using MonoDevelop.Core.Execution;
+
 namespace IdeUnitTests
 {
-	public class MockOperationConsole
+	public class MockOperationConsole: OperationConsole
 	{
-		public MockOperationConsole ()
-		{
-		}
+		public TextReader InReader { get; set; } = new StringReader ("");
+		public StringWriter OutWriter { get; set; } = new StringWriter ();
+		public StringWriter ErrorWriter { get; set; } = new StringWriter ();
+		public StringWriter LogWriter { get; set; } = new StringWriter ();
+
+		public override TextReader In => InReader;
+
+		public override TextWriter Out => OutWriter;
+
+		public override TextWriter Error => ErrorWriter;
+
+		public override TextWriter Log => LogWriter;
 	}
 }

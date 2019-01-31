@@ -24,12 +24,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using Mono.Addins;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
+
 namespace IdeUnitTests
 {
-	public class MockShellWindow
+	public class MockShellWindow: IWorkbenchWindow
 	{
-		public MockShellWindow ()
+		EventHandler<NotebookChangeEventArgs> notebookChanged;
+
+		public MockShellWindow (MockShell shell, DocumentController controller, DocumentView view, MockShellNotebook notebook)
 		{
+			Shell = shell;
+			Controller = controller;
+			View = view;
+			Notebook = notebook;
+		}
+
+		public MockShell Shell { get; }
+		public DocumentController Controller { get; }
+		public DocumentView View { get; }
+		public MockShellNotebook Notebook { get; }
+
+		public event EventHandler CloseRequested;
+
+		event EventHandler<NotebookChangeEventArgs> IWorkbenchWindow.NotebookChanged {
+			add { notebookChanged += value; }
+			remove { notebookChanged -= value; }
+		}
+
+		public Document Document { get; set; }
+
+		public string Title => Controller.DocumentTitle;
+
+		public bool ShowNotification { get; set; }
+
+		IShellNotebook IWorkbenchWindow.Notebook => Notebook;
+
+		public void SimulateClose ()
+		{
+			CloseRequested?.Invoke (this, EventArgs.Empty);
+		}
+
+		public void SelectWindow ()
+		{
+			Shell.ActiveWorkbenchWindow = this;
 		}
 	}
 }

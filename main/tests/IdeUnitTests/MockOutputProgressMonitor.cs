@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Execution;
+
 namespace IdeUnitTests
 {
-	public class MockOutputProgressMonitor
+	public class MockOutputProgressMonitor: OutputProgressMonitor
 	{
-		public MockOutputProgressMonitor ()
-		{
-		}
+		public OperationConsole MockOperationConsole { get; set; } = new MockOperationConsole ();
+
+		public override OperationConsole Console => MockOperationConsole;
 	}
 }

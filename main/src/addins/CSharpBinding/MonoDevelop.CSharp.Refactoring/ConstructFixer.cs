@@ -194,7 +194,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			int newOffset = offset;
 
-			var syntaxTree = await document.AnalysisDocument.GetSyntaxRootAsync (token);
+			var syntaxTree = await document.DocumentContext.AnalysisDocument.GetSyntaxRootAsync (token);
 
 			foreach (var c in completer) {
 				if (c.TryFix (this, syntaxTree, document, offset, ref newOffset)) {

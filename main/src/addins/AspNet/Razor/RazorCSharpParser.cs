@@ -443,16 +443,16 @@ namespace MonoDevelop.AspNet.Razor
 			context.CSharpCode = CreateCodeFile (context);
 			context.ParsedSyntaxTree = CSharpSyntaxTree.ParseText (Microsoft.CodeAnalysis.Text.SourceText.From (context.CSharpCode));
 
-			var originalProject = TypeSystemService.GetCodeAnalysisProject (context.Project);
+			var originalProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (context.Project);
 			if (originalProject != null) {
 				string fileName = context.FileName + ".g.cs";
-				var documentId = TypeSystemService.GetDocumentId (originalProject.Id, fileName);
+				var documentId = IdeApp.TypeSystemService.GetDocumentId (originalProject.Id, fileName);
 				if (documentId == null) {
 					context.AnalysisDocument = originalProject.AddDocument (
 						fileName,
 						context.ParsedSyntaxTree?.GetRoot ());
 				} else {
-					context.AnalysisDocument = TypeSystemService.GetCodeAnalysisDocument (documentId);
+					context.AnalysisDocument = IdeApp.TypeSystemService.GetCodeAnalysisDocument (documentId);
 				}
 			}
 		}

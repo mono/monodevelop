@@ -23,13 +23,93 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MonoDevelop.Components.DockNotebook;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
+
 namespace IdeUnitTests
 {
-	public class MockShell
+	public class MockShell: IShell
 	{
+		List<MockShellWindow> windows = new List<MockShellWindow> ();
+
+		MockShellWindow activeWindow;
+
+		EventHandler<WindowReorderedEventArgs> windowReordered;
+		EventHandler<NotebookEventArgs> notebookClosed;
+
 		public MockShell ()
 		{
+		}
+
+		public List<MockShellWindow> Windows {
+			get {
+				return windows;
+			}
+		}
+
+		event EventHandler<WindowReorderedEventArgs> IShell.WindowReordered {
+			add { windowReordered += value; }
+			remove { windowReordered -= value; }
+		}
+
+		event EventHandler<NotebookEventArgs> IShell.NotebookClosed {
+			add { notebookClosed += value; }
+			remove { notebookClosed -= value; }
+		}
+
+		public MockShellWindow ActiveWorkbenchWindow {
+			get {
+				return activeWindow;
+			} set {
+				activeWindow = value;
+				OnActiveWindowChanged ();
+			}
+		}
+
+		IWorkbenchWindow IShell.ActiveWorkbenchWindow => activeWindow;
+
+		public event EventHandler ActiveWorkbenchWindowChanged;
+		public event EventHandler PresentCalled;
+
+		void OnActiveWindowChanged ()
+		{
+			ActiveWorkbenchWindowChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		Task<IWorkbenchWindow> IShell.ShowView (DocumentContent content, IShellNotebook notebook, object viewCommandHandler)
+		{
+			var view = new MockShellWindow (this, content.DocumentController, content.DocumentView, (MockShellNotebook) notebook);
+			windows.Add (view);
+			return Task.FromResult<IWorkbenchWindow> (view);
+		}
+
+		void IShell.CloseView (IWorkbenchWindow window, bool animate)
+		{
+			int i = windows.IndexOf (window);
+			if (i != -1) {
+				windows.RemoveAt (i);
+				if (activeWindow == window) {
+					if (windows.Count == 0) {
+						activeWindow = null;
+					} else {
+						if (i >= windows.Count)
+							i--;
+						activeWindow = (MockShellWindow) windows [i];
+					}
+					OnActiveWindowChanged ();
+				}
+			}
+		}
+
+		public void Present ()
+		{
+			PresentCalled?.Invoke (this, EventArgs.Empty);
 		}
 	}
 }

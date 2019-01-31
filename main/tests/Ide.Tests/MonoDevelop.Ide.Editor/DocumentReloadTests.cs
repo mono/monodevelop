@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using NUnit.Framework;
 
 namespace MonoDevelop.Ide.Editor
@@ -45,14 +46,11 @@ namespace MonoDevelop.Ide.Editor
 			FilePath fileName = directory.Combine ("test.cs");
 			File.WriteAllText (fileName, "class Test {}");
 
-			var window = new TestWorkbenchWindow ();
 			var content = new TestViewContentWithDocumentReloadPresenter ();
-			window.ViewContent = content;
-			var doc = new Document (window);
+			content.FilePath = fileName;
 
-			using (var testCase = new TextEditorExtensionTestCase (doc, content, window, null, false)) {
-				content.Document = doc;
-				await content.Load (fileName);
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var doc = testCase.Document;
 
 				bool reloadWarningDisplayed = false;
 				content.OnShowFileChangeWarning = multiple => {
@@ -64,7 +62,7 @@ namespace MonoDevelop.Ide.Editor
 				FileService.RenameFile (fileName, newFileName);
 				// Simulate DefaultWorkbench which updates the view content name when the FileService
 				// fires the rename event.
-				content.ContentName = newFileName;
+				content.FilePath = newFileName;
 				FileService.NotifyFileChanged (newFileName);
 
 				Assert.IsFalse (reloadWarningDisplayed);
@@ -86,13 +84,13 @@ namespace MonoDevelop.Ide.Editor
 				OnShowFileChangeWarning (multiple);
 			}
 
-			public override Task Load (FileOpenInformation fileOpenInformation)
+			protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 			{
-				var fileName = fileOpenInformation.FileName;
-				string text = text = TextFileUtility.ReadAllText (fileName, out Encoding encoding);
-				Document.Editor.Text = text;
-				ContentName = fileName;
-				return Task.FromResult (true);
+				var file = (FileDescriptor)modelDescriptor;
+				var fileName = file.FilePath;
+				var content = await TextFileUtility.ReadAllTextAsync (fileName);
+				Document.Editor.Text = (await TextFileUtility.ReadAllTextAsync (fileName)).Text;
+				DocumentTitle = fileName;
 			}
 		}
 	}

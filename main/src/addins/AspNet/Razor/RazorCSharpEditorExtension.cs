@@ -92,10 +92,10 @@ namespace MonoDevelop.AspNet.Razor
 		/// <summary>
 		/// Used by unit tests.
 		/// </summary>
-		internal RazorCSharpEditorExtension (MonoDevelop.Ide.Gui.Document doc, RazorCSharpParsedDocument parsedDoc, bool cSharpContext)
+		internal RazorCSharpEditorExtension (TextEditor editor, DocumentContext doc, RazorCSharpParsedDocument parsedDoc, bool cSharpContext)
 		{
 			razorDocument = parsedDoc;
-			Initialize (doc.Editor, doc);
+			Initialize (editor, doc);
 			if (cSharpContext) {
 				InitializeCodeCompletion ();
 				SwitchToHidden ();

@@ -1,4 +1,4 @@
-//
+﻿//
 // FindDerivedSymbolsHandler.cs
 //
 // Author:
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (symbol == null)
 				return Task.FromResult (0);
-			var solution = IdeApp.Workbench.ActiveDocument?.AnalysisDocument?.Project?.Solution ?? TypeSystemService.Workspace.CurrentSolution;
+			var solution = IdeApp.Workbench.ActiveDocument?.DocumentContext.AnalysisDocument?.Project?.Solution ?? IdeApp.TypeSystemService.Workspace.CurrentSolution;
 			return Task.Run (async delegate {
 				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 				using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {

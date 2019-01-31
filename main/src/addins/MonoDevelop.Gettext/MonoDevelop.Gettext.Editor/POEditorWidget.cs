@@ -1,4 +1,4 @@
-//
+﻿//
 // POEditorWidget.cs
 //
 // Author:
@@ -665,7 +665,7 @@ namespace MonoDevelop.Gettext
 							line = "?";
 						}
 						string fullName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (this.poFileName), file);
-						this.foundInStore.AppendValues (file, line, fullName, DesktopService.GetIconForFile (fullName, IconSize.Menu));
+						this.foundInStore.AppendValues (file, line, fullName, IdeApp.DesktopService.GetIconForFile (fullName, IconSize.Menu));
 					}
 				}
 				

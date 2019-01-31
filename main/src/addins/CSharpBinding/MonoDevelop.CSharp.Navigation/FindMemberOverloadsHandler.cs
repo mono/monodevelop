@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.Navigation
 				info.Enabled = false;
 				return;
 			}
-			var symInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var symInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
 			var sym = symInfo.Symbol ?? symInfo.DeclaredSymbol;
 			info.Enabled = sym != null && (sym.IsKind (SymbolKind.Method) || sym.IsKind (SymbolKind.Property) && ((IPropertySymbol)sym).IsIndexer);
 			info.Bypass = !info.Enabled;
@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.Navigation
 			var metadata = Counters.CreateNavigateToMetadata ("MemberOverloads");
 			using (var timer = Counters.NavigateTo.BeginTiming (metadata)) {
 
-				var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+				var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
 				var sym = info.Symbol ?? info.DeclaredSymbol;
 				if (sym == null) {
 					metadata.SetUserFault ();

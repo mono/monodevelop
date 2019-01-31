@@ -1,4 +1,4 @@
-
+﻿
 // 
 // ResultTooltipProvider.cs
 //  
@@ -45,6 +45,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using System.Reflection;
 using MonoDevelop.CodeActions;
 using System.Windows.Input;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -73,7 +74,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return null;
 			var sb = StringBuilderCache.Allocate ();
 			sb.Append ("<span font='");
-			sb.Append (FontService.SansFontName);
+			sb.Append (IdeApp.FontService.SansFontName);
 			sb.Append ("' size='small'>");
 			int minOffset = int.MaxValue;
 			int maxOffset = -1;

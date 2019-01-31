@@ -49,7 +49,6 @@
     <Compile Include="Mono.MHex\HexEditorOptions.cs" />
     <Compile Include="Mono.MHex\DeleteActions.cs" />
     <Compile Include="Mono.MHex.Data\ReplaceEventArgs.cs" />
-    <Compile Include="MonoDevelop.HexEditor\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorView.cs" />
     <Compile Include="MonoDevelop.HexEditor\MonoDevelopHexEditorStyle.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorNodeExtension.cs" />

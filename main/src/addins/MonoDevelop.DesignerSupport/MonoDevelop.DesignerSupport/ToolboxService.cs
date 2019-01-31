@@ -404,30 +404,29 @@ namespace MonoDevelop.DesignerSupport
 		#region Change notification
 		
 		Document oldActiveDoc =  null;
-		Project oldProject = null;
+		SolutionFolderItem oldProject = null;
 		bool configChanged;
 		IToolboxDynamicProvider viewProvider = null;
 		
 		void onActiveDocChanged (object o, EventArgs e)
 		{
 			if (oldActiveDoc != null)
-				oldActiveDoc.ViewChanged -= OnViewChanged;
+				oldActiveDoc.ContentChanged -= OnContentChanged;
 			if (oldProject != null)
 				oldProject.Modified -= onProjectConfigChanged;
 			
 			oldActiveDoc = IdeApp.Workbench.ActiveDocument;
-			oldProject = oldActiveDoc != null?
-				oldActiveDoc.Project : null;
+			oldProject = oldActiveDoc?.Owner as SolutionFolderItem;
 			
 			if (oldActiveDoc != null)
-				oldActiveDoc.ViewChanged += OnViewChanged;					
+				oldActiveDoc.ContentChanged += OnContentChanged;					
 			if (oldProject != null)
 				oldProject.Modified += onProjectConfigChanged;
 			
-			OnViewChanged (null, null);
+			OnContentChanged (null, null);
 		}
 		
-		void OnViewChanged (object sender, EventArgs args)
+		void OnContentChanged (object sender, EventArgs args)
 		{
 			if (viewProvider != null) {
 				this.dynamicProviders.Remove (viewProvider);
@@ -435,10 +434,10 @@ namespace MonoDevelop.DesignerSupport
 			}
 			
 			//only treat active ViewContent as a Toolbox consumer if it implements IToolboxConsumer
-			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.ActiveView != null) {
-				CurrentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView.GetContent<IToolboxConsumer> ();
-				viewProvider    = IdeApp.Workbench.ActiveDocument.ActiveView.GetContent<IToolboxDynamicProvider> ();
-				customizer = IdeApp.Workbench.ActiveDocument.ActiveView.GetContent<IToolboxCustomizer> ();
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				CurrentConsumer = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxConsumer> (true);
+				viewProvider    = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxDynamicProvider> (true);
+				customizer = IdeApp.Workbench.ActiveDocument.GetContent<IToolboxCustomizer> (true);
 				if (viewProvider != null)  {
 					this.dynamicProviders.Add (viewProvider);
 					viewProvider.ItemsChanged += OnProviderItemsChanged;

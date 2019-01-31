@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Resolver
 		public ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, out DocumentRegion expressionRegion)
 		{
 			expressionRegion = DocumentRegion.Empty;
-			var parsedDocument = document.AnalysisDocument;
+			var parsedDocument = document.DocumentContext.AnalysisDocument;
 			if (parsedDocument == null)
 				return null;
 			var model = parsedDocument.GetSemanticModelAsync ().WaitAndGetResult ();
@@ -58,9 +58,9 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, string identifier)
 		{
-			if (document.AnalysisDocument == null)
+			if (document.DocumentContext.AnalysisDocument == null)
 				return null;
-			var model = document.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
+			var model = document.DocumentContext.AnalysisDocument.GetSemanticModelAsync ().WaitAndGetResult ();
 			if (model == null)
 				return null;
 

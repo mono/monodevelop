@@ -47,6 +47,7 @@ using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		string rootName;
 		object designerStatus;
 		
-		public GuiBuilderView (ViewContent content, GuiBuilderWindow window): base (content)
+		public GuiBuilderView (DocumentController content, GuiBuilderWindow window): base (content)
 		{
 			rootName = window.Name;
 			
@@ -87,16 +88,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.UpdateLibraries ();
 			LoadDesigner ();
 		}
-		
-		public override ProjectReloadCapability ProjectReloadCapability {
-			get {
-				return ProjectReloadCapability.Full;
-			}
+
+		protected override ProjectReloadCapability OnGetProjectReloadCapability ()
+		{
+			return ProjectReloadCapability.Full;
 		}
 
-		protected override void OnSetProject (Projects.Project project)
+		protected override void OnOwnerChanged ()
 		{
-			base.OnSetProject (project);
+			base.OnOwnerChanged ();
+
+			var project = Owner as Projects.Project;
 
 			if (gproject != null && gproject.Project == project)
 				return;
@@ -107,7 +109,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CloseDesigner ();
 			CloseProject ();
 			if (project != null) {
-				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName, project);
+				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (FilePath, project);
 				if (w != null) {
 					AttachWindow (w);
 					if (designerStatus != null)
@@ -230,12 +232,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.Reloaded -= OnReloadProject;
 		}
 		
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			CloseDesigner ();
 			CloseProject ();
 			codeBinder = null;
-			base.Dispose ();
+			base.OnDispose ();
 		}
 		
 		Gtk.Widget CreateDesignerNotAvailableWidget ()
@@ -300,7 +302,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnWindowModifiedChanged (object s, EventArgs args)
 		{
-			OnDirtyChanged ();
+			OnCombinedDirtyChanged ();
 		}
 		
 		async void OnBindWidgetField (object o, EventArgs a)
@@ -329,16 +331,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			await codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
-		public override async Task Save (FileSaveInformation fileSaveInformation)
+		protected override async Task OnSave ()
 		{
-			await base.Save (fileSaveInformation);
+			await base.OnSave ();
 			
 			if (designer == null)
 				return;
 			
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
-			codeBinder.UpdateBindings (fileSaveInformation.FileName);
+			codeBinder.UpdateBindings (FilePath);
 			if (!ErrorMode) {
 				if (designer != null)
 					designer.Save ();
@@ -357,17 +359,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.SaveWindow (true, window.RootWidget.Name);
 		}
 		
-		public override bool IsDirty {
+		protected override bool IsDirtyCombined {
 			get {
 				// There is no need to check if the action group designer is modified
 				// since changes in the action group are as well changes in the designed widget
-				return base.IsDirty || (designer != null && designer.Modified);
+				return base.IsDirtyCombined || (designer != null && designer.Modified);
 			}
 			set {
-				base.IsDirty = value;
+				base.IsDirtyCombined = value;
 			}
 		}
-		
+
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			var cls = codeBinder.GetClass ();

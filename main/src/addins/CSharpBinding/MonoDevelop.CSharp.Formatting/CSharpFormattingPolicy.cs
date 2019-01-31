@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpFormattingPolicy.cs
 //  
 // Author:
@@ -33,11 +33,11 @@ using System.Text;
 using System.Linq;
 using MonoDevelop.Projects.Policies;
 using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -602,7 +602,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public CSharpFormattingPolicy ()
 		{
-			this.options = TypeSystemService.Workspace?.Options;
+			this.options = IdeApp.TypeSystemService.Workspace?.Options;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

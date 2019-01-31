@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 				void AssertWorkspaceService<TExport, TActual> () where TExport : IWorkspaceService
 				{
-					var actual = doc.RoslynWorkspace.Services.GetService<TExport> ();
+					var actual = doc.DocumentContext.RoslynWorkspace.Services.GetService<TExport> ();
 					Assert.That (actual, Is.TypeOf<TActual> ());
 				}
 			}

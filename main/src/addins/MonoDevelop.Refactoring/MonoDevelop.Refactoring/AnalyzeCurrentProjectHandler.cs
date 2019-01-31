@@ -52,7 +52,7 @@ namespace MonoDevelop.Refactoring
 		protected override void Update (CommandInfo info)
 		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (project == null || TypeSystemService.GetCodeAnalysisProject (project) == null) {
+			if (project == null || IdeApp.TypeSystemService.GetCodeAnalysisProject (project) == null) {
 				info.Text = GettextCatalog.GetString ("Current Project");
 				info.Enabled = false;
 				return;
@@ -71,7 +71,7 @@ namespace MonoDevelop.Refactoring
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (project == null)
 				return;
-			var analysisProject = TypeSystemService.GetCodeAnalysisProject (project);
+			var analysisProject = IdeApp.TypeSystemService.GetCodeAnalysisProject (project);
 			if (analysisProject == null)
 				return;
 			try {

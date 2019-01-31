@@ -89,9 +89,9 @@ namespace MonoDevelop.RegexToolkit.CodeRefactorings
 			
 			context.RegisterRefactoring (CodeAction.Create(
 				GettextCatalog.GetString("Validate regular expression"),
-				t2 => {
-					ShowRegexToolkitHandler.RunRegexWindow ().Regex = regex.Value.ToString ();
-					return Task.FromResult(document);
+				async t2 => {
+					(await ShowRegexToolkitHandler.RunRegexWindow ()).Regex = regex.Value.ToString ();
+					return document;
 				}
 			));
 		}

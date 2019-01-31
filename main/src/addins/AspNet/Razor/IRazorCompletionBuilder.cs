@@ -31,6 +31,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.AspNet.Razor
 		Task<int> GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);
 	}
 
-	public class UnderlyingDocument : Document
+	public class UnderlyingDocument : RoslynDocumentContext
 	{
 		internal ParsedDocument HiddenParsedDocument;
 
@@ -57,12 +58,11 @@ namespace MonoDevelop.AspNet.Razor
 			get	{ return HiddenParsedDocument; }
 		}
 
-		public UnderlyingDocument (IWorkbenchWindow window)
-			: base (window)
+		internal Microsoft.CodeAnalysis.Document HiddenAnalysisDocument;
+
+		public UnderlyingDocument (FileDocumentController controller) : base (controller)
 		{
 		}
-
-		internal Microsoft.CodeAnalysis.Document HiddenAnalysisDocument;
 
 		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get { return HiddenAnalysisDocument; }

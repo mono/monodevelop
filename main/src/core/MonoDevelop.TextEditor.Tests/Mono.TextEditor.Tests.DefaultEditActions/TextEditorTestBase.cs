@@ -79,7 +79,6 @@ namespace Mono.TextEditor.Tests
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			Runtime.Initialize (true);
 			Gtk.Application.Init ();
-			DesktopService.Initialize ();
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
 		}

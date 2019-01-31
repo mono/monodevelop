@@ -75,18 +75,18 @@ namespace MonoDevelop.Ide
 		[Test]
 		public void TestOuptutTracking_ProjectType ()
 		{
-			TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { ProjectType = "TestProjectType" });
+			IdeApp.TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { ProjectType = "TestProjectType" });
 
-			Assert.IsFalse (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "Bar")));
-			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "TestProjectType")));
+			Assert.IsFalse (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "Bar")));
+			Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "TestProjectType")));
 		}
 
 		[Test]
 		public void TestOuptutTracking_LanguageName ()
 		{
-			TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { LanguageName = "IL" });
+			IdeApp.TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { LanguageName = "IL" });
 
-			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("IL", "Bar")));
+			Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("IL", "Bar")));
 		}
 
 		[Test]
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide
 			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
-				Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+				Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
 			}
 		}
 
@@ -159,9 +159,9 @@ namespace MonoDevelop.Ide
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			var tcs = new TaskCompletionSource<bool> ();
 			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				var workspace = TypeSystemService.GetWorkspace (e.Solution);
+				var workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
 				Assert.IsNotNull (workspace);
-				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
+				Assert.AreNotSame (workspace, IdeApp.TypeSystemService.emptyWorkspace);
 				workspace.Dispose ();
 				tcs.SetResult (true);
 			};
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide
 			bool workspaceLoaded = false;
 
 			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				workspace = TypeSystemService.GetWorkspace (e.Solution);
+				workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
 				workspace.WorkspaceChanged += (sender, ea) => {
 					// If SolutionReloaded event is raised while opening the solution, we are doing something wrong
 					if (ea.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.SolutionReloaded)
@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			var parsers = TypeSystemService.Parsers;
+			var parsers = IdeApp.TypeSystemService.Parsers;
 			try {
 				var projectionParser = new TypeSystemParserNode ();
 				projectionParser.BuildActions = new [] { "Compile" };
@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide
 
 				var newParsers = new List<TypeSystemParserNode> ();
 				newParsers.Add (projectionParser);
-				TypeSystemService.Parsers = newParsers;
+				IdeApp.TypeSystemService.Parsers = newParsers;
 
 				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 					using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -301,13 +301,13 @@ namespace MonoDevelop.Ide
 						var options = new ParseOptions {
 							FileName = "first.xaml.cs"
 						};
-						var task1 = TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
+						var task1 = IdeApp.TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
 						source1.Cancel ();
 
 						options = new ParseOptions {
 							FileName = "second.xaml.cs"
 						};
-						var task2 = TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
+						var task2 = IdeApp.TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
 
 						var result1 = await task1;
 						var result2 = await task2;
@@ -317,7 +317,7 @@ namespace MonoDevelop.Ide
 					}
 				}
 			} finally {
-				TypeSystemService.Parsers = parsers;
+				IdeApp.TypeSystemService.Parsers = parsers;
 			}
 		}
 

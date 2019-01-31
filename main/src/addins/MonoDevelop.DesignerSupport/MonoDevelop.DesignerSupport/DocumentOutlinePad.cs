@@ -79,10 +79,10 @@ namespace MonoDevelop.DesignerSupport
 				if (value == currentDoc)
 					return;
 				if (currentDoc != null)
-					currentDoc.ViewChanged -= ViewChangedHandler;
+					currentDoc.ContentChanged -= ViewChangedHandler;
 				currentDoc = value;
 				if (currentDoc != null)
-					currentDoc.ViewChanged += ViewChangedHandler;
+					currentDoc.ContentChanged += ViewChangedHandler;
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			IOutlinedDocument outlineDoc = null;
 			if (CurrentDoc != null)
-				outlineDoc = CurrentDoc.GetContent<IOutlinedDocument> ();
+				outlineDoc = CurrentDoc.GetContent<IOutlinedDocument> (true);
 
 			if (currentOutlineDoc == outlineDoc)
 				return;

@@ -170,7 +170,7 @@ namespace MonoDevelop.CSharpBinding
 			using (var testCase = await SetupTestCase (text, Math.Max (0, endPos))) {
 				var doc = testCase.Document;
 
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 				await test (testCase);
 			}
 		}
@@ -257,7 +257,7 @@ namespace MonoDevelop.CSharpBinding
 				var ka = KeyActions.Complete;
 				list.First (d => d.CompletionText == "class").InsertCompletionText (listWindow, ref ka, KeyDescriptor.Tab);
 
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 			}
 		}
 

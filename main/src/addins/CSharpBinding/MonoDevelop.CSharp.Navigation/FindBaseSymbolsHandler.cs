@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Navigation
 		{
 			if (doc == null)
 				return null;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
 			return info.Symbol ?? info.DeclaredSymbol;
 		}
 

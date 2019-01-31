@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AddViewDialog.cs
 //  
 // Author:
@@ -369,7 +369,7 @@ namespace MonoDevelop.AspNet.Commands
 			if (!File.Exists (realPath))
 				return;
 			
-			var pd = await TypeSystemService.ParseFile (project, realPath) as WebFormsParsedDocument;
+			var pd = await IdeApp.TypeSystemService.ParseFile (project, realPath) as WebFormsParsedDocument;
 			
 			if (pd != null) {
 				try {
@@ -479,7 +479,7 @@ namespace MonoDevelop.AspNet.Commands
 			public async Task GetTypes (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
-				var ctx = await TypeSystemService.GetCompilationAsync (project);
+				var ctx = await IdeApp.TypeSystemService.GetCompilationAsync (project);
 				TypesList = new List<INamedTypeSymbol> (ctx.GetAllTypesInMainAssembly ());
 				foreach (var typeDef in TypesList) {
 					TypeNamesList.Add (Ambience.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));

@@ -26,18 +26,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Collections.Generic;
 using NUnit.Framework;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.SignatureHelp;
 using Microsoft.CodeAnalysis.Shared.Extensions;
-using System;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis.Host.Mef;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 {
@@ -114,7 +111,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 			var document = workspace.CurrentSolution.GetDocument(documentId);
 			var semanticModel = document.GetSemanticModelAsync().Result;
 			if (force) {
-				var workspace1 = TypeSystemService.Workspace;
+				var workspace1 = IdeApp.TypeSystemService.Workspace;
 				var mefExporter = (IMefHostExportProvider)workspace1.Services.HostServices;
 				var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
 					.FilterToSpecificLanguage (LanguageNames.CSharp).ToImmutableArray ();

@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
 			var testCase = await SetupTestCase (text, Math.Max (0, endPos));
-			await testCase.Document.UpdateParseDocument ();
+			await testCase.Document.DocumentContext.UpdateParseDocument ();
 
 			return testCase;
 		}
@@ -167,7 +167,7 @@ namespace DebuggerTooltipTests
 			var loc = editor.OffsetToLocation (offset);
 			var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
 
-			return resolver.ResolveExpressionAsync (editor, doc, offset, default(System.Threading.CancellationToken)).Result.Text;
+			return resolver.ResolveExpressionAsync (editor, doc.DocumentContext, offset, default(System.Threading.CancellationToken)).Result.Text;
 		}
 
 		int GetBasicOffset (string expr)

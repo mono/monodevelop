@@ -33,6 +33,8 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.AspNet.Tests.Razor
 {
@@ -128,17 +130,9 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			project.AddFile (file);
 
 			var sev = new TestViewContent ();
-			sev.Project = project;
-			sev.ContentName = file;
+			await sev.Initialize (new FileDescriptor (file, null, project), null);
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
-
-			var tww = new TestWorkbenchWindow ();
-			tww.ViewContent = sev;
-
-			var doc = new TestDocument (tww);
-			doc.Editor.FileName = sev.ContentName;
-			doc.UpdateProject (project);
 
 			solution = new MonoDevelop.Projects.Solution ();
 			solution.DefaultSolutionFolder.AddItem (project);
@@ -146,17 +140,19 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			await TypeSystemServiceTestExtensions.LoadSolution (solution);
 
 			var parser = new RazorTestingParser {
-				Doc = doc
+				Editor = sev.Editor
 			};
 			var options = new ParseOptions {
 				Project = project,
-				FileName = sev.ContentName,
+				FileName = sev.FilePath,
 				Content = new StringTextSource (parsedText)
 			};
-			var parsedDoc = await parser.Parse (options, default(CancellationToken)) as RazorCSharpParsedDocument;
-			doc.HiddenParsedDocument = parsedDoc;
 
-			var editorExtension = new RazorCSharpEditorExtension (doc, parsedDoc as RazorCSharpParsedDocument, isInCSharpContext);
+			var documentContext = sev.GetContent<RoslynDocumentContext> ();
+			var parsedDoc = await parser.Parse (options, default(CancellationToken)) as RazorCSharpParsedDocument;
+			documentContext.SetParsedDocument (parsedDoc);
+
+			var editorExtension = new RazorCSharpEditorExtension (sev.Editor, documentContext, parsedDoc as RazorCSharpParsedDocument, isInCSharpContext);
 			return new EditorInfo {
 				Extension = editorExtension,
 				EditorText = editorText,
@@ -167,12 +163,12 @@ namespace MonoDevelop.AspNet.Tests.Razor
 
 	public class RazorTestingParser : RazorCSharpParser
 	{
-		public Document	Doc { get; set; }
+		public TextEditor Editor { get; set; }
 
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			Doc.Editor.FileName = parseOptions.FileName;
-			OpenDocuments.Add (new OpenRazorDocument (Doc.Editor));
+			Editor.FileName = parseOptions.FileName;
+			OpenDocuments.Add (new OpenRazorDocument (Editor));
 			return base.Parse (parseOptions, cancellationToken);
 		}
 	}

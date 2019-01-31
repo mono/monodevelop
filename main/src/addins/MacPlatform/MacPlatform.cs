@@ -1,4 +1,4 @@
-//
+﻿//
 // MacPlatformService.cs
 //
 // Author:
@@ -1165,7 +1165,7 @@ namespace MonoDevelop.MacIntegration
 				Arguments = "--start-app-bundle",
 			};
 
-			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			var recentWorkspace = reopen ? IdeApp.DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
 			if (!string.IsNullOrEmpty (recentWorkspace))
 				psi.Arguments += " " + recentWorkspace;
 
