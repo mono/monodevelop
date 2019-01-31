@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide
 				if (System.IO.File.Exists (storageLocation))
 					System.IO.File.Delete (storageLocation);
 				
-				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.Instance.GetExportedValue<ISolutionSizeTracker> ();
 
 				// This will return the tracker, since it's a singleton.
 				var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);

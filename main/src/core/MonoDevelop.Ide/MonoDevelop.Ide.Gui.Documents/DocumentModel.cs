@@ -42,6 +42,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public object Id => data?.Id;
 
 		/// <summary>
+		/// Returns true if this model is currently being shared with another view
+		/// </summary>
+		/// <value><c>true</c> if is shared; otherwise, <c>false</c>.</value>
+		public bool IsShared => data?.LinkedModelCount > 1;
+
+		/// <summary>
 		/// Raised when the model is modified
 		/// </summary>
 		public event EventHandler Changed;

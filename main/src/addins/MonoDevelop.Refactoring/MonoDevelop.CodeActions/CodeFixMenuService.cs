@@ -63,7 +63,7 @@ namespace MonoDevelop.CodeActions
 				return menu;
 			}
 
-			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
+			var options = ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ().Result;
 			int mnemonic = 1;
 
 			var suppressLabel = GettextCatalog.GetString ("_Suppress");

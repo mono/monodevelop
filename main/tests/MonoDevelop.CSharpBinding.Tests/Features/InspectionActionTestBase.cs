@@ -40,6 +40,7 @@ using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.CodeActions;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Core;
 
 namespace ICSharpCode.NRefactory6
 {

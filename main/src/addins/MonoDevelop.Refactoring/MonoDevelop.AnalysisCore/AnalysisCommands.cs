@@ -55,7 +55,7 @@ namespace MonoDevelop.AnalysisCore
 				return;
 
 			Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> ();
-			var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+			var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
 			var language = CodeRefactoringService.MimeTypeToLanguage (lang);
 			foreach (var node in options.AllDiagnostics.Where (x => x.Languages.Contains (language))) {
 				severities [node] = node.DiagnosticSeverity;

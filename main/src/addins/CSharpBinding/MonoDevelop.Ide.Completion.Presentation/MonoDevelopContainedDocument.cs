@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			DataBuffer = dataBuffer;
 			ContainedLanguageHost = containedLanguageHost;
 
-			_differenceSelectorService = CompositionManager.GetExportedValue<ITextDifferencingSelectorService> ();
+			_differenceSelectorService = CompositionManager.Instance.GetExportedValue<ITextDifferencingSelectorService> ();
 
 			var container = languageBuffer.CurrentSnapshot.AsText ().Container;
 			var registration = Workspace.GetWorkspaceRegistration (container);
@@ -601,7 +601,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 
 			var root = document.GetSyntaxRootSynchronously (CancellationToken.None);
 
-			var editorOptionsFactory = CompositionManager.GetExportedValue<IEditorOptionsFactoryService> ();
+			var editorOptionsFactory = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService> ();
 			var editorOptions = editorOptionsFactory.GetOptions (DataBuffer);
 			var options = _workspace.Options
 										.WithChangedOption (FormattingOptions.NewLine, root.Language, editorOptions.GetNewLineCharacter ())
@@ -708,7 +708,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 		private int GetBaseIndentation (SyntaxNode root, SourceText text, TextSpan span)
 		{
 			// Is this right?  We should probably get this from the IVsContainedLanguageHost instead.
-			var editorOptionsFactory = CompositionManager.GetExportedValue<IEditorOptionsFactoryService> ();
+			var editorOptionsFactory = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService> ();
 			var editorOptions = editorOptionsFactory.GetOptions (DataBuffer);
 
 			var additionalIndentation = GetAdditionalIndentation (root, text, span);

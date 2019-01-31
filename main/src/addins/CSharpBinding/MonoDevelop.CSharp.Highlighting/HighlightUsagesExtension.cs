@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			var old = Editor.SyntaxHighlighting as TagBasedSyntaxHighlighting;
 			if (old == null) {
-				Editor.SyntaxHighlighting = CompositionManager.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.cs");
+				Editor.SyntaxHighlighting = CompositionManager.Instance.GetExportedValue<ITagBasedSyntaxHighlightingFactory> ().CreateSyntaxHighlighting (Editor.TextView, "source.cs");
 			}
 		}
 

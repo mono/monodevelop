@@ -60,13 +60,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Title shown in the document tab
 		/// </summary>
-		public virtual string DocumentTitle { get; }
-
-		/// <summary>
-		/// Icon of the document tab
-		/// </summary>
-		/// <value>The stock icon identifier.</value>
-		public virtual string DocumentIconId { get; }
+		public virtual string TabPageLabel { get; }
 
 		/// <summary>
 		/// Controller to which this extension is bound

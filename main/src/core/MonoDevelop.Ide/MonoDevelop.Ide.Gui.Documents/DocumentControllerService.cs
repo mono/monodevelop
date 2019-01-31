@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	[DefaultServiceImplementation]
 	public class DocumentControllerService: Service
 	{
-		internal const string DocumentControllerFactoriesPath = "/MonoDevelop/Ide/DocumentControllers";
+		internal const string DocumentControllerFactoriesPath = "/MonoDevelop/Ide/DocumentControllerFactories";
 
 		List<DocumentControllerFactory> registeredFactories = new List<DocumentControllerFactory> ();
 

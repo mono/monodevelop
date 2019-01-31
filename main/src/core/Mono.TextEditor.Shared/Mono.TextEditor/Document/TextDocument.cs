@@ -83,7 +83,7 @@ namespace Mono.TextEditor
 		{
 			if (filePath != null)
 			{
-				var fileToContentTypeService = CompositionManager.GetExportedValue<IFileToContentTypeService> ();
+				var fileToContentTypeService = CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ();
 				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
 				if (contentTypeFromPath != null && 
 					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType)
