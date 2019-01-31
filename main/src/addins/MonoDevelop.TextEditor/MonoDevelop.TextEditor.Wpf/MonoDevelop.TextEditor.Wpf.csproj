@@ -7,7 +7,6 @@
     <AssemblyDescription>Integrates the WPF version of the Visual Studio Editor into MonoDevelop</AssemblyDescription>
     <AddinBuildDir>DisplayBindings\TextEditor.Wpf</AddinBuildDir>
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
-    <!-- <AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
@@ -17,10 +16,5 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="System.Xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CommandDispatcher.cs">
-      <Link>KeyProcessor\CommandDispatcher.cs</Link>
-    </Compile>
   </ItemGroup>
 </Project>

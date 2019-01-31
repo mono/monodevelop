@@ -21,39 +21,43 @@
 
 using System;
 using System.Windows.Input;
+using Microsoft.VisualStudio.Commanding;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding;
+using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.Text.Operations;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.Ide.Text
 {
-	internal sealed class DefaultKeyProcessor : KeyProcessor
+	sealed class DefaultKeyProcessor : KeyProcessor
 	{
-		private readonly IWpfTextView _textView;
-		private readonly IEditorOperations _editorOperations;
-		private readonly ITextUndoHistoryRegistry _undoHistoryRegistry;
-		private readonly Microsoft.VisualStudio.Text.Editor.Commanding.CommandDispatcher commandDispatcher;
+		readonly IWpfTextView _textView;
+		readonly IEditorOperations _editorOperations;
+		readonly ITextUndoHistoryRegistry _undoHistoryRegistry;
+		readonly IEditorCommandHandlerService _editorCommandHandlerService;
+
+		static Func<CommandState> Unspecified { get; } = () => CommandState.Unspecified;
+		static Action Noop { get; } = () => { };
 
 		internal DefaultKeyProcessor (
 			IWpfTextView textView,
 			IEditorOperations editorOperations,
 			ITextUndoHistoryRegistry undoHistoryRegistry,
-			Microsoft.VisualStudio.Text.Editor.Commanding.IEditorCommandHandlerService editorCommandHandlerService)
+			IEditorCommandHandlerService editorCommandHandlerService)
 		{
 			this._textView = textView;
 			this._editorOperations = editorOperations;
 			this._undoHistoryRegistry = undoHistoryRegistry;
-			this.commandDispatcher = new Microsoft.VisualStudio.Text.Editor.Commanding.CommandDispatcher (editorCommandHandlerService, editorOperations);
+			this._editorCommandHandlerService = editorCommandHandlerService;
 		}
 
-		ICommandHandler commandHandler;
-		ICommandHandler CommandHandler {
-			get {
-				return commandHandler ?? (commandHandler = _textView.Properties.GetProperty<ViewContent> (typeof (ViewContent)) as ICommandHandler);
-			}
+		public void QueryAndExecute<T> (Func<ITextView, ITextBuffer, T> argsFactory) where T : EditorCommandArgs
+		{
+			var state = _editorCommandHandlerService.GetCommandState (argsFactory, Unspecified);
+			if (state.IsAvailable)
+				_editorCommandHandlerService.Execute (argsFactory, Noop);
 		}
 
 		public override void KeyDown (KeyEventArgs args)
@@ -100,6 +104,9 @@ namespace MonoDevelop.Ide.Text
 			case Key.End:
 				_editorOperations.MoveCurrentLineToBottom ();
 				break;
+			case Key.Space:
+				QueryAndExecute ((v, b) => new ToggleCompletionModeCommandArgs (v, b));
+				break;
 			default:
 				args.Handled = false;
 				break;
@@ -110,37 +117,37 @@ namespace MonoDevelop.Ide.Text
 		{
 			switch (args.Key) {
 			case Key.Back:
-				args.Handled = this.PerformEditAction (() => _editorOperations.Backspace ());
+				QueryAndExecute ((v, b) => new BackspaceKeyCommandArgs (v, b));
 				break;
 			case Key.Right:
-				_editorOperations.MoveToNextCharacter (true);
+				_editorOperations.MoveToNextCharacter (extendSelection: true);
 				break;
 			case Key.Left:
-				_editorOperations.MoveToPreviousCharacter (true);
+				_editorOperations.MoveToPreviousCharacter (extendSelection: true);
 				break;
 			case Key.Up:
-				_editorOperations.MoveLineUp (true);
+				_editorOperations.MoveLineUp (extendSelection: true);
 				break;
 			case Key.Down:
-				_editorOperations.MoveLineDown (true);
+				_editorOperations.MoveLineDown (extendSelection: true);
 				break;
 			case Key.Home:
-				_editorOperations.MoveToHome (true);
+				QueryAndExecute ((v, b) => new LineStartExtendCommandArgs (v, b));
 				break;
 			case Key.End:
-				_editorOperations.MoveToEndOfLine (true);
+				QueryAndExecute ((v, b) => new LineEndExtendCommandArgs (v, b));
 				break;
 			case Key.PageUp:
-				_editorOperations.PageUp (true);
+				_editorOperations.PageUp (extendSelection: true);
 				break;
 			case Key.PageDown:
-				_editorOperations.PageDown (true);
+				_editorOperations.PageDown (extendSelection: true);
 				break;
 			case Key.Tab:
-				args.Handled = this.PerformEditAction (() => _editorOperations.Unindent ());
+				QueryAndExecute ((v, b) => new BackTabKeyCommandArgs (v, b));
 				break;
 			case Key.Enter:
-				args.Handled = this.PerformEditAction (() => _editorOperations.InsertNewLine ());
+				QueryAndExecute ((v, b) => new ReturnKeyCommandArgs (v, b));
 				break;
 			default:
 				args.Handled = false;
@@ -152,16 +159,16 @@ namespace MonoDevelop.Ide.Text
 		{
 			switch (args.Key) {
 			case Key.Right:
-				_editorOperations.MoveToNextWord (true);
+				_editorOperations.MoveToNextWord (extendSelection: true);
 				break;
 			case Key.Left:
-				_editorOperations.MoveToPreviousWord (true);
+				_editorOperations.MoveToPreviousWord (extendSelection: true);
 				break;
 			case Key.Home:
-				_editorOperations.MoveToStartOfDocument (true);
+				_editorOperations.MoveToStartOfDocument (extendSelection: true);
 				break;
 			case Key.End:
-				_editorOperations.MoveToEndOfDocument (true);
+				_editorOperations.MoveToEndOfDocument (extendSelection: true);
 				break;
 			case Key.U:
 				args.Handled = this.PerformEditAction (() => _editorOperations.MakeUppercase ());
@@ -203,10 +210,10 @@ namespace MonoDevelop.Ide.Text
 				_editorOperations.SelectFirstChild ();
 				break;
 			case Key.Down:
-				_editorOperations.SelectNextSibling (false);
+				_editorOperations.SelectNextSibling (extendSelection: false);
 				break;
 			case Key.Up:
-				_editorOperations.SelectPreviousSibling (false);
+				_editorOperations.SelectPreviousSibling (extendSelection: false);
 				break;
 			default:
 				args.Handled = false;
@@ -217,29 +224,32 @@ namespace MonoDevelop.Ide.Text
 		private void HandleControlKey (KeyEventArgs args)
 		{
 			switch (args.Key) {
+			case Key.Space:
+				QueryAndExecute ((v, b) => new CommitUniqueCompletionListItemCommandArgs (v, b));
+				break;
 			case Key.Back:
-				args.Handled = this.PerformEditAction (() => _editorOperations.DeleteWordToLeft ());
+				QueryAndExecute ((v, b) => new WordDeleteToStartCommandArgs (v, b));
 				break;
 			case Key.Delete:
-				args.Handled = this.PerformEditAction (() => _editorOperations.DeleteWordToRight ());
+				QueryAndExecute ((v, b) => new WordDeleteToEndCommandArgs (v, b));
 				break;
 			case Key.A:
-				_editorOperations.SelectAll ();
+				QueryAndExecute ((v, b) => new SelectAllCommandArgs (v, b));
 				break;
 			case Key.W:
 				_editorOperations.SelectCurrentWord ();
 				break;
 			case Key.Right:
-				_editorOperations.MoveToNextWord (false);
+				_editorOperations.MoveToNextWord (extendSelection: false);
 				break;
 			case Key.Left:
-				_editorOperations.MoveToPreviousWord (false);
+				_editorOperations.MoveToPreviousWord (extendSelection: false);
 				break;
 			case Key.Home:
-				_editorOperations.MoveToStartOfDocument (false);
+				QueryAndExecute ((v, b) => new DocumentStartCommandArgs (v, b));
 				break;
 			case Key.End:
-				_editorOperations.MoveToEndOfDocument (false);
+				QueryAndExecute ((v, b) => new DocumentEndCommandArgs (v, b));
 				break;
 			case Key.Up:
 				_editorOperations.ScrollUpAndMoveCaretIfNecessary ();
@@ -254,23 +264,23 @@ namespace MonoDevelop.Ide.Text
 				args.Handled = this.PerformEditAction (() => _editorOperations.MakeLowercase ());
 				break;
 			case Key.C:
-				_editorOperations.CopySelection ();
+				QueryAndExecute ((v, b) => new CopyCommandArgs (v, b));
 				break;
 			case Key.X:
-				args.Handled = this.PerformEditAction (() => _editorOperations.CutSelection ());
+				QueryAndExecute ((v, b) => new CutCommandArgs (v, b));
 				break;
 			case Key.V:
-				args.Handled = this.PerformEditAction (() => _editorOperations.Paste ());
+				QueryAndExecute ((v, b) => new PasteCommandArgs (v, b));
 				break;
 			case Key.Z:
 				if (UndoHistory.CanUndo)
-					UndoHistory.Undo (1);
+					QueryAndExecute ((v, b) => new UndoCommandArgs (v, b));
 				else
 					args.Handled = false;
 				break;
 			case Key.Y:
 				if (UndoHistory.CanRedo)
-					UndoHistory.Redo (1);
+					QueryAndExecute ((v, b) => new RedoCommandArgs (v, b));
 				else
 					args.Handled = false;
 				break;
@@ -280,57 +290,54 @@ namespace MonoDevelop.Ide.Text
 			}
 		}
 
-		private void ExecuteCommand(string command)
-		{
-			CommandHandler.Run (null, new ActionCommand (command, null));
-		}
-
 		private void HandleKey (KeyEventArgs args)
 		{
 			switch (args.Key) {
 			case Key.Right:
-				_editorOperations.MoveToNextCharacter (false);
+				QueryAndExecute ((v, b) => new RightKeyCommandArgs (v, b));
 				break;
 			case Key.Left:
-				//_editorOperations.MoveToPreviousCharacter (false);
-				ExecuteCommand ("MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft");
+				QueryAndExecute ((v, b) => new LeftKeyCommandArgs (v, b));
 				break;
 			case Key.Up:
-				_editorOperations.MoveLineUp (false);
+				QueryAndExecute ((v, b) => new UpKeyCommandArgs (v, b));
 				break;
 			case Key.Down:
-				_editorOperations.MoveLineDown (false);
+				QueryAndExecute ((v, b) => new DownKeyCommandArgs (v, b));
 				break;
 			case Key.PageUp:
-				_editorOperations.PageUp (false);
+				QueryAndExecute ((v, b) => new PageUpKeyCommandArgs (v, b));
 				break;
 			case Key.PageDown:
-				_editorOperations.PageDown (false);
+				QueryAndExecute ((v, b) => new PageDownKeyCommandArgs (v, b));
 				break;
 			case Key.Home:
-				_editorOperations.MoveToHome (false);
+				QueryAndExecute ((v, b) => new LineStartCommandArgs (v, b));
 				break;
 			case Key.End:
-				_editorOperations.MoveToEndOfLine (false);
+				QueryAndExecute ((v, b) => new LineEndCommandArgs (v, b));
 				break;
 			case Key.Escape:
-				_editorOperations.ResetSelection ();
+				QueryAndExecute ((v, b) => new EscapeKeyCommandArgs (v, b));
 				break;
 			case Key.Delete:
-				args.Handled = this.PerformEditAction (() => _editorOperations.Delete ());
+				QueryAndExecute ((v, b) => new DeleteKeyCommandArgs (v, b));
 				break;
 			case Key.Back:
-				args.Handled = this.PerformEditAction (() => _editorOperations.Backspace ());
+				QueryAndExecute ((v, b) => new BackspaceKeyCommandArgs (v, b));
 				break;
 			case Key.Insert:
 				_editorOperations.Options.SetOptionValue (DefaultTextViewOptions.OverwriteModeId,
 					!_editorOperations.Options.IsOverwriteModeEnabled ());
 				break;
 			case Key.Enter:
-				args.Handled = this.PerformEditAction (() => _editorOperations.InsertNewLine ());
+				QueryAndExecute ((v, b) => new ReturnKeyCommandArgs (v, b));
 				break;
 			case Key.Tab:
-				args.Handled = this.PerformEditAction (() => _editorOperations.Indent ());
+				QueryAndExecute ((v, b) => new TabKeyCommandArgs (v, b));
+				break;
+			case Key.F2:
+				QueryAndExecute ((v, b) => new RenameCommandArgs (v, b));
 				break;
 			default:
 				args.Handled = false;
@@ -341,17 +348,9 @@ namespace MonoDevelop.Ide.Text
 		public override void TextInput (TextCompositionEventArgs args)
 		{
 			if (args.Text.Length == 1) {
-				commandDispatcher.InsertChar (args.Text[0]);
+				QueryAndExecute ((v, b) => new TypeCharCommandArgs (v, b, args.Text[0]));
 				args.Handled = true;
 			}
-			// The view will generate an text input event of length zero to flush the current provisional composition span.
-			// No one else should be doing that, so ignore zero length inputs unless there is provisional text to flush.
-			//if ((args.Text.Length > 0) || (_editorOperations.ProvisionalCompositionSpan != null)) {
-			//	args.Handled = this.PerformEditAction (() => _editorOperations.InsertText (args.Text));
-
-			//	if (args.Handled)
-			//		_textView.Caret.EnsureVisible ();
-			//}
 		}
 
 		public override void TextInputStart (TextCompositionEventArgs args)
@@ -406,3 +405,12 @@ namespace MonoDevelop.Ide.Text
 		}
 	}
 }
+
+// TODO:
+// InvokeCompletionList
+// InvokeSignatureHelp
+// InsertSnippet
+// MoveSelectedLinesUp
+// MoveSelectedLinesDown
+// Rename
+// SurroundWith
