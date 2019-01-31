@@ -9,6 +9,7 @@
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DiagnosticMargin" Version="1.0.1" PrivateAssets="all" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj" Private="False" />
     <Reference Include="PresentationCore" />
@@ -16,5 +17,8 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="DiagnosticMargin.dll" />
   </ItemGroup>
 </Project>
