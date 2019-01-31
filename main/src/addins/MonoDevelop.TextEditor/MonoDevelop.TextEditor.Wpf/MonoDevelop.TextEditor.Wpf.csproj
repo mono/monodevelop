@@ -7,7 +7,6 @@
     <AssemblyDescription>Integrates the WPF version of the Visual Studio Editor into MonoDevelop</AssemblyDescription>
     <AddinBuildDir>DisplayBindings\TextEditor.Wpf</AddinBuildDir>
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
-    <!-- <AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />

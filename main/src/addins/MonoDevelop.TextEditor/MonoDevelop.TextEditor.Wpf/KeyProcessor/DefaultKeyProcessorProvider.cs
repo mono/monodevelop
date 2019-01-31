@@ -22,6 +22,7 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 
@@ -35,6 +36,9 @@ namespace MonoDevelop.Ide.Text
     {
         [Import]
         private IEditorOperationsFactoryService editorOperationsProvider = null;
+
+		[Import]
+		private IEditorCommandHandlerServiceFactory editorCommandHandlerServiceFactory = null;
 
 		[Import]
 		private ITextUndoHistoryRegistry textUndoHistoryRegistry = null;
@@ -54,7 +58,8 @@ namespace MonoDevelop.Ide.Text
             return new DefaultKeyProcessor(
                 wpfTextView,
                 editorOperationsProvider.GetEditorOperations(wpfTextView),
-                textUndoHistoryRegistry);
+                textUndoHistoryRegistry,
+                editorCommandHandlerServiceFactory.GetService(wpfTextView));
         }
     }
 }
