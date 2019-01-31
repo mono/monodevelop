@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.AspNet.Razor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.TypeSystem;
@@ -97,6 +98,18 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				Content = new StringTextSource (text)
 			};
 			return (RazorCSharpParsedDocument)parser.Parse (options, default(CancellationToken)).Result;
+		}
+	}
+
+	public class RazorTestingParser : RazorCSharpParser
+	{
+		public TextEditor Editor { get; set; }
+
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
+		{
+			Editor.FileName = parseOptions.FileName;
+			OpenDocuments.Add (new OpenRazorDocument (Editor));
+			return base.Parse (parseOptions, cancellationToken);
 		}
 	}
 }
