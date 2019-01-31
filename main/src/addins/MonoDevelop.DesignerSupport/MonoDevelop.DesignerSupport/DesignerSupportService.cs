@@ -85,7 +85,8 @@ namespace MonoDevelop.DesignerSupport
 								customizer.Customize (pad.PadWindow, null);
 						}
 					} catch (Exception ex) {
-						LoggingService.LogError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
+						LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
+						ReSetPad ();
 					}
 				}
 			}
@@ -193,7 +194,7 @@ namespace MonoDevelop.DesignerSupport
 							return;
 						}
 					} catch (Exception ex) {
-						LoggingService.LogError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
+						LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
 						propertyPad?.BlankPad ();
 						return;
 					}
