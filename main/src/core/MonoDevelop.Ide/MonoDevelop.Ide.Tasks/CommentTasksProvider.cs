@@ -30,29 +30,35 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Editor.Implementation.TodoComments;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	static partial class CommentTasksProvider
+	partial class CommentTasksProvider: Service
 	{
-		internal static void Initialize ()
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			var todoListProvider = Composition.CompositionManager.GetExportedValue<ITodoListProvider> ();
-			todoListProvider.TodoListUpdated += OnTodoListUpdated;
+			serviceProvider.WhenServiceInitialized<CompositionManager> (compositionManager => {
+				var todoListProvider = compositionManager.GetExportedValue<ITodoListProvider> ();
+				todoListProvider.TodoListUpdated += OnTodoListUpdated;
+			});
+
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (workspace => {
+				workspace.SolutionLoaded += OnSolutionLoaded;
+				workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
+				Legacy.Initialize ();
+			});
+
+			return Task.CompletedTask;
 		}
 
 		static CommentTasksProvider()
 		{
-			IdeApp.Initialized += (sender, args) => {
-				IdeApp.Workspace.SolutionLoaded += OnSolutionLoaded;
-				IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
-
-				Legacy.Initialize ();
-			};
-
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 		}
 
@@ -85,7 +91,7 @@ namespace MonoDevelop.Ide.Tasks
 					return;
 
 				if (triggerLoad == null || triggerLoad.Invoke (cachedUntilViewCreated.Count)) {
-					var changes = cachedUntilViewCreated.Values.Select (x => x.ToCommentTaskChange ()).Where (x => x != null).ToList ();
+					var changes = cachedUntilViewCreated.Values.Select (x => ToCommentTaskChange (x)).Where (x => x != null).ToList ();
 					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
 					cachedUntilViewCreated = null;
 					triggerLoad = null;
@@ -93,7 +99,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 
-		public static CommentTaskChange ToCommentTaskChange (this TodoItemsUpdatedArgs args)
+		public static CommentTaskChange ToCommentTaskChange (TodoItemsUpdatedArgs args)
 		{
 			if (!TryGetDocument (args, out var doc, out var project))
 				return null;

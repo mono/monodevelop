@@ -40,6 +40,7 @@ namespace MonoDevelop.Core
 		Dictionary<Type, Type> serviceTypes = new Dictionary<Type, Type> ();
 		Dictionary<object, TaskCompletionSource<object>> initializationTasks = new Dictionary<object, TaskCompletionSource<object>> ();
 		Dictionary<Type, object> servicesByType = new Dictionary<Type, object> ();
+		Dictionary<Type, List<object>> initializationCallbacks = new Dictionary<Type, List<object>> ();
 		bool disposing;
 
 		public override async Task<T> GetService<T> ()
@@ -64,12 +65,8 @@ namespace MonoDevelop.Core
 							serviceInstance.Initialize (this).ContinueWith (t => {
 								if (t.IsFaulted)
 									completionTask.SetException (t.Exception);
-								else {
-									lock (services) {
-										completionTask.SetResult (service);
-										initializationTasks.Remove (service);
-									}
-								}
+								else
+									OnServiceInitialized (completionTask, service);
 							});
 						}
 					}
@@ -83,6 +80,52 @@ namespace MonoDevelop.Core
 			}
 
 			return (T)await currentInitTask;
+		}
+
+		/// <summary>
+		/// Executes an action when a service is initialized
+		/// </summary>
+		/// <param name="action">Action to run</param>
+		/// <typeparam name="T">Service type</typeparam>
+		/// <remarks>This method does not cause the initialization of the service.</remarks>
+		public override void WhenServiceInitialized<T> (Action<T> action)
+		{
+			lock (services) {
+				if (servicesByType.TryGetValue (typeof (T), out var service)) {
+					// Service already requested
+					if (initializationTasks.TryGetValue (service, out var initTask))
+						initTask.Task.ContinueWith (t => action ((T)service), TaskScheduler.Current);
+					else
+						action ((T)service);
+				} else {
+					// Service not yet requested, register the callback
+					if (!initializationCallbacks.TryGetValue (typeof (T), out var list))
+						initializationCallbacks [typeof (T)] = list = new List<object> ();
+					list.Add (action);
+				}
+			}
+		}
+
+		void OnServiceInitialized<T> (TaskCompletionSource<object> completionTask, T service)
+		{
+			List<object> callbacks = null;
+
+			lock (services) {
+				completionTask.SetResult (service);
+				initializationTasks.Remove (service);
+				if (initializationCallbacks.TryGetValue (typeof (T), out callbacks))
+					initializationCallbacks.Remove (typeof (T));
+			}
+
+			if (callbacks != null) {
+				foreach (Action<T> action in callbacks) {
+					try {
+						action (service);
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Service initialization callback failed", ex);
+					}
+				}
+			}
 		}
 
 		Type GetImplementationType (Type serviceType)

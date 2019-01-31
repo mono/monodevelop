@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		DesktopService desktopService;
 		DocumentManager documentManager;
 		RootWorkspace workspace;
+		CompositionManager compositionManager;
 
 		// Background compiler is used to trigger compilations in the background for the solution and hold onto them
 		// so in case nothing references the solution in current stacks, they're not collected.
@@ -85,12 +86,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; }
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
-		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
-
-		static MonoDevelopWorkspace ()
-		{
-			Tasks.CommentTasksProvider.Initialize ();
-		}
 
 		/// <summary>
 		/// This bypasses the type system service. Use with care.
@@ -101,7 +96,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnSolutionAdded (sInfo);
 		}
 
-		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution, TypeSystemService typeSystemService) : base (HostServices, WorkspaceKind.Host)
+		internal MonoDevelopWorkspace (HostServices hostServices, MonoDevelop.Projects.Solution solution, TypeSystemService typeSystemService) : base (hostServices, WorkspaceKind.Host)
 		{
 			this.MonoDevelopSolution = solution;
 			this.serviceProvider = typeSystemService.ServiceProvider ?? Runtime.ServiceProvider;
@@ -121,6 +116,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			desktopService = await serviceProvider.GetService<DesktopService> ();
 			workspace = await serviceProvider.GetService<RootWorkspace> ();
 			documentManager = await serviceProvider.GetService<DocumentManager> ();
+			compositionManager = await serviceProvider.GetService<CompositionManager> ();
 
 			if (MonoDevelopSolution != null)
 				workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
@@ -241,7 +237,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			else
 				solutionCrawler.Unregister (this);
 
-			var diagnosticAnalyzer = CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.Diagnostics.IDiagnosticAnalyzerService> ();
+			var diagnosticAnalyzer = compositionManager.GetExportedValue<Microsoft.CodeAnalysis.Diagnostics.IDiagnosticAnalyzerService> ();
 			diagnosticAnalyzer.Reanalyze (this);
 		}
 

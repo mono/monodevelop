@@ -52,6 +52,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide
 {
@@ -151,6 +152,12 @@ namespace MonoDevelop.Ide
 		
 		public static CommandManager CommandService {
 			get { return commandService; }
+		}
+
+		public static CompositionManager CompositionManager {
+			get {
+				return CompositionManager.Instance;
+			}
 		}
 
 		public static DesktopService DesktopService => desktopService;
@@ -342,6 +349,14 @@ namespace MonoDevelop.Ide
 			fmTimeoutId = 0;
 			timeCompletion ();
 			return false;
+		}
+
+		public static void BringToFront ()
+		{
+			Initialized += (sender, e) => {
+				if (!Ide.WelcomePage.WelcomePageService.HasWindowImplementation)
+					Workbench.Present ();
+			};
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell

@@ -52,6 +52,7 @@ using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Shell;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide
 {
@@ -452,7 +453,8 @@ namespace MonoDevelop.Ide
 
 		static bool OnIdle ()
 		{
-			Composition.CompositionManager.InitializeAsync ().Ignore ();
+			// Make sure the composition manager started initializing
+			Runtime.GetService<CompositionManager> ();
 
 			// OpenDocuments appears when the app is idle.
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {

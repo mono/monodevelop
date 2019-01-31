@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	static partial class CommentTasksProvider
+	partial class CommentTasksProvider
 	{
 		internal static class Legacy
 		{
@@ -121,12 +121,14 @@ namespace MonoDevelop.Ide.Tasks
 
 			static void WorkbenchDocumentClosed (object sender, DocumentEventArgs e)
 			{
-				e.Document.DocumentContext.DocumentParsed -= HandleDocumentParsed;
+				if (e.Document.DocumentContext != null)
+					e.Document.DocumentContext.DocumentParsed -= HandleDocumentParsed;
 			}
 
 			static void WorkbenchDocumentOpened (object sender, DocumentEventArgs e)
 			{
-				e.Document.DocumentContext.DocumentParsed += HandleDocumentParsed;
+				if (e.Document.DocumentContext != null)
+					e.Document.DocumentContext.DocumentParsed += HandleDocumentParsed;
 			}
 
 			static void HandleDocumentParsed (object sender, EventArgs e)

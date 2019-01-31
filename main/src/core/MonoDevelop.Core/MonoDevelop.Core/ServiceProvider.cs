@@ -26,6 +26,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 namespace MonoDevelop.Core
 {
@@ -40,5 +41,13 @@ namespace MonoDevelop.Core
 		/// <returns>The service.</returns>
 		/// <typeparam name="T">The type of the service being requested</typeparam>
 		public abstract Task<T> GetService<T> () where T:class;
+
+		/// <summary>
+		/// Executes an action when a service is initialized
+		/// </summary>
+		/// <param name="action">Action to run</param>
+		/// <typeparam name="T">Service type</typeparam>
+		/// <remarks>This method does not cause the initialization of the service.</remarks>
+		public abstract void WhenServiceInitialized<T> (Action<T> action) where T : class;
 	}
 }

@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public Task Load (CancellationToken cancellationToken)
 		{
 			if (loadTask == null)
-				loadTask = Load (cancellationToken);
+				loadTask = OnLoad (cancellationToken);
 			return loadTask;
 		}
 

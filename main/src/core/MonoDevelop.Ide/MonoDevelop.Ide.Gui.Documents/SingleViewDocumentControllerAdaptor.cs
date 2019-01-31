@@ -102,9 +102,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		protected override async Task<DocumentView> OnInitializeView ()
 		{
 			var view = await base.OnInitializeView ();
-			view.ViewShown += (s,a) => {
-				IdeApp.Services.DisplayBindingService.AttachSubWindows (this, binding);
-			};
+//			view.ViewShown += (s,a) => {
+//				IdeApp.Services.DisplayBindingService.AttachSubWindows (this, binding);
+//			};
 			return view;
 		}
 

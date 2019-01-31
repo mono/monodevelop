@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.RoslynServices.Options;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -51,6 +52,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		DocumentManager documentManager;
 		DesktopService desktopService;
 		RootWorkspace rootWorkspace;
+		CompositionManager compositionManager;
 
 		IEnumerable<TypeSystemParserNode> parsers;
 		string[] filesSkippedInParseThread = new string[0];
@@ -90,7 +92,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			initialLoad = false;
 
 			try {
-				emptyWorkspace = new MonoDevelopWorkspace (null, this);
+				compositionManager = await serviceProvider.GetService<CompositionManager> ();
+				emptyWorkspace = new MonoDevelopWorkspace (compositionManager.HostServices, null, this);
 			} catch (Exception e) {
 				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
 			}
@@ -159,7 +162,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelopWorkspace CreateEmptyWorkspace ()
 		{
-			return new MonoDevelopWorkspace (null, this);
+			return new MonoDevelopWorkspace (compositionManager.HostServices, null, this);
 		}
 
 		public TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)

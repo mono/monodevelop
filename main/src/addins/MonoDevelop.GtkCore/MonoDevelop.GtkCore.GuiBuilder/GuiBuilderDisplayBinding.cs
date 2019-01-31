@@ -85,6 +85,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			excludeThis = true;
 			var db = IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			var content = await db.CreateController (file);
+			await content.Initialize (file);
 			var window = GetWindow (file.FilePath, (Project)file.Owner);
 			if (window == null)
 				throw new InvalidOperationException ("GetWindow == null");

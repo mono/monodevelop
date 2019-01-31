@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				Model = fileModel;
 			} else {
 				// Existing file, get a model from the registry
-				Model = modelRegistry.CreateSharedModel<FileDocumentModel> (fileDescriptor.FilePath);
+				Model = modelRegistry.GetSharedModel<FileDocumentModel> (fileDescriptor.FilePath);
 			}
 			FilePath = fileDescriptor.FilePath;
 			Owner = fileDescriptor.Owner;
@@ -103,14 +103,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		async Task UpdateIcon (Xwt.Drawing.Image iconToReplace)
 		{
-			if (Model is FileDocumentModel fileModel) {
+			if (!FilePath.IsNullOrEmpty) {
 				var desktopService = await ServiceProvider.GetService<DesktopService> ();
 				if (DocumentIcon != iconToReplace) // If the icon has changed since the update was requested, keep the new one
 					return;
 				try {
-					DocumentIcon = desktopService.GetIconForFile (fileModel.FilePath);
+					DocumentIcon = desktopService.GetIconForFile (FilePath);
 				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+					LoggingService.LogError ("Icon retrieval failed", ex);
 					DocumentIcon = desktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 				}
 			}

@@ -200,6 +200,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				throw new ApplicationException ("Can't create display binding for model descriptor: " + modelDescriptor);
 
 			var controller = await controllerDesc.CreateController (modelDescriptor);
+			await controller.Initialize (modelDescriptor);
 			return await OpenDocument (controller, bringToFront);
 		}
 

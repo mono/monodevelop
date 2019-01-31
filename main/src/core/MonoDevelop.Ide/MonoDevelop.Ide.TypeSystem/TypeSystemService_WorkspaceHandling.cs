@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is MonoDevelop.Projects.Solution solution) {
-				var workspace = new MonoDevelopWorkspace (solution, this);
+				var workspace = new MonoDevelopWorkspace (compositionManager.HostServices, solution, this);
 				lock (workspaceLock)
 					workspaces = workspaces.Add (workspace);
 				solution.SolutionItemAdded += OnSolutionItemAdded;

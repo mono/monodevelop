@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		public BuildOutputViewContent (FilePath filename): this()
 		{
 			this.filename = filename;
-			Model = IdeApp.Workbench.DocumentModelRegistry.CreateSharedModel<FileDocumentModel> (filename);
+			Model = IdeApp.Workbench.DocumentModelRegistry.GetSharedModel<FileDocumentModel> (filename);
 			Counters.OpenedFromFile++;
 			IsReadOnly = true;
 		}

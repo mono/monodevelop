@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Core.Text;
 using System.Threading;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -59,6 +60,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public string MimeType { get; set; }
 
 		public FilePath FilePath { get; private set; }
+
+		public Encoding Encoding { get; set; }
 
 		public bool IsNewFile { get; private set; }
 
@@ -122,6 +125,37 @@ namespace MonoDevelop.Ide.Gui.Documents
 			throw new NotImplementedException ();
 		}
 
+		/// <summary>
+		/// Sets the content of the file
+		/// </summary>
+		public Task SetContent (string text)
+		{
+			var ms = new MemoryStream ();
+			var writer = new StreamWriter (ms);
+			writer.Write (text);
+			return SetContent (ms);
+		}
+
+		/// <summary>
+		/// Sets the content of the file
+		/// </summary>
+		public Task SetTextContent (TextReader textReader)
+		{
+			var ms = new MemoryStream ();
+			var writer = new StreamWriter (ms);
+			writer.Write (textReader.ReadToEnd ());
+			return SetContent (ms);
+		}
+
+		/// <summary>
+		/// Returns the content of the file in a stream
+		/// </summary>
+		/// <returns>The read.</returns>
+		public async Task<TextReader> GetTextContent ()
+		{
+			return new StreamReader (await GetContent ());
+		}
+
 		public async Task<ITextBuffer> GetTextBuffer ()
 		{
 			return (await GetTextDocument()).TextBuffer;
@@ -131,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			var data = (FileData)Data;
 			if (data.TextDocument == null) {
-				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
+				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : await GetContentTypeFromMimeType (FilePath, MimeType);
 				if (IsNewFile) {
 					using (var reader = new StreamReader (await GetContent ())) {
 						var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (reader, contentType);
@@ -148,10 +182,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return data.TextDocument;
 		}
 
-		private static IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+		private static async Task<IContentType> GetContentTypeFromMimeType (string filePath, string mimeType)
 		{
 			if (filePath != null) {
-				var fileToContentTypeService = CompositionManager.GetExportedValue<IFileToContentTypeService> ();
+				var compositionManager = await Runtime.GetService<CompositionManager> ();
+				var fileToContentTypeService = compositionManager.GetExportedValue<IFileToContentTypeService> ();
 				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
 				if (contentTypeFromPath != null &&
 					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {

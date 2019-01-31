@@ -61,6 +61,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool isNewDocument;
 		string documentTitle;
 		string documentIconId;
+		string tabPageLabel;
+		string accessibilityDescription;
 		bool loaded;
 		Xwt.Drawing.Image documentIcon;
 		bool usingIconId;
@@ -96,6 +98,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public event EventHandler DocumentIconChanged;
 
 		/// <summary>
+		/// Raised when the TabPageLabel property changes
+		/// </summary>
+		public event EventHandler TabPageLabelChanged;
+
+		/// <summary>
 		/// Raised when the IsDirty property changes
 		/// </summary>
 		public event EventHandler IsDirtyChanged;
@@ -109,6 +116,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Raised when the IsReadyOnly property changes
 		/// </summary>
 		public event EventHandler IsReadOnlyChanged;
+
+		/// <summary>
+		/// Raised when the AccessibilityDescription property changes
+		/// </summary>
+		public event EventHandler AccessibilityDescriptionChanged;
 
 		/// <summary>
 		/// Gets or sets the service provider used to create this controller
@@ -214,6 +226,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		/// <summary>
+		/// Accessibility description for the document or view tab
+		/// </summary>
+		public string AccessibilityDescription {
+			get => accessibilityDescription;
+			set {
+				if (value != documentTitle) {
+					accessibilityDescription = value;
+					AccessibilityDescriptionChanged?.Invoke (this, EventArgs.Empty);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Icon of the document tab
 		/// </summary>
 		/// <value>The stock icon identifier.</value>
@@ -225,6 +250,29 @@ namespace MonoDevelop.Ide.Gui.Documents
 					documentIconId = null;
 					usingIconId = false;
 					DocumentIconChanged?.Invoke (this, EventArgs.Empty);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Title shown in the view tab, when a document shows more than one view
+		/// </summary>
+		public string TabPageLabel {
+			get {
+				if (tabPageLabel == null) {
+					switch (Role) {
+					case DocumentControllerRole.Preview: return GettextCatalog.GetString ("Preview");
+					case DocumentControllerRole.VisualDesign: return GettextCatalog.GetString ("Designer");
+					case DocumentControllerRole.Tool: return GettextCatalog.GetString ("Tools");
+					}
+					return GettextCatalog.GetString ("Source");
+				}
+				return tabPageLabel;
+			}
+			set {
+				if (value != tabPageLabel) {
+					tabPageLabel = value;
+					TabPageLabelChanged?.Invoke (this, EventArgs.Empty);
 				}
 			}
 		}
@@ -390,11 +438,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </remarks>
 		public async Task RefreshExtensions ()
 		{
+			if (extensionChain == null)
+				return;
+
 			// First of all look for new extensions that should be attached
 
-			// Get the list of nodes for which an extension has been created
+				// Get the list of nodes for which an extension has been created
 
-			var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
+				var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
 			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
 				.Select (ex => ex.SourceExtensionNode.Id).ToList ();
 

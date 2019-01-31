@@ -39,7 +39,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 	{
 		Dictionary<object, DocumentModel.DocumentModelData> dataModels = new Dictionary<object, DocumentModel.DocumentModelData> ();
 
-		public T CreateSharedModel<T> (object id) where T: DocumentModel, new()
+		public FileDocumentModel GetSharedFileModel (FilePath filePath)
+		{
+			return GetSharedModel<FileDocumentModel> (filePath);
+		}
+
+		public T GetSharedModel<T> (object id) where T: DocumentModel, new()
 		{
 			var t = new T ();
 			if (dataModels.TryGetValue (id, out var data))

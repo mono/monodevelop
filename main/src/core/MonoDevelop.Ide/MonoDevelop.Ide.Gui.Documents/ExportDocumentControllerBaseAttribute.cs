@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public bool HasFileFilter {
 			get {
-				return FileExtension.Any () || MimeTypes.Any () || FileNames.Any ();
+				return FileExtension != null && FileExtension.Any () || MimeTypes != null && MimeTypes.Any () || FileNames != null && FileNames.Any ();
 			}
 		}
 

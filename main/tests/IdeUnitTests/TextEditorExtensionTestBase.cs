@@ -35,6 +35,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Documents;
 using IdeUnitTests;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide
 {
@@ -148,7 +149,7 @@ namespace MonoDevelop.Ide
 
 		protected async Task<TextEditorExtensionTestCase> SetupTestCase (string input, int cursorPosition = -1, bool wrap = false)
 		{
-			await Composition.CompositionManager.InitializeAsync ();
+			await Runtime.GetService<CompositionManager> ();
 
 			var data = GetContentData ();
 

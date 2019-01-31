@@ -45,12 +45,20 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Raised when the active view in this hierarchy of views changes
 		/// </summary>
 		public EventHandler ActiveViewInHierarchyChanged;
+		private DocumentController sourceController;
 
 		/// <summary>
 		/// The controller that was used to create this view
 		/// </summary>
 		/// <value>The parent controller.</value>
-		public DocumentController SourceController { get; internal set; }
+		public DocumentController SourceController {
+			get { return sourceController; }
+			internal set {
+				UnsubscribeControllerEvents ();
+				sourceController = value;
+				SubscribeControllerEvents ();
+			}
+		}
 
 		public DocumentViewContentCollection AttachedViews { get; } = new DocumentViewContentCollection ();
 
@@ -58,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Title of the view. This is the text shown in tabs and selectors.
 		/// </summary>
 		public string Title {
-			get => title;
+			get => title ?? SourceController?.TabPageLabel;
 			set {
 				title = value;
 				UpdateTitle ();
@@ -66,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		public string AccessibilityDescription {
-			get { return accessibilityDescription; }
+			get { return accessibilityDescription ?? SourceController?.AccessibilityDescription; }
 			set { accessibilityDescription = value; UpdateTitle (); }
 		}
 
@@ -151,6 +159,27 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (SourceController != null)
 				yield return SourceController;
+		}
+
+		void SubscribeControllerEvents ()
+		{
+			if (SourceController != null) {
+				SourceController.AccessibilityDescriptionChanged += SourceController_AccessibilityDescriptionChanged;
+				SourceController.DocumentTitleChanged += SourceController_AccessibilityDescriptionChanged;
+			}
+		}
+
+		void UnsubscribeControllerEvents ()
+		{
+			if (SourceController != null) {
+				SourceController.AccessibilityDescriptionChanged -= SourceController_AccessibilityDescriptionChanged;
+				SourceController.DocumentTitleChanged -= SourceController_AccessibilityDescriptionChanged;
+			}
+		}
+
+		void SourceController_AccessibilityDescriptionChanged (object sender, EventArgs e)
+		{
+			UpdateTitle ();
 		}
 	}
 }

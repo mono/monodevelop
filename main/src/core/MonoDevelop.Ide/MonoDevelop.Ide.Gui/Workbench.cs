@@ -299,7 +299,10 @@ namespace MonoDevelop.Ide.Gui
 			//partially work around this by avoiding the present call if it's already toplevel
 			if (Platform.IsWindows && RootWindow.HasToplevelFocus)
 				return;
-			
+
+			RootWindow.Deiconify ();
+			RootWindow.Visible = true;
+
 			//FIXME: this should do a "request for attention" dock bounce on MacOS but only in some cases.
 			//Doing it for all Present calls is excessive and annoying. Maybe we have too many Present calls...
 			//Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (RootWindow);
