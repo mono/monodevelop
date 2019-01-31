@@ -29,22 +29,31 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core
 {
-	public class FileEventInfo
+	// For backwards compat.
+	public class FileCopyEventInfo
 	{
 		public FilePath SourceFile { get; }
 		public FilePath TargetFile { get; }
-		public FilePath FileName => TargetFile;
 		public bool IsDirectory { get; }
 
-		public FileEventInfo (string fileName, bool isDirectory) : this (fileName, fileName, isDirectory)
-		{
-		}
-
-		public FileEventInfo (string sourceFile, string targetFile, bool isDirectory)
+		protected FileCopyEventInfo (string sourceFile, string targetFile, bool isDirectory)
 		{
 			SourceFile = sourceFile;
 			TargetFile = TargetFile;
 			IsDirectory = isDirectory;
+		}
+	}
+
+	public class FileEventInfo : FileCopyEventInfo
+	{
+		public FilePath FileName => TargetFile;
+
+		public FileEventInfo (string fileName, bool isDirectory) : base (fileName, fileName, isDirectory)
+		{
+		}
+
+		public FileEventInfo (string sourceFile, string targetFile, bool isDirectory) : base (sourceFile, targetFile, isDirectory)
+		{
 		}
 	}
 
