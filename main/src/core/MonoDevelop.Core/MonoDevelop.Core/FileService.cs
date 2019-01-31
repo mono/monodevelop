@@ -47,6 +47,16 @@ namespace MonoDevelop.Core
 {
 	public static class FileService
 	{
+		internal enum EventDataKind
+		{
+			Created,
+			Changed,
+			Copied,
+			Moved,
+			Removed,
+			Renamed,
+		}
+
 		delegate bool PathCharsAreEqualDelegate (char a, char b);
 
 		static PathCharsAreEqualDelegate PathCharsAreEqual = Platform.IsWindows || Platform.IsMac ?
@@ -753,19 +763,19 @@ namespace MonoDevelop.Core
 					Counters.FilesCreated++;
 			}
 
-			eventQueue.RaiseEvent (FileCreated, args);
+			eventQueue.RaiseEvent (EventDataKind.Created, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileCopied;
 		static void OnFileCopied (FileCopyEventArgs args)
 		{
-			eventQueue.RaiseEvent (FileCopied, args);
+			eventQueue.RaiseEvent (EventDataKind.Copied, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileMoved;
 		static void OnFileMoved (FileCopyEventArgs args)
 		{
-			eventQueue.RaiseEvent (FileMoved, args);
+			eventQueue.RaiseEvent (EventDataKind.Moved, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
@@ -780,7 +790,7 @@ namespace MonoDevelop.Core
 					Counters.FilesRenamed++;
 			}
 
-			eventQueue.RaiseEvent (FileRenamed, args);
+			eventQueue.RaiseEvent (EventDataKind.Renamed, args);
 		}
 
 		public static event EventHandler<FileEventArgs> FileRemoved;
@@ -795,14 +805,14 @@ namespace MonoDevelop.Core
 					Counters.FilesRemoved++;
 			}
 
-			eventQueue.RaiseEvent (FileRemoved, args);
+			eventQueue.RaiseEvent (EventDataKind.Removed, args);
 		}
 
 		public static event EventHandler<FileEventArgs> FileChanged;
 		static void OnFileChanged (FileEventArgs args)
 		{
 			Counters.FileChangeNotifications++;
-			eventQueue.RaiseEvent (FileChanged, args);
+			eventQueue.RaiseEvent (EventDataKind.Changed, args);
 		}
 
 		public static async Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
@@ -867,6 +877,27 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		internal static object GetHandler (EventDataKind kind)
+		{
+			switch (kind)
+			{
+			case EventDataKind.Changed:
+				return FileChanged;
+			case EventDataKind.Copied:
+				return FileCopied;
+			case EventDataKind.Created:
+				return FileCreated;
+			case EventDataKind.Moved:
+				return FileMoved;
+			case EventDataKind.Removed:
+				return FileRemoved;
+			case EventDataKind.Renamed:
+				return FileRenamed;
+			default:
+				throw new InvalidOperationException ();
+			}
+		}
+
 		/// <summary>
 		/// File watcher events - these are not fired on the UI thread.
 		/// </summary>
@@ -875,32 +906,47 @@ namespace MonoDevelop.Core
 
 	class EventQueue
 	{
-		class EventData<TArgs> : EventData where TArgs:EventArgs
+		static void RaiseSync (FileService.EventDataKind kind, FileEventArgs args)
 		{
-			public EventHandler<TArgs> Delegate;
-			public TArgs Args;
+			var handler = FileService.GetHandler (kind);
 
-			public override void Invoke ()
-			{
-				Delegate?.Invoke (null, Args);
+			// Ugly, but it saves us the problem of having to deal with generic event handlers without covariance.
+			if (args is FileCopyEventArgs copyArgs) {
+				if (handler is EventHandler<FileCopyEventArgs> copyHandler) {
+					copyHandler.Invoke (null, copyArgs);
+					return;
+				}
+				throw new InvalidOperationException ();
 			}
 
-			public override bool ShouldMerge (EventData other)
-			{
-				if (!(other is EventData<TArgs> next))
-					return false;
-				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate;
-			}
+			if (handler is EventHandler<FileEventArgs> fileHandler)
+				fileHandler.Invoke (null, args);
+			else
+				throw new InvalidOperationException ();
+		}
 
-			public override bool IsChainArgs ()
-			{
-				return Args is IEventArgsChain;
-			}
+		class FileEventData : EventData
+		{
+			public FileService.EventDataKind Kind;
+			public FileEventArgs Args;
 
-			public override void MergeArgs (EventData other)
+			public override void Invoke () => RaiseSync (Kind, Args);
+
+			public override bool MergeArgs (EventData other)
 			{
-				var next = (EventData<TArgs>)other;
-				((IEventArgsChain)next.Args).MergeWith ((IEventArgsChain)Args);
+				bool shouldMerge = false;
+
+				if (other is FileEventData next && Kind == next.Kind) {
+					shouldMerge = true;
+
+					if (next.Args is FileCopyEventArgs nextArgs && Args is FileCopyEventArgs thisArgs)
+						shouldMerge &= nextArgs.IsExternal == thisArgs.IsReadOnly;
+
+					if (shouldMerge)
+						next.Args.MergeWith (Args);
+				}
+
+				return shouldMerge;
 			}
 		}
 
@@ -909,17 +955,13 @@ namespace MonoDevelop.Core
 			public static EmptyEventData Instance = new EmptyEventData ();
 
 			public override void Invoke () { }
-			public override bool ShouldMerge (EventData other) => false;
-			public override void MergeArgs (EventData other) { }
-			public override bool IsChainArgs () => false;
+			public override bool MergeArgs (EventData other) => false;
 		}
 
 		abstract class EventData
 		{
 			public abstract void Invoke ();
-			public abstract bool ShouldMerge (EventData other);
-			public abstract void MergeArgs (EventData other);
-			public abstract bool IsChainArgs ();
+			public abstract bool MergeArgs (EventData other);
 		}
 
 		List<EventData> events = new List<EventData> ();
@@ -955,28 +997,26 @@ namespace MonoDevelop.Core
 			}).Ignore ();
 		}
 
-		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
+		public void RaiseEvent (FileService.EventDataKind kind, FileEventArgs args)
 		{
-			if (del == null)
-				return;
-
 			lock (lockObject) {
 				if (frozen > 0) {
-					var ed = new EventData<TArgs> ();
-					ed.Delegate = del;
-					ed.Args = args;
+					var ed = new FileEventData {
+						Kind = kind,
+						Args = args,
+					};
 					events.Add (ed);
 					return;
 				}
 			}
 
 			if (Runtime.IsMainThread) {
-				del.Invoke (null, args);
+				RaiseSync (kind, args);
 			} else {
 				Runtime.MainSynchronizationContext.Post (state => {
-					var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
-					del1.Invoke (null, args1);
-				}, (del, args));
+					var (k, a) = (ValueTuple<FileService.EventDataKind, FileEventArgs>)state;
+					RaiseSync (k, a);
+				}, (kind, args));
 			}
 		}
 
@@ -991,11 +1031,8 @@ namespace MonoDevelop.Core
 				for (int n = 1; n < pendingEvents.Count; n++, previous = current) {
 					current = pendingEvents [n];
 
-					if (!previous.IsChainArgs () || !previous.ShouldMerge (current))
-						continue;
-
-					previous.MergeArgs (current);
-					pendingEvents [n - 1] = EmptyEventData.Instance;
+					if (previous.MergeArgs (current))
+						pendingEvents [n - 1] = EmptyEventData.Instance;
 				}
 			}
 		}
