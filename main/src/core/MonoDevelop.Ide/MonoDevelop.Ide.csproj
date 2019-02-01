@@ -3039,7 +3039,6 @@
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
-    <Compile Include="MonoDevelop.Ide.Composition\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />

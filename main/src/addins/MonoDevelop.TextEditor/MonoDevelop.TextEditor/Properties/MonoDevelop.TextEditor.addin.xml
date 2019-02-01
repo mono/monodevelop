@@ -165,6 +165,7 @@
 	<!-- temporary, need to align with old menu -->
 	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />

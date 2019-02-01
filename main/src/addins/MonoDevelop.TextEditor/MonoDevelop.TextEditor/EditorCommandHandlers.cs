@@ -68,7 +68,8 @@ namespace MonoDevelop.TextEditor.Cocoa
         ICommandHandler<UndoCommandArgs>,
         ICommandHandler<UpKeyCommandArgs>,
         ICommandHandler<WordDeleteToEndCommandArgs>,
-        ICommandHandler<WordDeleteToStartCommandArgs>
+        ICommandHandler<WordDeleteToStartCommandArgs>,
+        ICommandHandler<FindReferencesCommandArgs>
     {
         [Import]
         private IEditorOperationsFactoryService OperationsService { get; set; }
@@ -332,6 +333,17 @@ namespace MonoDevelop.TextEditor.Cocoa
         }
 
         bool ICommandHandler<RenameCommandArgs>.ExecuteCommand(RenameCommandArgs args, CommandExecutionContext executionContext)
+        {
+            // Do nothing. We merely enable others to call this command
+            return true;
+        }
+
+        CommandState ICommandHandler<FindReferencesCommandArgs>.GetCommandState (FindReferencesCommandArgs args)
+        {
+            return CommandState.Available;
+        }
+
+        bool ICommandHandler<FindReferencesCommandArgs>.ExecuteCommand (FindReferencesCommandArgs args, CommandExecutionContext executionContext)
         {
             // Do nothing. We merely enable others to call this command
             return true;
