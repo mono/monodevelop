@@ -9,4 +9,7 @@
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "TextViewWpf" insertbefore = "TextEditor" class = "MonoDevelop.TextEditor.WpfTextViewDisplayBinding" />
 	</Extension>
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
+	</Extension>
 </ExtensionModel>
