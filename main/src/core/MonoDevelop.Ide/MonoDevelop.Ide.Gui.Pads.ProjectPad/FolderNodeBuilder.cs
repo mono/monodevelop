@@ -438,7 +438,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void OnFileInserted (ITreeNavigator nav)
 		{
 			nav.Selected = true;
-			Tree.StartLabelEdit ();
 		}
 
 		///<summary>Imports files and folders from a target folder into the current folder</summary>
@@ -549,27 +548,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			// project node is collapsed and Refresh was used the project node would not expand and the new folder
 			// node would not be selected.
 			CurrentNode.Expanded = true;
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			
-			string baseFolderPath = GetFolderPath (CurrentNode.DataItem);
-			string directoryName = Path.Combine (baseFolderPath, GettextCatalog.GetString("New Folder"));
-			int index = -1;
 
-			if (Directory.Exists(directoryName)) {
-				while (Directory.Exists(directoryName + (++index + 1))) ;
-			}
-			
-			if (index >= 0) {
-				directoryName += index + 1;
-			}
-			
-			Directory.CreateDirectory (directoryName);
-			
-			ProjectFile newFolder = new ProjectFile (directoryName);
+			var project = CurrentNode.GetParentDataItem (typeof (Project), true) as Project;
+			string baseFolderPath = GetFolderPath (CurrentNode.DataItem);
+
+			FilePath folder = await NewFolderDialog.Open (baseFolderPath);
+
+			if (folder.IsNull)
+				return;
+
+			var newFolder = new ProjectFile (folder);
 			newFolder.Subtype = Subtype.Directory;
 			project.Files.Add (newFolder);
 
-			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));
+			Tree.AddNodeInsertCallback (new ProjectFolder (folder, project), new TreeNodeCallback (OnFileInserted));
 
 			await IdeApp.ProjectOperations.SaveAsync (project);
 		}
