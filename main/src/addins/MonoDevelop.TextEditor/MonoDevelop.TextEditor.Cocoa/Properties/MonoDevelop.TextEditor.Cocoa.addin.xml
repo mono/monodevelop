@@ -44,4 +44,7 @@
 		<StockIcon stockid="vs-find-replace-option-regex" resource="vs-find-replace-option-regex-16.png" size="Menu" imageid="{6114fe54-2a4a-4354-aabb-d2b8fad160a5};4" />
 		<StockIcon stockid="vs-find-replace-option-whole-words-only" resource="vs-find-replace-option-whole-words-only-16.png" size="Menu" imageid="{6114fe54-2a4a-4354-aabb-d2b8fad160a5};5" />
 	</Extension>
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+	</Extension>
 </ExtensionModel>
