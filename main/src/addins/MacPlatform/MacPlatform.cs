@@ -311,12 +311,12 @@ namespace MonoDevelop.MacIntegration
 			e.DockMenu = menu;
 		}
 
-		void NewInstanceMenuItem_Activated (object sender, EventArgs e)
+		static void NewInstanceMenuItem_Activated (object sender, EventArgs e)
 		{
 			var bundlePath = NSBundle.MainBundle.BundlePath;
 			NSWorkspace.SharedWorkspace.LaunchApplication (NSUrl.FromFilename (bundlePath), NSWorkspaceLaunchOptions.NewInstance, new NSDictionary (), out NSError error);
 			if (error != null)
-				LoggingService.LogError ($"Failed to start new instance: { error.LocalizedDescription}");
+				LoggingService.LogError ($"Failed to start new instance: {error.LocalizedDescription}");
 		}
 
 
