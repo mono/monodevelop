@@ -278,3 +278,4 @@ main/po/StripMnemonics.pdb
 main/po/StripMnemonics.exe
 *.binlog
 *.ProjectImports.zip
+main/tests/StressTest/bin
