@@ -254,6 +254,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			disposed = true;
 
+			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
