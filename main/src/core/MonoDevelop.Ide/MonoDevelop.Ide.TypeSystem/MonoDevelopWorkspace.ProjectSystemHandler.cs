@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public partial class MonoDevelopWorkspace
 	{
-		internal class ProjectSystemHandler
+		internal class ProjectSystemHandler : IDisposable
 		{
 			readonly MonoDevelopWorkspace workspace;
 			readonly ProjectDataMap projectMap;
@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly Lazy<MetadataReferenceHandler> metadataHandler;
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
 			readonly HackyWorkspaceFilesCache hackyCache;
+			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
 
 			bool added;
 			readonly object addLock = new object ();
@@ -174,6 +175,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					references.Select (x => x.CurrentSnapshot),
 					analyzerReferences: analyzerFiles.SelectAsArray (x => {
 						var analyzer = new MonoDevelopAnalyzer (x, hostDiagnosticUpdateSource.Value, projectId, workspace, loader, LanguageNames.CSharp);
+						analyzersToDispose.Add (analyzer);
 						return analyzer.GetReference ();
 					}),
 					additionalDocuments: additionalDocuments
@@ -415,6 +417,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			static IEnumerable<string> GetFolders (string projectName, MonoDevelop.Projects.ProjectFile f)
 			{
 				return new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+			}
+
+			public void Dispose ()
+			{
+				foreach (var analyzer in analyzersToDispose)
+					analyzer.Dispose ();
+				analyzersToDispose.Clear ();
 			}
 		}
 	}
