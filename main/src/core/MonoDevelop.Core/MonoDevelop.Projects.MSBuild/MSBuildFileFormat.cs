@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public abstract class MSBuildFileFormat
+	public abstract class MSBuildFileFormat : IComparable<MSBuildFileFormat>, IEquatable<MSBuildFileFormat>
 	{
 		readonly SlnFileFormat slnFileFormat;
 
@@ -220,8 +220,25 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			return string.Empty;
 		}
-		
+
 		public abstract string Id { get; }
+
+		#region IComparable<MSBuildFileFormat> implementation and overloads
+
+		public override bool Equals (object obj) => obj is MSBuildFileFormat other && Equals (other);
+		public bool Equals (MSBuildFileFormat other) => other != null && Id == other.Id;
+		public override int GetHashCode () => Id.GetHashCode ();
+
+		public int CompareTo (MSBuildFileFormat other) => Version.Parse (SlnVersion).CompareTo (Version.Parse (other.SlnVersion));
+
+		public static bool operator == (MSBuildFileFormat a, MSBuildFileFormat b) => a.Id == b.Id;
+		public static bool operator != (MSBuildFileFormat a, MSBuildFileFormat b) => a.Id != b.Id;
+		public static bool operator < (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) < Version.Parse (b.SlnVersion);
+		public static bool operator > (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) > Version.Parse (b.SlnVersion);
+		public static bool operator <= (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) <= Version.Parse (b.SlnVersion);
+		public static bool operator >= (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) >= Version.Parse (b.SlnVersion);
+
+		#endregion
 	}
 
 	class MSBuildFileFormatVS05 : MSBuildFileFormat
