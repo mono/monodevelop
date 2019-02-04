@@ -26,9 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CustomTools;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 
@@ -63,19 +63,25 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
 			packageManagementEvents.ImportRemoved += ImportRemoved;
+
+			CustomToolService.Freeze ();
 		}
 
 		public void Dispose ()
 		{
-			packageManagementEvents.ImportRemoved -= ImportRemoved;
-			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
-			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
+			try {
+				packageManagementEvents.ImportRemoved -= ImportRemoved;
+				packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
+				packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 
-			if (taskCompletionSource != null && taskCompletionSource.Task == PackageManagementMSBuildExtension.PackageRestoreTask) {
-				PackageManagementMSBuildExtension.PackageRestoreTask = null;
+				if (taskCompletionSource != null && taskCompletionSource.Task == PackageManagementMSBuildExtension.PackageRestoreTask) {
+					PackageManagementMSBuildExtension.PackageRestoreTask = null;
+				}
+
+				UnloadMSBuildHost ();
+			} finally {
+				CustomToolService.Thaw ();
 			}
-
-			UnloadMSBuildHost ();
 		}
 
 		void ResolveFileConflict(object sender, ResolveFileConflictEventArgs e)

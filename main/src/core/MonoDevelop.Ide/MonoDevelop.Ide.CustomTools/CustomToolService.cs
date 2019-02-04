@@ -53,7 +53,23 @@ namespace MonoDevelop.Ide.CustomTools
 			public SingleFileCustomToolResult Result;
 		}
 
+		class PendingUpdate
+		{
+			public ProjectFile File;
+			public Project Project;
+			public bool Force;
+
+			public PendingUpdate (ProjectFile file, Project project, bool force)
+			{
+				File = file;
+				Project = project;
+				Force = force;
+			}
+		}
+
 		static readonly Dictionary<string,TaskInfo> runningTasks = new Dictionary<string, TaskInfo> ();
+		static readonly Dictionary<string, PendingUpdate> pendingUpdates = new Dictionary<string, PendingUpdate> ();
+		static int frozen;
 		
 		static CustomToolService ()
 		{
@@ -127,19 +143,35 @@ namespace MonoDevelop.Ide.CustomTools
 
 		public async static Task Update (IEnumerable<ProjectFile> files, bool force)
 		{
+			IEnumerable<PendingUpdate> updates = null;
+			if (files != null) {
+				updates = files.Select (file => new PendingUpdate (file, file.Project, force));
+			}
+
+			lock (pendingUpdates) {
+				if (frozen > 0) {
+					if (updates != null) {
+						foreach (var update in updates) {
+							pendingUpdates [update.File.FilePath] = update;
+						}
+					}
+					return;
+				}
+			}
+
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
 
-			IEnumerator<ProjectFile> fileEnumerator;
+			IEnumerator<PendingUpdate> fileEnumerator;
 
 			//begin root task
 			monitor.BeginTask (GettextCatalog.GetString ("Generate templates"), 1);
 
-			if (files == null || !(fileEnumerator = files.GetEnumerator ()).MoveNext ()) {
+			if (files == null || !(fileEnumerator = updates.GetEnumerator ()).MoveNext ()) {
 				monitor.EndTask ();
 				monitor.ReportSuccess (GettextCatalog.GetString ("No templates found"));
 				monitor.Dispose ();
 			} else {
-				await Update (monitor, fileEnumerator, force, 0, 0, 0);
+				await Update (monitor, fileEnumerator, 0, 0, 0);
 			}
 		}
 
@@ -183,29 +215,35 @@ namespace MonoDevelop.Ide.CustomTools
 				|| File.GetLastWriteTime (file.FilePath) > File.GetLastWriteTime (genFile.FilePath);
 		}
 
-		static async Task Update (ProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, int succeeded, int warnings, int errors)
+		static async Task Update (ProgressMonitor monitor, IEnumerator<PendingUpdate> updates, int succeeded, int warnings, int errors)
 		{
-			ProjectFile file = fileEnumerator.Current;
 			SingleProjectFileCustomTool tool;
 			ProjectFile genFile;
 
 			bool shouldRun;
-			while (!(shouldRun = ShouldRunGenerator (file, file.Project, force, out tool, out genFile)) && fileEnumerator.MoveNext ())
+			while (!(shouldRun = ShouldRunGenerator (updates.Current.File, updates.Current.Project, updates.Current.Force, out tool, out genFile)) && updates.MoveNext ())
 				continue;
 
+			PendingUpdate update = updates.Current;
 			//no files which can be generated in remaining elements of the collection, nothing to do
 			if (!shouldRun) {
-				WriteSummaryResults (monitor, succeeded, warnings, errors);
+				if (monitor != null)
+					WriteSummaryResults (monitor, succeeded, warnings, errors);
 				return;
 			}
 
-			TaskService.Errors.ClearByOwner (file);
+			TaskService.Errors.ClearByOwner (update.File);
 
 			var result = new SingleFileCustomToolResult ();
-			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
+			if (monitor == null) {
+				monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
+				// Need to create a parent root task to avoid an error when EndTask is called in WriteSummaryResults.
+				monitor.BeginTask (GettextCatalog.GetString ("Generating files"), 1);
+			}
+			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", update.File.Generator, update.File.Name), 1);
 
 			try {
-				await tool.Generate (monitor, file.Project, file, result);
+				await tool.Generate (monitor, update.Project, update.File, result);
 				if (!monitor.HasErrors && !monitor.HasWarnings) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("File '{0}' was generated successfully.", result.GeneratedFilePath));
 					succeeded++;
@@ -218,13 +256,13 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 
 				//check that we can process further. If UpdateCompleted returns `true` this means no errors or non-fatal errors occurred
-				if (UpdateCompleted (monitor, file, genFile, result, true) && fileEnumerator.MoveNext ())
-					await Update (monitor, fileEnumerator, force, succeeded, warnings, errors);
+				if (UpdateCompleted (monitor, update.File, genFile, result, true) && updates.MoveNext ())
+					await Update (monitor, updates, succeeded, warnings, errors);
 				else
 					WriteSummaryResults (monitor, succeeded, warnings, errors);
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
-				UpdateCompleted (monitor, file, genFile, result, true);
+				UpdateCompleted (monitor, update.File, genFile, result, true);
 			}
 		}
 
@@ -266,6 +304,14 @@ namespace MonoDevelop.Ide.CustomTools
 
 		public static async void Update (ProjectFile file, Project project, bool force)
 		{
+			lock (pendingUpdates) {
+				if (frozen > 0) {
+					var update = new PendingUpdate (file, project, force);
+					pendingUpdates [file.FilePath] = update;
+					return;
+				}
+			}
+
 			SingleProjectFileCustomTool tool;
 			ProjectFile genFile;
 			if (!ShouldRunGenerator (file, project, force, out tool, out genFile)) {
@@ -524,6 +570,32 @@ namespace MonoDevelop.Ide.CustomTools
 				monitor.EndTask (); 
 				cancelReg.Dispose ();
 			});
+		}
+
+		public static void Freeze ()
+		{
+			lock (pendingUpdates) {
+				frozen++;
+			}
+		}
+
+		public static void Thaw ()
+		{
+			List<PendingUpdate> updates = null;
+
+			lock (pendingUpdates) {
+				if (--frozen != 0 || pendingUpdates.Count == 0)
+					return;
+
+				updates = pendingUpdates.Values.ToList ();
+				pendingUpdates.Clear ();
+			}
+
+			Runtime.RunInMainThread (() => {
+				var enumerator = updates.GetEnumerator ();
+				enumerator.MoveNext ();
+				Update (null, enumerator, 0, 0, 0).Ignore ();
+			}).Ignore ();
 		}
 	}
 }
