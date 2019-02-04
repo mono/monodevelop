@@ -48,13 +48,16 @@ namespace MonoDevelop.HexEditor
 		Mono.MHex.HexEditor hexEditor;
 		ScrollView window;
 
+		protected override Type FileModelType => typeof (ByteBufferModel);
+
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
 			hexEditor = new Mono.MHex.HexEditor ();
+			hexEditor.HexEditorData.ByteBuffer = ((ByteBufferModel)Model).ByteBuffer;
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();
 			DefaultSourceEditorOptions.Instance.Changed += Instance_Changed;
-			hexEditor.HexEditorData.Replaced += delegate {
+			hexEditor.HexEditorData.Changed += delegate {
 				this.IsDirty = true;
 			};
 			window = new ScrollView (hexEditor);
@@ -72,9 +75,29 @@ namespace MonoDevelop.HexEditor
 
 		async Task LoadContent ()
 		{
-			using (Stream stream = await FileModel.GetContent ()) {
-				hexEditor.HexEditorData.Buffer = await ArrayBuffer.LoadAsync (stream);
-			}
+			var model = (ByteBufferModel)Model;
+			await model.Load ();
+			hexEditor.HexEditorData.ByteBuffer = model.ByteBuffer;
+		}
+
+		protected override bool OnCanAssignModel (Type type)
+		{
+			return typeof (ByteBufferModel).IsAssignableFrom (type);
+		}
+
+		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
+		{
+			if (oldModel != null)
+				((ByteBufferModel)oldModel).ByteBufferInstanceChanged -= Handle_ByteBufferInstanceChanged;
+			if (newModel != null)
+				((ByteBufferModel)newModel).ByteBufferInstanceChanged += Handle_ByteBufferInstanceChanged;
+			base.OnModelChanged (oldModel, newModel);
+		}
+
+		void Handle_ByteBufferInstanceChanged (object sender, EventArgs e)
+		{
+			if (hexEditor != null)
+				hexEditor.HexEditorData.ByteBuffer = ((ByteBufferModel)Model).ByteBuffer;
 		}
 
 		protected override void OnDispose ()
@@ -84,11 +107,6 @@ namespace MonoDevelop.HexEditor
 				DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
 			}
 			base.OnDispose ();
-		}
-
-		protected override void OnModelContentChanged ()
-		{
-			LoadContent ().Ignore ();
 		}
 
 		void Instance_Changed (object sender, EventArgs e)
@@ -114,12 +132,12 @@ namespace MonoDevelop.HexEditor
 		#region IUndoHandler implementation
 		void IUndoHandler.Undo ()
 		{
-			hexEditor.HexEditorData.Undo ();
+			hexEditor.HexEditorData.ByteBuffer.Undo ();
 		}
 
 		void IUndoHandler.Redo ()
 		{
-			hexEditor.HexEditorData.Redo ();
+			hexEditor.HexEditorData.ByteBuffer.Redo ();
 		}
 		
 		class UndoGroup : IDisposable
@@ -131,13 +149,13 @@ namespace MonoDevelop.HexEditor
 				if (data == null)
 					throw new ArgumentNullException ("data");
 				this.data = data;
-				data.BeginAtomicUndo ();
+				data.ByteBuffer.BeginAtomicUndo ();
 			}
 			
 			public void Dispose ()
 			{
 				if (data != null) {
-					data.EndAtomicUndo ();
+					data.ByteBuffer.EndAtomicUndo ();
 					data = null;
 				}
 			}
@@ -150,14 +168,14 @@ namespace MonoDevelop.HexEditor
 		
 		bool IUndoHandler.EnableUndo {
 			get {
-				return hexEditor.HexEditorData.EnableUndo;
+				return hexEditor.HexEditorData.ByteBuffer.CanUndo;
 			}
 		}
 		
 		
 		bool IUndoHandler.EnableRedo {
 			get {
-				return hexEditor.HexEditorData.EnableRedo;
+				return hexEditor.HexEditorData.ByteBuffer.CanRedo;
 			}
 		}
 		

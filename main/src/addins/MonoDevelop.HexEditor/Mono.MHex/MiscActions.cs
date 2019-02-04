@@ -39,12 +39,12 @@ namespace Mono.MHex
 		
 		public static void Undo (HexEditorData data)
 		{
-			data.Undo ();
+			data.ByteBuffer.Undo ();
 		}
 		
 		public static void Redo (HexEditorData data)
 		{
-			data.Redo ();
+			data.ByteBuffer.Redo ();
 		}
 	}
 }

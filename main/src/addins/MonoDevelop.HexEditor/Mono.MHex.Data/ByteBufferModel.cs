@@ -24,12 +24,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+
 namespace Mono.MHex.Data
 {
-	public class ByteBufferModel
+	class ByteBufferModel: FileModel
 	{
-		public ByteBufferModel ()
+		public ByteBuffer ByteBuffer => GetRepresentation<ByteBufferModelRepresentation> ().ByteBuffer;
+
+		public event EventHandler ByteBufferInstanceChanged;
+
+		protected override void OnRepresentationChanged ()
 		{
+			base.OnRepresentationChanged ();
+			ByteBufferInstanceChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		protected class ByteBufferModelRepresentation : FileModelRepresentation
+		{
+			ByteBuffer byteBuffer;
+
+			internal ByteBuffer ByteBuffer => byteBuffer;
+
+			protected override Stream OnGetContent ()
+			{
+				return new MemoryStream (byteBuffer.Bytes);
+			}
+
+			protected override async Task OnLoad ()
+			{
+				byteBuffer = new ByteBuffer ();
+				byteBuffer.Replaced += ByteBuffer_Replaced;
+				using (var stream = File.OpenRead (FilePath)) {
+					byteBuffer.Buffer = await ArrayBuffer.LoadAsync (stream);
+				}
+			}
+
+			protected override void OnLoadNew ()
+			{
+				byteBuffer = new ByteBuffer ();
+				byteBuffer.Buffer = new ArrayBuffer (new byte [0]);
+			}
+
+			protected override Task OnSave ()
+			{
+				File.WriteAllBytes (FilePath, byteBuffer.Bytes);
+				return Task.CompletedTask;
+			}
+
+			protected override async Task OnSetContent (Stream content)
+			{
+				byteBuffer.Buffer = await ArrayBuffer.LoadAsync (content);
+			}
+
+			void ByteBuffer_Replaced (object sender, ReplaceEventArgs e)
+			{
+				NotifyChanged ();
+			}
+		}
+	}
+
+	public class UndoOperationEventArgs : EventArgs
+	{
+		public long BufferOffset {
+			get;
+			private set;
+		}
+
+		public UndoOperationEventArgs (long offset)
+		{
+			this.BufferOffset = offset;
 		}
 	}
 }

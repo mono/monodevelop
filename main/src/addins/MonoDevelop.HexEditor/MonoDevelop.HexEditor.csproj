@@ -55,6 +55,8 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorVisualizer.cs" />
     <Compile Include="Mono.MHex\HexEditorDebugger.cs" />
+    <Compile Include="Mono.MHex.Data\ByteBufferModel.cs" />
+    <Compile Include="Mono.MHex.Data\ByteBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

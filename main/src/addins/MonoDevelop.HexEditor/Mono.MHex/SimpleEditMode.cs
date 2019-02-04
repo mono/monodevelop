@@ -198,9 +198,9 @@ namespace Mono.MHex
 			if (HexEditorData.Caret.InTextEditor) {
 				if ((char.IsLetterOrDigit (ch) || char.IsPunctuation (ch) || ch == ' ') && unicodeChar <= 255) {
 					if (HexEditorData.Caret.IsInsertMode) {
-						HexEditorData.Insert (HexEditorData.Caret.Offset, (byte)unicodeChar);
+						HexEditorData.ByteBuffer.Insert (HexEditorData.Caret.Offset, (byte)unicodeChar);
 					} else {
-						HexEditorData.Replace (HexEditorData.Caret.Offset, 1, (byte)unicodeChar);
+						HexEditorData.ByteBuffer.Replace (HexEditorData.Caret.Offset, 1, (byte)unicodeChar);
 					}
 					Editor.Margins.ForEach (margin => margin.PurgeLayoutCache ());
 					CaretMoveActions.Right (HexEditorData);
@@ -210,13 +210,13 @@ namespace Mono.MHex
 				int idx = hex.IndexOf (char.ToUpper (ch));
 				if (idx >= 0) {
 					if (HexEditorData.Caret.Offset >= HexEditorData.Length)
-						HexEditorData.Insert (HexEditorData.Length, 0);
+						HexEditorData.ByteBuffer.Insert (HexEditorData.Length, 0);
 					if (HexEditorData.Caret.IsInsertMode && HexEditorData.Caret.SubPosition == 0) {
-						HexEditorData.Insert (HexEditorData.Caret.Offset, (byte)(idx * 0x10));
+						HexEditorData.ByteBuffer.Insert (HexEditorData.Caret.Offset, (byte)(idx * 0x10));
 					} else {
 						byte cur = HexEditorData.GetByte (HexEditorData.Caret.Offset);
 						int newByte = HexEditorData.Caret.SubPosition == 0 ? cur & 0xF | idx * 0x10 : cur & 0xF0 | idx;
-						HexEditorData.Replace (HexEditorData.Caret.Offset, 1, (byte)newByte);
+						HexEditorData.ByteBuffer.Replace (HexEditorData.Caret.Offset, 1, (byte)newByte);
 					}
 					Editor.Margins.ForEach (margin => margin.PurgeLayoutCache ());
 					CaretMoveActions.Right (HexEditorData);
