@@ -7,14 +7,18 @@
     <AssemblyDescription>Integrates the WPF version of the Visual Studio Editor into MonoDevelop</AssemblyDescription>
     <AddinBuildDir>DisplayBindings\TextEditor.Wpf</AddinBuildDir>
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
-    <!-- <AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DiagnosticMargin" Version="1.0.1" PrivateAssets="all" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj" Private="False" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <IncludeCopyLocal Include="DiagnosticMargin.dll" />
   </ItemGroup>
 </Project>

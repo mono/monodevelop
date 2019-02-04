@@ -106,13 +106,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return (await GetErrorsAsync (cancellationToken).ConfigureAwait (false)).Any (e => e.ErrorType == ErrorType.Error);
 		}
-
-		[Obsolete ("Use the HasErrorsAsync method for cancellation and async support.")]
-		public bool HasErrors {
-			get {
-				return GetErrorsAsync ().Result.Any (e => e.ErrorType == ErrorType.Error);
-			}
-		}
 		
 		/// <summary>
 		/// Gets or sets the language ast used by specific language backends.
@@ -120,13 +113,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		public object Ast {
 			get;
 			set;
-		}
-
-
-		[Obsolete("Do not use this system anymore. Use the analysisDocument.GetSemanticModelAsync () instead.")]
-		public T GetAst<T> () where T : class
-		{
-			return Ast as T;
 		}
 		
 		public ParsedDocument ()

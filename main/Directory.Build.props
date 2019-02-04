@@ -18,6 +18,6 @@
     <NuGetVersionRoslyn>3.0.0-beta2-19055-09</NuGetVersionRoslyn>
     <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>
     <NuGetVersionVSComposition>15.8.112</NuGetVersionVSComposition>
-    <NuGetVersionVSEditor>16.0.127</NuGetVersionVSEditor>
+    <NuGetVersionVSEditor>16.0.379-g4a55b0e4f2</NuGetVersionVSEditor>
   </PropertyGroup>
 </Project>

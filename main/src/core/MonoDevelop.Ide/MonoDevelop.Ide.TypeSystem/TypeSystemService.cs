@@ -49,7 +49,6 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		const string CurrentVersion = "1.1.9";
 		static IEnumerable<TypeSystemParserNode> parsers;
-		static string[] filesSkippedInParseThread = new string[0];
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
 		internal static MonoDevelopRuleSetManager RuleSetManager { get; } = new MonoDevelopRuleSetManager ();
@@ -61,18 +60,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			set {
 				parsers = value;
 			}
-		}
-
-		public static void RemoveSkippedfile (FilePath fileName)
-		{
-			filesSkippedInParseThread = filesSkippedInParseThread.Where (f => f != fileName).ToArray ();
-		}
-
-		public static void AddSkippedFile (FilePath fileName)
-		{
-			if (filesSkippedInParseThread.Any (f => f == fileName))
-				return;
-			filesSkippedInParseThread = filesSkippedInParseThread.Concat (new string[] { fileName }).ToArray ();
 		}
 
 		static TypeSystemService ()

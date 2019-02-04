@@ -34,6 +34,8 @@ using MonoDevelop.Core;
 using System.Security.Permissions;
 using System.Security;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -77,8 +79,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", IdeApp.Workbench.ActiveDocument.FileName));
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc.Editor != null)
-				yield return new OpenFileProvider (doc.Editor, doc.Project);
+			var textBuffer = doc.GetContent<ITextBuffer> ();
+			if (textBuffer != null)
+				yield return new OpenFileProvider (textBuffer, doc.Project, doc.FileName);
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
@@ -104,9 +107,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc.Editor != null) {
-				var selection = doc.Editor.SelectionRange;
-				yield return new OpenFileProvider (doc.Editor, doc.Project, selection.Offset, selection.EndOffset);
+			var textView = doc.GetContent<ITextView> ();
+			if (textView != null) {
+				var selection = textView.Selection.SelectedSpans.FirstOrDefault ();
+				yield return new OpenFileProvider (textView.TextBuffer, doc.Project, doc.FileName, selection.Start, selection.End);
 			}
 		}
 
@@ -258,8 +262,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			foreach (Document document in IdeApp.Workbench.Documents) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
-				if (document.Editor != null && filterOptions.NameMatches (document.FileName))
-					yield return new OpenFileProvider (document.Editor, document.Project);
+				var textBuffer = document.GetContent<ITextBuffer> ();
+				if (textBuffer != null && filterOptions.NameMatches (document.FileName))
+					yield return new OpenFileProvider (textBuffer, document.Project, document.FileName);
 			}
 		}
 

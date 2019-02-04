@@ -32,10 +32,13 @@ namespace MonoDevelop.TextEditor
 		public WpfTextViewContent (WpfTextViewImports imports, Core.FilePath fileName, string mimeType, Projects.Project ownerProject)
 			: base (imports, fileName, mimeType, ownerProject)
 		{
+			WpfImageFactory.EnsureInitialized ();
 		}
 
 		protected override IWpfTextView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles)
 			=> Imports.TextEditorFactoryService.CreateTextView (viewModel, roles, Imports.EditorOptionsFactoryService.GlobalOptions);
+
+		public System.Windows.Controls.Control HostControl => wpfTextViewHost.HostControl;
 
 		protected override Control CreateControl ()
 		{

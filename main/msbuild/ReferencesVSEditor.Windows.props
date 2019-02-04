@@ -19,7 +19,7 @@
        However we do reference quite a few of the types from the package on Windows, so we need to be able to 
        reference it. Currently it gets added to ReferenceCopyLocalPaths but not to _ReferencesFromNuGetPackages.-->
   <ItemGroup>
-    <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net46\Microsoft.VisualStudio.Platform.VSEditor.dll">
+    <Reference Include="$(NuGetPackageRoot)Microsoft.VisualStudio.Platform.VSEditor\$(NuGetVersionVSEditor)\lib\net472\Microsoft.VisualStudio.Platform.VSEditor.dll">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
