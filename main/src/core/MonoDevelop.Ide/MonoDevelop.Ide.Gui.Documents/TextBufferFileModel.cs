@@ -39,160 +39,116 @@ namespace MonoDevelop.Ide.Gui.Documents
 {
 	public class TextBufferFileModel : TextFileModel
 	{
-		ITextDocument textDocument;
-
 		public event EventHandler TextBufferInstanceChanged;
 
-		public override async Task<string> GetText ()
-		{
-			var buffer = await GetTextBuffer ();
-			return buffer.CurrentSnapshot.GetText ();
-		}
+		public ITextBuffer TextBuffer => TextDocument.TextBuffer;
 
-		public override void SetText (string text)
-		{
-			if (textDocument != null) {
-				var edit = textDocument.TextBuffer.CreateEdit ();
-				edit.Replace (0, textDocument.TextBuffer.CurrentSnapshot.Length, text);
-				edit.Apply ();
-			} else {
-				textDocument = CreateTextDocument (text);
-			}
-		}
-
-		public async Task<ITextBuffer> GetTextBuffer ()
-		{
-			return (await GetTextDocument ()).TextBuffer;
-		}
-
-		public async Task<ITextDocument> GetTextDocument ()
-		{
-			if (textDocument == null) {
-				// If a linked document has a text document, reuse it
-				textDocument = LinkedModels.OfType<TextBufferFileModel> ().FirstOrDefault (m => m.textDocument != null)?.textDocument;
-				if (textDocument != null)
-					return textDocument;
-				// If linked to another model, take the text from it
-				var someFile = LinkedModels.FirstOrDefault ();
-				if (someFile != null) {
-					await CopyFromLinkedModel (someFile);
-					return textDocument;
-				}
-			}
-
-			var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
-			if (IsNewFile) {
-				textDocument = CreateTextDocument ("");
-			} else {
-				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
-				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
-				textDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
-				textDocument.Encoding = text.Encoding;
-			}
-			return textDocument;
-		}
-
-		ITextDocument CreateTextDocument (string text)
-		{
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, contentType);
-			var textDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
-			textDocument.Encoding = TextFileUtility.DefaultEncoding;
-			return textDocument;
-		}
-
-		protected static IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
-		{
-			if (filePath != null) {
-				var fileToContentTypeService = CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ();
-				var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
-				if (contentTypeFromPath != null &&
-					contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
-					return contentTypeFromPath;
-				}
-			}
-
-			var contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
-			if (contentType == null) {
-				// fallback 1: see if there is a content tyhpe with the same name
-				contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType (mimeType);
-				if (contentType == null) {
-					// No joy, create a content type that, by default, derives from text. This is strictly an error
-					// (there should be mappings between any mime type and any content type).
-					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType (mimeType, new string [] { "text" });
-				}
-			}
-
-			return contentType;
-		}
-
-		void BindTextBuffer (ITextBuffer textBuffer)
-		{
-			textBuffer.Changed += TextBuffer_Changed;
-		}
-
-		void TextBuffer_Changed (object sender, TextContentChangedEventArgs e)
-		{
-			NotifyChanged ();
-		}
-
-		protected override void OnLinkedModelChanged (DocumentModel model)
-		{
-			base.OnLinkedModelChanged (model);
-		}
-
-		void ReplaceTextDocument (ITextDocument textDocument)
-		{
-			bool hadDocument = this.textDocument != null && this.textDocument != textDocument;
-			this.textDocument = textDocument;
-			OnTextBufferInstanceChanged ();
-		}
-
-		protected override Task CopyFromLinkedModel (DocumentModel model)
-		{
-			if (model is TextBufferFileModel textBufferFile) {
-				if (textDocument != textBufferFile.textDocument) {
-					ReplaceTextDocument (textBufferFile.textDocument);
-				}
-				return Task.CompletedTask;
-			} else
-				return base.CopyFromLinkedModel (model);
-		}
-
-		internal protected override void LinkToModels (IEnumerable<DocumentModel> documentModels, bool keepCurrentData)
-		{
-			if (textDocument == null)
-				return;
-
-			var fileModels = documentModels.OfType<TextBufferFileModel> ().ToList ();
-			if (keepCurrentData) {
-				foreach (var model in fileModels)
-					model.ReplaceTextDocument (textDocument);
-			} else if (fileModels.Count > 0)
-				// Reset the document, a new one will be reused from the linked model
-				ReplaceTextDocument (null);
-		}
-
-		internal protected override void UnlinkFromModels (IEnumerable<DocumentModel> documentModels)
-		{
-			if (textDocument == null)
-				return;
-
-			var fileModels = documentModels.OfType<TextBufferFileModel> ().Where (m => m.textDocument == textDocument).ToList ();
-			if (fileModels.Count == 0)
-				return;
-
-			var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
-			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (GetText (), contentType);
-			var newDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
-			newDocument.Encoding = TextFileUtility.DefaultEncoding;
-
-			foreach (var fileModel in fileModels)
-				fileModel.ReplaceTextDocument (newDocument);
-		}
+		public ITextDocument TextDocument => GetRepresentation<TextBufferFileModelRepresentation> ().TextDocument;
 
 		protected virtual void OnTextBufferInstanceChanged ()
 		{
 			TextBufferInstanceChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		internal protected override Type RepresentationType => typeof (TextBufferFileModelRepresentation);
+
+		protected internal override void OnRepresentationChanged ()
+		{
+			OnTextBufferInstanceChanged ();
+		}
+
+		class TextBufferFileModelRepresentation : TextFileModelRepresentation
+		{
+			ITextDocument textDocument;
+
+			protected override async Task OnLoad ()
+			{
+				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
+
+				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
+				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
+				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
+				doc.Encoding = text.Encoding;
+				UseByteOrderMark = text.HasByteOrderMark;
+				SetTextDocument (doc);
+			}
+
+			protected override void OnLoadNew ()
+			{
+				SetTextDocument (CreateTextDocument (""));
+			}
+
+			protected override string OnGetText ()
+			{
+				// OnLoad is always called before anything else, so the document should be ready
+				return textDocument.TextBuffer.CurrentSnapshot.GetText ();
+			}
+
+			protected override void OnSetText (string text)
+			{
+				// OnLoad is always called before anything else, so the document should be ready
+				var edit = textDocument.TextBuffer.CreateEdit ();
+				edit.Replace (0, textDocument.TextBuffer.CurrentSnapshot.Length, text);
+				edit.Apply ();
+			}
+
+			protected override Task OnSave ()
+			{
+				// OnLoad is always called before anything else, so the document should be ready
+				textDocument.Save ();
+				return Task.CompletedTask;
+			}
+
+			public ITextDocument TextDocument => textDocument;
+
+			ITextDocument CreateTextDocument (string text)
+			{
+				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
+				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, contentType);
+				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
+				doc.Encoding = TextFileUtility.DefaultEncoding;
+				return doc;
+			}
+
+			protected static IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
+			{
+				if (filePath != null) {
+					var fileToContentTypeService = CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ();
+					var contentTypeFromPath = fileToContentTypeService.GetContentTypeForFilePath (filePath);
+					if (contentTypeFromPath != null &&
+						contentTypeFromPath != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
+						return contentTypeFromPath;
+					}
+				}
+				var contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
+				if (contentType == null) {
+					// fallback 1: see if there is a content tyhpe with the same name
+					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType (mimeType);
+					if (contentType == null) {
+						// No joy, create a content type that, by default, derives from text. This is strictly an error
+						// (there should be mappings between any mime type and any content type).
+						contentType = PlatformCatalog.Instance.ContentTypeRegistryService.AddContentType (mimeType, new string [] { "text" });
+					}
+				}
+
+				return contentType;
+			}
+
+			void SetTextDocument (ITextDocument doc)
+			{
+				if (doc != textDocument) {
+					if (textDocument != null)
+						textDocument.TextBuffer.Changed -= TextBuffer_Changed;
+					textDocument = doc;
+					if (textDocument != null)
+						textDocument.TextBuffer.Changed += TextBuffer_Changed;
+				}
+			}
+
+			void TextBuffer_Changed (object sender, TextContentChangedEventArgs e)
+			{
+				NotifyChanged ();
+			}
 		}
 	}
 }

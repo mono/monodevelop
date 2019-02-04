@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			textEditor.MimeType = MimeType;
 			string text = null;
-			var res = await TextFileUtility.GetTextAsync (await FileModel.GetContent ());
+			var res = await TextFileUtility.GetTextAsync (FileModel.GetContent ());
 			text = textEditor.Text = res.Text;
 			textEditor.Encoding = res.Encoding;
 			await RunFirstTimeFoldUpdate (text);

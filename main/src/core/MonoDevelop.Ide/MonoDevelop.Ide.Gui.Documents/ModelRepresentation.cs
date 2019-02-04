@@ -31,11 +31,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 {
 	public abstract class ModelRepresentation
 	{
-		ModelRepresentation lastChangedRepresentation;
+		bool doingInternalChange;
+
+		internal int CurrentVersion { get; set; }
 
 		internal DocumentModel.DocumentModelData DocumentModelData { get; set; }
 
-		protected SemaphoreSlim WaitHandle { get } = new SemaphoreSlim (1);
+		internal protected SemaphoreSlim WaitHandle { get; } = new SemaphoreSlim (1);
 
 		public object Id { get; set; }
 
@@ -47,6 +49,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		public async Task Load ()
+		{
+			try {
+				await WaitHandle.WaitAsync ();
+				if (IsLoaded)
+					return;
+				if (DocumentModelData.IsLinked)
+					await OnLoad ();
+				else
+					OnLoadNew ();
+				IsLoaded = true;
+			} finally {
+				WaitHandle.Release ();
+			}
+		}
+
+		public async Task Reload ()
 		{
 			try {
 				await WaitHandle.WaitAsync ();
@@ -67,47 +85,44 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		public async Task CopyFrom (ModelRepresentation other)
-		{
-			if (!other.IsLoaded)
-				await other.Load ();
-			try {
-				await WaitHandle.WaitAsync ();
-				await OnCopyFrom (other);
-				IsLoaded = true;
-			} finally {
-				WaitHandle.Release ();
-			}
-		}
-
 		internal async Task Synchronize ()
 		{
-			try {
-				await WaitHandle.WaitAsync ();
-				if (lastChangedRepresentation != null && lastChangedRepresentation != this) {
-					await OnCopyFrom (lastChangedRepresentation);
-					lastChangedRepresentation = null;
-				}
-			} finally {
-				WaitHandle.Release ();
-			}
+			await DocumentModelData?.Synchronize (this);
 		}
 
 		public void NotifyChanged ()
 		{
+			if (!doingInternalChange)
+				DocumentModelData?.NotifyChanged (this);
 		}
+
+		protected abstract void OnLoadNew ();
 
 		protected abstract Task OnLoad ();
 
 		protected abstract Task OnSave ();
 
+		internal async Task InternalCopyFrom (ModelRepresentation other)
+		{
+			try {
+				doingInternalChange = true;
+
+				// Capture the copied version now. If the copied object changes during the copy, the version
+				// will increase, so a subsequent synchronize call will bring the additional changes.
+				CurrentVersion = other.CurrentVersion;
+				IsLoaded = true;
+
+				await OnCopyFrom (other);
+			} finally {
+				doingInternalChange = false;
+			}
+		}
+
 		protected abstract Task OnCopyFrom (ModelRepresentation other);
 
-		internal async Task<ModelRepresentation> Clone ()
+		internal protected virtual Task OnDispose ()
 		{
-			var copy = (ModelRepresentation)Activator.CreateInstance (GetType ());
-			await copy.CopyFrom (this);
-			return copy;
+			return Task.CompletedTask;
 		}
 	}
 }

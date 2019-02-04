@@ -4068,7 +4068,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\LineSeparatorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCapabilityFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\OrFileTemplateCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildLogDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputProcessor.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.BuildOutputView\BuildOutputWidget.cs" />
@@ -4231,7 +4230,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentController.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerRole.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentModel.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Documents\FileDocumentModel.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\FileModel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\SingleViewDocumentControllerAdaptor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentModelRegistry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerFactory.cs" />
@@ -4275,6 +4274,9 @@
     <Compile Include="MonoDevelop.Ide\IdeInstanceConnection.cs" />
     <Compile Include="MonoDevelop.Ide\MonoDevelopOptions.cs" />
     <Compile Include="MonoDevelop.Ide\AddinError.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\TextBufferFileModel.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\TextFileModel.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\ModelRepresentation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

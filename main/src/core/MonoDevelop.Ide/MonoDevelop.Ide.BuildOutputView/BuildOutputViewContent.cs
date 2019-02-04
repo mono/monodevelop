@@ -44,23 +44,16 @@ namespace MonoDevelop.Ide.BuildOutputView
 		JumpTo
 	}
 
-	class BuildOutputViewContent : DocumentController
+	[ExportFileDocumentController (Name = "Build Output", FileExtension = ".binlog", CanUseAsDefault = true, Role = DocumentControllerRole.Preview)]
+	class BuildOutputViewContent : FileDocumentController
 	{
-		FilePath filename;
 		BuildOutputWidget control;
 		XwtControl xwtControl;
 		BuildOutput buildOutput;
+		bool loadedFromFile;
 
-		BuildOutputViewContent ()
+		public BuildOutputViewContent ()
 		{
-		}
-
-		public BuildOutputViewContent (FilePath filename): this()
-		{
-			this.filename = filename;
-			Model = IdeApp.Workbench.DocumentModelRegistry.GetSharedModel<FileDocumentModel> (filename);
-			Counters.OpenedFromFile++;
-			IsReadOnly = true;
 		}
 
 		public BuildOutputViewContent (BuildOutput buildOutput) : this ()
@@ -70,12 +63,24 @@ namespace MonoDevelop.Ide.BuildOutputView
 			Counters.OpenedFromIDE++;
 		}
 
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			if (modelDescriptor is FileDescriptor file) {
+				FilePath = file.FilePath;
+				loadedFromFile = true;
+				Counters.OpenedFromFile++;
+			}
+			return Task.CompletedTask;
+		}
+
+		protected override bool ControllerIsViewOnly => !loadedFromFile;
+
 		void FileNameChanged (object sender, string file)
 		{
-			var fileModel = (FileDocumentModel) Model;
-			fileModel.LinkToFile (file);
-			filename = file;
+			FilePath = file;
 			DocumentTitle = control.ViewContentName;
+			if (System.IO.File.Exists (file))
+				loadedFromFile = true;
 		}
 
 		protected override Control OnGetViewControl (DocumentViewContent view)
@@ -98,7 +103,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				if (buildOutput != null)
 					control = new BuildOutputWidget (buildOutput, DocumentTitle, toolbar);
 				else
-					control = new BuildOutputWidget (filename, toolbar);
+					control = new BuildOutputWidget (FilePath, toolbar);
 				control.FileNameChanged += FileNameChanged;
 			});
 			return control;

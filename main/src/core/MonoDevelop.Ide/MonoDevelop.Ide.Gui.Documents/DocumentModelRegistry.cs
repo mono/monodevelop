@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -37,84 +39,87 @@ namespace MonoDevelop.Ide.Gui.Documents
 	[DefaultServiceImplementation]
 	public class DocumentModelRegistry: Service
 	{
+		SemaphoreSlim dataLock = new SemaphoreSlim (1);
 		Dictionary<object, DocumentModel.DocumentModelData> dataModels = new Dictionary<object, DocumentModel.DocumentModelData> ();
 
-		public FileDocumentModel GetSharedFileModel (FilePath filePath)
+		public Task<FileModel> GetSharedFileModel (FilePath filePath)
 		{
-			return GetSharedModel<FileDocumentModel> (filePath);
+			return GetSharedModel<FileModel> (filePath);
 		}
 
-		public T GetSharedModel<T> (object id) where T: DocumentModel, new()
+		public async Task<T> GetSharedModel<T> (object id) where T : DocumentModel, new()
 		{
-			var t = new T ();
-			if (dataModels.TryGetValue (id, out var data))
-				t.Data = data;
-			else {
-				data = t.CreateDataObject ();
-				data.Id = id;
-				data.Registry = this;
-				dataModels[id] = data;
-				t.Data = data;
-			}
-			return t;
+			return (T) await GetSharedModel (typeof (T), id);
 		}
 
-		public void RegisterSharedModel (DocumentModel model)
+		public async Task<DocumentModel> GetSharedModel (Type type, object id)
 		{
-			if (model.Data?.Registry == null)
-				RelinkModel (model, model.Id);
-		}
+			var model = (DocumentModel) Activator.CreateInstance (type);
 
-		internal void UnregisterModelData (DocumentModel.DocumentModelData data)
-		{
-			dataModels.Remove (data.Id);
-		}
-
-		DocumentModel.DocumentModelData GetModelData (object id)
-		{
-			dataModels.TryGetValue (id, out var data);
-			return data;
-		}
-
-		internal void RelinkModel (DocumentModel model, object newId)
-		{
-			var previousNewIdData = newId != null ? GetModelData (newId) : null;
-
-			// Create a copy of the data object. This copy will be assigned
-			// to models with the old id that are already open, since the current data object will
-			// be reused for models with the new id (we don't want to replace the data of the
-			// model being relinked
-
-			if (model.Data.LinkedModelCount > 1) {
-				var oldDataCopy = model.CreateDataObject ();
-				oldDataCopy.Id = model.Data.Id;
-				oldDataCopy.CopyFrom (model.Data);
-				oldDataCopy.Registry = this;
-				dataModels [oldDataCopy.Id] = oldDataCopy;
-
-				foreach (var oldLinked in model.Data.LinkedModels) {
-					if (oldLinked != model)
-						oldLinked.Data = oldDataCopy;
+			await dataLock.WaitAsync ();
+			try {
+				if (dataModels.TryGetValue (id, out var data))
+					await data.LinkNew (model);
+				else {
+					dataModels [id] = model.Data;
+					model.Data.Id = id;
 				}
-			} else {
-				// No other models are linked to this one, just unregister the data,
-				// since it will be re-registered with the new id
-				dataModels.Remove (model.Data.Id);
+			} finally {
+				dataLock.Release ();
 			}
+			model.Registry = this;
+			return model;
+		}
 
-			model.Data.Id = newId;
+		public Task RegisterSharedModel (DocumentModel model, object id)
+		{
+			if (model.Registry != null && model.Registry != this)
+				throw new InvalidOperationException ("Model does not belong to this registry");
 
-			// If there were models already loaded with the new id, replace their
-			// data by the one from the relinked model
+			return RelinkModel (model, id);
+		}
 
-			if (previousNewIdData != null) {
-				foreach (var linked in previousNewIdData.LinkedModels)
-					linked.Data = model.Data;
+		internal async Task DisposeModel (DocumentModel model)
+		{
+			await dataLock.WaitAsync ();
+			try {
+				if (await model.Data.Unlink (model)) {
+					dataModels.Remove (model.Id);
+					model.Data.Id = null;
+				}
+			} finally {
+				dataLock.Release ();
 			}
+		}
 
-			// Register the new data object
-			if (newId != null)
-				dataModels [newId] = model.Data;
+		internal async Task RelinkModel (DocumentModel model, object newId)
+		{
+			await dataLock.WaitAsync ();
+			try {
+				var oldData = model.Data;
+				if (newId != null) {
+					if (!dataModels.TryGetValue (newId, out var newData)) {
+						if (!oldData.IsShared) {
+							// Model not shared being assigned a new id with no models registered
+							if (model.Id != null)
+								dataModels.Remove (model.Id);
+							dataModels [newId] = oldData;
+							oldData.Id = newId;
+							return;
+						} else {
+							newData = new DocumentModel.DocumentModelData ();
+							dataModels [newId] = newData;
+							newData.Id = newId;
+						}
+					}
+					await oldData.Relink (model, newData);
+				} else {
+					await oldData.Relink (model, null);
+					oldData.Id = null;
+				}
+			} finally {
+				dataLock.Release ();
+			}
 		}
 	}
 }

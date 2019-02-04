@@ -35,14 +35,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// <summary>
 	/// A document model for files
 	/// </summary>
-	public class FileDocumentModel: DocumentModel
+	public class FileModel: DocumentModel
 	{
-		public FileDocumentModel (FilePath filePath)
+		public FileModel (FilePath filePath)
 		{
 			this.FilePath = filePath;
 		}
 
-		public FileDocumentModel ()
+		public FileModel ()
 		{
 			IsNewFile = true;
 		}
@@ -81,31 +81,23 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Save ();
 		}
 
-		protected override Task OnSave ()
-		{
-			if (IsNewFile)
-				throw new InvalidOperationException ("SaveAs() must be used to save new files");
-
-			return base.OnSave ();
-		}
-
 		/// <summary>
 		/// Returns the content of the file in a stream
 		/// </summary>
 		/// <returns>The read.</returns>
-		public async Task<Stream> GetContent () 
+		public Stream GetContent () 
 		{
-			var rep = await GetRepresentation<FileModelRepresentation> ();
-			return await rep.GetContent ();
+			var rep = GetRepresentation<FileModelRepresentation> ();
+			return rep.GetContent ();
 		}
 
 		/// <summary>
 		/// Sets the content of the file
 		/// </summary>
-		public async Task SetContent (Stream content)
+		public Task SetContent (Stream content)
 		{
-			var rep = await GetRepresentation<FileModelRepresentation> ();
-			await rep.SetContent (content);
+			var rep = GetRepresentation<FileModelRepresentation> ();
+			return rep.SetContent (content);
 		}
 
 		internal protected override Type RepresentationType => typeof (InternalFileModelRepresentation);
@@ -117,35 +109,23 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			public async Task SetContent (Stream content)
 			{
-				try {
-					await WaitHandle.WaitAsync ();
-					await OnSetContent (content);
-					SetLoaded ();
-				} finally {
-					WaitHandle.Release ();
-				}
+				await OnSetContent (content);
 				NotifyChanged ();
 			}
 
-			public async Task<Stream> GetContent ()
+			public Stream GetContent ()
 			{
-				await Load ();
-				try {
-					await WaitHandle.WaitAsync ();
-					return await OnGetContent ();
-				} finally {
-					WaitHandle.Release ();
-				}
+				return OnGetContent ();
 			}
 
 			protected abstract Task OnSetContent (Stream content);
 
-			protected abstract Task<Stream> OnGetContent ();
+			protected abstract Stream OnGetContent ();
 
 			protected override async Task OnCopyFrom (ModelRepresentation other)
 			{
 				if (other is FileModelRepresentation file) {
-					await SetContent (await file.GetContent ());
+					await SetContent (file.GetContent ());
 				} else
 					throw new InvalidOperationException ($"Can't copy data from model of type {other.GetType ()} into a model of type {GetType ()}");
 			}
@@ -155,9 +135,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			byte [] content;
 
-			protected override Task<Stream> OnGetContent ()
+			protected override Stream OnGetContent ()
 			{
-				return Task.FromResult<Stream> (new MemoryStream (content));
+				return new MemoryStream (content);
 			}
 
 			protected override Task OnSetContent (Stream content)
@@ -170,6 +150,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			{
 				content = File.ReadAllBytes (FilePath);
 				return Task.CompletedTask;
+			}
+
+			protected override void OnLoadNew ()
+			{
+				content = new byte [0];
 			}
 
 			protected override Task OnSave ()

@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	{
 		FilePath filePath;
 
-		public FileDocumentModel FileModel { get => Model as FileDocumentModel; set => Model = value; }
+		public FileModel FileModel { get => Model as FileModel; set => Model = value; }
 
 		public FilePath FilePath {
 			get { return filePath; }
@@ -61,26 +61,32 @@ namespace MonoDevelop.Ide.Gui.Documents
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
 			if (!(modelDescriptor is FileDescriptor fileDescriptor))
-				throw new NotSupportedException ("Controllers of type FileDocumentController can only handle model descriptors of type FileDescriptor");
+				return;
 
-			var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
+			if (FileModelType != null) {
+				var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
 
-			if (fileDescriptor.Content != null) {
-				// It is a new file
-				var fileModel = new FileDocumentModel ();
-				await fileModel.SetContent (fileDescriptor.Content);
-				Model = fileModel;
-			} else {
-				// Existing file, get a model from the registry
-				Model = modelRegistry.GetSharedModel<FileDocumentModel> (fileDescriptor.FilePath);
+				if (fileDescriptor.Content != null) {
+					// It is a new file
+					if (!typeof (FileModel).IsAssignableFrom (FileModelType))
+						throw new InvalidOperationException ("Invalid file model type: " + FileModelType);
+					var fileModel = (FileModel) Activator.CreateInstance (FileModelType);
+					await fileModel.SetContent (fileDescriptor.Content);
+					Model = fileModel;
+				} else {
+					// Existing file, get a model from the registry
+					Model = await modelRegistry.GetSharedModel(FileModelType, fileDescriptor.FilePath);
+				}
 			}
 			FilePath = fileDescriptor.FilePath;
 			Owner = fileDescriptor.Owner;
 		}
 
+		protected virtual Type FileModelType => null;
+
 		protected override bool OnCanAssignModel (Type type)
 		{
-			return typeof (FileDocumentModel).IsAssignableFrom (type);
+			return false;
 		}
 
 		protected override bool OnTryReuseDocument (ModelDescriptor modelDescriptor)
@@ -90,15 +96,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnFileNameChanged ()
 		{
-			FileModel?.LinkToFile (FilePath);
+			if (FileModelType != null)
+				FileModel?.LinkToFile (FilePath);
 			UpdateIcon (DocumentIcon).Ignore ();
 		}
 
-		protected override void OnModelChanged ()
+		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
 		{
-			IsNewDocument = FileModel.IsNewFile;
+			if (FileModelType != null)
+				IsNewDocument = FileModel.IsNewFile;
 			UpdateIcon (DocumentIcon).Ignore ();
-			base.OnModelChanged ();
+			base.OnModelChanged (oldModel, newModel);
 		}
 
 		async Task UpdateIcon (Xwt.Drawing.Image iconToReplace)
@@ -116,19 +124,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		protected override async Task OnSave ()
-		{
-			var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
-			modelRegistry.RegisterSharedModel (FileModel);
-			await base.OnSave ();
-		}
-
-		public Task SaveAs (FilePath filePath, Encoding encoding)
+		public async Task SaveAs (FilePath filePath, Encoding encoding)
 		{
 			FilePath = filePath;
 			Encoding = encoding;
+			if (IsNewDocument && FileModelType != null) {
+				// Register the file model with the new id
+				var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
+				await modelRegistry.RegisterSharedModel (FileModel, filePath);
+			}
 			IsNewDocument = false;
-			return Save ();
+			await Save ();
 		}
 
 		public bool CanActivateFile (FilePath file)

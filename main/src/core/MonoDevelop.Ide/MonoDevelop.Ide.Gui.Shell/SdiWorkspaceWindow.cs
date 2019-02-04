@@ -392,7 +392,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		
 		void OnTitleChanged(EventArgs e)
 		{
-			if (controller.Model is FileDocumentModel fileModel)
+			if (controller.Model is FileModel fileModel)
 				fileTypeCondition.SetFileName (fileModel.FilePath);
 
 			SetDockNotebookTabTitle ();

@@ -235,7 +235,9 @@ namespace MonoDevelop.Ide.Gui
 
 		public FilePath FileName {
 			get {
-				if (controller.Model is FileDocumentModel fileModel)
+				if (controller is FileDocumentController file)
+					return file.FilePath;
+				else if (controller.Model is FileModel fileModel)
 					return fileModel.FilePath;
 				else
 					return null;
@@ -256,7 +258,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public bool IsFile {
-			get { return controller.Model is FileDocumentModel; }
+			get { return controller is FileDocumentController; }
 		}
 		
 		public bool IsDirty {

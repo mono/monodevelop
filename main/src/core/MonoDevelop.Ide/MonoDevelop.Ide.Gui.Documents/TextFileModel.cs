@@ -23,41 +23,154 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public abstract class TextFileModel : FileDocumentModel
+	public abstract class TextFileModel : FileModel
 	{
+		public Encoding Encoding {
+			get => GetRepresentation<TextFileModelRepresentation> ().Encoding;
+			set => GetRepresentation<TextFileModelRepresentation> ().Encoding = value;
+		}
+
 		public void SetText (string text)
 		{
-			GetRepresentation ();
+			var rep = GetRepresentation<TextFileModelRepresentation> ();
+			rep.SetText (text);
 		}
 
-		public abstract Task<string> GetText ();
-
-		public Task Read (TextReader reader)
+		public string GetText ()
 		{
-			return OnRead (reader);
+			var rep = GetRepresentation<TextFileModelRepresentation> ();
+			return rep.GetText ();
 		}
 
-		protected abstract Task OnRead (TextReader reader);
-
-		protected override Task CopyFromLinkedModel (DocumentModel model)
+		public Task SetText (TextReader reader)
 		{
-			if (model is TextFileModel textFileModel) {
-				SetText (textFileModel.GetText ());
+			var rep = GetRepresentation<TextFileModelRepresentation> ();
+			return rep.SetText (reader);
+		}
+
+		internal protected override Type RepresentationType => typeof (InternalTextFileModelRepresentation);
+
+		protected abstract class TextFileModelRepresentation : FileModelRepresentation
+		{
+			Encoding encoding;
+			bool useByteOrderMark;
+
+			public Encoding Encoding {
+				get { return encoding; }
+				set {
+					if (encoding != value) {
+						encoding = value;
+						NotifyChanged ();
+					}
+				}
+			}
+
+			public bool UseByteOrderMark {
+				get {
+					return useByteOrderMark;
+				}
+				set {
+					if (value != useByteOrderMark) {
+						useByteOrderMark = value;
+						NotifyChanged ();
+					}
+				}
+			}
+
+			public void SetText (string text)
+			{
+				OnSetText (text);
+				NotifyChanged ();
+			}
+
+			public async Task SetText (TextReader reader)
+			{
+				await OnSetText (reader);
+				NotifyChanged ();
+			}
+
+			public string GetText ()
+			{
+				return OnGetText ();
+			}
+
+			protected abstract void OnSetText (string text);
+
+			protected abstract string OnGetText ();
+
+			protected virtual Task OnSetText (TextReader reader)
+			{
+				OnSetText (reader.ReadToEnd ());
 				return Task.CompletedTask;
 			}
-			return base.CopyFromLinkedModel (model);
+
+			protected override Stream OnGetContent ()
+			{
+				var memStream = new MemoryStream ();
+				TextFileUtility.WriteText (memStream, GetText (), Encoding, UseByteOrderMark);
+				return memStream;
+			}
+
+			protected override async Task OnSetContent (Stream content)
+			{
+				var file = await TextFileUtility.GetTextAsync (content);
+				OnSetText (file.Text);
+				Encoding = file.Encoding;
+				UseByteOrderMark = file.HasByteOrderMark;
+			}
+
+			protected override async Task OnCopyFrom (ModelRepresentation other)
+			{
+				if (other is TextFileModelRepresentation textFile) {
+					OnSetText (textFile.GetText ());
+					Encoding = textFile.Encoding;
+					UseByteOrderMark = textFile.UseByteOrderMark;
+					NotifyChanged ();
+				} else
+					await base.OnCopyFrom (other);
+			}
 		}
 
-		protected abstract class TextFileModelRepresentation : ModelRepresentation
+		class InternalTextFileModelRepresentation : TextFileModelRepresentation
 		{
-			public abstract void SetText (string text);
+			string text;
 
-			public abstract Task<string> GetText ();
+			protected override string OnGetText ()
+			{
+				return text;
+			}
+
+			protected override void OnSetText (string text)
+			{
+				this.text = text;
+			}
+
+			protected override async Task OnLoad ()
+			{
+				var file = await TextFileUtility.ReadAllTextAsync (FilePath);
+				text = file.Text;
+				Encoding = file.Encoding;
+				UseByteOrderMark = file.HasByteOrderMark;
+			}
+
+			protected override void OnLoadNew ()
+			{
+				text = "";
+				Encoding = Encoding.UTF8;
+			}
+
+			protected override async Task OnSave ()
+			{
+				await TextFileUtility.WriteTextAsync (FilePath, text, Encoding, UseByteOrderMark);
+			}
 		}
 	}
 }

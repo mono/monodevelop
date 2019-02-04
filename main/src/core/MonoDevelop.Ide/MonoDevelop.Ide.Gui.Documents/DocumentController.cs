@@ -514,11 +514,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (value != model) {
 				if (model != null)
 					model.Changed -= Model_Changed;
+				var oldModel = model;
 				model = value;
 				if (model != null)
 					model.Changed += Model_Changed;
-				OnModelChanged ();
-				OnModelContentChanged ();
+				OnModelChanged (oldModel, model);
 				RefreshExtensions ().Ignore ();
 				ModelChanged?.Invoke (this, EventArgs.Empty);
 			}
@@ -526,7 +526,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void Model_Changed (object sender, EventArgs e)
 		{
-			OnModelContentChanged ();
 		}
 
 		async Task InitializeExtensionChain ()
@@ -673,14 +672,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Called when a new DocumentModel is assigned to this controller.
 		/// It is also called when the controller is set to null.
 		/// </summary>
-		protected virtual void OnModelChanged ()
-		{
-		}
-
-		/// <summary>
-		/// Called when the content of the model changes (for example, when the content of the file changes)
-		/// </summary>
-		protected virtual void OnModelContentChanged ()
+		protected virtual void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
 		{
 		}
 
@@ -789,7 +781,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual IEnumerable<FilePath> OnGetDocumentFiles ()
 		{
-			if (Model is FileDocumentModel file)
+			if (Model is FileModel file)
 				yield return file.FilePath;
 		}
 
