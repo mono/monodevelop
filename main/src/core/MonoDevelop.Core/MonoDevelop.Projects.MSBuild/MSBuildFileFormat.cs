@@ -51,9 +51,6 @@ namespace MonoDevelop.Projects.MSBuild
 		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
 		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
 
-		[Obsolete("This is the same as VS2012")]
-		public static readonly MSBuildFileFormat VS2017 = VS2012;
-
 		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
 		{
 			yield return VS2012;
@@ -68,12 +65,6 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public static MSBuildFileFormat DefaultFormat => VS2012;
-		
-		[Obsolete ("Use ProductDescription or ID")]
-		public string Name => "MSBuild";
-
-		[Obsolete]
-		public abstract Version Version { get; }
 
 		internal SlnFileFormat SlnFileFormat {
 			get { return slnFileFormat; }
@@ -237,9 +228,6 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		public override string Id => "MSBuild05";
 
-		[Obsolete("Unused")]
-		public override Version Version => new Version ("2005");
-
 		public override string DefaultProductVersion => "8.0.50727";
 		public override string DefaultToolsVersion => "2.0";
 		public override string DefaultSchemaVersion => "2.0";
@@ -254,9 +242,6 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildFileFormatVS08: MSBuildFileFormat
 	{
 		public override string Id => "MSBuild08";
-
-		[Obsolete ("Unused")]
-		public override Version Version => new Version ("2008");
 
 		public override string DefaultProductVersion => "9.0.21022";
 		public override string DefaultToolsVersion => "3.5";
@@ -279,9 +264,6 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		public override string Id => "MSBuild10";
 
-		[Obsolete ("Unused")]
-		public override Version Version => new Version ("2010");
-
 		public override string DefaultProductVersion => "8.0.30703";
 		public override string DefaultSchemaVersion => "2.0";
 		public override string DefaultToolsVersion => "4.0";
@@ -293,9 +275,6 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildFileFormatVS12: MSBuildFileFormat
 	{
 		public override string Id => "MSBuild12";
-
-		[Obsolete ("Unused")]
-		public override Version Version => new Version ("2012");
 
 		// This is mostly irrelevant, the builder always uses the latest
 		// tools version. It's only used for new projects created with
