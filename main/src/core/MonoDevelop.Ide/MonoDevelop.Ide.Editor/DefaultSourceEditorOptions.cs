@@ -270,7 +270,14 @@ namespace MonoDevelop.Ide.Editor
 			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
 
 			IdeApp.Preferences.ColorScheme.Changed += OnColorSchemeChanged;
+			IdeApp.Preferences.Editor.FollowCodingConventions.Changed += OnFollowCodingConventionsChanged;
 		}
+
+		void OnFollowCodingConventionsChanged (object sender, EventArgs e)
+		{
+			UpdateContextOptions (null, null).Ignore ();
+		}
+
 
 		void UpdateFont ()
 		{
@@ -279,12 +286,12 @@ namespace MonoDevelop.Ide.Editor
 
 		internal void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
-			defaultEolMarker = TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
-			tabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
-			indentationSize       = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
+			DefaultEolMarker      = TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
+			TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
+			TabSize               = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
 			rulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
 			allowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
-			removeTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
+			RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
 
 		internal DefaultSourceEditorOptions Create ()
@@ -312,7 +319,7 @@ namespace MonoDevelop.Ide.Editor
 				this.context.CodingConventionsChangedAsync -= UpdateContextOptions;
 			this.context = context;
 			context.CodingConventionsChangedAsync += UpdateContextOptions;
-			UpdateContextOptions (null, null);
+			UpdateContextOptions (null, null).Ignore ();
 		}
 
 		private Task UpdateContextOptions (object sender, CodingConventionsChangedEventArgs arg)
@@ -320,29 +327,31 @@ namespace MonoDevelop.Ide.Editor
 			if (context == null)
 				return Task.FromResult (false);
 
+			bool followCodingConventions = IdeApp.Preferences.Editor.FollowCodingConventions;
+
 			defaultEolMarkerFromContext = null;
-			if (context.CurrentConventions.UniversalConventions.TryGetLineEnding (out string eolMarker))
+			if (followCodingConventions && context.CurrentConventions.UniversalConventions.TryGetLineEnding (out string eolMarker))
 				defaultEolMarkerFromContext = eolMarker;
 
 			tabsToSpacesFromContext = null;
-			if (context.CurrentConventions.UniversalConventions.TryGetIndentStyle (out Microsoft.VisualStudio.CodingConventions.IndentStyle result))
+			if (followCodingConventions && context.CurrentConventions.UniversalConventions.TryGetIndentStyle (out Microsoft.VisualStudio.CodingConventions.IndentStyle result))
 				tabsToSpacesFromContext = result == Microsoft.VisualStudio.CodingConventions.IndentStyle.Spaces;
 
 			indentationSizeFromContext = null;
-			if (context.CurrentConventions.UniversalConventions.TryGetIndentSize (out int indentSize)) 
+			if (followCodingConventions && context.CurrentConventions.UniversalConventions.TryGetIndentSize (out int indentSize)) 
 				indentationSizeFromContext = indentSize;
 
 			removeTrailingWhitespacesFromContext = null;
-			if (context.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out bool allowTrailing))
+			if (followCodingConventions && context.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out bool allowTrailing))
 				removeTrailingWhitespacesFromContext = !allowTrailing;
 
 			tabSizeFromContext = null;
-			if (context.CurrentConventions.UniversalConventions.TryGetTabWidth (out int tSize))
+			if (followCodingConventions && context.CurrentConventions.UniversalConventions.TryGetTabWidth (out int tSize))
 				tabSizeFromContext = tSize;
 
 			rulerColumnFromContext = null;
 			showRulerFromContext = null;
-			if (context.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out string maxLineLength)) {
+			if (followCodingConventions && context.CurrentConventions.TryGetConventionValue<string> (EditorConfigService.MaxLineLengthConvention, out string maxLineLength)) {
 				if (maxLineLength != "off" && int.TryParse (maxLineLength, out int i)) {
 					rulerColumnFromContext = i;
 					showRulerFromContext = true;
@@ -361,6 +370,7 @@ namespace MonoDevelop.Ide.Editor
 			set { IdeApp.Preferences.EnableAutoCodeCompletion.Set (value); }
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> defaultRegionsFolding = ConfigurationProperty.Create ("DefaultRegionsFolding", false);
 		public bool DefaultRegionsFolding {
 			get {
@@ -371,7 +381,8 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
+
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> defaultCommentFolding = ConfigurationProperty.Create ("DefaultCommentFolding", true);
 		public bool DefaultCommentFolding {
 			get {
@@ -394,6 +405,8 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> enableSemanticHighlighting = ConfigurationProperty.Create ("EnableSemanticHighlighting", true);
 		public bool EnableSemanticHighlighting {
 			get {
@@ -405,6 +418,8 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> tabIsReindent = ConfigurationProperty.Create ("TabIsReindent", false);
 		public bool TabIsReindent {
 			get {
@@ -416,7 +431,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> autoInsertMatchingBracket = ConfigurationProperty.Create ("AutoInsertMatchingBracket", true);
+		ConfigurationProperty<bool> autoInsertMatchingBracket = IdeApp.Preferences.Editor.EnableBraceCompletion;
 		public bool AutoInsertMatchingBracket {
 			get {
 				return autoInsertMatchingBracket;
@@ -427,6 +442,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> smartSemicolonPlacement = ConfigurationProperty.Create ("SmartSemicolonPlacement", false);
 		public bool SmartSemicolonPlacement {
 			get {
@@ -438,6 +454,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<IndentStyle> indentStyle = ConfigurationProperty.Create ("IndentStyle", IndentStyle.Smart);
 		public IndentStyle IndentStyle {
 			get {
@@ -449,6 +466,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> enableHighlightUsages = ConfigurationProperty.Create ("EnableHighlightUsages", true);
 		public bool EnableHighlightUsages {
 			get {
@@ -459,7 +477,8 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
+
+		// TODO: Windows equivalent?
 		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create ("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
@@ -471,6 +490,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> showProcedureLineSeparators = ConfigurationProperty.Create ("ShowProcedureLineSeparators", false);
 		public bool ShowProcedureLineSeparators {
 			get {
@@ -495,21 +515,21 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#region ITextEditorOptions
-		string defaultEolMarker = Environment.NewLine;
+		ConfigurationProperty<string> defaultEolMarker = IdeApp.Preferences.Editor.NewLineCharacter;
 		string defaultEolMarkerFromContext = null;
 
+		// TODO: This isn't surfaced in properties, only policies. We have no UI for it.
 		public string DefaultEolMarker {
 			get {
 				return defaultEolMarkerFromContext ?? defaultEolMarker;
 			}
 			set {
-				if (defaultEolMarker != value) {
-					defaultEolMarker = value;
+				if (defaultEolMarker.Set (value))
 					OnChanged (EventArgs.Empty);
-				}
 			}
 		}
-		
+
+		// TODO: Windows equivalent?
 		ConfigurationProperty<WordNavigationStyle> wordNavigationStyle;
 		public WordNavigationStyle WordNavigationStyle {
 			get {
@@ -534,7 +554,8 @@ namespace MonoDevelop.Ide.Editor
 				throw new System.NotImplementedException ();
 			}
 		}
-		
+
+		// TODO: Windows equivalent?
 		bool allowTabsAfterNonTabs = true;
 		public bool AllowTabsAfterNonTabs {
 			get {
@@ -549,70 +570,62 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		bool tabsToSpaces = true;
+		ConfigurationProperty<bool> tabsToSpaces = IdeApp.Preferences.Editor.ConvertTabsToSpaces;
 		bool? tabsToSpacesFromContext;
 		public bool TabsToSpaces {
 			get {
 				return tabsToSpacesFromContext ?? tabsToSpaces;
 			}
 			set {
-				if (tabsToSpaces != value) {
-					PropertyService.Set ("TabsToSpaces", value);
-					tabsToSpaces = value;
+				if (tabsToSpaces.Set (value))
 					OnChanged (EventArgs.Empty);
-				}
 			}
 		}
-		
-		int indentationSize = 4;
+
+		ConfigurationProperty<int> indentationSize = IdeApp.Preferences.Editor.IndentSize;
 		int? indentationSizeFromContext;
 		public int IndentationSize {
 			get {
 				return indentationSizeFromContext ?? indentationSize;
 			}
 			set {
-				if (indentationSize != value) {
-					PropertyService.Set ("TabIndent", value);
-					indentationSize = value;
+				if (indentationSize.Set (value))
 					OnChanged (EventArgs.Empty);
-				}
 			}
 		}
 
-		
 		public string IndentationString {
 			get {
 				return TabsToSpaces ? new string (' ', this.TabSize) : "\t";
 			}
 		}
 
+		ConfigurationProperty<int> tabSize = IdeApp.Preferences.Editor.TabSize;
 		int? tabSizeFromContext;
 		public int TabSize {
 			get {
 				return tabSizeFromContext ?? IndentationSize;
 			}
 			set {
-				IndentationSize = value;
+				if (tabSize.Set (value))
+					OnChanged (EventArgs.Empty);
 			}
 		}
 
-		bool removeTrailingWhitespaces = true;
+		ConfigurationProperty<bool> trimTrailingWhitespace = IdeApp.Preferences.Editor.TrimTrailingWhitespace;
 		bool? removeTrailingWhitespacesFromContext;
 
 		public bool RemoveTrailingWhitespaces {
 			get {
-				return removeTrailingWhitespacesFromContext ?? removeTrailingWhitespaces;
+				return removeTrailingWhitespacesFromContext ?? trimTrailingWhitespace;
 			}
 			set {
-				if (removeTrailingWhitespaces != value) {
-					PropertyService.Set ("RemoveTrailingWhitespaces", value);
+				if (trimTrailingWhitespace.Set(value))
 					OnChanged (EventArgs.Empty);
-					removeTrailingWhitespaces = value;
-				}
 			}
 		}
-		
-		ConfigurationProperty<bool> showLineNumberMargin = ConfigurationProperty.Create ("ShowLineNumberMargin", true);
+
+		ConfigurationProperty<bool> showLineNumberMargin = IdeApp.Preferences.Editor.ShowLineNumberMargin;
 		public bool ShowLineNumberMargin {
 			get {
 				return showLineNumberMargin;
@@ -623,32 +636,29 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> hideFoldMargin = ConfigurationProperty.Create ("HideFoldMargin", false);
+		ConfigurationProperty<bool> showFoldMargin = IdeApp.Preferences.Editor.ShowOutliningMargin;
 		public bool ShowFoldMargin {
 			get {
-				return !hideFoldMargin;
+				return showFoldMargin;
 			}
 			set {
-				if (hideFoldMargin.Set (!value))
+				if (showFoldMargin.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
-		bool showIconMargin = true;
+
+		ConfigurationProperty<bool> showIconMargin = IdeApp.Preferences.Editor.ShowGlyphMargin;
 		public bool ShowIconMargin {
 			get {
 				return showIconMargin;
 			}
 			set {
-				if (showIconMargin != value) {
-					PropertyService.Set ("ShowIconMargin", value);
-					showIconMargin = value;
+				if (showIconMargin.Set (value))
 					OnChanged (EventArgs.Empty);
-				}
 			}
 		}
-		
-		ConfigurationProperty<bool> highlightCaretLine = ConfigurationProperty.Create ("HighlightCaretLine", false);
+
+		ConfigurationProperty<bool> highlightCaretLine = IdeApp.Preferences.Editor.EnableHighlightCurrentLine;
 		public bool HighlightCaretLine {
 			get {
 				return highlightCaretLine;
@@ -659,6 +669,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> enableSyntaxHighlighting = ConfigurationProperty.Create ("EnableSyntaxHighlighting", true);
 		public bool EnableSyntaxHighlighting {
 			get {
@@ -670,7 +681,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal ConfigurationProperty<bool> highlightMatchingBracket = ConfigurationProperty.Create ("HighlightMatchingBracket", true);
+		internal ConfigurationProperty<bool> highlightMatchingBracket = IdeApp.Preferences.Editor.EnableHighlightDelimiter;
 		public bool HighlightMatchingBracket {
 			get {
 				return highlightMatchingBracket;
@@ -685,6 +696,7 @@ namespace MonoDevelop.Ide.Editor
 		int? rulerColumnFromContext;
 
 
+		// TODO: VS equivalent?
 		public int RulerColumn {
 			get {
 				return rulerColumnFromContext ?? rulerColumn;
@@ -697,7 +709,8 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
-		
+
+		// TODO: VS equivalent?
 		ConfigurationProperty<bool> showRuler = ConfigurationProperty.Create ("ShowRuler", true);
 		bool? showRulerFromContext;
 		public bool ShowRuler {
@@ -710,6 +723,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: ???
 		ConfigurationProperty<bool> enableAnimations = ConfigurationProperty.Create ("EnableAnimations", true);
 		public bool EnableAnimations {
 			get { 
@@ -720,7 +734,8 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
+
+		// TODO: Is this ShowBlockStructure?
 		ConfigurationProperty<bool> drawIndentationMarkers = ConfigurationProperty.Create ("DrawIndentationMarkers", false);
 		public bool DrawIndentationMarkers {
 			get {
@@ -732,18 +747,20 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> wrapLines = ConfigurationProperty.Create ("WrapLines", false);
+		// TODO: VSWindows has more options than just WordWrap and None. Might need UI changes.
+		ConfigurationProperty<Microsoft.VisualStudio.Text.Editor.WordWrapStyles> wrapLines = IdeApp.Preferences.Editor.WordWrapStyle;
 		public bool WrapLines {
 			get {
-				return wrapLines;
+				return (wrapLines.Value & Microsoft.VisualStudio.Text.Editor.WordWrapStyles.WordWrap) != 0;
 			}
 			set {
-				if (wrapLines.Set (value))
+				var newValue = value ? Microsoft.VisualStudio.Text.Editor.WordWrapStyles.WordWrap : Microsoft.VisualStudio.Text.Editor.WordWrapStyles.None;
+				if (wrapLines.Set (newValue))
 					OnChanged (EventArgs.Empty);
 			}
 		}
 
-		ConfigurationProperty<bool> enableQuickDiff = ConfigurationProperty.Create ("EnableQuickDiff", false);
+		ConfigurationProperty<bool> enableQuickDiff = IdeApp.Preferences.Editor.ShowChangeTrackingMargin;
 		public bool EnableQuickDiff {
 			get {
 				return enableQuickDiff;
@@ -786,8 +803,8 @@ namespace MonoDevelop.Ide.Editor
 		{
 			OnChanged (EventArgs.Empty);
 		}
-		
-		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", true);
+
+		ConfigurationProperty<bool> generateFormattingUndoStep = IdeApp.Preferences.Editor.OutliningUndoStep;
 		public bool GenerateFormattingUndoStep {
 			get {
 				return generateFormattingUndoStep;
@@ -822,6 +839,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: VS-Editor only has true/false here.
 		ConfigurationProperty<ShowWhitespaces> showWhitespaces = ConfigurationProperty.Create ("ShowWhitespaces", ShowWhitespaces.Never);
 		public ShowWhitespaces ShowWhitespaces {
 			get {
@@ -833,6 +851,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = ConfigurationProperty.Create ("IncludeWhitespaces", IncludeWhitespaces.All);
 		public IncludeWhitespaces IncludeWhitespaces {
 			get {
@@ -844,6 +863,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		// TODO: Windows equivalent?
 		ConfigurationProperty<bool> smartBackspace = ConfigurationProperty.Create ("SmartBackspace", true);
 		public bool SmartBackspace{
 			get {
@@ -861,6 +881,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			FontService.RemoveCallback (UpdateFont);
 			IdeApp.Preferences.ColorScheme.Changed -= OnColorSchemeChanged;
+			IdeApp.Preferences.Editor.FollowCodingConventions.Changed -= OnFollowCodingConventionsChanged;
 			if (context != null)
 				context.CodingConventionsChangedAsync -= UpdateContextOptions;
 		}

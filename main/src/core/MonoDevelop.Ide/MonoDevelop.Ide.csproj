@@ -4187,6 +4187,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
     <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="DeleteAfterWebToolsFixesDep\VacuousTextDataModel.cs" />
     <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="DeleteAfterWebToolsFixesDep\VacuousTextViewModel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorPreferences.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs">
