@@ -416,12 +416,6 @@ namespace MonoDevelop.Ide.Gui
 				AlertButton.CloseWithoutSave, AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
 
-		[Obsolete("Use CloseAllDocumentsAsync")]
-		public void CloseAllDocuments (bool leaveActiveDocumentOpen)
-		{
-			CloseAllDocumentsAsync (leaveActiveDocumentOpen).Ignore ();
-		}
-
 		public async Task CloseAllDocumentsAsync (bool leaveActiveDocumentOpen)
 		{
 			Document[] docs = new Document [Documents.Count];
