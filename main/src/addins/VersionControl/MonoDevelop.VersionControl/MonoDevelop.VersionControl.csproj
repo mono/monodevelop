@@ -78,6 +78,7 @@
       <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <PackageReference Include="Humanizer.Core" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\added-overlay-16.png" />
