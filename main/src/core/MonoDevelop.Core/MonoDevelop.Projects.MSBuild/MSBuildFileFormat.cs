@@ -231,12 +231,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public int CompareTo (MSBuildFileFormat other) => Version.Parse (SlnVersion).CompareTo (Version.Parse (other.SlnVersion));
 
-		public static bool operator == (MSBuildFileFormat a, MSBuildFileFormat b) => a.Id == b.Id;
-		public static bool operator != (MSBuildFileFormat a, MSBuildFileFormat b) => a.Id != b.Id;
-		public static bool operator < (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) < Version.Parse (b.SlnVersion);
-		public static bool operator > (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) > Version.Parse (b.SlnVersion);
-		public static bool operator <= (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) <= Version.Parse (b.SlnVersion);
-		public static bool operator >= (MSBuildFileFormat a, MSBuildFileFormat b) => Version.Parse (a.SlnVersion) >= Version.Parse (b.SlnVersion);
+		public static bool operator == (MSBuildFileFormat a, MSBuildFileFormat b)
+		{
+			if (ReferenceEquals (a, b))
+				return true;
+
+			if (a is null)
+				return b is null;
+
+			return a.Equals (b);
+		}
+
+		public static bool operator != (MSBuildFileFormat a, MSBuildFileFormat b) => !(a == b);
+		public static bool operator < (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) < 0;
+		public static bool operator > (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) > 0;
+		public static bool operator <= (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) <= 0;
+		public static bool operator >= (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) >= 0;
 
 		#endregion
 	}
