@@ -1,4 +1,4 @@
-﻿#if MAC
+#if MAC
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -10,7 +10,7 @@ namespace MonoDevelop.Debugger
 	[Name ("BreakpointGlyphMouseProcessorProvider")]
 	[Order]
 	[ContentType ("any")]
-	public class BreakpointGlyphMouseProcessorProvider : IGlyphMouseProcessorProvider
+	class BreakpointGlyphMouseProcessorProvider : IGlyphMouseProcessorProvider
 	{
 		[Import]
 		private IViewTagAggregatorFactoryService viewTagAggregatorService = null;

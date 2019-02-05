@@ -9,8 +9,9 @@ namespace MonoDevelop.Debugger
 			ClassificationTag tag,
 			ClassificationTag disabled,
 			ClassificationTag invalid,
-			ITextView textView)
-			: base (tag, disabled, invalid, textView)
+			ITextView textView,
+			BreakpointManager breakpointManager)
+			: base (tag, disabled, invalid, textView, breakpointManager)
 		{
 		}
 	}

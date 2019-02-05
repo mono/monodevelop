@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Composition;
+using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text.Classification;
@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MonoDevelop.Debugger
 {
-	public class ClassificationTypes
+	class ClassificationTypes
 	{
 		public const string BreakpointForegroundTypeName = "BreakpointForeground";
 		public const string BreakpointDisabledForegroundTypeName = "BreakpointDisabledForeground";

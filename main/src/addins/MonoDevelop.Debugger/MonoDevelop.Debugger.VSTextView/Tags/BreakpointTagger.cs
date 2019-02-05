@@ -5,8 +5,8 @@ namespace MonoDevelop.Debugger
 {
 	internal class BreakpointTagger : AbstractBreakpointTagger<TextMarkerTag>
 	{
-		public BreakpointTagger (ITextView textView)
-			: base (BreakpointTag.Instance, BreakpointDisabledTag.Instance, BreakpointInvalidTag.Instance, textView)
+		public BreakpointTagger (ITextView textView, BreakpointManager breakpointManager)
+			: base (BreakpointTag.Instance, BreakpointDisabledTag.Instance, BreakpointInvalidTag.Instance, textView, breakpointManager)
 		{
 		}
 	}

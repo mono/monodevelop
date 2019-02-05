@@ -19,6 +19,13 @@ namespace MonoDevelop.Debugger
 			return (textSnapshotLine.LineNumber + 1, point - textSnapshotLine.Start + 1);
 		}
 
+		public static (int line, int column, int endLine, int endColumn) MDLineAndColumnFromSpan (this ITextSnapshot snapshot, Span span)
+		{
+			var startLine = snapshot.GetLineFromPosition (span.Start);
+			var endLine = snapshot.GetLineFromPosition (span.End);
+			return (startLine.LineNumber + 1, span.Start - startLine.Start + 1, endLine.LineNumber + 1, span.End - endLine.Start + 1);
+		}
+
 		public static SnapshotSpan SpanFromMDColumnAndLine (this ITextSnapshot snapshot, int line, int column, int endLine, int endColumn)
 		{
 			var startSnapLine = snapshot.GetLineFromLineNumber (line - 1);

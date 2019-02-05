@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Composition;
+using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -21,7 +21,7 @@ namespace MonoDevelop.Debugger
 
 		public ITagger<T> CreateTagger<T> (ITextView textView, ITextBuffer buffer) where T : ITag
 		{
-			return new BreakpointGlyphTagger (TextDocumentFactoryService, textView) as ITagger<T>;
+			return new BreakpointGlyphTagger (TextDocumentFactoryService, textView, BreakpointManagerService.GetBreakpointManager (textView)) as ITagger<T>;
 		}
 	}
 }

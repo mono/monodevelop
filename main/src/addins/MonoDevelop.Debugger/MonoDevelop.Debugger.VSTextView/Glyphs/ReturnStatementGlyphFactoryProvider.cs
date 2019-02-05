@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Composition;
-using Microsoft.Ide.Editor;
+using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Core.Imaging;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;

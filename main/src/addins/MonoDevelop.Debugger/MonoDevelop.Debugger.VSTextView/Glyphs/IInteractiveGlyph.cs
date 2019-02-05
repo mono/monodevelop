@@ -1,6 +1,6 @@
-﻿namespace MonoDevelop.Debugger
+namespace MonoDevelop.Debugger
 {
-	public interface IInteractiveGlyph
+	interface IInteractiveGlyph
 	{
 		object HoverCursor { get; }
 		IActiveGlyphDropHandler DropHandler { get; }

@@ -1,5 +1,4 @@
 using System.ComponentModel.Composition;
-using Microsoft.Ide.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;

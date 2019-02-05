@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.Core.Imaging;
 using MonoDevelop.Ide;
 using System;
 
-namespace Microsoft.Ide.Editor
+namespace MonoDevelop.Debugger
 {
-	public class ImageSourceGlyphFactory<T> : IGlyphFactory
+	class ImageSourceGlyphFactory<T> : IGlyphFactory
 		where T : IGlyphTag
 	{
 		private readonly ImageId imageId;

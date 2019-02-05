@@ -15,40 +15,33 @@ namespace MonoDevelop.Debugger
 		private readonly T tag;
 		private readonly T disabled;
 		private readonly T invalid;
-		private readonly string file;
+		readonly BreakpointManager breakpointManager;
 
 		public AbstractBreakpointTagger (
-			T tag, T disabled, T invalid, ITextView textView)
+			T tag, T disabled, T invalid, ITextView textView, BreakpointManager breakpointManager)
 		{
+			this.breakpointManager = breakpointManager;
 			this.textView = textView;
 			this.tag = tag;
 			this.disabled = disabled;
 			this.invalid = invalid;
-			file = this.textView.TextBuffer.GetFilePathOrNull ();
-			DebuggingService.Breakpoints.Changed += OnBreakpointsChanged;
-			this.textView.Closed += (s, e) => DebuggingService.Breakpoints.Changed -= OnBreakpointsChanged;
+			breakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
+			this.textView.Closed += (s, e) => this.breakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
 		}
 
-		private void OnBreakpointsChanged (object sender, EventArgs eventArgs)
+		void BreakpointManager_BreakpointsChanged (object sender, SnapshotSpanEventArgs e)
 		{
-			if (TagsChanged != null) {
-				var snapshot = textView.TextBuffer.CurrentSnapshot;
-				var snapshotSpan = new SnapshotSpan (snapshot, 0, snapshot.Length);
-				var args = new SnapshotSpanEventArgs (snapshotSpan);
-				TagsChanged (this, args);
-			}
+			TagsChanged?.Invoke (this, e);
 		}
+
+
 
 		public IEnumerable<ITagSpan<T>> GetTags (NormalizedSnapshotSpanCollection spans)
 		{
-			if (file == null)
-				yield break;
-			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (file)) {
-				var snapshot = textView.TextBuffer.CurrentSnapshot;
-				if (snapshot.LineCount <= breakpoint.Line)
-					continue;
-				var span = snapshot.GetLineFromLineNumber (breakpoint.Line - 1).Extent;
+			foreach (var breakpointTag in breakpointManager.GetBreakpoints(spans[0].Snapshot)) {
+				var span = breakpointTag.Span;
 				if (spans.IntersectsWith (span)) {
+					var breakpoint = breakpointTag.Breakpoint;
 					var status = DebuggingService.GetBreakpointStatus (breakpoint);
 					if (breakpoint.Enabled)
 						if (status == BreakEventStatus.Bound || status == BreakEventStatus.Disconnected)
@@ -57,7 +50,9 @@ namespace MonoDevelop.Debugger
 							yield return new TagSpan<T> (span, invalid);
 					else
 						yield return new TagSpan<T> (span, disabled);
+
 				}
+
 			}
 		}
 

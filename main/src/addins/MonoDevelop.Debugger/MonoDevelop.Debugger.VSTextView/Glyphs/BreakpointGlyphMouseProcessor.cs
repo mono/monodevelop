@@ -1,4 +1,4 @@
-﻿#if MAC
+#if MAC
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +18,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Debugger
 {
-	public class BreakpointGlyphMouseProcessor : CocoaMouseProcessorBase
+	class BreakpointGlyphMouseProcessor : CocoaMouseProcessorBase
 	{
 		readonly ICocoaTextViewHost textViewHost;
 		ITagAggregator<IGlyphTag> glyphTagAggregator;

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Composition;
+using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 	[Export (typeof (ITaggerProvider))]
 	[TagType (typeof (IClassificationTag))]
 	[ContentType ("text")]
-	public class CurrentStatementForegroundTaggerProvider : ITaggerProvider
+	class CurrentStatementForegroundTaggerProvider : ITaggerProvider
 	{
 		private readonly IClassificationTypeRegistryService classificationTypeRegistryService;
 		private readonly IClassificationType classificationType;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -12,34 +12,28 @@ namespace MonoDevelop.Debugger
 	{
 		private readonly ITextView textView;
 		private readonly ITextDocumentFactoryService textDocumentFactoryService;
+		readonly BreakpointManager breakpointManager;
 
-		public BreakpointGlyphTagger (ITextDocumentFactoryService textDocumentFactoryService, ITextView textView)
+		public BreakpointGlyphTagger (ITextDocumentFactoryService textDocumentFactoryService, ITextView textView, BreakpointManager breakpointManager)
 		{
+			this.breakpointManager = breakpointManager;
 			this.textView = textView;
 			this.textDocumentFactoryService = textDocumentFactoryService;
-			DebuggingService.Breakpoints.Changed += OnBreakpointsChanged;
-			this.textView.Closed += (s, e) => DebuggingService.Breakpoints.Changed -= OnBreakpointsChanged;
+			breakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
+			this.textView.Closed += (s, e) => this.breakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
 		}
 
-		private void OnBreakpointsChanged (object sender, EventArgs eventArgs)
+		void BreakpointManager_BreakpointsChanged (object sender, SnapshotSpanEventArgs e)
 		{
-			if (TagsChanged != null) {
-				var snapshot = textView.TextBuffer.CurrentSnapshot;
-				var snapshotSpan = new SnapshotSpan (snapshot, 0, snapshot.Length);
-				var args = new SnapshotSpanEventArgs (snapshotSpan);
-				TagsChanged (this, args);
-			}
+			TagsChanged?.Invoke (this, e);
 		}
 
 		public IEnumerable<ITagSpan<BaseBreakpointGlyphTag>> GetTags (NormalizedSnapshotSpanCollection spans)
 		{
-			var found = textDocumentFactoryService.TryGetTextDocument (textView.TextBuffer, out var document);
-			if (!found || document.FilePath == null)
-				yield break;
-
-			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (document.FilePath)) {
-				var span = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber (breakpoint.Line - 1).Extent;
+			foreach (var breakpointTag in breakpointManager.GetBreakpoints(spans[0].Snapshot)) {
+				var span= breakpointTag.Span;
 				if (spans.IntersectsWith (span)) {
+					var breakpoint = breakpointTag.Breakpoint;
 					bool tracepoint = (breakpoint.HitAction & HitAction.Break) == HitAction.None;
 					if (breakpoint.Enabled) {
 						var status = DebuggingService.GetBreakpointStatus (breakpoint);
