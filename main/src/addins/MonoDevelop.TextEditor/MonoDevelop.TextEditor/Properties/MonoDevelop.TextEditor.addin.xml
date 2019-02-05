@@ -78,7 +78,6 @@
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentStartCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentEndCommandArgs" />
 
-		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Delete" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
@@ -165,6 +164,7 @@
 	<!-- temporary, need to align with old menu -->
 	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />

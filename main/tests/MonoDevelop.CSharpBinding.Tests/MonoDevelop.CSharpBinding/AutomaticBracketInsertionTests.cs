@@ -205,7 +205,7 @@ namespace MonoDevelop.CSharpBinding
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			var model = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+			var model = await ext.DocumentContext.AnalysisDocument.GetSemanticModelAsync ();
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 
 			var t = model.Compilation.GetTypeByMetadataName (type);

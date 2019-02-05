@@ -153,6 +153,7 @@ namespace MonoDevelop.TextEditor
 			("add word", ""),
 			("bracehighlight", ""),
 			("BraceCompletionClosingBrace", ""),
+			("outlining.collapsehintadornment.background", "" )
 		};
 
 		void UpdateEditorFormatMap (object sender, EventArgs args)
@@ -190,6 +191,7 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "currentstatement", EditorThemeColors.DebuggerCurrentLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "returnstatement", EditorThemeColors.DebuggerStackLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Indicator Margin", EditorThemeColors.IndicatorMargin);
+			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.ForegroundColorId);
 			foreach (var mapping in mappings) {
 				if (settingsMap.TryGetValue (mapping.MDThemeSettingName, out var setting))
 					CreateResourceDictionary (editorFormat, mapping.EditorFormatName, setting);
@@ -234,30 +236,30 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
+		void SetBrushes (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string name, string foregroundKey, string backgroundKey = null)
+		{
+			var squareResources = editorFormat.GetProperties (name);
+			if (defaultSettings.TryGetColor (foregroundKey, out var squareForeground)) {
+				var (r, g, b, a) = squareForeground.ToRgba ();
+				var c = Color.FromArgb (a, r, g, b);
+				squareResources[EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
+			}
+			if (backgroundKey != null && defaultSettings.TryGetColor (backgroundKey, out var squareBackground)) {
+				var (r, g, b, a) = squareBackground.ToRgba ();
+				var c = Color.FromArgb (a, r, g, b);
+				squareResources[EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
+			}
+			editorFormat.SetProperties (name, squareResources);
+		}
+
 		void CreateOutlining (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
 			// There is EditorThemeColors.FoldCross and EditorThemeColors.FoldCrossBackground
 			// but old editor is using ForeGround and FoldLine colors...
-			var resourceDictionary = editorFormat.GetProperties ("outlining.square");
-			if (defaultSettings.TryGetColor (EditorThemeColors.Foreground, out var foregroundColor)) {
-				var (r, g, b, a) = foregroundColor.ToRgba ();
-				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
-			}
-			if (defaultSettings.TryGetColor (EditorThemeColors.FoldLine, out var backgroundColor)) {
-				var (r, g, b, a) = backgroundColor.ToRgba ();
-				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
-			}
-			editorFormat.SetProperties ("outlining.square", resourceDictionary);
-			if (defaultSettings.TryGetColor (EditorThemeColors.CollapsedText, out var collapsedColor)) {
-				var (r, g, b, a) = collapsedColor.ToRgba ();
-				var c = Color.FromArgb (a, r, g, b);
-				var collapsedResourceDictionary = editorFormat.GetProperties ("Collapsible Text (Collapsed)");
-
-				collapsedResourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
-				editorFormat.SetProperties ("Collapsible Text (Collapsed)", collapsedResourceDictionary);
-			}
+			SetBrushes (editorFormat, defaultSettings, "outlining.square", EditorThemeColors.Foreground, EditorThemeColors.FoldLine);
+			SetBrushes (editorFormat, defaultSettings, "outlining.collapsehintadornment", EditorThemeColors.LineHighlight, EditorThemeColors.LineHighlight);
+			SetBrushes (editorFormat, defaultSettings, "outlining.verticalrule", EditorThemeColors.FoldLine);
+			SetBrushes (editorFormat, defaultSettings, "Collapsible Text (Collapsed)", EditorThemeColors.CollapsedText);
 		}
 
 		void CreateResourceDictionary (IEditorFormatMap editorFormat, string formatName, ThemeSetting setting)
@@ -268,10 +270,13 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = color.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
+				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 			}
 			if (setting.TryGetColor (EditorThemeColors.Background, out color)) {
 				var (r, g, b, a) = color.ToRgba ();
-				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = Color.FromArgb (a, r, g, b);
+				var c = Color.FromArgb (a, r, g, b);
+				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
+				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
 			}
 
 			if (setting.TryGetSetting ("fontStyle", out var style)) {
@@ -280,13 +285,24 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties (formatName, resourceDictionary);
 		}
 
-		static void CreateResourceDictionary (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string vsName, string settingName, string key = EditorFormatDefinition.BackgroundColorId)
+		static void CreateResourceDictionary (IEditorFormatMap editorFormat, ThemeSetting defaultSettings, string vsName, string settingName, string key = EditorFormatDefinition.BackgroundColorId, string brushKey = null)
 		{
 			ResourceDictionary resourceDictionary = editorFormat.GetProperties (vsName);
 			if (defaultSettings.TryGetColor (settingName, out var backgroundColor)) {
 				var (r, g, b, a) = backgroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [key] = c;
+
+				if (brushKey == null) {
+					if (key == EditorFormatDefinition.ForegroundColorId) {
+						brushKey = EditorFormatDefinition.ForegroundBrushId;
+					} else if (key == EditorFormatDefinition.BackgroundColorId) {
+						brushKey = EditorFormatDefinition.BackgroundBrushId;
+					}
+				}
+				if (brushKey != null) {
+					resourceDictionary [brushKey] = new SolidColorBrush (c);
+				}
 			}
 			editorFormat.SetProperties (vsName, resourceDictionary);
 		}
@@ -298,11 +314,13 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
+				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 			}
 			if (defaultSettings.TryGetColor ("gutter", out var backgroundColor)) {
 				var (r, g, b, a) = backgroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
+				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
 			}
 			editorFormat.SetProperties ("Line Number", resourceDictionary);
 		}
@@ -314,6 +332,7 @@ namespace MonoDevelop.TextEditor
 				var (r, g, b, a) = foregroundColor.ToRgba ();
 				var c = Color.FromArgb (a, r, g, b);
 				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
+				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
 			}
 			var fontName = Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
 			if (!double.TryParse (fontName.Substring (fontName.LastIndexOf (' ') + 1), out var fontSize)) {

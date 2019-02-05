@@ -34,15 +34,32 @@ namespace MonoDevelop.TextEditor
 	{
 		#region IEditorOperations Command Mapping
 
-		sealed class EditorOperationsMap : Dictionary<object, Action<IEditorOperations3>>
+		protected readonly struct EditorOperationCommand
 		{
-			public new Action<IEditorOperations3> this [object id] {
-				get => base [id];
-				set => base [CommandManager.ToCommandId (id)] = value;
+			public readonly Action<IEditorOperations3> Execute;
+			public readonly Action<IEditorOperations3, CommandInfo> Update;
+
+			public EditorOperationCommand (
+				Action<IEditorOperations3> execute,
+				Action<IEditorOperations3, CommandInfo> update = null)
+			{
+				Execute = execute;
+				Update = update;
 			}
 		}
 
-		readonly EditorOperationsMap editorOperationCommands = new EditorOperationsMap {
+		protected sealed class EditorOperationsMap : Dictionary<object, EditorOperationCommand>
+		{
+			public new Action<IEditorOperations3> this [object id] {
+				get => base [id].Execute;
+				set => base [CommandManager.ToCommandId (id)] = new EditorOperationCommand (value);
+			}
+
+			public new void Add (object id, EditorOperationCommand command)
+				=> base [CommandManager.ToCommandId (id)] = command;
+		}
+
+		protected readonly EditorOperationsMap EditorOperationCommands = new EditorOperationsMap {
 			[TextEditorCommands.ScrollLineUp] = op => op.ScrollUpAndMoveCaretIfNecessary (),
 			[TextEditorCommands.ScrollLineDown] = op => op.ScrollDownAndMoveCaretIfNecessary (),
 			[TextEditorCommands.ScrollPageUp] = op => op.ScrollPageUp (),
@@ -87,9 +104,9 @@ namespace MonoDevelop.TextEditor
 			[ViewCommands.CenterAndFocusCurrentDocument] = op => op.ScrollLineCenter ()
 		};
 
-		void InstallAdditionalEditorOperationsCommands ()
+		protected virtual void InstallAdditionalEditorOperationsCommands ()
 		{
-			editorOperationCommands [TextEditorCommands.SwitchCaretMode] = op => {
+			EditorOperationCommands [TextEditorCommands.SwitchCaretMode] = op => {
 				var overWriteMode = editorOptions.GetOptionValue (DefaultTextViewOptions.OverwriteModeId);
 				editorOptions.SetOptionValue (DefaultTextViewOptions.OverwriteModeId, !overWriteMode);
 			};
@@ -101,7 +118,7 @@ namespace MonoDevelop.TextEditor
 
 		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
 		{
-			if (CommandMappings.Instance.HasMapping (commandId) || editorOperationCommands.ContainsKey (commandId))
+			if (CommandMappings.Instance.HasMapping (commandId) || EditorOperationCommands.ContainsKey (commandId))
 				return this;
 
 			return null;
@@ -120,8 +137,9 @@ namespace MonoDevelop.TextEditor
 			var mapping = CommandMappings.Instance.GetMapping (cmd.Id);
 			if (mapping != null)
 				mapping.Execute (commandService, null);
-			else if (editorOperationCommands.TryGetValue (cmd.Id, out var editorOperationCommand))
-				editorOperationCommand (editorOperations);
+			else if (EditorOperationCommands.TryGetValue (cmd.Id, out var editorOperationCommand) &&
+				editorOperationCommand.Execute != null)
+				editorOperationCommand.Execute (editorOperations);
 		}
 
 		void ICommandHandler.Run (object cmdTarget, Command cmd, object dataItem)
@@ -135,7 +153,9 @@ namespace MonoDevelop.TextEditor
 				info.Enabled = commandState.IsAvailable;
 				info.Visible = !commandState.IsUnspecified;
 				info.Checked = commandState.IsChecked;
-			}
+			} else if (EditorOperationCommands.TryGetValue (info.Command.Id, out var editorOperationCommand) &&
+				editorOperationCommand.Update != null)
+				editorOperationCommand.Update (editorOperations, info);
 		}
 
 		void ICommandUpdater.Run (object cmdTarget, CommandArrayInfo info)

@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Utilities;
 	using UIElement = Xwt.Widget;
 
-    [Export(typeof(IViewElementFactory))]
+    //[Export(typeof(IViewElementFactory))]
     [Name("default ClassifiedTextElement to UIElement")]
     [TypeConversion(from: typeof(ClassifiedTextElement), to: typeof(UIElement))]
     [Order]

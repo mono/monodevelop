@@ -3039,7 +3039,6 @@
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
-    <Compile Include="MonoDevelop.Ide.Composition\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
     <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />
@@ -4188,6 +4187,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
     <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="DeleteAfterWebToolsFixesDep\VacuousTextDataModel.cs" />
     <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="DeleteAfterWebToolsFixesDep\VacuousTextViewModel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorPreferences.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="..\..\..\external\vs-editor-core\src\StandaloneMacEditor\RoslynOutliningWorkaround\AbstractStructureTaggerProvider.cs">
@@ -4284,6 +4284,7 @@
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
