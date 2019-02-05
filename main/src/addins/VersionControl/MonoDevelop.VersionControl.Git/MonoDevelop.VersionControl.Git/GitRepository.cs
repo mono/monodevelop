@@ -558,7 +558,7 @@ namespace MonoDevelop.VersionControl.Git
 			// Add the project files
 			ChangeSet cs = CreateChangeSet (localPath);
 			foreach (FilePath fp in files) {
-				RootRepository.Stage (RootRepository.ToGitPath (fp));
+				LibGit2Sharp.Commands.Stage (RootRepository, RootRepository.ToGitPath (fp));
 				cs.AddFile (fp);
 			}
 
@@ -588,7 +588,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 
 			if (RootRepository.Head.IsTracking) {
-				Fetch (monitor, RootRepository.Head.Remote.Name);
+				Fetch (monitor, RootRepository.Head.RemoteName);
 
 				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 				if (GitService.UseRebaseOptionWhenPulling)
@@ -665,10 +665,11 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.BeginTask (GettextCatalog.GetString ("Fetching"), 1);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			int progress = 0;
-			RetryUntilSuccess (monitor, credType => RootRepository.Fetch (remote, new FetchOptions {
+			var refSpec = RootRepository.Network.Remotes [remote]?.FetchRefSpecs.Select (spec => spec.Specification);
+			RetryUntilSuccess (monitor, credType => LibGit2Sharp.Commands.Fetch (RootRepository, remote, refSpec, new FetchOptions {
 				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 				OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
-			}));
+			}, string.Empty));
 			monitor.Step (1);
 			monitor.EndTask ();
 		}
@@ -856,7 +857,7 @@ namespace MonoDevelop.VersionControl.Git
 				return;
 
 			var repo = (GitRepository)changeSet.Repository;
-			repo.RootRepository.Stage (changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
+			LibGit2Sharp.Commands.Stage (repo.RootRepository, changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
 
 			if (changeSet.ExtendedProperties.Contains ("Git.AuthorName"))
 				repo.RootRepository.Commit (message, new Signature (
@@ -1052,11 +1053,11 @@ namespace MonoDevelop.VersionControl.Git
 							return true;
 						}
 					});
-					repository.Stage (repoFiles);
+					LibGit2Sharp.Commands.Stage (repository, repoFiles);
 				}
 
 				if (toUnstage.Any())
-					repository.Unstage (repository.ToGitPath (toUnstage).ToArray ());
+					LibGit2Sharp.Commands.Unstage (repository, repository.ToGitPath (toUnstage).ToArray ());
 				monitor.EndTask ();
 			}
 		}
@@ -1077,7 +1078,7 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 				var files = group.Where (f => !f.IsDirectory);
 				if (files.Any ())
-					repository.Stage (repository.ToGitPath (files));
+					LibGit2Sharp.Commands.Stage (repository, repository.ToGitPath (files));
 			}
 		}
 
@@ -1137,7 +1138,7 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 				var files = repository.ToGitPath (group);
 
-				repository.Remove (files, !keepLocal);
+				LibGit2Sharp.Commands.Remove (repository, files, !keepLocal, null);
 			}
 		}
 
@@ -1274,7 +1275,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void ChangeRemoteUrl (string name, string url)
 		{
 			RootRepository.Network.Remotes.Update (
-				RootRepository.Network.Remotes [name],
+				name,
 				r => r.Url = url
 			);
 		}
@@ -1282,7 +1283,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void ChangeRemotePushUrl (string name, string url)
 		{
 			RootRepository.Network.Remotes.Update (
-				RootRepository.Network.Remotes [name],
+				name,
 				r => r.PushUrl = url
 			);
 		}
@@ -1292,7 +1293,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (string.IsNullOrEmpty (name))
 				throw new InvalidOperationException ("Name not set");
 
-			RootRepository.Network.Remotes.Update (RootRepository.Network.Remotes.Add (name, url),
+			RootRepository.Network.Remotes.Update (RootRepository.Network.Remotes.Add (name, url).Name,
 				r => r.TagFetchMode = importTags ? TagFetchMode.All : TagFetchMode.Auto);
 		}
 
@@ -1336,7 +1337,7 @@ namespace MonoDevelop.VersionControl.Git
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
 			return RootRepository.Branches
-				.Where (b => b.IsRemote && b.Remote != null && b.Remote.Name == remoteName)
+				.Where (b => b.IsRemote && b.RemoteName == remoteName)
 				.Select (b => b.FriendlyName.Substring (b.FriendlyName.IndexOf ('/') + 1));
 		}
 
@@ -1373,7 +1374,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				int progress = 0;
-				RootRepository.Checkout (branch, new CheckoutOptions {
+				LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					OnCheckoutNotify = RefreshFile,
 					CheckoutNotifyFlags = refreshFlags,
@@ -1486,7 +1487,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			vi = GetVersionInfo (localDestPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi != null && ((vi.Status & (VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace)) != VersionStatus.Unversioned))
-				dstRepo.Unstage (localDestPath);
+				LibGit2Sharp.Commands.Unstage (dstRepo, localDestPath);
 
 			if (srcRepo == dstRepo) {
 				if (string.Equals (localSrcPath, localDestPath, StringComparison.OrdinalIgnoreCase)) {
@@ -1497,16 +1498,16 @@ namespace MonoDevelop.VersionControl.Git
 						DeleteFile (localSrcPath, true, monitor, false);
 						File.Move (temp, localDestPath);
 					} finally {
-						srcRepo.Stage (localDestPath);
+						LibGit2Sharp.Commands.Stage (srcRepo, localDestPath);
 					}
 				} else {
-					srcRepo.Move (localSrcPath, localDestPath);
+					LibGit2Sharp.Commands.Move (srcRepo, localSrcPath, localDestPath);
 				}
 				ClearCachedVersionInfo (localSrcPath, localDestPath);
 			} else {
 				File.Copy (localSrcPath, localDestPath);
-				srcRepo.Remove (localSrcPath, true);
-				dstRepo.Stage (localDestPath);
+				LibGit2Sharp.Commands.Remove (srcRepo, localSrcPath, true);
+				LibGit2Sharp.Commands.Stage (dstRepo, localDestPath);
 			}
 		}
 
@@ -1584,7 +1585,7 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (RootRepository.ToGitPath (path));
 
 			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			RootRepository.Stage (".gitignore");
+			LibGit2Sharp.Commands.Stage (RootRepository, ".gitignore");
 		}
 
 		protected override void OnUnignore (FilePath[] localPath)
@@ -1605,7 +1606,7 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (path);
 
 			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			RootRepository.Stage (".gitignore");
+			LibGit2Sharp.Commands.Stage (RootRepository, ".gitignore");
 		}
 
 		public override bool GetFileIsText (FilePath path)

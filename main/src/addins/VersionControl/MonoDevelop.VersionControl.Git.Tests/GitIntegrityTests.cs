@@ -141,7 +141,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 					File.WriteAllText (path, data.AsText ());
 				}
 
-				repo.Stage ("*");
+				LibGit2Sharp.Commands.Stage (repo, "*");
 
 				var gitCommit = repo.Commit ($"commit - {index}", signature, signature);
 				commit.Commit = gitCommit;
@@ -205,7 +205,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		[Test]
 		public void BlameWithRename ()
 		{
-			repo.Move ("a.cs", "d.cs");
+			LibGit2Sharp.Commands.Move (repo, "a.cs", "d.cs");
 			repo.Commit ("Remove commit", signature, signature);
 
 			var dData = commits [commits.Length - 1].Datas.Single (x => x.File == "a.cs");

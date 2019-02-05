@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectTemplateHandler.cs
 //
 // Author:
@@ -63,7 +63,7 @@ namespace MonoDevelop.VersionControl.Git
 		void CreateGitRepository (FilePath solutionPath)
 		{
 			using (var repo = GitUtil.Init (solutionPath, null))
-				repo.Stage ("*");
+				LibGit2Sharp.Commands.Stage (repo ,"*");
 		}
 	}
 }
