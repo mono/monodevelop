@@ -37,42 +37,39 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// </summary>
 	public class FileModel: DocumentModel
 	{
-		public FileModel (FilePath filePath)
-		{
-			this.FilePath = filePath;
-		}
-
 		public FileModel ()
 		{
-			IsNewFile = true;
 		}
 
 		public string MimeType { get; set; }
 
 		public FilePath FilePath { get; private set; }
 
-		public bool IsNewFile { get; private set; }
-
 		public bool CanWrite {
 			get {
-				var attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
-				return (File.GetAttributes (FilePath) & attr) != 0;
+				if (IsNew)
+					return false;
+				if (File.Exists (FilePath)) {
+					var attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
+					return (File.GetAttributes (FilePath) & attr) == 0;
+				} else
+					return true;
 			}
 		}
 
-		public void LinkToFile (FilePath filePath)
+		public Task LinkToFile (FilePath filePath)
 		{
 			if (FilePath != filePath) {
 				FilePath = filePath;
-				Relink (filePath);
+				return Relink (filePath);
 			}
+			return Task.CompletedTask;
 		}
 
-		public void ConvertToUnsaved ()
+		public async Task ConvertToUnsaved ()
 		{
-			UnlinkFromId ();
-			FilePath = FilePath.FileName; // Remove the path, keep only the file name
-			IsNewFile = true;
+			await UnlinkFromId ();
+			FilePath = FilePath.Null;
 		}
 
 		public Task SaveAs (FilePath filePath)
@@ -104,13 +101,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected abstract class FileModelRepresentation : ModelRepresentation
 		{
-			public FilePath FilePath => (FilePath)Id;
+			public FilePath FilePath => Id != null ? (FilePath)Id : FilePath.Null;
 			public string MimeType { get; set; }
 
 			public async Task SetContent (Stream content)
 			{
-				await OnSetContent (content);
-				NotifyChanged ();
+				try {
+					FreezeChangeEvent ();
+					await OnSetContent (content);
+				} finally {
+					ThawChangeEvent ();
+				}
 			}
 
 			public Stream GetContent ()
@@ -152,7 +153,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return Task.CompletedTask;
 			}
 
-			protected override void OnLoadNew ()
+			protected override void OnCreateNew ()
 			{
 				content = new byte [0];
 			}

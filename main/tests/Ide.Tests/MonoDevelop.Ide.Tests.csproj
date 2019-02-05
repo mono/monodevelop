@@ -146,6 +146,11 @@
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopFrameworkAssemblyPathResolverFactoryTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\DocumentModelRegistryTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\DocumentModelTestsBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\TextFileModelTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\FileModelTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\TextBufferFileModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -205,6 +210,9 @@
       <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
       <Name>IdeUnitTests</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Ide.Gui.DocumentModels\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -71,12 +71,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return model;
 		}
 
-		public Task RegisterSharedModel (DocumentModel model, object id)
+		public Task ShareModel (DocumentModel model)
 		{
 			if (model.Registry != null && model.Registry != this)
 				throw new InvalidOperationException ("Model does not belong to this registry");
 
-			return RelinkModel (model, id);
+			if (!model.Data.IsLinked)
+				throw new InvalidOperationException ("Model is not linked to an id");
+
+			model.Registry = this;
+			return RelinkModel (model, model.Id);
 		}
 
 		internal async Task DisposeModel (DocumentModel model)
@@ -86,6 +90,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				if (await model.Data.Unlink (model)) {
 					dataModels.Remove (model.Id);
 					model.Data.Id = null;
+					model.Registry = null;
 				}
 			} finally {
 				dataLock.Release ();
@@ -114,8 +119,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 					}
 					await oldData.Relink (model, newData);
 				} else {
-					await oldData.Relink (model, null);
-					oldData.Id = null;
+					var newData = new DocumentModel.DocumentModelData ();
+					await oldData.Relink (model, newData);
+					model.Registry = null;
 				}
 			} finally {
 				dataLock.Release ();

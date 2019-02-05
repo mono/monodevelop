@@ -31,7 +31,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 {
 	public abstract class ModelRepresentation
 	{
-		bool doingInternalChange;
+		int changeEventFreeze;
+		bool changeEventRaised;
 
 		internal int CurrentVersion { get; set; }
 
@@ -39,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal protected SemaphoreSlim WaitHandle { get; } = new SemaphoreSlim (1);
 
-		public object Id { get; set; }
+		public object Id => DocumentModelData.Id;
 
 		public bool IsLoaded { get; internal set; }
 
@@ -57,11 +58,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 				if (DocumentModelData.IsLinked)
 					await OnLoad ();
 				else
-					OnLoadNew ();
+					OnCreateNew ();
 				IsLoaded = true;
 			} finally {
 				WaitHandle.Release ();
 			}
+		}
+
+		internal void CreateNew ()
+		{
+			FreezeChangeEvent ();
+			try {
+				OnCreateNew ();
+			} finally {
+				ThawChangeEvent (false);
+			}
+			IsLoaded = true;
 		}
 
 		public async Task Reload ()
@@ -92,11 +104,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void NotifyChanged ()
 		{
-			if (!doingInternalChange)
+			if (changeEventFreeze == 0)
 				DocumentModelData?.NotifyChanged (this);
+			else
+				changeEventRaised = true;
 		}
 
-		protected abstract void OnLoadNew ();
+		protected abstract void OnCreateNew ();
 
 		protected abstract Task OnLoad ();
 
@@ -105,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal async Task InternalCopyFrom (ModelRepresentation other)
 		{
 			try {
-				doingInternalChange = true;
+				FreezeChangeEvent ();
 
 				// Capture the copied version now. If the copied object changes during the copy, the version
 				// will increase, so a subsequent synchronize call will bring the additional changes.
@@ -114,7 +128,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 				await OnCopyFrom (other);
 			} finally {
-				doingInternalChange = false;
+				ThawChangeEvent (false);
 			}
 		}
 
@@ -123,6 +137,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal protected virtual Task OnDispose ()
 		{
 			return Task.CompletedTask;
+		}
+
+		protected void FreezeChangeEvent ()
+		{
+			changeEventFreeze++;
+		}
+
+		protected void ThawChangeEvent (bool notifyPendingEvents = true)
+		{
+			if (--changeEventFreeze == 0 && notifyPendingEvents && changeEventRaised)
+				NotifyChanged ();
 		}
 	}
 }

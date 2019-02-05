@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentModelData data;
 		ModelRepresentation modelRepresentation;
 		int notifiedChangeVersion;
+		bool isNew;
 
 		internal DocumentModelData Data {
 			get {
@@ -59,11 +60,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 		protected ModelRepresentation ModelRepresentation {
 			get {
 				if (modelRepresentation == null) {
-					if (Registry != null)
+					if (isNew) {
+						modelRepresentation = data.GetRepresentationUnlinked (RepresentationType);
+					}
+					else if (Registry != null)
 						throw new InvalidOperationException ("The model is not yet loaded");
+					else
+						throw new InvalidOperationException ("The model is linked");
 
-					// Not shared, so this should always run sync
-					modelRepresentation = GetRepresentationAsync ().Result;
+					// Not shared, no need to async
+					modelRepresentation = data.GetRepresentationUnlinked (RepresentationType);
 				}
 				return modelRepresentation;
 			}
@@ -85,51 +91,77 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public event EventHandler Changed;
 
+		public void CreateNew ()
+		{
+			if (IsLoaded)
+				throw new InvalidOperationException ("Model already loaded");
+			if (Data.IsLinked)
+				throw new InvalidOperationException ("Model already linked");
+			isNew = true;
+			ModelRepresentation.CreateNew ();
+		}
+
+		public bool IsNew {
+			get {
+				CheckInitialized ();
+				return isNew;
+			}
+		}
+
+		void CheckInitialized ()
+		{
+			if (!isNew && !Data.IsLinked)
+				throw new InvalidOperationException ("Model not initialized. CreateNew() or Relink() must be called before accessing the model content.");
+		}
+
 		/// <summary>
 		/// Saves the data to disk
 		/// </summary>
 		/// <returns>The save.</returns>
 		public async Task Save ()
 		{
+			CheckInitialized ();
 			await ModelRepresentation.Save ();
 		}
 
 		public async Task Reload ()
 		{
+			if (!Data.IsLinked)
+				throw new InvalidOperationException ("The model is not linked");
 			var rep = await GetRepresentationAsync ();
 			await rep.Reload ();
 		}
 
 		public async Task Load ()
 		{
+			CheckInitialized ();
 			modelRepresentation = await GetRepresentationAsync ();
 			await modelRepresentation.Load ();
 		}
+
+		public bool IsLoaded => modelRepresentation != null && modelRepresentation.IsLoaded;
 
 		public void Dispose ()
 		{
 			if (disposed)
 				return;
 			disposed = true;
-			OnDispose ();
 			if (Registry != null)
 				Registry.DisposeModel (this).Ignore ();
 			else
 				Data.Unlink (this).Ignore ();
 		}
 
-		protected virtual void OnDispose ()
-		{
-		}
-
 		public async Task Synchronize ()
 		{
+			CheckInitialized ();
 			var rep = await GetRepresentationAsync ();
 			await rep.Synchronize ();
 		}
 
 		protected Task Relink (object id)
 		{
+			isNew = false;
 			if (Registry != null)
 				return Registry.RelinkModel (this, id);
 			else {
@@ -140,6 +172,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected Task UnlinkFromId ()
 		{
+			isNew = true;
 			if (Registry != null)
 				return Registry.RelinkModel (this, null);
 			else {
@@ -274,6 +307,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 							modelsToNotify.AddRange (newData.linkedModels.Where (m => m.RepresentationType == repType));
 
 						newData.linkedModels = newData.linkedModels.Add (model);
+						model.Data = newData;
 						newData.representations [repType] = representation;
 						representation.DocumentModelData = newData;
 
@@ -298,21 +332,42 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			async Task RemoveRepresentation (Type repType, ModelRepresentation representation)
 			{
-				if (lastChangedRepresentation == representation) {
-					// Make sure all other representations have the latest data
-					foreach (var otherRep in representations.Values) {
-						if (otherRep != representation) {
-							await Synchronize (otherRep, true);
-							lock (changeLock) {
-								if (lastChangedRepresentation == representation || changeVersion < otherRep.CurrentVersion) {
-									lastChangedRepresentation = otherRep;
-									changeVersion = otherRep.CurrentVersion;
-								}
-							}
+				if (lastChangedRepresentation == representation && linkedModels.Count > 0) {
+					// Make sure there is at lease one representation with the latest data
+					var otherRep = representations.Values.FirstOrDefault (r => r != representation);
+					if (otherRep == null) {
+						// Even though there are other models sharing the same data, none of their
+						// representations is loaded. Load one of them now, so that we can copy to it the data of the 
+						// representation being deleted.
+						var otherModel = linkedModels [0];
+						otherRep = GetRepresentationUnlinked (otherModel.RepresentationType); // Force the creation of the rep
+					}
+					try {
+						await otherRep.WaitHandle.WaitAsync ();
+						await Synchronize (otherRep, true);
+					} finally {
+						otherRep.WaitHandle.Release ();
+					}
+					lock (changeLock) {
+						if (lastChangedRepresentation == representation || changeVersion < otherRep.CurrentVersion) {
+							lastChangedRepresentation = otherRep;
+							changeVersion = otherRep.CurrentVersion;
 						}
 					}
 				}
 				representations.Remove (repType);
+			}
+
+			public ModelRepresentation GetRepresentationUnlinked (Type type)
+			{
+				if (linkedModels.Count > 1)
+					throw new InvalidOperationException ();
+
+				if (!representations.TryGetValue (type, out var representation)) {
+					representations [type] = representation = (ModelRepresentation)Activator.CreateInstance (type);
+					representation.DocumentModelData = this;
+				}
+				return representation;
 			}
 
 			public async Task<ModelRepresentation> GetRepresentation (Type type)
@@ -330,6 +385,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 							// The requested representation is new and there are other representations around which may contain
 							// changes. Get existing data from them.
 							await existingRep.WaitHandle.WaitAsync ();
+
+							// Ensure internal data structures are initialized
+							representation.CreateNew ();
 							await representation.InternalCopyFrom (existingRep);
 						}
 					}
@@ -390,18 +448,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 				try {
 					// Any operation that requires the lock of several representation must take
 					// the model lock first, to avoid deadlocks
-					if (!dataLocked)
+					if (!dataLocked) {
 						await dataLock.WaitAsync ();
-
-					await targetRep.WaitHandle.WaitAsync ();
-					await sourceModel.WaitHandle.WaitAsync ();
+						await targetRep.WaitHandle.WaitAsync ();
+						await sourceModel.WaitHandle.WaitAsync ();
+					}
 
 					await targetRep.InternalCopyFrom (sourceModel);
 				} finally {
-					if (!dataLocked)
+					if (!dataLocked) {
 						dataLock.Release ();
-					targetRep.WaitHandle.Release ();
-					sourceModel.WaitHandle.Release ();
+						targetRep.WaitHandle.Release ();
+						sourceModel.WaitHandle.Release ();
+					}
 				}
 				RaiseChangedEvent (targetRep.GetType ());
 			}

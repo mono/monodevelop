@@ -69,13 +69,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
 				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
 				doc.Encoding = text.Encoding;
+				Encoding = doc.Encoding;
 				UseByteOrderMark = text.HasByteOrderMark;
 				SetTextDocument (doc);
 			}
 
-			protected override void OnLoadNew ()
+			protected override void OnCreateNew ()
 			{
+				base.OnCreateNew ();
 				SetTextDocument (CreateTextDocument (""));
+				textDocument.Encoding = Encoding;
 			}
 
 			protected override string OnGetText ()
@@ -95,7 +98,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			protected override Task OnSave ()
 			{
 				// OnLoad is always called before anything else, so the document should be ready
-				textDocument.Save ();
+				textDocument.SaveAs (FilePath, true);
 				return Task.CompletedTask;
 			}
 
@@ -106,7 +109,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
 				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text, contentType);
 				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath.ToString () ?? "");
-				doc.Encoding = TextFileUtility.DefaultEncoding;
 				return doc;
 			}
 

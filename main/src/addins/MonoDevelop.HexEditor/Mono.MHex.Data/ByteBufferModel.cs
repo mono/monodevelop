@@ -63,7 +63,7 @@ namespace Mono.MHex.Data
 				}
 			}
 
-			protected override void OnLoadNew ()
+			protected override void OnCreateNew ()
 			{
 				byteBuffer = new ByteBuffer ();
 				byteBuffer.Buffer = new ArrayBuffer (new byte [0]);

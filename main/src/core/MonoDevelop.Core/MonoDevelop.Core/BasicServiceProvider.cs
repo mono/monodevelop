@@ -79,7 +79,7 @@ namespace MonoDevelop.Core
 					return (T)service;
 			}
 
-			return (T)await currentInitTask;
+			return (T)await currentInitTask.ConfigureAwait (false);
 		}
 
 		/// <summary>

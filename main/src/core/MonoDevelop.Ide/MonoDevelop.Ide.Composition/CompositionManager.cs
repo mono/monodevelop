@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Composition
 					if (!task.IsCompleted && Runtime.IsMainThread) {
 						LoggingService.LogInfo ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
 					}
-					instance = task.Result;
+					instance = task.WaitAndGetResult ();
 				}
 
 				return instance;

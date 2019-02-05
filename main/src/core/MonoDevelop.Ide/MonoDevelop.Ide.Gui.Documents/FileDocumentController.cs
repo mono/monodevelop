@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
 		{
 			if (FileModelType != null)
-				IsNewDocument = FileModel.IsNewFile;
+				IsNewDocument = FileModel.IsNew;
 			UpdateIcon (DocumentIcon).Ignore ();
 			base.OnModelChanged (oldModel, newModel);
 		}
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (IsNewDocument && FileModelType != null) {
 				// Register the file model with the new id
 				var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
-				await modelRegistry.RegisterSharedModel (FileModel, filePath);
+				await modelRegistry.ShareModel (FileModel);
 			}
 			IsNewDocument = false;
 			await Save ();

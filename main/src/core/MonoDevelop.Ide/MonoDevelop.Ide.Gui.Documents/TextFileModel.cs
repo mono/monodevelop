@@ -31,7 +31,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public abstract class TextFileModel : FileModel
+	public class TextFileModel : FileModel
 	{
 		public Encoding Encoding {
 			get => GetRepresentation<TextFileModelRepresentation> ().Encoding;
@@ -116,6 +116,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			{
 				var memStream = new MemoryStream ();
 				TextFileUtility.WriteText (memStream, GetText (), Encoding, UseByteOrderMark);
+				memStream.Position = 0;
 				return memStream;
 			}
 
@@ -136,6 +137,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 					NotifyChanged ();
 				} else
 					await base.OnCopyFrom (other);
+			}
+
+			protected override void OnCreateNew ()
+			{
+				Encoding = Encoding.UTF8;
 			}
 		}
 
@@ -161,10 +167,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				UseByteOrderMark = file.HasByteOrderMark;
 			}
 
-			protected override void OnLoadNew ()
+			protected override void OnCreateNew ()
 			{
 				text = "";
-				Encoding = Encoding.UTF8;
+				base.OnCreateNew ();
 			}
 
 			protected override async Task OnSave ()
