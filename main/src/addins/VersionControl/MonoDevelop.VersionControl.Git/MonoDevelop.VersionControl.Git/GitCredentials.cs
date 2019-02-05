@@ -23,14 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
+using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using LibGit2Sharp;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using System.Linq;
+using Mono.Addins;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -120,9 +122,7 @@ namespace MonoDevelop.VersionControl.Git
 			// if the password store contains an invalid password/no password
 			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
 				if (Uri.TryCreate (url, UriKind.RelativeOrAbsolute, out uri)) {
-					string username;
-					string password;
-					if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
+					if (!state.NativePasswordUsed && TryGetUsernamePassword (uri, out var username, out var password)) {
 						state.NativePasswordUsed = true;
 						return new UsernamePasswordCredentials {
 							Username = username,
@@ -202,7 +202,23 @@ namespace MonoDevelop.VersionControl.Git
 				return cred;
 			}
 
-			if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+			var gitCredentialsProviders = AddinManager.GetExtensionObjects<IGitCredentialsProvider> ();
+
+			if (gitCredentialsProviders != null) {
+				foreach (var gitCredentialsProvider in gitCredentialsProviders) {
+					if (gitCredentialsProvider.SupportsUrl (url)) {
+						result = GetCredentialsFromProvider (gitCredentialsProvider, url, types, cred);
+						if (result)
+							break;
+					}
+				}
+			}
+
+			if (!result) {
+				result = GetCredentials (url, types, cred);
+			}
+
+			if (result) {
 				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
 					var upcred = (UsernamePasswordCredentials)cred;
 					if (!string.IsNullOrEmpty (upcred.Password) && uri != null) {
@@ -213,6 +229,26 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			throw new UserCancelledException (UserCancelledExceptionMessage);
+		}
+
+		static bool GetCredentialsFromProvider (IGitCredentialsProvider gitCredentialsProvider, string uri, SupportedCredentialTypes type, Credentials cred)
+		{
+			if (type != SupportedCredentialTypes.UsernamePassword)
+				return false;
+
+			var (exists, credentials) = gitCredentialsProvider.TryGetCredentialsAsync (uri).Result;
+		
+			if (exists) {
+				((UsernamePasswordCredentials)cred).Username = credentials.Username;
+				((UsernamePasswordCredentials)cred).Password = credentials.Password;
+			}
+
+			return exists;
+		}
+
+		static bool GetCredentials (string uri, SupportedCredentialTypes type, Credentials cred)
+		{
+			return XwtCredentialsDialog.Run (uri, type, cred).Result;
 		}
 
 		internal static bool KeyHasPassphrase (string key)
