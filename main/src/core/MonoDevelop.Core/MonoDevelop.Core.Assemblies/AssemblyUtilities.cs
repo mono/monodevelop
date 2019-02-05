@@ -38,16 +38,50 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.PkgConfig;
+using System.Reflection.PortableExecutable;
+using System.Reflection.Metadata;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public static class AssemblyUtilities
 	{
-		static bool Is64BitPE (Mono.Cecil.TargetArchitecture machine)
+		static bool Is64BitPE (Machine machine)
 		{
-			return machine == Mono.Cecil.TargetArchitecture.AMD64 ||
-				   machine == Mono.Cecil.TargetArchitecture.IA64 ||
-				   machine == Mono.Cecil.TargetArchitecture.ARM64;
+			return machine == Machine.Amd64 || machine == Machine.Arm64 || machine == Machine.IA64 || machine == Machine.Alpha64;
+		}
+
+		static bool TryReadPEHeaders (string assemblyPath, out PortableExecutableKinds peKind, out Machine machine)
+		{
+			peKind = default;
+			machine = default;
+
+			try {
+				if (!File.Exists (assemblyPath))
+					return false;
+
+				using (var reader = new PEReader (File.OpenRead (assemblyPath))) {
+					var peHeaders = reader.PEHeaders;
+
+					var corFlags = peHeaders.CorHeader.Flags;
+					if ((corFlags & CorFlags.ILOnly) != 0)
+						peKind |= PortableExecutableKinds.ILOnly;
+
+					if ((corFlags & CorFlags.Prefers32Bit) != 0)
+						peKind |= PortableExecutableKinds.Preferred32Bit;
+					else if ((corFlags & CorFlags.Requires32Bit) != 0)
+						peKind |= PortableExecutableKinds.Required32Bit;
+
+					if (peHeaders.PEHeader.Magic == PEMagic.PE32Plus)
+						peKind |= PortableExecutableKinds.PE32Plus;
+
+					machine = peHeaders.CoffHeader.Machine;
+				}
+
+				return true;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while determining 64/32 bit assembly.", e);
+				return false;
+			}
 		}
 
 		public static ProcessExecutionArchitecture GetProcessExecutionArchitectureForAssembly (string assemblyPath)
@@ -55,27 +89,14 @@ namespace MonoDevelop.Core.Assemblies
 			if (string.IsNullOrEmpty (assemblyPath))
 				throw new ArgumentNullException (nameof (assemblyPath));
 
-			try {
-				Mono.Cecil.ModuleAttributes peKind;
-				Mono.Cecil.TargetArchitecture machine;
-				if (!File.Exists (assemblyPath))
-					return ProcessExecutionArchitecture.Unspecified;
-				try {
-					using (var adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (assemblyPath)) {
-						peKind = adef.MainModule.Attributes;
-						machine = adef.MainModule.Architecture;
-					}
-				} catch {
-					peKind = Mono.Cecil.ModuleAttributes.ILOnly;
-					machine = Mono.Cecil.TargetArchitecture.I386;
-				}
-				if ((peKind & (Mono.Cecil.ModuleAttributes.Required32Bit | Mono.Cecil.ModuleAttributes.Preferred32Bit)) != 0)
+			if (TryReadPEHeaders (assemblyPath, out var peKind, out var machine)) {
+				if ((peKind & (PortableExecutableKinds.Preferred32Bit | PortableExecutableKinds.Required32Bit)) != 0)
 					return ProcessExecutionArchitecture.X86;
-				if (Is64BitPE (machine))
+
+				if ((peKind & PortableExecutableKinds.PE32Plus) != 0 || Is64BitPE (machine))
 					return ProcessExecutionArchitecture.X64;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while determining 64/32 bit assembly.", e);
 			}
+
 			return ProcessExecutionArchitecture.Unspecified;
 		}
 	}

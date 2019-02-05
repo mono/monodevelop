@@ -91,5 +91,14 @@ namespace MonoDevelop.Core.Assemblies
 
 			Assert.AreEqual (actual, fromReader);
 		}
+
+		[Test]
+		public void TestFrameworkVersion ()
+		{
+			var result = new SystemAssemblyService ().GetTargetFrameworkForAssembly (null, "Xwt.dll");
+
+			Assert.AreEqual (TargetFrameworkMoniker.ID_NET_FRAMEWORK, result.Identifier);
+			Assert.AreEqual ("4.0", result.Version);
+		}
 	}
 }

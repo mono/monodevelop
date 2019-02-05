@@ -38,10 +38,7 @@ using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using System.Threading;
 using Mono.Addins;
-using Mono.Cecil;
 using MonoDevelop.Core.AddIns;
-
-using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -374,29 +371,50 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			if (!File.Exists (file))
 				return TargetFrameworkMoniker.UNKNOWN;
-			AssemblyDefinition assembly = null;
+
 			try {
-				assembly = AssemblyDefinition.ReadAssembly (file);
-				var att = assembly.CustomAttributes.FirstOrDefault (a =>
-					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
-				);
-				if (att != null) {
-					if (att.ConstructorArguments.Count == 1) {
-						var v = att.ConstructorArguments[0].Value as string;
-						TargetFrameworkMoniker m;
-						if (v != null && TargetFrameworkMoniker.TryParse (v, out m)) {
+				using (var reader = new PEReader (File.OpenRead (file))) {
+					var mr = reader.GetMetadataReader ();
+
+					foreach (var customAttributeHandle in mr.GetAssemblyDefinition ().GetCustomAttributes ()) {
+						var customAttribute = mr.GetCustomAttribute (customAttributeHandle);
+
+						var ctor = mr.GetMemberReference ((MemberReferenceHandle)customAttribute.Constructor);
+						var attrType = mr.GetTypeReference ((TypeReferenceHandle)ctor.Parent);
+
+						var ns = mr.GetString (attrType.Namespace);
+						if (ns != "System.Runtime.Versioning")
+							continue;
+
+						var typeName = mr.GetString (attrType.Name);
+						if (typeName != "TargetFrameworkAttribute")
+							continue;
+
+						var provider = new StringParameterValueTypeProvider (mr, customAttribute.Value);
+						var signature = ctor.DecodeMethodSignature (provider, null);
+						var parameterTypes = signature.ParameterTypes;
+						if (parameterTypes.Length != 1)
+							continue;
+
+						var value = parameterTypes [0];
+						if (value != null && TargetFrameworkMoniker.TryParse (value, out var m)) {
 							return m;
 						}
+						LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0} - {1}", file, value);
 					}
-					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
-				}
-				if (tr != null) {
-					foreach (var r in assembly.MainModule.AssemblyReferences) {
-						if (r.Name == "mscorlib") {
+
+					if (tr != null) {
+						foreach (var assemblyReferenceHandle in mr.AssemblyReferences) {
+							var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+
+							var name = mr.GetString (assemblyReference.Name);
+							if (name != "mscorlib")
+								continue;
+
 							TargetFramework compatibleFramework = null;
 							// If there are several frameworks that can run the file, pick one that is installed
 							foreach (TargetFramework tf in GetKnownFrameworks ()) {
-								if (tf.GetCorlibVersion () == r.Version.ToString ()) {
+								if (tf.GetCorlibVersion () == assemblyReference.Version.ToString ()) {
 									compatibleFramework = tf;
 									if (tr.IsInstalled (tf))
 										return tf.Id;
@@ -410,11 +428,7 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error determining target framework for assembly {0}: {1}", file, ex);
-				return TargetFrameworkMoniker.UNKNOWN;
-			} finally {
-				assembly?.Dispose ();
 			}
-			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
 
@@ -426,13 +440,15 @@ namespace MonoDevelop.Core.Assemblies
 			try {
 				using (var reader = new PEReader (File.OpenRead (fileName))) {
 					var mr = reader.GetMetadataReader ();
-					var assemblyReferences = reader.GetMetadataReader ().AssemblyReferences;
+					var assemblyReferences = mr.AssemblyReferences;
 
 					var builder = ImmutableArray.CreateBuilder<string> (assemblyReferences.Count);
+
 					foreach (var assemblyReferenceHandle in assemblyReferences) {
 						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
 						builder.Add (mr.GetString (assemblyReference.Name));
 					}
+
 					return builder.MoveToImmutable();
 				}
 			} catch {
@@ -556,6 +572,38 @@ namespace MonoDevelop.Core.Assemblies
 		public Assembly LoadAssemblyFrom (string asmPath)
 		{
 			return Runtime.LoadAssemblyFrom (asmPath);
+		}
+
+		sealed class StringParameterValueTypeProvider : ISignatureTypeProvider<string, object>
+		{
+			readonly BlobReader valueReader;
+
+			public StringParameterValueTypeProvider (MetadataReader reader, BlobHandle value)
+			{
+				valueReader = reader.GetBlobReader (value);
+
+				var prolog = valueReader.ReadUInt16 ();
+				if (prolog != 1)
+					throw new BadImageFormatException ("Invalid custom attribute prolog.");
+			}
+
+			public string GetPrimitiveType (PrimitiveTypeCode typeCode) => typeCode != PrimitiveTypeCode.String ? "" : valueReader.ReadSerializedString ();
+			public string GetArrayType (string elementType, ArrayShape shape) => "";
+			public string GetByReferenceType (string elementType) => "";
+			public string GetFunctionPointerType (MethodSignature<string> signature) => "";
+			public string GetGenericInstance (string genericType, ImmutableArray<string> typestrings) => "";
+			public string GetGenericInstantiation (string genericType, ImmutableArray<string> typeArguments) { throw new NotImplementedException (); }
+			public string GetGenericMethodParameter (int index) => "";
+			public string GetGenericMethodParameter (object genericContext, int index) { throw new NotImplementedException (); }
+			public string GetGenericTypeParameter (int index) => "";
+			public string GetGenericTypeParameter (object genericContext, int index) { throw new NotImplementedException (); }
+			public string GetModifiedType (string modifier, string unmodifiedType, bool isRequired) => "";
+			public string GetPinnedType (string elementType) => "";
+			public string GetPointerType (string elementType) => "";
+			public string GetSZArrayType (string elementType) => "";
+			public string GetTypeFromDefinition (MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) => "";
+			public string GetTypeFromReference (MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) => "";
+			public string GetTypeFromSpecification (MetadataReader reader, object genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => "";
 		}
 	}
 }
