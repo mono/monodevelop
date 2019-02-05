@@ -156,15 +156,6 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		[Obsolete ("Use Disconnect()")]
-		public void Disconnect (bool waitUntilDone)
-		{
-			if (waitUntilDone)
-				Disconnect ().Wait (TimeSpan.FromSeconds (7));
-			else
-				Disconnect ().Ignore ();
-		}
-
 		public async Task Disconnect ()
 		{
 			StopPinger ();

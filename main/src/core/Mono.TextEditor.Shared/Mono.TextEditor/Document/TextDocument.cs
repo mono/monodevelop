@@ -1397,12 +1397,6 @@ namespace Mono.TextEditor
 			update = foldedSegmentAdded || countChanged || foldedFoldingRemoved;
 			return newFoldedSegments;
 		}
-
-		[Obsolete("Doesn't do anything anymore")]
-		public void WaitForFoldUpdateFinished ()
-		{
-			// nothing
-		}
 		
 		internal void InterruptFoldWorker ()
 		{
