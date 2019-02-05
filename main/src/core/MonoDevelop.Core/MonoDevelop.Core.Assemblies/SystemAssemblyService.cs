@@ -376,7 +376,7 @@ namespace MonoDevelop.Core.Assemblies
 				using (var reader = new PEReader (File.OpenRead (file))) {
 					var mr = reader.GetMetadataReader ();
 
-					foreach (var customAttributeHandle in mr.CustomAttributes) {
+					foreach (var customAttributeHandle in mr.GetAssemblyDefinition ().GetCustomAttributes ()) {
 						var customAttribute = mr.GetCustomAttribute (customAttributeHandle);
 
 						var ctor = mr.GetMemberReference ((MemberReferenceHandle)customAttribute.Constructor);
