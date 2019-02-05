@@ -64,4 +64,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.1\build\LargeAddressAware.targets" Condition="$(OS) != 'Unix' AND Exists('$(MSBuildThisFileDirectory)..\..\..\packages\LargeAddressAware.1.0.1\build\LargeAddressAware.targets')" />
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <PropertyEditingResourceBundlePath Include="$(SolutionDir)\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing.Mac\PropertyEditingResource\**\*" />
+    </ItemGroup>
+    <Copy 
+      SourceFiles="@(PropertyEditingResourceBundlePath)" 
+      DestinationFiles="@(PropertyEditingResourceBundlePath->'$(OutDir)\PropertyEditingResource.bundle\%(RecursiveDir)%(Filename)%(Extension)')" 
+      SkipUnchangedFiles="true" 
+      OverwriteReadOnlyFiles="true" 
+      Retries="3" 
+      RetryDelayMilliseconds="300" />
+  </Target>
 </Project>
