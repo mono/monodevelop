@@ -521,7 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			renderer.Text = age.Days >= 2 ?
 				revision.Time.ToShortDateString () :
-				revision.Time.Humanize (dateToCompareAgainst: now);
+				revision.Time.Humanize (utcDate: false, dateToCompareAgainst: now);
 		}	
 		
 		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
