@@ -28,10 +28,10 @@ using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
+namespace MonoDevelop.TextEditor.Wpf
 {
 	[Export (typeof (IViewElementFactory))]
-	[Name ("default ImageElement to UIElement")]
+	[Name ("MonoDevelop ImageElement to UIElement")]
 	[TypeConversion (from: typeof (ImageElement), to: typeof (UIElement))]
 	[Order]
 	sealed class WpfImageElementViewElementFactory : IViewElementFactory
