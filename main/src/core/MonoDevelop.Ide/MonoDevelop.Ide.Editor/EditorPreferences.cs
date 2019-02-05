@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.Editor
 			ConvertTabsToSpaces = Wrap<bool> ("TabsToSpaces", DefaultOptions.ConvertTabsToSpacesOptionName);
 			EnableBraceCompletion = Wrap<bool> ("AutoInsertMatchingBracket", DefaultTextViewOptions.BraceCompletionEnabledOptionName);
 			EnableCompletionSuggestionMode = Map<bool> ("ForceCompletionSuggestionMode", PredefinedCompletionNames.SuggestionModeInCompletionOptionName, IdeApp.Preferences.ForceSuggestionMode);
-			EnableHighlightCurrentLine = Wrap ("HighlightCaretLine", DefaultTextViewOptions.EnableHighlightCurrentLineName, false);
+			// have to use literal because it's in different types on different platforms (DefaultTextViewOptions vs. DefaultWpfViewOptions)
+			EnableHighlightCurrentLine = Wrap ("HighlightCaretLine", "Adornments/HighlightCurrentLine/Enable", false);
 			EnableHighlightDelimiter = Wrap<bool> ("HighlightMatchingBracket", DefaultOptions.AutomaticDelimiterHighlightingName);
 			FollowCodingConventions = Wrap<bool> ("FollowCodingConventions", DefaultOptions.FollowCodingConventionsName);
 			IndentSize = Wrap<int> ("TabIndent", DefaultOptions.IndentSizeOptionName);
