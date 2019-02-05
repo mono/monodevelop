@@ -24,6 +24,7 @@ using System.ComponentModel.Composition;
 
 using Microsoft.VisualStudio.Core.Imaging;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Language.Intellisense.Implementation;
 
 using MonoDevelop.Core;
 using MDImageService = MonoDevelop.Ide.ImageService;
@@ -115,6 +116,17 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		static string GetStockIconId (ImageId imageId)
 		{
+			if (imageId.Guid == LightBulbImageCatalog.CatalogId) {
+				switch ((LightBulbImageId)imageId.Id) {
+				case LightBulbImageId.OnlyActions:
+					return "md-lightbulb-screwdriver";
+				case LightBulbImageId.Fixes:
+					return "md-lightbulb";
+				case LightBulbImageId.ErrorFixes:
+					return "md-lightbulb-error";
+				}
+			}
+
 			switch (imageId.Id) {
 			case KnownImageIds.Class:
 			case KnownImageIds.ClassPublic:
