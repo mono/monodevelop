@@ -82,7 +82,10 @@ namespace MonoDevelop.DesignerSupport
 				targets.AddTable (e);
 			};
 			toolbox.DragBegin += (object sender, EventArgs e) => {
-				if (!isDragging) {
+				var selectedNode = toolbox.SelectedNode;
+				if (!isDragging && selectedNode != null) {
+
+					DesignerSupport.Service.ToolboxService.SelectItem (selectedNode);
 
 					Gtk.Drag.SourceUnset (widget);
 
