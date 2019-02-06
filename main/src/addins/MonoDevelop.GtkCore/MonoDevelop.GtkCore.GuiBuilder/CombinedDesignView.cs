@@ -58,7 +58,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					ShowPage (0);
 				};
 			}*/
-			content.IsDirtyChanged += new EventHandler (OnTextDirtyChanged);
+			content.HasUnsavedChangesChanged += new EventHandler (OnTextDirtyChanged);
 			
 			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 		}
@@ -146,7 +146,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (content == null)
 				return;
 
-			content.IsDirtyChanged -= OnTextDirtyChanged;
+			content.HasUnsavedChangesChanged -= OnTextDirtyChanged;
 			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
 
 			content = null;
@@ -172,11 +172,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			OnCombinedDirtyChanged ();
 		}
 
-		protected virtual bool IsDirtyCombined { get => content.IsDirty; set => content.IsDirty = value; }
+		protected virtual bool IsDirtyCombined { get => content.HasUnsavedChanges; set => content.HasUnsavedChanges = value; }
 
 		protected void OnCombinedDirtyChanged ()
 		{
-			IsDirty = IsDirtyCombined;
+			HasUnsavedChanges = IsDirtyCombined;
 		}
 
 		void OnActiveDocumentChanged (object s, EventArgs args)

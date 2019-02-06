@@ -747,7 +747,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			
-			view.DocumentController.IsDirty = true;
+			view.DocumentController.HasUnsavedChanges = true;
 			view.WarnOverwrite = true;
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
 			vbox.ReorderChild (messageBar, 0);
@@ -992,7 +992,7 @@ namespace MonoDevelop.SourceEditor
 						view.Load (fileName);
 						view.ReplaceContent (fileName, content.Text, view.SourceEncoding);
 						view.DocumentController.Document.DocumentContext.ReparseDocument ();
-						view.DocumentController.IsDirty = true;
+						view.DocumentController.HasUnsavedChanges = true;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not remove the autosave file.", ex);
 					} finally {
@@ -1003,7 +1003,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.ActionArea.Add (b2);
 			}
 			
-			view.DocumentController.IsDirty = true;
+			view.DocumentController.HasUnsavedChanges = true;
 			view.WarnOverwrite = true;
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
 			vbox.ReorderChild (messageBar, 0);

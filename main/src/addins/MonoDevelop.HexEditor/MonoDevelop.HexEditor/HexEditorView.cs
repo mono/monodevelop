@@ -58,7 +58,7 @@ namespace MonoDevelop.HexEditor
 			SetOptions ();
 			DefaultSourceEditorOptions.Instance.Changed += Instance_Changed;
 			hexEditor.HexEditorData.Changed += delegate {
-				this.IsDirty = true;
+				this.HasUnsavedChanges = true;
 			};
 			window = new ScrollView (hexEditor);
 			await LoadContent ();
@@ -125,7 +125,7 @@ namespace MonoDevelop.HexEditor
 		protected override Task OnSave ()
 		{
 			File.WriteAllBytes (FilePath, hexEditor.HexEditorData.Bytes);
-			this.IsDirty = false;
+			this.HasUnsavedChanges = false;
 			return Task.FromResult (true);
 		}
 		

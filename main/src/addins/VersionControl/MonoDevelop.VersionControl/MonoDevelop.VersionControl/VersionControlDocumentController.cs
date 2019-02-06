@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 using MonoDevelop.VersionControl.Views;
 using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.VersionControl
 
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
-			if (!(controller is FileDocumentController fileController))
+			if (!(controller is FileDocumentController fileController) || !IdeApp.IsInitialized)
 				return false;
 
 			project = controller.Owner;
