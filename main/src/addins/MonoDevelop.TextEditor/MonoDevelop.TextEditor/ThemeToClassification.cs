@@ -192,11 +192,24 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "returnstatement", EditorThemeColors.DebuggerStackLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Indicator Margin", EditorThemeColors.IndicatorMargin);
 			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.ForegroundColorId);
+			CreateRename (editorFormat, defaultSettings);
 			foreach (var mapping in mappings) {
 				if (settingsMap.TryGetValue (mapping.MDThemeSettingName, out var setting))
 					CreateResourceDictionary (editorFormat, mapping.EditorFormatName, setting);
 			}
 			editorFormat.EndBatchUpdate ();
+		}
+
+		private void CreateRename (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		{
+			if (defaultSettings.TryGetColor (EditorThemeColors.PrimaryTemplateHighlighted2, out var selectionColor)) {
+				var resourceDictionary = editorFormat.GetProperties ("RoslynRenameFieldBackgroundAndBorderTag");
+				var (r, g, b, a) = selectionColor.ToRgba ();
+				var c = Color.FromArgb (a, r, g, b);
+				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
+				resourceDictionary [MarkerFormatDefinition.BorderId] = new Pen (new SolidColorBrush (c), 2);
+				editorFormat.SetProperties ("RoslynRenameFieldBackgroundAndBorderTag", resourceDictionary);
+			}
 		}
 
 		void CreateSelection (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
