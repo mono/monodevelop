@@ -183,6 +183,12 @@ Thumbs.db
 /main/tests/TestRunner/Makefile
 /main/tests/UnitTests/Makefile
 /main/tests/UserInterfaceTests/Makefile
+/main/tests/performance/Makefile
+/main/tests/performance/MonoDevelop.Ide.PerfTests/Makefile
+/main/tests/performance/MonoDevelop.PerformanceTesting/Makefile
+/main/tests/performance/PerfTool/Makefile
+/main/tests/ui/Makefile
+/main/tests/ui/MonoDevelop.UserInterfaceTesting/Makefile
 /main/theme-icons/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 /main/tests/MacPlatform.Tests/Makefile
