@@ -3390,16 +3390,19 @@ namespace MonoDevelop.SourceEditor
 		bool ITextEditorImpl.LockFixIndentation { get => TextEditor.GetTextEditorData ().LockFixIndentation; set => TextEditor.GetTextEditorData ().LockFixIndentation = value; }
 
 		public bool IsDirty {
-			get => _isDirty;
+			get => isDirty;
 			private set {
-				_isDirty = value;
+				if (isDirty != value) {
+					isDirty = value;
+					DirtyChanged?.Invoke (this, EventArgs.Empty);
+				}
 			}
 		}
 
 		public Project Project { get; set; }
 
 		ExtensionContext extensionContext;
-		private bool _isDirty;
+		private bool isDirty;
 
 		internal ExtensionContext GetExtensionContext ()
 		{
