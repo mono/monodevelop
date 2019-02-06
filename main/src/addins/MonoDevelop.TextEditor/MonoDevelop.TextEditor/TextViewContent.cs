@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
+	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, IZoomable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
 		where TView : ITextView
 		where TImports : TextViewImports
 	{
@@ -44,7 +44,7 @@ namespace MonoDevelop.TextEditor
 		readonly string mimeType;
 		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
-		readonly IEditorOperations3 editorOperations;
+		readonly IEditorOperations4 editorOperations;
 		readonly IEditorOptions editorOptions;
 		readonly List<IEditorContentProvider> contentProviders;
 		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
@@ -90,7 +90,7 @@ namespace MonoDevelop.TextEditor
 			control = CreateControl ();
 
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
-			editorOperations = (IEditorOperations3)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
+			editorOperations = (IEditorOperations4)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
 			editorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
