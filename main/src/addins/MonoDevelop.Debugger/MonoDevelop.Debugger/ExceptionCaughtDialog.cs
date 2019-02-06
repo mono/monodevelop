@@ -180,6 +180,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
 			ExceptionValueTreeView.AllowEditing = false;
+			ExceptionValueTreeView.CanFocus = true;
 			ExceptionValueTreeView.AllowAdding = false;
 			ExceptionValueTreeView.RulesHint = true;
 			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
@@ -189,6 +190,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 			var scrolled = new ScrolledWindow {
 				HeightRequest = 180,
+				CanFocus = true,
 				HscrollbarPolicy = PolicyType.Automatic,
 				VscrollbarPolicy = PolicyType.Automatic
 			};
@@ -230,7 +232,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			expander.Child = widget;
 			expander.Spacing = 0;
 			expander.Show ();
-			expander.CanFocus = false;
+			expander.CanFocus = true;
 			expander.UseMarkup = true;
 			expander.Expanded = true;
 			expander.Activated += Expander_Activated;
