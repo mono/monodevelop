@@ -64,10 +64,23 @@ namespace MonoDevelop.Ide.Extensions
 		public ImageId ImageId {
 			get {
 				if (imageid == null)
-					return default (ImageId);
+					return default;
+
+				Guid guid = KnownImagesGuid;
+				int id;
+
 				var semicolonIndex = imageid.IndexOf (';');
-				return new ImageId (Guid.Parse (imageid.Remove (semicolonIndex)), int.Parse (imageid.Substring (semicolonIndex + 1)));
+				if (semicolonIndex > 0) {
+					guid = Guid.Parse (imageid.Remove (semicolonIndex));
+					id = int.Parse (imageid.Substring (semicolonIndex + 1));
+				} else {
+					id = int.Parse (imageid);
+				}
+
+				return new ImageId (guid, id);
 			}
 		}
+
+		static readonly Guid KnownImagesGuid = Guid.Parse ("{ae27a6b0-e345-4288-96df-5eaf394ee369}");
 	}
 }

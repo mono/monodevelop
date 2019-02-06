@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems" Label="Shared" Condition="Exists('..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems')" />
+  <Import Project="..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems" Label="Shared Mac"
+    Condition="Exists('..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems') And ('$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <Import Project="$(ReferencesVSEditor)" />
