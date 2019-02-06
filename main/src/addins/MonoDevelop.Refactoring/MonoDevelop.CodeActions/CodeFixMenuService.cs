@@ -186,11 +186,11 @@ namespace MonoDevelop.CodeActions
 			var item = new CodeFixMenuEntry (label, async delegate {
 
 				// Task.Run here so we don't end up binding the whole document on popping the menu, also there is no cancellation token support
-				var fix = await Task.Run (() => {
-					var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
-					return provider.GetFixAsync (context);
-				});
+
 				Microsoft.CodeAnalysis.Text.TextChange[] result = await Task.Run (async () => {
+					var context = fixState.CreateFixAllContext (new RoslynProgressTracker (), token);
+					var fix = await provider.GetFixAsync (context);
+
 					var previewOperations = await fix.GetPreviewOperationsAsync (token);
 					return await Runtime.RunInMainThread (() => {
 						var engine = Xwt.Toolkit.CurrentEngine; // NativeEngine

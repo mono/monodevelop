@@ -248,7 +248,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void Dispose (bool finalize)
 		{
-			base.Dispose (finalize);
 			if (disposed)
 				return;
 
@@ -278,6 +277,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				backgroundCompiler.Dispose ();
 				backgroundCompiler = null; // PartialSemanticsEnabled will now return false
 			}
+
+			base.Dispose (finalize);
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)

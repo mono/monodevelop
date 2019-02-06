@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
 			readonly HackyWorkspaceFilesCache hackyCache;
 			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
+			IDisposable persistentStorageLocationServiceRegistration;
 
 			bool added;
 			readonly object addLock = new object ();
@@ -66,6 +67,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
+
+				var persistentStorageLocationService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
+				if (workspace.MonoDevelopSolution != null)
+					persistentStorageLocationServiceRegistration = persistentStorageLocationService.RegisterPrimaryWorkspace (workspace.Id);
 			}
 
 			#region Solution mapping
@@ -83,26 +88,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					return result;
 				}
-			}
-
-			static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
-			{
-				var sol = (MonoDevelop.Projects.Solution)args.Item;
-				var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
-				var solId = workspace.ProjectHandler.GetSolutionId (sol);
-				if (solId == null)
-					return;
-
-				NotifySolutionModified (sol, solId, workspace);
-			}
-
-			static void NotifySolutionModified (MonoDevelop.Projects.Solution sol, SolutionId solId, MonoDevelopWorkspace workspace)
-			{
-				if (string.IsNullOrWhiteSpace (sol.BaseDirectory))
-					return;
-
-				var locService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
-				locService.NotifyStorageLocationChanging (solId, sol.GetPreferencesDirectory ());
 			}
 			#endregion
 
@@ -287,9 +272,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						lock (addLock) {
 							if (!added) {
 								added = true;
-								solution.Modified += OnSolutionModified;
-								NotifySolutionModified (solution, solutionId, workspace);
 								workspace.OnSolutionAdded (solutionInfo);
+								var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
+								service.SetupSolution (workspace);
 								lock (workspace.generatedFiles) {
 									foreach (var generatedFile in workspace.generatedFiles) {
 										if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
@@ -421,6 +406,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void Dispose ()
 			{
+				persistentStorageLocationServiceRegistration?.Dispose ();
+
+				solutionIdMap.Clear ();
+
 				foreach (var analyzer in analyzersToDispose)
 					analyzer.Dispose ();
 				analyzersToDispose.Clear ();
