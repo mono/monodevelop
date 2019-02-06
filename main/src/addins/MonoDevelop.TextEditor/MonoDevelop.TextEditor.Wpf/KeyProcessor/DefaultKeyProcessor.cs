@@ -236,6 +236,12 @@ namespace MonoDevelop.Ide.Text
 			case Key.A:
 				QueryAndExecute ((v, b) => new SelectAllCommandArgs (v, b));
 				break;
+			case Key.F:
+				QueryAndExecute ((v, b) => new FindCommandArgs (v, b));
+				break;
+			case Key.H:
+				QueryAndExecute ((v, b) => new ReplaceCommandArgs (v, b));
+				break;
 			case Key.W:
 				_editorOperations.SelectCurrentWord ();
 				break;
