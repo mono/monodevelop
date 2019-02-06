@@ -42,9 +42,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		SemaphoreSlim dataLock = new SemaphoreSlim (1);
 		Dictionary<object, DocumentModel.DocumentModelData> dataModels = new Dictionary<object, DocumentModel.DocumentModelData> ();
 
-		public Task<FileModel> GetSharedFileModel (FilePath filePath)
+		public Task<T> GetSharedFileModel<T> (FilePath filePath) where T:FileModel, new()
 		{
-			return GetSharedModel<FileModel> (filePath);
+			return GetSharedModel<T> (filePath);
 		}
 
 		public async Task<T> GetSharedModel<T> (object id) where T : DocumentModel, new()
