@@ -13,6 +13,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Find.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
