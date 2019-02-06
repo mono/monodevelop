@@ -64,6 +64,7 @@ namespace MonoDevelop.DesignerSupport
 
 		internal object CommandRouteOrigin { get; set; }
 
+
 		public PropertyPad ()
 		{
 			frame = new InvisibleFrame ();
@@ -220,7 +221,7 @@ namespace MonoDevelop.DesignerSupport
 				toolbarProvider.Attach (container.GetToolbar (DockPositionType.Top));
 			}
 		}
-		
+
 		internal void UseCustomWidget (Gtk.Widget widget)
 		{
 			toolbarProvider.Attach (null);
