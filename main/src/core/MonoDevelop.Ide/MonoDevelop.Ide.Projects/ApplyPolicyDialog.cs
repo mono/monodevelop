@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -59,6 +60,22 @@ namespace MonoDevelop.Ide.Projects
 			combPolicies.Active = 0;
 			OnRadioCustomToggled (null, null);
 			UpdateContentLabels ();
+
+			combPolicies.Accessible.Name = "ApplyPolicyDialog.PolicyCombo";
+			combPolicies.SetAccessibilityLabelRelationship (label2);
+			CombPolicies_Changed (null, null);
+			combPolicies.Changed += CombPolicies_Changed;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			combPolicies.Changed -= CombPolicies_Changed;
+			base.OnDestroyed ();
+		}
+
+		void CombPolicies_Changed (object sender, EventArgs e)
+		{
+			combPolicies.Accessible.Description = GettextCatalog.GetString ("Select policy, current: {0}", combPolicies.ActiveText);
 		}
 
 		protected void OnRadioCustomToggled (object sender, System.EventArgs e)
