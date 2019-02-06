@@ -412,17 +412,14 @@ namespace MonoDevelop.VersionControl.Views
 					WidthRequest = newWidthRequest;
 					QueueResize ();
 				}
-				int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
-				var ann = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
-				if (ann != null)
+
+				GetAnnotationFromY (evnt.Y, out var annotation, out var startLine);
+
+				if (annotation != null)
 					TooltipText = GetCommitMessage (startLine - 1, true);
 
-				highlightPositon = evnt.Y;
-				if (highlightAnnotation != ann) {
-					highlightAnnotation = ann;
-					widget.QueueDraw ();
-				}
-				
+				SetHighlight (annotation, startLine, evnt.Y, highlightAnnotation != annotation);
+
 				return base.OnMotionNotifyEvent (evnt);
 			}
 			
@@ -438,8 +435,8 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				if (evnt.TriggersContextMenu ()) {
-					int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
-					menuAnnotation = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
+
+					GetAnnotationFromY (evnt.Y, out menuAnnotation, out var startLine);
 
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
@@ -789,7 +786,33 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				return true;
 			}
-			
+
+			int GetStartLineFromY (double y) => widget.Editor.YToLine (widget.Editor.VAdjustment.Value + y);
+
+			void GetAnnotationFromY (double y, out Annotation annotation, out int startLine)
+			{
+				startLine = GetStartLineFromY (y);
+				annotation = GetAnnotationFromLine (startLine);
+			}
+
+			internal Annotation GetAnnotationFromLine (int startLine) =>
+			 startLine > 0 && startLine <= annotations.Count ? annotations [startLine - 1] : null;
+
+			internal void SetHighlight (Annotation annotation, int line, double y, bool needsRedraw)
+			{
+				highlightPositon = y;
+				highlightAnnotation = annotation;
+				if (needsRedraw) {
+					widget.QueueDraw ();
+				}
+			}
+
+			internal void Hightlight (int line)
+			{
+				var y = widget.editor.LineToY (line);
+			 	var annotation = GetAnnotationFromLine (line);
+				SetHighlight (annotation, line, y, true);
+			}
 		}	
 	}
 }
