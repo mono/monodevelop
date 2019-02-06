@@ -33,6 +33,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Collections.Immutable;
 using MonoDevelop.Projects;
+using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -159,6 +160,61 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		/// <value>The display binding used to create this view.</value>
 		public IDisplayBinding Binding { get; internal set; }
+
+		public virtual void GrabFocus ()
+		{
+			Widget widget = Control;
+			Widget first = null;
+			foreach (var f in GetFocusableWidgets (widget)) {
+				if (f.HasFocus)
+					return;
+
+				if (first == null)
+					first = f;
+			}
+			if (first != null) {
+				first.GrabFocus ();
+			}
+		}
+
+		static IEnumerable<Gtk.Widget> GetFocusableWidgets (Gtk.Widget widget)
+		{
+			if (widget.CanFocus) {
+				yield return widget;
+			}
+
+			if (widget is Container c) {
+				foreach (var f in c.FocusChain.SelectMany (x => GetFocusableWidgets (x))) {
+					yield return f;
+				}
+
+				if (c.Children is var children) {
+					foreach (var f in children) {
+						if (f is Container container) {
+							foreach (var child in GetFocusableChildren (container)) {
+								yield return child;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		static IEnumerable<Gtk.Widget> GetFocusableChildren (Gtk.Container container)
+		{
+			if (container.CanFocus) {
+				yield return container;
+			}
+
+			foreach (var f in container.Children) {
+				if (f is Container c) {
+					foreach (var child in GetFocusableChildren (c)) {
+						yield return child;
+					}
+				}
+			}
+		}
+
 	}
 
 	public enum ProjectReloadCapability
