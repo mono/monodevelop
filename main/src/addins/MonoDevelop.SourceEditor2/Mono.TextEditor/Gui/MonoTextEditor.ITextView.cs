@@ -601,15 +601,10 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Gets or sets the Zoom level for the <see cref="ITextView3"/> between 20% to 400%
 		/// </summary>
-		public double XPlatZoomLevel {
+		public double ZoomLevel {
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Occurs when the <see cref="XPlatZoomLevel"/> is set.
-		/// </summary>
-		public event EventHandler<XPlatZoomLevelChangedEventArgs> XPlatZoomLevelChanged;
 
 		public ITextViewLineSource FormattedLineSource { get; } = null;
 #endif
