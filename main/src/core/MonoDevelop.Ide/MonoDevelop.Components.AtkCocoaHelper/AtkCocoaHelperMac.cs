@@ -343,7 +343,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			using (var realTabs = new NSMutableArray ((nuint)tabs.Length)) {
+			using (var realTabs = tabs.ToAccessibilityArray ()) {
 				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityTabs_Handle, realTabs != null ? realTabs.Handle : IntPtr.Zero);
 			}
 		}
