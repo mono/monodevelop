@@ -1915,14 +1915,14 @@ namespace MonoDevelop.Projects
 		{
 			bool externalConsole = false, pauseConsole = false;
 
-			var dotNetExecutionCommand = executionCommand as DotNetExecutionCommand;
-
-			if (!Directory.Exists (dotNetExecutionCommand.WorkingDirectory)) {
-				monitor.ReportError (GettextCatalog.GetString ("Can not execute. The run configuration working directory doesn't exist at {0}", dotNetExecutionCommand.WorkingDirectory), null);
-				return;
+			if (executionCommand is ProcessExecutionCommand processExecutionCommand) {
+				if (!Directory.Exists (processExecutionCommand.WorkingDirectory)) {
+					monitor.ReportError (GettextCatalog.GetString ("Can not execute. The run configuration working directory doesn't exist at {0}", processExecutionCommand.WorkingDirectory), null);
+					return;
+				}
 			}
 
-			if (dotNetExecutionCommand != null) {
+			if (executionCommand is DotNetExecutionCommand dotNetExecutionCommand) {
 				dotNetExecutionCommand.UserAssemblyPaths = GetUserAssemblyPaths (configuration);
 				externalConsole = dotNetExecutionCommand.ExternalConsole;
 				pauseConsole = dotNetExecutionCommand.PauseConsoleOutput;
