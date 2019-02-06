@@ -42,6 +42,7 @@ using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.Metadata;
+using ICSharpCode.Decompiler.Documentation;
 using MonoDevelop.Projects;
 using ICSharpCode.Decompiler.TypeSystem.Implementation;
 using XmlDocIdLib;
@@ -390,11 +391,9 @@ namespace MonoDevelop.AssemblyBrowser
 
 		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
-			if (!(nav.DataItem is INamedElement member))
+			if (!(nav.DataItem is IMember member))
 				return false;
-			// TODO: Fix this
-			return member.ReflectionName == helpUrl;
-			//return Mono.Cecil.Rocks.DocCommentId.GetDocCommentId (member) == helpUrl;
+			return member.GetIdString () == helpUrl;
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl, bool searchType)
