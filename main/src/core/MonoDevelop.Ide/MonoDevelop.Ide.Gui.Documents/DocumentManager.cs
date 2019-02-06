@@ -462,6 +462,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 				try {
 					await controller.Initialize (fileDescriptor, GetStoredMemento (fileName));
 					controller.OriginalContentName = fileInfo.OriginalFileName;
+					if (fileInfo.Owner != null)
+						controller.Owner = fileInfo.Owner;
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), iex);
 					return null;

@@ -52,25 +52,25 @@ namespace MonoDevelop.Ide.Editor
 	public sealed class DefaultSourceEditorOptions : ITextEditorOptions
 	{
 		static DefaultSourceEditorOptions instance;
-		//static TextStylePolicy defaultPolicy;
+		static ITextEditorOptions plainEditor;
 		static bool inited;
 		ICodingConventionContext context;
 
 		public static DefaultSourceEditorOptions Instance {
-			get { return instance; }
+			get {
+				Init ();
+				return instance;
+			}
 		}
 
 		public static ITextEditorOptions PlainEditor {
-			get;
-			private set;
+			get {
+				Init ();
+				return plainEditor;
+			}
 		}
 
-		static DefaultSourceEditorOptions ()
-		{
-			Init ();
-		}
-
-		public static void Init ()
+		static void Init ()
 		{
 			if (inited)
 				return;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Editor
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 
-			PlainEditor = new PlainEditorOptions ();
+			plainEditor = new PlainEditorOptions ();
 		}
 
 		internal void FireChange ()

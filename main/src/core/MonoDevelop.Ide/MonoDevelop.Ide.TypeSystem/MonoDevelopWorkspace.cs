@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				cacheService.CacheFlushRequested += OnCacheFlushRequested;
 
 			// Trigger running compiler syntax and semantic errors via the diagnostic analyzer engine
-			typeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = true;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = true;
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
             // Turn on FSA on a new workspace addition
@@ -139,15 +139,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
 			    .WithChangedOption (Microsoft.CodeAnalysis.Storage.StorageOptions.SolutionSizeThreshold, MonoDevelop.Core.Platform.IsLinux ? int.MaxValue : 0);
 
-			if (typeSystemService.EnableSourceAnalysis) {
+			if (TypeSystemService.EnableSourceAnalysis) {
 				var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 				solutionCrawler.Register (this);
 			}
 
-			typeSystemService.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
+			TypeSystemService.EnableSourceAnalysis.Changed += OnEnableSourceAnalysisChanged;
 
 			// TODO: Unhack C# here when monodevelop workspace supports more than C#
-			typeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged += OnEnableFullSourceAnalysisChanged;
 
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 
 			Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
-			typeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = false;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = false;
 			if (IsUserOptionOn ()) {
 				// let user know full analysis is turned off due to memory concern.
 				// make sure we show info bar only once for the same solution.
@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// check languages currently on solution. since we only show info bar once, we don't need to track solution changes.
 			var languages = CurrentSolution.Projects.Select (p => p.Language).Distinct ();
 			foreach (var language in languages) {
-				if (typeSystemService.Preferences.For (language).SolutionCrawlerClosedFileDiagnostic) {
+				if (TypeSystemService.Preferences.For (language).SolutionCrawlerClosedFileDiagnostic) {
 					return true;
 				}
 			}
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		void OnEnableSourceAnalysisChanged(object sender, EventArgs args)
 		{
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
-			if (typeSystemService.EnableSourceAnalysis)
+			if (TypeSystemService.EnableSourceAnalysis)
 				solutionCrawler.Register (this);
 			else
 				solutionCrawler.Unregister (this);
@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			// we only want to turn on FSA if the option is explicitly enabled,
 			// we don't want to turn it off here.
-			if (typeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled) {
+			if (TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled) {
 				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true);
 			}
 		}
@@ -262,8 +262,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			MetadataReferenceManager.ClearCache ();
 
-			typeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
-			typeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
+			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
+			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
 			desktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			CancelLoad ();

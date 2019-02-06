@@ -68,7 +68,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			style = style.CloneWithName (entryName.Text);
 
-			string path = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath;
+			string path = SyntaxHighlightingService.SyntaxModePath;
 			string baseName = style.Name.Replace (" ", "_");
 
 			while (File.Exists (System.IO.Path.Combine (path, baseName + ".tmTheme"))) {

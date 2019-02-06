@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide
 		{
 		}
 
-		internal RoslynPreferences Roslyn => IdeApp.TypeSystemService.Preferences;
+		internal RoslynPreferences Roslyn => TypeSystemService.Preferences;
 
 		public readonly ConfigurationProperty<bool> EnableInstrumentation = Runtime.Preferences.EnableInstrumentation;
 		public readonly ConfigurationProperty<bool> EnableAutomatedTesting = Runtime.Preferences.EnableAutomatedTesting;
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide
 		internal static readonly string DefaultLightColorScheme = "Light";
 		internal static readonly string DefaultDarkColorScheme = "Dark";
 
-		public ConfigurationProperty<bool> EnableSourceAnalysis => IdeApp.TypeSystemService.EnableSourceAnalysis;
+		public ConfigurationProperty<bool> EnableSourceAnalysis => TypeSystemService.EnableSourceAnalysis;
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
 		public readonly SchemeConfigurationProperty ColorScheme = new SchemeConfigurationProperty ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);

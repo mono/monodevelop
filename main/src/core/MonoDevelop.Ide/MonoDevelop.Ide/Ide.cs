@@ -164,7 +164,13 @@ namespace MonoDevelop.Ide
 
 		public static FontService FontService => fontsService;
 
-		public static TypeSystemService TypeSystemService => typeSystemService;
+		public static TypeSystemService TypeSystemService {
+			get {
+				if (typeSystemService == null)
+					typeSystemService = Runtime.GetService<TypeSystemService> ().Result;
+				return typeSystemService;
+			}
+		}
 
 		public static IdeServices Services {
 			get { return ideServices; }
@@ -223,7 +229,6 @@ namespace MonoDevelop.Ide
 			commandService = await Runtime.GetService<CommandManager> ();
 			desktopService = await Runtime.GetService<DesktopService> ();
 			fontsService = await Runtime.GetService<FontService> ();
-			typeSystemService = await Runtime.GetService<TypeSystemService> ();
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
@@ -281,12 +286,6 @@ namespace MonoDevelop.Ide
 
 			if (Customizer != null)
 				Customizer.OnIdeInitialized (hideWelcomePage);
-			
-			// Startup commands
-			Counters.Initialization.Trace ("Running Startup Commands");
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
-			monitor.Step (1);
-			monitor.EndTask ();
 
 			// Set initial run flags
 			Counters.Initialization.Trace ("Upgrading Settings");
@@ -307,16 +306,9 @@ namespace MonoDevelop.Ide
 				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", Runtime.Version.ToString ());
 				PropertyService.SaveProperties ();
 			}
-			
-			// The ide is now initialized
 
-			isInitialized = true;
-			
-			if (initializedEvent != null) {
-				initializedEvent (null, EventArgs.Empty);
-				initializedEvent = null;
-			}
-			
+			monitor.EndTask ();
+
 			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 			
@@ -328,6 +320,28 @@ namespace MonoDevelop.Ide
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
 
 			Gtk.LinkButton.SetUriHook ((button, uri) => Xwt.Desktop.OpenUrl (uri));
+
+			// Start initializing the type system service in the background
+			Runtime.GetService<TypeSystemService> ().Ignore ();
+
+			// The ide is now initialized
+			OnInitialized ();
+		}
+
+		static void OnInitialized ()
+		{
+			// The ide is now initialized
+
+			isInitialized = true;
+
+			if (initializedEvent != null) {
+				initializedEvent (null, EventArgs.Empty);
+				initializedEvent = null;
+			}
+
+			// Startup commands
+			Counters.Initialization.Trace ("Running Startup Commands");
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 		}
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)

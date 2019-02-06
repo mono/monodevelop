@@ -60,8 +60,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		public Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation { get; } = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
 		// Preferences
-		internal RoslynPreferences Preferences { get; } = new RoslynPreferences ();
-		internal readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled_V2", true);
+		internal static RoslynPreferences Preferences { get; } = new RoslynPreferences ();
+		internal static ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled_V2", true);
 
 		internal MonoDevelopRuleSetManager RuleSetManager { get; } = new MonoDevelopRuleSetManager ();
 

@@ -40,7 +40,7 @@ namespace MonoDevelop.Core
 		/// </summary>
 		/// <returns>The service.</returns>
 		/// <typeparam name="T">The type of the service being requested</typeparam>
-		public abstract Task<T> GetService<T> () where T:class;
+		public abstract Task<T> GetService<T> (bool create = true) where T:class;
 
 		/// <summary>
 		/// Executes an action when a service is initialized

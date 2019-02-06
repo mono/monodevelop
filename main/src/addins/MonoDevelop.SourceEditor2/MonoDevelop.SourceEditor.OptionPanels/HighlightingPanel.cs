@@ -188,7 +188,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			string fileName = sheme.FileName;
 
-			if (fileName != null && fileName.StartsWith (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath, StringComparison.Ordinal)) {
+			if (fileName != null && fileName.StartsWith (SyntaxHighlightingService.SyntaxModePath, StringComparison.Ordinal)) {
 				SyntaxHighlightingService.Remove (sheme);
 				File.Delete (fileName);
 				ShowStyles ();
@@ -207,7 +207,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			var fileName = dialog.SelectedFile.FileName;
 			var filePath = dialog.SelectedFile.FullPath;
-			string newFilePath = TextEditorDisplayBinding.SyntaxModePath.Combine (fileName);
+			string newFilePath = SyntaxHighlightingService.SyntaxModePath.Combine (fileName);
 
 			if (!SyntaxHighlightingService.IsValidTheme (filePath)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Could not import color theme."));
@@ -235,8 +235,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				LoggingService.LogError ("Can't copy color theme file.", e);
 			}
 			if (success) {
-				SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
-				TextEditorDisplayBinding.LoadCustomStylesAndModes ();
+				SyntaxHighlightingService.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}
 		}
@@ -285,7 +284,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void ButtonOpenFolder_Clicked (object sender, EventArgs e)
 		{
-			IdeApp.DesktopService.OpenFolder (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
+			IdeApp.DesktopService.OpenFolder (SyntaxHighlightingService.SyntaxModePath);
 		}
 	}
 }

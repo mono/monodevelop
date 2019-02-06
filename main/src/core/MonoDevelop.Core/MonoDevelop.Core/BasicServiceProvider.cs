@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MonoDevelop.Core
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Core
 		Dictionary<Type, List<object>> initializationCallbacks = new Dictionary<Type, List<object>> ();
 		bool disposing;
 
-		public override async Task<T> GetService<T> ()
+		public override async Task<T> GetService<T> (bool create = true)
 		{
 			CheckValid ();
 			Task<object> currentInitTask = null;
@@ -54,15 +55,20 @@ namespace MonoDevelop.Core
 					// Look in all registered services
 					service = services.OfType<T> ().FirstOrDefault ();
 					if (service == null) {
+						if (!create)
+							return null;
 						// Create a new service instance
 						LoggingService.LogInfo ("Creating service: " + typeof (T));
 						service = (T)Activator.CreateInstance (GetImplementationType (typeof (T)), true);
 						services.Add (service);
 						servicesByType [typeof (T)] = service;
 						if (service is IService serviceInstance) {
+							var timer = Stopwatch.StartNew ();
 							var completionTask = new TaskCompletionSource<object> ();
 							initializationTasks [service] = completionTask;
 							serviceInstance.Initialize (this).ContinueWith (t => {
+								LoggingService.LogInfo ($"Service {typeof (T)} initialized in {timer.ElapsedMilliseconds} ms.");
+								timer.Stop ();
 								if (t.IsFaulted)
 									completionTask.SetException (t.Exception);
 								else

@@ -544,9 +544,9 @@ namespace MonoDevelop.Core
 		/// </summary>
 		/// <returns>The service.</returns>
 		/// <typeparam name="T">The type of the service being requested</typeparam>
-		public static Task<T> GetService<T> () where T: class
+		public static Task<T> GetService<T> (bool create = true) where T: class
 		{
-			return mainServiceProvider.GetService<T> ();
+			return mainServiceProvider.GetService<T> (create);
 		}
 
 		/// <summary>
@@ -577,7 +577,7 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static void SealServiceProvider ()
 		{
-			serviceProviderSealed = true; IServiceProvider f;
+			serviceProviderSealed = true;
 		}
 
 		/// <summary>

@@ -18,7 +18,6 @@ module FixtureSetup =
             MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
             Xwt.Application.Initialize (Xwt.ToolkitType.Gtk)
             Runtime.Initialize (true)
-            MonoDevelop.Ide.DesktopService.Initialize()
 
             GuiUnit.TestRunner.ExitCode |> ignore // hack to get GuiUnit into the AppDomain
 

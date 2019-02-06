@@ -471,8 +471,8 @@ namespace MonoDevelop.Ide.Gui
 
 			ClearTasks ();
 
-			var typeSystemService = await documentManager.ServiceProvider.GetService<TypeSystemService> ();
-			typeSystemService.RemoveSkippedFile (FileName);
+			var typeSystemService = await documentManager.ServiceProvider.GetService<TypeSystemService> (false);
+			typeSystemService?.RemoveSkippedFile (FileName);
 
 			try {
 				Closed?.Invoke (this, args);

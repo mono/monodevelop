@@ -39,45 +39,6 @@ namespace MonoDevelop.Ide.Editor
 	[ExportDocumentControllerFactory (MimeType = "*")]
 	public class TextEditorDisplayBinding : FileDocumentControllerFactory
 	{
-		static bool IsInitialized = false;
-
-		public static FilePath SyntaxModePath {
-			get {
-				return UserProfile.Current.UserDataRoot.Combine ("ColorThemes");
-			}
-		}
-
-		static TextEditorDisplayBinding ()
-		{
-			InitSourceEditor ();
-		}
-
-		public static void InitSourceEditor ()
-		{
-			if (IsInitialized)
-				return;
-			IsInitialized = true;
-
-			DefaultSourceEditorOptions.Init ();
-			LoadCustomStylesAndModes ();
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void LoadCustomStylesAndModes ()
-		{
-			bool success = true;
-			if (!Directory.Exists (SyntaxModePath)) {
-				try {
-					Directory.CreateDirectory (SyntaxModePath);
-				} catch (Exception e) {
-					success = false;
-					LoggingService.LogError ("Can't create syntax mode directory", e);
-				}
-			}
-			if (success)
-				SyntaxHighlightingService.LoadStylesAndModesInPath (SyntaxModePath);
-		}
-
 		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
 		{
 			if (!file.FilePath.IsNullOrEmpty) {
@@ -108,7 +69,6 @@ namespace MonoDevelop.Ide.Editor
 			// which means the information is lost.
 			editor = TextEditorFactory.CreateNewEditor (file.FilePath, file.MimeType);
 
-			editor.GetViewContent ().Owner = file.Owner;
 			return Task.FromResult< DocumentController> (editor.GetViewContent ());
 		}
 
