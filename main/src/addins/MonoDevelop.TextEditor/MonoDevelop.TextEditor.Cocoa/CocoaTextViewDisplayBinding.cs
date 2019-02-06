@@ -18,10 +18,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Windows;
 
-using AppKit;
+using System.Windows;
 
 using Microsoft.VisualStudio.Text.Classification;
 
@@ -47,7 +45,8 @@ namespace MonoDevelop.TextEditor
 
 			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
 			{
-				resourceDictionary[ClassificationFormatDefinition.TypefaceId] = NSFontWorkarounds.FromFontName (fontName, (nfloat)fontSize);
+				resourceDictionary [ClassificationFormatDefinition.TypefaceId] = fontName;
+				resourceDictionary [ClassificationFormatDefinition.FontRenderingSizeId] = fontSize;
 			}
 		}
 	}
