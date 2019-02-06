@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger.Visualizer
 
 			if (value.TypeName == "string") {
 				rawString = value.GetRawValue (options) as RawValueString;
-				length = rawString.Length;
+				length = rawString?.Length ?? 0;
 				offset = 0;
 
 				if (length > 0) {
