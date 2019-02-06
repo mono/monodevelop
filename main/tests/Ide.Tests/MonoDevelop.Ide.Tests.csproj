@@ -145,12 +145,14 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopFrameworkAssemblyPathResolverFactoryTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DocumentManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\DocumentModelRegistryTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\DocumentModelTestsBase.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\TextFileModelTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\FileModelTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.DocumentModels\TextBufferFileModelTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentManagerTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\FileDocumentControllerTests.cs" />
+    <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -213,6 +215,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.Gui.DocumentModels\" />
+    <Folder Include="MonoDevelop.Ide.Gui.Documents\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

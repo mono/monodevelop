@@ -47,6 +47,11 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 				var r = file.IsNew;
 				Assert.Fail ("Expected InvalidOperationException");
 			} catch (InvalidOperationException) { }
+			try {
+				var file = CreateModel ();
+				var r = file.HasUnsavedChanges;
+				Assert.Fail ("Expected InvalidOperationException");
+			} catch (InvalidOperationException) { }
 		}
 
 		[Test]
@@ -73,35 +78,6 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 				file.CreateNew ();
 				Assert.Fail ("Expected InvalidOperationException");
 			} catch (InvalidOperationException) {
-			} finally {
-				File.Delete (fileName);
-			}
-		}
-
-		[Test]
-		public async Task UnsharedFileModelSaveAs ()
-		{
-			var file = new TextFileModel ();
-			file.CreateNew ();
-			file.SetText ("Foo");
-
-			string fileName = Path.GetTempFileName ();
-			try {
-				File.WriteAllText (fileName, "Empty");
-
-				Assert.AreEqual ("Foo", file.GetText ());
-				Assert.AreEqual ("Empty", File.ReadAllText (fileName));
-
-				await file.SaveAs (fileName);
-				Assert.AreEqual (fileName, file.FilePath.ToString ());
-				Assert.IsTrue (file.CanWrite);
-				Assert.IsFalse (file.IsNew);
-				Assert.IsNotNull (file.Id);
-				Assert.IsFalse (file.IsShared);
-				Assert.IsTrue (file.IsLoaded);
-
-				Assert.AreEqual ("Foo", File.ReadAllText (fileName));
-
 			} finally {
 				File.Delete (fileName);
 			}

@@ -24,19 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Core;
-using UnitTests;
-using NUnit.Framework;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.Gui.Documents;
-using IdeUnitTests;
 using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Ide.Gui.Shell;
 using System.IO;
+using System.Threading.Tasks;
+using IdeUnitTests;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Shell;
+using NUnit.Framework;
+using UnitTests;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
 	public class DocumentManagerTests: TestBase
 	{

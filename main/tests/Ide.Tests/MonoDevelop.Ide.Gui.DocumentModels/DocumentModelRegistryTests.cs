@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			FilePath filePath = "test.txt";
 			var file = new FileModel ();
 			file.CreateNew ();
-			await file.SetContent (FileModelTests.ToStream ("Foo"));
+			await file.SetContent (TestHelper.ToStream ("Foo"));
 			await file.LinkToFile (filePath);
 			await registry.ShareModel (file);
 
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			var file = await registry.GetSharedModel<FileModel> (filePath);
 			Assert.IsFalse (file.IsLoaded);
 			await file.Load ();
-			Assert.AreEqual ("Foo", FileModelTests.FromStream (file.GetContent ()));
+			Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
 		}
 
 		[Test]

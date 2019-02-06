@@ -24,12 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-namespace Ide.Tests
+using System.IO;
+
+namespace MonoDevelop.Ide
 {
-	public class TestHelper
+	public static class TestHelper
 	{
-		public TestHelper ()
+		public static Stream ToStream (string text)
 		{
+			var mem = new MemoryStream ();
+			var w = new StreamWriter (mem);
+			w.Write (text);
+			w.Flush ();
+			mem.Position = 0;
+			return mem;
+		}
+
+		public static string FromStream (Stream stream)
+		{
+			var r = new StreamReader (stream);
+			return r.ReadToEnd ();
 		}
 	}
 }

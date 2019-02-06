@@ -89,22 +89,6 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			} catch (InvalidOperationException) { }
 		}
 
-		public static Stream ToStream (string text)
-		{
-			var mem = new MemoryStream ();
-			var w = new StreamWriter (mem);
-			w.Write (text);
-			w.Flush ();
-			mem.Position = 0;
-			return mem;
-		}
-
-		public static string FromStream (Stream stream)
-		{
-			var r = new StreamReader (stream);
-			return r.ReadToEnd ();
-		}
-
 		[Test]
 		public async Task UnsharedFileModelCreation ()
 		{
@@ -118,16 +102,18 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			file.CreateNew ();
 			Assert.IsTrue (file.IsLoaded);
 			Assert.IsTrue (file.IsNew);
+			Assert.IsTrue (file.HasUnsavedChanges);
 			Assert.IsFalse (file.CanWrite);
-			await file.SetContent (ToStream ("Foo"));
-			Assert.AreEqual ("Foo", FromStream (file.GetContent ()));
+			await file.SetContent (TestHelper.ToStream ("Foo"));
+			Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
 
 			// Not liked to a file, so it should not load, but also not fail
 			await file.Load ();
 			Assert.IsTrue (file.IsLoaded);
 			Assert.IsTrue (file.IsNew);
+			Assert.IsTrue (file.HasUnsavedChanges);
 
-			Assert.AreEqual ("Foo", FromStream (file.GetContent ()));
+			Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
 
 			string fileName = Path.GetTempFileName ();
 			try {
@@ -139,16 +125,19 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 				Assert.IsNotNull (file.Id);
 				Assert.IsFalse (file.IsShared);
 				Assert.IsTrue (file.IsLoaded);
+				Assert.IsTrue (file.HasUnsavedChanges);
 
-				Assert.AreEqual ("Foo", FromStream (file.GetContent ()));
+				Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
 
 				// File was new, so it won't load data from file
 				await file.Load ();
-				Assert.AreEqual ("Foo", FromStream (file.GetContent ()));
+				Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
 				Assert.AreEqual ("Empty", File.ReadAllText (fileName));
 
 				await file.Save ();
 				Assert.AreEqual ("Foo", File.ReadAllText (fileName));
+				Assert.IsFalse (file.IsNew);
+				Assert.IsFalse (file.HasUnsavedChanges);
 
 			} finally {
 				File.Delete (fileName);
@@ -167,9 +156,14 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 				await file.LinkToFile (fileName);
 				Assert.IsFalse (file.IsNew);
 				Assert.IsFalse (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
 				await file.Load ();
 				Assert.IsTrue (file.IsLoaded);
-				Assert.AreEqual ("Foo", FromStream (file.GetContent ()));
+				Assert.IsFalse (file.HasUnsavedChanges);
+				Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
+
+				await file.SetContent (TestHelper.ToStream ("Bar"));
+				Assert.IsTrue (file.HasUnsavedChanges);
 			} finally {
 				File.Delete (fileName);
 			}
@@ -180,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 		{
 			int changedCount = 0;
 
-			var file = new TextFileModel ();
+			var file = CreateFileModel ();
 
 			Assert.AreEqual (0, changedCount);
 
@@ -194,8 +188,37 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			file.GetContent ();
 			Assert.AreEqual (0, changedCount);
 
-			await file.SetContent (ToStream ("Foo"));
+			await file.SetContent (TestHelper.ToStream ("Foo"));
 			Assert.AreEqual (1, changedCount);
+		}
+
+		[Test]
+		public async Task UnsharedFileModelSaveAs ()
+		{
+			var file = CreateFileModel ();
+			file.CreateNew ();
+			await file.SetContent (TestHelper.ToStream ("Foo"));
+
+			string fileName = Path.GetTempFileName ();
+			try {
+				File.WriteAllText (fileName, "Empty");
+
+				Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
+				Assert.AreEqual ("Empty", File.ReadAllText (fileName));
+
+				await file.SaveAs (fileName);
+				Assert.AreEqual (fileName, file.FilePath.ToString ());
+				Assert.IsTrue (file.CanWrite);
+				Assert.IsFalse (file.IsNew);
+				Assert.IsNotNull (file.Id);
+				Assert.IsFalse (file.IsShared);
+				Assert.IsTrue (file.IsLoaded);
+
+				Assert.AreEqual ("Foo", File.ReadAllText (fileName));
+
+			} finally {
+				File.Delete (fileName);
+			}
 		}
 	}
 }
