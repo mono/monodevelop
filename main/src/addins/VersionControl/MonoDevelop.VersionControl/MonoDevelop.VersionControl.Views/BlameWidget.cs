@@ -418,7 +418,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (annotation != null)
 					TooltipText = GetCommitMessage (startLine - 1, true);
 
-				SetHighlight (annotation, startLine, evnt.Y, highlightAnnotation != annotation);
+				SetHighligh (annotation, startLine, evnt.Y, highlightAnnotation != annotation);
 
 				return base.OnMotionNotifyEvent (evnt);
 			}
@@ -787,18 +787,18 @@ namespace MonoDevelop.VersionControl.Views
 				return true;
 			}
 
-			int GetStartLineFromY (double y) => widget.Editor.YToLine (widget.Editor.VAdjustment.Value + y);
+			int YToStartLine (double y) => widget.Editor.YToLine (widget.Editor.VAdjustment.Value + y);
 
 			void GetAnnotationFromY (double y, out Annotation annotation, out int startLine)
 			{
-				startLine = GetStartLineFromY (y);
+				startLine = YToStartLine (y);
 				annotation = GetAnnotationFromLine (startLine);
 			}
 
 			internal Annotation GetAnnotationFromLine (int startLine) =>
-			 startLine > 0 && startLine <= annotations.Count ? annotations [startLine - 1] : null;
+				startLine > 0 && startLine <= annotations.Count ? annotations [startLine - 1] : null;
 
-			internal void SetHighlight (Annotation annotation, int line, double y, bool needsRedraw)
+			internal void SetHighligh (Annotation annotation, int line, double y, bool needsRedraw)
 			{
 				highlightPositon = y;
 				highlightAnnotation = annotation;
@@ -807,11 +807,11 @@ namespace MonoDevelop.VersionControl.Views
 				}
 			}
 
-			internal void Hightlight (int line)
+			internal void Hightligh (int line)
 			{
 				var y = widget.editor.LineToY (line);
 			 	var annotation = GetAnnotationFromLine (line);
-				SetHighlight (annotation, line, y, true);
+				SetHighligh (annotation, line, y, true);
 			}
 		}	
 	}
