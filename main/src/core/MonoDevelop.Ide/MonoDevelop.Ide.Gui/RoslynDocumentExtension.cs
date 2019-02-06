@@ -44,6 +44,19 @@ namespace MonoDevelop.Ide.Gui
 	{
 		RoslynDocumentContext documentContext;
 
+		static RoslynDocumentExtension ()
+		{
+			if (IdeApp.Workbench != null) {
+				IdeApp.Workbench.ActiveDocumentChanged += delegate {
+					// reparse on document switch to update the current file with changes done in other files.
+					var doc = IdeApp.Workbench.ActiveDocument;
+					if (doc == null || doc.Editor == null || doc.DocumentContext == null)
+						return;
+					doc.DocumentContext.ReparseDocument ();
+				};
+			}
+		}
+
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
 			if (controller is FileDocumentController file)

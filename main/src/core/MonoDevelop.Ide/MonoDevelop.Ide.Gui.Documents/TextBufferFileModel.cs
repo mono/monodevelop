@@ -139,17 +139,26 @@ namespace MonoDevelop.Ide.Gui.Documents
 			void SetTextDocument (ITextDocument doc)
 			{
 				if (doc != textDocument) {
-					if (textDocument != null)
+					if (textDocument != null) {
 						textDocument.TextBuffer.Changed -= TextBuffer_Changed;
+						textDocument.DirtyStateChanged -= TextDocument_DirtyStateChanged;
+					}
 					textDocument = doc;
-					if (textDocument != null)
+					if (textDocument != null) {
 						textDocument.TextBuffer.Changed += TextBuffer_Changed;
+						textDocument.DirtyStateChanged += TextDocument_DirtyStateChanged;
+					}
 				}
 			}
 
 			void TextBuffer_Changed (object sender, TextContentChangedEventArgs e)
 			{
 				NotifyChanged ();
+			}
+
+			void TextDocument_DirtyStateChanged (object sender, EventArgs e)
+			{
+				HasUnsavedChanges = textDocument.IsDirty;
 			}
 		}
 	}

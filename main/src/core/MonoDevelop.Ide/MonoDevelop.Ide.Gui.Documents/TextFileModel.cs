@@ -156,7 +156,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected override void OnSetText (string text)
 			{
-				this.text = text;
+				if (this.text != text) {
+					this.text = text;
+					HasUnsavedChanges = true;
+					NotifyChanged ();
+				}
 			}
 
 			protected override async Task OnLoad ()

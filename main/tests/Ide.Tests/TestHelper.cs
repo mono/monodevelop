@@ -1,5 +1,5 @@
 //
-// FileDescriptor.cs
+// TestHelper.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
@@ -24,36 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using System.IO;
-using System.Text;
-namespace MonoDevelop.Ide.Gui.Documents
+namespace Ide.Tests
 {
-	/// <summary>
-	/// Describes a file
-	/// </summary>
-	public class FileDescriptor : ModelDescriptor
+	public class TestHelper
 	{
-		public FileDescriptor (FilePath filePath, string mimeType, WorkspaceObject owner)
+		public TestHelper ()
 		{
-			FilePath = filePath;
-			MimeType = mimeType;
-			Owner = owner;
 		}
-
-		public FileDescriptor (string fileName, string mimeType, Stream content, WorkspaceObject owner)
-		{
-			FilePath = fileName;
-			MimeType = mimeType;
-			Owner = owner;
-			Content = content;
-		}
-
-		public FilePath FilePath { get; }
-		public string MimeType { get; }
-		public WorkspaceObject Owner { get; }
-		public Stream Content { get; }
-		public Encoding Encoding { get; set; }
 	}
 }

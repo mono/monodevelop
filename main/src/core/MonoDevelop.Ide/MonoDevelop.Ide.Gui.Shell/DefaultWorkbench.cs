@@ -519,7 +519,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (string.IsNullOrEmpty (controller.DocumentTitle))
 				return GetDefaultTitle ();
 			string post = String.Empty;
-			if (controller.IsDirty) {
+			if (controller.HasUnsavedChanges) {
 				post = "*";
 			}
 			if (controller.Owner is Project project) {

@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		Func<CancellationToken,Task<Control>> contentLoader;
 		VBox box;
 		IPathedDocument pathDoc;
+		IPathedDocument pathDocPending;
 		Gtk.Widget viewControl;
 
 		public IShellDocumentToolbar GetToolbar ()
@@ -79,6 +80,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 				viewControl = control.GetNativeWidget<Gtk.Widget> ();
 				box.PackStart (viewControl, true, true, 0);
 			}
+			if (pathDocPending != null) {
+				ShowPathBar (pathDocPending);
+				pathDocPending = null;
+			}
 		}
 
 		/*		public void OnDeactivated ()
@@ -95,6 +100,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void ShowPathBar (IPathedDocument pathDoc)
 		{
+			if (box == null) {
+				pathDocPending = pathDoc;
+				return;
+			}
+
 			DetachPathedDocument ();
 
 			this.pathDoc = pathDoc;

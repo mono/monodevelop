@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			OnDocumentClosing ();
 			fileName = doc.FileName;
-			project = doc.DocumentContext.HasProject ? doc.DocumentContext.Project.ItemId : null;
+			project = doc.Owner is SolutionItem item ? item.ItemId : null;
 			if (fileName == FilePath.Null) {
 				// If the document is not a file, dispose the navigation point because the document can't be reopened
 				Dispose ();

@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public Microsoft.CodeAnalysis.Workspace Workspace {
 			get {
-				var solution = rootWorkspace.CurrentSelectedSolution;
+				var solution = rootWorkspace?.CurrentSelectedSolution;
 				if (solution == null)
 					return emptyWorkspace;
 				return GetWorkspace (solution);
@@ -374,8 +374,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void IntitializeTrackedProjectHandling ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", OutputTrackingExtensionChanged);
-			rootWorkspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
-
 			IdeApp.Initialized += (sender, e) => {
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 			};
@@ -384,8 +382,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		void FinalizeTrackedProjectHandling ()
 		{
 			AddinManager.RemoveExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", OutputTrackingExtensionChanged);
-			rootWorkspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
-
 			if (IdeApp.IsInitialized)
 				IdeApp.ProjectOperations.EndBuild -= HandleEndBuild;
 		}
@@ -422,7 +418,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			if (rootWorkspace.CurrentSelectedSolution != null) {
+			if (rootWorkspace?.CurrentSelectedSolution != null) {
 				foreach (var pr in rootWorkspace.CurrentSelectedSolution.GetAllProjects ()) {
 					var project = pr as DotNetProject;
 					if (project != null)
@@ -446,8 +442,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IsOutputTrackedProject (project)) {
 				if (autoUpdate) {
 					// update documents
-					foreach (var openDocument in documentManager.Documents) {
-						openDocument.DocumentContext.ReparseDocument ();
+					if (documentManager != null) {
+						foreach (var openDocument in documentManager.Documents)
+							openDocument.DocumentContext.ReparseDocument ();
 					}
 				}
 			}

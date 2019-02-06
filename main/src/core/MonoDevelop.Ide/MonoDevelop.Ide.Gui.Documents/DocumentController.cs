@@ -48,15 +48,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal const string DocumentControllersPath = "/MonoDevelop/Ide/DocumentControllers";
 		internal const string DocumentControllerExtensionsPath = "/MonoDevelop/Ide/DocumentControllerExtensions";
 
-		List<DocumentControllerExtension> controllerExtensions = new List<DocumentControllerExtension> ();
-
 		DocumentModel model;
 		WorkspaceObject owner;
 		ExtensionContext extensionContext;
 		DocumentView viewItem;
 		ServiceProvider serviceProvider;
 
-		bool isDirty;
+		bool initialized;
+		bool hasUnsavedChanges;
 		bool isReadOnly;
 		bool isNewDocument;
 		string documentTitle;
@@ -105,7 +104,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Raised when the IsDirty property changes
 		/// </summary>
-		public event EventHandler IsDirtyChanged;
+		public event EventHandler HasUnsavedChangesChanged;
 
 		/// <summary>
 		/// Raised when the content of the document changes, which means that GetContent() may return different content objects
@@ -142,7 +141,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		/// <value>The model.</value>
 		public DocumentModel Model {
-			get { return model; }
+			get {
+				CheckInitialized ();
+				return model; 
+			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException ();
@@ -153,14 +155,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		/// <summary>
-		/// Returs true if the document has been modified
+		/// Returs true if the document has been modified and the changes are not yet saved
 		/// </summary>
-		public bool IsDirty {
-			get { return isDirty; }
+		public bool HasUnsavedChanges {
+			get {
+				CheckInitialized ();
+				return hasUnsavedChanges;
+			}
 			set {
-				if (value != isDirty) {
-					isDirty = value;
-					IsDirtyChanged?.Invoke (this, EventArgs.Empty);
+				if (value != hasUnsavedChanges) {
+					hasUnsavedChanges = value;
+					HasUnsavedChangesChanged?.Invoke (this, EventArgs.Empty);
 				}
 			}
 		}
@@ -173,7 +178,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// be possible to save changes to another file.
 		/// </remarks>
 		public bool IsReadOnly {
-			get { return isReadOnly || IsViewOnly; }
+			get {
+				CheckInitialized ();
+				return isReadOnly || IsViewOnly; 
+			}
 			protected set {
 				if (value != isReadOnly) {
 					isReadOnly = value;
@@ -187,7 +195,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		/// <value>The owner.</value>
 		public WorkspaceObject Owner {
-			get { return owner; }
+			get {
+				CheckInitialized ();
+				return owner;
+			}
 			set {
 				if (value != owner) {
 					owner = value;
@@ -200,7 +211,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Title shown in the document tab
 		/// </summary>
 		public string DocumentTitle {
-			get => documentTitle;
+			get {
+				CheckInitialized ();
+				return documentTitle;
+			}
 			set {
 				if (value != documentTitle) {
 					documentTitle = value;
@@ -214,7 +228,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		/// <value>The stock icon identifier.</value>
 		protected string DocumentIconId {
-			get => documentIconId;
+			get {
+				CheckInitialized ();
+				return documentIconId;
+			}
 			set {
 				if (value != documentIconId || !usingIconId) {
 					documentIconId = value;
@@ -229,7 +246,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Accessibility description for the document or view tab
 		/// </summary>
 		public string AccessibilityDescription {
-			get => accessibilityDescription;
+			get {
+				CheckInitialized ();
+				return accessibilityDescription;
+			}
 			set {
 				if (value != documentTitle) {
 					accessibilityDescription = value;
@@ -243,7 +263,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		/// <value>The stock icon identifier.</value>
 		public Xwt.Drawing.Image DocumentIcon {
-			get => documentIcon;
+			get {
+				CheckInitialized ();
+				return documentIcon;
+			}
 			set {
 				if (value != documentIcon) {
 					documentIcon = value;
@@ -259,6 +282,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public string TabPageLabel {
 			get {
+				CheckInitialized ();
 				if (tabPageLabel == null) {
 					switch (Role) {
 					case DocumentControllerRole.Preview: return GettextCatalog.GetString ("Preview");
@@ -281,7 +305,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Returns true when the document has just been created and has not yet been saved
 		/// </summary>
 		public bool IsNewDocument {
-			get { return isNewDocument; }
+			get {
+				CheckInitialized ();
+				return isNewDocument; 
+			}
 			protected set {
 				if (value != isNewDocument) {
 					isNewDocument = value;
@@ -295,7 +322,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public ProjectReloadCapability ProjectReloadCapability {
 			get {
-				return controllerExtensions.Select (c => c.ProjectReloadCapability).Append (OnGetProjectReloadCapability ()).Min ();
+				CheckInitialized ();
+				if (extensionChain != null)
+					return extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().Select (c => c.ProjectReloadCapability).Append (OnGetProjectReloadCapability ()).Min ();
+				else
+					return OnGetProjectReloadCapability ();
 			}
 		}
 
@@ -307,7 +338,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Returns true if the controller only display data, but it doesn't allow to modify it.
 		/// The main side effect is that the save command won't be available.
 		/// </summary>
-		public bool IsViewOnly => ControllerIsViewOnly;
+		public bool IsViewOnly {
+			get {
+				CheckInitialized ();
+				return ControllerIsViewOnly;
+			}
+		}
 
 		protected virtual bool ControllerIsViewOnly => false;
 
@@ -320,6 +356,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <param name="status">Status of the controller/view, returned by a GetDocumentStatus() call from a previous session</param>
 		public async Task Initialize (ModelDescriptor modelDescriptor, Properties status = null)
 		{
+			if (initialized)
+				throw new InvalidOperationException ("Already initialized");
+			initialized = true;
 			await OnInitialize (modelDescriptor, status);
 			extensionContext = CreateExtensionContext ();
 			await InitializeExtensionChain ();
@@ -337,6 +376,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <param name="modelDescriptor">Model descriptor.</param>
 		public bool TryReuseDocument (ModelDescriptor modelDescriptor)
 		{
+			CheckInitialized ();
 			return OnTryReuseDocument (modelDescriptor);
 		}
 
@@ -347,16 +387,20 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <param name="type">A type of model</param>
 		public bool CanAssignModel (Type type)
 		{
+			CheckInitialized ();
 			return OnCanAssignModel (type);
 		}
 
-		public Task Save ()
+		public async Task Save ()
 		{
-			return OnSave ();
+			CheckInitialized ();
+			await OnSave ();
+			IsNewDocument = false;
 		}
 
 		public async Task Reload ()
 		{
+			CheckInitialized ();
 			var status = GetDocumentStatus ();
 			await OnLoad (true);
 			await RefreshExtensions ();
@@ -368,6 +412,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public Properties GetDocumentStatus ()
 		{
+			CheckInitialized ();
 			return OnGetDocumentStatus ();
 		}
 
@@ -376,26 +421,31 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public void SetDocumentStatus (Properties properties)
 		{
+			CheckInitialized ();
 			OnSetDocumentStatus (properties);
 		}
 
 		public object GetContent (Type type)
 		{
+			CheckInitialized ();
 			return GetContents (type).FirstOrDefault ();
 		}
 
 		public T GetContent<T> () where T : class
 		{
+			CheckInitialized ();
 			return GetContents<T> ().FirstOrDefault ();
 		}
 
 		public IEnumerable<T> GetContents<T> () where T : class
 		{
+			CheckInitialized ();
 			return OnGetContents (typeof (T)).Cast<T> ();
 		}
 
 		public IEnumerable<object> GetContents (Type type)
 		{
+			CheckInitialized ();
 			return OnGetContents (type);
 		}
 
@@ -407,6 +457,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void DiscardChanges ()
 		{
+			CheckInitialized ();
 			OnDiscardChanges ();
 		}
 
@@ -416,6 +467,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <returns>The view</returns>
 		public async Task<DocumentView> GetDocumentViewItem ()
 		{
+			CheckInitialized ();
 			if (viewItem == null) {
 				try {
 					viewItem = await OnInitializeView ();
@@ -438,14 +490,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </remarks>
 		public async Task RefreshExtensions ()
 		{
+			CheckInitialized ();
 			if (extensionChain == null)
 				return;
 
+			bool extensionsChanged = false;
+
 			// First of all look for new extensions that should be attached
 
-				// Get the list of nodes for which an extension has been created
+			// Get the list of nodes for which an extension has been created
 
-				var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
+			var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
 			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
 				.Select (ex => ex.SourceExtensionNode.Id).ToList ();
 
@@ -478,6 +533,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 							} else
 								extensionChain.AddExtension (ext);
 							await ext.Init (this, null);
+							extensionsChanged = true;
 						}
 					}
 				}
@@ -485,8 +541,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				// Now dispose extensions that are not supported anymore
 
 				foreach (var ext in allExtensions) {
-					if (!await ext.SupportsController (this))
+					if (!await ext.SupportsController (this)) {
 						ext.Dispose ();
+						extensionsChanged = true;
+					}
 				}
 
 				if (loadedNodes.Any ()) {
@@ -494,6 +552,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						if (loadedNodes.Contains (ext.SourceExtensionNode.Id)) {
 							ext.Dispose ();
 							loadedNodes.Remove (ext.SourceExtensionNode.Id);
+							extensionsChanged = true;
 						}
 					}
 				}
@@ -501,6 +560,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			foreach (var e in newExtensions)
 				e.OnExtensionChainCreated ();
+
+			if (extensionsChanged)
+				OnContentChanged ();
 		}
 
 
@@ -509,7 +571,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 
 
-		void SetModel (DocumentModel value)
+		protected void SetModel (DocumentModel value)
 		{
 			if (value != model) {
 				if (model != null)
@@ -547,6 +609,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					if (!(ext is DocumentControllerExtension controllerExtension))
 						throw new InvalidOperationException ("Invalid document controller extension type: " + ext.GetType ());
 					if (await controllerExtension.SupportsController (this)) {
+						controllerExtension.SourceExtensionNode = node;
 						extensions.Add (controllerExtension);
 					}
 				}
@@ -571,6 +634,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			foreach (var e in extensions)
 				e.OnExtensionChainCreated ();
 
+			OnExtensionChainCreated ();
+
+			if (extensions.Count - defaultExts.Count > 0)
+				OnContentChanged ();
+		}
+
+		protected virtual void OnExtensionChainCreated ()
+		{
 		}
 
 		ExtensionContext CreateExtensionContext ()
@@ -674,6 +745,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		protected virtual void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
 		{
+			if (Model != null) {
+				IsNewDocument = Model.IsNew;
+				HasUnsavedChanges = Model.HasUnsavedChanges;
+				Model.Changed += FileModel_Changed;
+			}
+			if (oldModel != null)
+				oldModel.Changed -= FileModel_Changed;
+		}
+
+		void FileModel_Changed (object sender, EventArgs e)
+		{
+			if (Model != null)
+				HasUnsavedChanges = Model.HasUnsavedChanges;
 		}
 
 		/// <summary>
@@ -744,10 +828,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (type.IsInstanceOfType (this))
 				return this;
 
-			foreach (var ext in controllerExtensions) {
-				var c = ext.GetContent (type);
-				if (c != null)
-					return c;
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					var c = ext.GetContent (type);
+					if (c != null)
+						return c;
+				}
 			}
 
 			return null;
@@ -764,6 +850,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			UpdateContentExtensions ();
 			ContentChanged?.Invoke (this, EventArgs.Empty);
+
+			RefreshExtensions ().Ignore ();
 		}
 
 		protected virtual void OnDispose ()
@@ -791,6 +879,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnDeselected ()
 		{
+		}
+
+		protected bool CheckInitialized ()
+		{
+			if (!initialized)
+				throw new InvalidOperationException ("Document model not initialized");
+			return true;
 		}
 	}
 

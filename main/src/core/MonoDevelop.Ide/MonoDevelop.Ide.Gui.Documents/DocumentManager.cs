@@ -47,7 +47,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 	public class DocumentManager: Service
 	{
 		NavigationHistoryService navigationHistoryManager;
-		ProgressMonitorManager progressMonitorManager;
 		IShell workbench;
 		DesktopService desktopService;
 
@@ -57,7 +56,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected override async Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			progressMonitorManager = await serviceProvider.GetService<ProgressMonitorManager> ();
 			workbench = await serviceProvider.GetService<IShell> ();
 			desktopService = await serviceProvider.GetService<DesktopService> ();
 
@@ -176,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				await controller.Initialize (fileDescriptor, new Properties ());
 			}
 
-			controller.IsDirty = false;
+			controller.HasUnsavedChanges = false;
 
 			var fileOpenInfo = new FileOpenInformation (defaultName);
 			fileOpenInfo.DocumentController = controller;
@@ -262,6 +260,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					}
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
+				var progressMonitorManager = await ServiceProvider.GetService<ProgressMonitorManager> ();
 				var pm = progressMonitorManager.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Opening {0}", info.Owner is SolutionFolderItem item ?
 						info.FileName.ToRelative (item.ParentSolution.BaseDirectory) :
@@ -662,7 +661,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 			UnwatchDocument (doc);
 
 			OnDocumentClosed (doc);
-			doc.Dispose ();
 		}
 
 		void OnDocumentOpened (DocumentEventArgs e)

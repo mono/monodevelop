@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
+		DocumentContext documentContext;
 
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
@@ -66,11 +67,24 @@ namespace MonoDevelop.Ide.Editor
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
 			textEditorImpl.DirtyChanged += ViewContent_DirtyChanged; 
 			textEditor.Options = DefaultSourceEditorOptions.Instance.Create ();
+			this.TabPageLabel = GettextCatalog.GetString ("Source");
 		}
 
-		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
-			return base.OnInitialize (modelDescriptor, status);
+			await base.OnInitialize (modelDescriptor, status);
+		}
+
+		protected override void OnContentChanged ()
+		{
+			base.OnContentChanged ();
+			if (documentContext == null) {
+			var context = GetContent<DocumentContext> ();
+				if (context != null) {
+					documentContext = context;
+					textEditor.InitializeExtensionChain (documentContext);
+				}
+			}
 		}
 
 		protected override void OnFileNameChanged ()
@@ -79,19 +93,19 @@ namespace MonoDevelop.Ide.Editor
 			if (FilePath != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditor.FileName = FilePath;
-			if (this.WorkbenchWindow?.Document != null)
-				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document.DocumentContext);
+			if (documentContext != null)
+				textEditor.InitializeExtensionChain (documentContext);
 			UpdateTextEditorOptions (null, null);
 		}
 
 		void ViewContent_DirtyChanged (object sender, EventArgs e)
 		{
-			IsDirty = textEditorImpl.IsDirty;
+			HasUnsavedChanges = textEditorImpl.IsDirty;
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
 		{
-			IsDirty = textEditorImpl.IsDirty;
+			HasUnsavedChanges = textEditorImpl.IsDirty;
 			InformAutoSave ();
 		}
 
@@ -117,7 +131,7 @@ namespace MonoDevelop.Ide.Editor
 				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
 					return false;
 
-				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, IsDirty);
+				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, HasUnsavedChanges);
 				return false;
 			});
 		}
@@ -284,12 +298,8 @@ namespace MonoDevelop.Ide.Editor
 			else
 				await Load (false);
 
-			IsDirty = textEditorImpl.IsDirty;
+			HasUnsavedChanges = textEditorImpl.IsDirty;
 			return textEditor;
-		}
-
-		public string TabPageLabel {
-			get { return GettextCatalog.GetString ("Source"); }
 		}
 
 		public string TabAccessibilityDescription {

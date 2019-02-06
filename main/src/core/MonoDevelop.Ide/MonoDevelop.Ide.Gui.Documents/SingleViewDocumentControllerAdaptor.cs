@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void ContentDirtyChanged (object sender, EventArgs e)
 		{
-			IsDirty = content.IsDirty;
+			HasUnsavedChanges = content.IsDirty;
 		}
 
 		protected override bool ControllerIsViewOnly => content.IsViewOnly;

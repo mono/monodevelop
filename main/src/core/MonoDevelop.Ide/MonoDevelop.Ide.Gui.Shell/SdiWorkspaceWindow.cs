@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
 			controller.DocumentTitleChanged += SetTitleEvent;
-			controller.IsDirtyChanged += HandleDirtyChanged;
+			controller.HasUnsavedChangesChanged += HandleDirtyChanged;
 
 			SetTitleEvent ();
 		}
@@ -355,7 +355,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		protected override void OnDestroyed ()
 		{
 			controller.DocumentTitleChanged -= SetTitleEvent;
-			controller.IsDirtyChanged -= HandleDirtyChanged;
+			controller.HasUnsavedChangesChanged -= HandleDirtyChanged;
 
 			document = null;
 			base.OnDestroyed ();
@@ -383,7 +383,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		{
 			tab.Text = Title;
 			tab.Notify = show_notification;
-			tab.Dirty = controller.IsDirty;
+			tab.Dirty = controller.HasUnsavedChanges;
 			if (!string.IsNullOrEmpty (controller.DocumentTitle)) {
 				tab.Tooltip = controller.DocumentTitle;
 			}

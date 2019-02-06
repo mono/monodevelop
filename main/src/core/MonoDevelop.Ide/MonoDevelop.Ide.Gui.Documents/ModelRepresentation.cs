@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	{
 		int changeEventFreeze;
 		bool changeEventRaised;
+		bool hasUnsavedChanges;
 
 		internal int CurrentVersion { get; set; }
 
@@ -43,6 +44,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public object Id => DocumentModelData.Id;
 
 		public bool IsLoaded { get; internal set; }
+
+		/// <summary>
+		/// Returs true if the data has been modified and the changes are not yet saved
+		/// </summary>
+		public bool HasUnsavedChanges { get; set; }
 
 		public void SetLoaded ()
 		{
@@ -70,6 +76,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			FreezeChangeEvent ();
 			try {
 				OnCreateNew ();
+				HasUnsavedChanges = true;
 			} finally {
 				ThawChangeEvent (false);
 			}
@@ -82,6 +89,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				await WaitHandle.WaitAsync ();
 				await OnLoad ();
 				IsLoaded = true;
+				HasUnsavedChanges = false;
 			} finally {
 				WaitHandle.Release ();
 			}
@@ -92,6 +100,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			try {
 				await WaitHandle.WaitAsync ();
 				await OnSave ();
+				HasUnsavedChanges = false;
 			} finally {
 				WaitHandle.Release ();
 			}

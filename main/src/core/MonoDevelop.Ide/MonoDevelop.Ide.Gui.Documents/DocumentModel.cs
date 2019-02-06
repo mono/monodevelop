@@ -108,6 +108,27 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		public bool IsLinked {
+			get {
+				return data.IsLinked;
+			}
+		}
+
+		/// <summary>
+		/// Returs true if the document has been modified and the changes are not yet saved
+		/// </summary>
+		public bool HasUnsavedChanges {
+			get {
+				CheckInitialized ();
+
+				// Linked but not yet loaded == no unsaved changes
+				if (modelRepresentation == null && IsLinked)
+					return false;
+				return ModelRepresentation.HasUnsavedChanges;
+			}
+		}
+
+
 		void CheckInitialized ()
 		{
 			if (!isNew && !Data.IsLinked)

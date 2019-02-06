@@ -37,48 +37,86 @@ namespace MonoDevelop.Ide.Gui.Documents
 	public class FileDocumentController : DocumentController
 	{
 		FilePath filePath;
+		string originalFileTitle;
+		string defaultMimeType;
+		string mimeType;
+		DesktopService desktopService;
+		private Encoding encoding;
 
 		public FileModel FileModel { get => Model as FileModel; set => Model = value; }
 
 		public FilePath FilePath {
-			get { return filePath; }
+			get {
+				CheckInitialized ();
+				return filePath;
+			}
 			set {
 				if (value != filePath) {
 					filePath = value.CanonicalPath;
+					defaultMimeType = null;
 					OnFileNameChanged ();
 				}
 			}
 		}
 
-		public string MimeType { get; set; }
+		public string MimeType {
+			get {
+				CheckInitialized ();
+				if (mimeType != null)
+					return mimeType;
+				if (defaultMimeType == null)
+					defaultMimeType = desktopService.GetMimeTypeForUri (FilePath);
+				return defaultMimeType;
+			}
+			set {
+				mimeType = value;
+			}
+		}
 
-		public Encoding Encoding { get; set; }
+		public Encoding Encoding {
+			get {
+				return encoding;
+			}
+			set {
+				if (encoding != value) {
+					encoding = value;
+					OnEncodingChanged ();
+				}
+			}
+		}
 
-		public bool SupportsSaveAs { get; set; }
+		public bool SupportsSaveAs { get; set; } = true;
 
-		public bool SupportsEncoding { get; set; }
+		public virtual bool SupportsEncoding => FileModelType != null && typeof(TextFileModel).IsAssignableFrom (FileModelType);
 
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
+			desktopService = await ServiceProvider.GetService<DesktopService> ();
+
 			if (!(modelDescriptor is FileDescriptor fileDescriptor))
 				return;
 
 			if (FileModelType != null) {
-				var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
-
 				if (fileDescriptor.Content != null) {
 					// It is a new file
 					if (!typeof (FileModel).IsAssignableFrom (FileModelType))
 						throw new InvalidOperationException ("Invalid file model type: " + FileModelType);
-					var fileModel = (FileModel) Activator.CreateInstance (FileModelType);
+					var fileModel = (FileModel)Activator.CreateInstance (FileModelType);
+					fileModel.CreateNew ();
 					await fileModel.SetContent (fileDescriptor.Content);
-					Model = fileModel;
+					if (fileDescriptor.Encoding != null && fileModel is TextFileModel textFileModel)
+						textFileModel.Encoding = fileDescriptor.Encoding;
+					SetModel (fileModel);
 				} else {
 					// Existing file, get a model from the registry
-					Model = await modelRegistry.GetSharedModel(FileModelType, fileDescriptor.FilePath);
+					var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
+					SetModel (await modelRegistry.GetSharedModel (FileModelType, fileDescriptor.FilePath));
 				}
 			}
+			IsNewDocument = HasUnsavedChanges = fileDescriptor.Content != null;
 			FilePath = fileDescriptor.FilePath;
+			MimeType = fileDescriptor.MimeType;
+			Encoding = fileDescriptor.Encoding ?? Encoding.UTF8;
 			Owner = fileDescriptor.Owner;
 		}
 
@@ -96,45 +134,59 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnFileNameChanged ()
 		{
-			if (FileModelType != null)
-				FileModel?.LinkToFile (FilePath);
-			UpdateIcon (DocumentIcon).Ignore ();
+			// If name changed and the file model is linked to a file, relink it
+			if (FileModelType != null && FileModel != null && FileModel.IsLinked && FileModel.FilePath != filePath)
+				FileModel.LinkToFile (FilePath);
+			UpdateIcon ();
+			if (DocumentTitle == null || DocumentTitle == originalFileTitle)
+				DocumentTitle = originalFileTitle = FilePath.FileName;
+		}
+
+		protected virtual void OnEncodingChanged ()
+		{
 		}
 
 		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
 		{
-			if (FileModelType != null)
-				IsNewDocument = FileModel.IsNew;
-			UpdateIcon (DocumentIcon).Ignore ();
+			if (FileModelType != null && FileModel != null) {
+				if (FileModel.Id != null)
+					FilePath = FileModel.FilePath;
+			}
+			UpdateIcon ();
 			base.OnModelChanged (oldModel, newModel);
 		}
 
-		async Task UpdateIcon (Xwt.Drawing.Image iconToReplace)
+		void UpdateIcon ()
 		{
 			if (!FilePath.IsNullOrEmpty) {
-				var desktopService = await ServiceProvider.GetService<DesktopService> ();
-				if (DocumentIcon != iconToReplace) // If the icon has changed since the update was requested, keep the new one
-					return;
 				try {
 					DocumentIcon = desktopService.GetIconForFile (FilePath);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Icon retrieval failed", ex);
 					DocumentIcon = desktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 				}
-			}
+			} else
+				DocumentIcon = desktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 		}
 
 		public async Task SaveAs (FilePath filePath, Encoding encoding)
 		{
 			FilePath = filePath;
 			Encoding = encoding;
-			if (IsNewDocument && FileModelType != null) {
-				// Register the file model with the new id
-				var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
-				await modelRegistry.ShareModel (FileModel);
-			}
-			IsNewDocument = false;
 			await Save ();
+		}
+
+		protected override async Task OnSave ()
+		{
+			if (FileModelType != null) {
+				if (IsNewDocument) {
+					// Register the file model with the new id
+					var modelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
+					await FileModel.LinkToFile (FilePath);
+					await modelRegistry.ShareModel (FileModel);
+				}
+			}
+			await base.OnSave ();
 		}
 
 		public bool CanActivateFile (FilePath file)

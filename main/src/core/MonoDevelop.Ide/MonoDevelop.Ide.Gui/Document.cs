@@ -59,6 +59,8 @@ namespace MonoDevelop.Ide.Gui
 		DocumentControllerDescription documentControllerDescription;
 		DocumentView view;
 		DocumentManager documentManager;
+		DocumentContext documentContext;
+		bool checkedDocumentContext;
 
 		internal IWorkbenchWindow Window {
 			get { return window; }
@@ -69,7 +71,15 @@ namespace MonoDevelop.Ide.Gui
 			set;
 		}
 
-		public DocumentContext DocumentContext => GetContent<RoslynDocumentExtension> ()?.DocumentContext;
+		public DocumentContext DocumentContext {
+			get {
+				if (!checkedDocumentContext) {
+					documentContext = GetContent<RoslynDocumentExtension> ()?.DocumentContext;
+					checkedDocumentContext = true;
+				}
+				return documentContext;
+			}
+		}
 
 		internal DocumentControllerDescription DocumentControllerDescription => documentControllerDescription;
 
@@ -88,6 +98,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void OnContentChanged ()
 		{
+			checkedDocumentContext = false;
 			ContentChanged?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -126,19 +137,6 @@ namespace MonoDevelop.Ide.Gui
 		public IEnumerable<T> GetContents<T> () where T : class
 		{
 			return GetControllersForContentCheck ().Select (controller => controller.GetContent (typeof (T)) as T).Where (c => c != null);
-		}
-
-		static Document ()
-		{
-			if (IdeApp.Workbench != null) {
-				IdeApp.Workbench.ActiveDocumentChanged += delegate {
-					// reparse on document switch to update the current file with changes done in other files.
-					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc == null || doc.Editor == null)
-						return;
-					doc.DocumentContext.ReparseDocument ();
-				};
-			}
 		}
 
 		internal Document ()
@@ -262,8 +260,8 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public bool IsDirty {
-			get { return !controller.IsReadOnly && (controller.IsNewDocument || controller.IsDirty); }
-			set { controller.IsDirty = value; }
+			get { return !controller.IsReadOnly && (controller.IsNewDocument || controller.HasUnsavedChanges); }
+			set { controller.HasUnsavedChanges = value; }
 		}
 
 		public object GetDocumentObject ()
@@ -330,7 +328,7 @@ namespace MonoDevelop.Ide.Gui
 				// Freeze the file change events. There can be several such events, and sending them all together
 				// is more efficient
 				FileService.FreezeEvents ();
-				if (controller.IsViewOnly || !controller.IsDirty)
+				if (controller.IsViewOnly || !controller.HasUnsavedChanges)
 					return;
 				if (fileController == null) {
 					await controller.Save ();
@@ -471,8 +469,6 @@ namespace MonoDevelop.Ide.Gui
 			if (!await ShowSaveUI (force))
 				return false;
 
-			shell.CloseView (window, true);
-
 			ClearTasks ();
 
 			var typeSystemService = await documentManager.ServiceProvider.GetService<TypeSystemService> ();
@@ -484,7 +480,11 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogError ("Exception while calling Closed event.", ex);
 			}
 
+			shell.CloseView (window, true);
+
 			Counters.OpenDocuments--;
+
+			Dispose ();
 
 			return true;
 		}
@@ -502,7 +502,7 @@ namespace MonoDevelop.Ide.Gui
 
 		async Task<bool> ShowSaveUI (bool force)
 		{
-			if (!force && controller.IsDirty) {
+			if (!force && controller.HasUnsavedChanges) {
 				AlertButton result = MessageService.GenericAlert (Stock.Warning,
 					GettextCatalog.GetString ("Save the changes to document '{0}' before closing?", controller.DocumentTitle),
 					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
@@ -510,14 +510,14 @@ namespace MonoDevelop.Ide.Gui
 
 				if (result == AlertButton.Save) {
 					await Save ();
-					if (controller.IsDirty) {
+					if (controller.HasUnsavedChanges) {
 						// This may happen if the save operation failed
 						Select ();
 						return false;
 					}
 				} else if (result == AlertButton.SaveAs) {
 					var resultSaveAs = await SaveAs ();
-					if (!resultSaveAs || controller.IsDirty) {
+					if (!resultSaveAs || controller.HasUnsavedChanges) {
 						// This may happen if the save operation failed or Save As was canceled
 						Select ();
 						return false;

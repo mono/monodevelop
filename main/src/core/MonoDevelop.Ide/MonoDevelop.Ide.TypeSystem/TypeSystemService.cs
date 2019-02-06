@@ -76,9 +76,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override async Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			documentManager = await serviceProvider.GetService<DocumentManager> ();
+			serviceProvider.WhenServiceInitialized<DocumentManager> (s => documentManager = s);
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				rootWorkspace = s;
+				rootWorkspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			});
 			desktopService = await serviceProvider.GetService<DesktopService> ();
-			rootWorkspace = await serviceProvider.GetService<RootWorkspace> ();
 
 			RoslynServices.RoslynService.Initialize ();
 			CleanupCache ();
@@ -106,6 +109,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override Task OnDispose ()
 		{
 			FileService.FileChanged -= FileService_FileChanged;
+			if (rootWorkspace != null)
+				rootWorkspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			FinalizeTrackedProjectHandling ();
 			return Task.CompletedTask;
 		}
@@ -115,7 +120,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var filesToUpdate = new List<string> ();
 			foreach (var file in e) {
 				// Open documents are handled by the Document class itself.
-				if (documentManager.GetDocument (file.FileName) != null)
+				if (documentManager?.GetDocument (file.FileName) != null)
 					continue;
 
 				foreach (var w in workspaces) {
@@ -141,8 +146,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 					Gtk.Application.Invoke ((o, args) => {
-						foreach (var w in documentManager.Documents)
-							w.DocumentContext.ReparseDocument ();
+						if (documentManager != null) {
+							foreach (var w in documentManager.Documents)
+								w.DocumentContext.ReparseDocument ();
+						}
 					});
 				} catch (Exception) { }
 			});
