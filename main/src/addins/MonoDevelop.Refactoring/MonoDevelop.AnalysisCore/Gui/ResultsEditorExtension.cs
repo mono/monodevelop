@@ -90,6 +90,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			enabled = false;
 			diagService.DiagnosticsUpdated -= OnDiagnosticsUpdated;
+			diagService = null;
 			CancelUpdateTimout ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			RemoveAllMarkers ();
