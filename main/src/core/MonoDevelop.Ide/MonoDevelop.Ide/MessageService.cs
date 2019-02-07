@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide
 			// if dialog is modal, make sure it's parented on any existing modal dialog
 			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
-				parent = GetDefaultModalParent ();
+				parent = DesktopService.GetParentForModalWindow ();
 			}
 
 			//ensure the dialog has a parent
@@ -384,35 +384,6 @@ namespace MonoDevelop.Ide
 			dialog.Shown -= HandleShown;
 		}
 		#endif
-
-		/// <summary>
-		/// Gets a default parent for modal dialogs.
-		/// </summary>
-		public static Window GetDefaultModalParent ()
-		{
-#if MAC
-			return NSApplication.SharedApplication.ModalWindow;
-#else
-			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
-				if (w.Visible && w.HasToplevelFocus && w.Modal)
-					return w;
-			return GetFocusedToplevel ();
-#endif
-		}
-
-		static Window GetFocusedToplevel ()
-		{
-#if MAC
-			return NSApplication.SharedApplication.KeyWindow;
-#else
-			// use the first "normal" toplevel window (skipping docks, popups, etc.) or the main IDE window
-			Window gtkToplevel = Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus &&
-																(w.TypeHint == Gdk.WindowTypeHint.Dialog ||
-																 w.TypeHint == Gdk.WindowTypeHint.Normal ||
-																 w.TypeHint == Gdk.WindowTypeHint.Utility));
-			return gtkToplevel ?? RootWindow;
-#endif
-		}
 		
 		/// <summary>
 		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
@@ -426,7 +397,7 @@ namespace MonoDevelop.Ide
 			if (parent == null) {
 				if (childControl.nativeWidget is Gtk.Window gtkChild) {
 					if (gtkChild.Modal)
-						parent = GetDefaultModalParent ();
+						parent = DesktopService.GetParentForModalWindow ();
 				}
 			}
 
@@ -592,7 +563,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? GetDefaultModalParent ()
+					TransientFor = parent ?? DesktopService.GetParentForModalWindow ()
 				};
 				return dialog.Run ();
 			}
@@ -604,7 +575,7 @@ namespace MonoDevelop.Ide
 					Caption = caption,
 					Value = initialValue,
 					IsPassword = isPassword,
-					TransientFor = parent ?? GetDefaultModalParent ()
+					TransientFor = parent ?? DesktopService.GetParentForModalWindow ()
 				};
 				if (dialog.Run ())
 					return dialog.Value;
