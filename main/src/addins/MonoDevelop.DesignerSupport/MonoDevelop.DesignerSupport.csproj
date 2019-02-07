@@ -212,4 +212,16 @@
     <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <PropertyEditingResourceBundlePath Include="$(SolutionDir)\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing.Mac\PropertyEditingResource\**\*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(PropertyEditingResourceBundlePath)"
+      DestinationFiles="@(PropertyEditingResourceBundlePath->'$(OutputPath)\PropertyEditingResource.bundle\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true"
+      OverwriteReadOnlyFiles="true"
+      Retries="3"
+      RetryDelayMilliseconds="300" />
+  </Target>
 </Project>
