@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -49,6 +50,13 @@ namespace MonoDevelop.VersionControl.Views
 	class BlameWidget : Bin
 	{
 		Revision revision;
+
+		public Revision Revision {
+			get {
+				return revision;
+			}
+		}
+
 		Adjustment vAdjustment;
 		Gtk.VScrollbar vScrollBar;
 		
@@ -131,7 +139,11 @@ namespace MonoDevelop.VersionControl.Views
 				IsReadOnly = true,
 				MimeType = sourceEditor.TextEditor.Document.MimeType,
 			};
-			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);
+			var options = new CustomEditorOptions (DefaultSourceEditorOptions.Instance);
+			options.TabsToSpaces = false;
+
+			editor = new MonoTextEditor (doc, new SourceEditor.StyledSourceEditorOptions (options));
+
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -569,6 +581,11 @@ namespace MonoDevelop.VersionControl.Views
 							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
 						} else {
 							document.Text = widget.Document.Editor.Text;
+							if (widget.Document.Editor.TextView is MonoTextEditor exEditor) {
+								document.UpdateFoldSegments (exEditor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
+								widget.Editor.SetCaretTo (exEditor.Caret.Line, exEditor.Caret.Column);
+								widget.Editor.VAdjustment.Value = exEditor.VAdjustment.Value;
+							}
 						}
 						widget.editor.Caret.Location = location;
 						widget.editor.VAdjustment.Value = adj;

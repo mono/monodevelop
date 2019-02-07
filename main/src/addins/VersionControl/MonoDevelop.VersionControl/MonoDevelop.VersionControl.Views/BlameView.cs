@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
 using System;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -59,13 +60,9 @@ namespace MonoDevelop.VersionControl.Views
 			info.Start ();
 			BlameWidget blameWidget = Control.GetNativeWidget<BlameWidget> ();
 			blameWidget.Reset ();
-
 			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
-				if (buffer.TextView is MonoTextEditor exEditor) {
-					blameWidget.Editor.SetCaretTo (exEditor.Caret.Line, exEditor.Caret.Column);
-					blameWidget.Editor.VAdjustment.Value = exEditor.VAdjustment.Value;
-				} else {
+				if (!(buffer.TextView is MonoTextEditor)) {
 					//compatibility for other not MonoTextEditor editors
 					var loc = buffer.CaretLocation;
 					int line = loc.Line < 1 ? 1 : loc.Line;
@@ -82,7 +79,8 @@ namespace MonoDevelop.VersionControl.Views
 				var blameWidget = Control.GetNativeWidget<BlameWidget> ();
 
 				if (buffer.TextView is MonoTextEditor exEditor) {
-
+					if (blameWidget.Revision == null)
+						exEditor.Document.UpdateFoldSegments (blameWidget.Editor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
 					exEditor.SetCaretTo (blameWidget.Editor.Caret.Line, blameWidget.Editor.Caret.Column);
 					exEditor.VAdjustment.Value = blameWidget.Editor.VAdjustment.Value;
 				} else {
