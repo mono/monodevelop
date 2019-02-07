@@ -566,7 +566,7 @@ namespace MonoDevelop.Debugger
 			var textView = doc.GetContent<ITextView> ();
 			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
 			if (DebuggingService.IsPaused) {
-				DebuggingService.RunToCursor (doc.FileName, caretColumn, caretColumn);
+				DebuggingService.RunToCursor (doc.FileName, caretLine, caretColumn);
 				return;
 			}
 

@@ -233,10 +233,12 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" insertafter="Separator1" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement" insertafter="MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" insertafter="MonoDevelop.Debugger.DebugCommands.ShowNextStatement" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" insertafter="MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+		<SeparatorItem id = "DebuggerSectionStart" insertafter="Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement"  />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
+		<SeparatorItem id = "DebuggerSectionEnd" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/ExecutionModes/Debug">
