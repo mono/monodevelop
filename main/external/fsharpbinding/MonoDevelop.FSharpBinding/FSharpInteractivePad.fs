@@ -64,7 +64,7 @@ type ImageRendererMarker(line, image:Xwt.Drawing.Image) =
 
 type FsiDocumentContext() =
     inherit DocumentContext()
-    let name = "__FSI__.fsx"
+    static let name = "__FSI__.fs"
     let pd = new FSharpParsedDocument(name, None, None) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
@@ -84,6 +84,7 @@ type FsiDocumentContext() =
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
+    static member DocumentName = name
     member x.CompletionWidget 
         with set (value) = 
             completionWidget <- value
