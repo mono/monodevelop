@@ -139,25 +139,28 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public IEnumerable<FileViewer> GetFileViewers (FilePath filePath, Project ownerProject)
+		public async Task<IEnumerable<FileViewer>> GetFileViewers (FilePath filePath, Project ownerProject)
 		{
+			var result = new List<FileViewer> ();
+
 			string mimeType = desktopService.GetMimeTypeForUri (filePath);
 			var viewerIds = new HashSet<string> ();
 			var fileDescriptor = new FileDescriptor (filePath, mimeType, ownerProject);
 
-			foreach (var b in IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (fileDescriptor)) {
-				yield return new FileViewer (b);
+			foreach (var b in await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (fileDescriptor)) {
+				result.Add (new FileViewer (b));
 			}
 
 			foreach (var eb in GetDisplayBindings (filePath, mimeType, ownerProject).OfType< IExternalDisplayBinding> ()) {
 				var app = eb.GetApplication (filePath, mimeType, ownerProject);
 				if (viewerIds.Add (app.Id))
-					yield return new FileViewer (app);
+					result.Add (new FileViewer (app));
 			}
 
 			foreach (var app in desktopService.GetApplications (filePath))
 				if (viewerIds.Add (app.Id))
-					yield return new FileViewer (app);
+					result.Add (new FileViewer (app));
+			return result;
 		}
 	}
 	

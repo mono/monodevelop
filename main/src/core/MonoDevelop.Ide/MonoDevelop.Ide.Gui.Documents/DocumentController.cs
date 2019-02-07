@@ -349,6 +349,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal FilePath OriginalContentName { get; set; }
 
+		internal bool Initialized => initialized;
+
 		/// <summary>
 		/// Initializes the controller
 		/// </summary>

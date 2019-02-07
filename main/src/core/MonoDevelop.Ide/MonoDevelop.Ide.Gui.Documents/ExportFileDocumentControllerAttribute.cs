@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Task.FromResult ((DocumentController) node.CreateInstance (typeof (DocumentController)));
 		}
 
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
 		{
 			if (attribute.CanHandle (file.FilePath, file.MimeType)) {
 				yield return new DocumentControllerDescription {

@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var fileDescriptor = new FileDescriptor (defaultName, mimeType, content, null);
 
 			var documentControllerService = await ServiceProvider.GetService<DocumentControllerService> ();
-			var controllerDesc = documentControllerService.GetSupportedControllers (fileDescriptor).FirstOrDefault (c => c.CanUseAsDefault);
+			var controllerDesc = (await documentControllerService.GetSupportedControllers (fileDescriptor)).FirstOrDefault (c => c.CanUseAsDefault);
 			if (controllerDesc == null)
 				throw new ApplicationException ("Can't create display binding for mime type: " + mimeType);
 
@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public async Task<Document> OpenDocument (ModelDescriptor modelDescriptor, DocumentControllerRole? role = null, bool bringToFront = true)
 		{
 			var documentControllerService = await ServiceProvider.GetService<DocumentControllerService> ();
-			var factories = documentControllerService.GetSupportedControllers (modelDescriptor).Where (c => role == null || c.Role == role).ToList ();
+			var factories = (await documentControllerService.GetSupportedControllers (modelDescriptor)).Where (c => role == null || c.Role == role).ToList ();
 			var controllerDesc = factories.FirstOrDefault (c => c.CanUseAsDefault);
 			if (controllerDesc == null)
 				controllerDesc = factories.FirstOrDefault ();
@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var displayBindingService = await ServiceProvider.GetService<DisplayBindingService> ();
 
 			var fileDescriptor = new FileDescriptor (fileName, null, project);
-			var internalViewers = documentControllerService.GetSupportedControllers (fileDescriptor).ToList ();
+			var internalViewers = await documentControllerService.GetSupportedControllers (fileDescriptor);
 			var externalViewers = displayBindingService.GetDisplayBindings (fileName, null, project as Project).OfType<IExternalDisplayBinding> ().ToList ();
 
 			if (openFileInfo.DocumentControllerDescription != null) {
@@ -489,8 +489,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			var commandHandler = new ViewCommandHandlers ();
 			var content = new DocumentContent (documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription);
+
+			// If the controller has not been initialized, do it now
+			if (!documentOpenInfo.DocumentController.Initialized)
+				await documentOpenInfo.DocumentController.Initialize (null, null);
+
 			content.DocumentView = await documentOpenInfo.DocumentController.GetDocumentViewItem ();
 			var window = await workbench.ShowView (content, documentOpenInfo.DockNotebook, commandHandler);
+
+			content.DocumentView.IsRoot = true;
+			window.SetRootView (content.DocumentView.CreateShellView (window));
+
 			var doc = CreateDocument (content, window);
 			if (documentOpenInfo.Options.HasFlag (OpenDocumentOptions.BringToFront) || documents.Count == 1)
 				window.SelectWindow ();

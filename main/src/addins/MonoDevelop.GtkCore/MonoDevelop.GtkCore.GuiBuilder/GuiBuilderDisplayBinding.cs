@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Gui.Documents;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -54,36 +55,40 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return true; }
 		}
 
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
+		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor file)
 		{
+			var list = ImmutableList<DocumentControllerDescription>.Empty;
+
 			if (excludeThis)
-				yield break;
+				return list;
 
 			if (file.FilePath.IsNullOrEmpty || !(file.Owner is DotNetProject))
-				yield break;
+				return list;
 
 			if (!IdeApp.Workspace.IsOpen)
-				yield break;
+				return list;
 
 			if (GetWindow (file.FilePath, (DotNetProject)file.Owner) == null)
-				yield break;
+				return list;
 
 			excludeThis = true;
-			var db = IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
+			var db = (await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			excludeThis = false;
 			if (db != null) {
-				yield return new DocumentControllerDescription {
-					CanUseAsDefault = true,
-					Role = DocumentControllerRole.VisualDesign,
-					Name = MonoDevelop.Core.GettextCatalog.GetString ("Window Designer")
-				};
+				list = list.Add (
+					new DocumentControllerDescription {
+						CanUseAsDefault = true,
+						Role = DocumentControllerRole.VisualDesign,
+						Name = MonoDevelop.Core.GettextCatalog.GetString ("Window Designer")
+					});
 			}
+			return list;
 		}
 
 		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
 			excludeThis = true;
-			var db = IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
+			var db = (await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			var content = await db.CreateController (file);
 			await content.Initialize (file);
 			var window = GetWindow (file.FilePath, (Project)file.Owner);

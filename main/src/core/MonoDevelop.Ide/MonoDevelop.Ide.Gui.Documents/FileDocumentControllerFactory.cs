@@ -40,16 +40,24 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return CreateController ((FileDescriptor)modelDescriptor, controllerDescription);
 		}
 
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		public override Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (ModelDescriptor modelDescriptor)
 		{
 			if (modelDescriptor is FileDescriptor file)
-				return GetSupportedControllers (file);
+				return GetSupportedControllersAsync (file);
 			else
-				return Array.Empty<DocumentControllerDescription> ();
+				return Task.FromResult<IEnumerable<DocumentControllerDescription>> (Array.Empty<DocumentControllerDescription> ());
 		}
 
 		public abstract Task<DocumentController> CreateController (FileDescriptor modelDescriptor, DocumentControllerDescription controllerDescription);
 
-		public abstract IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor);
+		protected virtual IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected virtual Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor modelDescriptor)
+		{
+			return Task.FromResult (GetSupportedControllers (modelDescriptor));
+		}
 	}
 }

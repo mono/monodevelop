@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser
 	[ExportDocumentControllerFactory]
 	class AssemblyBrowserDisplayBinding : DocumentControllerFactory
 	{
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
 		{
 			if (modelDescriptor is AssemblyBrowserDescriptor || (modelDescriptor is FileDescriptor file && (file.FilePath.HasExtension (".dll") || file.FilePath.HasExtension (".exe"))))
 				yield return new DocumentControllerDescription (GettextCatalog.GetString ("Assembly Browser"), true, DocumentControllerRole.Tool);

@@ -44,17 +44,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Checks if this factory can create a controller for the provided file, and returns the kind of
 		/// controller it can create.
 		/// </summary>
-		public IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		public async Task<DocumentControllerDescription[]> GetSupportedControllers (ModelDescriptor modelDescriptor)
 		{
 			var result = new List<DocumentControllerDescription> ();
 			foreach (var factory in GetFactories (modelDescriptor)) {
-				foreach (var desc in factory.GetSupportedControllers (modelDescriptor)) {
+				factory.ServiceProvider = ServiceProvider;
+				foreach (var desc in await factory.GetSupportedControllersAsync (modelDescriptor)) {
 					desc.Factory = factory;
 					desc.ServiceProvider = ServiceProvider;
 					result.Add (desc);
 				}
 			}
-			return result;
+			return result.ToArray ();
 		}
 
 		IEnumerable<DocumentControllerFactory> GetFactories (ModelDescriptor modelDescriptor)

@@ -220,7 +220,7 @@ namespace MonoDevelop.MacIntegration
 				i++;
 			}
 			
-			foreach (var vw in IdeApp.Services.DisplayBindingService.GetFileViewers (filename, null)) {
+			foreach (var vw in IdeApp.Services.DisplayBindingService.GetFileViewers (filename, null).Result) {
 				if (!vw.IsExternal) {
 					button.Menu.AddItem (new NSMenuItem { Title = vw.Title });
 					currentViewers.Add (vw);

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -36,6 +37,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 	[TypeExtensionPoint (ExtensionAttributeType = typeof(ExportDocumentControllerFactoryAttribute), Path = DocumentControllerService.DocumentControllerFactoriesPath)]
 	public abstract class DocumentControllerFactory
 	{
+		internal protected ServiceProvider ServiceProvider { get; set; }
+
 		/// <summary>
 		/// Unique identifier of the controller factory.
 		/// </summary>
@@ -45,7 +48,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Checks if this factory can create a controller for the provided file, and returns the kind of
 		/// controller it can create.
 		/// </summary>
-		public abstract IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor);
+		protected virtual IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		{
+			throw new NotImplementedException ();
+		}
+
+		/// <summary>
+		/// Checks if this factory can create a controller for the provided file, and returns the kind of
+		/// controller it can create.
+		/// </summary>
+		public virtual Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (ModelDescriptor modelDescriptor)
+		{
+			return Task.FromResult (GetSupportedControllers (modelDescriptor));
+		}
 
 		/// <summary>
 		/// Creates a controller for editing the provided file

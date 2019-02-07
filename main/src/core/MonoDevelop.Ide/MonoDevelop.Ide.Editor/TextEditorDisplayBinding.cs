@@ -33,34 +33,38 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Gui.Documents;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[ExportDocumentControllerFactory (MimeType = "*")]
 	public class TextEditorDisplayBinding : FileDocumentControllerFactory
 	{
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
+		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor file)
 		{
+			var list = ImmutableList<DocumentControllerDescription>.Empty;
+
+			var desktopService = await ServiceProvider.GetService<DesktopService> ();
 			if (!file.FilePath.IsNullOrEmpty) {
-				if (!IdeApp.DesktopService.GetFileIsText (file.FilePath, file.MimeType))
-					yield break;
+				if (!desktopService.GetFileIsText (file.FilePath, file.MimeType))
+					return list;
 			}
 
 			if (!string.IsNullOrEmpty (file.MimeType)) {
-				if (!IdeApp.DesktopService.GetMimeTypeIsText (file.MimeType))
-					yield break;
+				if (!desktopService.GetMimeTypeIsText (file.MimeType))
+					return list;
 			}
 
-			yield return new DocumentControllerDescription {
+			return list.Add (new DocumentControllerDescription {
 				 Name = GettextCatalog.GetString ("Source Code Editor"),
 				 Role = DocumentControllerRole.Source,
 				 CanUseAsDefault = true
-			};
+			});
 		}
 
 		public override Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
-			return Task.FromResult< DocumentController> (new TextEditorViewContent ());
+			return Task.FromResult<DocumentController> (new TextEditorViewContent ());
 		}
 
 		public override string Id => "MonoDevelop.Ide.Editor.TextEditorDisplayBinding";

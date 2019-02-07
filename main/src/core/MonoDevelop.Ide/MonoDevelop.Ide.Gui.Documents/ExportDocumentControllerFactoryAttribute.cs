@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			throw new NotImplementedException ();
 		}
 
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (ModelDescriptor modelDescriptor)
 		{
 			yield break;
 		}

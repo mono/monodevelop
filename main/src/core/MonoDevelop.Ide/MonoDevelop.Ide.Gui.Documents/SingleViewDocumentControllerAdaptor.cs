@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Task.FromResult< DocumentController> (new SingleViewDocumentControllerAdaptor (binding, content));
 		}
 
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor file)
 		{
 			foreach (var binding in IdeApp.Services.DisplayBindingService.GetDisplayBindings (file.FilePath, file.MimeType, file.Owner as Project).OfType<IViewDisplayBinding> ())
 				yield return new BindingDocumentControllerDescription {
