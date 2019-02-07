@@ -418,7 +418,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (annotation != null)
 					TooltipText = GetCommitMessage (startLine - 1, true);
 
-				SetHighligh (annotation, startLine, evnt.Y, highlightAnnotation != annotation);
+				SetHighlight (annotation, startLine, evnt.Y, highlightAnnotation != annotation);
 
 				return base.OnMotionNotifyEvent (evnt);
 			}
@@ -798,20 +798,13 @@ namespace MonoDevelop.VersionControl.Views
 			internal Annotation GetAnnotationFromLine (int startLine) =>
 				startLine > 0 && startLine <= annotations.Count ? annotations [startLine - 1] : null;
 
-			internal void SetHighligh (Annotation annotation, int line, double y, bool needsRedraw)
+			internal void SetHighlight (Annotation annotation, int line, double y, bool needsRedraw)
 			{
 				highlightPositon = y;
 				highlightAnnotation = annotation;
 				if (needsRedraw) {
 					widget.QueueDraw ();
 				}
-			}
-
-			internal void Hightligh (int line)
-			{
-				var y = widget.editor.LineToY (line);
-			 	var annotation = GetAnnotationFromLine (line);
-				SetHighligh (annotation, line, y, true);
 			}
 		}	
 	}
