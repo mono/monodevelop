@@ -36,6 +36,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Find.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
