@@ -13,5 +13,7 @@ namespace Microsoft.VisualStudio.Text.Editor
         {
             get;
         }
+
+        void Focus();
 	}
 }

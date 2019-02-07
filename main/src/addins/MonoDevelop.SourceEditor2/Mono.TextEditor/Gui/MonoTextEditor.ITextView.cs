@@ -608,6 +608,10 @@ namespace Mono.TextEditor
 		}
 
 		public ITextViewLineSource FormattedLineSource { get; } = null;
+
+		public void Focus ()
+		{
+		}
 #endif
 	}
 }
