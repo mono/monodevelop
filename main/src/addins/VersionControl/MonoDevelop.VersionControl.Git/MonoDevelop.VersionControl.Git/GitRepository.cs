@@ -315,7 +315,7 @@ namespace MonoDevelop.VersionControl.Git
 				return new GitRevision [0];
 
 			var sinceRev = since != null ? ((GitRevision)since).Commit : null;
-			IEnumerable<Commit> commits = repository.Commits;
+			IEnumerable<Commit> commits = repository.Commits.QueryBy (new CommitFilter { SortBy = CommitSortStrategies.Topological });
 			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
 				commits = commits.Where (c => {

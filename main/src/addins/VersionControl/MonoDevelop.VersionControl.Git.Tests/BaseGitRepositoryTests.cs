@@ -97,7 +97,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		protected override void CheckLog (Repository repo)
 		{
 			int index = 2;
-			foreach (Revision rev in Repo.GetHistory (LocalPath, null))
+			var history = Repo.GetHistory (LocalPath, null);
+			Assert.AreEqual (index + 1, history.Length);
+			foreach (Revision rev in history)
 				Assert.AreEqual (String.Format ("Commit #{0}\n", index--), rev.Message);
 		}
 
