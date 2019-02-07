@@ -83,7 +83,7 @@ namespace MonoDevelop.DesignerSupport
 							if (currentCustomWidget != null) {
 								ppad.UseCustomWidget (currentCustomWidget);
 								if (lastCustomProvider is IPropertyPadCustomizer customizer)
-									customizer.Customize (pad.PadWindow, null);
+									customizer.Customize (ppad.PadWindow, null);
 							}
 						} catch (Exception ex) {
 							LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
