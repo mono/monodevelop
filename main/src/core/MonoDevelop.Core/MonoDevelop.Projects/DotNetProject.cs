@@ -1916,7 +1916,7 @@ namespace MonoDevelop.Projects
 			bool externalConsole = false, pauseConsole = false;
 
 			if (executionCommand is ProcessExecutionCommand processExecutionCommand) {
-				if (!Directory.Exists (processExecutionCommand.WorkingDirectory)) {
+				if (!string.IsNullOrEmpty (processExecutionCommand.WorkingDirectory) && !Directory.Exists (processExecutionCommand.WorkingDirectory)) {
 					monitor.ReportError (GettextCatalog.GetString ("Can not execute. The run configuration working directory doesn't exist at {0}", processExecutionCommand.WorkingDirectory), null);
 					return;
 				}
