@@ -253,6 +253,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			disposed = true;
 
+			var cacheService = Services.GetService<IWorkspaceCacheService> ();
+			if (cacheService != null)
+				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
+
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
