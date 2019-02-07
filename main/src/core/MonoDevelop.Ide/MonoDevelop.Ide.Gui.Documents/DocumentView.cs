@@ -27,25 +27,35 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Shell;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
 	/// <summary>
 	/// Base type for views that can show the content of documents
 	/// </summary>
-	public class DocumentView : ICommandDelegator, IDisposable
+	public abstract class DocumentView : ICommandDelegator, IDocumentViewContentCollectionListener, IDisposable
 	{
 		string title;
 		string accessibilityDescription;
 		Xwt.Drawing.Image icon;
-		DocumentView activeChildView;
+		DocumentViewContent activeChildView;
 		IShellDocumentViewItem shellView;
+		IShellDocumentViewContainer attachmentsContainer;
+		IShellDocumentViewItem mainShellView;
+		DocumentView activeAttachedView;
+		internal IWorkbenchWindow window;
 
 		/// <summary>
 		/// Raised when the active view in this hierarchy of views changes
 		/// </summary>
 		public EventHandler ActiveViewInHierarchyChanged;
 		private DocumentController sourceController;
+
+		public DocumentView ()
+		{
+			AttachedViews.AttachListener (this);
+		}
 
 		/// <summary>
 		/// The controller that was used to create this view
@@ -86,23 +96,36 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		public DocumentView ActiveViewInHierarchy {
+		public DocumentViewContent ActiveViewInHierarchy {
 			get => activeChildView;
 			set {
 				if (value != activeChildView) {
 					activeChildView = value;
 					ActiveViewInHierarchyChanged?.Invoke (this, EventArgs.Empty);
-					if (Parent?.ActiveView == this)
-						Parent.ActiveViewInHierarchy = value;
+					if (Parent != null) {
+						if (Parent is DocumentViewContainer container) {
+							if (container.ActiveView == this)
+								Parent.ActiveViewInHierarchy = value;
+						} else
+							Parent.ActiveViewInHierarchy = value; // Must be an attached view
+					}
 				}
 			}
+		}
+
+		internal void UpdateActiveViewInHierarchy ()
+		{
+		}
+
+		internal virtual void OnActivated ()
+		{
 		}
 
 		/// <summary>
 		/// Container that contains this view
 		/// </summary>
 		/// <value>The parent.</value>
-		public DocumentViewContainer Parent { get; internal set; }
+		public DocumentView Parent { get; internal set; }
 
 		internal IShellDocumentViewItem ShellView {
 			get {
@@ -114,13 +137,41 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public void SetActive ()
 		{
+			if (AttachedViews.Count > 0 && activeAttachedView != this) {
+				if (attachmentsContainer != null)
+					attachmentsContainer.ActiveView = mainShellView;
+				else {
+					activeAttachedView = this;
+					activeAttachedView.OnActivated ();
+				}
+				return;
+			}
 			if (Parent != null)
-				Parent.ActiveView = this;
+				Parent.SetActiveChild (this);
+		}
+
+		public void BringToFront ()
+		{
+			SetActive ();
+			if (Parent is DocumentViewContainer)
+				Parent.SetActive ();
 		}
 
 		public void Dispose ()
 		{
 			OnDispose ();
+		}
+
+		internal virtual void SetActiveChild (DocumentView child)
+		{
+			if (AttachedViews.Contains (child)) {
+				if (attachmentsContainer != null) {
+					attachmentsContainer.ActiveView = child.ShellView;
+				} else {
+					activeAttachedView = child;
+					activeAttachedView.OnActivated ();
+				}
+			}
 		}
 
 		void UpdateTitle ()
@@ -129,7 +180,91 @@ namespace MonoDevelop.Ide.Gui.Documents
 				shellView.SetTitle (title, icon, accessibilityDescription);
 		}
 
-		internal virtual void AttachToView (IShellDocumentViewItem shellView)
+		internal bool IsRoot { get; set; }
+
+		internal IShellDocumentViewItem CreateShellView (IWorkbenchWindow window)
+		{
+			if (shellView != null)
+				return shellView;
+			this.window = window;
+			mainShellView = OnCreateShellView (window);
+			if (IsRoot && AttachedViews.Count > 0) {
+				attachmentsContainer = window.CreateViewContainer ();
+				attachmentsContainer.InsertView (0, shellView);
+				int pos = 1;
+				foreach (var attachedView in AttachedViews)
+					attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
+				attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
+				shellView = attachmentsContainer;
+			} else
+				shellView = mainShellView;
+
+			AttachToView (shellView);
+			return shellView;
+		}
+
+		internal void ReplaceViewInParent ()
+		{
+			if (Parent == null) {
+				if (IsRoot)
+					window.SetRootView (shellView);
+			} else {
+				Parent.ReplaceChildView (this);
+			}
+		}
+
+		internal virtual bool ReplaceChildView (DocumentView documentView)
+		{
+			var index = AttachedViews.IndexOf (documentView);
+			if (index == -1)
+				return false;
+			if (attachmentsContainer != null)
+				attachmentsContainer.ReplaceView (index, documentView.CreateShellView (window));
+			return true;
+		}
+
+		internal virtual bool RemoveChild (DocumentView view)
+		{
+			return AttachedViews.Remove (view);
+		}
+
+		void UpdateAttachmentsContainer ()
+		{
+			if (!IsRoot)
+				return;
+			if (AttachedViews.Count > 0) {
+				if (attachmentsContainer == null && window != null) {
+					// Attachments notebook needs to be added
+					attachmentsContainer = window.CreateViewContainer ();
+					attachmentsContainer.InsertView (0, mainShellView);
+					int pos = 1;
+					foreach (var attachedView in AttachedViews)
+						attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
+					shellView = attachmentsContainer;
+					attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
+					ReplaceViewInParent ();
+				}
+			} else {
+				if (attachmentsContainer != null) {
+					// No more attachments, the attachments notebook can be removed
+					attachmentsContainer.RemoveView (0);
+					attachmentsContainer.ActiveViewChanged -= AttachmentsContainer_ActiveViewChanged;
+					attachmentsContainer.Dispose ();
+					shellView = mainShellView;
+					ReplaceViewInParent ();
+				}
+			}
+		}
+
+		void AttachmentsContainer_ActiveViewChanged (object sender, EventArgs e)
+		{
+			activeAttachedView = attachmentsContainer.ActiveView?.Item;
+			activeAttachedView.OnActivated ();
+		}
+
+		internal abstract IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window);
+
+		void AttachToView (IShellDocumentViewItem shellView)
 		{
 			this.shellView = shellView;
 			UpdateTitle ();
@@ -138,15 +273,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal virtual void DetachFromView ()
 		{
+			IsRoot = false;
+			window = null;
 			shellView = null;
 		}
 
 		protected virtual void OnDispose ()
 		{
 			if (Parent != null)
-				Parent.Views.Remove (this);
-			else if (shellView != null)
+				Parent.RemoveChild (this);
+			else if (IsRoot)
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
+			if (shellView != null)
+				shellView.Dispose ();
 		}
 
 		internal virtual IEnumerable<DocumentController> GetActiveControllerHierarchy ()
@@ -157,8 +296,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal virtual IEnumerable<DocumentController> GetAllControllers ()
 		{
+			var result = AttachedViews.SelectMany (v => v.GetAllControllers ());
 			if (SourceController != null)
-				yield return SourceController;
+				result = result.Concat (SourceController);
+			return result;
 		}
 
 		void SubscribeControllerEvents ()
@@ -180,6 +321,112 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void SourceController_AccessibilityDescriptionChanged (object sender, EventArgs e)
 		{
 			UpdateTitle ();
+		}
+
+		void IDocumentViewContentCollectionListener.ClearItems (DocumentViewContentCollection list)
+		{
+			OnClearItems (list);
+		}
+
+		void IDocumentViewContentCollectionListener.InsertItem (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			OnInsertItem (list, index, item);
+		}
+
+		void IDocumentViewContentCollectionListener.RemoveItem (DocumentViewContentCollection list, int index)
+		{
+			OnRemoveItem (list, index);
+		}
+
+		void IDocumentViewContentCollectionListener.SetItem (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			OnSetItem (list, index, item);
+		}
+
+		void IDocumentViewContentCollectionListener.ItemsCleared (DocumentViewContentCollection list)
+		{
+			OnItemsCleared (list);
+		}
+
+		void IDocumentViewContentCollectionListener.ItemInserted (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			OnItemInserted (list, index, item);
+		}
+
+		void IDocumentViewContentCollectionListener.ItemRemoved (DocumentViewContentCollection list, int index)
+		{
+			OnItemRemoved (list, index);
+		}
+
+		void IDocumentViewContentCollectionListener.ItemSet (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			OnItemSet (list, index, item);
+		}
+
+		internal virtual void OnClearItems (DocumentViewContentCollection list)
+		{
+			if (list == AttachedViews) {
+				foreach (var it in AttachedViews)
+					it.Parent = null;
+				if (attachmentsContainer != null)
+					attachmentsContainer.RemoveAllViews ();
+			}
+		}
+
+		internal virtual void OnInsertItem (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			if (list == AttachedViews) {
+				item.Parent = this;
+				if (attachmentsContainer != null)
+					attachmentsContainer.InsertView (index, item.CreateShellView (window));
+			}
+		}
+
+		internal virtual void OnRemoveItem (DocumentViewContentCollection list, int index)
+		{
+			if (list == AttachedViews) {
+				AttachedViews [index].Parent = null;
+				if (attachmentsContainer != null)
+					attachmentsContainer.RemoveView (index);
+			}
+		}
+
+		internal virtual void OnSetItem (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			if (list == AttachedViews) {
+				AttachedViews [index].Parent = null;
+				item.Parent = this;
+				if (attachmentsContainer != null)
+					attachmentsContainer.ReplaceView (index, item.CreateShellView (window));
+			}
+		}
+
+		internal virtual void OnItemsCleared (DocumentViewContentCollection list)
+		{
+			if (list == AttachedViews)
+				UpdateAttachmentsContainer ();
+		}
+
+		internal virtual void OnItemInserted (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			if (list == AttachedViews)
+				UpdateAttachmentsContainer ();
+		}
+
+		internal virtual void OnItemRemoved (DocumentViewContentCollection list, int index)
+		{
+			if (list == AttachedViews) {
+				UpdateAttachmentsContainer ();
+			}
+		}
+
+		internal virtual void OnItemSet (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+		}
+
+		public override string ToString ()
+		{
+			return GetType ().Name + " - " + Title;
 		}
 	}
 }

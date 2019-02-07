@@ -24,12 +24,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
+using Xwt.Drawing;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace IdeUnitTests
 {
-	public class MockShellDocumentView
+	public class MockShellDocumentView: IShellDocumentViewItem
 	{
-		public MockShellDocumentView ()
+		bool disposed;
+		object delegatedCommandTarget;
+		string title;
+		string accessibilityDescription;
+
+		DocumentView IShellDocumentViewItem.Item { get => throw new NotImplementedException (); set => throw new NotImplementedException (); }
+
+		public virtual Task Show ()
 		{
+			return Task.CompletedTask;
+		}
+
+		void IShellDocumentViewItem.Dispose ()
+		{
+			disposed = true;
+		}
+
+		void IShellDocumentViewItem.SetDelegatedCommandTarget (object target)
+		{
+			delegatedCommandTarget = target;
+		}
+
+		void IShellDocumentViewItem.SetTitle (string label, Image icon, string accessibilityDescription)
+		{
+			title = label;
+			this.accessibilityDescription = accessibilityDescription;
+		}
+
+		public virtual string Tag => "";
+
+		public override string ToString ()
+		{
+			var sb = new StringBuilder ();
+			Render (sb, 0);
+			return sb.ToString ();
+		}
+
+		protected virtual void Render (StringBuilder sb, int indent)
+		{
+			sb.Append (new string (' ', indent));
+			sb.Append ("[").Append (Tag).AppendLine ("]");
+			RenderProperty (sb, indent + 2, "Title", title);
+			RenderProperty (sb, indent + 2, "AccessibilityDescription", accessibilityDescription);
+		}
+
+		protected void RenderProperty (StringBuilder sb, int indent, string name, string value)
+		{
+			if (!string.IsNullOrEmpty (value)) {
+				sb.Append (new string (' ', indent));
+				sb.Append (name).Append (" = ").AppendLine (value);
+			}
 		}
 	}
 }

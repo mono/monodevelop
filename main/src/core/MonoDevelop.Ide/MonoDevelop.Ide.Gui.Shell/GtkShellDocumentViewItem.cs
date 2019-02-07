@@ -53,23 +53,14 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void SetTitle (string label, Xwt.Drawing.Image icon, string accessibilityDescription)
 		{
+			Title = label;
+			Icon = icon;
+			AccessibilityDescription = accessibilityDescription;
 		}
 
-		public static GtkShellDocumentViewItem CreateShellView (DocumentView item)
-		{
-			GtkShellDocumentViewItem view;
-
-			if (item is DocumentViewContent content) {
-				view = new GtkShellDocumentViewContent ();
-			} else if (item is DocumentViewContainer container) {
-				view = new GtkShellDocumentViewContainer ();
-			} else
-				throw new NotSupportedException ();
-
-			view.Item = item;
-			item.AttachToView (view);
-			return view;
-		}
+		public string Title { get; set; }
+		public Xwt.Drawing.Image Icon { get; set; }
+		public string AccessibilityDescription { get; set; }
 
 		protected override void OnRealized ()
 		{
@@ -110,9 +101,14 @@ namespace MonoDevelop.Ide.Gui.Shell
 			return delegatedCommandTarget;
 		}
 
+		void IShellDocumentViewItem.Dispose ()
+		{
+			DetachFromView ();
+			Destroy ();
+		}
+
 		public virtual void DetachFromView ()
 		{
-			Item.DetachFromView ();
 			Item = null;
 		}
 	}

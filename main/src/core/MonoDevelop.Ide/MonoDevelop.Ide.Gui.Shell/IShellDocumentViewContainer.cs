@@ -31,8 +31,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 {
 	internal interface IShellDocumentViewContainer : IShellDocumentViewItem
 	{
-		IShellDocumentViewItem InsertView (int position, DocumentView view);
-		IShellDocumentViewItem ReplaceView (int position, DocumentView view);
+		void InsertView (int position, IShellDocumentViewItem view);
+		void ReplaceView (int position, IShellDocumentViewItem view);
 		void RemoveView (int tabPos);
 		void ReorderView (int currentIndex, int newIndex);
 		void SetSupportedModes (DocumentViewContainerMode supportedModes);

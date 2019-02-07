@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void UpdateSelectedController ()
 		{
-			var currentView = view.ActiveViewInHierarchy;
+			DocumentView currentView = view.ActiveViewInHierarchy;
 			while (currentView != null && currentView.SourceController == null)
 				currentView = currentView.Parent;
 
@@ -544,6 +544,9 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			UnsubscribeControllerEvents ();
+			window.SetRootView (null);
+			view.IsRoot = false;
+			view.Dispose ();
 			controller.Dispose ();
 
 			window = null;

@@ -35,5 +35,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 		DocumentView Item { get; set; }
 		void SetTitle (string label, Xwt.Drawing.Image icon, string accessibilityDescription);
 		void SetDelegatedCommandTarget (object target);
+		void Dispose ();
 	}
 }

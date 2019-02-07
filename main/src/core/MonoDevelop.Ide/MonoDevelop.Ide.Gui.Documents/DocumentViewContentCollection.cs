@@ -43,38 +43,50 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected override void ClearItems ()
 		{
+			if (listener != null)
+				listener.ClearItems (this);
 			base.ClearItems ();
 			if (listener != null)
-				listener.ClearItems ();
+				listener.ItemsCleared (this);
 		}
 
 		protected override void InsertItem (int index, DocumentView item)
 		{
+			if (listener != null)
+				listener.InsertItem (this, index, item);
 			base.InsertItem (index, item);
 			if (listener != null)
-				listener.InsertItem (index, item);
+				listener.ItemInserted (this, index, item);
 		}
 
 		protected override void RemoveItem (int index)
 		{
+			if (listener != null)
+				listener.RemoveItem (this, index);
 			base.RemoveItem (index);
 			if (listener != null)
-				listener.RemoveItem (index);
+				listener.ItemRemoved (this, index);
 		}
 
 		protected override void SetItem (int index, DocumentView item)
 		{
+			if (listener != null)
+				listener.SetItem (this, index, item);
 			base.SetItem (index, item);
 			if (listener != null)
-				listener.SetItem (index, item);
+				listener.ItemSet (this, index, item);
 		}
 	}
 
 	interface IDocumentViewContentCollectionListener
 	{
-		void ClearItems ();
-		void InsertItem (int index, DocumentView item);
-		void RemoveItem (int index);
-		void SetItem (int index, DocumentView item);
+		void ClearItems (DocumentViewContentCollection list);
+		void InsertItem (DocumentViewContentCollection list, int index, DocumentView item);
+		void RemoveItem (DocumentViewContentCollection list, int index);
+		void SetItem (DocumentViewContentCollection list, int index, DocumentView item);
+		void ItemsCleared (DocumentViewContentCollection list);
+		void ItemInserted (DocumentViewContentCollection list, int index, DocumentView item);
+		void ItemRemoved (DocumentViewContentCollection list, int index);
+		void ItemSet (DocumentViewContentCollection list, int index, DocumentView item);
 	}
 }

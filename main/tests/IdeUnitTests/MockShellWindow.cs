@@ -73,5 +73,19 @@ namespace IdeUnitTests
 		{
 			Shell.ActiveWorkbenchWindow = this;
 		}
+
+		IShellDocumentViewContent IWorkbenchWindow.CreateViewContent ()
+		{
+			return new MockShellDocumentViewContent ();
+		}
+
+		IShellDocumentViewContainer IWorkbenchWindow.CreateViewContainer ()
+		{
+			return new MockShellDocumentViewContainer ();
+		}
+
+		void IWorkbenchWindow.SetRootView (IShellDocumentViewItem view)
+		{
+		}
 	}
 }

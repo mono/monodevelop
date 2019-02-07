@@ -24,12 +24,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
+using Xwt.Drawing;
+
 namespace IdeUnitTests
 {
-	public class MockShellDocumentViewContent
+	public class MockShellDocumentViewContent : MockShellDocumentView, IShellDocumentViewContent
 	{
-		public MockShellDocumentViewContent ()
+		Control control;
+		Func<CancellationToken, Task<Control>> contentLoader;
+		IPathedDocument pathedDocument;
+		MockShellDocumentToolbar toolbar;
+
+		public override string Tag => "Content";
+
+		public override async Task Show ()
 		{
+			await base.Show ();
+			control = await contentLoader (CancellationToken.None);
+		}
+
+		IShellDocumentToolbar IShellDocumentViewContent.GetToolbar ()
+		{
+			if (toolbar == null)
+				toolbar = new MockShellDocumentToolbar ();
+			return toolbar;
+		}
+
+		void IShellDocumentViewContent.HidePathBar ()
+		{
+			pathedDocument = null;
+		}
+
+		void IShellDocumentViewContent.ReloadContent ()
+		{
+			control = contentLoader (CancellationToken.None).Result;
+		}
+
+		void IShellDocumentViewContent.SetContentLoader (Func<CancellationToken, Task<Control>> contentLoader)
+		{
+			this.contentLoader = contentLoader;
+		}
+
+		void IShellDocumentViewContent.ShowPathBar (IPathedDocument pathedDocument)
+		{
+			this.pathedDocument = pathedDocument;
+		}
+
+		protected override void Render (StringBuilder sb, int indent)
+		{
+			base.Render (sb, indent);
 		}
 	}
 }

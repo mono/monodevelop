@@ -40,7 +40,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentViewContainerMode supportedModes;
 		IShellDocumentViewContainer shellViewContainer;
 		DocumentView activeView;
-		List<IShellDocumentViewItem> workbenchViews = new List<IShellDocumentViewItem> ();
+
+		public DocumentViewContainer ()
+		{
+			Views.AttachListener (this);
+		}
 
 		/// <summary>
 		/// Raised when the active view of this container changes
@@ -81,6 +85,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						throw new InvalidOperationException ("View doesn't belong to this container");
 					if (shellViewContainer == null) {
 						activeView = value;
+						activeView.OnActivated ();
 						ActiveViewChanged?.Invoke (this, EventArgs.Empty);
 					} else
 						shellViewContainer.ActiveView = value.ShellView;
@@ -92,27 +97,36 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		internal override void SetActiveChild (DocumentView child)
+		{
+			base.SetActiveChild (child);
+			if (Views.Contains (child))
+				ActiveView = child;
+		}
+
 		internal IShellDocumentViewContainer ShellViewContainer {
 			get {
 				return shellViewContainer;
 			}
 		}
 
+		internal override IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window)
+		{
+			shellViewContainer = window.CreateViewContainer ();
+			shellViewContainer.ActiveViewChanged += ShellViewContainer_ActiveViewChanged;
+			if (activeView != null)
+				shellViewContainer.ActiveView = activeView.ShellView;
+
+			for (int n = 0; n < Views.Count; n++) {
+				shellViewContainer.InsertView (n, Views [n].CreateShellView (window));
+			}
+			return shellViewContainer;
+		}
+
 		internal void SelectView (IShellDocumentViewItem shellView)
 		{
 			if (shellViewContainer != null)
 				shellViewContainer.SelectView (shellView);
-		}
-
-		internal override void AttachToView (IShellDocumentViewItem shellView)
-		{
-			base.AttachToView (shellView);
-			shellViewContainer = (IShellDocumentViewContainer)shellView;
-			Views.AttachListener (this);
-			shellViewContainer.ActiveViewChanged += ShellViewContainer_ActiveViewChanged;
-			UpdateViews ();
-			if (activeView != null)
-				shellViewContainer.ActiveView = activeView.ShellView;
 		}
 
 		internal override void DetachFromView ()
@@ -125,65 +139,91 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void ShellViewContainer_ActiveViewChanged (object sender, EventArgs e)
 		{
 			activeView = shellViewContainer.ActiveView?.Item;
+			activeView?.OnActivated ();
 			ActiveViewChanged?.Invoke (this, EventArgs.Empty);
-			ActiveViewInHierarchy = activeView;
 		}
 
-		void UpdateViews ()
+		internal override void OnActivated ()
 		{
-			int tabPos = 0;
-			foreach (var view in Views) {
-				var existingViewIndex = workbenchViews.FindIndex (v => v.Item == view);
+			base.OnActivated ();
+			ActiveViewInHierarchy = ActiveView?.ActiveViewInHierarchy;
+			if (Parent != null)
+				Parent.ActiveViewInHierarchy = ActiveViewInHierarchy;
+		}
 
-				if (tabPos >= workbenchViews.Count || existingViewIndex == -1) {
-					// New view
-					var newView = shellViewContainer.InsertView (tabPos, view);
-					workbenchViews.Insert (tabPos, newView);
-				} else if (workbenchViews [tabPos].Item != view) {
-					if (existingViewIndex != -1) {
-						// The view is in the collection, but not in the same position
-						shellViewContainer.ReorderView (existingViewIndex, tabPos);
-						var viewToReorder = workbenchViews [existingViewIndex];
-						workbenchViews.RemoveAt (existingViewIndex);
-						workbenchViews.Insert (tabPos, viewToReorder);
-					} else {
-						// The view is gone
-						shellViewContainer.RemoveView (tabPos);
-						workbenchViews.RemoveAt (tabPos);
-					}
+		internal override void OnClearItems (DocumentViewContentCollection list)
+		{
+			if (list == Views) {
+				foreach (var it in Views)
+					it.Parent = null;
+				if (shellViewContainer != null)
+					shellViewContainer.RemoveAllViews ();
+				else
+					ActiveView = null;
+			} else
+				base.OnClearItems (list);
+		}
+
+		internal override void OnInsertItem (DocumentViewContentCollection list, int index, DocumentView item)
+		{
+			if (list == Views) {
+				item.Parent = this;
+				if (shellViewContainer != null)
+					shellViewContainer.InsertView (index, item.CreateShellView (window));
+				else if (Views.Count == 0)
+					ActiveView = item;
+			} else
+				base.OnInsertItem (list, index, item);
+		}
+
+		internal override void OnRemoveItem (DocumentViewContentCollection list, int index)
+		{
+			if (list == Views) {
+				var item = Views [index];
+				item.Parent = null;
+				if (shellViewContainer != null)
+					shellViewContainer.RemoveView (index);
+				else if (ActiveView == item) {
+					if (index < Views.Count - 1)
+						ActiveView = Views [index + 1];
+					else if (index > 0)
+						ActiveView = Views [index - 1];
+					else
+						ActiveView = null;
 				}
-				tabPos++;
-			}
+			} else 
+				base.OnRemoveItem (list, index);
 		}
 
-		void IDocumentViewContentCollectionListener.ClearItems ()
+		internal override void OnSetItem (DocumentViewContentCollection list, int index, DocumentView item)
 		{
-			foreach (var it in workbenchViews)
-				it.Item.Parent = null;
-			workbenchViews.Clear ();
-			shellViewContainer.RemoveAllViews ();
+			if (list == Views) {
+				var oldItem = Views [index];
+				oldItem.Parent = null;
+				item.Parent = this;
+				if (shellViewContainer != null)
+					shellViewContainer.ReplaceView (index, item.CreateShellView (window));
+				else if (ActiveView == oldItem)
+					ActiveView = item;
+			} else
+				base.OnSetItem (list, index, item);
 		}
 
-		void IDocumentViewContentCollectionListener.InsertItem (int index, DocumentView item)
+		internal override bool ReplaceChildView (DocumentView documentView)
 		{
-			item.Parent = this;
-			var view = shellViewContainer.InsertView (index, item);
-			workbenchViews.Insert (index, view);
+			if (base.ReplaceChildView (documentView))
+				return true;
+			var index = Views.IndexOf (documentView);
+			if (index == -1)
+				return false;
+			if (shellViewContainer != null)
+				shellViewContainer.ReplaceView (index, documentView.CreateShellView (window));
+			return true;
 		}
 
-		void IDocumentViewContentCollectionListener.RemoveItem (int index)
+		internal override bool RemoveChild (DocumentView view)
 		{
-			workbenchViews [index].Item.Parent = null;
-			workbenchViews.RemoveAt (index);
-			shellViewContainer.RemoveView (index);
-		}
-
-		void IDocumentViewContentCollectionListener.SetItem (int index, DocumentView item)
-		{
-			workbenchViews [index].Item.Parent = null;
-			item.Parent = this;
-			var view = shellViewContainer.ReplaceView (index, item);
-			workbenchViews [index] = view;
+			return base.RemoveChild (view) || RemoveChild (view);
 		}
 
 		internal override IEnumerable<DocumentController> GetActiveControllerHierarchy ()

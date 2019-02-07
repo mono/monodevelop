@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using IdeUnitTests;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Shell;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ using UnitTests;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	public class DocumentManagerTests: TestBase
+	public class DocumentManagerTests : TestBase
 	{
 		BasicServiceProvider serviceProvider;
 		DocumentManager documentManager;
@@ -107,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var doc1 = await documentManager.OpenDocument (new TestController ());
 
 			Assert.AreEqual (1, documentManager.Documents.Count);
-			Assert.AreSame (doc1, documentManager.Documents[0]);
+			Assert.AreSame (doc1, documentManager.Documents [0]);
 
 			Assert.AreEqual (1, eventTracker.ActiveDocumentChangedEvents.Count);
 			Assert.AreSame (doc1, eventTracker.ActiveDocumentChangedEvents [0].Document);
@@ -243,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				sel = documentManager.GetDocument (file2);
 				Assert.AreSame (doc2, sel);
 
-				sel = documentManager.GetDocument (tempDir.Combine ("aa","bb","cc","dd","..","foo1.test"));
+				sel = documentManager.GetDocument (tempDir.Combine ("aa", "bb", "cc", "dd", "..", "foo1.test"));
 				Assert.AreSame (doc2, sel);
 
 				sel = documentManager.GetDocument (tempDir.Combine ("aa", "bb", "foo3.test"));
@@ -251,6 +252,110 @@ namespace MonoDevelop.Ide.Gui.Documents
 			} finally {
 				Directory.Delete (tempDir, true);
 			}
+		}
+
+		[Test]
+		public async Task ActiveViewInHierarchy ()
+		{
+			var controller = new TestController ();
+			await controller.Initialize (null, null);
+			var view = await controller.GetDocumentViewItem ();
+
+			Assert.AreEqual (view, view.ActiveViewInHierarchy);
+
+			var attached1 = new DocumentViewContent (c => Task.FromResult<Control> (null));
+			var attached2 = new DocumentViewContent (c => Task.FromResult<Control> (null));
+			view.AttachedViews.Add (attached1);
+			view.AttachedViews.Add (attached2);
+
+			Assert.AreEqual (view, view.ActiveViewInHierarchy);
+
+			attached1.SetActive ();
+			Assert.AreEqual (attached1, view.ActiveViewInHierarchy);
+			Assert.AreEqual (attached1, attached1.ActiveViewInHierarchy);
+			Assert.AreEqual (attached2, attached2.ActiveViewInHierarchy);
+
+			attached2.SetActive ();
+			Assert.AreEqual (attached2, view.ActiveViewInHierarchy);
+			Assert.AreEqual (attached1, attached1.ActiveViewInHierarchy);
+			Assert.AreEqual (attached2, attached2.ActiveViewInHierarchy);
+		}
+
+		[Test]
+		public void ActiveViewInHierarchy2 ()
+		{
+			var root = new DocumentViewContainer () { Title = "root" };
+			root.IsRoot = true;
+			Assert.IsNull (root.ActiveViewInHierarchy);
+			Assert.IsNull (root.ActiveView);
+
+			var attached1 = new DocumentViewContent (c => Task.FromResult<Control> (null)) { Title = "attached1" };
+			root.AttachedViews.Add (attached1);
+			Assert.IsNull (root.ActiveView);
+			Assert.IsNull (root.ActiveViewInHierarchy);
+
+			var view1 = new DocumentViewContent (c => Task.FromResult<Control> (null)) { Title = "view1" };
+			root.Views.Add (view1);
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (view1, root.ActiveViewInHierarchy);
+			Assert.AreEqual (view1, view1.ActiveViewInHierarchy);
+
+			attached1.SetActive ();
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (attached1, root.ActiveViewInHierarchy);
+
+			root.SetActive ();
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (view1, root.ActiveViewInHierarchy);
+
+			var view2 = new DocumentViewContent (c => Task.FromResult<Control> (null)) { Title = "view2" };
+			root.Views.Add (view2);
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (view1, root.ActiveViewInHierarchy);
+			Assert.AreEqual (view2, view2.ActiveViewInHierarchy);
+
+			var container = new DocumentViewContainer ();
+			root.Views.Add (container);
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (view1, root.ActiveViewInHierarchy);
+			Assert.IsNull (container.ActiveViewInHierarchy);
+
+			var subView1 = new DocumentViewContent (c => Task.FromResult<Control> (null)) { Title = "subView1" };
+			container.Views.Add (subView1);
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (view1, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView1, container.ActiveView);
+			Assert.AreEqual (subView1, container.ActiveViewInHierarchy);
+			Assert.AreEqual (subView1, subView1.ActiveViewInHierarchy);
+
+			var subView2 = new DocumentViewContent (c => Task.FromResult<Control> (null)) { Title = "subView2" };
+			container.Views.Add (subView2);
+			Assert.AreEqual (view1, root.ActiveView);
+			Assert.AreEqual (view1, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView1, container.ActiveView);
+			Assert.AreEqual (subView1, container.ActiveViewInHierarchy);
+			Assert.AreEqual (subView2, subView2.ActiveViewInHierarchy);
+
+			container.SetActive ();
+			Assert.AreEqual (container, root.ActiveView);
+			Assert.AreEqual (subView1, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView1, container.ActiveViewInHierarchy);
+
+			subView2.SetActive ();
+			Assert.AreEqual (subView2, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView2, container.ActiveViewInHierarchy);
+
+			view2.SetActive ();
+			Assert.AreEqual (view2, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView2, container.ActiveViewInHierarchy);
+
+			subView1.SetActive ();
+			Assert.AreEqual (view2, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView1, container.ActiveViewInHierarchy);
+
+			container.SetActive ();
+			Assert.AreEqual (subView1, root.ActiveViewInHierarchy);
+			Assert.AreEqual (subView1, container.ActiveViewInHierarchy);
 		}
 
 		// Test disposing view hierarchy disposes controllers
@@ -271,7 +376,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Task.FromResult<DocumentController> (new TestFileController ());
 		}
 
-		public override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
+		protected override IEnumerable<DocumentControllerDescription> GetSupportedControllers (FileDescriptor modelDescriptor)
 		{
 			if (modelDescriptor.FilePath.Extension == ".test") {
 				yield return new DocumentControllerDescription ("Test Source View", true, DocumentControllerRole.Source);

@@ -49,8 +49,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		bool showNotification;
 
-		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
-
 		public event EventHandler CloseRequested;
 		public event EventHandler<NotebookChangeEventArgs> NotebookChanged;
 		public event EventHandler TitleChanged;
@@ -81,16 +79,38 @@ namespace MonoDevelop.Ide.Gui.Shell
 			this.content = content;
 			this.tab = tabLabel;
 
-			view = GtkShellDocumentViewItem.CreateShellView (content.DocumentView);
-			view.Show ();
-			Add (view);
+			// The root view can have attached views, so we need a root container just in case
 
+			var container = new GtkShellDocumentViewContainer ();
+			container.SetSupportedModes (DocumentViewContainerMode.Tabs);
+			
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
 			controller.DocumentTitleChanged += SetTitleEvent;
 			controller.HasUnsavedChangesChanged += HandleDirtyChanged;
 
 			SetTitleEvent ();
+		}
+
+		public void SetRootView (IShellDocumentViewItem view)
+		{
+			if (Child != null)
+				Remove (Child);
+			if (view != null) {
+				var widget = (Gtk.Widget)view;
+				widget.Show ();
+				Add (widget);
+			}
+		}
+
+		public IShellDocumentViewContent CreateViewContent ()
+		{
+			return new GtkShellDocumentViewContent ();
+		}
+
+		public IShellDocumentViewContainer CreateViewContainer ()
+		{
+			return new GtkShellDocumentViewContainer ();
 		}
 
 		internal void SetDockNotebook (DockNotebook tabControl, DockNotebookTab tabLabel)
@@ -371,9 +391,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 		
 		void OnTitleChanged(EventArgs e)
 		{
-			if (controller.Model is FileModel fileModel)
-				fileTypeCondition.SetFileName (fileModel.FilePath);
-
 			SetDockNotebookTabTitle ();
 			if (TitleChanged != null) {
 				TitleChanged(this, e);

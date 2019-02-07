@@ -153,6 +153,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\FileDocumentControllerTests.cs" />
     <Compile Include="TestHelper.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentViewTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

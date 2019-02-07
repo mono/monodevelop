@@ -47,11 +47,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public DocumentViewContent (Func<CancellationToken,Task<Control>> contentLoader)
 		{
 			this.asyncContentLoader = contentLoader;
+			ActiveViewInHierarchy = this;
 		}
 
 		public DocumentViewContent (Func<Control> contentLoader)
 		{
 			ContentLoader = contentLoader;
+			ActiveViewInHierarchy = this;
+		}
+
+		internal override IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window)
+		{
+			shellContentView = window.CreateViewContent ();
+			shellContentView.SetContentLoader (AsyncContentLoader);
+			if (pathDoc != null)
+				shellContentView.ShowPathBar (pathDoc);
+			return shellContentView;
 		}
 
 		/// <summary>
@@ -116,20 +127,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 				shellContentView.HidePathBar ();
 		}
 
-		internal override void AttachToView (IShellDocumentViewItem shellView)
-		{
-			base.AttachToView (shellView);
-			shellContentView = (IShellDocumentViewContent)shellView;
-			shellContentView.SetContentLoader (AsyncContentLoader);
-			if (pathDoc != null)
-				shellContentView.ShowPathBar (pathDoc);
-		}
-
 		protected override void OnDispose ()
 		{
+			base.OnDispose ();
 			if (control != null)
 				control.Dispose ();
-			base.OnDispose ();
+		}
+
+		internal override void OnActivated ()
+		{
+			base.OnActivated ();
+			if (Parent != null)
+				Parent.ActiveViewInHierarchy = this;
 		}
 	}
 }

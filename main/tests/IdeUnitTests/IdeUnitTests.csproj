@@ -32,6 +32,11 @@
     <Compile Include="MockOutputProgressMonitor.cs" />
     <Compile Include="MockOperationConsole.cs" />
     <Compile Include="MockShellNotebook.cs" />
+    <Compile Include="MockShellDocumentViewContent.cs" />
+    <Compile Include="MockShellDocumentViewContainer.cs" />
+    <Compile Include="MockShellDocumentView.cs" />
+    <Compile Include="MockShellDocumentToolbar.cs" />
+    <Compile Include="MockViewBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

@@ -117,21 +117,19 @@ namespace MonoDevelop.Ide.Gui.Shell
 			base.DetachFromView ();
 		}
 
-		public IShellDocumentViewItem InsertView (int position, DocumentView view)
+		public void InsertView (int position, IShellDocumentViewItem shellView)
 		{
-			var workbenchView = CreateShellView (view);
-
+			var widget = (GtkShellDocumentViewContent)shellView;
 			if (mode == DocumentViewContainerMode.Tabs) {
-				var tab = new Tab (tabstrip, view.Title) { Tag = workbenchView };
+				var tab = new Tab (tabstrip, widget.Title) { Tag = shellView };
 				if (tab.Accessible != null)
-					tab.Accessible.Help = view.AccessibilityDescription;
+					tab.Accessible.Help = widget.AccessibilityDescription;
 				tab.Activated += TabActivated;
-				notebook.InsertPage (workbenchView, new Gtk.Label (), position);
+				notebook.InsertPage (widget, new Gtk.Label (), position);
 				tabstrip.InsertTab (position, tab);
 			} else {
-				paned.InsertView (position, workbenchView);
+				paned.InsertView (position, widget);
 			}
-			return workbenchView;
 		}
 
 		void TabActivated (object s, EventArgs args)
@@ -140,35 +138,24 @@ namespace MonoDevelop.Ide.Gui.Shell
 			SelectView ((IShellDocumentViewItem) tab.Tag);
 		}
 
-		public IShellDocumentViewItem ReplaceView (int position, DocumentView view)
+		public void ReplaceView (int position, IShellDocumentViewItem shellView)
 		{
-			var replacedView = GetViewAt (position);
-			IShellDocumentViewItem newView;
+			var newView = (GtkShellDocumentViewItem)shellView;
 
 			if (mode == DocumentViewContainerMode.Tabs) {
 				notebook.RemovePage (position);
-				newView = InsertView (position, view);
+				InsertView (position, newView);
 			} else {
-				var workbenchView = CreateShellView (view);
-				paned.ReplaceView (position, workbenchView);
-				newView = workbenchView;
+				paned.ReplaceView (position, newView);
 			}
-			replacedView.DetachFromView ();
-			replacedView.Destroy ();
-			return newView;
 		}
 
 		public void RemoveView (int tabPos)
 		{
-			var removed = GetViewAt (tabPos);
-
 			if (mode == DocumentViewContainerMode.Tabs)
 				notebook.RemovePage (tabPos);
 			else
 				paned.RemoveView (tabPos);
-
-			removed.DetachFromView ();
-			removed.Destroy ();
 		}
 
 		public void ReorderView (int currentIndex, int newIndex)
@@ -183,17 +170,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void RemoveAllViews ()
 		{
-			var allViews = GetAllViews ().ToList ();
-
 			if (mode == DocumentViewContainerMode.Tabs) {
 				while (notebook.NPages > 0)
 					notebook.RemovePage (notebook.NPages - 1);
 			} else {
 				paned.RemoveAllViews ();
-			}
-			foreach (var child in allViews) {
-				child.DetachFromView ();
-				child.Destroy ();
 			}
 		}
 

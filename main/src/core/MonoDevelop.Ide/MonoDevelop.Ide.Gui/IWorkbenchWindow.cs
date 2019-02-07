@@ -46,6 +46,11 @@ namespace MonoDevelop.Ide.Gui
 
 		void SelectWindow ();
 
+		IShellDocumentViewContent CreateViewContent ();
+		IShellDocumentViewContainer CreateViewContainer ();
+
+		void SetRootView (IShellDocumentViewItem view);
+
 		event EventHandler CloseRequested;
 		event EventHandler<NotebookChangeEventArgs> NotebookChanged;
 	}

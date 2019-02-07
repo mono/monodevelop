@@ -24,11 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
+using Xwt.Drawing;
+
 namespace IdeUnitTests
 {
-	public class MockShellDocumentViewContainer
+	public class MockShellDocumentViewContainer : MockShellDocumentView, IShellDocumentViewContainer
 	{
-		public MockShellDocumentViewContainer ()
+		public override string Tag => "Container";
+
+		IShellDocumentViewItem IShellDocumentViewContainer.ActiveView { get => throw new NotImplementedException (); set => throw new NotImplementedException (); }
+
+		public event EventHandler ActiveViewChanged;
+
+		void IShellDocumentViewContainer.InsertView (int position, IShellDocumentViewItem view)
+		{
+		}
+
+		void IShellDocumentViewContainer.RemoveAllViews ()
+		{
+		}
+
+		void IShellDocumentViewContainer.RemoveView (int tabPos)
+		{
+		}
+
+		void IShellDocumentViewContainer.ReorderView (int currentIndex, int newIndex)
+		{
+		}
+
+		void IShellDocumentViewContainer.ReplaceView (int position, IShellDocumentViewItem view)
+		{
+		}
+
+		void IShellDocumentViewContainer.SelectView (IShellDocumentViewItem view)
+		{
+		}
+
+		void IShellDocumentViewContainer.SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
 		}
 	}
