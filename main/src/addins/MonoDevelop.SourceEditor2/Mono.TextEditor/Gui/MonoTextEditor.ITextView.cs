@@ -422,7 +422,8 @@ namespace Mono.TextEditor
 
 		static readonly string[] allowedTextViewCreationListeners = {
 			"MonoDevelop.SourceEditor.Braces.BraceCompletionManagerFactory",
-			"MonoDevelop.SourceEditor.CurrentLineSpaceReservationAgent.CurrentLineSpaceReservationAgent_ViewCreationListener"
+			"MonoDevelop.SourceEditor.CurrentLineSpaceReservationAgent.CurrentLineSpaceReservationAgent_ViewCreationListener",
+			"Microsoft.VisualStudio.Text.AdornmentLibrary.Squiggles.Implementation.WebToolingErrorProviderFactory"
 		};
 
 		private void BindContentTypeSpecificAssets (IContentType beforeContentType, IContentType afterContentType)
