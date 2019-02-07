@@ -646,7 +646,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = DebuggingService.IsDebuggingSupported;
+			info.Visible = DebuggingService.IsDebuggingSupported && DebuggingService.IsDebugging;
 			info.Enabled = DebuggingService.CurrentFrame != null;
 		}
 	}

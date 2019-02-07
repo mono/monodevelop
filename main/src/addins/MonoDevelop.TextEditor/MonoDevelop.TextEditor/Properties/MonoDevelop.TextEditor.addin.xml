@@ -167,13 +167,14 @@
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<SeparatorItem id = "Separator1" />
+		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
-		<SeparatorItem id = "Separator2" />
+		<SeparatorItem id = "Separator3" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment" />
-		<SeparatorItem id = "Separator3" />
+		<SeparatorItem id = "Separator4" />
 	</Extension>
 <!--
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">

@@ -29,9 +29,13 @@ namespace MonoDevelop.Debugger
 		public static SnapshotSpan SpanFromMDColumnAndLine (this ITextSnapshot snapshot, int line, int column, int endLine, int endColumn)
 		{
 			var startSnapLine = snapshot.GetLineFromLineNumber (line - 1);
-			var endSnapLine = line == endLine ? startSnapLine : snapshot.GetLineFromLineNumber (endLine - 1);
-			var startPos = startSnapLine.Start + column - 1;
-			return new SnapshotSpan (startPos, endSnapLine.Start + endColumn - 1 - startPos);
+			if (line > 0 && column > 0 && endLine > 0 && endColumn > 0) {
+				var endSnapLine = line == endLine ? startSnapLine : snapshot.GetLineFromLineNumber (endLine - 1);
+				var startPos = startSnapLine.Start + column - 1;
+				return new SnapshotSpan (startPos, endSnapLine.Start + endColumn - 1 - startPos);
+			}
+			//if we don't have full info return whole line
+			return startSnapLine.Extent;
 		}
 
 		public static string GetFilePathOrNull (this ITextBuffer textBuffer)

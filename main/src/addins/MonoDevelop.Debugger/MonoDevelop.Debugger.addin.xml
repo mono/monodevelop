@@ -231,6 +231,13 @@
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		</Condition>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" insertafter="Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement" insertafter="MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" insertafter="MonoDevelop.Debugger.DebugCommands.ShowNextStatement" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" insertafter="MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/ExecutionModes/Debug">
 		<ModeSetType id="MonoDevelop.Debugger" class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
