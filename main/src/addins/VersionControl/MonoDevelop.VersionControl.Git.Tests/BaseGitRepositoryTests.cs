@@ -548,7 +548,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			try {
 				toCheckout.Checkout (directory, true, new ProgressMonitor ());
 			} catch (VersionControlException e) {
-				Assert.That (e.InnerException, Is.InstanceOf<LibGit2Sharp.NotFoundException> ());
+				// libgit2 < 0.26 will throw NotFoundException (result -3)
+				// libgit2 >= 0.26 will throw generic LibGit2SharpException (result -1), assert the expected message
+				Assert.That (e.InnerException, Is.InstanceOf<LibGit2Sharp.NotFoundException> ().Or.Message.EqualTo("reference 'refs/heads/master' not found"));
 				return;
 			} finally {
 				Directory.Delete (directory, true);
