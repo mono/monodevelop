@@ -154,6 +154,7 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 
 				var file = CreateFileModel ();
 				await file.LinkToFile (fileName);
+				Assert.AreEqual (fileName, file.FilePath.ToString());
 				Assert.IsFalse (file.IsNew);
 				Assert.IsFalse (file.IsLoaded);
 				Assert.IsFalse (file.HasUnsavedChanges);

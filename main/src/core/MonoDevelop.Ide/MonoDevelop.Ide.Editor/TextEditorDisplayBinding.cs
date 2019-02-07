@@ -60,16 +60,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public override Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
-			TextEditor editor;
-
-			// HACK: CreateNewEditor really needs to know whether the document exists (& should be loaded)
-			// or we're creating an empty document with the given file name & mime type.
-			//
-			// That information could be added to FilePath but fileName is converted to a string below
-			// which means the information is lost.
-			editor = TextEditorFactory.CreateNewEditor (file.FilePath, file.MimeType);
-
-			return Task.FromResult< DocumentController> (editor.GetViewContent ());
+			return Task.FromResult< DocumentController> (new TextEditorViewContent ());
 		}
 
 		public override string Id => "MonoDevelop.Ide.Editor.TextEditorDisplayBinding";

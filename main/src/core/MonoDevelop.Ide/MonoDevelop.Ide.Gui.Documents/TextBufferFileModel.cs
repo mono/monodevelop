@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected override async Task OnLoad ()
 			{
+				MimeType = (await Runtime.GetService<DesktopService> ()).GetMimeTypeForUri (FilePath);
 				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
 
 				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
@@ -159,6 +160,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			void TextDocument_DirtyStateChanged (object sender, EventArgs e)
 			{
 				HasUnsavedChanges = textDocument.IsDirty;
+			}
+
+			protected internal override Task OnDispose ()
+			{
+				textDocument?.Dispose ();
+				return base.OnDispose ();
 			}
 		}
 	}

@@ -44,14 +44,19 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using Microsoft.VisualStudio.Platform;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace Mono.TextEditor
 {
 	class TextDocument : ITextDocument, IDisposable
 	{
-		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; }
-		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
+		bool vsTextDocumentOwned;
 		Microsoft.VisualStudio.Text.ITextSnapshot currentSnapshot;
+		TextBufferFileModel textBufferFileModel;
+
+		public Microsoft.VisualStudio.Text.ITextDocument VsTextDocument { get; private set; }
+
+		public Microsoft.VisualStudio.Text.ITextBuffer TextBuffer { get { return this.VsTextDocument.TextBuffer; } }
 
 		bool lineEndingMismatch;
 
@@ -224,32 +229,46 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected void Initialize()
+		void AttachTextBuffer (Microsoft.VisualStudio.Text.ITextDocument textDocument, bool owned)
 		{
+			DetachTextBuffer ();
+			vsTextDocumentOwned = owned;
+			this.VsTextDocument = textDocument;
 			this.currentSnapshot = this.TextBuffer.CurrentSnapshot;
-
-			this.TextBuffer.Properties.AddProperty(typeof(ITextDocument), this);
+			this.TextBuffer.Properties.AddProperty (typeof (ITextDocument), this);
 			this.TextBuffer.Changed += this.OnTextBufferChanged;
 			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate += OnTextBufferChangedImmediate;
 			this.TextBuffer.ContentTypeChanged += this.OnTextBufferContentTypeChanged;
-
 			this.VsTextDocument.FileActionOccurred += this.OnTextDocumentFileActionOccurred;
+		}
 
+		void DetachTextBuffer ()
+		{
+			if (VsTextDocument != null) {
+				(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
+				this.TextBuffer.Changed -= this.OnTextBufferChanged;
+				this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
+				this.TextBuffer.Properties.RemoveProperty (typeof (ITextDocument));
+				this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
+				if (vsTextDocumentOwned) {
+					vsTextDocumentOwned = false;
+					this.VsTextDocument.Dispose ();
+				}
+			}
+		}
+
+		protected void Initialize()
+		{
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved;
 			this.diffTracker.SetTrackDocument(this);
 		}
 
 		public void Dispose()
 		{
-			(this.TextBuffer as Microsoft.VisualStudio.Text.Implementation.BaseBuffer).ChangedImmediate -= OnTextBufferChangedImmediate;
-			this.TextBuffer.Changed -= this.OnTextBufferChanged;
-			this.TextBuffer.ContentTypeChanged -= this.OnTextBufferContentTypeChanged;
-			this.TextBuffer.Properties.RemoveProperty(typeof(ITextDocument));
-			this.VsTextDocument.FileActionOccurred -= this.OnTextDocumentFileActionOccurred;
 			SyntaxMode = null;
 
-			// Dispose this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
-			this.VsTextDocument.Dispose ();
+			// Dispose ITextDocument this after SyntaxMode is set, otherwise we'll query the VsTextDocument when setting SyntaxMode.
+			DetachTextBuffer ();
 		}
 
 		private void OnTextBufferChangedImmediate (object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs args)
@@ -325,6 +344,17 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
+		public TextDocument (TextBufferFileModel textBufferFileModel)
+		{
+			var doc = textBufferFileModel.TextDocument;
+
+			AttachTextBuffer (doc, false);
+			this.Initialize ();
+
+			this.textBufferFileModel = textBufferFileModel;
+			textBufferFileModel.TextBufferInstanceChanged += TextBufferFileModel_TextBufferInstanceChanged;
+		}
+
 		public TextDocument (string fileName, string mimeType)
 		{
 			var contentType = (mimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType(fileName, mimeType);
@@ -333,9 +363,10 @@ namespace Mono.TextEditor
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
 			                                                                                 contentType);
 			
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
-			this.VsTextDocument.Encoding = enc;
+			var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, fileName);
+			doc.Encoding = enc;
 
+			AttachTextBuffer (doc, true);
 			this.Initialize();
 		}
 
@@ -345,10 +376,17 @@ namespace Mono.TextEditor
 			var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text ?? string.Empty,
 																							contentType);
 
-			this.VsTextDocument = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, fileName ?? string.Empty);
-			this.VsTextDocument.Encoding = TextFileUtility.DefaultEncoding;
+			var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument(buffer, fileName ?? string.Empty);
+			doc.Encoding = TextFileUtility.DefaultEncoding;
 
+			AttachTextBuffer (doc, true);
 			this.Initialize();
+		}
+
+		void TextBufferFileModel_TextBufferInstanceChanged (object sender, EventArgs e)
+		{
+			var doc = textBufferFileModel.TextDocument;
+			AttachTextBuffer (doc, false);
 		}
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)

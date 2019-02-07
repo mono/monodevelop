@@ -48,54 +48,91 @@ namespace MonoDevelop.Ide.Editor
 	/// </summary>
 	class TextEditorViewContent : FileDocumentController, ICommandRouter
 	{
-		readonly TextEditor textEditor;
-		readonly ITextEditorImpl textEditorImpl;
+		TextEditor textEditor;
+		ITextEditorImpl textEditorImpl;
 		DocumentContext documentContext;
+		FileDescriptor fileDescriptor;
 
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
+		protected override Type FileModelType => typeof (TextBufferFileModel);
+
+		public TextEditorViewContent ()
+		{
+		}
+
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
 		{
-			if (textEditor == null)
-				throw new ArgumentNullException (nameof (textEditor));
-			if (textEditorImpl == null)
-				throw new ArgumentNullException (nameof (textEditorImpl));
-			this.textEditor = textEditor;
-			this.textEditorImpl = textEditorImpl;
-			textEditorImpl.DocumentController = this;
-			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
-			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			textEditorImpl.DirtyChanged += ViewContent_DirtyChanged; 
-			textEditor.Options = DefaultSourceEditorOptions.Instance.Create ();
-			this.TabPageLabel = GettextCatalog.GetString ("Source");
+			Init (textEditor, textEditorImpl).Wait ();
 		}
 
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
+			fileDescriptor = modelDescriptor as FileDescriptor;
 			await base.OnInitialize (modelDescriptor, status);
+		}
+
+		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
+		{
+			if (textEditor == null) {
+				await Model.Load (); 
+				var editor = TextEditorFactory.CreateNewEditor ((TextBufferFileModel)Model);
+				var impl = editor.Implementation;
+				await Init (editor, impl);
+				HasUnsavedChanges = impl.IsDirty;
+			}
+			return textEditor;
+		}
+
+		Task Init (TextEditor editor, ITextEditorImpl editorImpl)
+		{
+			this.textEditor = editor;
+			this.textEditorImpl = editorImpl;
+			editorImpl.DocumentController = this;
+			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
+			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
+			editorImpl.DirtyChanged += ViewContent_DirtyChanged;
+			editor.Options = DefaultSourceEditorOptions.Instance.Create ();
+			this.TabPageLabel = GettextCatalog.GetString ("Source");
+
+			if (documentContext != null)
+				textEditor.InitializeExtensionChain (documentContext);
+
+			// Editor extensions can provide additional content
+			OnContentChanged ();
+
+			if (IsNewDocument)
+				return LoadNew ();
+			else
+				return Load (false);
 		}
 
 		protected override void OnContentChanged ()
 		{
-			base.OnContentChanged ();
 			if (documentContext == null) {
-			var context = GetContent<DocumentContext> ();
+				var context = GetContent<DocumentContext> ();
 				if (context != null) {
 					documentContext = context;
-					textEditor.InitializeExtensionChain (documentContext);
+					if (textEditor != null)
+						textEditor.InitializeExtensionChain (documentContext);
 				}
 			}
+			// Calling base class after initializing the editor extension chain
+			// so that it picks additional content from the extensionasdfas dfasdf asdf asdf asdf asdf sadfsaf
+			base.OnContentChanged ();
 		}
 
 		protected override void OnFileNameChanged ()
 		{
 			base.OnFileNameChanged ();
-			if (FilePath != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
-				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditor.FileName = FilePath;
-			if (documentContext != null)
-				textEditor.InitializeExtensionChain (documentContext);
-			UpdateTextEditorOptions (null, null);
+			if (textEditor != null) {
+				if (FilePath != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
+					AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
+				textEditor.FileName = FilePath;
+				if (documentContext != null)
+					textEditor.InitializeExtensionChain (documentContext);
+				UpdateTextEditorOptions (null, null);
+			}
 		}
 
 		void ViewContent_DirtyChanged (object sender, EventArgs e)
@@ -262,8 +299,10 @@ namespace MonoDevelop.Ide.Editor
 		protected override void OnOwnerChanged ()
 		{
 			base.OnOwnerChanged ();
-			textEditorImpl.Project = Owner as Project;
-			UpdateTextEditorOptions (null, null);
+			if (textEditorImpl != null) {
+				textEditorImpl.Project = Owner as Project;
+				UpdateTextEditorOptions (null, null);
+			}
 		}
 
 		protected override ProjectReloadCapability OnGetProjectReloadCapability ()
@@ -275,31 +314,22 @@ namespace MonoDevelop.Ide.Editor
 		{
 			foreach (var r in base.OnGetContents (type))
 				yield return r;
-			if (type.IsAssignableFrom (typeof (TextEditor))) {
-				yield return textEditor;
-				yield break;
-			}
+			if (textEditorImpl != null) {
+				if (type.IsAssignableFrom (typeof (TextEditor))) {
+					yield return textEditor;
+					yield break;
+				}
 
-			var ext = textEditorImpl.EditorExtension;
-			while (ext != null) {
-				foreach (var r in ext.OnGetContents (type))
+				var ext = textEditorImpl.EditorExtension;
+				while (ext != null) {
+					foreach (var r in ext.OnGetContents (type))
+						yield return r;
+					ext = ext.Next;
+				}
+
+				foreach (var r in textEditorImpl.GetContents (type))
 					yield return r;
-				ext = ext.Next;
 			}
-
-			foreach (var r in textEditorImpl.GetContents (type))
-				yield return r;
-		}
-
-		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
-		{
-			if (IsNewDocument)
-				await LoadNew ();
-			else
-				await Load (false);
-
-			HasUnsavedChanges = textEditorImpl.IsDirty;
-			return textEditor;
 		}
 
 		public string TabAccessibilityDescription {
@@ -315,21 +345,24 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (isDisposed)
 				return;
-			
-			base.Dispose ();
 
 			isDisposed = true;
-			EditorConfigService.RemoveEditConfigContext (textEditor.FileName).Ignore ();
-			CancelDocumentParsedUpdate ();
-			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
-			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
-			textEditor.TextChanged -= HandleTextChanged;
-			textEditorImpl.DirtyChanged -= ViewContent_DirtyChanged; ;
 
-			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
-			RemovePolicyChangeHandler ();
-			RemoveAutoSaveTimer ();
-			textEditor.Dispose ();
+			if (textEditorImpl != null) {
+				EditorConfigService.RemoveEditConfigContext (textEditor.FileName).Ignore ();
+				CancelDocumentParsedUpdate ();
+				textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+				textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
+				textEditor.TextChanged -= HandleTextChanged;
+				textEditorImpl.DirtyChanged -= ViewContent_DirtyChanged; ;
+
+				DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
+				RemovePolicyChangeHandler ();
+				RemoveAutoSaveTimer ();
+				textEditor.Dispose ();
+			}
+
+			base.OnDispose ();
 		}
 
 		#endregion

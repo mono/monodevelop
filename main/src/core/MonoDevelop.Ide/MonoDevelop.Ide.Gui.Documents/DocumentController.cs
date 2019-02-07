@@ -856,6 +856,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnDispose ()
 		{
+			if (Model != null)
+				Model.Dispose ();
 		}
 
 		protected virtual void OnDiscardChanges ()

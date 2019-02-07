@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				compositionManager = await serviceProvider.GetService<CompositionManager> ();
 				emptyWorkspace = new MonoDevelopWorkspace (compositionManager.HostServices, null, this);
+				await emptyWorkspace.Initialize ();
 			} catch (Exception e) {
 				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
 			}
@@ -167,9 +168,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			filesSkippedInParseThread = filesSkippedInParseThread.Concat (new string [] { fileName }).ToArray ();
 		}
 
-		internal MonoDevelopWorkspace CreateEmptyWorkspace ()
+		internal async Task<MonoDevelopWorkspace> CreateEmptyWorkspace ()
 		{
-			return new MonoDevelopWorkspace (compositionManager.HostServices, null, this);
+			var ws = new MonoDevelopWorkspace (compositionManager.HostServices, null, this);
+			await ws.Initialize ();
+			return ws;
 		}
 
 		public TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)

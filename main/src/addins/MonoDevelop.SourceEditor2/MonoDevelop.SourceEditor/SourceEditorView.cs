@@ -174,6 +174,12 @@ namespace MonoDevelop.SourceEditor
 			this.textEditorType = textEditorType;
 		}
 
+		public SourceEditorView (TextBufferFileModel textBufferFileModel, TextEditorType textEditorType = TextEditorType.Default)
+			: this (new DocumentAndLoaded (textBufferFileModel))
+		{
+			this.textEditorType = textEditorType;
+		}
+
 		public SourceEditorView (IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
 			: this (new DocumentAndLoaded (document))
 		{
@@ -272,6 +278,18 @@ namespace MonoDevelop.SourceEditor
 									? new TextDocument (fileName, mimeType)
 									: new TextDocument (string.Empty, fileName, mimeType);
 
+					this.Loaded = true;
+				}
+			}
+
+			public DocumentAndLoaded (TextBufferFileModel textBufferFileModel)
+			{
+				if (AutoSave.AutoSaveExists (textBufferFileModel.FilePath)) {
+					// Don't load the document now, let Load() handle it
+					this.Document = new TextDocument (textBufferFileModel);
+					this.Loaded = false;
+				} else {
+					this.Document = new TextDocument (textBufferFileModel);
 					this.Loaded = true;
 				}
 			}
@@ -3407,6 +3425,7 @@ namespace MonoDevelop.SourceEditor
 		internal ExtensionContext GetExtensionContext ()
 		{
 			if (extensionContext == null) {
+				extensionContext = AddinManager.CreateExtensionContext ();
 				var fileTypeCondition = new FileTypeCondition ();
 				fileTypeCondition.SetFileName (Document.FileName);
 				extensionContext.RegisterCondition ("FileType", fileTypeCondition);

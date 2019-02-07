@@ -40,26 +40,20 @@ namespace MonoDevelop.Ide.Gui.Shell
 		DefaultWorkbench workbench;
 		DocumentContent content;
 		DocumentController controller;
-
-		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
-		
-		List<BaseViewContent> viewContents = new List<BaseViewContent> ();
-		Tabstrip subViewToolbar = null;
-		PathBar pathBar = null;
-		Dictionary<BaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<BaseViewContent, DocumentToolbar> ();
-
 		GtkShellDocumentViewItem view;
-
 		DockNotebookTab tab;
-
 		DockNotebook tabControl;
 
-		string myUntitledTitle = null;
-		string _titleHolder = "";
+		string myUntitledTitle;
+		string titleHolder = "";
 
-		bool show_notification = false;
+		bool showNotification;
+
+		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 
 		public event EventHandler CloseRequested;
+		public event EventHandler<NotebookChangeEventArgs> NotebookChanged;
+		public event EventHandler TitleChanged;
 
 		public DockNotebook TabControl {
 			get {
@@ -111,8 +105,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 				NotebookChanged?.Invoke (this, new NotebookChangeEventArgs { OldNotebook = oldNotebook, NewNotebook = tabControl });
 		}
 
-		public event EventHandler<NotebookChangeEventArgs> NotebookChanged;
-
 		void HandleDirtyChanged (object sender, EventArgs e)
 		{
 			OnTitleChanged (null);
@@ -138,11 +130,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public bool ShowNotification {
 			get {
-				return show_notification;
+				return showNotification;
 			}
 			set {
-				if (show_notification != value) {
-					show_notification = value;
+				if (showNotification != value) {
+					showNotification = value;
 					OnTitleChanged (null);
 				}
 			}
@@ -150,34 +142,20 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public string Title {
 			get {
-				return _titleHolder;
+				return titleHolder;
 			}
 			set {
-				_titleHolder = value;
+				titleHolder = value;
 				OnTitleChanged (null);
 			}
 		}
 
-		public int FindView<T> ()
-		{
-			for (int i = 0; i < viewContents.Count; i++) {
-				if (viewContents [i] is T)
-					return i;
-			}
-
-			return -1;
-		}
-
 		public void OnDeactivated ()
 		{
-			if (pathBar != null)
-				pathBar.HideMenu ();
 		}
 
 		public void OnActivated ()
 		{
-			if (subViewToolbar != null)
-				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
 		}
 
 		public void SelectWindow ()
@@ -349,6 +327,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void Close ()
 		{
+			view.DetachFromView ();
 			Destroy ();
 		}
 
@@ -382,7 +361,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void SetDockNotebookTabTitle ()
 		{
 			tab.Text = Title;
-			tab.Notify = show_notification;
+			tab.Notify = showNotification;
 			tab.Dirty = controller.HasUnsavedChanges;
 			if (!string.IsNullOrEmpty (controller.DocumentTitle)) {
 				tab.Tooltip = controller.DocumentTitle;
@@ -400,7 +379,5 @@ namespace MonoDevelop.Ide.Gui.Shell
 				TitleChanged(this, e);
 			}
 		}
-
-		public event EventHandler TitleChanged;
 	}
 }

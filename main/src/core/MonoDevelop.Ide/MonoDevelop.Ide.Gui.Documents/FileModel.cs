@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public string MimeType { get; set; }
 
-		public FilePath FilePath { get; private set; }
+		public FilePath FilePath => Id != null ? (FilePath)Id : FilePath.Null;
 
 		public bool CanWrite {
 			get {
@@ -59,17 +59,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public Task LinkToFile (FilePath filePath)
 		{
-			if (FilePath != filePath) {
-				FilePath = filePath;
+			if (FilePath != filePath)
 				return Relink (filePath);
-			}
+
 			return Task.CompletedTask;
 		}
 
 		public async Task ConvertToUnsaved ()
 		{
 			await UnlinkFromId ();
-			FilePath = FilePath.Null;
 		}
 
 		public Task SaveAs (FilePath filePath)

@@ -179,6 +179,51 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 			await file2.Load ();
 			Assert.AreEqual ("Foo", file2.GetText ());
 		}
+
+		[Test]
+		public async Task GetSharedModel ()
+		{
+			string fileName = Path.GetTempFileName ();
+			try {
+				File.WriteAllText (fileName, "Foo");
+
+				var file = await registry.GetSharedFileModel<FileModel> (fileName);
+				Assert.AreEqual (fileName, file.FilePath.ToString ());
+				Assert.IsFalse (file.IsNew);
+				Assert.IsFalse (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
+				await file.Load ();
+				Assert.IsTrue (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
+				Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
+			} finally {
+				File.Delete (fileName);
+			}
+		}
+
+		[Test]
+		public async Task RelinkSharedBeforeLoad ()
+		{
+			string fileName = Path.GetTempFileName ();
+			try {
+				File.WriteAllText (fileName, "Foo");
+				File.WriteAllText (fileName + ".tmp", "Bar");
+
+				var file = await registry.GetSharedFileModel<FileModel> (fileName);
+				Assert.AreEqual (fileName, file.FilePath.ToString ());
+				Assert.IsFalse (file.IsNew);
+				Assert.IsFalse (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
+				await file.LinkToFile (fileName + ".tmp");
+				await file.Load ();
+				Assert.IsTrue (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
+				Assert.AreEqual ("Bar", TestHelper.FromStream (file.GetContent ()));
+			} finally {
+				File.Delete (fileName);
+				File.Delete (fileName + ".tmp");
+			}
+		}
 	}
 
 	class CustomFileModel : TextFileModel

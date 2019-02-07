@@ -544,6 +544,7 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			UnsubscribeControllerEvents ();
+			controller.Dispose ();
 
 			window = null;
 		}

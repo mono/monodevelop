@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DocumentToolbar toolbar;
 		IPathedDocument pathDoc;
 		Control control;
-		bool controlCallbackChanged;
 
 		public DocumentViewContent (Func<CancellationToken,Task<Control>> contentLoader)
 		{

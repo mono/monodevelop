@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			} else
 				throw new NotSupportedException ();
 
+			view.Item = item;
 			item.AttachToView (view);
 			return view;
 		}
@@ -112,6 +113,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public virtual void DetachFromView ()
 		{
 			Item.DetachFromView ();
+			Item = null;
 		}
 	}
 }

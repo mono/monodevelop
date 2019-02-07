@@ -117,30 +117,29 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal async Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default (CancellationToken), bool showStatusIcon = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				var wsList = CreateWorkspaces (item).ToList();
+				var wsList = new List<MonoDevelopWorkspace> ();
+				await CreateWorkspaces (item, wsList);
 				//If we want BeginTiming to work correctly we need to `await`
 				await InternalLoad (wsList, progressMonitor, cancellationToken, showStatusIcon).ConfigureAwait (false);
-				return wsList.ToList ();
+				return wsList;
 			}
 		}
 
-		IEnumerable<MonoDevelopWorkspace> CreateWorkspaces (WorkspaceItem item)
+		async Task CreateWorkspaces (WorkspaceItem item, List<MonoDevelopWorkspace> result)
 		{
 			if (item is MonoDevelop.Projects.Workspace ws) {
-				foreach (var wsItem in ws.Items) {
-					foreach (var mdWorkspace in CreateWorkspaces (wsItem)) {
-						yield return mdWorkspace;
-					}
-				}
+				foreach (var wsItem in ws.Items)
+					await CreateWorkspaces (wsItem, result);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is MonoDevelop.Projects.Solution solution) {
 				var workspace = new MonoDevelopWorkspace (compositionManager.HostServices, solution, this);
+				await workspace.Initialize ();
 				lock (workspaceLock)
 					workspaces = workspaces.Add (workspace);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
-				yield return workspace;
+				result.Add (workspace);
 			}
 		}
 
