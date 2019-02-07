@@ -3033,7 +3033,6 @@
     <Compile Include="MonoDevelop.Ide.Composition\EditorWaitIndicator.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\ExtensionSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
-    <Compile Include="MonoDevelop.Ide.Composition\LoggingServiceInternal.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\ObscuringTipManager.cs" />
     <!--<Compile Include="MonoDevelop.Ide.Composition\PeekResultFactory.cs" />-->
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
