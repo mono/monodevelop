@@ -257,6 +257,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (cacheService != null)
 				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
 
+			var cacheHostService = Services.GetService<IProjectCacheHostService> () as IDisposable;
+			cacheHostService?.Dispose ();
+
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
