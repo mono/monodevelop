@@ -474,6 +474,7 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RoslynIntegration", "external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.shproj", "{A10C6E18-A872-4D43-9BB2-2B28C70C7BF7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationProvidersImpl", "external\vs-editor-core\src\Editor\Text\Impl\NavigationProviders\NavigationProvidersImpl.csproj", "{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTools", "src\tools\ExtensionTools\ExtensionTools.csproj", "{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}"
 EndProject
 Global
