@@ -980,6 +980,8 @@ namespace MonoDevelop.Debugger
 
 		void RefreshRow (TreeIter iter, ObjectValue val)
 		{
+			if (val == null)
+				return;
 			UnregisterValue (val);
 			
 			RemoveChildren (iter);
