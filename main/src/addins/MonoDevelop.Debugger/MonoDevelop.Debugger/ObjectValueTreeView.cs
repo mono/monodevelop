@@ -930,7 +930,7 @@ namespace MonoDevelop.Debugger
 					ExpandRow (store.GetPath (it), false);
 				}
 			} else {
-				RefreshRow (it);
+				RefreshRow (it, val);
 			}
 		}
 
@@ -977,10 +977,9 @@ namespace MonoDevelop.Debugger
 				enumerableLoading.Remove (value);
 			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
 		}
-		
-		void RefreshRow (TreeIter iter)
+
+		void RefreshRow (TreeIter iter, ObjectValue val)
 		{
-			var val = (ObjectValue) store.GetValue (iter, ObjectColumn);
 			UnregisterValue (val);
 			
 			RemoveChildren (iter);
@@ -1905,7 +1904,7 @@ namespace MonoDevelop.Debugger
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					if (DebuggingService.ShowValueVisualizer (val)) {
 						UpdateParentValue (it);
-						RefreshRow (it);
+						RefreshRow (it, val);
 					}
 				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
