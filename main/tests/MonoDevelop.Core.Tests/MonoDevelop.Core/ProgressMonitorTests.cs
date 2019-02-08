@@ -1,4 +1,4 @@
-﻿//
+//
 // ProgressMonitorTests.cs
 //
 // Author:
@@ -117,14 +117,22 @@ namespace MonoDevelop.Core
 				using (var mon = new ChainedProgressMonitor (ctx)) {
 					// These call once into Write.
 					mon.Log.Write ("a");
+					Assert.AreEqual (1, ctx.CallCount);
+
 					mon.Log.Write ('a');
+					Assert.AreEqual (2, ctx.CallCount);
+
 					mon.Log.Write (new [] { 'a' }, 0, 1);
+					Assert.AreEqual (3, ctx.CallCount);
+
 					mon.Log.WriteLine ("a");
+					Assert.AreEqual (4, ctx.CallCount);
 
 					// These 2 call twice into Write.
 					mon.Log.WriteLine ('a');
-					mon.Log.WriteLine (new [] { 'a' }, 0, 1);
+					Assert.AreEqual (6, ctx.CallCount);
 
+					mon.Log.WriteLine (new [] { 'a' }, 0, 1);
 					Assert.AreEqual (8, ctx.CallCount);
 
 					mon.Log.Flush ();
