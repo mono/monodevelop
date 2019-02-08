@@ -379,7 +379,11 @@ namespace MonoDevelop.Core.Assemblies
 					foreach (var customAttributeHandle in mr.GetAssemblyDefinition ().GetCustomAttributes ()) {
 						var customAttribute = mr.GetCustomAttribute (customAttributeHandle);
 
-						var ctor = mr.GetMemberReference ((MemberReferenceHandle)customAttribute.Constructor);
+						var ctorHandle = customAttribute.Constructor;
+						if (ctorHandle.Kind != HandleKind.MemberReference)
+							continue;
+
+						var ctor = mr.GetMemberReference ((MemberReferenceHandle)ctorHandle);
 						var attrType = mr.GetTypeReference ((TypeReferenceHandle)ctor.Parent);
 
 						var ns = mr.GetString (attrType.Namespace);
