@@ -319,7 +319,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			using (var titleElements = objects.ToAccessibilityArray ()) {
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityServesAsTitleForUIElements_Handle, titleElements != null ? titleElements.Handle : IntPtr.Zero);
+				nsa.SendSelector (selSetAccessibilityServesAsTitleForUIElements_Handle, titleElements);
 			}
 		}
 
@@ -332,7 +332,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			using (var realTabs = tabs.ConvertToRealProxyArray ()) {
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityTabs_Handle, realTabs != null ? realTabs.Handle : IntPtr.Zero);
+				nsa.SendSelector (selSetAccessibilityTabs_Handle, realTabs);
 			}
 		}
 
@@ -344,7 +344,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			using (var realTabs = tabs.ToAccessibilityArray ()) {
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityTabs_Handle, realTabs != null ? realTabs.Handle : IntPtr.Zero);
+				nsa.SendSelector (selSetAccessibilityTabs_Handle, realTabs);
 			}
 		}
 
@@ -362,7 +362,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			using (var array = Runtime.GetNSObject<NSArray> (ptr))
 			using (var copy = array != null ? (NSMutableArray)array.MutableCopy () : new NSMutableArray (1)) {
 				copy.Add ((NSObject)nsa);
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityServesAsTitleForUIElements_Handle, copy.Handle);
+				nsa.SendSelector (selSetAccessibilityServesAsTitleForUIElements_Handle, copy);
 			}
 		}
 
@@ -389,7 +389,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				using (var set = NSIndexSet.FromIndex (index)) {
 					copy.RemoveObjectsAtIndexes (set);
 
-					Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityServesAsTitleForUIElements_Handle, copy.Handle);
+					nsa.SendSelector (selSetAccessibilityServesAsTitleForUIElements_Handle, copy);
 				}
 			}
 		}
@@ -412,6 +412,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			return array;
 		}
 
+		static void SendSelector (this INSAccessibility nsa, IntPtr selectorHandle, NSArray array)
+		{
+			Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selectorHandle, array != null ? array.Handle : IntPtr.Zero);
+		}
+
 		static readonly IntPtr selAccessibilityChildren_Handle = Selector.GetHandle ("accessibilityChildren:");
 		static readonly IntPtr selSetAccessibilityChildren_Handle = Selector.GetHandle ("setAccessibilityChildren:");
 		public static void ReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
@@ -429,7 +434,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			using (var array = columns.ConvertToRealProxyArray ()) {
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityColumns_Handle, array != null ? array.Handle : IntPtr.Zero);
+				nsa.SendSelector (selSetAccessibilityColumns_Handle, array);
 			}
 		}
 
@@ -443,7 +448,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			using (var array = rows.ConvertToRealProxyArray ()) {
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityRows_Handle, array != null ? array.Handle : IntPtr.Zero);
+				nsa.SendSelector (selSetAccessibilityRows_Handle, array);
 			}
 		}
 
@@ -486,7 +491,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				using (var copy = (NSMutableArray)array.MutableCopy ())
 				using (var set = NSIndexSet.FromIndex (index)) {
 					copy.RemoveObjectsAtIndexes (set);
-					Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityChildren_Handle, copy.Handle);
+					nsa.SendSelector (selSetAccessibilityChildren_Handle, array);
 				}
 			}
 		}
@@ -512,7 +517,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 					using (var copy = (NSMutableArray)fromArray.MutableCopy ())
 					using (var set = NSIndexSet.FromIndex (index)) {
 						copy.RemoveObjectsAtIndexes (set);
-						Messaging.void_objc_msgSend_IntPtr (fromNsa.Handle, selSetAccessibilityChildren_Handle, copy.Handle);
+						fromNsa.SendSelector (selSetAccessibilityChildren_Handle, copy);
 					}
 				}
 			}
@@ -521,7 +526,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			using (var toArray = Runtime.GetNSObject<NSArray> (toChildren))
 			using (var copy = toArray != null ? (NSMutableArray)toArray.Copy () : new NSMutableArray (1)) {
 				copy.Add ((NSObject)childNsa);
-				Messaging.void_objc_msgSend_IntPtr (toNsa.Handle, selSetAccessibilityChildren_Handle, copy.Handle);
+				toNsa.SendSelector (selSetAccessibilityChildren_Handle, copy);
 			}
 		}
 
@@ -533,7 +538,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			using (var array = children.ConvertToRealProxyArray ()) {
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityChildren_Handle, array != null ? array.Handle : IntPtr.Zero);
+				nsa.SendSelector (selSetAccessibilityChildren_Handle, array);
 			}
 		}
 
@@ -551,7 +556,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			using (var array = Runtime.GetNSObject<NSArray> (current))
 			using (var copy = array != null ? (NSMutableArray)array.Copy () : new NSMutableArray (1)) {
 				copy.Add ((NSObject)linkedNSA);
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityLinkedUIElements_Handle, copy.Handle);
+				nsa.SendSelector (selSetAccessibilityLinkedUIElements_Handle, copy);
 			}
 		}
 
@@ -569,7 +574,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 					var nsaLinked = GetNSAccessibilityElement (e);
 					copy.Add ((NSObject)nsaLinked);
 				}
-				Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selSetAccessibilityLinkedUIElements_Handle, copy.Handle);
+				nsa.SendSelector (selSetAccessibilityLinkedUIElements_Handle, copy);
 			}
 		}
 
