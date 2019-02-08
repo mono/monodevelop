@@ -182,10 +182,8 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 		{
 			base.OnSizeAllocated (allocation);
 			ExceptionMessageLabel.WidthRequest = rightVBox.Allocation.Width;
-			//ExceptionHelpLinkButton.WidthRequest = rightVBox.Allocation.Width;
 			if (vboxAroundInnerExceptionMessage != null) {
 				InnerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
-				InnerExceptionHelpLinkButton.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
 			}
 		}
 
@@ -641,7 +639,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				InnerExceptionTypeLabel.Markup = "<b>" + GLib.Markup.EscapeText (ex.Type) + "</b>";
 				InnerExceptionMessageLabel.Text = ex.Message;
 				if (!string.IsNullOrEmpty (ex.HelpLink)) {
-					InnerExceptionHelpLinkButton.Label = ex.HelpLink;
+					InnerExceptionHelpLinkButton.Label = GettextCatalog.GetString ("Read More...");
 					innerExceptionHelpLink = ex.HelpLink;
 					InnerExceptionHelpLinkButton.Show ();
 				} else {
