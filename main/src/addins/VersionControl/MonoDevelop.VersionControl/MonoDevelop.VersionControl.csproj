@@ -527,7 +527,7 @@
     <InternalsVisibleTo Include="MonoDevelop.MacDev" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="Humanizer.Core" Version="2.2.0" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
