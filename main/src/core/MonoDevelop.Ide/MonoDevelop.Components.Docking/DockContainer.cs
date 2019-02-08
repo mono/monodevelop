@@ -403,6 +403,7 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool UpdatePlaceholder (DockItem item, Gdk.Size size, bool allowDocking)
 		{
+			MonoDevelop.Core.Runtime.AssertMainThread ();
 			var placeholderWindow = this.placeholderWindow;
 			var padTitleWindow = this.padTitleWindow;
 
