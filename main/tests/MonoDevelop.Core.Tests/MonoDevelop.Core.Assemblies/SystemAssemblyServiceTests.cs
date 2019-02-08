@@ -36,6 +36,12 @@ namespace MonoDevelop.Core.Assemblies
 	[TestFixture]
 	public class SystemAssemblyServiceTests
 	{
+		static string GetDllPath(string dllName)
+		{
+			var directory = Path.GetDirectoryName (typeof(Runtime).Assembly.Location);
+			return Path.Combine (directory, dllName);
+		}
+
 		[TestCase (true, "System.Collections.Immutable.dll")]
 		[TestCase (false, "MonoDevelop.Core.dll")]
 		[TestCase (false, "NonExistingDll.dll")]
