@@ -288,10 +288,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			void OnSolutionOpened (MonoDevelopWorkspace workspace, SolutionInfo solutionInfo)
 			{
+				workspace.OnSolutionAdded (solutionInfo);
+				
 				var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
 				service.SetupSolution (workspace);
-
-				workspace.OnSolutionAdded (solutionInfo);
 
 				AssignOpenDocumentsToWorkspace (workspace);
 				OpenGeneratedFiles (workspace);
