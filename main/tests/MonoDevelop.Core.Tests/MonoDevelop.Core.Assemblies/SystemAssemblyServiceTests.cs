@@ -82,7 +82,7 @@ namespace MonoDevelop.Core.Assemblies
 		public void GetManifestResources ()
 		{
 			var mdCorePath = GetDllPath ("MonoDevelop.Core.dll");
-			var result = SystemAssemblyService.GetAssemblyManifestResources (mdCorePth).ToArray ();
+			var result = SystemAssemblyService.GetAssemblyManifestResources (mdCorePath).ToArray ();
 
 			Assert.That (result.Length, Is.GreaterThanOrEqualTo (1));
 
