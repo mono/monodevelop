@@ -4195,8 +4195,6 @@
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLabel.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLine.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\NewSolutionRunConfigurationDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
   </ItemGroup>
   <ItemGroup>
