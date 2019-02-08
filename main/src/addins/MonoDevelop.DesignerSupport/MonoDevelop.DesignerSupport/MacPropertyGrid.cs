@@ -132,7 +132,9 @@ namespace MonoDevelop.DesignerSupport
 
 		protected override void Dispose (bool disposing)
 		{
-			propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
+			if (propertyEditorPanel != null) {
+				propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
+			}
 			base.Dispose (disposing);
 		}
 
