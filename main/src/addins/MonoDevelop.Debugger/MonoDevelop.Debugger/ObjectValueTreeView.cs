@@ -1013,8 +1013,7 @@ namespace MonoDevelop.Debugger
 
 			while (store.IterChildren (out citer, iter)) {
 				var val = (ObjectValue) store.GetValue (citer, ObjectColumn);
-				if (val != null)
-					UnregisterValue (val);
+				UnregisterValue (val);
 				RemoveChildren (citer);
 				store.Remove (ref citer);
 			}
@@ -1030,6 +1029,8 @@ namespace MonoDevelop.Debugger
 
 		void UnregisterValue (ObjectValue val)
 		{
+			if (val == null)
+				return;
 			val.ValueChanged -= OnValueUpdated;
 			nodes.Remove (val);
 		}
