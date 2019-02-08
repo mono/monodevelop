@@ -52,8 +52,8 @@ namespace MonoDevelop.Components.Docking
 
 		bool needsRelayout = true;
 
-		PlaceholderWindow placeholderWindow;
-		PadTitleWindow padTitleWindow;
+		volatile PlaceholderWindow placeholderWindow;
+		volatile PadTitleWindow padTitleWindow;
 		
 		public DockContainer (DockFrame frame)
 		{
@@ -403,7 +403,10 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool UpdatePlaceholder (DockItem item, Gdk.Size size, bool allowDocking)
 		{
-			if (placeholderWindow == null)
+			var placeholderWindow = this.placeholderWindow;
+			var padTitleWindow = this.padTitleWindow;
+
+			if (placeholderWindow == null || padTitleWindow == null)
 				return false;
 			
 			int px, py;
