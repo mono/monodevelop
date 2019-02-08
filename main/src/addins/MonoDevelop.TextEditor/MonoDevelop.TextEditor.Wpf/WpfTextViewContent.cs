@@ -25,7 +25,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.TextEditor
 {
-	class WpfTextViewContent : TextViewContent<IWpfTextView, WpfTextViewImports>
+	class WpfTextViewContent : TextViewContent<IWpfTextView, WpfTextViewImports>, Ide.Gui.Content.IZoomable
 	{
 		IWpfTextViewHost wpfTextViewHost;
 
@@ -82,5 +82,29 @@ namespace MonoDevelop.TextEditor
 				wpfTextViewHost = null;
 			}
 		}
+
+		#region IZoomable
+
+		// the base TextViewContent impl of IZoomable doesn't work on Windows as it requires IEditorOperations4
+
+		const double MAX_ZOOM = 400.0;
+		const double MIN_ZOOM = 20.0;
+		const double DEFAULT_ZOOM = 100.0;
+
+		bool IsZoomable => TextView.Roles.Contains (PredefinedTextViewRoles.Zoomable);
+
+		public bool EnableZoomIn => IsZoomable && TextView.ZoomLevel < MAX_ZOOM;
+
+		public bool EnableZoomOut => IsZoomable && TextView.ZoomLevel < MIN_ZOOM;
+
+		public bool EnableZoomReset => IsZoomable && TextView.ZoomLevel != DEFAULT_ZOOM;
+
+		public void ZoomIn () => EditorOperations.ZoomIn ();
+
+		public void ZoomOut () => EditorOperations.ZoomOut ();
+
+		public void ZoomReset () => EditorOperations.ZoomTo (DEFAULT_ZOOM);
+
+		#endregion
 	}
 }

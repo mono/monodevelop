@@ -113,8 +113,8 @@ namespace MonoDevelop.TextEditor
 		protected virtual void InstallAdditionalEditorOperationsCommands ()
 		{
 			EditorOperationCommands[TextEditorCommands.SwitchCaretMode] = op => {
-				var overWriteMode = editorOptions.GetOptionValue (DefaultTextViewOptions.OverwriteModeId);
-				editorOptions.SetOptionValue (DefaultTextViewOptions.OverwriteModeId, !overWriteMode);
+				var overWriteMode = EditorOptions.GetOptionValue (DefaultTextViewOptions.OverwriteModeId);
+				EditorOptions.SetOptionValue (DefaultTextViewOptions.OverwriteModeId, !overWriteMode);
 			};
 		}
 
@@ -145,7 +145,7 @@ namespace MonoDevelop.TextEditor
 				mapping.Execute (commandService, null);
 			else if (EditorOperationCommands.TryGetValue (cmd.Id, out var editorOperationCommand) &&
 				editorOperationCommand.Execute != null)
-				editorOperationCommand.Execute (editorOperations);
+				editorOperationCommand.Execute (EditorOperations);
 		}
 
 		void ICommandHandler.Run (object cmdTarget, Command cmd, object dataItem)
@@ -161,7 +161,7 @@ namespace MonoDevelop.TextEditor
 				info.Checked = commandState.IsChecked;
 			} else if (EditorOperationCommands.TryGetValue (info.Command.Id, out var editorOperationCommand) &&
 				editorOperationCommand.Update != null)
-				editorOperationCommand.Update (editorOperations, info);
+				editorOperationCommand.Update (EditorOperations, info);
 		}
 
 		void ICommandUpdater.Run (object cmdTarget, CommandArrayInfo info)
@@ -171,22 +171,14 @@ namespace MonoDevelop.TextEditor
 
 		#region IZoomable
 
-		public void ZoomIn () => editorOperations.ZoomIn ();
-		public void ZoomOut () => editorOperations.ZoomOut ();
 
-#if WINDOWS
-		public bool EnableZoomIn => true;
-		public bool EnableZoomOut => true;
-		public bool EnableZoomReset => true;
-
-		public void ZoomReset ()
-		{
-		}
-#else
+#if !WINDOWS
 		public bool EnableZoomIn => editorOperations.CanZoomIn;
 		public bool EnableZoomOut => editorOperations.CanZoomOut;
 		public bool EnableZoomReset => editorOperations.CanZoomReset;
 
+		public void ZoomIn () => editorOperations.ZoomIn ();
+		public void ZoomOut () => editorOperations.ZoomOut ();
 		public void ZoomReset () => editorOperations.ZoomReset ();
 #endif
 

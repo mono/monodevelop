@@ -25,7 +25,6 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components.Commands;
@@ -42,7 +41,11 @@ using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditor
 
 namespace MonoDevelop.TextEditor
 {
-	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, IZoomable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
+	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
+#if !WINDOWS
+		// implementing this correctly requires IEditorOperations4
+		, IZoomable
+#endif
 		where TView : ITextView
 		where TImports : TextViewImports
 	{
@@ -50,8 +53,6 @@ namespace MonoDevelop.TextEditor
 		readonly string mimeType;
 		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
-		readonly EditorOperationsInterface editorOperations;
-		readonly IEditorOptions editorOptions;
 		readonly List<IEditorContentProvider> contentProviders;
 		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
 
@@ -59,6 +60,9 @@ namespace MonoDevelop.TextEditor
 		public TView TextView { get; }
 		public ITextDocument TextDocument { get; }
 		public ITextBuffer TextBuffer { get; }
+
+		protected EditorOperationsInterface EditorOperations { get; }
+		protected IEditorOptions EditorOptions { get; }
 
 		protected TextViewContent (
 			TImports imports,
@@ -96,8 +100,8 @@ namespace MonoDevelop.TextEditor
 			control = CreateControl ();
 
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
-			editorOperations = (EditorOperationsInterface)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
-			editorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
+			EditorOperations = (EditorOperationsInterface)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
+			EditorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
 			TextView.Properties [typeof(ViewContent)] = this;
