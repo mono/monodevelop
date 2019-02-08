@@ -56,7 +56,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler Focused;
 		public event EventHandler DragBegin;
 		public event EventHandler<CGPoint> MenuOpened;
-		public event EventHandler SelectedItemChanged;
 		public event EventHandler ActivateSelectedItem;
 		public Action<NSEvent> MouseDownActivated { get; set; }
 
@@ -74,8 +73,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		internal void PerformActivateSelectedItem () => OnActivateSelectedItem (EventArgs.Empty);
 
 		void OnActivateSelectedItem (EventArgs args) => ActivateSelectedItem?.Invoke (this, args);
-	
-		void OnSelectedItemChanged (EventArgs args) => SelectedItemChanged?.Invoke (this, args);
 
 		NSIndexPath selectedIndexPath;
 		public NSIndexPath SelectedIndexPath {
@@ -85,7 +82,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set {
 				if (selectedIndexPath != value) {
 					selectedIndexPath = value;
-					OnSelectedItemChanged (EventArgs.Empty);
 				}
 			}
 		}

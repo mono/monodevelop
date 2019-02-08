@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public abstract class MSBuildFileFormat
+	public abstract class MSBuildFileFormat : IComparable<MSBuildFileFormat>, IEquatable<MSBuildFileFormat>
 	{
 		readonly SlnFileFormat slnFileFormat;
 
@@ -50,9 +50,6 @@ namespace MonoDevelop.Projects.MSBuild
 		public static readonly MSBuildFileFormat VS2008 = new MSBuildFileFormatVS08 ();
 		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
 		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
-
-		[Obsolete("This is the same as VS2012")]
-		public static readonly MSBuildFileFormat VS2017 = VS2012;
 
 		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
 		{
@@ -68,12 +65,6 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		public static MSBuildFileFormat DefaultFormat => VS2012;
-		
-		[Obsolete ("Use ProductDescription or ID")]
-		public string Name => "MSBuild";
-
-		[Obsolete]
-		public abstract Version Version { get; }
 
 		internal SlnFileFormat SlnFileFormat {
 			get { return slnFileFormat; }
@@ -229,16 +220,40 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 			return string.Empty;
 		}
-		
+
 		public abstract string Id { get; }
+
+		#region IComparable<MSBuildFileFormat> implementation and overloads
+
+		public override bool Equals (object obj) => obj is MSBuildFileFormat other && Equals (other);
+		public bool Equals (MSBuildFileFormat other) => other != null && Id == other.Id;
+		public override int GetHashCode () => Id.GetHashCode ();
+
+		public int CompareTo (MSBuildFileFormat other) => Version.Parse (SlnVersion).CompareTo (Version.Parse (other.SlnVersion));
+
+		public static bool operator == (MSBuildFileFormat a, MSBuildFileFormat b)
+		{
+			if (ReferenceEquals (a, b))
+				return true;
+
+			if (a is null)
+				return b is null;
+
+			return a.Equals (b);
+		}
+
+		public static bool operator != (MSBuildFileFormat a, MSBuildFileFormat b) => !(a == b);
+		public static bool operator < (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) < 0;
+		public static bool operator > (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) > 0;
+		public static bool operator <= (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) <= 0;
+		public static bool operator >= (MSBuildFileFormat a, MSBuildFileFormat b) => a.CompareTo (b) >= 0;
+
+		#endregion
 	}
 
 	class MSBuildFileFormatVS05 : MSBuildFileFormat
 	{
 		public override string Id => "MSBuild05";
-
-		[Obsolete("Unused")]
-		public override Version Version => new Version ("2005");
 
 		public override string DefaultProductVersion => "8.0.50727";
 		public override string DefaultToolsVersion => "2.0";
@@ -254,9 +269,6 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildFileFormatVS08: MSBuildFileFormat
 	{
 		public override string Id => "MSBuild08";
-
-		[Obsolete ("Unused")]
-		public override Version Version => new Version ("2008");
 
 		public override string DefaultProductVersion => "9.0.21022";
 		public override string DefaultToolsVersion => "3.5";
@@ -279,9 +291,6 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		public override string Id => "MSBuild10";
 
-		[Obsolete ("Unused")]
-		public override Version Version => new Version ("2010");
-
 		public override string DefaultProductVersion => "8.0.30703";
 		public override string DefaultSchemaVersion => "2.0";
 		public override string DefaultToolsVersion => "4.0";
@@ -293,9 +302,6 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildFileFormatVS12: MSBuildFileFormat
 	{
 		public override string Id => "MSBuild12";
-
-		[Obsolete ("Unused")]
-		public override Version Version => new Version ("2012");
 
 		// This is mostly irrelevant, the builder always uses the latest
 		// tools version. It's only used for new projects created with

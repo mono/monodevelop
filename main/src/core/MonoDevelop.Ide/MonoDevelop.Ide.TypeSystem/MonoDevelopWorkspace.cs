@@ -77,7 +77,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool disposed;
-		readonly object updatingProjectDataLock = new object ();
+
+		internal readonly SemaphoreSlim LoadLock = new SemaphoreSlim (1, 1);
 		Lazy<MonoDevelopMetadataReferenceManager> manager;
 		Lazy<MetadataReferenceHandler> metadataHandler;
 		ProjectionData Projections { get; }
@@ -254,12 +255,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void Dispose (bool finalize)
 		{
-			base.Dispose (finalize);
 			if (disposed)
 				return;
 
 			disposed = true;
 
+			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
 			IdeApp.Preferences.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
@@ -283,6 +284,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				backgroundCompiler.Dispose ();
 				backgroundCompiler = null; // PartialSemanticsEnabled will now return false
 			}
+
+			base.Dispose (finalize);
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
@@ -1091,18 +1094,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
-		internal Task UpdateFileContent (string fileName, string text)
+		internal async Task UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
 			var tasks = new List<Task> ();
-			lock (updatingProjectDataLock) {
-				foreach (var kv in ProjectMap.projectDataMap) {
-					var projectId = kv.Key;
+			try {
+				await LoadLock.WaitAsync ();
+				foreach (var projectId in ProjectMap.GetProjectIds ()) {
 					var docId = this.GetDocumentId (projectId, fileName);
 					if (docId != null) {
 						try {
 							if (this.GetDocument (docId) != null) {
-								OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+								base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							} else if (this.GetAdditionalDocument (docId) != null) {
 								base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							}
@@ -1123,9 +1126,11 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 				}
+			} finally {
+				LoadLock.Release ();
 			}
 
-			return Task.WhenAll (tasks);
+			await Task.WhenAll (tasks);
 		}
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)

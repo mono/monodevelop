@@ -474,6 +474,7 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RoslynIntegration", "external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.shproj", "{A10C6E18-A872-4D43-9BB2-2B28C70C7BF7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationProvidersImpl", "external\vs-editor-core\src\Editor\Text\Impl\NavigationProviders\NavigationProvidersImpl.csproj", "{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTools", "src\tools\ExtensionTools\ExtensionTools.csproj", "{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -2740,6 +2741,30 @@ Global
 		{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Debug|x86.Build.0 = Debug|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Release|x86.ActiveCfg = Release|Any CPU
+		{44FFFDDA-156F-49F9-AE6A-BA640C198B33}.Release|x86.Build.0 = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.DebugMac|Any CPU.ActiveCfg = DebugMac|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.DebugMac|Any CPU.Build.0 = DebugMac|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.ReleaseMac|Any CPU.Build.0 = ReleaseMac|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Debug|x86.Build.0 = Debug|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|x86.ActiveCfg = Release|Any CPU
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2960,6 +2985,7 @@ Global
 		{6C7ADE4D-2544-581E-918B-659243920781} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{A10C6E18-A872-4D43-9BB2-2B28C70C7BF7} = {5A92B792-BF17-4748-B29E-34C99B2E8722}
 		{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A} = {32539734-6484-4451-9EF3-61610CA25BBF}
+		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}

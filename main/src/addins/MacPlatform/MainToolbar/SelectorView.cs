@@ -562,6 +562,28 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			int focusedCellIndex = 0;
 			NSPathComponentCellFocusable focusedItem;
 
+			bool UpdatePreviousCellForResponderChain (int fromPosition)
+			{
+				for (focusedCellIndex = fromPosition; focusedCellIndex >= 0; focusedCellIndex--) {
+					var cell = Cells [focusedCellIndex].Cell;
+					if (PathComponentCells.Contains (cell) && cell.Enabled) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			bool UpdateNextCellForResponderChain (int fromPosition)
+			{
+				for (focusedCellIndex = fromPosition; focusedCellIndex < Cells.Length; focusedCellIndex++) {
+					var cell = Cells [focusedCellIndex].Cell;
+					if (PathComponentCells.Contains (cell) && cell.Enabled) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			public override void KeyDown (NSEvent theEvent)
 			{
 				if (theEvent.KeyCode == (ushort) KeyCodes.Space) {
@@ -580,9 +602,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 								focusedItem = null;
 							}
 						} else {
-							focusedCellIndex--;
-							SetSelection ();
-							return;
+							if (UpdatePreviousCellForResponderChain (focusedCellIndex - 1)) {
+								SetSelection ();
+								return;
+							}
 						}
 					} else {
 						if (focusedCellIndex >= VisibleCellIds.Length - 1) {
@@ -592,9 +615,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 								focusedItem = null;
 							}
 						} else {
-							focusedCellIndex++;
-							SetSelection ();
-							return;
+							if (UpdateNextCellForResponderChain (focusedCellIndex + 1)) {
+								SetSelection ();
+								return;
+							}
 						}
 					}
 				}
@@ -632,9 +656,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (currentEvent.Type == NSEventType.KeyDown) {
 					if (currentEvent.KeyCode == (ushort) KeyCodes.Tab) {
 						if ((currentEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
-							focusedCellIndex = Cells.Length - 1;
+							UpdatePreviousCellForResponderChain (Cells.Length - 1);
 						} else {
-							focusedCellIndex = 0;
+							UpdateNextCellForResponderChain (0);
 						}
 					}
 				}

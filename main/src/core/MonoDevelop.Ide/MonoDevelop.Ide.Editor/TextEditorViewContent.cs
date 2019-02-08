@@ -384,8 +384,10 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#endregion
-	
 
-
+		public override void GrabFocus ()
+		{
+			textEditor.GrabFocus ();
+		}
 	}
 }
