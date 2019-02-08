@@ -36,12 +36,12 @@ namespace MonoDevelop.TextEditor
 
 		protected readonly struct EditorOperationCommand
 		{
-			public readonly Action<IEditorOperations3> Execute;
-			public readonly Action<IEditorOperations3, CommandInfo> Update;
+			public readonly Action<IEditorOperations4> Execute;
+			public readonly Action<IEditorOperations4, CommandInfo> Update;
 
 			public EditorOperationCommand (
-				Action<IEditorOperations3> execute,
-				Action<IEditorOperations3, CommandInfo> update = null)
+				Action<IEditorOperations4> execute,
+				Action<IEditorOperations4, CommandInfo> update = null)
 			{
 				Execute = execute;
 				Update = update;
@@ -50,7 +50,7 @@ namespace MonoDevelop.TextEditor
 
 		protected sealed class EditorOperationsMap : Dictionary<object, EditorOperationCommand>
 		{
-			public new Action<IEditorOperations3> this [object id] {
+			public new Action<IEditorOperations4> this [object id] {
 				get => base [id].Execute;
 				set => base [CommandManager.ToCommandId (id)] = new EditorOperationCommand (value);
 			}
@@ -160,6 +160,18 @@ namespace MonoDevelop.TextEditor
 
 		void ICommandUpdater.Run (object cmdTarget, CommandArrayInfo info)
 			=> throw new InvalidOperationException ("Array commands cannot be mapped to editor commands");
+
+		#endregion
+
+		#region IZoomable
+
+		public bool EnableZoomIn => editorOperations.CanZoomIn;
+		public bool EnableZoomOut => editorOperations.CanZoomOut;
+		public bool EnableZoomReset => editorOperations.CanZoomReset;
+
+		public void ZoomIn () => editorOperations.ZoomIn ();
+		public void ZoomOut () => editorOperations.ZoomOut ();
+		public void ZoomReset () => editorOperations.ZoomReset ();
 
 		#endregion
 	}
