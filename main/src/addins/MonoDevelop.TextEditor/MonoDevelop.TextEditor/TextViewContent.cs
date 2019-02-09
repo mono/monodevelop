@@ -34,6 +34,12 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 
+#if WINDOWS
+using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
+#else
+using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations4;
+#endif
+
 namespace MonoDevelop.TextEditor
 {
 	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, IZoomable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
@@ -44,7 +50,7 @@ namespace MonoDevelop.TextEditor
 		readonly string mimeType;
 		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
-		readonly IEditorOperations4 editorOperations;
+		readonly EditorOperationsInterface editorOperations;
 		readonly IEditorOptions editorOptions;
 		readonly List<IEditorContentProvider> contentProviders;
 		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
@@ -90,7 +96,7 @@ namespace MonoDevelop.TextEditor
 			control = CreateControl ();
 
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
-			editorOperations = (IEditorOperations4)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
+			editorOperations = (EditorOperationsInterface)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
 			editorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 

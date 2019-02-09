@@ -7,6 +7,7 @@
     <AssemblyDescription>Integrates the Visual Studio Editor into MonoDevelop</AssemblyDescription>
     <AddinBuildDir>DisplayBindings\TextEditor</AddinBuildDir>
     <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
+    <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS;WIN32</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
