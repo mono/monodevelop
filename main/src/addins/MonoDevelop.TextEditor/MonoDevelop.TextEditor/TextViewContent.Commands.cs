@@ -173,13 +173,13 @@ namespace MonoDevelop.TextEditor
 
 
 #if !WINDOWS
-		public bool EnableZoomIn => editorOperations.CanZoomIn;
-		public bool EnableZoomOut => editorOperations.CanZoomOut;
-		public bool EnableZoomReset => editorOperations.CanZoomReset;
+		public bool EnableZoomIn => EditorOperations.CanZoomIn;
+		public bool EnableZoomOut => EditorOperations.CanZoomOut;
+		public bool EnableZoomReset => EditorOperations.CanZoomReset;
 
-		public void ZoomIn () => editorOperations.ZoomIn ();
-		public void ZoomOut () => editorOperations.ZoomOut ();
-		public void ZoomReset () => editorOperations.ZoomReset ();
+		public void ZoomIn () => EditorOperations.ZoomIn ();
+		public void ZoomOut () => EditorOperations.ZoomOut ();
+		public void ZoomReset () => EditorOperations.ZoomReset ();
 #endif
 
 		#endregion
