@@ -28,6 +28,12 @@ using Microsoft.VisualStudio.Text.Operations;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 
+#if WINDOWS
+using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
+#else
+using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations4;
+#endif
+
 namespace MonoDevelop.TextEditor
 {
 	partial class TextViewContent<TView, TImports>
@@ -36,12 +42,12 @@ namespace MonoDevelop.TextEditor
 
 		protected readonly struct EditorOperationCommand
 		{
-			public readonly Action<IEditorOperations4> Execute;
-			public readonly Action<IEditorOperations4, CommandInfo> Update;
+			public readonly Action<EditorOperationsInterface> Execute;
+			public readonly Action<EditorOperationsInterface, CommandInfo> Update;
 
 			public EditorOperationCommand (
-				Action<IEditorOperations4> execute,
-				Action<IEditorOperations4, CommandInfo> update = null)
+				Action<EditorOperationsInterface> execute,
+				Action<EditorOperationsInterface, CommandInfo> update = null)
 			{
 				Execute = execute;
 				Update = update;
@@ -50,13 +56,13 @@ namespace MonoDevelop.TextEditor
 
 		protected sealed class EditorOperationsMap : Dictionary<object, EditorOperationCommand>
 		{
-			public new Action<IEditorOperations4> this [object id] {
-				get => base [id].Execute;
-				set => base [CommandManager.ToCommandId (id)] = new EditorOperationCommand (value);
+			public new Action<EditorOperationsInterface> this[object id] {
+				get => base[id].Execute;
+				set => base[CommandManager.ToCommandId (id)] = new EditorOperationCommand (value);
 			}
 
 			public new void Add (object id, EditorOperationCommand command)
-				=> base [CommandManager.ToCommandId (id)] = command;
+				=> base[CommandManager.ToCommandId (id)] = command;
 		}
 
 		protected readonly EditorOperationsMap EditorOperationCommands = new EditorOperationsMap {
@@ -106,7 +112,7 @@ namespace MonoDevelop.TextEditor
 
 		protected virtual void InstallAdditionalEditorOperationsCommands ()
 		{
-			EditorOperationCommands [TextEditorCommands.SwitchCaretMode] = op => {
+			EditorOperationCommands[TextEditorCommands.SwitchCaretMode] = op => {
 				var overWriteMode = editorOptions.GetOptionValue (DefaultTextViewOptions.OverwriteModeId);
 				editorOptions.SetOptionValue (DefaultTextViewOptions.OverwriteModeId, !overWriteMode);
 			};
@@ -165,13 +171,24 @@ namespace MonoDevelop.TextEditor
 
 		#region IZoomable
 
+		public void ZoomIn () => editorOperations.ZoomIn ();
+		public void ZoomOut () => editorOperations.ZoomOut ();
+
+#if WINDOWS
+		public bool EnableZoomIn => true;
+		public bool EnableZoomOut => true;
+		public bool EnableZoomReset => true;
+
+		public void ZoomReset ()
+		{
+		}
+#else
 		public bool EnableZoomIn => editorOperations.CanZoomIn;
 		public bool EnableZoomOut => editorOperations.CanZoomOut;
 		public bool EnableZoomReset => editorOperations.CanZoomReset;
 
-		public void ZoomIn () => editorOperations.ZoomIn ();
-		public void ZoomOut () => editorOperations.ZoomOut ();
 		public void ZoomReset () => editorOperations.ZoomReset ();
+#endif
 
 		#endregion
 	}

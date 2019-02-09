@@ -593,6 +593,10 @@ namespace Mono.TextEditor
 			throw new NotImplementedException ();
 		}
 
+		public void Focus ()
+		{
+		}
+
 #if MAC
 		public IXPlatAdornmentLayer GetXPlatAdornmentLayer (string name)
 		{
@@ -608,10 +612,6 @@ namespace Mono.TextEditor
 		}
 
 		public ITextViewLineSource FormattedLineSource { get; } = null;
-
-		public void Focus ()
-		{
-		}
 #endif
 	}
 }
