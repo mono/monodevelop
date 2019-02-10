@@ -98,4 +98,11 @@
 		</Reference>
 	</ItemGroup>
 
+	<!--
+	Hide these refs behind an import so NuGet doesn't see them and generate spurious NU1108 "cycle detected" errors even when the condition is false.
+	This means that they have to be imported AFTER the project instead of before it, so the project can set AddMonoDevelopCoreReferences.
+	-->
+	<Import Project="$(MSBuildThisFileDirectory)CoreReferences.props" Condition="'$(AddMonoDevelopCoreReferences)' == 'true'" />
+
+
 </Project>
