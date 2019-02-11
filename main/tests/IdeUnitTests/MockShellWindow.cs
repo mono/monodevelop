@@ -36,17 +36,15 @@ namespace IdeUnitTests
 	{
 		EventHandler<NotebookChangeEventArgs> notebookChanged;
 
-		public MockShellWindow (MockShell shell, DocumentController controller, DocumentView view, MockShellNotebook notebook)
+		public MockShellWindow (MockShell shell, DocumentController controller, MockShellNotebook notebook)
 		{
 			Shell = shell;
 			Controller = controller;
-			View = view;
 			Notebook = notebook;
 		}
 
 		public MockShell Shell { get; }
 		public DocumentController Controller { get; }
-		public DocumentView View { get; }
 		public MockShellNotebook Notebook { get; }
 
 		public event EventHandler CloseRequested;

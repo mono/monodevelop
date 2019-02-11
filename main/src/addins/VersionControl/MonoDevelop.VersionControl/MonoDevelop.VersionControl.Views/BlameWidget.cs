@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 			GtkWorkarounds.FixContainerLeak (this);
 			
 			this.info = info;
-			var sourceEditor = info.DocumentController.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			var sourceEditor = info.Controller.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			
 			vAdjustment = new Adjustment (
 				sourceEditor.TextEditor.VAdjustment.Value, 
@@ -482,7 +482,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (rev == null)
 					return;
 
-				widget.info.DocumentController.ShowDiffView (rev, rev.GetPrevious ());
+				widget.info.VersionControlExtension.ShowDiffView (rev, rev.GetPrevious ());
 			}
 
 			[CommandHandler (BlameCommands.ShowLog)]
@@ -494,7 +494,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (rev == null)
 					return;
 
-				widget.info.DocumentController.ShowLogView (rev);
+				widget.info.VersionControlExtension.ShowLogView (rev);
 			}
 
 			[CommandHandler (BlameCommands.ShowBlameBefore)]

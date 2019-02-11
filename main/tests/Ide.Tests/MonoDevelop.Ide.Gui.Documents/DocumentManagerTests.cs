@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			var controller = new TestController ();
 			await controller.Initialize (null, null);
-			var view = await controller.GetDocumentViewItem ();
+			var view = await controller.GetDocumentView ();
 
 			Assert.AreEqual (view, view.ActiveViewInHierarchy);
 

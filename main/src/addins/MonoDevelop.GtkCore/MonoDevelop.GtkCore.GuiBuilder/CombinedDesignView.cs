@@ -72,7 +72,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			container = new DocumentViewContainer ();
 			container.ActiveViewChanged += Container_ActiveViewChanged;
-			var sourceView = await content.GetDocumentViewItem ();
+			var sourceView = await content.GetDocumentView ();
 			sourceView.Title = GettextCatalog.GetString ("Source");
 			container.Views.Add (sourceView);
 			return container;

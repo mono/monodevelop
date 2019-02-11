@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
-			var buffer = info.DocumentController.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
 				int line = loc.Line < 1 ? 1 : loc.Line;
@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
 			ComparisonWidget.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
-			var sourceEditorView = info.DocumentController.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			var sourceEditorView = info.Controller.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditorView != null) {
 				int line = GetLineInCenter (sourceEditorView.TextEditor);
 				ComparisonWidget.OriginalEditor.CenterTo (line, 1);
@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void OnDeselected ()
 		{
-			var sourceEditor = info.DocumentController.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
+			var sourceEditor = info.Controller.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {
 				sourceEditor.TextEditor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
 				

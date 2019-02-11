@@ -82,9 +82,9 @@ namespace IdeUnitTests
 			ActiveWorkbenchWindowChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		Task<IWorkbenchWindow> IShell.ShowView (DocumentContent content, IShellNotebook notebook, object viewCommandHandler)
+		Task<IWorkbenchWindow> IShell.ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler)
 		{
-			var view = new MockShellWindow (this, content.DocumentController, content.DocumentView, (MockShellNotebook) notebook);
+			var view = new MockShellWindow (this, controller, (MockShellNotebook) notebook);
 			windows.Add (view);
 			return Task.FromResult<IWorkbenchWindow> (view);
 		}

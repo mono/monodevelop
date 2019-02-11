@@ -58,7 +58,7 @@ namespace IdeUnitTests
 		{
 		}
 
-		void IShellDocumentViewContainer.SelectView (IShellDocumentViewItem view)
+		void IShellDocumentViewContainer.SetCurrentMode (DocumentViewContainerMode currentMode)
 		{
 		}
 

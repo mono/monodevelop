@@ -42,10 +42,12 @@ namespace MonoDevelop.VersionControl.Views
 			set;
 		}
 
-		public VersionControlDocumentController DocumentController {
+		public VersionControlDocumentController VersionControlExtension {
 			get;
 			set;
 		}
+
+		public DocumentController Controller { get; }
 
 		public VersionControlItem Item {
 			get;
@@ -66,9 +68,10 @@ namespace MonoDevelop.VersionControl.Views
 			get { return alreadyStarted; }
 		}
 
-		public VersionControlDocumentInfo (VersionControlDocumentController controller, VersionControlItem item, Repository repository)
+		public VersionControlDocumentInfo (VersionControlDocumentController versionControlExtension, DocumentController controller, VersionControlItem item, Repository repository)
 		{
-			this.DocumentController = controller;
+			this.VersionControlExtension = versionControlExtension;
+			Controller = controller;
 			this.Item = item;
 			item.Repository = repository;
 		}

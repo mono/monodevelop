@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		public override async Task<bool> SupportsController (DocumentController controller)
 		{
-			if (!await base.SupportsController (controller))
+			if (!await base.SupportsController (controller) || !(controller is FileDocumentController))
 				return false;
 
 			if (controller is FileDocumentController file) {
@@ -161,16 +161,15 @@ namespace MonoDevelop.Ide.Tasks
 
 		void Context_DocumentParsed (object sender, EventArgs e)
 		{
-			var doc = Controller.Document;
-			var pd = doc.DocumentContext.ParsedDocument;
-			var project = doc.Owner as Project;
-			if (pd == null || project == null)
+			var pd = context.ParsedDocument;
+			var project = Controller.Owner as Project;
+			if (project == null || !(Controller is FileDocumentController fileController))
 				return;
 			ProjectCommentTags tags;
 			if (!CommentTasksProvider.Legacy.ProjectTags.TryGetValue (project, out tags))
 				return;
 			var token = CommentTasksProvider.Legacy.CancellationToken;
-			var file = doc.FileName;
+			var file = fileController.FilePath;
 			Task.Run (async () => {
 				try {
 					tags.UpdateTags (project, file, await pd.GetTagCommentsAsync (token).ConfigureAwait (false));

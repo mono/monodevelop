@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl
 					continue;
 				}
 
-				var info = new VersionControlDocumentInfo (null, item, item.Repository);
+				var info = new VersionControlDocumentInfo (null, null, item, item.Repository);
 				var logView = new LogView (info);
 				info.Document = await IdeApp.Workbench.OpenDocument (logView, true);
 				logView.Init ();

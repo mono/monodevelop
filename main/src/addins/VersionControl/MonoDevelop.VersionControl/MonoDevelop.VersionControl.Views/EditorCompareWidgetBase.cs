@@ -606,7 +606,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void UpdateLocalText ()
 		{
-			var text = info.DocumentController.GetContent<ITextFile> ();
+			var text = info.Controller.GetContent<ITextFile> ();
 			foreach (var data in dict.Values) {
 				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 				data.Document.Text = text.Text;

@@ -34,10 +34,9 @@ namespace MonoDevelop.VersionControl
 {
 	public class DefaultDiffViewHandler : IVersionControlViewHandler
 	{
-		public bool CanHandle (VersionControlItem item, Document primaryView)
+		public bool CanHandle (VersionControlItem item, DocumentController controller)
 		{
-			return (primaryView == null || primaryView.GetContent <ITextFile> () != null)
-				&& item.Repository.GetFileIsText (item.Path);
+			return (controller is FileDocumentController) && item.Repository.GetFileIsText (item.Path);
 		}
 
 		public DocumentController CreateView (VersionControlDocumentInfo info)

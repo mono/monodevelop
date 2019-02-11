@@ -58,7 +58,7 @@ namespace MonoDevelop.VersionControl.Views
 			info.Start ();
 			widget.Reset ();
 
-			var buffer = info.DocumentController.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
 				int line = loc.Line < 1 ? 1 : loc.Line;
@@ -69,7 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void OnDeselected ()
 		{
-			var buffer = info.DocumentController.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				buffer.SetCaretLocation (widget.Editor.Caret.Line, widget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
 				buffer.ScrollTo (new Ide.Editor.DocumentLocation (widget.Editor.YToLine (widget.Editor.VAdjustment.Value), 1));

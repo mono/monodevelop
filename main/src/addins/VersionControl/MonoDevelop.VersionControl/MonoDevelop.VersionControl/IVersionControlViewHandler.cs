@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl {
 	
 	public interface IVersionControlViewHandler
 	{
-		bool CanHandle (VersionControlItem item, Document primaryView);
+		bool CanHandle (VersionControlItem item, DocumentController controller);
 		DocumentController CreateView (VersionControlDocumentInfo info);
 	}
 }
