@@ -352,14 +352,14 @@ namespace MonoDevelop.Ide.Gui.Shell
 			void OnDispose () => deduplicationMap.Remove (dedupId);
 		}
 		
-		public async Task<IWorkbenchWindow> ShowView (DocumentContent content, IShellNotebook notebook, object viewCommandHandler)
+		public Task<IWorkbenchWindow> ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler)
 		{
-			var mimeimage = content.DocumentController.DocumentIcon.WithSize (Gtk.IconSize.Menu);
+			var mimeimage = controller.DocumentIcon.WithSize (Gtk.IconSize.Menu);
 
 			var addToControl = (DockNotebook) notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
 			var tab = addToControl.AddTab ();
 
-			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
+			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, controller, addToControl, tab);
 			sdiWorkspaceWindow.ViewCommandHandler = viewCommandHandler;
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Show ();
@@ -369,12 +369,12 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
-			SubscribeControllerEvents (content.DocumentController);
+			SubscribeControllerEvents (controller);
 
 			// The insertion of the tab may have changed the active view (or maybe not, this is checked in OnActiveWindowChanged)
 			OnActiveWindowChanged (null, null);
 
-			return sdiWorkspaceWindow;
+			return Task.FromResult< IWorkbenchWindow> (sdiWorkspaceWindow);
 		}
 
 		public void CloseView (IWorkbenchWindow view, bool animate)

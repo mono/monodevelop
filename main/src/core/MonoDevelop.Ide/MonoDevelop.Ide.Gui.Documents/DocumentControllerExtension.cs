@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 	{
 		DocumentView viewItem;
 
+		DocumentControllerExtension next;
+
 		internal TypeExtensionNode<ExportDocumentControllerExtensionAttribute> SourceExtensionNode { get; set; }
 
 		/// <summary>
@@ -86,6 +88,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Initialize (status);
 		}
 
+		protected override void InitializeChain (ChainedExtension next)
+		{
+			base.InitializeChain (next);
+			this.next = FindNextImplementation<DocumentControllerExtension> (next);
+		}
+
 		/// <summary>
 		/// Initializes the controller
 		/// </summary>
@@ -117,37 +125,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public bool IsDirty { get; set; }
 
-
 		/// <summary>
-		/// Gets the view that will show the content of the extension.
+		/// Creates and initializes the view for the controller
 		/// </summary>
-		/// <returns>The view</returns>
-		public async Task<DocumentView> GetDocumentViewItem ()
+		/// <returns>The initialize view.</returns>
+		internal protected virtual Task<DocumentView> OnInitializeView ()
 		{
-			if (viewItem == null) {
-				viewItem = new DocumentViewContainer ();
-				try {
-					viewItem = await OnInitializeView ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("View container initialization failed", ex);
-				}
-			}
-			return viewItem;
-		}
-
-		protected virtual Task<DocumentView> OnInitializeView ()
-		{
-			return Task.FromResult<DocumentView> (new DocumentViewContent (OnGetViewControlCallback));
-		}
-
-		Task<Control> OnGetViewControlCallback (CancellationToken token)
-		{
-			return OnGetViewControl (token, (DocumentViewContent)viewItem);
-		}
-
-		protected virtual Task<Control> OnGetViewControl (CancellationToken token, DocumentViewContent view)
-		{
-			return Task.FromResult<Control> (null);
+			return next.OnInitializeView ();
 		}
 
 		internal void OnExtensionChainCreated ()

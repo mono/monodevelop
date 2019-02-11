@@ -139,24 +139,27 @@ namespace MonoDevelop.Ide.Gui
 			return GetControllersForContentCheck ().Select (controller => controller.GetContent (typeof (T)) as T).Where (c => c != null);
 		}
 
-		internal Document ()
-		{
-		}
-
-		internal Document (DocumentManager documentManager, IShell shell, IWorkbenchWindow window, DocumentContent content)
+		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription)
 		{
 			Counters.OpenDocuments++;
 
-			this.documentManager = documentManager;
 			this.shell = shell;
+			this.documentManager = documentManager;
+			this.documentControllerDescription = controllerDescription;
+			this.controller = controller;
+			controller.Document = this;
+		}
+
+		internal async Task InitializeWindow (IWorkbenchWindow window)
+		{
 			this.window = window;
 			window.Document = this;
-			documentControllerDescription = content.DocumentControllerDescription;
-			controller = content.DocumentController;
-			view = content.DocumentView;
+
+			view = await controller.GetDocumentView ();
+			view.IsRoot = true;
+			window.SetRootView (view.CreateShellView (window));
 
 			LastTimeActive = DateTime.Now;
-			controller.Document = this;
 			this.window.CloseRequested += Window_CloseRequested;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;

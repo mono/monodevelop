@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 	internal class SdiWorkspaceWindow : EventBox, IWorkbenchWindow, ICommandDelegatorRouter
 	{
 		DefaultWorkbench workbench;
-		DocumentContent content;
 		DocumentController controller;
 		GtkShellDocumentViewItem view;
 		DockNotebookTab tab;
@@ -71,19 +70,13 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
-		public SdiWorkspaceWindow (DefaultWorkbench workbench, DocumentContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, DocumentController controller, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;
-			this.controller = content.DocumentController;
-			this.content = content;
+			this.controller = controller;
 			this.tab = tabLabel;
 
-			// The root view can have attached views, so we need a root container just in case
-
-			var container = new GtkShellDocumentViewContainer ();
-			container.SetSupportedModes (DocumentViewContainerMode.Tabs);
-			
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
 			controller.DocumentTitleChanged += SetTitleEvent;
@@ -94,6 +87,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void SetRootView (IShellDocumentViewItem view)
 		{
+			this.view = (GtkShellDocumentViewItem) view;
 			if (Child != null)
 				Remove (Child);
 			if (view != null) {
@@ -312,8 +306,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
-		public DocumentContent DocumentContent => content;
-
 		public object ViewCommandHandler { get; set; }
 
 		IShellNotebook IWorkbenchWindow.Notebook => tabControl;
@@ -325,7 +317,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		void SetTitleEvent ()
 		{
-			if (content == null)
+			if (controller == null)
 				return;
 
 			string newTitle;

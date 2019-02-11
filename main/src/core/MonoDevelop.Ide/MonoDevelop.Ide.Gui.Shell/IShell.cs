@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		event EventHandler ActiveWorkbenchWindowChanged;
 
-		Task<IWorkbenchWindow> ShowView (DocumentContent content, IShellNotebook notebook, object viewCommandHandler);
+		Task<IWorkbenchWindow> ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler);
 		void CloseView (IWorkbenchWindow window, bool animate);
 
 		void Present ();

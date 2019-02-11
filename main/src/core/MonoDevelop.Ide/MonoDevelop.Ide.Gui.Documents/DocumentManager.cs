@@ -488,21 +488,27 @@ namespace MonoDevelop.Ide.Gui.Documents
 		async Task<Document> ShowView (DocumentOpenInformation documentOpenInfo)
 		{
 			var commandHandler = new ViewCommandHandlers ();
-			var content = new DocumentContent (documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription);
 
 			// If the controller has not been initialized, do it now
 			if (!documentOpenInfo.DocumentController.Initialized)
 				await documentOpenInfo.DocumentController.Initialize (null, null);
 
-			content.DocumentView = await documentOpenInfo.DocumentController.GetDocumentViewItem ();
-			var window = await workbench.ShowView (content, documentOpenInfo.DockNotebook, commandHandler);
+			var window = await workbench.ShowView (documentOpenInfo.DocumentController, documentOpenInfo.DockNotebook, commandHandler);
 
-			content.DocumentView.IsRoot = true;
-			window.SetRootView (content.DocumentView.CreateShellView (window));
+			var doc = new Document (this, workbench, documentOpenInfo.DocumentController, documentOpenInfo.DocumentControllerDescription);
+			await doc.InitializeWindow (window);
 
-			var doc = CreateDocument (content, window);
+			doc.Closing += OnWindowClosing;
+			doc.Closed += OnWindowClosed;
+			doc.Window.NotebookChanged += Window_NotebookChanged;
+			documents = documents.Add (doc);
+			WatchDocument (doc);
+
+			OnDocumentOpened (new DocumentEventArgs (doc));
+
 			if (documentOpenInfo.Options.HasFlag (OpenDocumentOptions.BringToFront) || documents.Count == 1)
-				window.SelectWindow ();
+				doc.Select ();
+
 			commandHandler.Initialize (doc);
 
 			CountFileOpened (documentOpenInfo.DocumentController);
@@ -593,20 +599,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 				navigator.JumpToOffset (fileInfo.Offset);
 			else
 				navigator.JumpToLine (fileInfo.Line, fileInfo.Column);*/
-		}
-
-		Document CreateDocument (DocumentContent content, IWorkbenchWindow window)
-		{
-			var doc = new Document (this, workbench, window, content);
-			doc.Closing += OnWindowClosing;
-			doc.Closed += OnWindowClosed;
-			doc.Window.NotebookChanged += Window_NotebookChanged;
-			documents = documents.Add (doc);
-			WatchDocument (doc);
-
-			OnDocumentOpened (new DocumentEventArgs (doc));
-
-			return doc;
 		}
 
 		Document FindDocument (IWorkbenchWindow window)

@@ -52,6 +52,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		WorkspaceObject owner;
 		ExtensionContext extensionContext;
 		DocumentView viewItem;
+		DocumentView finalViewItem;
 		ServiceProvider serviceProvider;
 
 		bool initialized;
@@ -467,20 +468,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Gets the view that will show the content of the document.
 		/// </summary>
 		/// <returns>The view</returns>
-		public async Task<DocumentView> GetDocumentViewItem ()
+		public async Task<DocumentView> GetDocumentView ()
 		{
 			CheckInitialized ();
-			if (viewItem == null) {
+			if (finalViewItem == null) {
 				try {
-					viewItem = await OnInitializeView ();
+					finalViewItem = await itemExtension.OnInitializeView ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("View container initialization failed", ex);
-					viewItem = new DocumentViewContent (() => (Control)null);
+					finalViewItem = new DocumentViewContent (() => (Control)null);
 				}
-				viewItem.SourceController = this;
 				OnContentChanged ();
 			}
-			return viewItem;
+			return finalViewItem;
 		}
 
 		/// <summary>
@@ -706,6 +706,20 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Task.CompletedTask;
 		}
 
+		async Task<DocumentView> InternalInitializeView ()
+		{
+			if (viewItem == null) {
+				try {
+					viewItem = await OnInitializeView ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("View container initialization failed", ex);
+					viewItem = new DocumentViewContent (() => (Control)null);
+				}
+				viewItem.SourceController = this;
+			}
+			return viewItem;
+		}
+
 		/// <summary>
 		/// Creates and initializes the view for this controller
 		/// </summary>
@@ -891,9 +905,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 				throw new InvalidOperationException ("Document model not initialized");
 			return true;
 		}
-	}
 
-	class DefaultControllerExtension : DocumentControllerExtension
-	{
+		class DefaultControllerExtension : DocumentControllerExtension
+		{
+			internal protected override Task<DocumentView> OnInitializeView ()
+			{
+				return Controller.InternalInitializeView ();
+			}
+		}
 	}
 }
