@@ -1,0 +1,8 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Reference Include="System.ComponentModel.Composition" />
+		<ProjectReference Include="$(MonoDevelopRootDir)src\core\MonoDevelop.Core\MonoDevelop.Core.csproj" Private="False" />
+		<ProjectReference Include="$(MonoDevelopRootDir)src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj" Private="False" />
+		<ProjectReference Include="$(MonoDevelopRootDir)external\mono-addins\Mono.Addins\Mono.Addins.csproj" Private="False" />
+	</ItemGroup>
+</Project>
