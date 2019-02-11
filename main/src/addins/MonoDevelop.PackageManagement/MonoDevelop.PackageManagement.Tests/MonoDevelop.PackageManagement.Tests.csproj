@@ -1,5 +1,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <ProjectGuid>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -222,6 +223,11 @@
     <ProjectReference Include="..\..\..\..\tests\UnitTests\UnitTests.csproj">
       <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
       <Name>UnitTests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
