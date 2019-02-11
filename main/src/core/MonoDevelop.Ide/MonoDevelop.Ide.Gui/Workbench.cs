@@ -90,6 +90,8 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				monitors = (IdeProgressMonitorManager) await Runtime.GetService<ProgressMonitorManager> ();
 				documentManager = await Runtime.GetService<DocumentManager> ();
+				DocumentModelRegistry = await Runtime.GetService<DocumentModelRegistry> ();
+				DocumentControllerService = await Runtime.GetService<DocumentControllerService> ();
 
 				Counters.Initialization.Trace ("Creating DefaultWorkbench");
 				workbench = (DefaultWorkbench) await Runtime.GetService<IShell> ();
@@ -201,9 +203,9 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 
-		public DocumentModelRegistry DocumentModelRegistry { get; } = new DocumentModelRegistry ();
+		public DocumentModelRegistry DocumentModelRegistry { get; private set; }
 
-		public DocumentControllerService DocumentControllerService { get; } = new DocumentControllerService ();
+		public DocumentControllerService DocumentControllerService { get; private set; }
 
 		internal DocumentManager DocumentManager => documentManager;
 
