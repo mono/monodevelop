@@ -60,19 +60,23 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			}
 		}
 
+		/// <summary>
+		/// Get package sources.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		public IEnumerable<KeyValuePair<string, string>> GetSources (bool includeUnOfficial, bool includeDisabled)
 		{
-			return Runtime.RunInMainThread (() => {
-				var result = new List<KeyValuePair<string, string>> ();
+			var result = new List<KeyValuePair<string, string>> ();
 
-				foreach (var repository in GetSourceRepositories ().ToList ()) {
-					result.Add (new KeyValuePair<string, string> (
-						repository.PackageSource.Name,
-						repository.PackageSource.Source
-					));
-				}
-				return result;
-			}).WaitAndGetResult (default (CancellationToken));
+			foreach (var repository in GetSourceRepositories ().ToList ()) {
+				result.Add (new KeyValuePair<string, string> (
+					repository.PackageSource.Name,
+					repository.PackageSource.Source
+				));
+			}
+			return result;
 		}
 
 		public void InstallLatestPackage (string source, Project project, string packageId, bool includePrerelease, bool ignoreDependencies)
@@ -179,6 +183,12 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			});
 		}
 
+		/// <summary>
+		/// Get package source repositories.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		IEnumerable<SourceRepository> GetSourceRepositories ()
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
