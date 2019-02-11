@@ -41,70 +41,67 @@ namespace MonoDevelop.Ide.Gui.Shell
 		DocumentViewContainerMode supportedModes;
 		DocumentViewContainerMode mode;
 
-		Notebook notebook;
-		Tabstrip tabstrip;
-		VBox rootTabsBox;
-		HBox bottomBarBox;
-
-		GtkMultiPaned paned;
+		IGtkShellDocumentViewContainer container;
 
 		public event EventHandler ActiveViewChanged;
 
-		void SetupContainer ()
-		{
-		}
+		public DocumentViewContainerMode CurrentMode => mode;
 
-		void SetNotebookMode (IEnumerable<GtkShellDocumentViewItem> items)
-		{
-			if (notebook != null) {
-				return;
-			}
-
-			rootTabsBox = new VBox ();
-			rootTabsBox.Accessible.SetShouldIgnore (true);
-
-			bottomBarBox = new HBox (false, 0);
-			bottomBarBox.Show ();
-			rootTabsBox.PackEnd (bottomBarBox, false, false, 0);
-
-			notebook = new Notebook ();
-			notebook.TabPos = PositionType.Bottom;
-			notebook.ShowTabs = false;
-			notebook.ShowBorder = false;
-			notebook.Show ();
-			rootTabsBox.PackStart (notebook, true, true, 1);
-
-			tabstrip = new Tabstrip ();
-			tabstrip.Show ();
-			bottomBarBox.PackStart (tabstrip, true, true, 0);
-
-			rootTabsBox.Show ();
-			Add (rootTabsBox);
-		}
-
-		void SetSplitMode (IEnumerable<GtkShellDocumentViewItem> items)
-		{
-			if (paned != null)
-				return;
-			paned = new GtkMultiPaned (mode);
-			paned.AddRange (items);
-			Add (paned.Paned);
-		}
+		public IGtkShellDocumentViewContainer InternalContainer => container;
 
 		public void SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
 			this.supportedModes = supportedModes;
 		}
 
+		public void SetCurrentMode (DocumentViewContainerMode mode)
+		{
+			if (this.mode == mode)
+				return;
+
+			this.mode = mode;
+
+			GtkShellDocumentViewItem activeView = null;
+
+			List<GtkShellDocumentViewItem> allViews = null;
+			if (container != null) {
+				activeView = container.ActiveView;
+				container.ActiveViewChanged -= Container_ActiveViewChanged;
+				allViews = container.GetAllViews ().ToList ();
+				container.RemoveAllViews ();
+				container.Widget.Destroy ();
+			}
+
+			if (mode == DocumentViewContainerMode.Tabs)
+				container = new GtkShellDocumentViewContainerTabs ();
+			else
+				container = new GtkShellDocumentViewContainerSplit (mode);
+
+			if (allViews != null) {
+				for (int n = 0; n < allViews.Count; n++)
+					container.InsertView (n, allViews [n]);
+			}
+
+			container.ActiveView = activeView;
+			container.ActiveViewChanged += Container_ActiveViewChanged;
+			Add (container.Widget);
+			container.Widget.Show ();
+		}
+
+		void Container_ActiveViewChanged (object sender, EventArgs e)
+		{
+			ActiveViewChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		protected override async Task OnLoad (CancellationToken cancellationToken)
 		{
 			if (mode == DocumentViewContainerMode.Tabs) {
-				var item = (GtkShellDocumentViewItem)notebook.CurrentPageWidget;
+				var item = (GtkShellDocumentViewItem)container.ActiveView;
 				if (item != null && !item.Loaded)
 					await item.Load (cancellationToken);
 			} else {
 				var allTasks = new List<Task> ();
-				foreach (var c in paned.Children.OfType<GtkShellDocumentViewItem> ())
+				foreach (var c in container.GetAllViews ())
 					allTasks.Add (c.Load (cancellationToken));
 				await Task.WhenAll (allTasks);
 			}
@@ -119,98 +116,55 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void InsertView (int position, IShellDocumentViewItem shellView)
 		{
-			var widget = (GtkShellDocumentViewContent)shellView;
-			if (mode == DocumentViewContainerMode.Tabs) {
-				var tab = new Tab (tabstrip, widget.Title) { Tag = shellView };
-				if (tab.Accessible != null)
-					tab.Accessible.Help = widget.AccessibilityDescription;
-				tab.Activated += TabActivated;
-				notebook.InsertPage (widget, new Gtk.Label (), position);
-				tabstrip.InsertTab (position, tab);
-			} else {
-				paned.InsertView (position, widget);
-			}
-		}
-
-		void TabActivated (object s, EventArgs args)
-		{
-			var tab = (Tab)s;
-			SelectView ((IShellDocumentViewItem) tab.Tag);
+			var widget = (GtkShellDocumentViewItem)shellView;
+			widget.Show ();
+			container.InsertView (position, widget);
 		}
 
 		public void ReplaceView (int position, IShellDocumentViewItem shellView)
 		{
 			var newView = (GtkShellDocumentViewItem)shellView;
-
-			if (mode == DocumentViewContainerMode.Tabs) {
-				notebook.RemovePage (position);
-				InsertView (position, newView);
-			} else {
-				paned.ReplaceView (position, newView);
-			}
+			newView.Show ();
+			container.ReplaceView (position, newView);
 		}
 
 		public void RemoveView (int tabPos)
 		{
-			if (mode == DocumentViewContainerMode.Tabs)
-				notebook.RemovePage (tabPos);
-			else
-				paned.RemoveView (tabPos);
+			container.RemoveView (tabPos);
 		}
 
 		public void ReorderView (int currentIndex, int newIndex)
 		{
-			if (mode == DocumentViewContainerMode.Tabs) {
-				var child = (GtkShellDocumentViewItem)notebook.Children [currentIndex];
-				notebook.ReorderChild (child, newIndex);
-			} else {
-				paned.ReorderView (currentIndex, newIndex);
-			}
+			container.ReorderView (currentIndex, newIndex);
 		}
 
 		public void RemoveAllViews ()
 		{
-			if (mode == DocumentViewContainerMode.Tabs) {
-				while (notebook.NPages > 0)
-					notebook.RemovePage (notebook.NPages - 1);
-			} else {
-				paned.RemoveAllViews ();
-			}
-		}
-
-		public void SelectView (IShellDocumentViewItem view)
-		{
-			if (mode == DocumentViewContainerMode.Tabs) {
-				var child = (GtkShellDocumentViewItem)view;
-				if (notebook != null) {
-					var i = notebook.Children.IndexOf (child);
-					if (i != -1) {
-						notebook.CurrentPage = i;
-						tabstrip.ActiveTab = i;
-						if (Loaded && !child.Loaded)
-							child.Load ();
-					}
-				}
-			}
+			container.RemoveAllViews ();
 		}
 
 		IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
 		{
-			if (notebook != null)
-				return notebook.Children.Cast<GtkShellDocumentViewItem> ();
-			else
-				return paned.Children.Cast<GtkShellDocumentViewItem> ();
+			return container.GetAllViews ();
 		}
 
-		public GtkShellDocumentViewItem GetViewAt (int position)
-		{
-			if (mode == DocumentViewContainerMode.Tabs) {
-				return (GtkShellDocumentViewItem)notebook.GetNthPage (position);
-			} else {
-				return (GtkShellDocumentViewItem)paned.Children [position];
-			}
+		public IShellDocumentViewItem ActiveView {
+			get => container.ActiveView;
+			set => container.ActiveView = (GtkShellDocumentViewItem) value;
 		}
+	}
 
-		public IShellDocumentViewItem ActiveView { get => throw new NotImplementedException (); set => throw new NotImplementedException (); }
+	interface IGtkShellDocumentViewContainer
+	{
+		Gtk.Widget Widget { get; }
+		void InsertView (int position, GtkShellDocumentViewItem view);
+		void ReplaceView (int position, GtkShellDocumentViewItem view);
+		void RemoveView (int tabPos);
+		void ReorderView (int currentIndex, int newIndex);
+		void RemoveAllViews ();
+		GtkShellDocumentViewItem ActiveView { get; set; }
+		event EventHandler ActiveViewChanged;
+		IEnumerable<GtkShellDocumentViewItem> GetAllViews ();
+		void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription);
 	}
 }

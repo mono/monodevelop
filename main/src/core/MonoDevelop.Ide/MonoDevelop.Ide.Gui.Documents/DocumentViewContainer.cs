@@ -37,7 +37,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// </summary>
 	public sealed class DocumentViewContainer : DocumentView, IDocumentViewContentCollectionListener
 	{
-		DocumentViewContainerMode supportedModes;
+		DocumentViewContainerMode supportedModes = DocumentViewContainerMode.Tabs;
+		DocumentViewContainerMode currentMode = DocumentViewContainerMode.Tabs;
 		IShellDocumentViewContainer shellViewContainer;
 		DocumentView activeView;
 
@@ -62,6 +63,31 @@ namespace MonoDevelop.Ide.Gui.Documents
 					supportedModes = value;
 					if (shellViewContainer != null)
 						shellViewContainer.SetSupportedModes (supportedModes);
+					if ((currentMode & supportedModes) == 0) {
+						if ((supportedModes & DocumentViewContainerMode.Tabs) != 0)
+							CurrentMode = DocumentViewContainerMode.Tabs;
+						else if ((supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0)
+							CurrentMode = DocumentViewContainerMode.HorizontalSplit;
+						else
+							CurrentMode = DocumentViewContainerMode.VerticalSplit;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the display modes supported by this container
+		/// </summary>
+		/// <value>The supported modes.</value>
+		public DocumentViewContainerMode CurrentMode {
+			get => currentMode;
+			set {
+				if (currentMode != value) {
+					if ((value & supportedModes) == 0)
+						return;
+					currentMode = value;
+					if (shellViewContainer != null)
+						shellViewContainer.SetCurrentMode (currentMode);
 				}
 			}
 		}
@@ -113,6 +139,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal override IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window)
 		{
 			shellViewContainer = window.CreateViewContainer ();
+			shellViewContainer.SetSupportedModes (supportedModes);
+			shellViewContainer.SetCurrentMode (currentMode);
 			shellViewContainer.ActiveViewChanged += ShellViewContainer_ActiveViewChanged;
 			if (activeView != null)
 				shellViewContainer.ActiveView = activeView.ShellView;
@@ -121,12 +149,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 				shellViewContainer.InsertView (n, Views [n].CreateShellView (window));
 			}
 			return shellViewContainer;
-		}
-
-		internal void SelectView (IShellDocumentViewItem shellView)
-		{
-			if (shellViewContainer != null)
-				shellViewContainer.SelectView (shellView);
 		}
 
 		internal override void DetachFromView ()

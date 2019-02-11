@@ -4239,7 +4239,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IFileViewer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\ModelDescriptor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentManager.cs" />
     <Compile Include="MonoDevelop.Ide.Navigation\NavigationHistoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitorManager.cs" />
@@ -4260,7 +4259,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewItem.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\IShell.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkMultiPaned.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkDocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\IShellDocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\ExportDocumentControllerBaseAttribute.cs" />
@@ -4277,6 +4275,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\TextBufferFileModel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\TextFileModel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\ModelRepresentation.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerTabs.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerSplit.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

@@ -1,5 +1,5 @@
 //
-// GtkMultiPaned.cs
+// GtkShellDocumentViewContainerSplit.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
@@ -23,26 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Gui.Documents;
 using Xwt.Drawing;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
-	class GtkMultiPaned
+	class GtkShellDocumentViewContainerSplit: IGtkShellDocumentViewContainer
 	{
 		DocumentViewContainerMode mode;
 		Paned paned;
 
-		public GtkMultiPaned (DocumentViewContainerMode mode)
+		public GtkShellDocumentViewContainerSplit (DocumentViewContainerMode mode)
 		{
 			this.mode = mode;
 			paned = CreatePaned ();
 			paned.Show ();
 		}
+
+		public Gtk.Widget Widget => paned;
+
 
 		Paned CreatePaned ()
 		{
@@ -52,11 +55,23 @@ namespace MonoDevelop.Ide.Gui.Shell
 				return new VPaned ();
 		}
 
+		public List<Widget> Children { get; } = new List<Widget> ();
+
 		public Paned Paned {
 			get {
 				return paned;
 			}
 		}
+
+		public GtkShellDocumentViewItem ActiveView {
+			get {
+				return (GtkShellDocumentViewItem) Children.FirstOrDefault ();
+			}
+			set {
+			}
+		}
+
+		public event EventHandler ActiveViewChanged;
 
 		public void AddRange (IEnumerable<Widget> widgets)
 		{
@@ -65,14 +80,12 @@ namespace MonoDevelop.Ide.Gui.Shell
 			Rebuild ();
 		}
 
-		public List<Widget> Children { get; } = new List<Widget> ();
-
 		void Rebuild ()
 		{
 			ClearPaneds ();
 			var currentPaned = paned;
 			int currentChild = 1;
-			for (int n=0; n<Children.Count; n++) {
+			for (int n = 0; n < Children.Count; n++) {
 				var c = Children [n];
 				if (currentChild == 1) {
 					currentPaned.Add1 (c);
@@ -112,7 +125,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
-		public void InsertView (int position, Widget view)
+		public void Dispose ()
+		{
+		}
+
+		public void InsertView (int position, GtkShellDocumentViewItem view)
 		{
 			Children.Insert (position, view);
 			Rebuild ();
@@ -138,13 +155,26 @@ namespace MonoDevelop.Ide.Gui.Shell
 			Rebuild ();
 		}
 
-		public void ReplaceView (int position, Widget view)
+		public void ReplaceView (int position, GtkShellDocumentViewItem view)
 		{
 			Children [position] = view;
 			Rebuild ();
 		}
 
-		public void SelectView (Widget view)
+		public void SelectView (GtkShellDocumentViewItem view)
+		{
+		}
+
+		public void SetCurrentMode (DocumentViewContainerMode currentMode)
+		{
+		}
+
+		public IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
+		{
+			return paned.Children.Cast<GtkShellDocumentViewItem> ();
+		}
+
+		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
 		{
 		}
 	}

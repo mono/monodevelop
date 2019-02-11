@@ -65,6 +65,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return shellContentView;
 		}
 
+		void AttachToView (IShellDocumentViewItem shellView)
+		{
+		}
+
 		/// <summary>
 		/// Async callback to be invoked to retrieve the control that the view will display
 		/// </summary>

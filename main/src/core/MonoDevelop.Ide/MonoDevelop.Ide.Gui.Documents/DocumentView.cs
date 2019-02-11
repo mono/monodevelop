@@ -177,7 +177,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void UpdateTitle ()
 		{
 			if (shellView != null)
-				shellView.SetTitle (title, icon, accessibilityDescription);
+				shellView.SetTitle (Title, icon, accessibilityDescription);
+			if (mainShellView != shellView && mainShellView != null)
+				mainShellView.SetTitle (Title, icon, accessibilityDescription);
 		}
 
 		internal bool IsRoot { get; set; }
@@ -190,7 +192,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			mainShellView = OnCreateShellView (window);
 			if (IsRoot && AttachedViews.Count > 0) {
 				attachmentsContainer = window.CreateViewContainer ();
-				attachmentsContainer.InsertView (0, shellView);
+				attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
+				attachmentsContainer.SetCurrentMode (DocumentViewContainerMode.Tabs);
+				attachmentsContainer.InsertView (0, mainShellView);
 				int pos = 1;
 				foreach (var attachedView in AttachedViews)
 					attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
@@ -199,7 +203,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 			} else
 				shellView = mainShellView;
 
-			AttachToView (shellView);
+			UpdateTitle ();
+			shellView.SetDelegatedCommandTarget (this);
 			return shellView;
 		}
 
@@ -242,6 +247,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
 					shellView = attachmentsContainer;
 					attachmentsContainer.ActiveViewChanged += AttachmentsContainer_ActiveViewChanged;
+					UpdateTitle ();
 					ReplaceViewInParent ();
 				}
 			} else {
@@ -250,6 +256,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					attachmentsContainer.RemoveView (0);
 					attachmentsContainer.ActiveViewChanged -= AttachmentsContainer_ActiveViewChanged;
 					attachmentsContainer.Dispose ();
+					attachmentsContainer = null;
 					shellView = mainShellView;
 					ReplaceViewInParent ();
 				}
@@ -259,17 +266,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void AttachmentsContainer_ActiveViewChanged (object sender, EventArgs e)
 		{
 			activeAttachedView = attachmentsContainer.ActiveView?.Item;
-			activeAttachedView.OnActivated ();
+			activeAttachedView?.OnActivated ();
 		}
 
 		internal abstract IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window);
-
-		void AttachToView (IShellDocumentViewItem shellView)
-		{
-			this.shellView = shellView;
-			UpdateTitle ();
-			shellView.SetDelegatedCommandTarget (this);
-		}
 
 		internal virtual void DetachFromView ()
 		{

@@ -56,6 +56,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 			Title = label;
 			Icon = icon;
 			AccessibilityDescription = accessibilityDescription;
+			var parent = Parent;
+			while (parent != null && !(parent is GtkShellDocumentViewContainer))
+				parent = parent.Parent;
+			if (parent is GtkShellDocumentViewContainer container)
+				container.InternalContainer.SetViewTitle (this, label, icon, accessibilityDescription);
 		}
 
 		public string Title { get; set; }
