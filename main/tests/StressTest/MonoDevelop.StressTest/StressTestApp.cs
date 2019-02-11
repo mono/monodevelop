@@ -1,4 +1,4 @@
-﻿//
+//
 // StressTestApp.cs
 //
 // Author:
@@ -67,6 +67,8 @@ namespace MonoDevelop.StressTest
 			if (ProfilerOptions.Type != StressTestOptions.ProfilerOptions.ProfilerType.Disabled) {
 				if (ProfilerOptions.MlpdOutputPath == null)
 					ProfilerOptions.MlpdOutputPath = Path.Combine (profilePath, "profiler.mlpd");
+				if (File.Exists (ProfilerOptions.MlpdOutputPath))
+					File.Delete (ProfilerOptions.MlpdOutputPath);
 				profilerProcessor = new ProfilerProcessor (ProfilerOptions);
 				string monoPath = Environment.GetEnvironmentVariable ("PATH")
 											 .Split (Path.PathSeparator)
@@ -83,6 +85,7 @@ namespace MonoDevelop.StressTest
 
 			scenario = TestScenarioProvider.GetTestScenario ();
 
+			ReportMemoryUsage (-1);
 			for (int i = 0; i < Iterations; ++i) {
 				scenario.Run ();
 				ReportMemoryUsage (i);

@@ -262,9 +262,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (subViewToolbar != null)
 				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
+			SelectWindow ();
 		}
 
-		public void SelectWindow()
+		public void SelectWindow ()
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
 			if (window != null) {
@@ -287,11 +288,10 @@ namespace MonoDevelop.Ide.Gui
 			// The tab change must be done now to ensure that the content is created
 			// before exiting this method.
 			tabControl.CurrentTabIndex = tab.Index;
-
 			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
-				DeepGrabFocus (this.ActiveViewContent.Control);
+				ActiveViewContent.GrabFocus ();
 			});
 		}
 
