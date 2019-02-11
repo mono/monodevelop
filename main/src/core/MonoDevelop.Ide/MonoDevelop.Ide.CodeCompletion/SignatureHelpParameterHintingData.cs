@@ -129,7 +129,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			if (documentation.Count > 0) {
-				markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+				markup.Append ("<span font='");
+				markup.Append (FontService.SansFontName);
+				markup.Append ("' size='small'>");
 				markup.AppendLine ();
 				markup.AppendLine ();
 				markup.AppendTaggedText (theme, documentation, 0, MaxParamColumnCount);
@@ -146,7 +148,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 						LoggingService.LogError ("Error while getting parameter documentation", e);
 					}
 					if (documentation.Count > 0) {
-						markup.Append ("<span font='" + FontService.SansFontName + "' size='small'>");
+						markup.Append ("<span font='");
+						markup.Append (FontService.SansFontName);
+						markup.Append ("' size='small'>");
 						markup.AppendLine ();
 						markup.AppendLine ();
 						markup.Append ("<b>");

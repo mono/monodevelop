@@ -83,7 +83,8 @@ namespace MonoDevelop.Ide.Editor
 			base.OnContentNameChanged ();
 			if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditor.FileName = ContentName;
+			if (ContentName != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
+				textEditor.FileName = ContentName;
 			if (this.WorkbenchWindow?.Document != null)
 				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
 			UpdateTextEditorOptions (null, null);
@@ -189,24 +190,29 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (string.IsNullOrEmpty (text)) 
 				return;
-			ParsedDocument parsedDocument = null;
 
-			var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
-			if (foldingParser != null) {
-				parsedDocument = foldingParser.Parse (textEditor.FileName, text);
-			} else {
-				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
-				if (normalParser != null) {
-					parsedDocument = await normalParser.Parse(
-						new TypeSystem.ParseOptions {
-							FileName = textEditor.FileName,
-							Content = new StringTextSource(text),
-							Project = Project
-						});
+			try {
+				ParsedDocument parsedDocument = null;
+
+				var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
+				if (foldingParser != null) {
+					parsedDocument = foldingParser.Parse (textEditor.FileName, text);
+				} else {
+					var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
+					if (normalParser != null) {
+						parsedDocument = await normalParser.Parse(
+							new TypeSystem.ParseOptions {
+								FileName = textEditor.FileName,
+								Content = new StringTextSource(text),
+								Project = Project
+							});
+					}
 				}
-			}
-			if (parsedDocument != null) {
-				await FoldingTextEditorExtension.UpdateFoldings (textEditor, parsedDocument, textEditor.CaretLocation, true);
+				if (parsedDocument != null) {
+					await FoldingTextEditorExtension.UpdateFoldings (textEditor, parsedDocument, textEditor.CaretLocation, true);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error running first time fold update", e);
 			}
 		}
 
@@ -366,8 +372,10 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#endregion
-	
 
-
+		public override void GrabFocus ()
+		{
+			textEditor.GrabFocus ();
+		}
 	}
 }

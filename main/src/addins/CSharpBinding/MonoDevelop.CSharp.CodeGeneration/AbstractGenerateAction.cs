@@ -164,6 +164,7 @@ namespace MonoDevelop.CodeGeneration
 				data.EnsureCaretIsNotVirtual ();
 				int offset = data.CaretOffset;
 				var text = StringBuilderCache.ReturnAndFree (output).TrimStart ();
+				data.InsertAtCaret (text);				
 				var formattingService = options.DocumentContext?.AnalysisDocument?.GetLanguageService<IEditorFormattingService> ();
 				if (formattingService != null) {
 					var changes = formattingService.GetFormattingChangesAsync (options.DocumentContext.AnalysisDocument, new TextSpan (offset, text.Length), CancellationToken.None).WaitAndGetResult (CancellationToken.None);

@@ -67,7 +67,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			// Null check here because the service may be loaded in an external process
 			if (IdeApp.Workbench != null)
-				IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (onActiveDocChanged);
+				IdeApp.Workbench.ActiveDocumentChanged += onActiveDocChanged;
 			
 			AddinManager.AddExtensionNodeHandler (toolboxLoaderPath, OnLoaderExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (toolboxProviderPath, OnProviderExtensionChanged);
@@ -152,8 +152,16 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void RemoveUserItem (ItemToolboxNode node)
 		{
-			Configuration.ItemList.Remove (node);
-			SaveConfiguration ();
+			if (Configuration.ItemList.Remove (node)) {
+				SaveConfiguration ();
+			} else {
+				//we need check in the dynamic providers
+				foreach (var prov in dynamicProviders) {
+					if (prov is IToolboxDynamicProviderDeleteSupport provDelSupport && provDelSupport.DeleteDynamicItem (node)) {
+						break;
+					}
+				}
+			}
 			OnToolboxContentsChanged ();
 		}
 		
@@ -526,7 +534,22 @@ namespace MonoDevelop.DesignerSupport
 			//we assume permitted, so only return false when blocked by a filter
 			return true;
 		}
-		
+
+		internal bool CanRemoveUserItem (ItemToolboxNode node)
+		{
+			if (Configuration.ItemList.Contains (node)) {
+				return true;
+			} else {
+				//we need check in the dynamic providers
+				foreach (var prov in dynamicProviders) {
+					if (prov is IToolboxDynamicProviderDeleteSupport provDelSupport && provDelSupport.CanDeleteDynamicItem (node)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		//evaluate a filter attribute against a list, and check whether permitted
 		private bool FilterPermitted (ItemToolboxNode node, ToolboxItemFilterAttribute desFa, 
 		    ICollection<ToolboxItemFilterAttribute> filterAgainst, IToolboxConsumer consumer)

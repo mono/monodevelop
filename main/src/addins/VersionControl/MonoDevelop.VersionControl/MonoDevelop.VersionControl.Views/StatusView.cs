@@ -81,7 +81,7 @@ namespace MonoDevelop.VersionControl.Views
 		bool updatingComment;
 		ChangeSet changeSet;
 		bool firstLoad = true;
-		VersionControlItemList fileList;
+		volatile VersionControlItemList fileList;
 
 		const int ColIcon = 0;
 		const int ColStatus = 1;
@@ -432,6 +432,7 @@ namespace MonoDevelop.VersionControl.Views
 				return widget;
 			}
 		}
+		object updateLock = new object ();
 
 		void StartUpdate ()
 		{
@@ -448,25 +449,27 @@ namespace MonoDevelop.VersionControl.Views
 			buttonCommit.Sensitive = false;
 
 			ThreadPool.QueueUserWorkItem (delegate {
-				if (fileList != null) {
-					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
-					foreach (var item in group) {
-						// Is directory.
-						if (item.Key) {
-							foreach (var directory in item)
-								changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
-						} else
-							changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
+				lock (updateLock) {
+					if (fileList != null) {
+						var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
+						foreach (var item in group) {
+							// Is directory.
+							if (item.Key) {
+								foreach (var directory in item)
+									changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+							} else
+								changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
+						}
+						changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
+						fileList = null;
 					}
-					changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
-					fileList = null;
+					List<VersionInfo> newList = new List<VersionInfo> ();
+					newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
+					Runtime.RunInMainThread (delegate {
+						if (!disposed)
+							LoadStatus (newList);
+					});
 				}
-				List<VersionInfo> newList = new List<VersionInfo> ();
-				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
-				Runtime.RunInMainThread (delegate {
-					if (!disposed)
-						LoadStatus (newList);
-				});
 			});
 		}
 

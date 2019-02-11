@@ -79,6 +79,7 @@ namespace MonoDevelop.Ide.Gui
 		IWorkbenchWindow lastActive;
 
 		bool closeAll;
+		bool? fullScreenState = null;
 
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
@@ -146,13 +147,20 @@ namespace MonoDevelop.Ide.Gui
 		public DockFrame DockFrame {
 			get { return dock; }
 		}
-		
+
 		public bool FullScreen {
 			get {
 				return DesktopService.GetIsFullscreen (this);
 			}
 			set {
-				DesktopService.SetIsFullscreen (this, value);
+				// If this window is not visible, don't set full screen mode
+				// until it is, as that would conflict with other windows we
+				// might be opening before (Start Window, for instance)
+				if (Visible) {
+					DesktopService.SetIsFullscreen (this, value);
+				} else {
+					fullScreenState = value;
+				}
 			}
 		}
 
@@ -427,7 +435,7 @@ namespace MonoDevelop.Ide.Gui
 			} else
 				type = "(not a file)";
 
-			var metadata = new Dictionary<string,string> () {
+			var metadata = new Dictionary<string,object> () {
 				{ "FileType", type },
 				{ "DisplayBinding", content.GetType ().FullName },
 			};
@@ -435,7 +443,7 @@ namespace MonoDevelop.Ide.Gui
 			if (isFile)
 				metadata ["DisplayBindingAndType"] = type + " | " + content.GetType ().FullName;
 
-			Counters.DocumentOpened.Inc (metadata);
+			Counters.DocumentOpened.Inc (1, null, metadata);
 
 			var mimeimage = PrepareShowView (content);
 			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
@@ -503,7 +511,7 @@ namespace MonoDevelop.Ide.Gui
 		void RegisterPad (PadCodon content)
 		{
 			if (content.HasId) {
-				string lab = content.Label.Length > 0 ? GettextCatalog.GetString (content.Label) : "";
+				string lab = content.Label.Length > 0 ? content.Label : "";
 				ActionCommand cmd = new ActionCommand ("Pad|" + content.PadId, lab, null);
 				cmd.DefaultHandler = new PadActivationHandler (this, content);
 				cmd.Category = GettextCatalog.GetString ("View (Pads)");
@@ -738,6 +746,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			if (fullScreenState != null && fullScreenState != DesktopService.GetIsFullscreen (this)) {
+				DesktopService.SetIsFullscreen (this, (bool) fullScreenState);
+				fullScreenState = null;
+			}
+		}
+
 		bool closing;
 		protected /*override*/ async void OnClosing(object o, Gtk.DeleteEventArgs e)
 		{
@@ -840,7 +857,7 @@ namespace MonoDevelop.Ide.Gui
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
 
-			WelcomePage.WelcomePageService.HideWelcomePage ();
+			WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 
 			if (lastActive != null)
 				((SdiWorkspaceWindow)lastActive).OnDeactivated ();
@@ -1421,7 +1438,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ActivatePad (PadCodon padContent, bool giveFocus)
 		{
-			WelcomePage.WelcomePageService.HideWelcomePage ();
+			WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
@@ -1498,7 +1515,7 @@ namespace MonoDevelop.Ide.Gui
 			string location = ToDockLocation (placement);
 			
 			DockItem item = dock.AddItem (padCodon.PadId);
-			item.Label = GettextCatalog.GetString (padCodon.Label);
+			item.Label = padCodon.Label;
 			item.Icon = ImageService.GetIcon (padCodon.Icon).WithSize (IconSize.Menu);
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
@@ -1536,10 +1553,10 @@ namespace MonoDevelop.Ide.Gui
 			PadCodon codon = padCodons [window];
 			DockItem item = GetDockItem (codon);
 			if (item != null) {
-				string windowTitle = GettextCatalog.GetString (window.Title);
+				string windowTitle = window.Title;
 				var windowIcon = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);
 				if (String.IsNullOrEmpty (windowTitle)) 
-					windowTitle = GettextCatalog.GetString (codon.Label);
+					windowTitle = codon.Label;
 				if (window.HasErrors && !window.ContentVisible) {
 					windowTitle = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + windowTitle + "</span>";
 					windowIcon = windowIcon.WithStyles ("error");

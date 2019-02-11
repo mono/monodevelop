@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			                                               GettextCatalog.GetString ("Enter the title for this command"));
 			browseButton.Accessible.SetCommonAttributes ("ExternalTools.Command", null,
 			                                             GettextCatalog.GetString ("Enter or select the path for the external command"));
-			browseButton.Accessible.SetTitleUIElement (commandLabel.Accessible);
+			browseButton.SetEntryAccessibleTitleUIElement (commandLabel.Accessible);
 			argumentTextBox.SetCommonAccessibilityAttributes ("ExternalTools.Arguments", "",
 			                                                  GettextCatalog.GetString ("Enter the arguments for the external command"));
 			argumentTextBox.SetAccessibilityLabelRelationship (argumentLabel);

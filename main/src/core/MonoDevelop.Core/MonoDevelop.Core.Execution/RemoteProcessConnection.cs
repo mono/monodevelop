@@ -156,15 +156,6 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		[Obsolete ("Use Disconnect()")]
-		public void Disconnect (bool waitUntilDone)
-		{
-			if (waitUntilDone)
-				Disconnect ().Wait (TimeSpan.FromSeconds (7));
-			else
-				Disconnect ().Ignore ();
-		}
-
 		public async Task Disconnect ()
 		{
 			StopPinger ();
@@ -285,6 +276,8 @@ namespace MonoDevelop.Core.Execution
 			SetStatus (ConnectionStatus.ConnectionFailed, ex.Message, ex);
 		}
 
+		public ProcessExecutionArchitecture ProcessExecutionArchitecture { get; set; }
+
 		Task StartRemoteProcess ()
 		{
 			return Task.Run (() => {
@@ -296,7 +289,7 @@ namespace MonoDevelop.Core.Execution
 				// Explicitly propagate the PATH var to the process. It ensures that tools required
 				// to run XS are also in the PATH for remote processes.
 				cmd.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
-
+				cmd.ProcessExecutionArchitecture = ProcessExecutionArchitecture;
 				process = executionHandler.Execute (cmd, console);
 				process.Task.ContinueWith (t => ProcessExited ());
 			});

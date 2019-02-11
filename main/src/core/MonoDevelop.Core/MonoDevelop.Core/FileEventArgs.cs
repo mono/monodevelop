@@ -37,56 +37,26 @@ namespace MonoDevelop.Core
 
 		public FileEventArgs (FilePath fileName, bool isDirectory)
 		{
-			Add (new FileEventInfo (fileName, isDirectory, false));
-		}
-		
-		public FileEventArgs (FilePath fileName, bool isDirectory, bool autoReload)
-		{
-			Add (new FileEventInfo (fileName, isDirectory, autoReload));
+			Add (new FileEventInfo (fileName, isDirectory));
 		}
 
 		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory)
 		{
 			foreach (var f in files)
-				Add (new FileEventInfo (f, isDirectory, false));
-		}
-
-		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory, bool autoReload)
-		{
-			foreach (var f in files)
-				Add (new FileEventInfo (f, isDirectory, autoReload));
+				Add (new FileEventInfo (f, isDirectory));
 		}
 	}
 	
 	public class FileEventInfo
 	{
-		FilePath fileName;
-		bool isDirectory;
-		bool autoReload;
-		
-		public FilePath FileName {
-			get {
-				return fileName;
-			}
-		}
-		
-		public bool IsDirectory {
-			get {
-				return isDirectory;
-			}
-		}
+		public FilePath FileName { get; }
 
-		public bool AutoReload {
-			get {
-				return autoReload;
-			}
-		}
-		
-		public FileEventInfo (FilePath fileName, bool isDirectory, bool autoReload)
+		public bool IsDirectory { get; }
+
+		public FileEventInfo (FilePath fileName, bool isDirectory)
 		{
-			this.fileName = fileName;
-			this.isDirectory = isDirectory;
-			this.autoReload = autoReload;
+			this.FileName = fileName;
+			this.IsDirectory = isDirectory;
 		}
 	}
 	
@@ -113,33 +83,17 @@ namespace MonoDevelop.Core
 	
 	public class FileCopyEventInfo : System.EventArgs
 	{
-		FilePath sourceFile;
-		FilePath targetFile;
-		bool   isDirectory;
-		
-		public FilePath SourceFile {
-			get {
-				return sourceFile;
-			}
-		}
-		
-		public FilePath TargetFile {
-			get {
-				return targetFile;
-			}
-		}
-		
-		public bool IsDirectory {
-			get {
-				return isDirectory;
-			}
-		}
-		
+		public FilePath SourceFile { get; }
+
+		public FilePath TargetFile { get; }
+
+		public bool IsDirectory { get; }
+
 		public FileCopyEventInfo (FilePath sourceFile, FilePath targetFile, bool isDirectory)
 		{
-			this.sourceFile = sourceFile;
-			this.targetFile = targetFile;
-			this.isDirectory = isDirectory;
+			this.SourceFile = sourceFile;
+			this.TargetFile = targetFile;
+			this.IsDirectory = isDirectory;
 		}
 	}
 }

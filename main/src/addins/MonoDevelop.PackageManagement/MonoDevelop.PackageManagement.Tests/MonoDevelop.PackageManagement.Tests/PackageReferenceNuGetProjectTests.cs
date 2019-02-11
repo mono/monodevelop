@@ -27,18 +27,20 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using NUnit.Framework;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
+using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
 	[TestFixture]
-	public class PackageReferenceNuGetProjectTests
+	public class PackageReferenceNuGetProjectTests : TestBase
 	{
 		DotNetProject dotNetProject;
 		TestablePackageReferenceNuGetProject project;
@@ -221,23 +223,24 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public async Task GetPackageSpecsAsync_NewProject_BaseIntermediatePathUsedForProjectAssetsJsonFile ()
 		{
-			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string projectFile = Util.GetSampleProject ("NetStandardXamarinForms", "NetStandardXamarinForms", "NetStandardXamarinForms.csproj");
+			using (var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
 
-			PackageSpec spec = await GetPackageSpecsAsync ();
+				dependencyGraphCacheContext = new DependencyGraphCacheContext ();
+				var nugetProject = new DotNetCoreNuGetProject (project);
+				var specs = await nugetProject.GetPackageSpecsAsync (dependencyGraphCacheContext);
+				var spec = specs.Single ();
 
-			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.FilePath);
-			Assert.AreEqual ("MyProject", spec.Name);
-			Assert.AreEqual ("1.0.0", spec.Version.ToString ());
-			Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
-			Assert.AreEqual ("MyProject", spec.RestoreMetadata.ProjectName);
-			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectPath);
-			Assert.AreEqual (dotNetProject.FileName.ToString (), spec.RestoreMetadata.ProjectUniqueName);
-			Assert.AreEqual (dotNetProject.BaseIntermediateOutputPath.ToString (), spec.RestoreMetadata.OutputPath);
-			Assert.AreSame (spec, dependencyGraphCacheContext.PackageSpecCache[dotNetProject.FileName.ToString ()]);
-
-			// Cannot currently test this - needs the target framework to be available in the 
-			// MSBuild.EvaluatedProperties
-			//Assert.AreEqual ("netcoreapp1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+				Assert.AreEqual (projectFile, spec.FilePath);
+				Assert.AreEqual ("NetStandardXamarinForms", spec.Name);
+				Assert.AreEqual ("1.0.0", spec.Version.ToString ());
+				Assert.AreEqual (ProjectStyle.PackageReference, spec.RestoreMetadata.ProjectStyle);
+				Assert.AreEqual ("NetStandardXamarinForms", spec.RestoreMetadata.ProjectName);
+				Assert.AreEqual (projectFile, spec.RestoreMetadata.ProjectPath);
+				Assert.AreEqual (projectFile, spec.RestoreMetadata.ProjectUniqueName);
+				Assert.AreSame (spec, dependencyGraphCacheContext.PackageSpecCache [projectFile]);
+				Assert.AreEqual ("netstandard1.0", spec.RestoreMetadata.OriginalTargetFrameworks.Single ());
+			}
 		}
 
 		[Test]
@@ -327,6 +330,63 @@ namespace MonoDevelop.PackageManagement.Tests
 			var nugetProject = PackageReferenceNuGetProject.Create (dotNetProject);
 
 			Assert.IsNull (nugetProject);
+		}
+
+		[Test]
+		public async Task AddFile_NewFile_AddsFileToProject ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+
+			await project.AddFileToProjectAsync (fileName);
+
+			ProjectFile fileItem = dotNetProject.Files.GetFile (fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (Projects.BuildAction.Compile, fileItem.BuildAction);
+			Assert.IsTrue (project.IsSaved);
+		}
+
+		[Test]
+		public async Task AddFile_NewTextFile_AddsFileToProjectWithCorrectItemType ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.txt".ToNativePath ();
+
+			await project.AddFileToProjectAsync (fileName);
+
+			ProjectFile fileItem = dotNetProject.Files.GetFile (fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (Projects.BuildAction.None, fileItem.BuildAction);
+		}
+
+		[Test]
+		public async Task AddFile_RelativeFileNameUsed_AddsFileToProject ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+			string relativeFileName = @"src\NewFile.cs".ToNativePath ();
+
+			await project.AddFileToProjectAsync (relativeFileName);
+
+			ProjectFile fileItem = dotNetProject.Files.GetFile (fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (Projects.BuildAction.Compile, fileItem.BuildAction);
+		}
+
+		[Test]
+		public async Task AddFile_FileAlreadyExistsInProject_FileIsNotAddedToProject ()
+		{
+			CreateNuGetProject ("MyProject", @"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+
+			await project.AddFileToProjectAsync (fileName);
+			await project.AddFileToProjectAsync (fileName);
+
+			int projectItemsCount = dotNetProject.Files.Count;
+			Assert.AreEqual (1, projectItemsCount);
 		}
 	}
 }

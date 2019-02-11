@@ -62,6 +62,7 @@ using Microsoft.VisualStudio.Platform;
 using Counters = MonoDevelop.Ide.Counters;
 using Microsoft.CodeAnalysis.CSharp.Completion.Providers;
 using MonoDevelop.CSharp.Completion.Provider;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -284,8 +285,8 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (extensionMethodImport) {
 					if (ctx.TargetToken.Parent is MemberAccessExpressionSyntax memberAccess) {
-						var symbolInfo = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression);
-						if (symbolInfo.Symbol.Kind == SymbolKind.NamedType)
+						var symbol = ctx.SemanticModel.GetSymbolInfo (memberAccess.Expression).Symbol;
+						if (symbol != null && symbol.Kind == SymbolKind.NamedType)
 							return;
 						extensionMethodReceiverType = ctx.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
 						if (extensionMethodReceiverType == null) 
@@ -348,13 +349,13 @@ namespace MonoDevelop.CSharp.Completion
 							}
 							if (extensionMethodImport) {
 								if (type.MightContainExtensionMethods)
-									AddImportExtensionMethodCompletionData (result, type, extensionMethodReceiverType, extMethodDict);
+									AddImportExtensionMethodCompletionData (result, ctx, type, extensionMethodReceiverType, extMethodDict);
 							} else {
 								if (!typeDict.TryGetValue (type.ContainingNamespace, out var existingTypeHashSet)) {
 									typeDict.Add (type.ContainingNamespace, existingTypeHashSet = new HashSet<string> ());
 								}
 								if (!existingTypeHashSet.Contains (type.Name)) {
-									result.Add (new ImportSymbolCompletionData (this, type, false));
+									result.Add (new ImportSymbolCompletionData (this, ctx, type, false));
 									existingTypeHashSet.Add (type.Name);
 								}
 							}
@@ -366,7 +367,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		void AddImportExtensionMethodCompletionData (CompletionDataList result, INamedTypeSymbol fromType, ITypeSymbol receiverType, Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> extMethodDict)
+		void AddImportExtensionMethodCompletionData (CompletionDataList result, CSharpSyntaxContext ctx, INamedTypeSymbol fromType, ITypeSymbol receiverType, Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> extMethodDict)
 		{
 			try {
 				foreach (var extMethod in fromType.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
@@ -375,7 +376,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (!extMethodDict.TryGetValue (fromType.ContainingNamespace, out var importSymbolList))
 							extMethodDict.Add (fromType.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
 
-						var newData = new ImportSymbolCompletionData (this, reducedMethod, false);
+						var newData = new ImportSymbolCompletionData (this, ctx, reducedMethod, false);
 						ImportSymbolCompletionData existingItem = null;
 						foreach (var data in importSymbolList) {
 							if (data.Symbol.Name == extMethod.Name) {
@@ -698,13 +699,13 @@ namespace MonoDevelop.CSharp.Completion
 			return InternalHandleParameterCompletionCommand (completionContext, triggerInfo, token);
 		}
 
-		internal static Lazy<ISignatureHelpProvider []> signatureProviders = new Lazy<ISignatureHelpProvider []> (() => {
+		internal static Lazy<ImmutableArray<ISignatureHelpProvider>> signatureProviders = new Lazy<ImmutableArray<ISignatureHelpProvider>> (() => {
 			var workspace = TypeSystemService.Workspace;
 			var mefExporter = (IMefHostExportProvider)workspace.Services.HostServices;
 			var helpProviders = mefExporter.GetExports<ISignatureHelpProvider, LanguageMetadata> ()
 				.FilterToSpecificLanguage (LanguageNames.CSharp);
 
-			return helpProviders.ToArray ();
+			return helpProviders.ToImmutableArray ();
 		});
 		readonly static Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> emptyParameterHintingResultTask = Task.FromResult (ParameterHintingResult.Empty);
 
@@ -712,19 +713,19 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var data = Editor;
 			bool force = triggerInfo.TriggerReason != Ide.Editor.Extension.SignatureHelpTriggerReason.InvokeSignatureHelpCommand;
-			List<ISignatureHelpProvider> providers;
+			ImmutableArray<ISignatureHelpProvider> providers;
 			if (!force) {
 				if (triggerInfo.TriggerReason == Ide.Editor.Extension.SignatureHelpTriggerReason.TypeCharCommand) {
-					providers = signatureProviders.Value.Where (provider => provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value)).ToList ();
+					providers = signatureProviders.Value.WhereAsArray (provider => provider.IsTriggerCharacter (triggerInfo.TriggerCharacter.Value));
 				} else if (triggerInfo.TriggerReason == Ide.Editor.Extension.SignatureHelpTriggerReason.RetriggerCommand) {
-					providers = signatureProviders.Value.Where (provider => provider.IsRetriggerCharacter (triggerInfo.TriggerCharacter.Value)).ToList ();
+					providers = signatureProviders.Value.WhereAsArray (provider => provider.IsRetriggerCharacter (triggerInfo.TriggerCharacter.Value));
 				} else {
-					providers = signatureProviders.Value.ToList ();
+					providers = signatureProviders.Value;
 				}
-				if (providers.Count == 0)
+				if (providers.Length == 0)
 					return emptyParameterHintingResultTask;
 			} else
-				providers = signatureProviders.Value.ToList ();
+				providers = signatureProviders.Value;
 
 			if (Editor.EditMode != EditMode.Edit)
 				return emptyParameterHintingResultTask;

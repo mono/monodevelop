@@ -32,7 +32,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	class TestableDotNetCoreNuGetProject : DotNetCoreNuGetProject
 	{
 		public TestableDotNetCoreNuGetProject (DotNetProject project)
-			: base (project, new [] { "netcoreapp1.0" })
+			: base (project, new [] { "netcoreapp1.0" }, ConfigurationSelector.Default)
 		{
 			BuildIntegratedRestorer = new FakeMonoDevelopBuildIntegratedRestorer ();
 		}

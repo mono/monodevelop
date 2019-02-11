@@ -146,7 +146,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemServiceTests.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopFrameworkAssemblyPathResolverFactoryTests.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspaceTests.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\SingleFileDescriptionTemplateTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

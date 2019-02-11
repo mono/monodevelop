@@ -263,7 +263,6 @@ namespace Mono.TextEditor
 			}
 			var textChange = new TextChangeEventArgs(changes);
 
-			InterruptFoldWorker();
 			TextChanging?.Invoke(this, textChange);           
 			// After TextChanging notification has been sent, we can update the cached snapshot
 			this.currentSnapshot = args.After;
@@ -1333,10 +1332,6 @@ namespace Mono.TextEditor
 		void RemoveFolding (FoldSegment folding)
 		{
 			folding.isAttached = false;
-			if (folding.isFolded) {
-				foldedSegments.Remove (folding);
-				CommitUpdateAll ();
-			}
 			foldSegmentTree.Remove (folding);
 		}
 		
@@ -1348,7 +1343,7 @@ namespace Mono.TextEditor
 		{
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
-			bool foldedSegmentAdded = false;
+			bool foldedSegmentAdded = false, foldedFoldingRemoved = false;
 			var newSegments = segments.ToList ();
 			newSegments.Sort ();
 			var newFoldedSegments = new HashSet<FoldSegment> ();
@@ -1361,6 +1356,7 @@ namespace Mono.TextEditor
 				int offset = newFoldSegment.Offset;
 				while (oldIndex < oldSegments.Count && offset > oldSegments [oldIndex].Offset) {
 					RemoveFolding (oldSegments [oldIndex]);
+					foldedFoldingRemoved |= oldSegments [oldIndex].IsCollapsed;
 					oldIndex++;
 				}
 				if (oldIndex < oldSegments.Count && offset == oldSegments [oldIndex].Offset) {
@@ -1394,25 +1390,12 @@ namespace Mono.TextEditor
 					return null;
 				}
 				RemoveFolding (oldSegments [oldIndex]);
+				foldedFoldingRemoved |= oldSegments [oldIndex].IsCollapsed;
 				oldIndex++;
 			}
 			bool countChanged = foldedSegments.Count != newFoldedSegments.Count;
-			update = foldedSegmentAdded || countChanged;
+			update = foldedSegmentAdded || countChanged || foldedFoldingRemoved;
 			return newFoldedSegments;
-		}
-		
-		public void WaitForFoldUpdateFinished ()
-		{
-			if (foldSegmentTask != null) {
-				try {
-					foldSegmentTask.Wait (5000);
-				} catch (AggregateException e) {
-					e.Flatten ().Handle (x => x is OperationCanceledException);
-				} catch (OperationCanceledException) {
-					
-				}
-				foldSegmentTask = null;
-			}
 		}
 		
 		internal void InterruptFoldWorker ()
@@ -1420,7 +1403,6 @@ namespace Mono.TextEditor
 			if (foldSegmentSrc == null)
 				return;
 			foldSegmentSrc.Cancel ();
-			WaitForFoldUpdateFinished ();
 			foldSegmentSrc = null;
 		}
 		
@@ -1704,6 +1686,7 @@ namespace Mono.TextEditor
 					OnHeightChanged (EventArgs.Empty);
 				}
 			}
+			marker.parent = null;
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}

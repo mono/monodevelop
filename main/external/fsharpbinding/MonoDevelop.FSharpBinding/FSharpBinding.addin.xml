@@ -314,6 +314,12 @@
         <Command _description="Toggle type signature help"
                  _label="Toggle type signature help"
                  id="MonoDevelop.FSharp.SignatureHelp.Toggle" />
+				
+        <Command _description="Quick Fix Menu"
+                 id="MonoDevelop.FSharp.QuickFixMenu" 
+                 _label="Quick Fix"
+				 type = "array"
+		         defaultHandler = "MonoDevelop.FSharp.QuickFixMenuHandler" />
       </Category>
     </ComplexCondition>
   </Extension>
@@ -321,6 +327,9 @@
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
     <CommandItem id = "MonoDevelop.FSharp.CurrentRefactoringOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
     <Condition id="FileType" fileExtensions=".fs,.fsi,.fsx,.fsscript">
+	  <ItemSet id = "MonoDevelop.FSharp.QuickFixMenu" _label = "Quick Fix" autohide = "true" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator">
+  	    <CommandItem id = "MonoDevelop.FSharp.QuickFixMenu" />
+      </ItemSet>
       <SeparatorItem id = "FSharpScriptDebug" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptInternal" />
       <CommandItem id = "MonoDevelop.FSharp.Editor.DebugScriptExternal" />

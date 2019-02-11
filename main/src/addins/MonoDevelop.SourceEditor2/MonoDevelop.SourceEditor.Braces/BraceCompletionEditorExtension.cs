@@ -129,7 +129,7 @@ namespace MonoDevelop.SourceEditor.Braces
 		private IBraceCompletionManager Manager {
 			get {
 				if (_manager == null
-					&& !View.Properties.TryGetProperty ("BraceCompletionManager", out _manager)) {
+					&& !View.Properties.TryGetProperty ("BraceCompletionManagerMD", out _manager)) {
 					_manager = null;
 				}
 

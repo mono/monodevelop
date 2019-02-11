@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide
 		Socket listen_socket   = null;
 		List<AddinError> errorsList = new List<AddinError> ();
 		bool initialized;
+		static StartupInfo startupInfo;
 		static readonly int ipcBasePort = 40000;
 		static Stopwatch startupTimer = new Stopwatch ();
 		static Stopwatch startupSectionTimer = new Stopwatch ();
@@ -184,7 +185,7 @@ namespace MonoDevelop.Ide
 
 			AddinManager.AddinLoadError += OnAddinError;
 
-			var startupInfo = new StartupInfo (args);
+			startupInfo = new StartupInfo (args);
 
 			// If a combine was specified, force --newwindow.
 
@@ -280,7 +281,7 @@ namespace MonoDevelop.Ide
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
-				hideWelcomePage = startupInfo.HasFiles;
+				hideWelcomePage = startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				IdeApp.Initialize (monitor, hideWelcomePage);
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
@@ -301,7 +302,7 @@ namespace MonoDevelop.Ide
 
 				// load previous combine
 				RecentFile openedProject = null;
-				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
+				if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
@@ -465,23 +466,25 @@ namespace MonoDevelop.Ide
 			Composition.CompositionManager.InitializeAsync ().Ignore ();
 
 			// OpenDocuments appears when the app is idle.
-			if (!hideWelcomePage) {
+			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
+				IdeApp.Workbench.Show ();
+			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
+				IdeApp.Workbench.Show ();
 			}
 
-			IdeApp.Workbench.Show ();
 			return false;
 		}
 
-		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
+		void CreateStartupMetadata (StartupInfo si, Dictionary<string, long> timings)
 		{
 			var result = DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
 
-			var startupMetadata = GetStartupMetadata (startupInfo, result, timings);
+			var startupMetadata = GetStartupMetadata (si, result, timings);
 			Counters.Startup.Inc (startupMetadata);
 
 			if (ttcMetadata != null) {
@@ -917,8 +920,8 @@ namespace MonoDevelop.Ide
 				AssetTypeName = assetType.Name,
 				IsInitialRun = IdeApp.IsInitialRun,
 				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
-				TimeSinceMachineStart = platformDetails.TimeSinceMachineStart.Seconds,
-				TimeSinceLogin = platformDetails.TimeSinceLogin.Seconds,
+				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
+				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
 				Timings = timings
 			};
 		}

@@ -441,10 +441,14 @@ namespace MonoDevelop.CSharp.Formatting
 				    "SmartSemicolonPlacement",
 				    false
 			    ) && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
+				bool isCompletionWindowOpen = CompletionWindowManager.IsVisible;
 				bool retval = base.KeyPress (descriptor);
 				var curLine = Editor.GetLine (Editor.CaretLine);
 				string text = Editor.GetTextAt (curLine);
-				if (!(text.EndsWith (";", StringComparison.Ordinal) || text.Trim ().StartsWith ("for", StringComparison.Ordinal))) {
+
+				if (!isCompletionWindowOpen &&                           // Completion window handles ';' on it's own
+					Editor.GetCharAt (Editor.CaretOffset - 1) == ';' &&  // Formatting engine may've already interfered
+					!(text.EndsWith (";", StringComparison.Ordinal) || text.Trim ().StartsWith ("for", StringComparison.Ordinal))) {
 					int guessedOffset;
 
 					if (GuessSemicolonInsertionOffset (Editor, curLine, Editor.CaretOffset, out guessedOffset)) {

@@ -64,7 +64,9 @@ namespace MonoDevelop.WebReferences
 		/// <returns>An XmlDocument containing the generated xml for the specified discovery document.</returns>
 		public static void GenerateDiscoXml (StringBuilder text, DiscoveryDocument doc)
 		{
-			text.Append ("<big><b>" + GettextCatalog.GetString ("Web Service References") + "</b></big>\n\n");
+			text.Append ("<big><b>")
+				.Append (GettextCatalog.GetString ("Web Service References"))
+				.Append ("</b></big>\n\n");
 			foreach (object oref in doc.References)
 			{
 				var dref = oref as DiscoveryReference;

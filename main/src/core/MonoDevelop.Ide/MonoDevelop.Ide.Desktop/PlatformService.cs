@@ -59,13 +59,6 @@ namespace MonoDevelop.Ide.Desktop
 
 		public abstract string Name { get; }
 
-		[Obsolete]
-		public virtual string DefaultControlLeftRightBehavior {
-			get {
-				return "MonoDevelop";
-			}
-		}
-
 		public virtual void Initialize ()
 		{
 		}
@@ -503,6 +496,11 @@ namespace MonoDevelop.Ide.Desktop
 
 		internal virtual void SetMainWindowDecorations (Gtk.Window window)
 		{
+		}
+
+		public virtual void FocusWindow (Window window)
+		{
+			window.GrabFocus ();
 		}
 
 		internal virtual IMainToolbarView CreateMainToolbar (Gtk.Window window)

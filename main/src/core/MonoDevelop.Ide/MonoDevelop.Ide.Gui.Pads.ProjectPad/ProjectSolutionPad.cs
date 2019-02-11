@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	{
 		public ProjectSolutionPad ()
 		{
-			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnWindowChanged);
+			IdeApp.Workbench.ActiveDocumentChanged += OnWindowChanged;
 		}
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)

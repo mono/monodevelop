@@ -38,7 +38,7 @@ using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	class ToolboxWidget : Gtk.DrawingArea
+	class ToolboxWidget : Gtk.DrawingArea, IToolboxWidget
 	{
 		List<ToolboxWidgetCategory> categories = new List<ToolboxWidgetCategory> ();
 
@@ -237,7 +237,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			int ypos = -vadjustment;
 			ToolboxWidgetCategory lastCategory = null;
 			int lastCategoryYpos = 0;
-
 			cr.LineWidth = 1;
 
 			Iterate (ref xpos, ref ypos, (category, itemDimension) => {
@@ -1062,7 +1061,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 
-	class ToolboxWidgetItem : IComparable<ToolboxWidgetItem>
+ 	class ToolboxWidgetItem : IComparable<ToolboxWidgetItem>
 	{
 		static Xwt.Drawing.Image defaultIcon;
 		readonly Xwt.Drawing.Image icon;
@@ -1150,8 +1149,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 
-	[Obsolete("This class should never have been public")]
-	public class Item : IComparable<Item>
+	class Item : IComparable<Item>
 	{
 		ToolboxWidgetItem inner;
 

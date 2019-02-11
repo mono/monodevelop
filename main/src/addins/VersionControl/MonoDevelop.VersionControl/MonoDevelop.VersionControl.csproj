@@ -78,6 +78,10 @@
       <HintPath>..\..\..\..\build\bin\Microsoft.VisualStudio.Text.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Humanizer">
+      <HintPath>..\..\..\..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\added-overlay-16.png" />
@@ -516,10 +520,14 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.DiffWidget.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
+    <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.MacDev" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring
 				this.languageName = languageName;
 
 				placeSystemNamespaceFirstProp = Ide.IdeApp.Preferences.Roslyn.For (languageName).PlaceSystemNamespaceFirst;
-				separateImportDirectiveGroupsProp = Ide.IdeApp.Preferences.Roslyn.For (languageName).PlaceSystemNamespaceFirst;
+				separateImportDirectiveGroupsProp = Ide.IdeApp.Preferences.Roslyn.For (languageName).SeparateImportDirectiveGroups;
 
 				var hBox = new HBox ();
 				hBox.PackStart (new Label { Markup = GettextCatalog.GetString ("Organize Usings") });

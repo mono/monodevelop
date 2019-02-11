@@ -437,5 +437,31 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.AreEqual ("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}", project.TypeGuid);
 			Assert.AreEqual (solutionFileText, newSolutionFileText);
 		}
+
+		[Test]
+		public async Task NetStandard_EnsureGeneratedAssemblyInfoAvailableToTypeSystem ()
+		{
+			var solFile = Util.GetSampleProject ("netstandard-sdk", "netstandard-sdk.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (Project)sol.Items [0];
+
+				var process = Process.Start ("msbuild", $"/t:Restore \"{solFile}\"");
+				Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+				Assert.AreEqual (0, process.ExitCode);
+
+				var debugConfig = new SolutionConfigurationSelector ("Debug");
+				var debugSourceFiles = await p.GetSourceFilesAsync (Util.GetMonitor (), debugConfig);
+
+				var releaseConfig = new SolutionConfigurationSelector ("Release");
+				var releaseSourceFiles = await p.GetSourceFilesAsync (Util.GetMonitor (), releaseConfig);
+
+				var expectedDebugAssemblyInfoFile = p.BaseIntermediateOutputPath.Combine ("Debug", "netstandard1.4", "netstandard-sdk.AssemblyInfo.cs");
+				var expectedReleaseAssemblyInfoFile = p.BaseIntermediateOutputPath.Combine ("Release", "netstandard1.4", "netstandard-sdk.AssemblyInfo.cs");
+
+				Assert.IsTrue (debugSourceFiles.Any (f => f.FilePath == expectedDebugAssemblyInfoFile));
+				Assert.IsTrue (releaseSourceFiles.Any (f => f.FilePath == expectedReleaseAssemblyInfoFile));
+			}
+		}
 	}
 }

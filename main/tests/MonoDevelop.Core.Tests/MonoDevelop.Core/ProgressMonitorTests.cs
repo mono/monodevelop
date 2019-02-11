@@ -1,4 +1,4 @@
-﻿//
+//
 // ProgressMonitorTests.cs
 //
 // Author:
@@ -117,21 +117,29 @@ namespace MonoDevelop.Core
 				using (var mon = new ChainedProgressMonitor (ctx)) {
 					// These call once into Write.
 					mon.Log.Write ("a");
+					Assert.AreEqual (1, ctx.CallCount);
+
 					mon.Log.Write ('a');
+					Assert.AreEqual (2, ctx.CallCount);
+
 					mon.Log.Write (new [] { 'a' }, 0, 1);
+					Assert.AreEqual (3, ctx.CallCount);
+
 					mon.Log.WriteLine ("a");
+					Assert.AreEqual (4, ctx.CallCount);
 
 					// These 2 call twice into Write.
 					mon.Log.WriteLine ('a');
-					mon.Log.WriteLine (new [] { 'a' }, 0, 1);
+					Assert.AreEqual (6, ctx.CallCount);
 
+					mon.Log.WriteLine (new [] { 'a' }, 0, 1);
 					Assert.AreEqual (8, ctx.CallCount);
 
 					mon.Log.Flush ();
 					Assert.AreEqual (9, ctx.CallCount);
 				}
-				// Once for completed, Dispose needs API break to be done on the right context.
-				Assert.AreEqual (10, ctx.CallCount);
+				// Once for completed, once for Dispose.
+				Assert.AreEqual (11, ctx.CallCount);
 			}
 		}
 	}
@@ -144,10 +152,10 @@ namespace MonoDevelop.Core
 			Log = underlyingLog = new CustomWriter (ctx);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
 			underlyingLog.Dispose ();
-			base.Dispose ();
+			base.OnDispose (disposing);
 		}
 
 		class CustomWriter : System.IO.TextWriter

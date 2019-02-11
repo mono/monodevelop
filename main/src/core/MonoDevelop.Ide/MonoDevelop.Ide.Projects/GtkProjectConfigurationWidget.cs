@@ -87,6 +87,13 @@ namespace MonoDevelop.Ide.Projects
 			projectNameTextBox.Accessible.Description = GettextCatalog.GetString ("Enter the name for the new project");
 			projectNameTextBox.Accessible.SetTitleUIElement (projectNameLabel.Accessible);
 
+			solutionNameLabel.Accessible.Name = "ProjectConfigurationWidget.SolutionNameLabel";
+			solutionNameLabel.Accessible.SetTitleFor (solutionNameTextBox.Accessible);
+
+			solutionNameTextBox.Accessible.Name = "ProjectConfigurationWidget.SolutionNameTextBox";
+			solutionNameTextBox.Accessible.Description = GettextCatalog.GetString ("Enter the name for the new solution");
+			solutionNameTextBox.Accessible.SetTitleUIElement (solutionNameLabel.Accessible);
+
 			locationLabel.Accessible.Name = "ProjectConfigurationWidget.LocationLabel";
 			locationLabel.Accessible.SetTitleFor (locationTextBox.Accessible, browseButton.Accessible);
 
@@ -384,7 +391,7 @@ namespace MonoDevelop.Ide.Projects
 			eventBox.ShowAll ();
 
 			return new EventBoxTooltip (eventBox) {
-				ToolTip = GettextCatalog.GetString (tooltipText),
+				ToolTip = tooltipText,
 				Severity = TaskSeverity.Information
 			};
 		}

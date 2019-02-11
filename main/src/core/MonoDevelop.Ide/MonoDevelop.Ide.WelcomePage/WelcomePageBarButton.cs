@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			UpdateStyle ();
 
 			VisibleWindow = false;
-			this.Text = GettextCatalog.GetString (title);
+			this.Text = title;
 			this.actionLink = href;
 			if (!string.IsNullOrEmpty (iconResource)) {
 				imageHover = Xwt.Drawing.Image.FromResource (iconResource);

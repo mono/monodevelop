@@ -35,6 +35,9 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using System.Threading;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.LanguageServices;
+using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis.CSharp.Extensions;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -66,10 +69,25 @@ namespace MonoDevelop.CSharp.Formatting
 			var snapshot = editor.TextView.TextBuffer.CurrentSnapshot;
 			var caretLine = snapshot.GetLineFromLineNumber (lineNumber - 1);
 			int? indentation = smartIndentationService.GetDesiredIndentation (editor.TextView, caretLine);
-			if (indentation.HasValue && indentation.Value > 0)
+			if (indentation.HasValue && indentation.Value > 0) {
 				return CalculateIndentationString (indentation.Value);
+			}
 
-			return editor.GetLineIndent (lineNumber);
+			var line = editor.GetLine (lineNumber);
+			if (line == null)
+				return editor.GetLineIndent (lineNumber);
+			try {
+				if (line.Contains (editor.CaretOffset)) {
+					var syntaxRoot = doc.GetSyntaxRootSynchronously (default);
+					var token = syntaxRoot.FindTokenOnLeftOfPosition (editor.CaretOffset);
+					if (token.IsKind (Microsoft.CodeAnalysis.CSharp.SyntaxKind.CommaToken))
+						return line.GetIndentation (editor) + CalculateIndentationString (editor.Options.IndentationSize);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while calculating the indentation string.", e);
+			}
+
+			return line.GetIndentation (editor);
 		}
 
 		string CalculateIndentationString (int spaceCount)

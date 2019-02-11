@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.Tasks
 {	
@@ -63,7 +64,21 @@ namespace MonoDevelop.Ide.Tasks
 		bool solutionLoaded = false;
 		bool updating;
 		string[] priorities = { GettextCatalog.GetString ("High"), GettextCatalog.GetString ("Normal"), GettextCatalog.GetString ("Low")};
-		
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		static int GetEnumIndex(TaskPriority priority)
+		{
+			switch (priority) {
+			case TaskPriority.High:
+				return 0;
+			case TaskPriority.Normal:
+				return 1;
+			case TaskPriority.Low:
+			default:
+				return 2;
+			}
+		}
+
 		public UserTasksView ()
 		{
 			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
@@ -169,7 +184,8 @@ namespace MonoDevelop.Ide.Tasks
 
 			store.Clear ();
 			foreach (TaskListEntry task in TaskService.UserTasks) {
-				store.AppendValues (GettextCatalog.GetString (Enum.GetName (typeof (TaskPriority), task.Priority)), task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
+				var text = priorities [GetEnumIndex (task.Priority)];
+				store.AppendValues (text, task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
 			}
 			ValidateButtons ();
 		}
@@ -209,7 +225,8 @@ namespace MonoDevelop.Ide.Tasks
 			updating = true;
 			TaskService.UserTasks.Add (task);
 			updating = false;
-			TreeIter iter = store.AppendValues (GettextCatalog.GetString (Enum.GetName (typeof (TaskPriority), task.Priority)), task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
+			var text = priorities [GetEnumIndex (task.Priority)];
+			TreeIter iter = store.AppendValues (text, task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
 			view.Selection.SelectIter (sortModel.ConvertChildIterToIter (iter));
 			TreePath sortedPath = sortModel.ConvertChildPathToPath (store.GetPath (iter));
 			view.ScrollToCell (sortedPath, view.Columns[(int)Columns.Description], true, 0, 0);

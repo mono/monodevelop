@@ -81,7 +81,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			loadUserDataCheckButton.Active = IdeApp.Preferences.LoadDocumentUserProperties;
 			createBackupCopyCheckButton.Active = IdeApp.Preferences.CreateFileBackupCopies;
-			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup.Value;
+			openStartWindowRadioButton.Active = IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.ShowStartWindow;
+			loadPrevProjectRadioButton.Active = IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution;
+			emptyEnvironmentRadioButton.Active = IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.EmptyEnvironment;
 
 			SetupAccessibility ();
 		}
@@ -95,8 +97,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			loadUserDataCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadUserData", "",
 			                                                          GettextCatalog.GetString ("Check to load the user specific settings with the solution"));
-			loadPrevProjectCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", "",
+			openStartWindowRadioButton.SetCommonAccessibilityAttributes ("LoadSavePanel.openStartWindow", "",
+				GettextCatalog.GetString ("Check to load the Start Window when starting the application"));
+			loadPrevProjectRadioButton.SetCommonAccessibilityAttributes ("LoadSavePanel.loadPrevious", "",
 			                                                             GettextCatalog.GetString ("Check to load the previous solution when starting the application"));
+			emptyEnvironmentRadioButton.SetCommonAccessibilityAttributes ("LoadSavePanel.emptyEnvironment", "",
+				GettextCatalog.GetString ("Check to load an empty environment when starting the application"));
 			createBackupCopyCheckButton.SetCommonAccessibilityAttributes ("LoadSavePanel.createBackup", "",
 			                                                              GettextCatalog.GetString ("Check to always create a backup copy"));
 		}
@@ -116,7 +122,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store () 
 		{
-			IdeApp.Preferences.LoadPrevSolutionOnStartup.Value = loadPrevProjectCheckButton.Active;
+			if (openStartWindowRadioButton.Active) {
+				IdeApp.Preferences.StartupBehaviour.Value = OnStartupBehaviour.ShowStartWindow;
+			} else if (loadPrevProjectRadioButton.Active) {
+				IdeApp.Preferences.StartupBehaviour.Value = OnStartupBehaviour.LoadPreviousSolution;
+			} else if (emptyEnvironmentRadioButton.Active) {
+				IdeApp.Preferences.StartupBehaviour.Value = OnStartupBehaviour.EmptyEnvironment;
+			}
+
 			IdeApp.Preferences.LoadDocumentUserProperties.Value = loadUserDataCheckButton.Active;
 			IdeApp.Preferences.CreateFileBackupCopies.Value = createBackupCopyCheckButton.Active;
 			IdeApp.Preferences.ProjectsDefaultPath.Value = folderEntry.Path;

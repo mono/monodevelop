@@ -68,8 +68,6 @@ namespace MonoDevelop.PackageManagement
 			credentialService = new PackageManagementCredentialService ();
 			credentialService.Initialize ();
 
-			ConfigureNuGetSdkResolver ();
-
 			PackageManagementBackgroundDispatcher.Initialize ();
 
 			nuGetConfigFileChangedMonitor.MonitorFileChanges ();
@@ -81,17 +79,6 @@ namespace MonoDevelop.PackageManagement
 		internal static void InitializeCredentialService ()
 		{
 			credentialService.Initialize ();
-		}
-
-		/// <summary>
-		/// Tell the NuGet SDK resolver included with MSBuild to look at the NuGet addin directory when
-		/// resolving the NuGet assemblies. The NuGet SDK resolver will download NuGet packages for
-		/// .NET Core projects that use SDKs provided by a NuGet package.
-		/// </summary>
-		static void ConfigureNuGetSdkResolver ()
-		{
-			string directory = Path.GetDirectoryName (typeof (PackageManagementServices).Assembly.Location);
-			Environment.SetEnvironmentVariable ("MSBUILD_NUGET_PATH", directory);
 		}
 
 		internal static PackageManagementOptions Options {

@@ -522,18 +522,26 @@ namespace Mono.TextEditor
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
 				}
-				if (UpdatePreeditLineHeight ())
+				if (UpdatePreeditLineHeight ()) {
 					QueueDraw ();
+				} else {
+					this.textViewMargin.ForceInvalidateLine (preeditLine);
+					this.textEditorData.Document.CommitLineUpdate (preeditLine);
+				}
 			} else {
+				if (preeditOffset < 0)
+					return;
 				preeditOffset = -1;
 				preeditString = null;
 				preeditAttrs = null;
 				preeditCursorCharIndex = 0;
-				if (UpdatePreeditLineHeight ())
+				if (UpdatePreeditLineHeight ()) {
 					QueueDraw ();
+				} else {
+					this.textViewMargin.ForceInvalidateLine (preeditLine);
+					this.textEditorData.Document.CommitLineUpdate (preeditLine);
+				}
 			}
-			this.textViewMargin.ForceInvalidateLine (preeditLine);
-			this.textEditorData.Document.CommitLineUpdate (preeditLine);
 		}
 
 		internal bool UpdatePreeditLineHeight ()
@@ -1116,8 +1124,6 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed || logicalLine > LineCount || logicalLine < DocumentLocation.MinLine)
 				return;
-
-			textViewMargin.RemoveCachedLine(logicalLine);
 
 			double y = LineToY (logicalLine) - this.textEditorData.VAdjustment.Value;
 			double h = GetLineHeight (logicalLine);

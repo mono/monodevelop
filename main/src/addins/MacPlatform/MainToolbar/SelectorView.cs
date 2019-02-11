@@ -124,22 +124,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		internal void OnSizeChanged ()
 		{
-			if (SizeChanged != null) {
-				SizeChanged (this, EventArgs.Empty);
-			}
+			SizeChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		public override bool BecomeFirstResponder()
-		{
-			if (Window.FirstResponder != RealSelectorView)
-				return Window.MakeFirstResponder(RealSelectorView);
-			return false;
-		}
-
-		public override bool AcceptsFirstResponder()
-		{
-			return Window.FirstResponder != RealSelectorView;
-		}
+		public override bool AcceptsFirstResponder () => false;
 
 		#region PathSelectorView
 		[Register]
@@ -574,39 +562,63 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			int focusedCellIndex = 0;
 			NSPathComponentCellFocusable focusedItem;
 
+			bool UpdatePreviousCellForResponderChain (int fromPosition)
+			{
+				for (focusedCellIndex = fromPosition; focusedCellIndex >= 0; focusedCellIndex--) {
+					var cell = Cells [focusedCellIndex].Cell;
+					if (PathComponentCells.Contains (cell) && cell.Enabled) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			bool UpdateNextCellForResponderChain (int fromPosition)
+			{
+				for (focusedCellIndex = fromPosition; focusedCellIndex < Cells.Length; focusedCellIndex++) {
+					var cell = Cells [focusedCellIndex].Cell;
+					if (PathComponentCells.Contains (cell) && cell.Enabled) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			public override void KeyDown (NSEvent theEvent)
 			{
-				if (theEvent.KeyCode == KeyCodes.Space) {
+				if (theEvent.KeyCode == (ushort) KeyCodes.Space) {
 					var item = Cells [focusedCellIndex].Cell;
 					PopupMenuForCell (item);
 					return;
 				}
 
 				// 0x30 is Tab
-				if (theEvent.KeyCode == KeyCodes.Tab) {
+				if (theEvent.KeyCode == (ushort)KeyCodes.Tab) {
 					if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
-						focusedCellIndex--;
-						if (focusedCellIndex < 0) {
+						if (focusedCellIndex <= 0) {
 							if (PreviousKeyView != null) {
 								SetSelection ();
 								focusedCellIndex = 0;
 								focusedItem = null;
 							}
 						} else {
-							SetSelection ();
-							return;
+							if (UpdatePreviousCellForResponderChain (focusedCellIndex - 1)) {
+								SetSelection ();
+								return;
+							}
 						}
 					} else {
-						focusedCellIndex++;
-						if (focusedCellIndex >= VisibleCellIds.Length) {
+						if (focusedCellIndex >= VisibleCellIds.Length - 1) {
 							if (NextKeyView != null) {
 								SetSelection ();
 								focusedCellIndex = 0;
 								focusedItem = null;
 							}
 						} else {
-							SetSelection ();
-							return;
+							if (UpdateNextCellForResponderChain (focusedCellIndex + 1)) {
+								SetSelection ();
+								return;
+							}
 						}
 					}
 				}
@@ -616,15 +628,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void SetSelection ()
 			{
-				if (focusedItem != null) {
-					focusedItem.HasFocus = false;
-				}
+				//ensures our cells are in the correct enabled state
 				if (focusedCellIndex >= 0 && focusedCellIndex < Cells.Length) {
-					var item = Cells [focusedCellIndex].Cell as NSPathComponentCellFocusable;
-					focusedItem = item;
-					if (item != null)
-						item.HasFocus = true;
+					focusedItem = Cells [focusedCellIndex].Cell as NSPathComponentCellFocusable;
+					if (focusedItem != null)
+						focusedItem.HasFocus = true;
 				}
+
+				//we want ensure our state is correct in other elements
+				for (int i = 0; i < Cells.Length; i++) {
+					if (i != focusedCellIndex && Cells [i].Cell is NSPathComponentCellFocusable focusable) {
+						focusable.HasFocus = false;
+					}
+				}
+
 				SetNeedsDisplay ();
 			}
 
@@ -637,11 +654,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// Check if the currentEvent that caused us to become first responder is a Tab or a Reverse Tab
 				if (currentEvent.Type == NSEventType.KeyDown) {
-					if (currentEvent.KeyCode == KeyCodes.Tab) {
+					if (currentEvent.KeyCode == (ushort) KeyCodes.Tab) {
 						if ((currentEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask) {
-							focusedCellIndex = Cells.Length - 1;
+							UpdatePreviousCellForResponderChain (Cells.Length - 1);
 						} else {
-							focusedCellIndex = 0;
+							UpdateNextCellForResponderChain (0);
 						}
 					}
 				}

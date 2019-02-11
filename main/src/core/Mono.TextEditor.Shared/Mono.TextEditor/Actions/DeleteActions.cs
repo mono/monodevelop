@@ -318,7 +318,7 @@ namespace Mono.TextEditor
 				return;
 			var version = data.Version;
 			var o = data.Caret.Offset;
-			if (((ushort)data.GetCharAt (offset - 1) & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker) {
+			if (CaretMoveActions.IsLowSurrogateMarkerSet (data.GetCharAt (offset - 1))) {
 				data.Remove (offset - 2, 2);
 			} else {
 				data.Remove (offset - 1, 1);
@@ -388,7 +388,7 @@ namespace Mono.TextEditor
 					}
 				} else {
 					var o = data.Caret.Offset;
-					if (((ushort)data.GetCharAt (o) & CaretMoveActions.HighSurrogateMarker) == CaretMoveActions.HighSurrogateMarker) {
+					if (CaretMoveActions.IsHighSurrogateMarkerSet (data.GetCharAt (o))) {
 						data.Remove (o, 2);
 					} else {
 						data.Remove (o, 1);

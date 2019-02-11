@@ -217,7 +217,7 @@ namespace MonoDevelop.Core
 
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string, string> {
+			Counters.AddinsLoaded.Inc (1, "Add-in loaded: " + args.AddinId, new Dictionary<string, object> {
 				{ "AddinId", args.AddinId },
 				{ "LoadTrace", Environment.StackTrace },
 			});
@@ -251,7 +251,6 @@ namespace MonoDevelop.Core
 				ShuttingDown (null, EventArgs.Empty);
 			
 			PropertyService.SaveProperties ();
-			FSW.OSX.FileSystemWatcher.DisposeAll ();
 			
 			if (processService != null) {
 				processService.Dispose ();
@@ -296,15 +295,8 @@ namespace MonoDevelop.Core
 
 		public static Version Version {
 			get {
-				if (version == null) {
-					version = new Version (BuildInfo.Version);
-					var relId = SystemInformation.GetReleaseId ();
-					if (relId != null && relId.Length >= 9) {
-						int rev;
-						int.TryParse (relId.Substring (relId.Length - 4), out rev);
-						version = new Version (Math.Max (version.Major, 0), Math.Max (version.Minor, 0), Math.Max (version.Build, 0), Math.Max (rev, 0));
-					}
-				}
+				if (version == null)
+					version = new Version (BuildInfo.FullVersion);
 				return version;
 			}
 		}

@@ -668,22 +668,25 @@ namespace Mono.TextEditor
 		{
 			using (var metrics = textEditor.PangoContext.GetMetrics(font, textEditor.PangoContext.Language)) {
 #if MAC
-				double baseHeight;
 				try {
-					baseHeight = OSXEditor.GetLineHeight(font.ToString ()) * textEditor.Options.Zoom;
+					lineHeight = System.Math.Ceiling (0.5 + OSXEditor.GetLineHeight(font.ToString ()));
+					if (lineHeight < 0)
+						lineHeight = GetLineHeight (metrics);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting the macOS font metrics for " + font, e);
-					baseHeight = (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale;
+					lineHeight = GetLineHeight (metrics);
 				}
-				lineHeight = System.Math.Ceiling (0.5 + baseHeight);
 #else
-				lineHeight = System.Math.Ceiling(0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+				lineHeight = GetLineHeight (metrics);
 #endif
 				underlinePosition = metrics.UnderlinePosition;
 				underLineThickness = metrics.UnderlineThickness;
 				charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
 			}
 		}
+
+		static double GetLineHeight (Pango.FontMetrics metrics) => System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+
 		public override void Dispose ()
 		{
 			CancelCodeSegmentTooltip ();
@@ -3368,7 +3371,7 @@ namespace Mono.TextEditor
 
 						if (snapCharacters && !IsNearX1 (xp, xp1, xp2)) {
 							index++;
-							if (index < layoutWrapper.Text.Length  && (layoutWrapper.Text[index] & CaretMoveActions.LowSurrogateMarker) == CaretMoveActions.LowSurrogateMarker)
+							if (index < layoutWrapper.Text.Length  && CaretMoveActions.IsLowSurrogateMarkerSet (layoutWrapper.Text [index]))
 								index++;
 						}
 						return true;

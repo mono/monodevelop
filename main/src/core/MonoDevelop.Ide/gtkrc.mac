@@ -1,5 +1,5 @@
 # Xamarin Studio Light Mac GTK Theme
-# Copyright 2012-2016 Xamarin Inc.
+# Copyright 2012-2019 Xamarin Inc.
 # Authors:
 #   Christian Kellner <christian.kellner@lanedo.com>
 #   Carlos Garnacho <carlos.garnacho@lanedo.com>
@@ -14,7 +14,8 @@ fg_color: #272727
 base_color: #fff
 text_color: #272727
 link_color: #175fde
-selected_bg_color: #5189ed
+dim_color: #767676
+selected_bg_color: #2862d9
 selected_fg_color: #fff
 tooltip_bg_color: #f2f2f2
 tooltip_fg_color: #272727
@@ -49,13 +50,13 @@ style "default" {
     fg[NORMAL] = @fg_color
     fg[PRELIGHT] = @fg_color
     fg[SELECTED] = @selected_fg_color
-    fg[INSENSITIVE] = darker (@bg_color)
+    fg[INSENSITIVE] = @dim_color
     fg[ACTIVE] = @fg_color
 
     text[NORMAL] = @fg_color
     text[PRELIGHT] = @fg_color
     text[SELECTED] = @selected_fg_color
-    text[INSENSITIVE] = darker (@bg_color)
+    text[INSENSITIVE] = @dim_color
     text[ACTIVE] = @fg_color
 
     base[NORMAL] = @base_color
@@ -244,14 +245,20 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    base[ACTIVE] = "#a0a0a0"
-    text[ACTIVE] = @selected_fg_color
+    base[ACTIVE] = "#dcdcdc"
+    text[ACTIVE] = @fg_color
 
     engine "xamarin" {
         roundness = 0
         gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
         glazestyle = 1
     }
+}
+
+style "padtreeview" = "treeview"
+{
+    base[ACTIVE] = "#a0a0a0"
+    text[ACTIVE] = @selected_fg_color
 }
 
 style "tree-header"
@@ -499,6 +506,8 @@ widget_class "*ToolButton*" style "toolbar-button"
 widget_class "*.<GtkTreeView>*" style "treeview"
 widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
 widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
+
+widget "*.solutionBrowserTree" style "padtreeview"
 
 widget_class "*<GtkIconView>" style "icon-view"
 

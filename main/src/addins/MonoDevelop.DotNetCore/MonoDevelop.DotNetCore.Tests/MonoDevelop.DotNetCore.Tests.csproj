@@ -16,7 +16,11 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.7.0\lib\net46\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +40,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateWizardTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreProjectTemplateStringTagProviderTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\DependencyNodeTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\DotNetCoreSDKResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">

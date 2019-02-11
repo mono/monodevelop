@@ -266,6 +266,7 @@ namespace MonoDevelop.MacIntegration
 						e.Reply = NSApplicationTerminateReply.Now;
 					}
 				};
+				appDelegate.ShowDockMenu += AppDelegate_ShowDockMenu;
 			}
 
 			// Listen to the AtkCocoa notification for the presence of VoiceOver
@@ -297,6 +298,27 @@ namespace MonoDevelop.MacIntegration
 
 			return loaded;
 		}
+
+		void AppDelegate_ShowDockMenu (object sender, ShowDockMenuArgs e)
+		{
+			if (((FilePath)NSBundle.MainBundle.BundlePath).Extension != ".app")
+				return;
+			var menu = new NSMenu ();
+			var newInstanceMenuItem = new NSMenuItem ();
+			newInstanceMenuItem.Title = GettextCatalog.GetString ("New Instance");
+			newInstanceMenuItem.Activated += NewInstanceMenuItem_Activated;
+			menu.AddItem (newInstanceMenuItem);
+			e.DockMenu = menu;
+		}
+
+		static void NewInstanceMenuItem_Activated (object sender, EventArgs e)
+		{
+			var bundlePath = NSBundle.MainBundle.BundlePath;
+			NSWorkspace.SharedWorkspace.LaunchApplication (NSUrl.FromFilename (bundlePath), NSWorkspaceLaunchOptions.NewInstance, new NSDictionary (), out NSError error);
+			if (error != null)
+				LoggingService.LogError ($"Failed to start new instance: {error.LocalizedDescription}");
+		}
+
 
 		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
 		static void ShowVoiceOverNotice ()
@@ -589,7 +611,14 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
-					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
+					if (Ide.WelcomePage.WelcomePageService.HasWindowImplementation && !(IdeApp.Workbench.RootWindow?.Visible ?? false)) {
+						if (IdeApp.Workbench.RootWindow != null) {
+							IdeApp.Workbench.RootWindow.Visible = false;
+						}
+						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
+
+						e.Handled = true;
+					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
 						IdeApp.Workbench.RootWindow.Visible = true;
 
@@ -601,6 +630,7 @@ namespace MonoDevelop.MacIntegration
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (0, delegate {
+						Ide.WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
 						IdeApp.ReportTimeToCode = true;
 						IdeApp.OpenFiles (e.Documents.Select (
 							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
@@ -706,10 +736,12 @@ namespace MonoDevelop.MacIntegration
 		}
 
 		[GLib.ConnectBefore]
-		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
+		static async void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
-			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
+			if (await IdeApp.Workspace.Close ()) {
+				IdeApp.Workbench.RootWindow.Visible = false;
+			}
 		}
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
@@ -934,6 +966,20 @@ namespace MonoDevelop.MacIntegration
 		{
 			window.Present ();
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
+		}
+
+		public override void FocusWindow (Window window)
+		{
+			try {
+				NSWindow nswindow = window; // will also get an NSWindow from a Gtk.Window
+				if (nswindow != null) {
+					nswindow.MakeKeyAndOrderFront (nswindow);
+					return;
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Focusing window failed: not an NSWindow", ex);
+			}
+			base.FocusWindow (window);
 		}
 
 		static Cairo.Color ConvertColor (NSColor color)

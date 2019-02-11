@@ -45,24 +45,14 @@ namespace MonoDevelop.DotNetCore
 
 		public string ToolsVersion { get; private set; }
 		public bool IsOutputTypeDefined { get; private set; }
-		public string Sdk { get; set; }
 
-		public IEnumerable<string> TargetFrameworks {
-			get { return targetFrameworks; }
-		}
+		public IEnumerable<string> TargetFrameworks => targetFrameworks;
 
-		public bool HasSdk {
-			get { return Sdk != null; }
-		}
+		public bool HasSdk { get; set; }
 
-		public bool HasToolsVersion ()
-		{
-			return !string.IsNullOrEmpty (ToolsVersion);
-		}
+		public bool HasToolsVersion () => !string.IsNullOrEmpty (ToolsVersion);
 
-		public CompileTarget DefaultCompileTarget {
-			get { return defaultCompileTarget; }
-		}
+		public CompileTarget DefaultCompileTarget => defaultCompileTarget;
 
 		/// <summary>
 		/// Ensure MSBuildProject has ToolsVersion set to 15.0 so the correct

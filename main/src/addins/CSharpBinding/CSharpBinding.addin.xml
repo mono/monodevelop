@@ -60,6 +60,7 @@
 			type="array"
 			_label = "Refactory Operations" />
 		<Command id = "MonoDevelop.CSharp.Refactoring.Commands.SortAndRemoveImports"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.RemoveAndSortUsingsHandler"
 			_label = "R_emove and Sort Usings"
 			_displayName = "Remove Unused and Sort (Usings)"
 		/>
@@ -191,6 +192,10 @@
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
 		<Parser class="MonoDevelop.CSharp.Parser.TypeSystemParser" mimeType = "text/x-csharp" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/TypeSystem/FoldingParser">
+		<Parser class = "MonoDevelop.CSharp.Parser.CSharpFoldingParser" mimeType="text/x-csharp" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TypeSystem/CodeGenerators">

@@ -132,13 +132,6 @@ namespace MonoDevelop.Ide
 			get { return PlatformService.Name; }
 		}
 
-		[Obsolete]
-		public static string DefaultControlLeftRightBehavior {
-			get {
-				return PlatformService.DefaultControlLeftRightBehavior;
-			}
-		}
-
 		public static void ShowUrl (string url)
 		{
 			PlatformService.ShowUrl (url);
@@ -349,6 +342,12 @@ namespace MonoDevelop.Ide
 		internal static void GrabDesktopFocus (Gtk.Window window)
 		{
 			PlatformService.GrabDesktopFocus (window);
+		}
+
+		public static void FocusWindow (Window window)
+		{
+			if (window !=  null)
+				PlatformService.FocusWindow (window);
 		}
 
 		public static void RemoveWindowShadow (Window window)

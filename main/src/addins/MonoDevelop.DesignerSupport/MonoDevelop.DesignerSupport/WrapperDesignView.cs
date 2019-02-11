@@ -55,7 +55,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 
-			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
+			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 		}
 		
 		public override string TabPageLabel {
@@ -103,7 +103,7 @@ namespace MonoDevelop.DesignerSupport
 		public override void Dispose ()
 		{
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
-			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
+			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
 			base.Dispose ();
 		}
 		

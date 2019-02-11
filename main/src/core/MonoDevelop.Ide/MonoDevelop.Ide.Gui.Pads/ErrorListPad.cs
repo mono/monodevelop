@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtn.Toggled += HandleTextLogToggled;
 			toolbar.Add (logBtn);
 
-			if (BuildOutput.FeatureToggle.IsEnabled) {
+			if (BuildOutput.IsFeatureEnabled) {
 				buildLogBtn = MakeButton ("md-message-log", "toggleBuildOutput", out logBtnLbl);
 				buildLogBtn.Accessible.Name = "ErrorPad.BuildLogButton";
 				buildLogBtn.TooltipText = GettextCatalog.GetString ("Structured Build Output");
@@ -330,8 +330,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
-
-			control.FocusChain = new Gtk.Widget [] { logView };
 		}
 
 		public override void Dispose ()
@@ -340,7 +338,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.Toggled -= FilterChanged;
 			msgBtn.Toggled -= FilterChanged;
 			logBtn.Toggled -= HandleTextLogToggled;
-			if (BuildOutput.FeatureToggle.IsEnabled)
+			if (BuildOutput.IsFeatureEnabled)
 				buildLogBtn.Clicked -= HandleBinLogClicked;
 			searchEntry.Entry.Changed -= searchPatternChanged;
 
@@ -461,7 +459,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			help.Clicked += OnShowReference;
 			menu.Add (help);
 
-			if (BuildOutput.FeatureToggle.IsEnabled) {
+			if (BuildOutput.IsFeatureEnabled) {
 				var goBuild = new ContextMenuItem (GettextCatalog.GetString ("Go to _Log"));
 				goBuild.Clicked += async (s, e) => await OnGoToLog (s, e);
 				menu.Add (goBuild);
@@ -1058,7 +1056,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Document buildOutputDoc;
 		void HandleBinLogClicked (object sender, EventArgs e)
 		{
-			if (BuildOutput.FeatureToggle.IsEnabled) {
+			if (BuildOutput.IsFeatureEnabled) {
 				OpenBuildOutputViewDocument ();
 			}
 		}

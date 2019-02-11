@@ -159,6 +159,7 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationCommands.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationOptions.cs" />

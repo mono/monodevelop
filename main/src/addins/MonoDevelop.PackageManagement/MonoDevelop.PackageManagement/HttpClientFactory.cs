@@ -26,7 +26,10 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Credentials;
 using NuGet.Protocol;
@@ -70,7 +73,8 @@ namespace MonoDevelop.PackageManagement
 			if (existingCredentialService != null) {
 				return existingCredentialService.CreateNonInteractive ();
 			}
-			return new CredentialService (new ICredentialProvider[0], nonInteractive: true);
+			var lazyProvider = AsyncLazy.New (() => Enumerable.Empty<ICredentialProvider> ());
+			return new CredentialService (lazyProvider, nonInteractive: true, handlesDefaultCredentials: false);
 		}
 	}
 }

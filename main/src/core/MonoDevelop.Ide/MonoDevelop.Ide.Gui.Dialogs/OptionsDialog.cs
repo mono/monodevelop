@@ -767,7 +767,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					nb.InsertPage (box, blab, -1);
 				}
 				foreach (PanelInstance pi in tabPanels) {
-					Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString (pi.Node.Label));
+					Gtk.Label lab = new Gtk.Label (pi.Node.Label);
 					lab.Show ();
 					Gtk.Alignment a = new Alignment (0, 0, 1, 1);
 					a.BorderWidth = 9;

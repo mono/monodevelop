@@ -957,9 +957,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			return new InvalidOperationException ("Output progress monitor already disposed.");
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
-			base.Dispose ();
+			base.OnDispose (disposing);
 			console.Dispose ();
 			Disposed?.Invoke (this, EventArgs.Empty);
 		}

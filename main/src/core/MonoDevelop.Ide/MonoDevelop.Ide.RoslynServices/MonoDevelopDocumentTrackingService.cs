@@ -56,9 +56,11 @@ namespace MonoDevelop.Ide.RoslynServices
 
 	sealed class MonoDevelopDocumentTrackingService : IDocumentTrackingService, IDisposable
 	{
+		Gui.Document activeDocument = null;
 		public MonoDevelopDocumentTrackingService ()
 		{
 			IdeApp.Initialized += (o, args) => {
+				activeDocument = IdeApp.Workbench.ActiveDocument;
 				IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 
 				IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
@@ -78,8 +80,9 @@ namespace MonoDevelop.Ide.RoslynServices
 			//e.Document.Editor.TextView.TextBuffer.PostChanged -= OnNonRoslynBufferChanged;
 		}
 
-		void OnActiveDocumentChanged (object sender, EventArgs e)
+		void OnActiveDocumentChanged (object sender, Gui.DocumentEventArgs e)
 		{
+			activeDocument = e.Document;
 			ActiveDocumentChanged?.Invoke (this, GetActiveDocument ());
 		}
 
@@ -93,7 +96,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		/// <returns>The ID of the active document (if any)</returns>
 		public DocumentId GetActiveDocument ()
 		{
-			return IdeApp.Workbench?.ActiveDocument?.AnalysisDocument?.Id;
+			return activeDocument?.AnalysisDocument?.Id;
 		}
 
 		/// <summary>

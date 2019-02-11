@@ -28,12 +28,28 @@ using System;
 using NUnit.Framework;
 using MonoDevelop.AspNetCore.Commands;
 using System.IO;
+using MonoDevelop.AspNetCore.Dialogs;
+using MonoDevelop.Projects;
+using UnitTests;
+using System.Threading.Tasks;
+using System.Linq;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Tests
 {
 	[TestFixture]
 	class PublishProfileTests
 	{
+		[SetUp]
+		public void SetUp ()
+		{
+			DesktopService.Initialize ();
+			if (!IdeApp.IsInitialized)
+				IdeApp.Initialize (new ProgressMonitor ());
+		}
+
 		[TestCase ("Debug", "Any CPU", "netcoreapp2.0", "bin/Debug/netcoreapp2.0/publish")]
 		[TestCase ("Release", "x86", "netcoreapp2.1", "bin/Debug/netcoreapp2.1/publish")]
 		public void PublishProfilesCanBeRead (string configuration, string platform, string targetFramework, string publishDir)
@@ -54,6 +70,41 @@ namespace MonoDevelop.AspNetCore.Tests
 			Assert.That (profile.LastUsedPlatform, Is.EqualTo (readProfile.LastUsedPlatform));
 			Assert.That (profile.TargetFramework, Is.EqualTo (readProfile.TargetFramework));
 			Assert.That (profile.PublishUrl, Is.EqualTo (readProfile.PublishUrl));
+		}
+
+		[Test]
+		public async Task GetDefaultFolderWhenPublish ()
+		{
+			var solutionFileName = Util.GetSampleProject ("restore-netcore-offline", "dotnetcoreconsole.sln");
+			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = solution.GetAllProjects ().OfType<DotNetProject>().Single ();
+
+			var resolver = new DefaultFolderResolver (project);
+
+			//if there is a Release configuration id, the expected relative path should follow: "bin/Release/<netcore-version>/publish"
+			var expected = $"bin/{DefaultFolderResolver.DefaultConfiguration}/{GetShortFrameworkIdentifier (project.TargetFramework.Id)}/publish";
+			Assert.That (resolver.GetDefaultFolder (UriKind.Relative) == expected);
+
+			//if there is NOT a Release configuration id, the expected relative path should follow: "bin/<CurrentActiveConfig>/<netcore-version>/publish"
+			project.Configurations.Remove ("Release");
+			IdeApp.Workspace.ActiveConfigurationId = "Debug";
+			expected = $"bin/{project.GetActiveConfiguration ()}/{GetShortFrameworkIdentifier (project.TargetFramework.Id)}/publish";
+			Assert.That (resolver.GetDefaultFolder (UriKind.Relative) == expected);
+
+			solution.Dispose ();
+		}
+
+		[TearDown]
+		public async Task TearDown () => await IdeApp.Workspace.Close ();
+
+		string GetShortFrameworkIdentifier (TargetFrameworkMoniker framework)
+		{
+			string shortFrameworkIdentifier = framework.Identifier;
+
+			if (shortFrameworkIdentifier [0] == '.')
+				shortFrameworkIdentifier = shortFrameworkIdentifier.Substring (1);
+
+			return shortFrameworkIdentifier.ToLower () + framework.Version;
 		}
 	}
 }

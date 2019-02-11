@@ -40,19 +40,18 @@ namespace MonoDevelop.DotNetCore
 		static DotNetCoreSdk ()
 		{
 			var sdkPaths = new DotNetCoreSdkPaths ();
-			sdkPaths.FindMSBuildSDKsPath ();
-
+			sdkPaths.ResolveSDK ();
 			Update (sdkPaths);
 		}
 
-		internal static void Update (DotNetCoreSdkPaths sdkPaths)
+		internal static void Update (DotNetCoreSdkPaths dotNetCoreSdkPaths)
 		{
-			RegisterProjectImportSearchPath (MSBuildSDKsPath, sdkPaths.MSBuildSDKsPath);
+			RegisterProjectImportSearchPath (MSBuildSDKsPath, dotNetCoreSdkPaths.MSBuildSDKsPath);
 
-			MSBuildSDKsPath = sdkPaths.MSBuildSDKsPath;
-			SdkRootPath = sdkPaths.SdkRootPath;
+			MSBuildSDKsPath = dotNetCoreSdkPaths.MSBuildSDKsPath;
+			SdkRootPath = dotNetCoreSdkPaths.SdkRootPath;
 			IsInstalled = !string.IsNullOrEmpty (MSBuildSDKsPath);
-			Versions = sdkPaths.SdkVersions ?? Array.Empty<DotNetCoreVersion> ();
+			Versions = dotNetCoreSdkPaths.SdkVersions ?? Array.Empty<DotNetCoreVersion> ();
 
 			if (!IsInstalled)
 				LoggingService.LogInfo (".NET Core SDK not found.");
@@ -82,12 +81,11 @@ namespace MonoDevelop.DotNetCore
 		{
 		}
 
-		internal static DotNetCoreSdkPaths FindSdkPaths (string sdk)
+		internal static DotNetCoreSdkPaths FindSdkPaths (string[] sdks)
 		{
 			var sdkPaths = new DotNetCoreSdkPaths ();
-			sdkPaths.MSBuildSDKsPath = MSBuildSDKsPath;
-			sdkPaths.FindSdkPaths (sdk);
-
+			sdkPaths.ResolveSDK ();
+			sdkPaths.FindSdkPaths (sdks);
 			return sdkPaths;
 		}
 
