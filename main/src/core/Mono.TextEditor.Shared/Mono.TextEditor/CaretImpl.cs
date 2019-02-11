@@ -333,7 +333,7 @@ namespace Mono.TextEditor
 				base.OnPositionChanged (args);
 				PositionChanged_ITextCaret (args);
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error when updating caret position", ex);
+				LoggingService.LogInternalError ("Error when updating caret position", ex);
 			}
 		}
 		
