@@ -31,6 +31,7 @@ using System.Net.Sockets;
 using System.Text;
 using Mono.Unix;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide

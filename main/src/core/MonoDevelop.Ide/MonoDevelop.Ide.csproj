@@ -3163,7 +3163,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\Document.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Pad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Workbench.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\IMonoDevelopHostDocument.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageLocationService.cs" />
@@ -4274,6 +4273,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerTabs.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerSplit.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProjectReloadCapability.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\StartupInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

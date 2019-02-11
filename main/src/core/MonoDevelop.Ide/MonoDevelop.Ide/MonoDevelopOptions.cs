@@ -47,7 +47,6 @@ namespace MonoDevelop.Ide
 		Mono.Options.OptionSet GetOptionSet ()
 		{
 			return new Mono.Options.OptionSet {
-				{ "no-splash", "Do not display splash screen (deprecated).", s => {} },
 				{ "ipc-tcp", "Use the Tcp channel for inter-process communication.", s => IpcTcp = true },
 				{ "new-window", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => NewWindow = true },
 				{ "h|?|help", "Show help", s => ShowHelp = true },

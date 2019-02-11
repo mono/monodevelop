@@ -219,9 +219,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static Task Initialize (ProgressMonitor monitor) => Initialize (monitor, false);
-
-		internal static async Task Initialize (ProgressMonitor monitor, bool hideWelcomePage)
+		public static async Task Initialize (ProgressMonitor monitor)
 		{
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
@@ -285,7 +283,7 @@ namespace MonoDevelop.Ide
 			commandService.EnableIdleUpdate = true;
 
 			if (Customizer != null)
-				Customizer.OnIdeInitialized (hideWelcomePage);
+				Customizer.OnIdeInitialized ();
 
 			// Set initial run flags
 			Counters.Initialization.Trace ("Upgrading Settings");

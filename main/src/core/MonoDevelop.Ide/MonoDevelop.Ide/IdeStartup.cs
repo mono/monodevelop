@@ -119,9 +119,15 @@ namespace MonoDevelop.Ide
 			// explicit GLib type system initialization for GLib < 2.36 before any other type system access
 			GLib.GType.Init ();
 
+			var args = options.RemainingArgs.ToArray ();
+
+			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
+
+			var startupInfo = new StartupInfo (options, args);
+
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			try {
-				IdeApp.Customizer.Initialize ();
+				IdeApp.Customizer.Initialize (startupInfo);
 			} catch (UnauthorizedAccessException ua) {
 				LoggingService.LogError ("Unauthorized access: " + ua.Message);
 				return 1;
@@ -132,9 +138,6 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
-
-			var args = options.RemainingArgs.ToArray ();
-			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
 
 			sectionTimings ["GtkInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
@@ -183,8 +186,6 @@ namespace MonoDevelop.Ide
 
 			RegisterServices ();
 
-			var startupInfo = new StartupInfo (args);
-
 			// If a combine was specified, force --newwindow.
 
 			if (!options.NewWindow && startupInfo.HasFiles) {
@@ -210,11 +211,11 @@ namespace MonoDevelop.Ide
 			startupInfo.Restarted = restartRequested;
 			PropertyService.Set ("MonoDevelop.Core.RestartRequested", false);
 
-			IdeApp.Customizer.OnCoreInitialized ();
-
 			Counters.Initialization.Trace ("Initializing theme");
 
 			IdeTheme.SetupGtkTheme ();
+
+			IdeApp.Customizer.OnCoreInitialized ();
 
 			sectionTimings ["ThemeInitialized"] = startupSectionTimer.ElapsedMilliseconds;
 			startupSectionTimer.Restart ();
@@ -284,7 +285,7 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
 				hideWelcomePage = startupInfo.HasFiles;
-				await IdeApp.Initialize (monitor, hideWelcomePage);
+				await IdeApp.Initialize (monitor);
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
 
@@ -308,7 +309,7 @@ namespace MonoDevelop.Ide
 					openedProject = IdeApp.DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ());
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore();
 						startupInfo.OpenedRecentProject = true;
 					}
 				}

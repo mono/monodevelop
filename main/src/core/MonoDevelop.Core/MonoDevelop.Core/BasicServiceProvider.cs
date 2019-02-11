@@ -72,7 +72,7 @@ namespace MonoDevelop.Core
 								if (t.IsFaulted)
 									completionTask.SetException (t.Exception);
 								else
-									OnServiceInitialized (completionTask, service);
+									OnServiceInitialized (completionTask, (T)service);
 							});
 						}
 					}

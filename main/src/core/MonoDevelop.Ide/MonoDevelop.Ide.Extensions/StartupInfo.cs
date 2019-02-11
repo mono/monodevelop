@@ -32,13 +32,16 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Extensions
 {
-	internal class StartupInfo
+	public class StartupInfo
 	{
 		List<FileOpenInformation> requestedFileList = new List<FileOpenInformation> ();
 		List<string> parameterList = new List<string> ();
+
+		public MonoDevelopOptions Options { get; }
 
 		public IList<string> ParameterList {
 			get { return parameterList; }
@@ -58,26 +61,27 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal bool Restarted { get; set; }
+		public bool Restarted { get; set; }
 
 		/// <summary>
 		/// Set to true if a project was opened on startup.
 		/// </summary>
-		internal bool OpenedRecentProject { get; set; }
+		public bool OpenedRecentProject { get; set; }
 
 		/// <summary>
 		/// Set to true if files were opened on startup.
 		/// </summary>
-		internal bool OpenedFiles { get; set; }
+		public bool OpenedFiles { get; set; }
 		
 		/// <summary>
 		/// Matches a filename string with optional line and column 
 		/// (/foo/bar/blah.cs;22;31)
 		/// </summary>
-		public static readonly Regex FileExpression = new Regex (@"^(?<filename>[^;]+)(;(?<line>\d+))?(;(?<column>\d+))?$", RegexOptions.Compiled);
+		internal static readonly Regex FileExpression = new Regex (@"^(?<filename>[^;]+)(;(?<line>\d+))?(;(?<column>\d+))?$", RegexOptions.Compiled);
 		
-		public StartupInfo (IEnumerable<string> args)
+		internal StartupInfo (MonoDevelopOptions options, IEnumerable<string> args)
 		{
+			Options = options;
 			foreach (string arg in args) {
 				string a = arg;
 				Match fileMatch = FileExpression.Match (a);
