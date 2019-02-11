@@ -301,7 +301,7 @@ namespace Mono.TextEditor
 			TextFileUtility.GetText (fileName, out var enc),
 			fileName,
 			mimeType
-		) {}
+		) { this.Encoding = enc; }
 
 		public TextDocument (string text = null, string fileName = null, string mimeType = null)
 		{
