@@ -42,10 +42,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// A controller is a class that implements the logic for loading,
 	/// displaying and interacting with the contents of a document.
 	/// </summary>
-	[TypeExtensionPoint (Path = DocumentController.DocumentControllersPath, ExtensionAttributeType = typeof(ExportFileDocumentControllerAttribute), Name = "Document controllers")]
 	public abstract class DocumentController: IDisposable
 	{
-		internal const string DocumentControllersPath = "/MonoDevelop/Ide/DocumentControllers";
 		internal const string DocumentControllerExtensionsPath = "/MonoDevelop/Ide/DocumentControllerExtensions";
 
 		DocumentModel model;

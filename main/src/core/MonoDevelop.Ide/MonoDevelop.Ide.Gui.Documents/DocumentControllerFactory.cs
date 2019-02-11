@@ -34,7 +34,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// <summary>
 	/// Controller factories are in charge of creating controllers
 	/// </summary>
-	[TypeExtensionPoint (ExtensionAttributeType = typeof(ExportDocumentControllerFactoryAttribute), Path = DocumentControllerService.DocumentControllerFactoriesPath)]
 	public abstract class DocumentControllerFactory
 	{
 		internal protected ServiceProvider ServiceProvider { get; set; }

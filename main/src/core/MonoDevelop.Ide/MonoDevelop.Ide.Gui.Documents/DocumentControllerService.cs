@@ -60,12 +60,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		IEnumerable<DocumentControllerFactory> GetFactories (ModelDescriptor modelDescriptor)
 		{
-			foreach (var node in AddinManager.GetExtensionNodes<TypeExtensionNode<ExportFileDocumentControllerAttribute>> (DocumentController.DocumentControllersPath))
-					yield return node.Data.Factory;
-
-			foreach (var node in AddinManager.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerFactoryAttribute>> (DocumentControllerFactoriesPath)) {
-				if (node.Data.CanHandle (modelDescriptor))
-					yield return node.Data.Factory;
+			foreach (var node in AddinManager.GetExtensionNodes (DocumentControllerFactoriesPath)) {
+				if (node is TypeExtensionNode<ExportFileDocumentControllerAttribute> controllerNode)
+					yield return controllerNode.Data.Factory;
+				else if (node is TypeExtensionNode<ExportDocumentControllerFactoryAttribute> factoryNode && factoryNode.Data.CanHandle (modelDescriptor))
+					yield return factoryNode.Data.Factory;
 			}
 			foreach (var factory in registeredFactories)
 				yield return factory;

@@ -42,7 +42,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	[ExportDocumentControllerFactory (FileExtension = ".cs")]
+	[ExportDocumentControllerFactory (FileExtension = ".cs", InsertBefore = "DefaultDisplayBinding")]
 	public class GuiBuilderDisplayBinding : FileDocumentControllerFactory
 	{
 		bool excludeThis = false;
