@@ -1,9 +1,0 @@
-<ExtensionModel>
-
-	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
-		<Condition id="Platform" value="!windows">
-			<Class class = "MonoDevelop.VersionControl.Subversion.Unix.SvnClient" />
-		</Condition>
-	</Extension>
-
-</ExtensionModel>

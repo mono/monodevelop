@@ -1,7 +1,0 @@
-<ExtensionModel>
-
-	<Extension path = "/MonoDevelop/Core/Applications">
-		<Application id = "extension-tool" class = "MonoDevelop.ExtensionTools.Application" description = "Developer overview over the extension model"/>
-	</Extension>
-
-</ExtensionModel>

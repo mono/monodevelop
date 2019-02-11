@@ -1,7 +1,0 @@
-ExtCore
-FSharp.Compiler.Service
-FSharp.Core
-Mono.Cecil
-StrongNamer
-Newtonsoft.Json
-System.ValueTuple

@@ -1,6 +1,0 @@
-Name: Mono.Addins
-
-Description:
-Version: 1.0
-Libraries=${pcfiledir}/../main/build/bin/Mono.Addins.dll
-Libs: -r:${pcfiledir}/../main/build/bin/Mono.Addins.dll

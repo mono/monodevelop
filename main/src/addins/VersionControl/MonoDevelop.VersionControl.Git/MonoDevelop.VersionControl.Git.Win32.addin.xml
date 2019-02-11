@@ -1,6 +1,0 @@
-<ExtensionModel>
-	<Runtime>
-		<Import file="git2-e8b8948.dll" />
-		<ScanExclude path="git2-e8b8948.dll" />
-	</Runtime>
-</ExtensionModel>

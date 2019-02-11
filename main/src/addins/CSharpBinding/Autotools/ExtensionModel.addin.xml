@@ -1,5 +1,0 @@
-<ExtensionModel>
-	<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
-		<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
-	</Extension>
-</ExtensionModel>

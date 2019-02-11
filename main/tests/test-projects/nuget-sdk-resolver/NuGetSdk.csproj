@@ -1,5 +1,0 @@
-<Project Sdk="Xam.Test.MSBuild.Sdk/0.1.0">
-  <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
-  </PropertyGroup>
-</Project>

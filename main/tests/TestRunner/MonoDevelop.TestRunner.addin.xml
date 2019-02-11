@@ -1,7 +1,0 @@
-<ExtensionModel>
-
-	<Extension path = "/MonoDevelop/Core/Applications">
-		<Application id = "run-md-tests" class = "MonoDevelop.Tests.TestRunner.Runer" description = "Runs the MonoDevelop unit test suite"/>
-	</Extension>
-
-</ExtensionModel>

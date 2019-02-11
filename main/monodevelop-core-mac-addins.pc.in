@@ -1,9 +1,0 @@
-prefix=${pcfiledir}/../..
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib/monodevelop
-GacPackage=false
-
-Name: MonoDevelop Core Mac Add-ins
-Description: MonoDevelop Core Mac Add-ins
-Version: @VERSION@
-Libs: -r:${libdir}/AddIns/MacPlatform.dll -r:${libdir}/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll

@@ -1,7 +1,0 @@
-<ExtensionModel>
-
-	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
-		<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
-	</Extension>
-
-</ExtensionModel>
