@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -300,7 +301,8 @@ namespace MonoDevelop.Ide.Templates
 				} else {
 					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
 					string mimeType = GuessMimeType (fileName);
-					return IdeApp.Services.DisplayBindingService.GetDefaultViewBinding (null, mimeType, null) != null;
+					var fileDescriptor = new FileDescriptor (fileName, mimeType, project);
+					return IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (fileDescriptor).Result.Any (c => c.CanUseAsDefault);
 				}
 			}
 		}

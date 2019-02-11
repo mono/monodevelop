@@ -137,11 +137,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.Child.ShowAll ();
 		}
 
-		static string GetContentFileName (ViewContent viewcontent)
-		{
-			return viewcontent.ContentName ?? System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), viewcontent.UntitledName);
-		}
-
 		protected override void OnDestroyed ()
 		{
 			btnSaveAndQuit.Clicked -= SaveAndQuit;

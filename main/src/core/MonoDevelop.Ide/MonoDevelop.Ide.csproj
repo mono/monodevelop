@@ -3116,8 +3116,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\SingleFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\SolutionDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ResourceFileDescriptionTemplate.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\BaseViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\ViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewCommandHandlers.cs" />
@@ -3276,7 +3274,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MaintenanceOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\HiddenTextEditorViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ILocationList.cs" />
@@ -4231,7 +4228,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerRole.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentModel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\FileModel.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Documents\SingleViewDocumentControllerAdaptor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentModelRegistry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerDescription.cs" />
@@ -4277,6 +4273,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\ModelRepresentation.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerTabs.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerSplit.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\ProjectReloadCapability.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

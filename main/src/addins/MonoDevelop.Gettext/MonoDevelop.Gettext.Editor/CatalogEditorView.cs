@@ -29,52 +29,56 @@
 // 
 
 using System;
-using System.Collections.Generic;
-using Gtk;
-using Gdk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	class CatalogEditorView : ViewContent, IUndoHandler
+	[ExportFileDocumentController (FileExtension = ".po", Name = "Gettext Editor", CanUseAsDefault = true, InsertBefore = "DefaultDisplayBinding")]
+	class CatalogEditorView : FileDocumentController, IUndoHandler
 	{
 		Catalog catalog;
 		POEditorWidget poEditorWidget;
+		FilePath fileName;
 		
-		public CatalogEditorView (TranslationProject project, string poFile)
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
+			TabPageLabel = GettextCatalog.GetString ("Gettext Editor");
+			return base.OnInitialize (modelDescriptor, status);
+		}
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			TranslationProject project = null;
+
+			if (IdeApp.IsInitialized) {
+				foreach (var tp in IdeApp.Workspace.GetAllItems<TranslationProject> ())
+					if (tp.BaseDirectory == FilePath.ParentDirectory)
+						project = tp;
+			}
+
 			catalog = new Catalog (project);
 			poEditorWidget = new POEditorWidget (project);
 			catalog.DirtyChanged += delegate (object sender, EventArgs args) {
-				IsDirty = catalog.IsDirty;
+				HasUnsavedChanges = catalog.IsDirty;
 			};
-		}
-		
-		public override Task Load (FileOpenInformation fileOpenInformation)
-		{
-			var fileName = fileOpenInformation.FileName;
-//			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-			catalog.Load (null, fileName);
-//			}
+
+			catalog.Load (null, FilePath);
+
 			poEditorWidget.Catalog = catalog;
 			poEditorWidget.POFileName = fileName;
 			poEditorWidget.UpdateRules (System.IO.Path.GetFileNameWithoutExtension (fileName));
-			
-			this.ContentName = fileName;
-			this.IsDirty = false;
-			return Task.FromResult (true);
+			return poEditorWidget;
 		}
-		
-		public override Task Save (FileSaveInformation fileSaveInformation)
+
+		protected override Task OnSave ()
 		{
-			catalog.Save (fileSaveInformation.FileName);
-			ContentName = fileSaveInformation.FileName;
-			IsDirty = false;
-			return Task.FromResult (true);
+			catalog.Save (FilePath);
+			return Task.CompletedTask;
 		}
 		
 		#region IUndoHandler implementation
@@ -105,20 +109,5 @@ namespace MonoDevelop.Gettext.Editor
 			}
 		}
 		#endregion
-	
-		public override Control Control
-		{
-			get { return poEditorWidget; }
-		}
-				
-		public override bool IsReadOnly
-		{
-			get { return false; }
-		}
-		
-		public override string TabPageLabel 
-		{
-			get { return GettextCatalog.GetString ("Gettext Editor"); }
-		}
 	}
 }

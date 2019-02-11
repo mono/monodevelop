@@ -105,38 +105,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IViewDisplayBinding GetDefaultViewBinding (FilePath filePath, string mimeType, Project ownerProject)
-		{
-			return GetDisplayBindings (filePath, mimeType, ownerProject).OfType<IViewDisplayBinding> ()
-				.FirstOrDefault (d => d.CanUseAsDefault);
-		}
-		
 		public IDisplayBinding GetDefaultBinding (FilePath filePath, string mimeType, Project ownerProject)
 		{
 			return GetDisplayBindings (filePath, mimeType, ownerProject).FirstOrDefault (d => d.CanUseAsDefault);
-		}
-		
-		internal void AttachSubWindows (SingleViewDocumentControllerAdaptor viewAdaptor, IViewDisplayBinding binding)
-		{
-			int index = 0;
-
-			foreach (var o in GetBindings<object> ()) {
-				if (o == binding) {
-					index++;
-					continue;
-				}
-
-				var attachable = o as IAttachableDisplayBinding;
-				if (attachable == null)
-					continue;
-
-				var viewContent = viewAdaptor?.Content;
-
-				if (viewContent != null && attachable.CanAttachTo (viewContent)) {
-					var subViewContent = attachable.CreateViewContent (viewContent);
-					viewAdaptor.InsertViewContent (index++, subViewContent);
-				}
-			}
 		}
 
 		public async Task<IEnumerable<FileViewer>> GetFileViewers (FilePath filePath, Project ownerProject)
@@ -161,28 +132,6 @@ namespace MonoDevelop.Ide.Gui
 				if (viewerIds.Add (app.Id))
 					result.Add (new FileViewer (app));
 			return result;
-		}
-	}
-	
-	//dummy binding, anchor point for extension tree
-	class DefaultDisplayBinding : IViewDisplayBinding
-	{
-		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
-		{
-			throw new InvalidOperationException ();
-		}
-
-		public string Name {
-			get { return null; }
-		}
-
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
-		{
-			return false;
-		}
-
-		public bool CanUseAsDefault {
-			get { return false; }
 		}
 	}
 }

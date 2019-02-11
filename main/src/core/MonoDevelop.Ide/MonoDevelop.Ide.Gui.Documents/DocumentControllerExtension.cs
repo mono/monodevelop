@@ -60,11 +60,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public virtual ProjectReloadCapability ProjectReloadCapability { get; }
 
 		/// <summary>
-		/// Title shown in the document tab
-		/// </summary>
-		public virtual string TabPageLabel { get; }
-
-		/// <summary>
 		/// Controller to which this extension is bound
 		/// </summary>
 		/// <value>The controller.</value>

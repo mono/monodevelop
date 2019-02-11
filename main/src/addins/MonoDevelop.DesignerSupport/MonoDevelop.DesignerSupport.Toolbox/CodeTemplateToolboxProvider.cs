@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -43,13 +44,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			var content = consumer as ViewContent;
-			if (content == null || !content.IsFile)
+			// TOTEST
+			var content = consumer as FileDocumentController;
+			if (content == null)
 				yield break;
 			// Hack: Ensure that this category is only filled if the current page is a text editor.
 			if (!(content is ITextEditorResolver))
 				yield break;
-			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.ContentName)) {
+			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.FilePath)) {
 				if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 					continue;
 				yield return new TemplateToolboxNode (ct) {

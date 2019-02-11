@@ -39,7 +39,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		/// </summary>
 		public static T GetContent<T> (this IToolboxConsumer consumer) where T : class
 		{
-			return (consumer as ViewContent)?.GetContent<T> ();
+			return (consumer as DocumentController)?.GetContent<T> ();
 		}
 
 		/// <summary>

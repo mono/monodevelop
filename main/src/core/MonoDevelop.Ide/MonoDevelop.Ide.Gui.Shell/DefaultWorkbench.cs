@@ -584,23 +584,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			SetWorkbenchTitle ();
 		}
 		
-		public Properties GetStoredMemento (ViewContent content)
-		{
-			if (content != null && content.ContentName != null) {
-				string directory = UserProfile.Current.CacheDir.Combine ("temp");
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
-				}
-				string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
-				string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
-				// check the file name length because it could be more than the maximum length of a file name
-				if (FileService.IsValidPath(fullFileName) && File.Exists(fullFileName)) {
-					return Properties.Load (fullFileName);
-				}
-			}
-			return null;
-		}
-		
 		public ICustomXmlSerializer Memento {
 			get {
 				var memento  = new WorkbenchMemento (new Properties ());
