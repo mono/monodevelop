@@ -566,7 +566,7 @@ namespace MonoDevelop.Debugger
 			var textView = doc.GetContent<ITextView> ();
 			var (caretLine, caretColumn) = textView.MDCaretLineAndColumn ();
 			if (DebuggingService.IsPaused) {
-				DebuggingService.RunToCursor (doc.FileName, caretColumn, caretColumn);
+				DebuggingService.RunToCursor (doc.FileName, caretLine, caretColumn);
 				return;
 			}
 
@@ -646,7 +646,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = DebuggingService.IsDebuggingSupported;
+			info.Visible = DebuggingService.IsDebuggingSupported && DebuggingService.IsDebugging;
 			info.Enabled = DebuggingService.CurrentFrame != null;
 		}
 	}

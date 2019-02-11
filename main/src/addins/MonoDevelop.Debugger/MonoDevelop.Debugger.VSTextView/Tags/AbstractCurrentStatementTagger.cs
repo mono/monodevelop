@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide;
+using Mono.Debugging.Client;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
 {
@@ -23,6 +25,7 @@ namespace MonoDevelop.Debugger
 			this.tag = tag;
 			this.isGreen = isGreen;
 			DebuggingService.CurrentFrameChanged += OnDebuggerCurrentStatementChanged;
+			DebuggingService.ExecutionLocationChanged += OnDebuggerCurrentStatementChanged;
 		}
 
 		private void OnDebuggerCurrentStatementChanged (object sender, EventArgs eventArgs)
@@ -38,27 +41,37 @@ namespace MonoDevelop.Debugger
 
 		public IEnumerable<ITagSpan<T>> GetTags (NormalizedSnapshotSpanCollection spans)
 		{
-			if (DebuggingService.CurrentCallStack == null)
+			if (!DebuggingService.IsPaused)
 				yield break;
 			if (isGreen) {
 				if (DebuggingService.CurrentFrameIndex > 0) {
-					var newTag = CreateTag (DebuggingService.CurrentFrameIndex);
+					var newTag = CreateTag ();
 					if (newTag != null && spans.IntersectsWith (newTag.Span))
 						yield return newTag;
 				}
 			} else {
 				if (DebuggingService.CurrentFrameIndex == 0) {
-					var newTag = CreateTag (0);
+					var newTag = CreateTag ();
 					if (newTag != null && spans.IntersectsWith (newTag.Span))
 						yield return newTag;
 				}
 			}
 		}
 
-		private TagSpan<T> CreateTag (int stackIndex)
+		SourceLocation CheckLocationIsInFile (SourceLocation location)
 		{
-			var sourceLocation = DebuggingService.CurrentCallStack.GetFrame (stackIndex).SourceLocation;
-			if (sourceLocation.FileName != filePath)
+			if (!string.IsNullOrEmpty (filePath) && location != null && !string.IsNullOrEmpty (location.FileName)
+				&& ((FilePath)location.FileName).FullPath == ((FilePath)filePath).FullPath)
+				return location;
+			return null;
+		}
+
+		private TagSpan<T> CreateTag ()
+		{
+			var sourceLocation = CheckLocationIsInFile (DebuggingService.NextStatementLocation)
+					?? CheckLocationIsInFile (DebuggingService.CurrentFrame?.SourceLocation)
+					?? CheckLocationIsInFile (DebuggingService.GetCurrentVisibleFrame ()?.SourceLocation);
+			if (sourceLocation == null)
 				return null;
 			var span = textBuffer.CurrentSnapshot.SpanFromMDColumnAndLine (sourceLocation.Line, sourceLocation.Column, sourceLocation.EndLine, sourceLocation.EndColumn);
 			return new TagSpan<T> (span, tag);
@@ -67,6 +80,7 @@ namespace MonoDevelop.Debugger
 		public void Dispose ()
 		{
 			DebuggingService.CurrentFrameChanged -= OnDebuggerCurrentStatementChanged;
+			DebuggingService.ExecutionLocationChanged -= OnDebuggerCurrentStatementChanged;
 		}
 
 		public event System.EventHandler<SnapshotSpanEventArgs> TagsChanged;
