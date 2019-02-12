@@ -18,7 +18,7 @@ namespace MonoDevelop.VersionControl
 		{
 			SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
 			try {
-				if (MessageService.RunCustomDialog (del, MessageService.RootWindow ?? IdeApp.Workbench.RootWindow) == (int) Gtk.ResponseType.Ok && del.Repository != null) {
+				if (MessageService.RunCustomDialog (del) == (int) Gtk.ResponseType.Ok && del.Repository != null) {
 					CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
 					w.Start ();
 				}
