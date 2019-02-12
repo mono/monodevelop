@@ -69,6 +69,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				defaultPath = VersionControlDefaultPath;
 				entryFolder.Text = defaultPath;
 				buttonOk.Label = GettextCatalog.GetString ("_Checkout");
+				UpdateCheckoutButton ();
 			} else {
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;
@@ -125,11 +126,19 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repoContainer.Add (currentEditor.Widget);
 			currentEditor.Show ();
 			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
-			if (edit != null)
+			if (edit != null) {
+				edit.UrlChanged += OnEditUrlChanged;
 				edit.PathChanged += OnPathChanged;
+			}
 			UpdateRepoDescription ();
 		}
-		
+
+		protected virtual void OnRepositoryServerEntryChanged (object sender, System.EventArgs e)
+		{
+			if (mode == SelectRepositoryMode.Checkout)
+				buttonOk.Sensitive = this. entryFolder.Text.Length > 0;
+		}
+			
 		public void LoadRepositories ()
 		{
 			store.Clear ();
@@ -346,6 +355,21 @@ namespace MonoDevelop.VersionControl.Dialogs
 					return;
 			}
 			Respond (ResponseType.Ok);
+		}
+
+		protected virtual void OnEditUrlChanged (object sender, EventArgs e)
+		{
+			if (mode == SelectRepositoryMode.Checkout) {
+				UpdateCheckoutButton ();
+			}
+		}
+
+		void UpdateCheckoutButton()
+		{
+			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
+			if (edit == null)
+				return;
+			buttonOk.Sensitive = edit.RepositoryServer.Length > 0; 
 		}
 
 		protected virtual void OnPathChanged (object sender, EventArgs e)
