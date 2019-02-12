@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
+using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 
 #if WINDOWS
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
@@ -195,14 +196,27 @@ namespace MonoDevelop.TextEditor
 
 		public override Task Save ()
 		{
+			FormatOnSave ();
 			TextDocument.Save ();
 			return Task.CompletedTask;
 		}
 
 		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
+			FormatOnSave ();
 			TextDocument.SaveAs (fileSaveInformation.FileName, overwrite: true);
 			return Task.CompletedTask;
+		}
+
+		void FormatOnSave ()
+		{
+			if (!PropertyService.Get ("AutoFormatDocumentOnSave", false))
+				return;
+			try {
+				commandService.Execute ((t, b) => new FormatDocumentCommandArgs (t, b), null);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while formatting on save", e);
+			}
 		}
 
 		public override bool IsDirty => TextDocument.IsDirty;
