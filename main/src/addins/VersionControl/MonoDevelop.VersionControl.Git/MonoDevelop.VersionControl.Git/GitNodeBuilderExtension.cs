@@ -65,8 +65,10 @@ namespace MonoDevelop.VersionControl.Git
 				if (repos.TryGetValue (rep.RootPath, out rob)) {
 					if (ob == rob) {
 						string branch = rep.GetCurrentBranch ();
-						if (branch == "(no branch)")
-							branch = rep.RootRepository.ObjectDatabase.ShortenObjectId (rep.RootRepository.Head.Tip);
+						if (branch == "(no branch)") {
+							using (var RootRepository = new LibGit2Sharp.Repository (rep.RootPath))
+								branch = RootRepository.ObjectDatabase.ShortenObjectId (RootRepository.Head.Tip);
+						}
 						nodeInfo.Label += " (" + branch + ")";
 					}
 				}

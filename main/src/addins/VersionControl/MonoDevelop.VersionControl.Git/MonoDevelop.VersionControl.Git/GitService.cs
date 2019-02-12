@@ -43,7 +43,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static void Push (GitRepository repo)
 		{
-			bool hasCommits = repo.RootRepository.Commits.Any ();
+			bool hasCommits = false;
+			using (var RootRepository = new LibGit2Sharp.Repository (repo.RootPath))
+				hasCommits = RootRepository.Commits.Any ();
 			if (!hasCommits) {
 				MessageService.ShowMessage (
 					GettextCatalog.GetString ("There are no changes to push."),
