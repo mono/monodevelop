@@ -1,10 +1,10 @@
-﻿//
-// DebugValueConverter.cs
+//
+// HttpMessageHandlerProvider.cs
 //
 // Author:
-//       David Karlaš <david.karlas@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Mono.Debugging.Client;
+using System.Net.Http;
 
-namespace MonoDevelop.Debugger
+namespace MonoDevelop.Core.Web
 {
-	public abstract class DebugValueConverter<T>
+	public abstract class HttpMessageHandlerProvider
 	{
-		public abstract bool CanGetValue (ObjectValue val);
-
-		public abstract T GetValue (ObjectValue val);
-
-		public virtual Task<T> GetValueAsync (ObjectValue val, CancellationToken token = default (CancellationToken))
-		{
-			return Task.FromResult (GetValue (val));
-		}
-
-		public virtual bool CanSetValue (ObjectValue val)
-		{
-			return false;
-		}
-
-		public virtual void SetValue (T value, ObjectValue val)
-		{
-			throw new NotImplementedException ();
-		}
+		public abstract HttpMessageHandler CreateHttpMessageHandler (Uri uri, HttpClientSettings settings);
 	}
 }
-

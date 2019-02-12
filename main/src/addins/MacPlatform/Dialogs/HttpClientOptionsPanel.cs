@@ -1,10 +1,10 @@
-﻿//
-// DebugValueConverter.cs
+//
+// HttpClientOptionsPanel.cs
 //
 // Author:
-//       David Karlaš <david.karlas@xamarin.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Mono.Debugging.Client;
 
-namespace MonoDevelop.Debugger
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Dialogs;
+
+namespace MonoDevelop.MacIntegration
 {
-	public abstract class DebugValueConverter<T>
+	class HttpClientOptionsPanel : OptionsPanel
 	{
-		public abstract bool CanGetValue (ObjectValue val);
+		Control control;
+		HttpClientOptionsWidget widget;
 
-		public abstract T GetValue (ObjectValue val);
-
-		public virtual Task<T> GetValueAsync (ObjectValue val, CancellationToken token = default (CancellationToken))
+		public override void ApplyChanges ()
 		{
-			return Task.FromResult (GetValue (val));
+			widget.ApplyChanges ();
 		}
 
-		public virtual bool CanSetValue (ObjectValue val)
+		public override Control CreatePanelWidget ()
 		{
-			return false;
+			if (control == null) {
+				widget = new HttpClientOptionsWidget ();
+				control = new XwtControl (widget);
+			}
+
+			return control;
 		}
 
-		public virtual void SetValue (T value, ObjectValue val)
+		public override void Dispose ()
 		{
-			throw new NotImplementedException ();
+			if (control != null) {
+				// No need to dispose Control. This is done automatically.
+				// XwtControl does not dispose its widget though.
+				widget.Dispose ();
+			}
+			base.Dispose ();
 		}
 	}
 }
-

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props" Condition="Exists('..\..\..\packages\Microsoft.Build.Locator.1.1.2\build\Microsoft.Build.Locator.props')" />
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
     <Reference Include="System.Xml.Linq" />
@@ -722,6 +723,22 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\SdkResolverManifest.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitchCondition.cs" />
+    <Compile Include="MonoDevelop.Core.Web\HttpMessageHandlerProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\HttpClientProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\DefaultHttpMessageHandlerProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ProxyAuthenticationHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IProxyCredentialCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ICredentialService.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialService.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IAsyncCredentialProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialResponse.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialStatus.cs" />
+    <Compile Include="MonoDevelop.Core.Web\HttpSourceAuthenticationHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\AmbientAuthenticationState.cs" />
+    <Compile Include="MonoDevelop.Core.Web\HttpSourceCredentials.cs" />
+    <Compile Include="MonoDevelop.Core.Web\HttpClientSettings.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IHttpCredentialsHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\DefaultHttpClientHandler.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
     <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyUtilities.cs" />
@@ -761,6 +778,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.Core.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Utilities\" />
