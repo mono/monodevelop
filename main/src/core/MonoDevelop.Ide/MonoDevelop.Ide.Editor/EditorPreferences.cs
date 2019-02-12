@@ -98,13 +98,20 @@ namespace MonoDevelop.Ide.Editor
 
 		void Migrate<T> (string oldKey, string newKey, Func<T, T> transform = null)
 		{
-			// in 8.0
-			if (PropertyService.HasValue (oldKey) && !PropertyService.HasValue (newKey)) {
+			// Check the old key
+			if (!PropertyService.HasValue (oldKey))
+				return;
+
+			// Migrate old to new if new doesn't exist and then unset the old one
+			if (!PropertyService.HasValue (newKey)) {
 				var value = PropertyService.Get<T> (oldKey);
 				if (transform != null)
 					value = transform (value);
+
 				PropertyService.Set (newKey, value);
 			}
+			PropertyService.Set (oldKey, null);
+
 		}
 
 
