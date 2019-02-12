@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.ComponentModel.Composition;
-using AppKit;
-using Microsoft.VisualStudio.Text;
+
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Utilities;
+
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
@@ -40,40 +41,52 @@ namespace MonoDevelop.TextEditor.Cocoa
 	[Order (Before = "WordSelection")]
 	[ContentType ("Text")]
 	[TextViewRole ("INTERACTIVE")]
-	class MdMouseProcessorProvider : ICocoaMouseProcessorProvider
+	sealed class MdMouseProcessorProvider : ICocoaMouseProcessorProvider
 	{
-		[Import]
-		public ITextDocumentFactoryService TextDocumentFactory { get; private set; }
-
 		[Import]
 		public IEditorCommandHandlerServiceFactory CommandServiceFactory { get; private set; }
 
 		public ICocoaMouseProcessor GetAssociatedProcessor (ICocoaTextView cocoaTextView)
-		{
-			return new MdMouseProcessor (CommandServiceFactory.GetService(cocoaTextView), cocoaTextView);
-		}
+			=> new MdMouseProcessor (
+				CommandServiceFactory.GetService (cocoaTextView),
+				cocoaTextView);
 	}
 
-	class MdMouseProcessor : CocoaMouseProcessorBase
+	sealed class MdMouseProcessor : CocoaMouseProcessorBase
 	{
-		ICocoaTextView cocoaTextView;
-		private readonly IEditorCommandHandlerService commandServiceFactory;
-		readonly string menuPath = "/MonoDevelop/TextEditor/ContextMenu/Editor";
+		const string menuPath = "/MonoDevelop/TextEditor/ContextMenu/Editor";
 
-		public MdMouseProcessor (IEditorCommandHandlerService commandServiceFactory, ICocoaTextView cocoaTextView)
+		readonly IEditorCommandHandlerService commandServiceFactory;
+		readonly ICocoaTextView textView;
+
+		public MdMouseProcessor (
+			IEditorCommandHandlerService commandServiceFactory,
+			ICocoaTextView textView)
 		{
-			this.cocoaTextView = cocoaTextView;
-			this.commandServiceFactory = commandServiceFactory;
+			this.commandServiceFactory = commandServiceFactory
+				?? throw new ArgumentNullException (nameof (commandServiceFactory));
+
+			this.textView = textView
+				?? throw new ArgumentNullException (nameof (textView));
 		}
+
+		public override void PreprocessMouseRightButtonDown (MouseEvent e)
+			=> MoveCaretToPosition (textView, e.Event);
 
 		public override void PreprocessMouseRightButtonUp (MouseEvent e)
 		{
-			var view = (ViewContent)cocoaTextView.Properties [typeof (ViewContent)];
-			var ctx = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
-			var cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
-			var pt = ((NSEvent)e.Event).LocationInWindow;
-			pt = cocoaTextView.VisualElement.ConvertPointFromView (pt, null);
-			IdeApp.CommandService.ShowContextMenu (cocoaTextView.VisualElement, (int)pt.X, (int)pt.Y, cset, view);
+			var view = (ViewContent)textView.Properties [typeof (ViewContent)];
+			var extensionContext = view.WorkbenchWindow?.ExtensionContext ?? Mono.Addins.AddinManager.AddinEngine;
+			var commandEntrySet = IdeApp.CommandService.CreateCommandEntrySet (extensionContext, menuPath);
+
+			var menuPosition = GetViewRelativeMousePosition (textView, e.Event);
+
+			IdeApp.CommandService.ShowContextMenu (
+				textView.VisualElement,
+				(int)menuPosition.X,
+				(int)menuPosition.Y,
+				commandEntrySet,
+				view);
 		}
 	}
 }
