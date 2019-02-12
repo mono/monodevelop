@@ -295,9 +295,9 @@
 	<StockIcon stockid="md-typography" resource="typography-16.png" size="Menu" />
 	<StockIcon stockid="md-scroll" resource="scroll-16.png" size="Menu" />
 	<StockIcon stockid="md-widget" resource="widget-16.png" size="Menu" />
-	<StockIcon stockid="md-lightbulb" resource="lightbulb-16.png" size="Menu" imageid="{f09c8ce2-d515-4226-a430-dec104c81f05}#2" />
-	<StockIcon stockid="md-lightbulb-error" resource="lightbulb-error-16.png" size="Menu" imageid="{f09c8ce2-d515-4226-a430-dec104c81f05}#3" />
-	<StockIcon stockid="md-lightbulb-screwdriver" resource="lightbulb-screwdriver-16.png" size="Menu" imageid="{f09c8ce2-d515-4226-a430-dec104c81f05}#1" />
+	<StockIcon stockid="md-lightbulb" resource="lightbulb-16.png" size="Menu" imageid="1590;{f09c8ce2-d515-4226-a430-dec104c81f05}#2" />
+	<StockIcon stockid="md-lightbulb-error" resource="lightbulb-error-16.png" size="Menu" imageid="3751;{f09c8ce2-d515-4226-a430-dec104c81f05}#3" />
+	<StockIcon stockid="md-lightbulb-screwdriver" resource="lightbulb-screwdriver-16.png" size="Menu" imageid="3752;{f09c8ce2-d515-4226-a430-dec104c81f05}#1" />
 
 	<!-- Project icons -->
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />
