@@ -391,9 +391,9 @@ namespace MonoDevelop.AssemblyBrowser
 
 		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
-			if (!(nav.DataItem is IMember member))
-				return false;
-			return member.GetIdString () == helpUrl;
+			if (nav.DataItem is IEntity entity)
+				return entity.GetIdString () == helpUrl;
+			return false;
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl, bool searchType)
