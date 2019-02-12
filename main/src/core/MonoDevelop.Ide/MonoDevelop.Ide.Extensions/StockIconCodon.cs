@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.Core.Imaging;
 using Mono.Addins;
 
@@ -56,29 +57,37 @@ namespace MonoDevelop.Ide.Extensions
 		//these fields are assigned by reflection, suppress "never assigned" warning
 		#pragma warning disable 649
 
-		[NodeAttribute ("imageid", "Visual Studio ImageId, in format {guid};#.")]
+		[NodeAttribute ("imageid", "One or more semicolon-separated Visual Studio ImageIds, in format `{guid}#454;{guid}#7832;...`. The KnownImages GUID may be omitted.")]
 		string imageid;
 
 		#pragma warning restore 649
 
-		public ImageId ImageId {
-			get {
-				if (imageid == null)
-					return default;
+		public IEnumerable<ImageId> GetImageIds() {
+			if (imageid == null)
+				yield break;
 
-				Guid guid = KnownImagesGuid;
-				int id;
+			int start = 0;
 
-				var semicolonIndex = imageid.IndexOf (';');
-				if (semicolonIndex > 0) {
-					guid = Guid.Parse (imageid.Remove (semicolonIndex));
-					id = int.Parse (imageid.Substring (semicolonIndex + 1));
-				} else {
-					id = int.Parse (imageid);
+			do {
+				int end = imageid.IndexOf (';', start);
+				if (end < 0) {
+					end = imageid.Length;
 				}
 
-				return new ImageId (guid, id);
+				Guid guid = KnownImagesGuid;
+				int hashIdx = imageid.IndexOf ('#', start, end - start);
+				if (hashIdx > -1) {
+					guid = Guid.Parse (imageid.Substring (start, hashIdx - start));
+					start = hashIdx + 1;
+				}
+
+				int id = int.Parse (imageid.Substring (start, end - start));
+
+				yield return new ImageId (guid, id);
+
+				start = end + 1;
 			}
+			while (start < imageid.Length);
 		}
 
 		static readonly Guid KnownImagesGuid = Guid.Parse ("{ae27a6b0-e345-4288-96df-5eaf394ee369}");

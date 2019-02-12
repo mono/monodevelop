@@ -27,20 +27,18 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.Addins;
 using System.IO;
-using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Core;
-using MonoDevelop.Components;
-using System.Text;
 using System.Linq;
-using MonoDevelop.Ide.Gui.Components;
-using System.Threading.Tasks;
-using System.Net;
-using Xwt.Backends;
-using Gtk;
+using System.Text;
 using Gdk;
+using Gtk;
 using Microsoft.VisualStudio.Core.Imaging;
+using Mono.Addins;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Gui.Components;
+using Xwt.Backends;
 
 namespace MonoDevelop.Ide
 {
@@ -66,7 +64,6 @@ namespace MonoDevelop.Ide
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
 		static Dictionary<ImageId, string> imageIdToStockId = new Dictionary<ImageId, string> ();
-		static Dictionary<string, ImageId> stockIdToImageId = new Dictionary<string, ImageId> ();
 
 		static Gtk.Requisition[] iconSizes = new Gtk.Requisition[7];
 
@@ -80,9 +77,9 @@ namespace MonoDevelop.Ide
 				case ExtensionChange.Add:
 					if (!iconStock.ContainsKey (iconCodon.StockId)) {
 						iconStock [iconCodon.StockId] = new List<StockIconCodon> ();
-						if (iconCodon.ImageId.Guid != Guid.Empty) {
-							imageIdToStockId[iconCodon.ImageId] = iconCodon.StockId;
-							stockIdToImageId[iconCodon.StockId] = iconCodon.ImageId;
+
+						foreach (var imageId in iconCodon.GetImageIds ()) {
+							imageIdToStockId[imageId] = iconCodon.StockId;
 						}
 					}
 					iconStock[iconCodon.StockId].Add (iconCodon);
@@ -196,13 +193,7 @@ namespace MonoDevelop.Ide
 				throw new ArgumentNullException (nameof (icon));
 			var iconId = $"{imageId.Guid};{imageId.Id}";
 			imageIdToStockId.Add (imageId, iconId);
-			stockIdToImageId.Add (iconId, imageId);
 			AddIcon (iconId, icon);
-		}
-
-		public static bool TryGetImageId(string stockId, out ImageId imageId)
-		{
-			return stockIdToImageId.TryGetValue (stockId, out imageId);
 		}
 
 		public static void AddIcon (string iconId, Xwt.Drawing.Image icon)
