@@ -58,10 +58,8 @@ namespace MonoDevelop.Core.Web
 			if (credentials == null)
 				throw new ArgumentNullException (nameof (credentials));
 
-			cache.AddOrUpdate (
-				proxyAddress,
-				addValueFactory: _ => { Version = Guid.NewGuid (); return credentials; },
-				updateValueFactory: (_, __) => { Version = Guid.NewGuid (); return credentials; });
+			Version = Guid.NewGuid ();
+			cache [proxyAddress] = credentials;
 		}
 
 		public NetworkCredential GetCredential (Uri proxyAddress, string authType)
