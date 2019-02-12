@@ -37,5 +37,11 @@ namespace MonoDevelop.Ide
 			Gtk.Application.Init();
 			DesktopService.Initialize();
 		}
+
+		public override void TearDown ()
+		{
+			IdeApp.OnExit ();
+			base.TearDown ();
+		}
 	}
 }
