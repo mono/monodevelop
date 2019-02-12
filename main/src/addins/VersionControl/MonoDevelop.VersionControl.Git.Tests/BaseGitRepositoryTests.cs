@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		protected override Revision GetHeadRevision ()
 		{
 			var repo2 = (GitRepository)Repo;
-			return new GitRevision (Repo, repo2.RootRepository, repo2.RootRepository.Head.Tip);
+			return new GitRevision (Repo, repo2.RootPath, repo2.RootRepository.Head.Tip);
 		}
 
 		protected override void PostCommit (Repository repo)
