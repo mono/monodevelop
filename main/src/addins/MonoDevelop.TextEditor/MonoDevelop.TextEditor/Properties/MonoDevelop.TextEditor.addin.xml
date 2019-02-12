@@ -83,6 +83,8 @@
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
+
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickFixCommandArgs" />
 	</Extension>
 
 	<!--
@@ -163,6 +165,7 @@
 
 	<!-- temporary, need to align with old menu -->
 	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />

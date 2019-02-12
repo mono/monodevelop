@@ -96,6 +96,12 @@ namespace MonoDevelop.Refactoring.PackageInstaller
 		{
 			readonly ConcurrentDictionary<ProjectId, Dictionary<string, string>> _projectToInstalledPackageAndVersion = new ConcurrentDictionary<ProjectId, Dictionary<string, string>> ();
 
+			/// <summary>
+			/// Get package sources.
+			/// 
+			/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+			/// Therefore, it must be thread-safe and not defer to and then block other threads.
+			/// </summary>
 			public ImmutableArray<PackageSource> PackageSources {
 				get {
 					return PackageServices.GetSources (false, false).Select (kv => new PackageSource (kv.Key, kv.Value)) .ToImmutableArray ();

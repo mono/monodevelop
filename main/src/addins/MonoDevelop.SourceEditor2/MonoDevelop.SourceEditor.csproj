@@ -195,7 +195,6 @@
     <Compile Include="VSEditor\Language\Impl\Intellisense\BaseIntellisenseSession.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\CurrentLineSpaceReservationAgent.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IMultiSessionIntellisensePresenter.cs" />
-    <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseManager.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseSession.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseSessionStack.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseSessionStackMapService.cs" />
