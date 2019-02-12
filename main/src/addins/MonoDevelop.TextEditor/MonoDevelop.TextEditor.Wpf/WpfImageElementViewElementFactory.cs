@@ -33,7 +33,7 @@ namespace MonoDevelop.TextEditor.Wpf
 	[Export (typeof (IViewElementFactory))]
 	[Name ("MonoDevelop ImageElement to UIElement")]
 	[TypeConversion (from: typeof (ImageElement), to: typeof (UIElement))]
-	[Order]
+	[Order(Before = "default ImageElement to UIElement")]
 	sealed class WpfImageElementViewElementFactory : IViewElementFactory
 	{
 		public TView CreateViewElement<TView> (ITextView textView, object model) where TView : class
