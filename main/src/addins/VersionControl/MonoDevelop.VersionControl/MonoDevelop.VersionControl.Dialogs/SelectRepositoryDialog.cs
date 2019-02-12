@@ -136,7 +136,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		protected virtual void OnRepositoryServerEntryChanged (object sender, System.EventArgs e)
 		{
 			if (mode == SelectRepositoryMode.Checkout)
-				buttonOk.Sensitive = this. entryFolder.Text.Length > 0;
+				buttonOk.Sensitive = entryFolder.Text.Length > 0;
 		}
 			
 		public void LoadRepositories ()
@@ -369,7 +369,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
 			if (edit == null)
 				return;
-			buttonOk.Sensitive = edit.RepositoryServer.Length > 0; 
+			buttonOk.Sensitive = !string.IsNullOrWhiteSpace (edit.RepositoryServer);
 		}
 
 		protected virtual void OnPathChanged (object sender, EventArgs e)
