@@ -78,13 +78,25 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableNewEditor = this.newEditorCheckbutton.Active;
+			UpdateNewEditorOption (this.newEditorCheckbutton.Active);
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = (MonoDevelop.Ide.Editor.LineEndingConversion)this.comboboxLineEndings.Active;
 			if (DefaultSourceEditorOptions.Instance.ShowFoldMargin != this.foldingCheckbutton.Active) {
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 				HighlightingPanel.UpdateActiveDocument ();
 			}
 //			DefaultSourceEditorOptions.Instance.WrapLines = wordWrapCheckbutton.Active;
+		}
+
+		void UpdateNewEditorOption (bool enabled)
+		{
+			if (DefaultSourceEditorOptions.Instance.EnableNewEditor == enabled)
+				return;
+
+			DefaultSourceEditorOptions.Instance.EnableNewEditor = enabled;
+			if (enabled)
+				Counters.NewEditorEnabled.Inc ();
+			else
+				Counters.NewEditorDisabled.Inc ();
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
