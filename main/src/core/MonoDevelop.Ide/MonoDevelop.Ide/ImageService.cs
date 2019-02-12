@@ -174,10 +174,12 @@ namespace MonoDevelop.Ide
 			return GetIcon (name).WithSize (size);
 		}
 
-		public static bool TryGetImage (ImageId imageId, out Xwt.Drawing.Image image)
+		public static bool TryGetImage (ImageId imageId, out Xwt.Drawing.Image image) => TryGetImage (imageId, out image, out _);
+
+		public static bool TryGetImage (ImageId imageId, out Xwt.Drawing.Image image, out string name)
 		{
 			var success = true;
-			if (!imageIdToStockId.TryGetValue (imageId, out var name)) {
+			if (!imageIdToStockId.TryGetValue (imageId, out name)) {
 				name = "gtk-missing-image";
 				success = false;
 			}
