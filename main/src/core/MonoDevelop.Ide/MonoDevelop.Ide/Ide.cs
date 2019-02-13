@@ -222,6 +222,7 @@ namespace MonoDevelop.Ide
 			commandService = await Runtime.GetService<CommandManager> ();
 			await Runtime.GetService<DesktopService> ();
 			await Runtime.GetService<FontService> ();
+			await Runtime.GetService<TaskService> ();
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();

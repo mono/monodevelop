@@ -535,7 +535,7 @@ namespace MonoDevelop.Ide.Templates
 						ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
 				}
 			}
-
+			ctx.Dispose ();
 			ms.Position = 0;
 			return ms;
 		}

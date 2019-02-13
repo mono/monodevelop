@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide
 			return Task.CompletedTask;
 		}
 
-		internal readonly ConfigurationProperty<TargetRuntime> DefaultTargetRuntime = new DefaultTargetRuntimeProperty ();
+		internal static ConfigurationProperty<TargetRuntime> DefaultTargetRuntime = new DefaultTargetRuntimeProperty ();
 
 		public Project CurrentSelectedProject {
 			get {

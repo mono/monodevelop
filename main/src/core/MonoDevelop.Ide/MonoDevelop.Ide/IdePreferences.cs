@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> DefaultHideMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.DefaultHideMessageBubbles", false);
 		public readonly ConfigurationProperty<ShowMessageBubbles> ShowMessageBubbles = ConfigurationProperty.Create ("MonoDevelop.Ide.NewShowMessageBubbles", MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings);
 
-		public ConfigurationProperty<TargetRuntime> DefaultTargetRuntime => IdeApp.Workspace.DefaultTargetRuntime;
+		public ConfigurationProperty<TargetRuntime> DefaultTargetRuntime => RootWorkspace.DefaultTargetRuntime;
 
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
 		public readonly ConfigurationProperty<string> UserInterfaceThemeName = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
