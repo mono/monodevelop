@@ -25,17 +25,19 @@ using Gdk;
 using System.Reflection;
 using MonoDevelop.SourceEditor;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
 	public class SkipCharSessionTests : IdeTestBase
 	{
-		[TestCase]
+		[Test]
 		public async Task TestBug58764 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("foo.xml", null, null));
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var document = testCase.Document;
@@ -64,12 +66,13 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Bug 615849: Automatic matching brace completion deletes `{` when `}` is deleted
 		/// </summary>
-		[TestCase]
+		[Test]
 		public async Task TestVSTS615849 ()
 		{
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = true;
 
 			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("foo.xml", null, null));
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var document = testCase.Document;

@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Tasks
 {
+	[DefaultServiceImplementation]
 	public class TaskService: Service
 	{
 		TaskStore errors = new TaskStore ();
@@ -49,8 +50,9 @@ namespace MonoDevelop.Ide.Tasks
 		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
 			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
-				s.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
-				s.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				rootWorkspace = s;
+				rootWorkspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
+				rootWorkspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 				CommentTasksProvider.Legacy.Initialize ();
 			});
 			errors.ItemName = GettextCatalog.GetString ("Warning/Error");

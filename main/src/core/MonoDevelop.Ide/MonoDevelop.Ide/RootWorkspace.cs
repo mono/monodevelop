@@ -655,7 +655,7 @@ namespace MonoDevelop.Ide
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				CurrentSelectedWorkspaceItem = item;
-				if (IdeApp.Workbench != null)
+				if (IdeApp.IsInitialized)
 					IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
 				return true;
 			}
@@ -671,7 +671,7 @@ namespace MonoDevelop.Ide
 
 			monitor = monitor.WithCancellationSource (openingItemCancellationSource);
 
-			if (IdeApp.Workbench != null)
+			if (IdeApp.IsInitialized)
 				IdeApp.Workbench.LockGui ();
 			metadata = GetOpenWorkspaceItemMetadata (metadata);
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
@@ -684,7 +684,7 @@ namespace MonoDevelop.Ide
 
 				monitor.Dispose ();
 
-				if (IdeApp.Workbench != null)
+				if (IdeApp.IsInitialized)
 					IdeApp.Workbench.UnlockGui ();
 			}
 		}
@@ -1156,7 +1156,7 @@ namespace MonoDevelop.Ide
 			NotifyConfigurationsChanged (null, args);
 
 			if (Items.Count == 1 && !reloading) {
-				if (IdeApp.Workbench != null)
+				if (IdeApp.IsInitialized)
 					IdeApp.Workbench.CurrentLayout = "Solution";
 				if (FirstWorkspaceItemOpened != null)
 					FirstWorkspaceItemOpened (this, args);

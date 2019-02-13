@@ -797,9 +797,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			Gtk.Application.Invoke ((o, args) => {
 				workspacesLoading--;
-				if (workspacesLoading == 0 && statusIcon != null) {
-					statusIcon.Dispose ();
-					statusIcon = null;
+				if (workspacesLoading == 0) {
+					if (statusIcon != null) {
+						statusIcon.Dispose ();
+						statusIcon = null;
+					}
 					callback?.Invoke ();
 				}
 			});

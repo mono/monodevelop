@@ -33,10 +33,13 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
 using NUnit.Framework;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
+	[RequireService(typeof(TextEditorService))]
 	public class DocumentReloadTests : IdeTestBase
 	{
 		[Test]
@@ -51,6 +54,7 @@ namespace MonoDevelop.Ide.Editor
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var doc = testCase.Document;
+				await content.Load ();
 
 				bool reloadWarningDisplayed = false;
 				content.OnShowFileChangeWarning = multiple => {
@@ -71,8 +75,6 @@ namespace MonoDevelop.Ide.Editor
 
 		class TestViewContentWithDocumentReloadPresenter : TestViewContent, IDocumentReloadPresenter
 		{
-			public Document Document { get; set; }
-
 			public void RemoveMessageBar ()
 			{
 			}
@@ -84,13 +86,10 @@ namespace MonoDevelop.Ide.Editor
 				OnShowFileChangeWarning (multiple);
 			}
 
-			protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+			public async Task Load ()
 			{
-				var file = (FileDescriptor)modelDescriptor;
-				var fileName = file.FilePath;
-				var content = await TextFileUtility.ReadAllTextAsync (fileName);
-				Document.Editor.Text = (await TextFileUtility.ReadAllTextAsync (fileName)).Text;
-				DocumentTitle = fileName;
+				var content = await TextFileUtility.ReadAllTextAsync (FilePath);
+				Document.Editor.Text = (await TextFileUtility.ReadAllTextAsync (FilePath)).Text;
 			}
 		}
 	}

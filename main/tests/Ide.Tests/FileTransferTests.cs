@@ -33,6 +33,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
+	[RequireService(typeof(RootWorkspace))]
 	public class FileTransferTests: IdeTestBase
 	{
 		[Test]

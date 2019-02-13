@@ -36,6 +36,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -59,6 +60,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 			var projection = new Projection.Projection (projectedDocument, segments);
 			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("Foo.cs", null, null));
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var originalContext = testCase.Document.DocumentContext;
@@ -97,6 +99,7 @@ namespace MonoDevelop.Ide.Editor
 			var projection = new Projection.Projection (projectedDocument, segments);
 
 			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("Foo.cs", null, null));
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var originalContext = testCase.Document.DocumentContext;
@@ -150,6 +153,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 			var projection = new Projection.Projection (projectedDocument, segments);
 			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("Foo.cs", null, null));
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 

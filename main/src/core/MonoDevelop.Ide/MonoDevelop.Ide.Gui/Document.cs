@@ -161,8 +161,10 @@ namespace MonoDevelop.Ide.Gui
 
 			LastTimeActive = DateTime.Now;
 			this.window.CloseRequested += Window_CloseRequested;
-			if (IdeApp.Workspace != null)
-				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
+
+			var workspace = Runtime.PeekService<RootWorkspace> ();
+			if (workspace != null)
+				workspace.ItemRemovedFromSolution += OnEntryRemoved;
 
 			SubscribeControllerEvents ();
 			DocumentRegistry.Add (this);
@@ -543,8 +545,9 @@ namespace MonoDevelop.Ide.Gui
 		internal void Dispose ()
 		{
 			DocumentRegistry.Remove (this);
-			if (IdeApp.Workspace != null)
-				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
+			var workspace = Runtime.PeekService<RootWorkspace> ();
+			if (workspace != null)
+				workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
 			UnsubscribeControllerEvents ();
 			window.SetRootView (null);
@@ -560,7 +563,8 @@ namespace MonoDevelop.Ide.Gui
 		void ClearTasks ()
 		{
 			lock (lockObj) {
-				IdeServices.TaskService.Errors.ClearByOwner (this);
+				var taskService = Runtime.PeekService<TaskService> ();
+				taskService?.Errors.ClearByOwner (this);
 			}
 		}
 		

@@ -31,10 +31,12 @@ using System.Threading;
 using GuiUnit;
 using System;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
+	[RequireService(typeof(TextEditorService))]
 	class EditorConfigTests : IdeTestBase
 	{
 
@@ -55,7 +57,6 @@ namespace MonoDevelop.Ide.Editor
 				string editorConfigFile = Path.Combine (tempPath, ".editorconfig");
 				File.WriteAllText (editorConfigFile, editConfig);
 				var editor = TextEditorFactory.CreateNewEditor ();
-				var viewContent = editor.GetViewContent ();
 				string fileName = Path.Combine (tempPath, "a.cs");
 				try {
 					using (var ctx = await EditorConfigService.GetEditorConfigContext (fileName)) {

@@ -32,11 +32,13 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using UnitTests;
 using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
 	[RequireService (typeof (TextEditorService))]
+	[RequireService (typeof (TaskService))]
 	public class AbstractCodeFormatterTests : IdeTestBase
 	{
 		class TestAbstractCodeFormatter : AbstractCodeFormatter

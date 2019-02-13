@@ -771,9 +771,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						}, CancellationToken.None, TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 					}
 
-					if (tryApplyState_changedProjects.Count > 0) {
-						ProjectSaveTask = IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects);
-					}
+					if (tryApplyState_changedProjects.Count > 0)
+						ProjectSaveTask = IdeApp.IsInitialized ? IdeApp.ProjectOperations.SaveAsync (tryApplyState_changedProjects) : Task.WhenAll (tryApplyState_changedProjects.Select (p => p.SaveAsync (new ProgressMonitor ())));
 
 					return ret;
 				} finally {

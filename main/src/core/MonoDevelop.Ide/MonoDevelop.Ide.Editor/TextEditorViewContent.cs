@@ -61,11 +61,6 @@ namespace MonoDevelop.Ide.Editor
 		{
 		}
 
-		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
-		{
-			Init (textEditor, textEditorImpl).Wait ();
-		}
-
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
 			fileDescriptor = modelDescriptor as FileDescriptor;
@@ -78,6 +73,10 @@ namespace MonoDevelop.Ide.Editor
 				await Model.Load (); 
 				var editor = TextEditorFactory.CreateNewEditor ((TextBufferFileModel)Model);
 				var impl = editor.Implementation;
+
+				// Editor extensions can provide additional content
+				OnContentChanged ();
+
 				await Init (editor, impl);
 				HasUnsavedChanges = impl.IsDirty;
 			}
@@ -97,9 +96,6 @@ namespace MonoDevelop.Ide.Editor
 
 			if (documentContext != null)
 				textEditor.InitializeExtensionChain (documentContext);
-
-			// Editor extensions can provide additional content
-			OnContentChanged ();
 
 			if (IsNewDocument)
 				return LoadNew ();

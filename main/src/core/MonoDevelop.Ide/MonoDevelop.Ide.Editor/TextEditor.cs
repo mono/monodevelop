@@ -1087,16 +1087,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		TextEditorViewContent viewContent;
-		internal TextEditorViewContent GetViewContent ()
-		{
-			if (viewContent == null) {
-				viewContent = new TextEditorViewContent (this, textEditorImpl);
-			}
-
-			return viewContent;
-		}
-
 		internal IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false)
 		{
 			return textEditorImpl.CreateFoldSegment (offset, length, isFolded);

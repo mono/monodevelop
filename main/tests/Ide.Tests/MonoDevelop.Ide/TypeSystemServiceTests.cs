@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide
 			bool workspaceLoaded = false;
 
 			IdeServices.Workspace.SolutionLoaded += (s, e) => {
-				workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
+				workspace = IdeServices.TypeSystemService.GetWorkspace (e.Solution);
 				workspace.WorkspaceChanged += (sender, ea) => {
 					// If SolutionReloaded event is raised while opening the solution, we are doing something wrong
 					if (ea.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.SolutionReloaded)

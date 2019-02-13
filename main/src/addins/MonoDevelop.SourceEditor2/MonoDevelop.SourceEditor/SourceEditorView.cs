@@ -85,6 +85,8 @@ namespace MonoDevelop.SourceEditor
 		List<PinnedWatchInfo> pinnedWatches = new List<PinnedWatchInfo> ();
 		bool writeAllowed;
 		bool writeAccessChecked;
+		TaskService taskService;
+		TextEditorService textEditorService;
 
 		internal BreakpointStore Breakpoints => breakpoints;
 
@@ -218,8 +220,11 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
 			ClipboardRingService.Updated += OnClipboardItemsChanged;
 
-			IdeServices.TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
-			IdeServices.TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
+			textEditorService = Runtime.PeekService<TextEditorService> ();
+			if (textEditorService != null) {
+				IdeServices.TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
+				IdeServices.TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
+			}
 
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
 			DebuggingService.StoppedEvent += HandleTargetExited;
@@ -235,11 +240,14 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.PinnedWatches.WatchRemoved += OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged += OnWatchChanged;
 
-			IdeServices.TaskService.Errors.TasksAdded += UpdateTasks;
-			IdeServices.TaskService.Errors.TasksRemoved += UpdateTasks;
-			IdeServices.TaskService.JumpedToTask += HandleTaskServiceJumpedToTask;
+			taskService = Runtime.PeekService<TaskService> ();
+			if (taskService != null) {
+				taskService.Errors.TasksAdded += UpdateTasks;
+				taskService.Errors.TasksRemoved += UpdateTasks;
+				taskService.JumpedToTask += HandleTaskServiceJumpedToTask;
+				taskService.TaskToggled += HandleErrorListPadTaskToggled;
+			}
 			IdeApp.Preferences.ShowMessageBubbles.Changed += HandleIdeAppPreferencesShowMessageBubblesChanged;
-			IdeServices.TaskService.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			widget.TextEditor.Options.ZoomChanged += HandleWidgetTextEditorOptionsZoomChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
@@ -413,8 +421,10 @@ namespace MonoDevelop.SourceEditor
 			if (ContentName == null)
 				return;
 
-			foreach (var ext in IdeServices.TextEditorService.GetFileExtensions (ContentName))
-				AddFileExtension (ext);
+			if (textEditorService != null) {
+				foreach (var ext in textEditorService.GetFileExtensions (ContentName))
+					AddFileExtension (ext);
+			}
 		}
 
 		void AddFileExtension (FileExtension extension)
@@ -631,7 +641,7 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
-			TaskListEntry [] tasks = IdeServices.TaskService.Errors.GetFileTasks (ContentName);
+			TaskListEntry [] tasks = taskService.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
 			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
@@ -1048,7 +1058,14 @@ namespace MonoDevelop.SourceEditor
 
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubbles.Changed -= HandleIdeAppPreferencesShowMessageBubblesChanged;
-			IdeServices.TaskService.TaskToggled -= HandleErrorListPadTaskToggled;
+
+			if (taskService != null) {
+				taskService.Errors.TasksAdded -= UpdateTasks;
+				taskService.Errors.TasksRemoved -= UpdateTasks;
+				taskService.Errors.TasksChanged -= UpdateTasks;
+				taskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
+				taskService.TaskToggled -= HandleErrorListPadTaskToggled;
+			}
 
 			DisposeErrorMarkers ();
 
@@ -1071,8 +1088,10 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
 
-			IdeServices.TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
-			IdeServices.TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
+			if (textEditorService != null) {
+				IdeServices.TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
+				IdeServices.TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
+			}
 
 			DebuggingService.ExecutionLocationChanged -= OnExecutionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
@@ -1087,11 +1106,6 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.PinnedWatches.WatchAdded -= OnWatchAdded;
 			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged -= OnWatchChanged;
-
-			IdeServices.TaskService.Errors.TasksAdded -= UpdateTasks;
-			IdeServices.TaskService.Errors.TasksRemoved -= UpdateTasks;
-			IdeServices.TaskService.Errors.TasksChanged -= UpdateTasks;
-			IdeServices.TaskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
 
 			// This is not necessary but helps when tracking down memory leaks
 

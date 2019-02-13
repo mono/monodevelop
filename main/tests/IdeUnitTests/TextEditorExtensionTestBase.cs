@@ -38,6 +38,7 @@ using IdeUnitTests;
 using MonoDevelop.Ide.Composition;
 using UnitTests;
 using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -131,13 +132,14 @@ namespace MonoDevelop.Ide
 					IdeApp.TypeSystemService.Unload (Solution);
 			}
 			if (!Wrap)
-				Document.Dispose ();
+				Document.Close (true).Ignore ();
 		}
 
 		public T GetContent<T> () where T:class => Content.GetContent<T> ();
 	}
 
 	[RequireService (typeof (TextEditorService))]
+	[RequireService (typeof (TaskService))]
 	public abstract class TextEditorExtensionTestBase : IdeTestBase
 	{
 		protected abstract EditorExtensionTestData GetContentData ();

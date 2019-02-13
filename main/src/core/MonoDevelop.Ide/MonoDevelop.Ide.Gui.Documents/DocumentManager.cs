@@ -633,7 +633,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void UnwatchDocument (Document doc)
 		{
-			if (doc.IsDirty) {
+			if (doc.IsFile) {
 				doc.FileNameChanged -= OnContentNameChanged;
 				WatchDirectories ();
 			}
