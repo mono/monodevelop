@@ -1,4 +1,4 @@
-﻿//
+//
 // DefaultSourceEditorOptions.cs
 //
 // Author:
@@ -840,8 +840,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		// TODO: VS-Editor only has true/false here.
-		ConfigurationProperty<ShowWhitespaces> showWhitespaces = ConfigurationProperty.Create ("ShowWhitespaces", ShowWhitespaces.Never);
+		ConfigurationProperty<ShowWhitespaces> showWhitespaces = IdeApp.Preferences.Editor.ShowWhitespaces;
 		public ShowWhitespaces ShowWhitespaces {
 			get {
 				return showWhitespaces;
@@ -852,8 +851,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		// TODO: Windows equivalent?
-		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = ConfigurationProperty.Create ("IncludeWhitespaces", IncludeWhitespaces.All);
+		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = IdeApp.Preferences.Editor.IncludeWhitespaces;
 		public IncludeWhitespaces IncludeWhitespaces {
 			get {
 				return includeWhitespaces;

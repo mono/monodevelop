@@ -58,6 +58,8 @@ namespace MonoDevelop.Ide.Editor
 		public readonly ConfigurationProperty<int> TabSize;
 		public readonly ConfigurationProperty<bool> TrimTrailingWhitespace;
 		public readonly ConfigurationProperty<WordWrapStyles> WordWrapStyle;
+		public readonly ConfigurationProperty<ShowWhitespaces> ShowWhitespaces;
+		public readonly ConfigurationProperty<IncludeWhitespaces> IncludeWhitespaces;
 		// TODO: Maybe per language preferences?
 		#endregion
 
@@ -90,6 +92,8 @@ namespace MonoDevelop.Ide.Editor
 			// UseVirtualSpace should be a combination of IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Smart && RemoveTrailingWhitespaces
 			WordWrapStyle = Wrap<WordWrapStyles> ("WordWrapStyle", DefaultTextViewOptions.WordWrapStyleName);
 			TabSize = Wrap<int> ("TabSize", DefaultOptions.TabSizeOptionName);
+			ShowWhitespaces = new ShowWhitespacesProperty (this);
+			IncludeWhitespaces = new IncludeWhitespacesProperty (this);
 
 			LogNonMappedOptions ();
 		}
@@ -184,6 +188,123 @@ namespace MonoDevelop.Ide.Editor
 			EditorToIdeMapping.Add (editorOptionId, value => property.Value = (T)value);
 
 			return property;
+		}
+
+		class IncludeWhitespacesProperty : ConfigurationProperty<IncludeWhitespaces>
+		{
+			IncludeWhitespaces propertyValue;
+			const string propertyName = "IncludeWhitespaces";
+			readonly EditorPreferences editorPreferences;
+
+			public IncludeWhitespacesProperty (EditorPreferences editorPreferences)
+			{
+				this.editorPreferences = editorPreferences;
+				var definition = editorPreferences.factoryService.GetOptionDefinition (DefaultTextViewOptions.UseVisibleWhitespaceIncludeName);
+				propertyValue = PropertyService.Get (propertyName, Convert ((DefaultTextViewOptions.IncludeWhitespaces)definition.DefaultValue));
+				UpdateEditor (propertyValue);
+				editorPreferences.globalOptions.OptionChanged += GlobalOptions_OptionChanged;
+			}
+
+			private IncludeWhitespaces Convert (DefaultTextViewOptions.IncludeWhitespaces includeWhitespaces)
+			{
+				return (IncludeWhitespaces)(int)includeWhitespaces;
+			}
+
+			void GlobalOptions_OptionChanged (object sender, EditorOptionChangedEventArgs e)
+			{
+				if (e.OptionId == DefaultTextViewOptions.UseVisibleWhitespaceName) {
+					this.Set (Convert (editorPreferences.globalOptions.GetOptionValue<DefaultTextViewOptions.IncludeWhitespaces> (DefaultTextViewOptions.UseVisibleWhitespaceName)));
+				}
+			}
+
+			protected override IncludeWhitespaces OnGetValue ()
+			{
+				return propertyValue;
+			}
+
+			protected override bool OnSetValue (IncludeWhitespaces value)
+			{
+				if (this.propertyValue == value)
+					return false;
+				this.propertyValue = value;
+				PropertyService.Set (propertyName, value);
+				OnChanged ();
+				UpdateEditor (value);
+				return true;
+			}
+
+			private void UpdateEditor (IncludeWhitespaces value)
+			{
+				var val = (DefaultTextViewOptions.IncludeWhitespaces)(int)value;
+				if (val.HasFlag (DefaultTextViewOptions.IncludeWhitespaces.Spaces))
+					val |= DefaultTextViewOptions.IncludeWhitespaces.Ideographics;
+				editorPreferences.globalOptions.SetOptionValue (DefaultTextViewOptions.UseVisibleWhitespaceIncludeName, val);
+			}
+		}
+
+		class ShowWhitespacesProperty : ConfigurationProperty<ShowWhitespaces>
+		{
+			ShowWhitespaces value;
+			const string propertyName = "ShowWhitespaces";
+			readonly EditorPreferences editorPreferences;
+
+			public ShowWhitespacesProperty (EditorPreferences editorPreferences)
+			{
+				this.editorPreferences = editorPreferences;
+				var definitionEnabled = editorPreferences.factoryService.GetOptionDefinition (DefaultTextViewOptions.UseVisibleWhitespaceName);
+				var definitionSelection = editorPreferences.factoryService.GetOptionDefinition (DefaultTextViewOptions.UseVisibleWhitespaceOnlyWhenSelectedName);
+				value = PropertyService.Get (propertyName, Convert ((bool)definitionEnabled.DefaultValue, (bool)definitionSelection.DefaultValue));
+				UpdateEditor (value);
+				editorPreferences.globalOptions.OptionChanged += GlobalOptions_OptionChanged;
+			}
+
+			private ShowWhitespaces Convert (bool enable, bool selection)
+			{
+				if (enable)
+					if (selection)
+						return Editor.ShowWhitespaces.Selection;
+					else
+						return Editor.ShowWhitespaces.Always;
+				else
+					return Editor.ShowWhitespaces.Never;
+			}
+
+			void GlobalOptions_OptionChanged (object sender, EditorOptionChangedEventArgs e)
+			{
+				if (e.OptionId == DefaultTextViewOptions.UseVisibleWhitespaceName ||
+					e.OptionId == DefaultTextViewOptions.UseVisibleWhitespaceOnlyWhenSelectedName) {
+					if (editorPreferences.globalOptions.GetOptionValue<bool> (DefaultTextViewOptions.UseVisibleWhitespaceName)) {
+						if (editorPreferences.globalOptions.GetOptionValue<bool> (DefaultTextViewOptions.UseVisibleWhitespaceOnlyWhenSelectedName))
+							Set (Editor.ShowWhitespaces.Selection);
+						else
+							Set (Editor.ShowWhitespaces.Always);
+					} else {
+						Set (Editor.ShowWhitespaces.Never);
+					}
+				}
+			}
+
+			protected override ShowWhitespaces OnGetValue ()
+			{
+				return value;
+			}
+
+			protected override bool OnSetValue (ShowWhitespaces value)
+			{
+				if (this.value == value)
+					return false;
+				this.value = value;
+				PropertyService.Set (propertyName, value);
+				OnChanged ();
+				UpdateEditor (value);
+				return true;
+			}
+
+			private void UpdateEditor (ShowWhitespaces value)
+			{
+				editorPreferences.globalOptions.SetOptionValue (DefaultTextViewOptions.UseVisibleWhitespaceName, value != Editor.ShowWhitespaces.Never);
+				editorPreferences.globalOptions.SetOptionValue (DefaultTextViewOptions.UseVisibleWhitespaceOnlyWhenSelectedName, value == Editor.ShowWhitespaces.Selection);
+			}
 		}
 		#endregion
 	}
