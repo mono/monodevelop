@@ -524,7 +524,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			var toChildren = Messaging.IntPtr_objc_msgSend (fromNsa.Handle, selAccessibilityChildren_Handle);
 			using (var toArray = Runtime.GetNSObject<NSArray> (toChildren))
-			using (var copy = toArray != null ? (NSMutableArray)toArray.Copy () : new NSMutableArray (1)) {
+			using (var copy = toArray != null ? (NSMutableArray)toArray.MutableCopy () : new NSMutableArray (1)) {
 				copy.Add ((NSObject)childNsa);
 				toNsa.SendSelector (selSetAccessibilityChildren_Handle, copy);
 			}
@@ -554,7 +554,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			var current = Messaging.IntPtr_objc_msgSend (nsa.Handle, selAccessibilityLinkedUIElements_Handle);
 			using (var array = Runtime.GetNSObject<NSArray> (current))
-			using (var copy = array != null ? (NSMutableArray)array.Copy () : new NSMutableArray (1)) {
+			using (var copy = array != null ? (NSMutableArray)array.MutableCopy () : new NSMutableArray (1)) {
 				copy.Add ((NSObject)linkedNSA);
 				nsa.SendSelector (selSetAccessibilityLinkedUIElements_Handle, copy);
 			}
@@ -569,7 +569,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 			var current = Messaging.IntPtr_objc_msgSend (nsa.Handle, selAccessibilityLinkedUIElements_Handle);
 			using (var array = Runtime.GetNSObject<NSArray> (current))
-			using (var copy = array != null ? (NSMutableArray)array.Copy () : new NSMutableArray ((nuint)linked.Length)) {
+			using (var copy = array != null ? (NSMutableArray)array.MutableCopy () : new NSMutableArray ((nuint)linked.Length)) {
 				foreach (var e in linked) {
 					var nsaLinked = GetNSAccessibilityElement (e);
 					copy.Add ((NSObject)nsaLinked);
