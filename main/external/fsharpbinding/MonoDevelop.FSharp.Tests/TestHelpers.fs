@@ -25,6 +25,7 @@ module FixtureSetup =
             MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
             Runtime.Initialize (true)
             do! IdeApp.Initialize ((new ConsoleProgressMonitor()))
+            do! Runtime.GetService<TypeSystemService> ()
             GuiUnit.TestRunner.ExitCode |> ignore // hack to get GuiUnit into the AppDomain
     }
 
