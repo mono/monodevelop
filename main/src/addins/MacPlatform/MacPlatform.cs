@@ -1359,6 +1359,14 @@ namespace MonoDevelop.MacIntegration
 
 	public class ThemedMacDialogBackend : Xwt.Mac.DialogBackend
 	{
+		public ThemedMacDialogBackend ()
+		{
+		}
+
+		public ThemedMacDialogBackend (IntPtr ptr) : base (ptr)
+		{
+		}
+
 		public override void InitializeBackend (object frontend, Xwt.Backends.ApplicationContext context)
 		{
 			base.InitializeBackend (frontend, context);
@@ -1368,6 +1376,14 @@ namespace MonoDevelop.MacIntegration
 
 	public class ThemedMacAlertDialogBackend : Xwt.Mac.AlertDialogBackend
 	{
+		public ThemedMacAlertDialogBackend ()
+		{
+		}
+
+		public ThemedMacAlertDialogBackend (IntPtr ptr) : base (ptr)
+		{
+		}
+
 		public override void Initialize (Xwt.Backends.ApplicationContext actx)
 		{
 			base.Initialize (actx);
