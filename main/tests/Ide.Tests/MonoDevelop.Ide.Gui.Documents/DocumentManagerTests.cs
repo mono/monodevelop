@@ -53,11 +53,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			//			serviceProvider = ServiceHelper.SetupMockShell ();
 			documentManager = await Runtime.GetService<DocumentManager> ();
 			shell = await Runtime.GetService<IShell> () as MockShell;
-			eventTracker = new DocumentManagerEventTracker (documentManager);
 			documentControllerService = await Runtime.GetService<DocumentControllerService> ();
 
 			while (documentManager.Documents.Count > 0)
 				await documentManager.Documents [0].Close (true);
+
+			eventTracker = new DocumentManagerEventTracker (documentManager);
 		}
 
 		[TearDown]

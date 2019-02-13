@@ -797,11 +797,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Saves the document. If the controller has a model, the default implementation will save the model.
 		/// </summary>
-		protected virtual Task OnSave ()
+		protected virtual async Task OnSave ()
 		{
-			if (Model != null)
-				return Model.Save ();
-			return Task.CompletedTask;
+			if (Model != null) {
+				await Model.Save ();
+				HasUnsavedChanges = Model.HasUnsavedChanges;
+			}
 		}
 
 		/// <summary>

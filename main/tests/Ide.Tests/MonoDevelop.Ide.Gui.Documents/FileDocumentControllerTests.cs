@@ -144,7 +144,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				file.FilePath = tempFile;
 				Assert.AreEqual (tempFile, file.FilePath);
 				await file.Save ();
-				Assert.IsFalse (file.HasUnsavedChanges);
+
+				// The save implementation must reset HasUnsavedChanges
+				Assert.IsTrue (file.HasUnsavedChanges);
+
 				Assert.IsNull (file.Model);
 			} finally {
 				File.Delete (tempFile);
