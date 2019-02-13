@@ -55,6 +55,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static event EventHandler BranchSelectionChanged;
 
+
+		FileSystemWatcher watcher;
+
 		public GitRepository ()
 		{
 			Url = "git://";
@@ -68,12 +71,52 @@ namespace MonoDevelop.VersionControl.Git
 				RootPath = RootRepository.Info.WorkingDirectory;
 				Url = url;
 			});
+
+			watcher = new FileSystemWatcher (RootPath.Combine (".git"), "*.lock");
+			watcher.Created += HandleGitLockCreated;
+			watcher.Deleted += HandleGitLockDeleted;
+			watcher.Renamed += HandleGitLockRenamed;
+			watcher.EnableRaisingEvents = true;
+		}
+
+		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
+		{
+			OnGitLocked ();
+		}
+
+		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
+		{
+			if (e.OldName.EndsWith ("lock", StringComparison.Ordinal) && !e.Name.EndsWith ("lock", StringComparison.Ordinal))
+				OnGitUnlocked ();
+		}
+
+		void HandleGitLockDeleted (object sender, FileSystemEventArgs e)
+		{
+			OnGitUnlocked ();
+		}
+
+		void OnGitLocked ()
+		{
+			// TODO: freeze all git operations
+			FileService.FreezeEvents ();
+		}
+
+		void OnGitUnlocked ()
+		{
+			FileService.ThawEvents ();
 		}
 
 		internal bool Disposed { get; private set; }
 		public override void Dispose ()
 		{
+			if (!Disposed && watcher != null) {
+				watcher.EnableRaisingEvents = false;
+				watcher.Dispose ();
+				watcher = null;
+			}
+
 			Disposed = true;
+
 			base.Dispose ();
 
 			if (RootRepository != null)
