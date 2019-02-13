@@ -118,10 +118,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal async Task Initialize ()
 		{
-			desktopService = await serviceProvider.GetService<DesktopService> ();
-			documentManager = await serviceProvider.GetService<DocumentManager> ();
-			compositionManager = await serviceProvider.GetService<CompositionManager> ();
-
 			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
 				workspace = s;
 				if (MonoDevelopSolution != null)
@@ -159,8 +155,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
-			if (MonoDevelopSolution != null)
-				desktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+			desktopService = await serviceProvider.GetService<DesktopService> ().ConfigureAwait (false);
+			documentManager = await serviceProvider.GetService<DocumentManager> ().ConfigureAwait (false);
+			compositionManager = await serviceProvider.GetService<CompositionManager> ().ConfigureAwait (false);
+
+			if (MonoDevelopSolution != null) {
+				Runtime.RunInMainThread (() => desktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged).Ignore ();
+			}
 		}
 
 		bool lowMemoryLogged;

@@ -76,12 +76,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override async Task OnInitialize (ServiceProvider serviceProvider)
 		{
+			IntitializeTrackedProjectHandling ();
+
 			serviceProvider.WhenServiceInitialized<DocumentManager> (s => documentManager = s);
 			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
 				rootWorkspace = s;
 				rootWorkspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			});
-			desktopService = await serviceProvider.GetService<DesktopService> ();
 
 			RoslynServices.RoslynService.Initialize ();
 			CleanupCache ();
@@ -95,16 +96,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			initialLoad = false;
 
 			try {
-				compositionManager = await serviceProvider.GetService<CompositionManager> ();
+				compositionManager = await serviceProvider.GetService<CompositionManager> ().ConfigureAwait (false);
 				emptyWorkspace = new MonoDevelopWorkspace (compositionManager.HostServices, null, this);
-				await emptyWorkspace.Initialize ();
+				await emptyWorkspace.Initialize ().ConfigureAwait (false);
 			} catch (Exception e) {
 				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
 			}
 
 			FileService.FileChanged += FileService_FileChanged;
 
-			IntitializeTrackedProjectHandling ();
+			desktopService = await serviceProvider.GetService<DesktopService> ();
 		}
 
 		protected override Task OnDispose ()
