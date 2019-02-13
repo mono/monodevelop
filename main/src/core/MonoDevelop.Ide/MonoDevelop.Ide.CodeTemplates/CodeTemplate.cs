@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						continue;
 
 					// '-' because CSS property names templates include them
-					if (c == '-' && IdeApp.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
+					if (c == '-' && IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-css"))
 						continue;
 
 					break;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			int start  = FindPrevWordStart (editor, offset);
 
 			// HTML snippets include the opening '<', so ensure that we remove the old one if present
-			if (start > 0 && '<' == editor.GetCharAt(start - 1) && IdeApp.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
+			if (start > 0 && '<' == editor.GetCharAt(start - 1) && IdeServices.DesktopService.GetMimeTypeIsSubtype(editor.MimeType, "text/x-html"))
 				start -= 1;
 
 			editor.RemoveText (start, offset - start);

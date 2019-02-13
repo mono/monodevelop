@@ -134,7 +134,7 @@ namespace MonoDevelop.PackageManagement
 			});
 			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
 			licenseLabel.Uri = package.LicenseUrl;
-			licenseLabel.LinkClicked += (sender, e) => IdeApp.DesktopService.ShowUrl (e.Target.AbsoluteUri);
+			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
 			titleBox.PackStart (licenseLabel);
 
 			var rowBox = new HBox ();

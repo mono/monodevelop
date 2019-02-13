@@ -46,7 +46,7 @@ namespace MonoDevelop.JSon
 
 			// This extension needs to be turned off if the webtooling addin json extension is present.
 			//   That addin defines a "text/x-json" mimeType that has multiple levels of inheritance.
-			var mimeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChain("text/x-json").ToList();
+			var mimeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChain("text/x-json").ToList();
 			jsonExtensionInstalled = (mimeChain.Count > 2);
 
 			if (!jsonExtensionInstalled)

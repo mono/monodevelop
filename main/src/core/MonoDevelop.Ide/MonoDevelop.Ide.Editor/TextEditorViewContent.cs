@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Editor
 			if (string.IsNullOrEmpty (mimeType))
 				mimeType = "text/plain";
 
-			var mimeTypes = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var mimeTypes = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 
 			if (styleParent != null)
 				policyContainer = styleParent.Policies;
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
-			var mimeTypes = IdeApp.DesktopService.GetMimeTypeInheritanceChain (textEditor.MimeType);
+			var mimeTypes = IdeServices.DesktopService.GetMimeTypeInheritanceChain (textEditor.MimeType);
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 			((DefaultSourceEditorOptions)textEditor.Options).UpdateStylePolicy (currentPolicy);
 		}

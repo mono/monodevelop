@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal ICSharpCode.NRefactory6.CSharp.CacheIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;
 
-		readonly static IEnumerable<string> types = IdeApp.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+		readonly static IEnumerable<string> types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
 		char lastCharInserted;
 

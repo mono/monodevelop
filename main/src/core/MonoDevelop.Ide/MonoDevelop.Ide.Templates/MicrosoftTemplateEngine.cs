@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public static async Task FormatFile (PolicyContainer policies, FilePath file)
 		{
-			string mime = IdeApp.DesktopService.GetMimeTypeForUri (file);
+			string mime = IdeServices.DesktopService.GetMimeTypeForUri (file);
 			if (mime == null)
 				return;
 

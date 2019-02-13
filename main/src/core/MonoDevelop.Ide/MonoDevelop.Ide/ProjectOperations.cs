@@ -2641,7 +2641,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 
-			var data = TextEditorFactory.CreateNewDocument (filePath, IdeApp.DesktopService.GetMimeTypeForUri(filePath));
+			var data = TextEditorFactory.CreateNewDocument (filePath, IdeServices.DesktopService.GetMimeTypeForUri(filePath));
 
 			isOpen = false;
 			return data;

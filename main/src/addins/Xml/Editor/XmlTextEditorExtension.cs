@@ -547,7 +547,7 @@ namespace MonoDevelop.Xml.Editor
 			if (string.IsNullOrEmpty (fileName))
 				return false;
 
-			string mimeType = IdeApp.DesktopService.GetMimeTypeForUri (fileName);
+			string mimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 			if (IsMimeTypeHandled (mimeType))
 				return true;
 			
@@ -556,7 +556,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		static bool IsMimeTypeHandled (string mimeType)
 		{
-			foreach (var m in IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+			foreach (var m in IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
 					return true;
 			}

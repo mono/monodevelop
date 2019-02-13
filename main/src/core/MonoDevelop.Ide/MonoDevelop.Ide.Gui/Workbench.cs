@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public bool HasToplevelFocus {
 			get {
-				if (IdeApp.DesktopService.IsModalDialogRunning ())
+				if (IdeServices.DesktopService.IsModalDialogRunning ())
 					return false;
 				var windows = Gtk.Window.ListToplevels ();
 				var toplevel = windows.FirstOrDefault (x => x.HasToplevelFocus);
@@ -313,7 +313,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public void GrabDesktopFocus ()
 		{
-			IdeApp.DesktopService.GrabDesktopFocus (RootWindow);
+			IdeServices.DesktopService.GrabDesktopFocus (RootWindow);
 		}
 				
 		public bool FullScreen {

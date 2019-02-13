@@ -129,7 +129,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
-			var chain = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var chain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (chain);
 			var textPolicy = policyParent.Get<TextStylePolicy> (chain);
 			var optionSet = policy.CreateOptions (textPolicy);

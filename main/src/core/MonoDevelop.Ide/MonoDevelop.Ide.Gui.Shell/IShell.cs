@@ -27,10 +27,12 @@
 using System;
 using System.Threading.Tasks;
 using MonoDevelop.Components.DockNotebook;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
+	[DefaultServiceImplementation (typeof (DefaultWorkbench))]
 	internal interface IShell
 	{
 		IWorkbenchWindow ActiveWorkbenchWindow { get; }

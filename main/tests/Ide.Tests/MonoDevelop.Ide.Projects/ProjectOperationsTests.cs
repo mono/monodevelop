@@ -34,10 +34,10 @@ namespace MonoDevelop.Ide.Projects
 	public class ProjectOperationsTests : IdeTestBase
 	{
 		[TestFixtureSetUp]
-		public void SetUp ()
+		public async Task SetUp ()
 		{
 			if (!IdeApp.IsInitialized) {
-				IdeApp.Initialize (new ProgressMonitor ());
+				await IdeApp.Initialize (new ProgressMonitor ());
 			}
 		}
 

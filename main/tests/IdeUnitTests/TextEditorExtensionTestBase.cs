@@ -36,6 +36,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Documents;
 using IdeUnitTests;
 using MonoDevelop.Ide.Composition;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide
 {
@@ -87,8 +89,6 @@ namespace MonoDevelop.Ide
 	{
 		DocumentManager documentManager;
 
-		BasicServiceProvider serviceProvider = new BasicServiceProvider ();
-
 		public Document Document { get; private set; }
 		public Project Project => Document.Owner as Project;
 		public Solution Solution => (Document.Owner as Project)?.ParentSolution;
@@ -110,8 +110,8 @@ namespace MonoDevelop.Ide
 
 		async Task Init (TestViewContent content, EditorExtensionTestData data, bool wrap)
 		{
-			serviceProvider = ServiceHelper.SetupMockShell ();
-			documentManager = await serviceProvider.GetService<DocumentManager> ();
+			//serviceProvider = ServiceHelper.SetupMockShell ();
+			documentManager = await Runtime.GetService<DocumentManager> ();
 
 			Content = content;
 			TestData = data;
@@ -132,12 +132,12 @@ namespace MonoDevelop.Ide
 			}
 			if (!Wrap)
 				Document.Dispose ();
-			serviceProvider.Dispose ().Wait ();
 		}
 
 		public T GetContent<T> () where T:class => Content.GetContent<T> ();
 	}
 
+	[RequireService (typeof (TextEditorService))]
 	public abstract class TextEditorExtensionTestBase : IdeTestBase
 	{
 		protected abstract EditorExtensionTestData GetContentData ();
@@ -153,10 +153,11 @@ namespace MonoDevelop.Ide
 
 			var data = GetContentData ();
 
-			var content = new TestViewContent {
-				FilePath = data.FileName,
-				Text = input,
-			};
+			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor (data.FileName, null, null));
+
+			content.Text = input;
+
 			content.Editor.MimeType = data.MimeType;
 			if (cursorPosition != -1)
 				content.CursorPosition = cursorPosition;

@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		public Task<IDocumentOptions> GetOptionsForDocumentAsync (Document document, CancellationToken cancellationToken)
 		{
-			var mimeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChainForRoslynLanguage (document.Project.Language);
+			var mimeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForRoslynLanguage (document.Project.Language);
 			if (mimeChain == null) {
 				return Task.FromResult<IDocumentOptions>(null);
 			}

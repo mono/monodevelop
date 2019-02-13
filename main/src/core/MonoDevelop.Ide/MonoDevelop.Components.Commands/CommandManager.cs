@@ -1,4 +1,4 @@
-//
+﻿//
 // CommandManager.cs
 //
 // Author:
@@ -343,7 +343,7 @@ namespace MonoDevelop.Components.Commands
 
 			// If a modal dialog is running then the menus are disabled, even if the commands are not
 			// See MDMenuItem::IsGloballyDisabled
-			if (IdeApp.DesktopService.IsModalDialogRunning ()) {
+			if (IdeServices.DesktopService.IsModalDialogRunning ()) {
 				return ev;
 			}
 

@@ -87,6 +87,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 
+		static MonoDevelopWorkspace ()
+		{
+			Tasks.CommentTasksProvider.Initialize ();
+		}
+
 		/// <summary>
 		/// This bypasses the type system service. Use with care.
 		/// </summary>
@@ -114,12 +119,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal async Task Initialize ()
 		{
 			desktopService = await serviceProvider.GetService<DesktopService> ();
-			workspace = await serviceProvider.GetService<RootWorkspace> ();
 			documentManager = await serviceProvider.GetService<DocumentManager> ();
 			compositionManager = await serviceProvider.GetService<CompositionManager> ();
 
-			if (MonoDevelopSolution != null)
-				workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				workspace = s;
+				if (MonoDevelopSolution != null)
+					workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			});
 			
 			backgroundCompiler = new BackgroundCompiler (this);
 
@@ -268,7 +275,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			CancelLoad ();
 
-			workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
+			if (workspace != null)
+				workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 
 			if (MonoDevelopSolution != null) {
 				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {

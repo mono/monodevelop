@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 {
 	public class DocumentManagerTests : TestBase
 	{
-		BasicServiceProvider serviceProvider;
+//		BasicServiceProvider serviceProvider;
 		DocumentManager documentManager;
 		DocumentManagerEventTracker eventTracker;
 		DocumentControllerService documentControllerService;
@@ -47,17 +47,20 @@ namespace MonoDevelop.Ide.Gui.Documents
 		[SetUp]
 		public async Task Setup ()
 		{
-			serviceProvider = ServiceHelper.SetupMockShell ();
-			documentManager = await serviceProvider.GetService<DocumentManager> ();
-			shell = await serviceProvider.GetService<IShell> () as MockShell;
+			Runtime.RegisterServiceType<IShell, MockShell> ();
+			Runtime.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager> ();
+
+			//			serviceProvider = ServiceHelper.SetupMockShell ();
+			documentManager = await Runtime.GetService<DocumentManager> ();
+			shell = await Runtime.GetService<IShell> () as MockShell;
 			eventTracker = new DocumentManagerEventTracker (documentManager);
-			documentControllerService = await serviceProvider.GetService<DocumentControllerService> ();
+			documentControllerService = await Runtime.GetService<DocumentControllerService> ();
 		}
 
 		[TearDown]
 		public async Task TestTearDown ()
 		{
-			await serviceProvider.Dispose ();
+			//await serviceProvider.Dispose ();
 		}
 
 		[Test]

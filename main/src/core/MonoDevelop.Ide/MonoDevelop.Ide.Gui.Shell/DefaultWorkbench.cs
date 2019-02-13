@@ -151,10 +151,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 		
 		public bool FullScreen {
 			get {
-				return IdeApp.DesktopService.GetIsFullscreen (this);
+				return IdeServices.DesktopService.GetIsFullscreen (this);
 			}
 			set {
-				IdeApp.DesktopService.SetIsFullscreen (this, value);
+				IdeServices.DesktopService.SetIsFullscreen (this, value);
 			}
 		}
 
@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 			
-			if (!IdeApp.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
+			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
 				CreateMenuBar ();
 			}
 			
@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
 			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath)) {
-				if (IdeApp.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
+				if (IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
 					return;
 				
 				UninstallMenuBar ();
@@ -605,7 +605,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 					WorkbenchMemento memento = new WorkbenchMemento ((Properties)value);
 					
 					normalBounds = memento.Bounds;
-					IdeApp.DesktopService.PlaceWindow (this, normalBounds.X, normalBounds.Y, normalBounds.Width, normalBounds.Height);
+					IdeServices.DesktopService.PlaceWindow (this, normalBounds.X, normalBounds.Y, normalBounds.Width, normalBounds.Height);
 					
 					// HACK: don't restore Gdk.WindowState.Maximized on OS X, because there's a bug in 
 					// GdkWindow.State that means it doesn't reflect the real state, it only reflects values set
@@ -753,9 +753,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 			
 			InstallMenuBar ();
 			Realize ();
-			toolbar = IdeApp.DesktopService.CreateMainToolbar (this);
-			IdeApp.DesktopService.SetMainWindowDecorations (this);
-			IdeApp.DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
+			toolbar = IdeServices.DesktopService.CreateMainToolbar (this);
+			IdeServices.DesktopService.SetMainWindowDecorations (this);
+			IdeServices.DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 
 
 			infoBarFrame = new VBox (false, 0);

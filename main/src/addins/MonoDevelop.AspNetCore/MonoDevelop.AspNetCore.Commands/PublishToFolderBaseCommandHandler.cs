@@ -133,7 +133,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			}
 
 			if (Directory.Exists (path))
-				IdeApp.DesktopService.OpenFolder (path);
+				IdeServices.DesktopService.OpenFolder (path);
 			else
 				LoggingService.LogError ("Trying to open {0} but it does not exists.", path);
 		}

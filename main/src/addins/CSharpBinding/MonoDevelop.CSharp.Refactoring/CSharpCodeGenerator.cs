@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		//		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 		//			get {
 		//				if (policy == null) {
-		//					var types = MonoDevelop.Ide.IdeApp.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+		//					var types = MonoDevelop.Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 		//					if (PolicyParent != null)
 		//						policy = PolicyParent.Get<CSharpFormattingPolicy> (types);
 		//					if (policy == null) {
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		//			}
 		//			set {
 		//				base.PolicyParent = value;
-		//				var types = MonoDevelop.Ide.IdeApp.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+		//				var types = MonoDevelop.Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 		//				policy = value.Get<CSharpFormattingPolicy> (types);
 		//			}
 		//		}

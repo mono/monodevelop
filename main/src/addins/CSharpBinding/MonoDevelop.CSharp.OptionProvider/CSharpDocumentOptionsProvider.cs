@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.OptionProvider
 			var mdws = document.Project.Solution.Workspace as MonoDevelopWorkspace;
 			var project = mdws?.GetMonoProject (document.Project.Id);
 
-			var types = Ide.IdeApp.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			var types = Ide.IdeServices.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
 			CSharpFormattingPolicy policy;
 			TextStylePolicy textpolicy;

@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnOpenFolder ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			IdeApp.DesktopService.OpenFolder (solution.BaseDirectory, solution.FileName);
+			IdeServices.DesktopService.OpenFolder (solution.BaseDirectory, solution.FileName);
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]

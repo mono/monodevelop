@@ -206,7 +206,7 @@ namespace MonoDevelop.RegexToolkit
 //			int w = tooltipWindow.Child.SizeRequest ().Width;
 //			int h = tooltipWindow.Child.SizeRequest ().Height;
 //			
-//			Gdk.Rectangle geometry = IdeApp.DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (this.GdkWindow));
+//			Gdk.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (this.GdkWindow));
 //			if (oy + altY > geometry.Bottom) {
 //				tooltipWindow.Move (ox, altY - h);
 //			} else {

@@ -218,8 +218,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
 			ClipboardRingService.Updated += OnClipboardItemsChanged;
 
-			IdeApp.Services.TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
-			IdeApp.Services.TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
+			IdeServices.TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
+			IdeServices.TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
 
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
 			DebuggingService.StoppedEvent += HandleTargetExited;
@@ -413,7 +413,7 @@ namespace MonoDevelop.SourceEditor
 			if (ContentName == null)
 				return;
 
-			foreach (var ext in IdeApp.Services.TextEditorService.GetFileExtensions (ContentName))
+			foreach (var ext in IdeServices.TextEditorService.GetFileExtensions (ContentName))
 				AddFileExtension (ext);
 		}
 
@@ -770,7 +770,7 @@ namespace MonoDevelop.SourceEditor
 				object attributes = null;
 				if (File.Exists (fileName)) {
 					try {
-						attributes = IdeApp.DesktopService.GetFileAttributes (fileName);
+						attributes = IdeServices.DesktopService.GetFileAttributes (fileName);
 						var fileAttributes = File.GetAttributes (fileName);
 						if (fileAttributes.HasFlag (FileAttributes.ReadOnly)) {
 							var result = MessageService.AskQuestion (
@@ -811,7 +811,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				try {
 					if (attributes != null)
-						IdeApp.DesktopService.SetFileAttributes (fileName, attributes);
+						IdeServices.DesktopService.SetFileAttributes (fileName, attributes);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't set file attributes", e);
 				}
@@ -1022,7 +1022,7 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateMimeType (string fileName)
 		{
-			Document.MimeType = IdeApp.DesktopService.GetMimeTypeForUri (fileName);
+			Document.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 			extensionContext = null;
 		}
 
@@ -1071,8 +1071,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
 
-			IdeApp.Services.TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
-			IdeApp.Services.TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
+			IdeServices.TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
+			IdeServices.TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
 
 			DebuggingService.ExecutionLocationChanged -= OnExecutionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
@@ -1143,7 +1143,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				if (lines != 0)
-					IdeApp.Services.TextEditorService.NotifyLineCountChanged (this, location.Line, lines, location.Column);
+					IdeServices.TextEditorService.NotifyLineCountChanged (this, location.Line, lines, location.Column);
 			}
 		}
 

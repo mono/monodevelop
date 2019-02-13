@@ -54,9 +54,9 @@ namespace MonoDevelop.Ide.Tasks
 		
 		static TaskService ()
 		{
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
-				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			if (IdeServices.Workspace != null) {
+				IdeServices.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
+				IdeServices.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 				CommentTasksProvider.Legacy.Initialize ();
 			}
 			errors.ItemName = GettextCatalog.GetString ("Warning/Error");

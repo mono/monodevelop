@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public async Task MetadataReferencesToFrameworkAssembliesAreProperlyFound ()
 		{
 			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
+				await IdeApp.Initialize (new ProgressMonitor ());
 
 			FilePath projFile = Util.GetSampleProject ("workspace-metadata-references", "workspace-metadata-references.sln");
 

@@ -108,7 +108,7 @@ namespace MonoDevelop.MacIntegration
 					};
 
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
-						IdeApp.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+						IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 						return false;
 					}
 					if (!pathAlreadySet)
@@ -124,7 +124,7 @@ namespace MonoDevelop.MacIntegration
 							state.CurrentViewers [(int)state.ViewerSelector.IndexOfSelectedItem] : null;
 					}
 
-					IdeApp.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error in Open File dialog", ex);

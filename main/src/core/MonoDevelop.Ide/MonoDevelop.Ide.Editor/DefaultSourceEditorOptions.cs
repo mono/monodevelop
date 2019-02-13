@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.VisualStudio.CodingConventions;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -266,8 +267,10 @@ namespace MonoDevelop.Ide.Editor
 			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", WordNavigationStyle.Windows);
 			
 			UpdateStylePolicy (currentPolicy);
-			IdeApp.FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
-			IdeApp.FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+			Runtime.ServiceProvider.WhenServiceInitialized<FontService> (s => {
+				s.RegisterFontChangedCallback ("Editor", UpdateFont);
+				s.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+			});
 
 			IdeApp.Preferences.ColorScheme.Changed += OnColorSchemeChanged;
 		}

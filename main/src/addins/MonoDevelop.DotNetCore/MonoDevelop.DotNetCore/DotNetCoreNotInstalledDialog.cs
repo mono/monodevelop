@@ -85,7 +85,7 @@ namespace MonoDevelop.DotNetCore
 		void AlertButtonClicked (object sender, AlertButtonEventArgs e)
 		{
 			if (e.Button == downloadButton)
-				IdeApp.DesktopService.ShowUrl (downloadUrl);
+				IdeServices.DesktopService.ShowUrl (downloadUrl);
 		}
 
 		public void Dispose ()

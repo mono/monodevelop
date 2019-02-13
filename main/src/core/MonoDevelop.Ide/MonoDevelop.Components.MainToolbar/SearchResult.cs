@@ -163,7 +163,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Xwt.Drawing.Image Icon {
 			get {
-				return IdeApp.DesktopService.GetIconForFile (file.FilePath, IconSize.Menu);
+				return IdeServices.DesktopService.GetIconForFile (file.FilePath, IconSize.Menu);
 			}
 		}
 

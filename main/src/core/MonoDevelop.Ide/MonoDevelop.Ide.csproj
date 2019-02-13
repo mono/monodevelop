@@ -4274,6 +4274,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Shell\GtkShellDocumentViewContainerSplit.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProjectReloadCapability.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\StartupInfo.cs" />
+    <Compile Include="MonoDevelop.Ide\IdeServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

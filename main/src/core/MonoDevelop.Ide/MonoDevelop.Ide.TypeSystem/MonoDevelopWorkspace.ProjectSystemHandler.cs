@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
 			{
-				var mimeType = IdeApp.DesktopService.GetMimeTypeForUri (f.FilePath);
+				var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = IdeApp.TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node?.Parser == null)
 					return false;
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
 			{
-				var mimeType = IdeApp.DesktopService.GetMimeTypeForUri (f.FilePath);
+				var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = IdeApp.TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					yield break;

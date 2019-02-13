@@ -35,6 +35,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.Gui
 {
+	[DefaultServiceImplementation(typeof(IdeProgressMonitorManager))]
 	public abstract class ProgressMonitorManager : Service
 	{
 		public ProgressMonitor GetBuildProgressMonitor ()

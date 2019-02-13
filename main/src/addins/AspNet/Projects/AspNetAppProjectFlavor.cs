@@ -704,7 +704,7 @@ namespace MonoDevelop.AspNet.Projects
 		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
 		{
 			var apps = new List<ExecutionTarget> ();
-			foreach (var browser in MonoDevelop.Ide.IdeApp.DesktopService.GetApplications ("test.html")) {
+			foreach (var browser in MonoDevelop.Ide.IdeServices.DesktopService.GetApplications ("test.html")) {
 				if (browser.IsDefault)
 					apps.Insert (0, new BrowserExecutionTarget (browser.Id,browser.DisplayName,browser));
 				else

@@ -24,9 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-namespace IdeUnitTests
+
+namespace UnitTests
 {
-	[AttributeUsage (AttributeTargets.Class)]
+	[AttributeUsage (AttributeTargets.Class, AllowMultiple = true)]
 	public class RequireServiceAttribute: Attribute
 	{
 		public RequireServiceAttribute (Type serviceType)

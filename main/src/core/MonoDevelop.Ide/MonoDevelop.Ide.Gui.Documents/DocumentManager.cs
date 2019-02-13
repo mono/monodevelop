@@ -54,18 +54,25 @@ namespace MonoDevelop.Ide.Gui.Documents
 		Document activeDocument;
 		Dictionary<IShellNotebook, List<IWorkbenchWindow>> documentHistory = new Dictionary<IShellNotebook, List<IWorkbenchWindow>> ();
 
-		protected override async Task OnInitialize (ServiceProvider serviceProvider)
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			workbench = await serviceProvider.GetService<IShell> ();
-			desktopService = await serviceProvider.GetService<DesktopService> ();
-
-			workbench.ActiveWorkbenchWindowChanged += OnDocumentChanged;
-			workbench.WindowReordered += Workbench_WindowReordered;
-			workbench.NotebookClosed += Workbench_NotebookClosed;
+			serviceProvider.WhenServiceInitialized<IShell> (s => {
+				workbench = s;
+				workbench.ActiveWorkbenchWindowChanged += OnDocumentChanged;
+				workbench.WindowReordered += Workbench_WindowReordered;
+				workbench.NotebookClosed += Workbench_NotebookClosed;
+			});
 
 			FileService.FileRemoved += CheckRemovedFile;
 			FileService.FileMoved += CheckRenamedFile;
 			FileService.FileRenamed += CheckRenamedFile;
+			return Task.CompletedTask;
+		}
+
+		async Task InitDesktopService ()
+		{
+			if (desktopService == null)
+				desktopService = await ServiceProvider.GetService<DesktopService> ();
 		}
 
 		protected override Task OnDispose ()
@@ -319,6 +326,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			FilePath fileName;
 
+			await InitDesktopService ();
+
 			Counters.OpenDocumentTimer.Trace ("Checking file");
 
 			string origName = openFileInfo.FileName;
@@ -487,11 +496,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		async Task<Document> ShowView (DocumentOpenInformation documentOpenInfo)
 		{
+			await InitDesktopService ();
+
 			var commandHandler = new ViewCommandHandlers ();
 
 			// If the controller has not been initialized, do it now
 			if (!documentOpenInfo.DocumentController.Initialized)
 				await documentOpenInfo.DocumentController.Initialize (null, null);
+
+			// Make sure the shell is now initialized
+			await ServiceProvider.GetService<IShell> ();
 
 			var window = await workbench.ShowView (documentOpenInfo.DocumentController, documentOpenInfo.DockNotebook, commandHandler);
 

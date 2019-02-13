@@ -684,7 +684,7 @@ namespace MonoDevelop.Components
 			
 			var req = widget.SizeRequest ();
 
-			Xwt.Rectangle geometry = IdeApp.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
+			Xwt.Rectangle geometry = IdeServices.DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
 			int geomWidth = (int)geometry.Width;
 			int geomLeft = (int)geometry.Left;
 			int geomRight = (int)geometry.Right;

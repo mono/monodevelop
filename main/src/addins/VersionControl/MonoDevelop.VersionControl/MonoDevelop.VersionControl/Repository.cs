@@ -899,7 +899,7 @@ namespace MonoDevelop.VersionControl
 
 		public virtual bool GetFileIsText (FilePath path)
 		{
-			return IdeApp.DesktopService.GetFileIsText (path);
+			return IdeServices.DesktopService.GetFileIsText (path);
 		}
 	}
 	

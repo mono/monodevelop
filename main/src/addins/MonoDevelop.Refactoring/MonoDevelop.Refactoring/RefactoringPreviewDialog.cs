@@ -168,7 +168,7 @@ namespace MonoDevelop.Refactoring
 			
 			TreeIter result;
 			if (!fileDictionary.TryGetValue (replaceChange.FileName, out result))
-				fileDictionary[replaceChange.FileName] = result = store.AppendValues (IdeApp.DesktopService.GetIconForFile (replaceChange.FileName, IconSize.Menu), System.IO.Path.GetFileName (replaceChange.FileName), null, true);
+				fileDictionary[replaceChange.FileName] = result = store.AppendValues (IdeServices.DesktopService.GetIconForFile (replaceChange.FileName, IconSize.Menu), System.IO.Path.GetFileName (replaceChange.FileName), null, true);
 			return result;
 		}
 

@@ -582,7 +582,7 @@ namespace MonoDevelop.Ide.Desktop
 				WorkingDirectory = Environment.CurrentDirectory,
 			};
 
-			var recentWorkspace = reopen ? IdeApp.DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			var recentWorkspace = reopen ? IdeServices.DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
 			if (!string.IsNullOrEmpty (recentWorkspace))
 				psi.Arguments = recentWorkspace;
 

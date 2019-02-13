@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Extensions
 			string[] allowedMimes = conditionNode.GetAttribute ("mimeTypes").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 			if (allowedMimes.Length > 0) {
 				if (mimeTypeChain == null) {
-					mimeTypeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChainForFile (fileName).ToList ();
+					mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (fileName).ToList ();
 				}
 				foreach (var mimeType in mimeTypeChain) {
 					foreach (var allowedMime in allowedMimes) {

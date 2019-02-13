@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var timings = new TextEditorKeyPressTimings (null);
 
-			var telemetry = IdeApp.DesktopService.PlatformTelemetry;
+			var telemetry = IdeServices.DesktopService.PlatformTelemetry;
 			if (telemetry == null)
 				Assert.Ignore ("Platform does not implement telemetry details");
 

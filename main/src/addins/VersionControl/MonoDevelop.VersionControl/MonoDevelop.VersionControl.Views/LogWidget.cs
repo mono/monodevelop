@@ -472,7 +472,7 @@ namespace MonoDevelop.VersionControl.Views
 				string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
 				
 				Application.Invoke (delegate {
-					diffWidget.ComparisonWidget.MimeType = IdeApp.DesktopService.GetMimeTypeForUri (path);
+					diffWidget.ComparisonWidget.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (path);
 					diffWidget.ComparisonWidget.OriginalEditor.Text = prevRevision;
 					diffWidget.ComparisonWidget.DiffEditor.Text = text;
 					diffWidget.ComparisonWidget.CreateDiff ();
@@ -678,7 +678,7 @@ namespace MonoDevelop.VersionControl.Views
 					action = rp.ActionDescription;
 					actionIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
-				Xwt.Drawing.Image fileIcon = IdeApp.DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
+				Xwt.Drawing.Image fileIcon = IdeServices.DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
 				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
 				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {

@@ -45,8 +45,8 @@ namespace MonoDevelop.Ide.Tasks
 
 			internal static void Initialize ()
 			{
-				IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
-				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				IdeServices.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
+				IdeServices.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			}
 
 			public static Dictionary<Project, ProjectCommentTags> ProjectTags => projectTags;
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 
 				var files = project.Files.Where (x => {
-					var mt = IdeApp.DesktopService.GetMimeTypeForUri (x.FilePath);
+					var mt = IdeServices.DesktopService.GetMimeTypeForUri (x.FilePath);
 					// FIXME: Handle all language services.
 
 					// Discard files with known IToDoCommentService implementations

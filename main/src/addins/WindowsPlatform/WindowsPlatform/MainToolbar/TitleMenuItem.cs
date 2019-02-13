@@ -242,7 +242,7 @@ namespace WindowsPlatform.MainToolbar
 
 		void OnMenuLinkClicked (object sender, RoutedEventArgs e)
 		{
-			IdeApp.DesktopService.ShowUrl (menuLinkEntry.Url);
+			IdeServices.DesktopService.ShowUrl (menuLinkEntry.Url);
 		}
 
 		void OnSubmenuClosing ()

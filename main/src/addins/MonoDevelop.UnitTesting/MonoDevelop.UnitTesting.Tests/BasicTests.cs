@@ -36,9 +36,9 @@ namespace MonoDevelop.UnitTesting.Tests
 		Solution sol;
 
 		[TestFixtureSetUp]
-		public void Start()
+		public async Task Start()
 		{
-			IdeApp.Initialize(new ProgressMonitor());
+			await IdeApp.Initialize(new ProgressMonitor());
 			IdeApp.Workspace.ActiveConfigurationId = "Debug";
 		}
 

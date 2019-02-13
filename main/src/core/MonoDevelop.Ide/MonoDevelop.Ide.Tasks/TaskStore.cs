@@ -479,8 +479,8 @@ namespace MonoDevelop.Ide.Tasks
 				return false;
 
 			//only text files
-			var mimeType = IdeApp.DesktopService.GetMimeTypeForUri (t.FileName);
-			if (!IdeApp.DesktopService.GetMimeTypeIsText (mimeType))
+			var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (t.FileName);
+			if (!IdeServices.DesktopService.GetMimeTypeIsText (mimeType))
 				return false;
 
 			//only files for which we have a default internal display binding

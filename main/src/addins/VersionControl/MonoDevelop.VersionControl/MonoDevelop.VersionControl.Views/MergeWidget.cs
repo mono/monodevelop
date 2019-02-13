@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public void Load (string fileName)
 		{
-			MainEditor.Document.MimeType = IdeApp.DesktopService.GetMimeTypeForUri (fileName);
+			MainEditor.Document.MimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 			MainEditor.Document.Text = StringTextSource.ReadFrom (fileName).Text;
 
 			this.CreateDiff ();

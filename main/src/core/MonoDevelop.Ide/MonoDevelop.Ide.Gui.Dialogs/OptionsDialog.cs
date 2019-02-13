@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Instead, give this some awareness of the mime system.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
 			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
-				var pix = IdeApp.DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize);
+				var pix = IdeServices.DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize);
 				if (pix != null) {
 					crp.Image = pix;
 				} else {
@@ -598,7 +598,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					((Notebook)c).Page = 0;
 			}
 
-			if (!IdeApp.DesktopService.AccessibilityInUse && !IdeApp.DesktopService.AccessibilityKeyboardFocusInUse) {
+			if (!IdeServices.DesktopService.AccessibilityInUse && !IdeServices.DesktopService.AccessibilityKeyboardFocusInUse) {
 				// Don't automatically expand trees if using accessibility
 				// as it can be confusing with screen readers
 				tree.ExpandToPath (store.GetPath (page.Iter));

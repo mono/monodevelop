@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// A tab will always hold a file, never a folder.
 			FilePath path = Path.GetDirectoryName (doc.FileName);
-			IdeApp.DesktopService.OpenFolder (path, doc.FileName);
+			IdeServices.DesktopService.OpenFolder (path, doc.FileName);
 		}
 		
 		[CommandUpdateHandler (FileCommands.OpenContainingFolder)]

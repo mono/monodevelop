@@ -450,7 +450,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			IdeApp.DesktopService.RecentFiles.AddFile (filename, (Project)null);
+			IdeServices.DesktopService.RecentFiles.AddFile (filename, (Project)null);
 
 			return true;
 		}
@@ -474,7 +474,7 @@ namespace MonoDevelop.Ide.Gui
 
 			ClearTasks ();
 
-			var typeSystemService = await documentManager.ServiceProvider.GetService<TypeSystemService> (false);
+			var typeSystemService = documentManager.ServiceProvider.PeekService<TypeSystemService> ();
 			typeSystemService?.RemoveSkippedFile (FileName);
 
 			try {

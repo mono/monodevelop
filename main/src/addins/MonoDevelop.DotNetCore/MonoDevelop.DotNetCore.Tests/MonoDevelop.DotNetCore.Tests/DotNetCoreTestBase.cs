@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.IO;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using UnitTests;
@@ -33,10 +34,10 @@ namespace MonoDevelop.DotNetCore.Tests
 {
 	class DotNetCoreTestBase : TestBase
 	{
-		protected override void InternalSetup (string rootDir)
+		protected override Task InternalSetup (string rootDir)
 		{
-			base.InternalSetup (rootDir);
 			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
+			return base.InternalSetup (rootDir);
 		}
 
 		/// <summary>

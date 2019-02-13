@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							  () => new List<FileProvider> (),
 							  (folder, loop, providers) => {
 								  foreach (var file in folder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
-									  if (!IdeApp.DesktopService.GetFileIsText (file.FullPath))
+									  if (!IdeServices.DesktopService.GetFileIsText (file.FullPath))
 										  continue;
 									  lock (alreadyVisited) {
 										  if (alreadyVisited.Contains (file.FullPath))
@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.FindInFiles
 								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 									  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 										  continue;
-									  if (!IdeApp.DesktopService.GetFileIsText (file.FilePath))
+									  if (!IdeServices.DesktopService.GetFileIsText (file.FilePath))
 										  continue;
 
 									  lock (alreadyVisited) {
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 						continue;
-					if (!IdeApp.DesktopService.GetFileIsText (file.Name))
+					if (!IdeServices.DesktopService.GetFileIsText (file.Name))
 						continue;
 					if (alreadyVisited.Contains (file.FilePath.FullPath))
 						continue;
@@ -326,7 +326,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					if (!filterOptions.NameMatches (fileName))
 						continue;
-					if (!IdeApp.DesktopService.GetFileIsText (fileName))
+					if (!IdeServices.DesktopService.GetFileIsText (fileName))
 						continue;
 					yield return fileName;
 				}

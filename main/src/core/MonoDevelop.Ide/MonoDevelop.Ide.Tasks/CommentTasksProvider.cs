@@ -41,24 +41,18 @@ namespace MonoDevelop.Ide.Tasks
 {
 	partial class CommentTasksProvider: Service
 	{
-		protected override Task OnInitialize (ServiceProvider serviceProvider)
+		public static void Initialize ()
 		{
-			serviceProvider.WhenServiceInitialized<CompositionManager> (compositionManager => {
+			Runtime.ServiceProvider.WhenServiceInitialized<CompositionManager> (compositionManager => {
 				var todoListProvider = compositionManager.GetExportedValue<ITodoListProvider> ();
 				todoListProvider.TodoListUpdated += OnTodoListUpdated;
 			});
 
-			serviceProvider.WhenServiceInitialized<RootWorkspace> (workspace => {
+			Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (workspace => {
 				workspace.SolutionLoaded += OnSolutionLoaded;
 				workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 				Legacy.Initialize ();
 			});
-
-			return Task.CompletedTask;
-		}
-
-		static CommentTasksProvider()
-		{
 			CommentTag.SpecialCommentTagsChanged += OnSpecialTagsChanged;
 		}
 

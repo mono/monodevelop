@@ -28,20 +28,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.Ide.Tasks
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	partial class CommentTasksProviderTests : Ide.IdeTestBase
 	{
-		[SetUp]
-		public void SetUp ()
-		{
-			//Initialize IdeApp so IdeApp.Workspace is not null, comment tasks listen to root workspace events.
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		static async Task RunTest (Func<Controller, Task> act)
 		{
 			// Keep the current special comment tags and restore them after.

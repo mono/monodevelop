@@ -31,6 +31,8 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using IdeUnitTests;
+using MonoDevelop.Ide;
+using UnitTests;
 
 namespace MonoDevelop.DotNetCore.Tests
 {
@@ -339,6 +341,9 @@ namespace MonoDevelop.DotNetCore.Tests
 
 		static async Task CreateFromTemplateAndBuild (string basename, string templateId, string parameters)
 		{
+			if (!IdeApp.IsInitialized)
+				await IdeApp.Initialize (Util.GetMonitor ());
+
 			using (var ptt = new ProjectTemplateTest (basename, templateId)) {
 
 				foreach (var templateParameter in TemplateParameter.CreateParameters (parameters)) {

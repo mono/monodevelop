@@ -862,10 +862,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnContentChanged ()
 		{
-			UpdateContentExtensions ();
-			ContentChanged?.Invoke (this, EventArgs.Empty);
-
-			RefreshExtensions ().Ignore ();
+			if (initialized) {
+				UpdateContentExtensions ();
+				ContentChanged?.Invoke (this, EventArgs.Empty);
+				RefreshExtensions ().Ignore ();
+			}
 		}
 
 		protected virtual void OnDispose ()

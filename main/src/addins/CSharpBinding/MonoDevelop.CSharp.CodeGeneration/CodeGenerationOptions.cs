@@ -88,7 +88,7 @@ namespace MonoDevelop.CodeGeneration
 		{
 			get
 			{
-				return IdeApp.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
+				return IdeServices.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 

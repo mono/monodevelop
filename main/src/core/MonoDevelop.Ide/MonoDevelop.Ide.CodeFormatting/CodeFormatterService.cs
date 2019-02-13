@@ -57,14 +57,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		public static CodeFormatter GetFormatter (string mimeType)
 		{
-			//find the most specific formatter that can handle the document			var chain = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			//find the most specific formatter that can handle the document			var chain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			foreach (var mt in chain) {
 				var node = nodes.FirstOrDefault (f => f.MimeType == mt);
 				if (node != null)
 					return new CodeFormatter (mimeType, node.GetFormatter ());
 			}
 			
-			if (IdeApp.DesktopService.GetMimeTypeIsText (mimeType))
+			if (IdeServices.DesktopService.GetMimeTypeIsText (mimeType))
 				return new CodeFormatter (mimeType, new DefaultCodeFormatter ());
 			
 			return null;

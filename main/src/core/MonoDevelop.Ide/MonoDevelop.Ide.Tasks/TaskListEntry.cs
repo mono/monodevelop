@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ShowDocumentation ()
 		{
 			if (HasDocumentationLink ())
-				IdeApp.DesktopService.ShowUrl (DocumentationLink);
+				IdeServices.DesktopService.ShowUrl (DocumentationLink);
 		}
 
 		public virtual void JumpToPosition ()

@@ -66,7 +66,7 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return IdeApp.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
+				return IdeServices.DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 //		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 //		{
 //			IReturnType returnType = null; 
-//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (IdeApp.DesktopService.GetMimeTypeForUri (options.Document.FileName));
+//			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (IdeServices.DesktopService.GetMimeTypeForUri (options.Document.FileName));
 //			
 //			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null) {
 //				if (astProvider != null) 

@@ -776,7 +776,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinitionByMimeType (string mimeType)
 		{
-			foreach (string mt in IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+			foreach (string mt in IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (mimeType == "application/octet-stream" || mimeType == "text/plain")
 					return null;
 
@@ -784,7 +784,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					foreach (var h in bundle.Highlightings) {
 						foreach (var fe in h.FileTypes) {
 							var uri = fe.StartsWith (".", StringComparison.Ordinal) ? "a" + fe : "a." + fe;
-							var mime = IdeApp.DesktopService.GetMimeTypeForUri (uri);
+							var mime = IdeServices.DesktopService.GetMimeTypeForUri (uri);
 							if (mimeType == mime) {
 								return h.GetSyntaxHighlightingDefinition ();
 							}
@@ -804,7 +804,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 
 				if (mimeType == null) {
-					mimeType = IdeApp.DesktopService.GetMimeTypeForUri (fileName);
+					mimeType = IdeServices.DesktopService.GetMimeTypeForUri (fileName);
 				}
 			}
 

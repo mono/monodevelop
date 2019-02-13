@@ -400,7 +400,7 @@ namespace MonoDevelop.Components
 			Move (x, y);
 			Show ();
 			if (!ShowWindowShadow)
-				IdeApp.DesktopService.RemoveWindowShadow (this);
+				IdeServices.DesktopService.RemoveWindowShadow (this);
 		}
 		
 		public bool SupportsAlpha {

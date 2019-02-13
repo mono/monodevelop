@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			var window = tabControl.Toplevel as Gtk.Window;
 			if (window != null) {
 				if (window is DockWindow) {
-					IdeApp.DesktopService.GrabDesktopFocus (window);
+					IdeServices.DesktopService.GrabDesktopFocus (window);
 				}
 
 				// Focusing the main window so hide all the autohide pads

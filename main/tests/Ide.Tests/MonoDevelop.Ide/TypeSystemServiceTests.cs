@@ -44,6 +44,7 @@ using System.Collections.Immutable;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	class TypeSystemServiceTests : IdeTestBase
 	{
 		class TrackTestProject : DotNetProject
@@ -153,12 +154,9 @@ namespace MonoDevelop.Ide
 		[Test]
 		public async Task TestWorkspaceImmediatelyAvailable ()
 		{
-			//Initialize IdeApp so IdeApp.Workspace is not null
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			var tcs = new TaskCompletionSource<bool> ();
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+			IdeServices.Workspace.SolutionLoaded += (s, e) => {
 				var workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
 				Assert.IsNotNull (workspace);
 				Assert.AreNotSame (workspace, IdeApp.TypeSystemService.emptyWorkspace);
@@ -166,10 +164,10 @@ namespace MonoDevelop.Ide
 				tcs.SetResult (true);
 			};
 			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await IdeServices.Workspace.OpenWorkspaceItem (solFile);
 				await tcs.Task;
 			} finally {
-				await IdeApp.Workspace.Close (false);
+				await IdeServices.Workspace.Close (false);
 			}
 		}
 
@@ -178,15 +176,12 @@ namespace MonoDevelop.Ide
 		{
 			// Fix for VSTS 603762 - LoadProject is called twice on solution load due to configuration change.
 
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-
 			MonoDevelopWorkspace workspace;
 			bool reloaded = false;
 			bool solutionLoaded = false;
 			bool workspaceLoaded = false;
 
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
+			IdeServices.Workspace.SolutionLoaded += (s, e) => {
 				workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
 				workspace.WorkspaceChanged += (sender, ea) => {
 					// If SolutionReloaded event is raised while opening the solution, we are doing something wrong
@@ -206,17 +201,17 @@ namespace MonoDevelop.Ide
 			File.WriteAllText (Path.Combine (prefsPath, "UserPrefs.xml"), "<Properties><MonoDevelop.Ide.Workspace ActiveConfiguration='Release' /></Properties>");
 
 			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await IdeServices.Workspace.OpenWorkspaceItem (solFile);
 
 				// Check that the user prefs file has been loaded
-				Assert.AreEqual ("Release", IdeApp.Workspace.ActiveConfiguration.ToString ());
+				Assert.AreEqual ("Release", IdeServices.Workspace.ActiveConfiguration.ToString ());
 
 				// Wait for the roslyn workspace to be loaded
 				while (!workspaceLoaded)
 					await Task.Delay (100);
 
 			} finally {
-				await IdeApp.Workspace.Close (false);
+				await IdeServices.Workspace.Close (false);
 			}
 
 			Assert.IsTrue (solutionLoaded);

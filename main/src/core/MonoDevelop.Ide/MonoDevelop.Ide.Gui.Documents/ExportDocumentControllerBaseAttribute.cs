@@ -88,9 +88,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (MimeTypes != null && MimeTypes.Length > 0) {
 				IEnumerable<string> mimeTypeChain;
 				if (!string.IsNullOrEmpty (mimeType))
-					mimeTypeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+					mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 				else
-					mimeTypeChain = IdeApp.DesktopService.GetMimeTypeInheritanceChainForFile (filePath);
+					mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (filePath);
 				foreach (var mt in mimeTypeChain) {
 					foreach (var allowedMime in MimeTypes) {
 						if (mt == allowedMime) {

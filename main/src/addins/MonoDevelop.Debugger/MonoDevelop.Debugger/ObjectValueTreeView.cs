@@ -1946,7 +1946,7 @@ namespace MonoDevelop.Debugger
 						Uri uri;
 						if (url != null && Uri.TryCreate (url, UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
 							clickProcessed = true;
-							IdeApp.DesktopService.ShowUrl (url);
+							IdeServices.DesktopService.ShowUrl (url);
 						}
 					}
 				} else if (cr == crtExp) {

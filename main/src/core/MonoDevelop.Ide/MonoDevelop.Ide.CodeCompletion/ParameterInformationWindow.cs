@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 
 			vb2.ShowAll ();
-			//IdeApp.DesktopService.RemoveWindowShadow (this);
+			//IdeServices.DesktopService.RemoveWindowShadow (this);
 			Content.BoundsChanged += Content_BoundsChanged;
 		}
 

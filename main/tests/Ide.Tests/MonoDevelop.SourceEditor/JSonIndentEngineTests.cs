@@ -32,10 +32,14 @@ using MonoDevelop.JSon;
 using ICSharpCode.NRefactory6.CSharp;
 using System;
 using System.Threading.Tasks;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.SourceEditor
 {
 	[TestFixture]
+	[RequireService(typeof(TextEditorService))]
 	public class JSonIndentEngineTests : IdeTestBase
 	{
 		const string indentString = "\t";
@@ -61,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 				}
 
 				var content = new TestViewContent ();
-				content.FilePath = "/a.json";
+				await content.Initialize (new FileDescriptor ("/a.json", null, null));
 				content.Editor.MimeType = "application/json";
 
 				content.Editor.Text = sb.ToString ();

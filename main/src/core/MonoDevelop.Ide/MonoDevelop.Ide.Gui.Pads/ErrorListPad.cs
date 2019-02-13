@@ -605,7 +605,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			string reference = null;
 			if (GetSelectedErrorReference (out reference) && reference != null)
-				IdeApp.DesktopService.ShowUrl (reference);
+				IdeServices.DesktopService.ShowUrl (reference);
 		}
 
 		bool GetSelectedErrorReference (out string reference)

@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void HandleLink (string url)
 		{
-			IdeApp.DesktopService.ShowUrl (url);
+			IdeServices.DesktopService.ShowUrl (url);
 		}
 
 		void PickFramework (object sender, EventArgs e)

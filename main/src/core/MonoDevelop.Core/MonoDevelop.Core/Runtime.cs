@@ -544,9 +544,19 @@ namespace MonoDevelop.Core
 		/// </summary>
 		/// <returns>The service.</returns>
 		/// <typeparam name="T">The type of the service being requested</typeparam>
-		public static Task<T> GetService<T> (bool create = true) where T: class
+		public static Task<T> GetService<T> () where T: class
 		{
-			return mainServiceProvider.GetService<T> (create);
+			return mainServiceProvider.GetService<T> ();
+		}
+
+		/// <summary>
+		/// Returns the service of the provided type if it has been initialized, null otherwise
+		/// </summary>
+		/// <returns>The service.</returns>
+		/// <typeparam name="T">The type of the service being requested</typeparam>
+		public static T PeekService<T> () where T : class
+		{
+			return mainServiceProvider.PeekService<T> ();
 		}
 
 		/// <summary>
@@ -554,9 +564,14 @@ namespace MonoDevelop.Core
 		/// </summary>
 		/// <typeparam name="ServiceType">The service type.</typeparam>
 		/// <typeparam name="ImplementationType">The implementation type.</typeparam>
-		public static void RegisterServiceType<ServiceType,ImplementationType> () where ServiceType : class where ImplementationType : IService
+		public static void RegisterServiceType<ServiceType,ImplementationType> () where ServiceType : class where ImplementationType : ServiceType
 		{
 			mainServiceProvider.RegisterServiceType (typeof (ServiceType), typeof (ImplementationType));
+		}
+
+		public static void RegisterService (IService service)
+		{
+			mainServiceProvider.RegisterService (service);
 		}
 
 		/// <summary>

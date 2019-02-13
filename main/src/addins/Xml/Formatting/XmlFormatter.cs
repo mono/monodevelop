@@ -71,7 +71,7 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			if (policyParent == null)
 				policyParent = PolicyService.DefaultPolicies;
-			var mimeTypeInheritanceChain = IdeApp.DesktopService.GetMimeTypeInheritanceChain (mimeType).ToList ();
+			var mimeTypeInheritanceChain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType).ToList ();
 			var txtPol = policyParent.Get<TextStylePolicy> (mimeTypeInheritanceChain);
 			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeTypeInheritanceChain);
 			return new StringTextSource(FormatXml (txtPol, xmlPol, input.Text));

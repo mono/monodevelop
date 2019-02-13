@@ -455,7 +455,7 @@ namespace MonoDevelop.Components.Docking
 				};
 			}
 			floatingWindow.Show ();
-			Ide.IdeApp.DesktopService.PlaceWindow (floatingWindow, rect.X, rect.Y, rect.Width, rect.Height);
+			Ide.IdeServices.DesktopService.PlaceWindow (floatingWindow, rect.X, rect.Y, rect.Width, rect.Height);
 			if (titleTab != null)
 				titleTab.UpdateBehavior ();
 			Widget.Show ();

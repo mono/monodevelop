@@ -172,7 +172,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public static DecompilerSettings GetDecompilerSettings (TextEditor data, bool publicOnly = false)
 		{
-			var types = IdeApp.DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
+			var types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = TypeDefinitionNodeBuilder.CreateDecompilerSettings (publicOnly, codePolicy);
 			return settings;

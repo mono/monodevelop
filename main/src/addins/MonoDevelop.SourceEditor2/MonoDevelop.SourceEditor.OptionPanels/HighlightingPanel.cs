@@ -284,7 +284,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void ButtonOpenFolder_Clicked (object sender, EventArgs e)
 		{
-			IdeApp.DesktopService.OpenFolder (SyntaxHighlightingService.SyntaxModePath);
+			IdeServices.DesktopService.OpenFolder (SyntaxHighlightingService.SyntaxModePath);
 		}
 	}
 }

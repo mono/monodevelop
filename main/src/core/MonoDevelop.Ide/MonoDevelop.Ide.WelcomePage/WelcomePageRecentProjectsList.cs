@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			itemCount = count;
 			
-			IdeApp.DesktopService.RecentFiles.Changed += RecentFilesChanged;
+			IdeServices.DesktopService.RecentFiles.Changed += RecentFilesChanged;
 
 			SetContent (box);
 			RecentFilesChanged (null, null);
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			destroyed = true;
 			base.OnDestroyed ();
-			IdeApp.DesktopService.RecentFiles.Changed -= RecentFilesChanged;
+			IdeServices.DesktopService.RecentFiles.Changed -= RecentFilesChanged;
 		}
 
 		void RecentFilesChanged (object sender, EventArgs e)
@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			//TODO: pinned files
 			int idx = 1;
-			foreach (var recent in IdeApp.DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
+			foreach (var recent in IdeServices.DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
 				var filename = recent.FileName;
 
 				var accessed = recent.TimeStamp;
@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			void Button_PinClicked (object sender, EventArgs e)
 			{
-				IdeApp.DesktopService.RecentFiles.SetFavoriteFile (filename, button.Pinned);
+				IdeServices.DesktopService.RecentFiles.SetFavoriteFile (filename, button.Pinned);
 			}
 
 			void Button_Destroyed (object sender, EventArgs e)

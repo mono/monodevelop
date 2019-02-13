@@ -77,7 +77,7 @@ namespace SubversionAddinWindows
 						AlertButton.Ok);
 
 					if (res == db) {
-						IdeApp.DesktopService.ShowUrl ("https://www.microsoft.com/en-us/download/details.aspx?id=5555");
+						IdeServices.DesktopService.ShowUrl ("https://www.microsoft.com/en-us/download/details.aspx?id=5555");
 					}
 				}
 				return !installError;

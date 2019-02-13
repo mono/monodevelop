@@ -90,8 +90,8 @@ namespace MonoDevelop.DesignerSupport
 		[LocalizedDescription ("Type of the file.")]
 		public string FileType {
 			get {
-				string type = IdeApp.DesktopService.GetMimeTypeForUri (file.Name);
-				return IdeApp.DesktopService.GetMimeTypeDescription (type); 
+				string type = IdeServices.DesktopService.GetMimeTypeForUri (file.Name);
+				return IdeServices.DesktopService.GetMimeTypeDescription (type); 
 			}
 		}
 		

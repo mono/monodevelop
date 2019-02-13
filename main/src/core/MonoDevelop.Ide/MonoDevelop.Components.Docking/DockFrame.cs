@@ -930,7 +930,7 @@ namespace MonoDevelop.Components.Docking
 				win.Move (p.X, p.Y);
 				win.Resize (width, height);
 				win.Show ();
-				Ide.IdeApp.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
+				Ide.IdeServices.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
 				win.AcceptFocus = true;
 				win.Opacity = 1.0;
 

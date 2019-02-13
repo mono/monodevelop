@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.info = info;
 
-			var mimeType = IdeApp.DesktopService.GetMimeTypeForUri (info.Item.Path);
+			var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (info.Item.Path);
 			foreach (var editor in editors) {
 				editor.Document.IgnoreFoldings = true;
 				editor.Document.MimeType = mimeType;

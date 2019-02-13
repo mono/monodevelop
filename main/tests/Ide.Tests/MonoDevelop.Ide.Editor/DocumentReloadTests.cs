@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Editor
 			File.WriteAllText (fileName, "class Test {}");
 
 			var content = new TestViewContentWithDocumentReloadPresenter ();
-			content.FilePath = fileName;
+			await content.Initialize (new FileDescriptor (fileName, null, null));
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var doc = testCase.Document;

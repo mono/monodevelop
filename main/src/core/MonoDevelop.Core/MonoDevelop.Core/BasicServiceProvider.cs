@@ -44,7 +44,7 @@ namespace MonoDevelop.Core
 		Dictionary<Type, List<object>> initializationCallbacks = new Dictionary<Type, List<object>> ();
 		bool disposing;
 
-		public override async Task<T> GetService<T> (bool create = true)
+		public override async Task<T> GetService<T> ()
 		{
 			CheckValid ();
 			Task<object> currentInitTask = null;
@@ -55,8 +55,6 @@ namespace MonoDevelop.Core
 					// Look in all registered services
 					service = services.OfType<T> ().FirstOrDefault ();
 					if (service == null) {
-						if (!create)
-							return null;
 						// Create a new service instance
 						LoggingService.LogInfo ("Creating service: " + typeof (T));
 						service = (T)Activator.CreateInstance (GetImplementationType (typeof (T)), true);
@@ -74,6 +72,8 @@ namespace MonoDevelop.Core
 								else
 									OnServiceInitialized (completionTask, (T)service);
 							});
+						} else {
+							OnServiceInitialized (null, (T)service);
 						}
 					}
 				}
@@ -86,6 +86,20 @@ namespace MonoDevelop.Core
 			}
 
 			return (T)await currentInitTask.ConfigureAwait (false);
+		}
+
+		public override T PeekService<T> ()
+		{
+			CheckValid ();
+
+			lock (services) {
+				// Fast path, try to get a service for this specific type
+				if (servicesByType.TryGetValue (typeof (T), out var service))
+					return (T)service;
+
+				// Look in all registered services
+				return services.OfType<T> ().FirstOrDefault ();
+			}
 		}
 
 		/// <summary>
@@ -117,8 +131,10 @@ namespace MonoDevelop.Core
 			List<object> callbacks = null;
 
 			lock (services) {
-				completionTask.SetResult (service);
-				initializationTasks.Remove (service);
+				if (completionTask != null) {
+					completionTask.SetResult (service);
+					initializationTasks.Remove (service);
+				}
 				if (initializationCallbacks.TryGetValue (typeof (T), out callbacks))
 					initializationCallbacks.Remove (typeof (T));
 			}
