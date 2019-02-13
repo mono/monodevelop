@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using LibGit2Sharp;
 using MonoDevelop.Components;
 
@@ -80,7 +81,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void UpdateButtons ()
 		{
-			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0 && entryPushUrl.Text.Length > 0;
+			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0 && IsValidUrl (entryUrl.Text) && entryPushUrl.Text.Length > 0;
 		}
 
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
@@ -106,6 +107,11 @@ namespace MonoDevelop.VersionControl.Git
 			SetPushUrlTextStyle (sameUrls);
 
 			UpdateButtons ();
+		}
+
+		bool IsValidUrl (string url)
+		{
+			return Uri.TryCreate (url, UriKind.Absolute, out var dummy);
 		}
 	}
 }
