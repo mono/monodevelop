@@ -1709,19 +1709,7 @@ namespace MonoDevelop.VersionControl.Git
 				LibGit2Sharp.Commands.Unstage (dstRepo, localDestPath);
 
 			if (srcRepo == dstRepo) {
-				if (string.Equals (localSrcPath, localDestPath, StringComparison.OrdinalIgnoreCase)) {
-					try {
-						string temp = Path.GetTempFileName ();
-						File.Delete (temp);
-						File.Move (localSrcPath, temp);
-						DeleteFile (localSrcPath, true, monitor, false);
-						File.Move (temp, localDestPath);
-					} finally {
-						LibGit2Sharp.Commands.Stage (srcRepo, localDestPath);
-					}
-				} else {
-					LibGit2Sharp.Commands.Move (srcRepo, localSrcPath, localDestPath);
-				}
+				LibGit2Sharp.Commands.Move (srcRepo, localSrcPath, localDestPath);
 				ClearCachedVersionInfo (localSrcPath, localDestPath);
 			} else {
 				File.Copy (localSrcPath, localDestPath);
