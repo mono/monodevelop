@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 				var solution = project.ParentSolution;
 
-				if (solution != null) {
+				if (solution != null && IdeApp.IsInitialized) {
 					var config = rootWorkspace.ActiveConfiguration;
 					if (config != null) {
 						var sc = solution.GetConfiguration (config);

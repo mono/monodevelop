@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -46,11 +47,12 @@ namespace MonoDevelop.CSharpBinding
 		static async Task Simulate (string input, Action<TestViewContent, EditorFormattingServiceTextEditorExtension> act, CSharpFormattingPolicy formattingPolicy = null, EolMarker eolMarker = EolMarker.Unix)
 		{
 			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("/a.cs", null, null));
+
 			content.Editor.Options = new CustomEditorOptions {
 				IndentStyle = IndentStyle.Auto
 			};
 
-			content.FilePath = "/a.cs";
 			content.Editor.MimeType = "text/x-csharp";
 
 			var sb = new StringBuilder ();

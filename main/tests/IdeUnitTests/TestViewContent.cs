@@ -62,6 +62,13 @@ namespace MonoDevelop.Ide.Gui
 			Name = "";
 		}
 
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
+		{
+			if (modelDescriptor is FileDescriptor file && !file.FilePath.IsNullOrEmpty)
+				data.FileName = file.FilePath;
+			return base.OnInitialize (modelDescriptor, status);
+		}
+
 		FilePath name;
 		public FilePath Name { 
 			get { return name; }

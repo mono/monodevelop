@@ -45,8 +45,10 @@ namespace MonoDevelop.Ide.Tasks
 
 			internal static void Initialize ()
 			{
-				IdeServices.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
-				IdeServices.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+					s.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
+					s.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+				});
 			}
 
 			public static Dictionary<Project, ProjectCommentTags> ProjectTags => projectTags;
