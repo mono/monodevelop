@@ -477,6 +477,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationProvidersImpl", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTools", "src\tools\ExtensionTools\ExtensionTools.csproj", "{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDBuildTasks", "msbuild\MDBuildTasks\MDBuildTasks.csproj", "{37E01D0B-8C44-441F-9F5D-56C36AB0B918}"
+EndProject
+
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\BaseViewImpl.projitems*{47d57f5a-0693-4768-a970-5491d4f5574c}*SharedItemsImports = 13
@@ -2761,6 +2764,22 @@ Global
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Debug|x86.Build.0 = Debug|Any CPU
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|x86.ActiveCfg = Release|Any CPU
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|x86.Build.0 = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.DebugWin32|Any CPU.ActiveCfg = DebugWin32|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.DebugWin32|Any CPU.Build.0 = DebugWin32|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
