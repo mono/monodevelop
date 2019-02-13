@@ -81,7 +81,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void UpdateButtons ()
 		{
-			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0 && IsValidUrl (entryUrl.Text) && entryPushUrl.Text.Length > 0;
+			buttonOk.Sensitive = entryName.Text.Length > 0 && IsValidUrl (entryUrl.Text) && entryPushUrl.Text.Length > 0;
 		}
 
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
