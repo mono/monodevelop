@@ -63,10 +63,7 @@ namespace MonoDevelop.Ide
 		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
 		static CommandManager commandService;
-		static IdeServices ideServices;
-		static RootWorkspace workspace;
-		static DesktopService desktopService;
-		static FontService fontsService;
+		static IdeAppServices ideServices;
 		static TypeSystemService typeSystemService;
 
 		static bool isInitialRun;
@@ -141,11 +138,9 @@ namespace MonoDevelop.Ide
 		public static ProjectOperations ProjectOperations {
 			get { return projectOperations; }
 		}
-		
-		public static RootWorkspace Workspace {
-			get { return workspace; }
-		}
-		
+
+		public static RootWorkspace Workspace => IdeServices.Workspace;
+
 		public static HelpOperations HelpOperations {
 			get { return helpOperations; }
 		}
@@ -160,9 +155,9 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static DesktopService DesktopService => desktopService;
+		public static DesktopService DesktopService => IdeServices.DesktopService;
 
-		public static FontService FontService => fontsService;
+		public static FontService FontService => IdeServices.FontService;
 
 		public static TypeSystemService TypeSystemService {
 			get {
@@ -172,7 +167,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static IdeServices Services {
+		public static IdeAppServices Services {
 			get { return ideServices; }
 		}
 
@@ -225,19 +220,19 @@ namespace MonoDevelop.Ide
 			DispatchService.Initialize ();
 
 			commandService = await Runtime.GetService<CommandManager> ();
-			desktopService = await Runtime.GetService<DesktopService> ();
-			fontsService = await Runtime.GetService<FontService> ();
+			await Runtime.GetService<DesktopService> ();
+			await Runtime.GetService<FontService> ();
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 
 			Counters.Initialization.Trace ("Creating Root Workspace");
-			workspace = await Runtime.GetService<RootWorkspace> ();
+			await Runtime.GetService<RootWorkspace> ();
 
 			Counters.Initialization.Trace ("Creating Services");
 			projectOperations = await Runtime.GetService<ProjectOperations> ();
 			helpOperations = new HelpOperations ();
-			ideServices = new IdeServices ();
+			ideServices = new IdeAppServices ();
 			await ideServices.Initialize ();
 			CustomToolService.Init ();
 			
@@ -498,11 +493,11 @@ namespace MonoDevelop.Ide
 				PropertyService.Set ("MonoDevelop.Core.RestartRequested", true);
 
 				try {
-					IdeApp.DesktopService.RestartIde (reopenWorkspace);
+					IdeServices.DesktopService.RestartIde (reopenWorkspace);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Restarting IDE failed", ex);
 				}
-				// return true here even if IdeApp.DesktopService.RestartIde has failed,
+				// return true here even if IdeServices.DesktopService.RestartIde has failed,
 				// because the Ide has already been closed.
 				return true;
 			}
@@ -569,7 +564,7 @@ namespace MonoDevelop.Ide
 				return;
 
 			// If a modal dialog is open, try again later
-			if (IdeApp.DesktopService.IsModalDialogRunning ()) {
+			if (IdeServices.DesktopService.IsModalDialogRunning ()) {
 				DispatchIdleActions (1000);
 				return;
 			}
@@ -655,39 +650,26 @@ namespace MonoDevelop.Ide
 		}
 	}
 	
-	public class IdeServices
+	public class IdeAppServices
 	{
-		TaskStore taskStore;
-		TextEditorService textEditorService;
-		NavigationHistoryService navigationHistoryManager;
-		static DisplayBindingService displayBindingService;
-
 		internal async Task Initialize ()
 		{
-			taskStore = await Runtime.GetService<TaskStore> ();
-			textEditorService = await Runtime.GetService<TextEditorService> ();
-			navigationHistoryManager = await Runtime.GetService<NavigationHistoryService> ();
-			displayBindingService = await Runtime.GetService<DisplayBindingService> ();
+			await Runtime.GetService<TaskStore> ();
+			await Runtime.GetService<TextEditorService> ();
+			await Runtime.GetService<NavigationHistoryService> ();
+			await Runtime.GetService<DisplayBindingService> ();
 		}
 
-		public TaskStore TaskStore => taskStore;
+		public TaskStore TaskStore => IdeServices.TaskStore;
 
-		public TextEditorService TextEditorService => textEditorService;
+		public TextEditorService TextEditorService => IdeServices.TextEditorService;
 
-		public NavigationHistoryService NavigationHistory => navigationHistoryManager;
+		public NavigationHistoryService NavigationHistory => IdeServices.NavigationHistory;
 
-		public DisplayBindingService DisplayBindingService => displayBindingService;
+		public DisplayBindingService DisplayBindingService => IdeServices.DisplayBindingService;
 
-		readonly Lazy<TemplatingService> templatingService = new Lazy<TemplatingService> (() => new TemplatingService ());
+		public ProjectService ProjectService => IdeServices.ProjectService;
 
-		public ProjectService ProjectService {
-			get { return MonoDevelop.Projects.Services.ProjectService; }
-		}
-
-		public TemplatingService TemplatingService {
-			get { return templatingService.Value; }
-		}
-
-		internal RoslynService RoslynService { get; } = new RoslynService ();
+		public TemplatingService TemplatingService => IdeServices.TemplatingService;
 	}
 }

@@ -95,13 +95,11 @@ namespace MonoDevelop.Ide
 
 			LoggingService.LogInfo ("Operating System: {0}", SystemInformation.GetOperatingSystemDescription ());
 
-			if (!Platform.IsWindows) {
-				// The assembly resolver for MSBuild 15 assemblies needs to be defined early on.
-				// Whilst Runtime.Initialize loads the MSBuild 15 assemblies from Mono this seems
-				// to be too late to prevent the MEF composition and the static registrar from
-				// failing to load the MonoDevelop.Ide assembly which now uses MSBuild 15 assemblies.
-				ResolveMSBuildAssemblies ();
-			}
+			// The assembly resolver for MSBuild 15 assemblies needs to be defined early on.
+			// Whilst Runtime.Initialize loads the MSBuild 15 assemblies from Mono this seems
+			// to be too late to prevent the MEF composition and the static registrar from
+			// failing to load the MonoDevelop.Ide assembly which now uses MSBuild 15 assemblies.
+			ResolveMSBuildAssemblies ();
 
 			Counters.Initialization.BeginTiming ();
 
@@ -306,7 +304,7 @@ namespace MonoDevelop.Ide
 				// load previous combine
 				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					openedProject = IdeApp.DesktopService.RecentFiles.MostRecentlyUsedProject;
+					openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
 						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName, true, true, metadata).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList, metadata), TaskScheduler.FromCurrentSynchronizationContext ()).Ignore();
@@ -419,6 +417,9 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		void ResolveMSBuildAssemblies ()
 		{
+			if (Platform.IsWindows)
+				return;
+
 			var currentRuntime = MonoRuntimeInfo.FromCurrentRuntime ();
 			if (currentRuntime != null) {
 				msbuildBinDir = Path.Combine (currentRuntime.Prefix, "lib", "mono", "msbuild", "15.0", "bin");
@@ -469,7 +470,7 @@ namespace MonoDevelop.Ide
 
 		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
 		{
-			var result = IdeApp.DesktopService.PlatformTelemetry;
+			var result = IdeServices.DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
@@ -712,7 +713,7 @@ namespace MonoDevelop.Ide
 						return false;
 					}
 					if (res == info)
-						IdeApp.DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
+						IdeServices.DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
 					if (res == cont) {
 						bool exists = Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin");
 						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Continuing " + (exists ? "Installed." : "Uninstalled.")));
