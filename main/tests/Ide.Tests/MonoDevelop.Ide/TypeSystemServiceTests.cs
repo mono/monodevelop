@@ -181,6 +181,8 @@ namespace MonoDevelop.Ide
 			bool solutionLoaded = false;
 			bool workspaceLoaded = false;
 
+			await IdeServices.Workspace.Close ();
+
 			IdeServices.Workspace.SolutionLoaded += (s, e) => {
 				workspace = IdeServices.TypeSystemService.GetWorkspace (e.Solution);
 				workspace.WorkspaceChanged += (sender, ea) => {
@@ -207,8 +209,12 @@ namespace MonoDevelop.Ide
 				Assert.AreEqual ("Release", IdeServices.Workspace.ActiveConfiguration.ToString ());
 
 				// Wait for the roslyn workspace to be loaded
-				while (!workspaceLoaded)
+				int timeout = 100;
+				while (!workspaceLoaded && --timeout > 0)
 					await Task.Delay (100);
+
+				if (timeout <= 0)
+					Assert.Fail ("Workspace did not load");
 
 			} finally {
 				await IdeServices.Workspace.Close (false);
