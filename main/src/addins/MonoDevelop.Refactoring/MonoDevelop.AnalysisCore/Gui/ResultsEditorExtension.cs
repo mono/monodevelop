@@ -140,9 +140,20 @@ namespace MonoDevelop.AnalysisCore.Gui
 			enabled = false;
 			diagService.DiagnosticsUpdated -= OnDiagnosticsUpdated;
 			CancelUpdateTimout ();
-			new ResultsUpdater (this, new Result[0], null, CancellationToken.None).Update ();
+			RemoveMarkersAndTasks ();
 		}
-		
+
+		void RemoveMarkersAndTasks ()
+		{
+			RemoveAllMarkers ();
+			lock (tasks) {
+				if (tasks.Count == 0)
+					return;
+				tasks.Clear ();
+				OnTasksUpdated (EventArgs.Empty);
+			}
+		}
+
 		CancellationTokenSource src = new CancellationTokenSource ();
 		object updateLock = new object();
 
@@ -225,8 +236,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 			try {
 				var result = await CodeDiagnosticRunner.Check (ad, token, e.Diagnostics).ConfigureAwait (false);
 				if (result is IReadOnlyList<Result> resultList) {
-					var updater = new ResultsUpdater (this, resultList, e.Id, token);
-					updater.Update ();
+					await Runtime.RunInMainThread (delegate {
+						if (resultUpdaters.TryGetValue (e.Id, out var oldUpdater))
+							oldUpdater.Cancel ();
+						var updater = new ResultsUpdater (this, resultList, e.Id);
+						updater.Start ();
+						resultUpdaters [e.Id] = updater;
+					});
 				}
 			} catch (Exception) {
 			}
@@ -239,7 +255,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 					cts.Value.Cancel ();
 				cancellations.Clear ();
 			}
-			
+
+			foreach (var kv in resultUpdaters) {
+				kv.Value.Cancel ();
+			}
+			resultUpdaters.Clear ();
+
 			src?.Cancel ();
 			src = new CancellationTokenSource ();
 		}
@@ -275,7 +296,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 		class ResultsUpdater
 		{
 			readonly ResultsEditorExtension ext;
-			readonly CancellationToken cancellationToken;
 
 			//the number of markers at the head of the queue that need tp be removed
 			int oldMarkerIndex;
@@ -287,8 +307,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 			List<IGenericTextSegmentMarker> newMarkers;
 			ImmutableArray<QuickTask>.Builder builder;
 			object id;
+			private uint idleHandlerId;
 
-			public ResultsUpdater (ResultsEditorExtension ext, IReadOnlyList<Result> results, object resultsId, CancellationToken cancellationToken)
+			public ResultsUpdater (ResultsEditorExtension ext, IReadOnlyList<Result> results, object resultsId)
 			{
 				if (ext == null)
 					throw new ArgumentNullException ("ext");
@@ -296,7 +317,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 					throw new ArgumentNullException ("results");
 				this.ext = ext;
 				id = resultsId;
-				this.cancellationToken = cancellationToken;
 
 				if (resultsId != null) {
 					ext.markers.TryGetValue (id, out oldMarkers);
@@ -308,15 +328,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 				Debug.Assert (newMarkers != null);
 			}
 
-			public void Update ()
+			public void Start ()
 			{
-				if (cancellationToken.IsCancellationRequested)
-					return;
 				if (id != null)
 					lock (ext.tasks) {
 						ext.tasks.Remove (id);
 					}
-				GLib.Idle.Add (IdleHandler);
+				idleHandlerId = GLib.Idle.Add (IdleHandler);
+			}
+
+			internal void Cancel ()
+			{
+				FinishUpdateRun ();
+				GLib.Source.Remove (idleHandlerId);
 			}
 
 			static Cairo.Color GetColor (TextEditor editor, Result result)
@@ -353,15 +377,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (editor == null)
 						return false;
 					if (id == null) {
-						ext.RemoveAllMarkers ();
-						lock (ext.tasks)
-							ext.tasks.Clear ();
-						ext.OnTasksUpdated (EventArgs.Empty);
-						return false;
-					}
-
-					if (cancellationToken.IsCancellationRequested) {
-						FinishUpdateRun ();
+						ext.RemoveMarkersAndTasks ();
 						return false;
 					}
 
@@ -442,13 +458,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 					ext.tasks [id] = builder.ToImmutable ();
 				ext.OnTasksUpdated (EventArgs.Empty);
 			}
+
 		}
 
 		//all markers known to be in the editor
 		// Roslyn groups diagnostics by their provider. In this case, we rely on the id passed in to group markers by their id.
 		Dictionary<object, List<IGenericTextSegmentMarker>> markers = new Dictionary<object, List<IGenericTextSegmentMarker>> ();
 		Dictionary<object, CancellationTokenSource> cancellations = new Dictionary<object, CancellationTokenSource> ();
-		
+		Dictionary<object, ResultsUpdater> resultUpdaters = new Dictionary<object, ResultsUpdater> ();
 		const int UPDATE_COUNT = 20;
 		
 		public IList<Result> GetResultsAtOffset (int offset, CancellationToken token = default (CancellationToken))

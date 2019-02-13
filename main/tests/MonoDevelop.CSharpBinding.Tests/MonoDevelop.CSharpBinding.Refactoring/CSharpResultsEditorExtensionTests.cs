@@ -76,12 +76,13 @@ class MyClass
 		[Test]
 		public async Task DiagnosticEnableSourceAnalysisChanged ()
 		{
-			await RunTest (5, OneFromEach, (remainingUpdates, doc) => {
-				if (remainingUpdates == 4) {
+			await RunTest (9, OneFromEach, (remainingUpdates, doc) => {
+
+				if (remainingUpdates == 8) {
 					AssertExpectedDiagnostics (OneFromEachDiagnostics.Take (2), doc);
 				}
 
-				if (remainingUpdates == 1) {
+				if (remainingUpdates == 5) {
 					AssertExpectedDiagnostics (OneFromEachDiagnostics, doc);
 					IdeApp.Preferences.EnableSourceAnalysis.Value = false;
 				}
