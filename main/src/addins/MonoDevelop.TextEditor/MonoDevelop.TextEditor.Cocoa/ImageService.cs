@@ -23,8 +23,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 
 using Microsoft.VisualStudio.Core.Imaging;
-using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Language.Intellisense.Implementation;
 
 using MonoDevelop.Core;
 using MDImageService = MonoDevelop.Ide.ImageService;
@@ -43,7 +41,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 			if (descriptionToImageMap.TryGetValue (imageDescription, out var nativeImage))
 				return nativeImage;
 
-			if (!MDImageService.TryGetImage (imageDescription.Id, out Xwt.Drawing.Image image, out string stockId)) {
+			if (!MDImageService.TryGetImage (imageDescription.Id, generateDefaultIcon: false, out Xwt.Drawing.Image image, out string stockId)) {
 				LoggingService.LogWarning ("ImageService missing ImageDescription: {0}", imageDescription);
 			}
 
