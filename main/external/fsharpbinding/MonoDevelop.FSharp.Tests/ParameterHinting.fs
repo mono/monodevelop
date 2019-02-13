@@ -9,6 +9,8 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
         
 type ``Parameter Hinting``() =
     let getHints (input: string) =
@@ -26,6 +28,10 @@ type ``Parameter Hinting``() =
         let hints = ParameterHinting.getHints(editor, doc, ctx)
                     |> Async.RunSynchronously
         hints.[0].GetParameterName(index - 1) // index is 1 based
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     [<TestCase("System.IO.Path.ChangeExtension(|", "path")>]
     [<TestCase("System.IO.Path.ChangeExtension(|)", "path")>]

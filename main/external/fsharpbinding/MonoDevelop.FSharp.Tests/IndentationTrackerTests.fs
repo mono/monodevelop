@@ -4,9 +4,15 @@ open FsUnit
 open Mono.TextEditor
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 type IndentationTrackerTests() =
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     let docWithCaretAt (content:string) =
         let d = TestHelpers.createDoc(content.Replace("§", "")) ""

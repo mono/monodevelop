@@ -20,11 +20,15 @@ open NUnit.Framework
 [<TestFixture>]
 type ``Template tests``() =
     inherit UnitTests.TestBase()
-    let toTask computation : Task = Async.StartAsTask computation :> _
+    let toTask computation : Task = Async.StartImmediateAsTask computation :> _
+
+    [<SetUp>]
+    [<AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     let monitor = UnitTests.Util.GetMonitor ()
     do
-        FixtureSetup.initialiseMonoDevelop()
         let getField name =
             typeof<IdeApp>.GetField(name, BindingFlags.NonPublic ||| BindingFlags.Static)
 

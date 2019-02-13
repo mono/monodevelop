@@ -4,9 +4,15 @@ open NUnit.Framework
 open MonoDevelop.FSharp
 open FsUnit
 open MonoDevelop.Debugger
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 [<TestFixture>]
 type DebuggerExpressionResolver() =
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
 
     let content =
       """
