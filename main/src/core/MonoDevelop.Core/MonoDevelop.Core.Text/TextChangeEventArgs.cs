@@ -1,4 +1,4 @@
-﻿//
+//
 // TextChangeEventArgs.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Text
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	[DebuggerDisplay("({offset}, {removedText.Length}, {insertedText.Text})")]
 	public sealed class TextChange
 	{
@@ -141,6 +142,7 @@ namespace MonoDevelop.Core.Text
 	/// This class is thread-safe.
 	/// </summary>
 	[Serializable]
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class TextChangeEventArgs : EventArgs
 	{
 		public IReadOnlyList<TextChange> TextChanges { get; }

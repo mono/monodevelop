@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
      * While we're at it, we just create one RegexCompiler per thread
      * as well, and have RegexCompiler inherit from RegexDynamicModule.
      */
+	[Obsolete]
     internal abstract class RegexCompiler {
         // fields that never change (making them saves about 6% overall running time)
 

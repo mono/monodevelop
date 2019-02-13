@@ -1,4 +1,4 @@
-﻿//
+//
 // LineSeparatorTextEditorExtension.cs
 //
 // Author:
@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class LineSeparatorTextEditorExtension : TextEditorExtension
 	{
 		CancellationTokenSource src = new CancellationTokenSource ();

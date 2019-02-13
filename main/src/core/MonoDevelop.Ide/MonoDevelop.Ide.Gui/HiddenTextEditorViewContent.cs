@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.ViewContent, IServiceProvider
 	{
 		readonly TextEditor editor;

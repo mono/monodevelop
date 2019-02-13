@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public partial class MonoDevelopWorkspace
 	{
+		[Obsolete]
 		internal class ProjectionData
 		{
 			readonly object projectionListUpdateLock = new object ();
@@ -116,6 +117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Obsolete]
 		internal class ProjectionEntry : IDisposable
 		{
 			public MonoDevelop.Projects.ProjectFile File;

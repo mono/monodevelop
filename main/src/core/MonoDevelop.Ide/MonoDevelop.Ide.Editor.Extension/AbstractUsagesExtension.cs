@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractUsagesExtension.cs
 //
 // Author:
@@ -38,6 +38,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class UsageProviderEditorExtension : TextEditorExtension
 	{
 		public abstract ImmutableArray<Usage> Usages {
@@ -57,6 +58,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// <summary>
 	/// Provides a base class for implementing highlighting of usages inside the text editor.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class AbstractUsagesExtension<T> : UsageProviderEditorExtension
 	{
 		[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]

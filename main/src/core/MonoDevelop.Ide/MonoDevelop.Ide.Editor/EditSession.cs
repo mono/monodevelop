@@ -1,4 +1,4 @@
-﻿//
+//
 // EditSession.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public abstract class EditSession : IDisposable
 	{
 		private TextEditor editor;
@@ -136,6 +137,7 @@ namespace MonoDevelop.Ide.Editor
 
 	}
 
+	[Obsolete]
 	abstract class PairInsertEditSession : EditSession
 	{
 		IGenericTextSegmentMarker marker;

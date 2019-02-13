@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectedDocumentContext.cs
 //
 // Author:
@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
-
+	[Obsolete]
 	class ProjectedDocumentContext : DocumentContext
 	{
 		DocumentContext originalContext;

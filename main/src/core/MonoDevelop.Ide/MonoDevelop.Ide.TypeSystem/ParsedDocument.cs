@@ -36,6 +36,7 @@ using MonoDevelop.Core.Text;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[Flags]
+	[Obsolete ("Not supported in new editor")]
 	public enum ParsedDocumentFlags
 	{
 		None            = 0,
@@ -52,6 +53,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		HasCustomCompletionExtension = 4
 	}
 
+	[Obsolete ("Not supported in new editor")]
 	public abstract class ParsedDocument
 	{
 		DateTime lastWriteTimeUtc = DateTime.UtcNow;
@@ -124,7 +126,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.fileName = fileName;
 		}
 	}
-	
+
+	[Obsolete]
 	public class DefaultParsedDocument : ParsedDocument
 	{
 		public DefaultParsedDocument (string fileName) : base (fileName)
@@ -201,6 +204,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public static class FoldingUtilities
 	{
 		static bool IncompleteOrSingleLine (DomRegion region)

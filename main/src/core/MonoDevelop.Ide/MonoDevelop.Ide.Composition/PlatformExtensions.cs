@@ -9,7 +9,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Platform
 {
-    public static class PlatformExtensions
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
+	public static class PlatformExtensions
     {
         public static ITextBuffer GetPlatformTextBuffer(this MonoDevelop.Ide.Editor.TextEditor textEditor)
         {

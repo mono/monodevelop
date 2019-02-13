@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class QuickTask
 	{
 		Lazy<string> description;

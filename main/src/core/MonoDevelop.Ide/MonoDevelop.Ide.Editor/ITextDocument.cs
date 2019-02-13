@@ -32,6 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public interface ITextDocument : IReadonlyTextDocument
 	{
 		/// <summary>
@@ -108,6 +109,7 @@ namespace MonoDevelop.Ide.Editor
 //		event EventHandler<LineEventArgs> LineRemoved;
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public static class DocumentExtensions
 	{
 		public static void RemoveText (this ITextDocument document, ISegment segment)

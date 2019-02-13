@@ -1,4 +1,4 @@
-﻿//
+//
 // MainToolbarController.cs
 //
 // Author:

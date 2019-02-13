@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.RepresentationModel;
@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Execution;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class SyntaxHighlighting : ISyntaxHighlighting
 	{
 		readonly SyntaxHighlightingDefinition definition;

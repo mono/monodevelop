@@ -34,6 +34,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public sealed class CodeFormatterService
 	{
 		static List<CodeFormatterExtensionNode> nodes = new List<CodeFormatterExtensionNode> ();

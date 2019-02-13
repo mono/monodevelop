@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractBraceMatcher.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using System;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class AbstractBraceMatcher
 	{
 		public string MimeType {
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.Editor
 		public abstract Task<BraceMatchingResult?> GetMatchingBracesAsync(IReadonlyTextDocument editor, DocumentContext context, int offset, CancellationToken cancellationToken = default(CancellationToken));
 	}
 
+	[Obsolete]
 	sealed class DefaultBraceMatcher : AbstractBraceMatcher
 	{
 		public override bool CanHandle (TextEditor editor)

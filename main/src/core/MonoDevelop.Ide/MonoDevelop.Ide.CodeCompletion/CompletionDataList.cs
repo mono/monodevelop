@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public interface ICompletionDataList : IList<CompletionData>
 	{
 		int TriggerWordStart { get; }
@@ -68,17 +69,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 	}
 	
 	
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public interface ICompletionKeyHandler
 	{
 		bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction);
 		bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction);
 	}
 	
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public enum CompletionSelectionMode {
 		InsideTextEditor,
 		OwnTextField
 	}
 	
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionDataList : List<CompletionData>, ICompletionDataList
 	{
 		public int TriggerWordStart { get; set; } = -1;

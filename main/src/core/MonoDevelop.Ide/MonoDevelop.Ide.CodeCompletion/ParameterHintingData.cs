@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public abstract class ParameterHintingData
 	{
 		public abstract int ParameterCount {

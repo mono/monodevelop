@@ -1,4 +1,4 @@
-﻿//
+//
 // HighlightUrlExtension.cs
 //
 // Author:
@@ -35,6 +35,7 @@ using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class HighlightUrlExtension : TextEditorExtension
 	{
 		List<IUrlTextLineMarker> markers = new List<IUrlTextLineMarker> ();

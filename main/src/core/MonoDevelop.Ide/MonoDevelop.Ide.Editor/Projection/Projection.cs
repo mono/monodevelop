@@ -1,4 +1,4 @@
-﻿//
+//
 // Projection.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class Projection : IDisposable
 	{
 		public ITextDocument Document { get; private set; }

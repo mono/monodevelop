@@ -1,4 +1,4 @@
-﻿//
+//
 // IIndentEngine.cs
 //
 // Author:
@@ -29,6 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete]
 	interface IDocumentIndentEngine
 	{
 		/// <summary>
@@ -66,6 +67,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 	///     The decorator is based on periodical caching of the engine's state and
 	///     delegating all logic behind indentation to the currently active engine.
 	/// </remarks>
+	[Obsolete]
 	class CacheIndentEngine : IDocumentIndentEngine
 	{
 

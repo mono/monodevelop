@@ -1,4 +1,4 @@
-﻿//
+//
 // SimpleBracketMatcher.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Util
 {
+	[Obsolete]
 	static class SimpleBracketMatcher
 	{
 		const string openBrackets = "([{<";

@@ -1,4 +1,4 @@
-﻿//
+//
 // BraceMatcherTextEditorExtension.cs
 //
 // Author:
@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	sealed class BraceMatcherTextEditorExtension : TextEditorExtension
 	{
 		CancellationTokenSource src = new CancellationTokenSource();

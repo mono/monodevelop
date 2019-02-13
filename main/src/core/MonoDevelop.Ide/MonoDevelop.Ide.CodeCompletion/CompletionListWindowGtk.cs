@@ -1,4 +1,4 @@
-﻿// CompletionListWindow.cs
+// CompletionListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -39,6 +39,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete]
 	class CompletionListWindowGtk : PopoverWindow, ICompletionView
 	{
 		const int declarationWindowMargin = 3;

@@ -1,4 +1,4 @@
-﻿//
+//
 // EditorFormattingServiceTextEditorExtension.cs
 //
 // Author:
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Threading;
 using Microsoft.CodeAnalysis.Editor;
 using MonoDevelop.Core;
@@ -36,6 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	partial class EditorFormattingServiceTextEditorExtension : TextEditorExtension
 	{
 		protected override void Initialize()

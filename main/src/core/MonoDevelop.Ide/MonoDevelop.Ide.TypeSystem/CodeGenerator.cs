@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete("Use Roslyn APIs")]
 	public abstract class CodeGenerator
 	{
 		static Dictionary<string, MimeTypeExtensionNode> generators = new Dictionary<string, MimeTypeExtensionNode> ();

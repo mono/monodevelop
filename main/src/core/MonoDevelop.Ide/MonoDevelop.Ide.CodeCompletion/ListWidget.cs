@@ -44,6 +44,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CategorizedCompletionItems
 	{
 		public CompletionCategory CompletionCategory {
@@ -60,6 +61,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal IListDataProvider DataProvider { get; set; }
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionListFilterInput
 	{
 		public ICompletionDataList DataList { get; }
@@ -76,6 +78,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionListFilterResult 
 	{
 		public readonly List<CategorizedCompletionItems> CategorizedItems;
@@ -93,6 +96,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
+	[Obsolete]
 	class ListWidget : Gtk.DrawingArea
 	{
 		const int minSize = 400;

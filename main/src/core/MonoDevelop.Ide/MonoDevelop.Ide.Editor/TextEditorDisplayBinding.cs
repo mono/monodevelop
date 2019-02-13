@@ -1,4 +1,4 @@
-﻿//
+//
 // TextEditorDisplayBinding.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class TextEditorDisplayBinding : IViewDisplayBinding
 	{
 		static bool IsInitialized = false;

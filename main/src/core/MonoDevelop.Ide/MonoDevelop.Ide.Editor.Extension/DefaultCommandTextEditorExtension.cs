@@ -1,4 +1,4 @@
-﻿//
+//
 // DefaultCommandTextEditorExtension.cs
 //
 // Author:
@@ -37,6 +37,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class DefaultCommandTextEditorExtension : TextEditorExtension
 	{
 		#region Commands

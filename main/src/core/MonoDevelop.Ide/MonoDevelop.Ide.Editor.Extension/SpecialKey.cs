@@ -1,4 +1,4 @@
-﻿//
+//
 // SpecialKey.cs
 //
 // Author:
@@ -27,6 +27,7 @@ using System;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public enum SpecialKey
 	{
 		None,

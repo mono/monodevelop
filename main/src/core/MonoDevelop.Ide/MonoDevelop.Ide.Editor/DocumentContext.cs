@@ -1,4 +1,4 @@
-﻿//
+//
 // DocumentContext.cs
 //
 // Author:
@@ -178,6 +178,7 @@ namespace MonoDevelop.Ide.Editor
 				handler (this, e);
 		}
 
+		[Obsolete]
 		internal virtual Task<IReadOnlyList<Editor.Projection.Projection>> GetPartialProjectionsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return null;

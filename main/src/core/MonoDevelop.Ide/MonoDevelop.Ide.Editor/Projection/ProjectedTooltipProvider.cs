@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectedTooltipProvider.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
+	[Obsolete]
 	sealed class ProjectedTooltipProvider  : TooltipProvider
 	{
 		readonly Projection projection;

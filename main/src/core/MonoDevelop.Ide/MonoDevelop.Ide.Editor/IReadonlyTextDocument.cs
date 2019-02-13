@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public interface IReadonlyTextDocument : ITextSource
 	{
 		bool IsReadOnly { get; }
@@ -67,6 +68,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public static class ReadonlyTextDocumentExtensions
 	{
 		/// <summary>

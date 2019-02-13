@@ -38,6 +38,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Navigation
 {
+	[Obsolete]
 	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
 		int line;

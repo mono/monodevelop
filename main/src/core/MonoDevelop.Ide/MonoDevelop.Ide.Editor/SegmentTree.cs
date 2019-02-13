@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Editor
 	/// A segment tree contains overlapping segments and get all segments overlapping a segment. It's implemented as a augmented interval tree
 	/// described in Cormen et al. (2001, Section 14.3: Interval trees, pp. 311–317).
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public class SegmentTree<T> : TextSegmentTree, ICollection<T> where T : TreeSegment
 	{
 		readonly RedBlackTree tree = new RedBlackTree ();

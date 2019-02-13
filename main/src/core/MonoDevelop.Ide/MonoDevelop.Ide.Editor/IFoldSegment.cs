@@ -1,4 +1,4 @@
-﻿//
+//
 // IFoldSegment.cs
 //
 // Author:
@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// Represents the origin for a fold segment
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public enum FoldingType {
 		Unknown,
 		Region,
@@ -43,6 +44,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// A fold segment represents a collapsible region inside the text editor.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public interface IFoldSegment : ISegment
 	{
 		/// <summary>

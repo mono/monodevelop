@@ -1,4 +1,4 @@
-﻿//
+//
 // SignatureHelpParameterHintingData.cs
 //
 // Author:
@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	/// <summary>
 	/// SignatureHelpItem is internal, therefore this class has only internal visibility.
 	/// </summary>
+	[Obsolete]
 	class SignatureHelpParameterHintingData : Ide.CodeCompletion.ParameterHintingData
 	{
 		public SignatureHelpParameterHintingData (SignatureHelpItem item)

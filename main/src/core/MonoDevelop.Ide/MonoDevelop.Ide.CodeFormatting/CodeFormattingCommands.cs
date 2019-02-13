@@ -37,7 +37,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 	public enum CodeFormattingCommands {
 		FormatBuffer
 	}
-	
+
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class FormatBufferHandler : CommandHandler
 	{
 		internal static CodeFormatter GetFormatter (out Document doc)

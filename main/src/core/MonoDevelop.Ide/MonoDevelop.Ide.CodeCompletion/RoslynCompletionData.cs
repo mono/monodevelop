@@ -1,4 +1,4 @@
-﻿//
+//
 // RoslynCompletionData.cs
 //
 // Author:
@@ -51,6 +51,7 @@ using Microsoft.CodeAnalysis.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Roslyn completion APIs")]
 	public abstract class RoslynCompletionData : CompletionData
 	{
 		protected readonly Microsoft.CodeAnalysis.Document doc;

@@ -38,6 +38,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionData : IComparable
 	{
 		protected CompletionData () { }
@@ -274,6 +275,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	/// several calls on the matching methods will be able to reuse
 	/// calculated data.
 	/// </summary>
+	[Obsolete]
 	internal class CompletionDataMatcher
 	{
 		public int MatcherId { get; set; }

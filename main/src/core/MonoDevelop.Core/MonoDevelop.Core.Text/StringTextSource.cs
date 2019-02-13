@@ -1,4 +1,4 @@
-﻿//
+//
 // StringTextSource.cs
 //
 // Author:
@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.Text
 	/// Note that objects from this class are immutable.
 	/// </summary>
 	[Serializable]
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class StringTextSource : ITextSource
 	{
 		/// <summary>

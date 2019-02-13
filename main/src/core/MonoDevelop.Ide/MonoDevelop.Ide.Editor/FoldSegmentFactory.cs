@@ -1,4 +1,4 @@
-﻿//
+//
 // FoldSegmentFactory.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class FoldSegmentFactory
 	{
 		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, bool isCollapsed = false, string collapsedText = "...", FoldingType foldingType = FoldingType.Unknown)

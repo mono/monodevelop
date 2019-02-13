@@ -1,4 +1,4 @@
-﻿//
+//
 // BlockStructureFoldingTextEditorExtension.cs
 //
 // Author:
@@ -39,6 +39,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class BlockStructureFoldingTextEditorExtension : TextEditorExtension
 	{
 		CancellationTokenSource src = new CancellationTokenSource ();

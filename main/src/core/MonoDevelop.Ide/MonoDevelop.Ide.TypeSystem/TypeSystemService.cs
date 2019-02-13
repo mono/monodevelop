@@ -48,11 +48,14 @@ namespace MonoDevelop.Ide.TypeSystem
 	public static partial class TypeSystemService
 	{
 		const string CurrentVersion = "1.1.9";
+
+		[Obsolete]
 		static IEnumerable<TypeSystemParserNode> parsers;
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
 		internal static MonoDevelopRuleSetManager RuleSetManager { get; } = new MonoDevelopRuleSetManager ();
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
@@ -66,6 +69,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			RoslynServices.RoslynService.Initialize ();
 			CleanupCache ();
+
+			#pragma warning disable CS0618, 612 // Type or member is obsolete
 			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			bool initialLoad = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
@@ -73,6 +78,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!initialLoad)
 					parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			});
+			#pragma warning restore CS0618, 612 // Type or member is obsolete
 			initialLoad = false;
 
 			try {
@@ -130,12 +136,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
 			var n = GetTypeSystemParserNode (mimeType, buildAction);
 			return n != null ? n.Parser : null;
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
 			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
@@ -146,6 +154,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			StringTextSource text;
@@ -161,6 +170,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
@@ -186,6 +196,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static bool CanParseProjections (Project project, string mimeType, string fileName)
 		{
 			var projectFile = project.GetProjectFile (fileName);
@@ -197,21 +208,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			return parser.CanGenerateProjection (mimeType, projectFile.BuildAction, project.SupportedLanguages);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static async Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
@@ -265,16 +280,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseProjection (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseProjection (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseProjection (project, data.FileName, data.MimeType, data, cancellationToken);

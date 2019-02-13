@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Editor;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[Serializable]
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class FoldingRegion
 	{
 		static string defaultName = "...";

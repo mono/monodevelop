@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public enum EditMode
 	{
 		Edit,
@@ -44,6 +45,7 @@ namespace MonoDevelop.Ide.Editor
 		CursorInsertion
 	}
 
+	[Obsolete]
 	interface ITextEditorImpl : IDisposable
 	{
 		Microsoft.VisualStudio.Text.Editor.ITextView TextView { get; set; }

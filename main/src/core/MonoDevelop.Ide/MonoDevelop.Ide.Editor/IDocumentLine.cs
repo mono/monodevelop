@@ -1,4 +1,4 @@
-﻿//
+//
 // IDocumentLine.cs
 //
 // Author:
@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// A line inside a <see cref="ITextDocument"/>.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public interface IDocumentLine : ISegment
 	{
 		/// <summary>
@@ -83,6 +84,7 @@ namespace MonoDevelop.Ide.Editor
 		IDocumentLine NextLine { get; }
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class DocumentLineExt
 	{
 		/// <summary>

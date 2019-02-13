@@ -365,12 +365,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete("Use GetContent<ITextBuffer>()")]
 		public TextEditor Editor {
 			get {
 				return GetContent <TextEditor> ();
 			}
 		}
 
+		[Obsolete("Use GetContent<ITextBuffer> ()")]
 		public ITextBuffer TextBuffer => GetContent<ITextBuffer> ();
 
 		public bool IsViewOnly {
@@ -697,6 +699,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool wasEdited;
 
+		[Obsolete]
 		void InitializeExtensionChain ()
 		{
 			Editor.InitializeExtensionChain (this);
@@ -709,6 +712,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete]
 		void InitializeEditor ()
 		{
 			Editor.TextChanged += (o, a) => {
@@ -738,10 +742,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnDocumentAttached ()
 		{
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (Editor != null) {
 				InitializeEditor ();
 				RunWhenRealized (delegate { ListenToProjectLoad (Project); });
 			}
+			#pragma warning restore CS0618, CS0612
 
 			// this is used by TextViewExtensions.TryGetParentDocument
 			var textView = GetContent<Microsoft.VisualStudio.Text.Editor.ITextView> ();
@@ -760,6 +766,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <param name='action'>
 		/// The action to run.
 		/// </param>
+		[Obsolete("This only works for the old editor")]
 		public void RunWhenLoaded (System.Action action)
 		{
 			var e = Editor;
@@ -770,6 +777,7 @@ namespace MonoDevelop.Ide.Gui
 			e.RunWhenLoaded (action);
 		}
 
+		[Obsolete("This only works for the old editor")]
 		public void RunWhenRealized (System.Action action)
 		{
 			var e = Editor;
@@ -1035,6 +1043,7 @@ namespace MonoDevelop.Ide.Gui
 
 		object reparseTimeoutLock = new object ();
 
+		[Obsolete]
 		internal void StartReparseThread ()
 		{
 			RunWhenRealized (() => {
@@ -1054,6 +1063,7 @@ namespace MonoDevelop.Ide.Gui
 			});
 		}
 
+		[Obsolete]
 		string GetCurrentParseFileName ()
 		{
 			var editor = Editor;
@@ -1061,6 +1071,7 @@ namespace MonoDevelop.Ide.Gui
 			return result ?? FileName;
 		}
 
+		[Obsolete]
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
 		{
 			var editor = Editor;
@@ -1197,6 +1208,7 @@ namespace MonoDevelop.Ide.Gui
 			return TypeSystemService.Workspace.Options;
 		}
 
+		[Obsolete]
 		internal override Task<IReadOnlyList<Editor.Projection.Projection>> GetPartialProjectionsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var parser = TypeSystemService.GetParser (Editor.MimeType);

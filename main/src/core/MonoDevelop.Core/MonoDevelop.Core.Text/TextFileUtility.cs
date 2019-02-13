@@ -1,4 +1,4 @@
-﻿//
+//
 // TextFileUtility.cs
 //
 // Author:
@@ -264,6 +264,7 @@ namespace MonoDevelop.Core.Text
 			}
 		}
 
+		[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 		public static void WriteText (string fileName, ITextSource source)
 		{
 			ArgumentCheck (fileName);

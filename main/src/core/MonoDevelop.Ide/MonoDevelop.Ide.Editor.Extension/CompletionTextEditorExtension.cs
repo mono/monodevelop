@@ -1,4 +1,4 @@
-﻿// CompletionTextEditorExtension.cs
+// CompletionTextEditorExtension.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -41,6 +41,7 @@ using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public enum SignatureHelpTriggerReason
 	{
 		InvokeSignatureHelpCommand,
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		RetriggerCommand
 	}
 
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public readonly struct SignatureHelpTriggerInfo
 	{
 		public char? TriggerCharacter {
@@ -70,6 +72,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 	}
 
+	[Obsolete("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class CompletionTextEditorExtension : TextEditorExtension
 	{
 		CompletionStatistics completionStats = new CompletionStatistics ();

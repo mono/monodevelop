@@ -1,4 +1,4 @@
-﻿//
+//
 // InsertionPoint.cs
 //
 // Author:
@@ -29,6 +29,7 @@ using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public enum NewLineInsertion
 	{
 		None,
@@ -36,6 +37,7 @@ namespace MonoDevelop.Ide.Editor
 		BlankLine
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class InsertionPoint 
 	{
 		public DocumentLocation Location {

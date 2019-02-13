@@ -32,6 +32,7 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense IAsyncQuickInfo* APIs")]
 	public sealed class TooltipItem : ISegment
 	{
 		int offset;
@@ -84,6 +85,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense IAsyncQuickInfo* APIs")]
 	public enum TooltipCloseReason
 	{
 		Force,
@@ -91,6 +93,7 @@ namespace MonoDevelop.Ide.Editor
 		MouseMove
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense IAsyncQuickInfo* APIs")]
 	// TODO: Improve tooltip API - that really looks messy
 	public abstract class TooltipProvider : IDisposable
 	{
