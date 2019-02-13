@@ -417,7 +417,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selectorHandle, array != null ? array.Handle : IntPtr.Zero);
 		}
 
-		static readonly IntPtr selAccessibilityChildren_Handle = Selector.GetHandle ("accessibilityChildren:");
+		static readonly IntPtr selAccessibilityChildren_Handle = Selector.GetHandle ("accessibilityChildren");
 		static readonly IntPtr selSetAccessibilityChildren_Handle = Selector.GetHandle ("setAccessibilityChildren:");
 		public static void ReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
 		{
@@ -542,7 +542,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		static readonly IntPtr selAccessibilityLinkedUIElements_Handle = Selector.GetHandle ("accessibilityLinkedUIElements:");
+		static readonly IntPtr selAccessibilityLinkedUIElements_Handle = Selector.GetHandle ("accessibilityLinkedUIElements");
 		static readonly IntPtr selSetAccessibilityLinkedUIElements_Handle = Selector.GetHandle ("setAccessibilityLinkedUIElements:");
 		public static void AddLinkedUIElement (this Atk.Object o, Atk.Object linked)
 		{
