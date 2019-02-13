@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void HandleGitLockRenamed (object sender, RenamedEventArgs e)
 		{
-			if (e.OldName.EndsWith ("lock", StringComparison.Ordinal) && !e.Name.EndsWith ("lock", StringComparison.Ordinal))
+			if (e.OldName.EndsWith (".lock", StringComparison.Ordinal) && !e.Name.EndsWith (".lock", StringComparison.Ordinal))
 				OnGitUnlocked ();
 		}
 
