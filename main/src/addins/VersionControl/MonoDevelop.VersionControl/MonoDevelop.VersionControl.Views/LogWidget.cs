@@ -384,7 +384,9 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		const int colFile = 3;
 		const int colOperation = 4;
+		const int colOperationText = 1;
 		const int colPath = 5;
 		const int colDiff = 6;
 		
@@ -787,16 +789,60 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		internal string DiffText {
-			get {
-				TreeIter iter;
-				if (treeviewFiles.Selection.GetSelected (out iter)) {
-					string [] items = changedpathstore.GetValue (iter, colDiff) as string [];
-					if (items != null)
-						return String.Join (Environment.NewLine, items);
+		internal string GetSelectedText ()
+		{
+			if (treeviewFiles.HasFocus ) {
+				if (treeviewFiles.Selection.GetSelected (out var iter)) {
+					if (changedpathstore.GetValue (iter, colDiff) is string [] items) {
+						return string.Join (Environment.NewLine, items);
+					}
+					if (changedpathstore.GetValue (iter, colFile) is string file) {
+						var path = changedpathstore.GetValue (iter, colPath) as string;
+						var operation = changedpathstore.GetValue (iter, colOperationText) as string;
+						return string.Format ("{0}, {1}, {2}", file, operation, path);
+					}
 				}
-				return null;
 			}
+
+			if (treeviewLog.HasFocus) {
+				if (treeviewLog.Selection.GetSelected (out var iter)) {
+					if (logstore.GetValue (iter, 0) is Revision revision) {
+						return string.Format ("{0}, {1}, {2}", revision.ShortMessage, revision.Time, revision.Author);
+					}
+				}
+			}
+
+			if (textviewDetails.HasFocus) {
+				textviewDetails.Buffer.GetSelectionBounds (out var A, out var B);
+				var result = textviewDetails.Buffer.GetText (A, B, true);
+				if (!string.IsNullOrEmpty (result)) {
+					return result;
+				}
+			}
+
+			int start, end;
+			if (labelDate.HasFocus) {
+				labelDate.GetSelectionBounds (out start, out end);
+				if (start != end) {
+					return labelDate.Text.Substring (start, end - start);
+				}
+			}
+
+			if (labelAuthor.HasFocus) {
+				labelAuthor.GetSelectionBounds (out start, out end);
+				if (start != end) {
+					return labelAuthor.Text.Substring (start, end - start);
+				}
+			}
+
+			if (labelRevision.HasFocus) {
+				labelRevision.GetSelectionBounds (out start, out end);
+				if (start != end) {
+					return labelRevision.Text.Substring (start, end - start);
+				}
+			}
+		
+			return null;
 		}
 	}
 }
