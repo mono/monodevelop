@@ -150,6 +150,11 @@ namespace MonoDevelop.Ide
 			get => GetProperty<Dictionary<string, long>> ();
 			set => SetProperty (value);
 		}
+
+		public OnStartupBehaviour StartupBehaviour {
+			get => GetProperty<OnStartupBehaviour> ();
+			set => SetProperty (value);
+		}
 	}
 
 	class TimeToCodeMetadata : CounterMetadata
