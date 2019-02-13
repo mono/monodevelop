@@ -26,14 +26,26 @@
 using UnitTests;
 using MonoDevelop.Ide.Gui.Documents;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Gui.Shell;
+using IdeUnitTests;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
 {
+	[RequireService (typeof (DesktopService))]
+	[RequireService (typeof (TypeSystemService))]
+	[RequireService (typeof (FontService))]
 	public class IdeTestBase: RoslynTestBase
 	{
-		protected override void InternalSetup(string rootDir)
+		protected override async Task InternalSetup(string rootDir)
 		{
-			base.InternalSetup(rootDir);
+			Runtime.RegisterServiceType<IShell, MockShell> ();
+			Runtime.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager> ();
+
+			await base.InternalSetup(rootDir);
 
 			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
 			Gtk.Application.Init();

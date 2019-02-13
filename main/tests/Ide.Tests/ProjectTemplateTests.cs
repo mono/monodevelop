@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide
 
 		async Task FormatFile (Project p, FilePath file)
 		{
-			string mime = IdeApp.DesktopService.GetMimeTypeForUri (file);
+			string mime = IdeServices.DesktopService.GetMimeTypeForUri (file);
 			if (mime == null)
 				return;
 

@@ -24,16 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
 using UnitTests;
 
 namespace MonoDevelop.Ide
 {
 	public class RoslynTestBase : TestBase
 	{
-		protected override void InternalSetup (string rootDir)
+		protected override Task InternalSetup (string rootDir)
 		{
 			RoslynServices.RoslynService.Initialize ();
-			base.InternalSetup (rootDir);
+			return base.InternalSetup (rootDir);
 		}
 	}
 }
