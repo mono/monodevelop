@@ -416,7 +416,7 @@ namespace MonoDevelop.Ide.Tasks
 			protected override async Task<Document> DoShow ()
 			{
 				Document result = await base.DoShow ();
-				TaskService.InformJumpToTask (task);
+				IdeServices.TaskService.InformJumpToTask (task);
 				return result;
 			}
 		}
@@ -454,7 +454,7 @@ namespace MonoDevelop.Ide.Tasks
 				CurrentLocationTaskChanged (this, EventArgs.Empty);
 			
 			if (currentLocationTask != null) {
-				TaskService.ShowStatus (currentLocationTask);
+				IdeServices.TaskService.ShowStatus (currentLocationTask);
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
@@ -528,7 +528,7 @@ namespace MonoDevelop.Ide.Tasks
 				CurrentLocationTaskChanged (this, EventArgs.Empty);
 			
 			if (currentLocationTask != null) {
-				TaskService.ShowStatus (currentLocationTask);
+				IdeServices.TaskService.ShowStatus (currentLocationTask);
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {

@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.Tasks
 				}
 				ShowDocumentation ();
 			}
-			TaskService.InformJumpToTask (this);
+			IdeServices.TaskService.InformJumpToTask (this);
 		}
 
 		public void SelectInPad()

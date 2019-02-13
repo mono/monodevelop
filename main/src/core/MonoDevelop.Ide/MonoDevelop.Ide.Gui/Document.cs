@@ -560,7 +560,7 @@ namespace MonoDevelop.Ide.Gui
 		void ClearTasks ()
 		{
 			lock (lockObj) {
-				TaskService.Errors.ClearByOwner (this);
+				IdeServices.TaskService.Errors.ClearByOwner (this);
 			}
 		}
 		

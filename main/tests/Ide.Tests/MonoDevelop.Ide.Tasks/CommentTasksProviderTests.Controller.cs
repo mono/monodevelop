@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Tasks
 				var gatheredFiles = new HashSet<string> ();
 				int count = 0;
 				IReadOnlyList<TypeSystem.Tag> comments = null;
-				TaskService.CommentTasksChanged += (s, args) => {
+				IdeServices.TaskService.CommentTasksChanged += (s, args) => {
 					if (tcs.Task.IsCompleted)
 						return;
 

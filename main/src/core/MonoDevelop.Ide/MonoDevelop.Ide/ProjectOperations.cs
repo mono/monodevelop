@@ -1257,9 +1257,9 @@ namespace MonoDevelop.Ide
 				tasks [n].Owner = this;
 			}
 
-			TaskService.Errors.AddRange (tasks);
-			TaskService.Errors.ResetLocationList ();
-			IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
+			IdeServices.TaskService.Errors.AddRange (tasks);
+			IdeServices.TaskService.Errors.ResetLocationList ();
+			IdeApp.Workbench.ActiveLocationList = IdeServices.TaskService.Errors;
 			return tasks;
 		}
 
@@ -1275,11 +1275,11 @@ namespace MonoDevelop.Ide
 					errorsPad.BringToFront ();
 					break;
 				case BuildResultStates.OnErrors:
-					if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
+					if (IdeServices.TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
 						goto case BuildResultStates.Always;
 					break;
 				case BuildResultStates.OnErrorsOrWarnings:
-					if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
+					if (IdeServices.TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
 						goto case BuildResultStates.Always;
 					break;
 				}
@@ -1719,7 +1719,7 @@ namespace MonoDevelop.Ide
 		{
 			tt.Trace ("Start build event");
 			if (!isRebuilding) {
-				MonoDevelop.Ide.Tasks.TaskService.Errors.ClearByOwner (this);
+				IdeServices.TaskService.Errors.ClearByOwner (this);
 			}
 			if (StartBuild != null) {
 				StartBuild (this, new BuildEventArgs (monitor, true));
@@ -2429,7 +2429,7 @@ namespace MonoDevelop.Ide
 		void OnStartClean (ProgressMonitor monitor, ITimeTracker tt)
 		{
 			tt.Trace ("Start clean event");
-			TaskService.Errors.ClearByOwner (this);
+			IdeServices.TaskService.Errors.ClearByOwner (this);
 			if (StartClean != null) {
 				StartClean (this, new CleanEventArgs (monitor));
 			}

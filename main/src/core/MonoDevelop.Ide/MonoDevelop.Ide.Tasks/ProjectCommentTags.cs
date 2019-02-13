@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Tasks
 				if (list == null && oldList == null)
 					return;
 				tags[fileName] = list;
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, tagComments, project));
+				IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, tagComments, project));
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Tasks
 				tags[fileName] = null;
 			}
 			
-			TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, null, project));
+			IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, null, project));
 		}
 
 		internal async Task UpdateAsync (Project project, ProjectFile[] files, CancellationToken token = default (CancellationToken))
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			await Runtime.RunInMainThread (delegate {
 				this.tags = newTags;
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
+				IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
 			}).ConfigureAwait (false);
 		}
 	}

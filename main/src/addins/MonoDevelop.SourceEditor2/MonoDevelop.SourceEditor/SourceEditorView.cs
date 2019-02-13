@@ -235,11 +235,11 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.PinnedWatches.WatchRemoved += OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged += OnWatchChanged;
 
-			TaskService.Errors.TasksAdded += UpdateTasks;
-			TaskService.Errors.TasksRemoved += UpdateTasks;
-			TaskService.JumpedToTask += HandleTaskServiceJumpedToTask;
+			IdeServices.TaskService.Errors.TasksAdded += UpdateTasks;
+			IdeServices.TaskService.Errors.TasksRemoved += UpdateTasks;
+			IdeServices.TaskService.JumpedToTask += HandleTaskServiceJumpedToTask;
 			IdeApp.Preferences.ShowMessageBubbles.Changed += HandleIdeAppPreferencesShowMessageBubblesChanged;
-			TaskService.TaskToggled += HandleErrorListPadTaskToggled;
+			IdeServices.TaskService.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			widget.TextEditor.Options.ZoomChanged += HandleWidgetTextEditorOptionsZoomChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
@@ -631,7 +631,7 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
-			TaskListEntry [] tasks = TaskService.Errors.GetFileTasks (ContentName);
+			TaskListEntry [] tasks = IdeServices.TaskService.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
 			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
@@ -1048,7 +1048,7 @@ namespace MonoDevelop.SourceEditor
 
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubbles.Changed -= HandleIdeAppPreferencesShowMessageBubblesChanged;
-			TaskService.TaskToggled -= HandleErrorListPadTaskToggled;
+			IdeServices.TaskService.TaskToggled -= HandleErrorListPadTaskToggled;
 
 			DisposeErrorMarkers ();
 
@@ -1088,10 +1088,10 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged -= OnWatchChanged;
 
-			TaskService.Errors.TasksAdded -= UpdateTasks;
-			TaskService.Errors.TasksRemoved -= UpdateTasks;
-			TaskService.Errors.TasksChanged -= UpdateTasks;
-			TaskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
+			IdeServices.TaskService.Errors.TasksAdded -= UpdateTasks;
+			IdeServices.TaskService.Errors.TasksRemoved -= UpdateTasks;
+			IdeServices.TaskService.Errors.TasksChanged -= UpdateTasks;
+			IdeServices.TaskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
 
 			// This is not necessary but helps when tracking down memory leaks
 

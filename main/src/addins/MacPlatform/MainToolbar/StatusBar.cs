@@ -596,7 +596,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
 
-				foreach (var t in TaskService.Errors) {
+				foreach (var t in IdeServices.TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
@@ -617,8 +617,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			updateHandler (null, null);
 
-			TaskService.Errors.TasksAdded += updateHandler;
-			TaskService.Errors.TasksRemoved += updateHandler;
+			IdeServices.TaskService.Errors.TasksAdded += updateHandler;
+			IdeServices.TaskService.Errors.TasksRemoved += updateHandler;
 			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			AddSubview (cancelButton);
@@ -666,8 +666,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		protected override void Dispose (bool disposing)
 		{
-			TaskService.Errors.TasksAdded -= updateHandler;
-			TaskService.Errors.TasksRemoved -= updateHandler;
+			IdeServices.TaskService.Errors.TasksAdded -= updateHandler;
+			IdeServices.TaskService.Errors.TasksRemoved -= updateHandler;
 			Ide.Gui.Styles.Changed -= LoadStyles;
 			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			base.Dispose (disposing);

@@ -654,13 +654,10 @@ namespace MonoDevelop.Ide
 	{
 		internal async Task Initialize ()
 		{
-			await Runtime.GetService<TaskStore> ();
 			await Runtime.GetService<TextEditorService> ();
 			await Runtime.GetService<NavigationHistoryService> ();
 			await Runtime.GetService<DisplayBindingService> ();
 		}
-
-		public TaskStore TaskStore => IdeServices.TaskStore;
 
 		public TextEditorService TextEditorService => IdeServices.TextEditorService;
 

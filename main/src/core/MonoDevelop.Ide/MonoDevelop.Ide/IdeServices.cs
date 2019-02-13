@@ -48,7 +48,6 @@ namespace MonoDevelop.Ide
 {
 	public static class IdeServices
 	{
-		static TaskStore taskStore;
 		static TextEditorService textEditorService;
 		static NavigationHistoryService navigationHistoryManager;
 		static DisplayBindingService displayBindingService;
@@ -58,10 +57,10 @@ namespace MonoDevelop.Ide
 		static DocumentManager documentManager;
 		static RootWorkspace workspace;
 		static ProgressMonitorManager progressMonitorManager;
+		static TaskService taskService;
 
 		static IdeServices ()
 		{
-			Runtime.ServiceProvider.WhenServiceInitialized<TaskStore> (s => taskStore = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<TextEditorService> (s => textEditorService = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<NavigationHistoryService> (s => navigationHistoryManager = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<DisplayBindingService> (s => displayBindingService = s);
@@ -71,9 +70,8 @@ namespace MonoDevelop.Ide
 			Runtime.ServiceProvider.WhenServiceInitialized<DocumentManager> (s => documentManager = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => workspace = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<ProgressMonitorManager> (s => progressMonitorManager = s);
+			Runtime.ServiceProvider.WhenServiceInitialized<TaskService> (s => taskService = s);
 		}
-
-		public static TaskStore TaskStore => Initialized (taskStore);
 
 		public static TextEditorService TextEditorService => Initialized (textEditorService);
 
@@ -98,6 +96,8 @@ namespace MonoDevelop.Ide
 		public static TemplatingService TemplatingService => templatingService.Value;
 
 		public static DocumentManager DocumentManager => Initialized (documentManager);
+
+		public static TaskService TaskService => Initialized (taskService);
 
 		static T Initialized<T> (T s) where T : class
 		{

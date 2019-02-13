@@ -39,8 +39,10 @@ using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	partial class CommentTasksProvider: Service
+	partial class CommentTasksProvider
 	{
+		TaskService taskService;
+
 		public static void Initialize ()
 		{
 			Runtime.ServiceProvider.WhenServiceInitialized<CompositionManager> (compositionManager => {
@@ -86,7 +88,7 @@ namespace MonoDevelop.Ide.Tasks
 
 				if (triggerLoad == null || triggerLoad.Invoke (cachedUntilViewCreated.Count)) {
 					var changes = cachedUntilViewCreated.Values.Select (x => ToCommentTaskChange (x)).Where (x => x != null).ToList ();
-					TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
+					IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
 					cachedUntilViewCreated = null;
 					triggerLoad = null;
 				}
@@ -149,7 +151,7 @@ namespace MonoDevelop.Ide.Tasks
 
 			var change = ToCommentTaskChange (args);
 			if (change != null)
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (new [] { change }));
+				IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (new [] { change }));
 		}
 
 		static async void OnSolutionLoaded (object sender, SolutionEventArgs args)

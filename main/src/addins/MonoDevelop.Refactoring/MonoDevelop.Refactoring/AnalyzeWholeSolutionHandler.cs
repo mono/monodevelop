@@ -147,8 +147,8 @@ namespace MonoDevelop.Refactoring
 		internal static void Report (ProgressMonitor monitor, List<Diagnostic> allDiagnostics, Projects.WorkspaceObject parent)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Reporting results..."), allDiagnostics.Count);
-			TaskService.Errors.Clear ();
-			TaskService.Errors.AddRange (allDiagnostics.Select (diagnostic => {
+			IdeServices.TaskService.Errors.Clear ();
+			IdeServices.TaskService.Errors.AddRange (allDiagnostics.Select (diagnostic => {
 				var startLinePosition = diagnostic.Location.GetLineSpan ().StartLinePosition;
 				return new TaskListEntry (
 					diagnostic.Location.SourceTree.FilePath,
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 
 		static void ShowAnalyzationResults ()
 		{
-			TaskService.ShowErrors ();
+			IdeServices.TaskService.ShowErrors ();
 			var errorsPad = IdeApp.Workbench.GetPad<ErrorListPad> ().Content as ErrorListPad;
 			errorsPad.SetFilter (true, true, true);
 		}

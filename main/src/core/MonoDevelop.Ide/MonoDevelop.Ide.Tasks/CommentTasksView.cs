@@ -1,4 +1,4 @@
-//
+﻿//
 // CommentTasksView.cs
 //
 // Author:
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Tasks
 		Dictionary<ContextMenuItem, int> columnsActions;
 		Clipboard clipboard;
 
-		TaskStore comments = IdeApp.Services.TaskStore;
+		TaskStore comments = new TaskStore ();
 
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 		HashSet<Solution> loadedSlns = new HashSet<Solution> ();
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			ReloadPriorities ();
 			
-			TaskService.CommentTasksChanged += OnCommentTasksChanged;
+			IdeServices.TaskService.CommentTasksChanged += OnCommentTasksChanged;
 			CommentTag.SpecialCommentTagsChanged += OnCommentTagsChanged;
 
 			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Tasks
 
 			view.Destroyed += delegate {
 				view.RowActivated -= OnRowActivated;
-				TaskService.CommentTasksChanged -= OnCommentTasksChanged;
+				IdeServices.TaskService.CommentTasksChanged -= OnCommentTasksChanged;
 				CommentTag.SpecialCommentTagsChanged -= OnCommentTagsChanged;
 				MonoDevelopWorkspace.LoadingFinished -= OnWorkspaceItemLoaded;
 				IdeApp.Workspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;

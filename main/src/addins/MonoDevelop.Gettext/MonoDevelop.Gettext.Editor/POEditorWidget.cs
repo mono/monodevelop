@@ -974,7 +974,7 @@ namespace MonoDevelop.Gettext
 		
 		void ClearTasks ()
 		{
-			TaskService.Errors.ClearByOwner (this);
+			IdeServices.TaskService.Errors.ClearByOwner (this);
 		}
 		
 		static bool CompareTasks (List<TaskListEntry> list1, List<TaskListEntry> list2)
@@ -1141,7 +1141,7 @@ namespace MonoDevelop.Gettext
 				Runtime.RunInMainThread (() => {
 					ClearTasks ();
 					currentTasks = tasks;
-					TaskService.Errors.AddRange (tasks);
+					IdeServices.TaskService.Errors.AddRange (tasks);
 				});
 			}
 		}
