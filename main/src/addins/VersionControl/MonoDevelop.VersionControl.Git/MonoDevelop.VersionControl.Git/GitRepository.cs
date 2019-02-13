@@ -478,10 +478,18 @@ namespace MonoDevelop.VersionControl.Git
 
 		static void GetFilesVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, List<FilePath> localPaths, List<VersionInfo> versions)
 		{
-			foreach (var file in repo.ToGitPath (localPaths)) {
-				var status = repo.RetrieveStatus (file);
-				AddStatus (repo, rev, file, versions, status, null);
-			}
+			foreach (var localPath in localPaths)
+				if (!localPath.IsDirectory) {
+					var file = repo.ToGitPath (localPath);
+					var repositoryStatus = repo.RetrieveStatus (new StatusOptions { DisablePathSpecMatch = true, PathSpec = new [] { file }, IncludeUnaltered = true });
+
+					if (repositoryStatus.Any ()) {
+						var fileStatus = repositoryStatus.FirstOrDefault (s => s.FilePath.Equals (file, StringComparison.InvariantCultureIgnoreCase));
+						if (fileStatus != null) {
+							AddStatus (repo, rev, file, versions, fileStatus.State, null);
+						}
+					}
+				}
 		}
 
 		static void AddStatus (LibGit2Sharp.Repository repo, GitRevision rev, string file, List<VersionInfo> versions, FileStatus status, string directoryPath)
