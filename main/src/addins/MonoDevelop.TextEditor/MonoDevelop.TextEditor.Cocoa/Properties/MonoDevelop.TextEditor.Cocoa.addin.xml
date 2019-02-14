@@ -1,13 +1,10 @@
 <ExtensionModel>
 	<Extension path="/MonoDevelop/Ide/Composition">
-		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.dll" />
-		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />
-		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Data.Utilities.dll" />
-		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
-		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
@@ -16,6 +13,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Data.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
@@ -25,15 +23,17 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Structure.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
-		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
-		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Structure.dll" />
-		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
+		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.TextEditor.CocoaTextViewDisplayBinding" />
