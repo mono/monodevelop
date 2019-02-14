@@ -27,6 +27,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NuGet.Versioning;
@@ -38,6 +39,23 @@ namespace MonoDevelop.PackageManagement.Tests
 	[TestFixture]
 	public class UpdateXamarinFormsBuildTest : RestoreTestBase
 	{
+		static readonly string UseNSUrlSessionHandlerProperty = "MonoDevelop.MacIntegration.UseNSUrlSessionHandler";
+		static bool originalSessionHandlerPropertyValue;
+
+		[TestFixtureSetUp]
+		public void TestFixtureSetup ()
+		{
+			// Disable use of Xamarin.Mac's NSUrlSessionHandler for tests. Xamarin.Mac is not initialized.
+			originalSessionHandlerPropertyValue = PropertyService.Get (UseNSUrlSessionHandlerProperty, true);
+			PropertyService.Set (UseNSUrlSessionHandlerProperty, false);
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown ()
+		{
+			PropertyService.Set (UseNSUrlSessionHandlerProperty, originalSessionHandlerPropertyValue);
+		}
+
 		/// <summary>
 		/// Tests that a build error due to a mismatched Xamarin.Forms NuGet package used
 		/// in two projects can be fixed by updating the NuGet package to match without
