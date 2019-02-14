@@ -377,9 +377,12 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				var semanticModel = await doc.GetSemanticModelAsync (cancellationToken);
 				if (!doc.IsOpen () || await doc.IsForkedDocumentWithSyntaxChangesAsync (cancellationToken))
 					return CompletionChange.Create (change);
-				await Runtime.RunInMainThread (delegate {
-					var document = IdeApp.Workbench.ActiveDocument;
-					var editor = document.Editor;
+
+				var document = IdeApp.Workbench.ActiveDocument;
+				var editor = document.Editor;
+
+				void StartInsertionMode ()
+				{
 					if (editor.EditMode != EditMode.Edit)
 						return;
 					var parsedDocument = document.ParsedDocument;
@@ -400,7 +403,13 @@ namespace MonoDevelop.CSharp.Completion.Provider
 						}
 					);
 					editor.StartInsertionMode (options);
-				});
+				}
+
+				if (editor.TextView is Microsoft.VisualStudio.Text.Editor.IMdTextView)
+					await Runtime.RunInMainThread (StartInsertionMode);
+				else
+					StartInsertionMode ();
+
 				return CompletionChange.Create (change);
 			}
 			change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), beforeText + afterText);
@@ -420,8 +429,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			string oneIndent = null;
 			string eol = null;
 
-			await Runtime.RunInMainThread (delegate {
-				var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
+			var editor = IdeApp.Workbench?.ActiveDocument?.Editor;
+
+			void GetText ()
+			{
 				var indentationTracker = editor?.IndentationTracker;
 				if (indentationTracker != null) {
 					if (!properties.TryGetValue (PositionKey, out var positionString)) {
@@ -437,7 +448,12 @@ namespace MonoDevelop.CSharp.Completion.Provider
 					thisLineIndent = oneIndent = "\t";
 				}
 				eol = editor?.EolMarker ?? "\n";
-			});
+			}
+
+			if (editor.TextView is Microsoft.VisualStudio.Text.Editor.IMdTextView)
+				await Runtime.RunInMainThread (GetText);
+			else
+				GetText ();
 
 			properties.TryGetValue (InsertBeforeKey, out string beforeText);
 			properties.TryGetValue (InsertAfterKey, out string afterText);
