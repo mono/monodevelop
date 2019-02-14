@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
@@ -42,7 +43,7 @@ using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditor
 
 namespace MonoDevelop.TextEditor
 {
-	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, ICustomCommandTarget, ICommandHandler, ICommandUpdater
+	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, ICustomCommandTarget, ICommandHandler, ICommandUpdater, IPropertyPadProvider
 #if !WINDOWS
 		// implementing this correctly requires IEditorOperations4
 		, IZoomable
@@ -239,6 +240,25 @@ namespace MonoDevelop.TextEditor
 		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
 		{
 			TryLogNavPoint (false);
+		}
+
+		object IPropertyPadProvider.GetActiveComponent ()
+		{
+			if (WorkbenchWindow?.Document is Document doc && doc.HasProject) {
+				return Project.Files.GetFile (doc.Name);
+			}
+			return null;
+		}
+
+		object IPropertyPadProvider.GetProvider () => null;
+
+		void IPropertyPadProvider.OnEndEditing (object obj) { }
+
+		void IPropertyPadProvider.OnChanged (object obj)
+		{
+			if (WorkbenchWindow?.Document is Document doc && doc.HasProject) {
+				Ide.IdeApp.ProjectOperations.SaveAsync (doc.Project);
+			}
 		}
 	}
 }

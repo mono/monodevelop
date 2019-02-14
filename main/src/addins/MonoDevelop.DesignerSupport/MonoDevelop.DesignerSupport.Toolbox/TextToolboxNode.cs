@@ -30,6 +30,7 @@
 
 using System;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -89,7 +90,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public void InsertAtCaret (Document document)
 		{
-			document.Editor.InsertAtCaret (text);
+			if (document.ActiveView.GetContent<ITextView> () is ITextView view) {
+				view.TextBuffer.Insert (view.Caret.Position.BufferPosition.Position, text);
+			}
 		}
 	}
 }
