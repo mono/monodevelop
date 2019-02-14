@@ -28,8 +28,7 @@ vbox1
           antiAliasingCheckbutton
   GtkLabel16 "Experimental"
   alignment5
-      vbox7
-          newEditorCheckbutton
+      experimentalSection
 
 		*/
 		private global::Gtk.VBox vbox1;
@@ -68,17 +67,13 @@ vbox1
 
 		private global::Gtk.VBox vbox6;
 
-		private global::Gtk.CheckButton wordWrapCheckbutton;
-
 		private global::Gtk.CheckButton antiAliasingCheckbutton;
 
 		private global::Gtk.Label GtkLabel16;
 
 		private global::Gtk.Alignment alignment5;
 
-		private global::Gtk.VBox vbox7;
-
-		private global::Gtk.CheckButton newEditorCheckbutton;
+		private global::Gtk.VBox experimentalSection;
 
 		protected virtual void Build()
 		{
@@ -241,18 +236,6 @@ vbox1
 			this.vbox6.Name = "vbox6";
 			this.vbox6.Spacing = 6;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.wordWrapCheckbutton = new global::Gtk.CheckButton();
-			this.wordWrapCheckbutton.CanFocus = true;
-			this.wordWrapCheckbutton.Name = "wordWrapCheckbutton";
-			this.wordWrapCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Word wrap");
-			this.wordWrapCheckbutton.DrawIndicator = true;
-			this.wordWrapCheckbutton.UseUnderline = true;
-			this.vbox6.Add(this.wordWrapCheckbutton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.wordWrapCheckbutton]));
-			w16.Position = 0;
-			w16.Expand = false;
-			w16.Fill = false;
-			// Container child vbox6.Gtk.Box+BoxChild
 			this.antiAliasingCheckbutton = new global::Gtk.CheckButton();
 			this.antiAliasingCheckbutton.CanFocus = true;
 			this.antiAliasingCheckbutton.Name = "antiAliasingCheckbutton";
@@ -289,24 +272,11 @@ vbox1
 			this.alignment5.LeftPadding = ((uint)(12));
 
 			// Container child alignment3.Gtk.Container+ContainerChild
-			this.vbox7 = new global::Gtk.VBox ();
-			this.vbox7.Name = "vbox7";
-			this.vbox7.Spacing = 6;
+			this.experimentalSection = new global::Gtk.VBox ();
+			this.experimentalSection.Name = "experimentalSection";
+			this.experimentalSection.Spacing = 6;
 
-			// Container child vbox5.Gtk.Box+BoxChild
-			this.newEditorCheckbutton = new global::Gtk.CheckButton ();
-			this.newEditorCheckbutton.CanFocus = true;
-			this.newEditorCheckbutton.Name = "newEditorCheckbutton";
-			this.newEditorCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Open C# files in the New Editor");
-			this.newEditorCheckbutton.DrawIndicator = true;
-			this.newEditorCheckbutton.UseUnderline = true;
-			this.vbox7.Add (this.newEditorCheckbutton);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.newEditorCheckbutton]));
-			w21.Position = 0;
-			w21.Expand = false;
-			w21.Fill = false;
-
-			this.alignment5.Add (this.vbox7);
+			this.alignment5.Add (this.experimentalSection);
 			this.vbox1.Add (this.alignment5);
 			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment5]));
 			w22.Position = 7;
