@@ -519,9 +519,9 @@ namespace MonoDevelop.VersionControl
 		static void OnFileRemoved (object s, ProjectFileEventArgs args)
 		{
 			foreach (var file in args) {
-				string path = file.ProjectFile.FilePath;
 				Repository repo = GetRepository (args.CommonProject);
 				if (repo != null) {
+					string path = file.ProjectFile.FilePath;
 					using (ProgressMonitor monitor = GetStatusMonitor ()) {
 						repo.DeleteFile (path, true, monitor);
 					}
@@ -533,13 +533,9 @@ namespace MonoDevelop.VersionControl
 		static void OnFileRenamed (object s, ProjectFileRenamedEventArgs args)
 		{
 			foreach (var file in args) {
-				string path = file.ProjectFile.FilePath;
 				Repository repo = GetRepository (file.Project);
 				if (repo != null) {
-					using (ProgressMonitor monitor = GetStatusMonitor ()) {
-						repo.Update (path, false, monitor);
-					}
-					NotifyFileStatusChanged (new FileUpdateEventArgs (repo, path, file.ProjectFile.Subtype == Subtype.Directory));
+					NotifyFileStatusChanged (new FileUpdateEventArgs (repo, file.ProjectFile.FilePath;, file.ProjectFile.Subtype == Subtype.Directory));
 				}
 			}
 		}
