@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.OnGetContents (type).Concat (contents.Where (c => type.IsInstanceOfType (c)));
+			return base.OnGetContents (type).Concat (contents.Where (c => type.IsInstanceOfType (c))).Concat (Editor.GetContents (type));
 		}
 
 		public IDisposable OpenUndoGroup ()
