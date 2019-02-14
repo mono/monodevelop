@@ -112,7 +112,10 @@
 		BeforeTargets="SplitResourcesByCulture"
 		DependsOnTargets="_DownloadNupkgGatherOutput;_CollectExtensionOutputFiles;_GenerateExtensionContentManifest" />
 
-	<Target Name="_CollectExtensionOutputFiles">
+	<Target
+		Name="_CollectExtensionOutputFiles"
+		Condition="'@(ExtensionContent)' != ''"
+		>
     <!--declare this here instead of toplevel so that IntermediateOutputPath has a value w/SDK style projects-->
     <PropertyGroup>
       <_ExtensionContentManifest>$(IntermediateOutputPath)_Manifest.addin.xml</_ExtensionContentManifest>
