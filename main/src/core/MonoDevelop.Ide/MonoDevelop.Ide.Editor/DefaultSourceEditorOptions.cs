@@ -31,6 +31,8 @@ using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.VisualStudio.CodingConventions;
 using System.Threading.Tasks;
 
+using Microsoft.VisualStudio.Text.Editor;
+
 namespace MonoDevelop.Ide.Editor
 {
 	public enum WordNavigationStyle
@@ -747,15 +749,14 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		// TODO: VSWindows has more options than just WordWrap and None. Might need UI changes.
-		ConfigurationProperty<Microsoft.VisualStudio.Text.Editor.WordWrapStyles> wrapLines = IdeApp.Preferences.Editor.WordWrapStyle;
-		public bool WrapLines {
-			get {
-				return (wrapLines.Value & Microsoft.VisualStudio.Text.Editor.WordWrapStyles.WordWrap) != 0;
-			}
+		[Obsolete ("Deprecated - use WordWrapStyle")]
+		public bool WrapLines => WordWrapStyle.HasFlag (WordWrapStyles.WordWrap);
+
+		ConfigurationProperty<WordWrapStyles> wordWrapStyle = IdeApp.Preferences.Editor.WordWrapStyle;
+		public WordWrapStyles WordWrapStyle {
+			get => wordWrapStyle;
 			set {
-				var newValue = value ? Microsoft.VisualStudio.Text.Editor.WordWrapStyles.WordWrap : Microsoft.VisualStudio.Text.Editor.WordWrapStyles.None;
-				if (wrapLines.Set (newValue))
+				if (wordWrapStyle.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
 		}

@@ -24,17 +24,23 @@
 // THE SOFTWARE.
 
 using System;
+
+using Microsoft.VisualStudio.Text.Editor;
+
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Editor; 
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	partial class GeneralOptionsPanel : Gtk.Bin, IOptionsPanel
 	{
+		readonly Xwt.CheckBox newEditorCheckBox;
+		readonly Xwt.CheckBox wordWrapCheckBox;
+		readonly Xwt.CheckBox wordWrapVisualGlyphsCheckBox;
+
 		public GeneralOptionsPanel()
 		{
 			this.Build();
@@ -43,6 +49,32 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.comboboxLineEndings.AppendText (GettextCatalog.GetString ("Leave line endings as is"));
 			this.comboboxLineEndings.AppendText (GettextCatalog.GetString ("Always convert line endings"));
 			this.comboboxLineEndings.Active = (int)DefaultSourceEditorOptions.Instance.LineEndingConversion;
+
+			var newEditorOptionsBox = new Xwt.VBox ();
+
+			newEditorCheckBox = new Xwt.CheckBox (GettextCatalog.GetString ("Open C# files in the New Editor"));
+			newEditorCheckBox.Active = DefaultSourceEditorOptions.Instance.EnableNewEditor;
+			newEditorCheckBox.Toggled += HandleNewEditorOptionToggled;
+			newEditorOptionsBox.PackStart (newEditorCheckBox);
+
+			wordWrapCheckBox = new Xwt.CheckBox (GettextCatalog.GetString ("_Word wrap"));
+			wordWrapCheckBox.MarginLeft = 18;
+			wordWrapCheckBox.Active = DefaultSourceEditorOptions.Instance.WordWrapStyle.HasFlag (WordWrapStyles.WordWrap);
+			wordWrapCheckBox.Toggled += HandleNewEditorOptionToggled;
+			newEditorOptionsBox.PackStart (wordWrapCheckBox);
+
+			wordWrapVisualGlyphsCheckBox = new Xwt.CheckBox (GettextCatalog.GetString ("Show visible glyphs for word wrap"));
+			wordWrapVisualGlyphsCheckBox.MarginLeft = 36;
+			wordWrapVisualGlyphsCheckBox.Active = DefaultSourceEditorOptions.Instance.WordWrapStyle.HasFlag (WordWrapStyles.VisibleGlyphs);
+			wordWrapVisualGlyphsCheckBox.Toggled += HandleNewEditorOptionToggled;
+			newEditorOptionsBox.PackStart (wordWrapVisualGlyphsCheckBox);
+
+			if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.Gtk)
+				experimentalSection.PackStart ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (newEditorOptionsBox), false, false, 0);
+			else
+				LoggingService.LogError ("GeneralOptionsPanel: Xwt.Toolkit.CurrentEngine.Type != Xwt.ToolkitType.Gtk - currently unsupported");
+
+			HandleNewEditorOptionToggled (this, EventArgs.Empty);
 
 			SetupAccessibility ();
 		}
@@ -57,8 +89,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			                                                         GettextCatalog.GetString ("Check to fold regions by default"));
 			foldCommentsCheckbutton.SetCommonAccessibilityAttributes ("SourceEditorGeneral.commens", "",
 			                                                          GettextCatalog.GetString ("Check to fold comments by default"));
-			newEditorCheckbutton.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor", "",
-			                                                          GettextCatalog.GetString ("Check to enable experimental new editor"));
+			newEditorCheckBox.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor", "",
+			                                                    GettextCatalog.GetString ("Check to enable experimental new editor"));
+			wordWrapCheckBox.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor.wordWrap", "",
+			                                                   GettextCatalog.GetString ("Check to enable word wrap in the experimental new editor"));
+			wordWrapVisualGlyphsCheckBox.SetCommonAccessibilityAttributes ("SourceEditorGeneral.newEditor.wordWrap.enableVisualGlyphs", "",
+			                                                               GettextCatalog.GetString ("Check to enable visual word wrap glyphs in the experimental new editor"));
 		}
 
 		public virtual Control CreatePanelWidget ()
@@ -66,11 +102,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.foldingCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
 			this.foldregionsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			this.foldCommentsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-			this.newEditorCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableNewEditor;
-			//			wordWrapCheckbutton.Active = DefaultSourceEditorOptions.Instance.WrapLines;
-			wordWrapCheckbutton.Visible = false;
+
 			antiAliasingCheckbutton.Visible = false;
 			GtkLabel15.Visible = false;
+
 			return this;
 		}
 		
@@ -78,13 +113,34 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			UpdateNewEditorOption (this.newEditorCheckbutton.Active);
-			DefaultSourceEditorOptions.Instance.LineEndingConversion = (MonoDevelop.Ide.Editor.LineEndingConversion)this.comboboxLineEndings.Active;
+			DefaultSourceEditorOptions.Instance.LineEndingConversion = (LineEndingConversion)this.comboboxLineEndings.Active;
+
 			if (DefaultSourceEditorOptions.Instance.ShowFoldMargin != this.foldingCheckbutton.Active) {
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 				HighlightingPanel.UpdateActiveDocument ();
 			}
-//			DefaultSourceEditorOptions.Instance.WrapLines = wordWrapCheckbutton.Active;
+
+			UpdateNewEditorOption (this.newEditorCheckBox.Active);
+		}
+
+		void HandleNewEditorOptionToggled (object sender, EventArgs e)
+		{
+			wordWrapCheckBox.Sensitive = newEditorCheckBox.Active;
+			wordWrapVisualGlyphsCheckBox.Sensitive = newEditorCheckBox.Active && wordWrapCheckBox.Active;
+
+			var wrap = DefaultSourceEditorOptions.Instance.WordWrapStyle;
+
+			if (wordWrapCheckBox.Active)
+				wrap |= WordWrapStyles.WordWrap;
+			else
+				wrap &= ~WordWrapStyles.WordWrap;
+
+			if (wordWrapVisualGlyphsCheckBox.Active)
+				wrap |= WordWrapStyles.VisibleGlyphs;
+			else
+				wrap &= ~WordWrapStyles.VisibleGlyphs;
+
+			DefaultSourceEditorOptions.Instance.WordWrapStyle = wrap;
 		}
 
 		void UpdateNewEditorOption (bool enabled)
