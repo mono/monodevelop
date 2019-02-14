@@ -63,7 +63,6 @@
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-<<<<<<< HEAD
     <PackageReference Include="Microsoft.TemplateEngine.Edge" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
