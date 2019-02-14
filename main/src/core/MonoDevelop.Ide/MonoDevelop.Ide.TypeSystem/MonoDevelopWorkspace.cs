@@ -156,8 +156,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (MonoDevelopSolution == solution)
 				return;
 
-			MonoDevelopSolution = solution;
 			OnSolutionRemoved ();
+			MonoDevelopSolution = solution;
 
 			// We don't want to do anything else.
 			if (solution == null) {
@@ -172,6 +172,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		// This is called by OnSolutionRemoved.
 		protected override void ClearSolutionData ()
 		{
+			if (MonoDevelopSolution != null) {
+				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
+					UnloadMonoProject (prj);
+				}
+			}
+
 			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 			base.ClearSolutionData ();
 		}
@@ -297,11 +303,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
-			if (MonoDevelopSolution != null) {
-				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
-					UnloadMonoProject (prj);
-				}
-			}
+
+			ClearSolutionData ();
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
