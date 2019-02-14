@@ -1,81 +1,25 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+		<MDBuildTasksAssembly>$(MSBuildThisFileDirectory)MDBuildTasks\bin\MDBuildTasks.dll</MDBuildTasksAssembly>
 	</PropertyGroup>
 
-	<UsingTask
-		TaskName="DownloadFiles"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(RoslynCodeTaskFactory)"
-		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
-		<!--
-		TaskFactory="RoslynCodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
-		-->
-		<Task>
-			<Reference Include="System.IO.Compression" />
-			<Reference Include="System.IO.Compression.FileSystem" />
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/DownloadFiles.cs" />
-		</Task>
-	</UsingTask>
+	<!-- Ensure the tasks are built before any project that includes these files -->
+	<ItemGroup>
+		<ProjectReference
+			Include="$(MSBuildThisFileDirectory)MDBuildTasks\MDBuildTasks.csproj"
+			Project="{37E01D0B-8C44-441F-9F5D-56C36AB0B918}"
+			Name="MDBuildTasks"
+			ReferenceOutputAssembly="false"
+			SkipGetTargetFrameworkProperties="true"
+			/>
+	</ItemGroup>
 
-	<UsingTask
-		TaskName="DownloadNupkg"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(RoslynCodeTaskFactory)"
-		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
-		<!--
-		TaskFactory="RoslynCodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
-		-->
-		<Task>
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/DownloadNupkg.cs" />
-		</Task>
-	</UsingTask>
-
-	<UsingTask
-		TaskName="GenerateExtensionContentManifest"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(RoslynCodeTaskFactory)"
-		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
-		<!--
-		TaskFactory="RoslynCodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
-		-->
-		<Task>
-			<Reference Include="System.Xml" />
-			<Reference Include="System.Xml.Linq" />
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/GenerateExtensionContentManifest.cs" />
-		</Task>
-	</UsingTask>
-
-	<UsingTask
-		TaskName="CollectExtensionContent"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(RoslynCodeTaskFactory)"
-		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
-		<!--
-		TaskFactory="RoslynCodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
-		-->
-		<Task>
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/CollectExtensionContent.cs" />
-		</Task>
-	</UsingTask>
-
-	<UsingTask
-		TaskName="FilterLocalCopyReferences"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(RoslynCodeTaskFactory)"
-		Condition=" '$(RoslynCodeTaskFactory)' != '' ">
-		<!--
-		TaskFactory="RoslynCodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
-		-->
-		<Task>
-			<Code Language="cs" Source="$(MSBuildThisFileDirectory)/MDBuildTasks/FilterLocalCopyReferences.cs" />
-		</Task>
-	</UsingTask>
+	<UsingTask TaskName="DownloadFiles" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="DownloadNupkg" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="GenerateExtensionContentManifest" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="CollectExtensionContent" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="FilterLocalCopyReferences" AssemblyFile="$(MDBuildTasksAssembly)" />
 
 	<!--
 	=================================================================
@@ -168,7 +112,10 @@
 		BeforeTargets="SplitResourcesByCulture"
 		DependsOnTargets="_DownloadNupkgGatherOutput;_CollectExtensionOutputFiles;_GenerateExtensionContentManifest" />
 
-	<Target Name="_CollectExtensionOutputFiles">
+	<Target
+		Name="_CollectExtensionOutputFiles"
+		Condition="'@(ExtensionContent)' != ''"
+		>
     <!--declare this here instead of toplevel so that IntermediateOutputPath has a value w/SDK style projects-->
     <PropertyGroup>
       <_ExtensionContentManifest>$(IntermediateOutputPath)_Manifest.addin.xml</_ExtensionContentManifest>

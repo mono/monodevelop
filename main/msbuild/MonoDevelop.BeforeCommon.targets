@@ -84,14 +84,6 @@
 		</ItemGroup>
 	</Target>
 
-	<ItemGroup>
-		<!--
-		the one built into MSBuild 15.98+ is broken:
-		https://github.com/Microsoft/msbuild/issues/3726
-		-->
-		<PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
-	</ItemGroup>
-
 	<ItemGroup Condition="$(MSBuildProjectName) != 'MonoDevelop.Core'">
 		<Reference Include="$(NuGetPackageRoot)microsoft.visualstudio.composition/$(NuGetVersionVSComposition)/lib/net45/Microsoft.VisualStudio.Composition.dll">
 			<Private>false</Private>
