@@ -164,8 +164,10 @@ namespace MonoDevelop.Ide
 				tcs.SetResult (true);
 			};
 			try {
-				await IdeServices.Workspace.OpenWorkspaceItem (solFile);
-				await tcs.Task;
+				if (!await IdeServices.Workspace.OpenWorkspaceItem (solFile))
+					Assert.Fail ("Solution load failed");
+				if (await Task.WhenAny (tcs.Task, Task.Delay (10000)) != tcs.Task)
+					Assert.Fail ("Solution did not load");
 			} finally {
 				await IdeServices.Workspace.Close (false);
 			}
@@ -181,7 +183,7 @@ namespace MonoDevelop.Ide
 			bool solutionLoaded = false;
 			bool workspaceLoaded = false;
 
-			await IdeServices.Workspace.Close ();
+			await IdeServices.Workspace.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
 
 			IdeServices.Workspace.SolutionLoaded += (s, e) => {
 				workspace = IdeServices.TypeSystemService.GetWorkspace (e.Solution);
@@ -214,7 +216,7 @@ namespace MonoDevelop.Ide
 					await Task.Delay (100);
 
 				if (timeout <= 0)
-					Assert.Fail ("Workspace did not load");
+						Assert.Fail ("Workspace did not load");
 
 			} finally {
 				await IdeServices.Workspace.Close (false);

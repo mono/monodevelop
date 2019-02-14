@@ -31,11 +31,12 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.UnitTesting.VsTest;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.UnitTesting.Tests
 {
 	[TestFixture]
-	public class TestResultBuilderTests
+	public class TestResultBuilderTests : TestBase
 	{
 		TestResultBuilder builder;
 		TestContext context;

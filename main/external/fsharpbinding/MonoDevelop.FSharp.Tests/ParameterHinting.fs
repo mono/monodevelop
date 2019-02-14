@@ -11,8 +11,13 @@ open FsUnit
 open MonoDevelop
 open System.Threading.Tasks
 open System.Runtime.CompilerServices
-        
+
 type ``Parameter Hinting``() =
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
+
     let getHints (input: string) =
         let offset = input.LastIndexOf "|"
         if offset = -1 then

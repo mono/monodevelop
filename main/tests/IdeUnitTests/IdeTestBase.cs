@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Shell;
 using IdeUnitTests;
 using MonoDevelop.Ide.Gui;
+using NUnit.Framework;
 
 namespace MonoDevelop.Ide
 {
@@ -49,6 +50,15 @@ namespace MonoDevelop.Ide
 
 			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
 			Gtk.Application.Init();
+		}
+
+		[TearDown]
+		Task CloseWorkspace ()
+		{
+			var ws = Runtime.PeekService<RootWorkspace> ();
+			if (ws != null)
+				return ws.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
+			return Task.CompletedTask;
 		}
 	}
 }

@@ -28,11 +28,12 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using MonoDevelop.UnitTesting.VsTest;
 using NUnit.Framework;
 using System;
+using UnitTests;
 
 namespace MonoDevelop.UnitTesting.Tests
 {
 	[TestFixture]
-	class VsTestUnitTestTests
+	class VsTestUnitTestTests : TestBase
 	{
 		VsTestUnitTest CreateVsUnitTest (string fullyQualifiedName)
 		{

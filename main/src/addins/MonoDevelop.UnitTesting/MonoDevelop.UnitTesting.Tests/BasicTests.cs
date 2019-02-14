@@ -35,13 +35,6 @@ namespace MonoDevelop.UnitTesting.Tests
 	{
 		Solution sol;
 
-		[TestFixtureSetUp]
-		public async Task Start()
-		{
-			await IdeApp.Initialize(new ProgressMonitor());
-			IdeApp.Workspace.ActiveConfigurationId = "Debug";
-		}
-
 		[TearDown]
 		public override void TearDown ()
 		{

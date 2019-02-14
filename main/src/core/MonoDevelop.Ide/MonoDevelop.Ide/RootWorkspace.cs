@@ -502,18 +502,20 @@ namespace MonoDevelop.Ide
 
 		public async Task<bool> Close (bool saveWorkspacePreferencies)
 		{
-			return await Close (saveWorkspacePreferencies, true);
+			return await Close (saveWorkspacePreferencies, true, false);
 		}
-		
-		internal async Task<bool> Close (bool saveWorkspacePreferencies, bool closeProjectFiles)
+
+		internal async Task<bool> Close (bool saveWorkspacePreferencies, bool closeProjectFiles, bool force = false)
 		{
 			if (Items.Count > 0) {
 				ITimeTracker timer = Counters.CloseWorkspaceTimer.BeginTiming ();
 				try {
-					// Request permission for unloading the items
-					foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
-						if (!RequestItemUnload (it))
-							return false;
+					if (!force) {
+						// Request permission for unloading the items
+						foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
+							if (!RequestItemUnload (it))
+								return false;
+						}
 					}
 
 					if (saveWorkspacePreferencies)
@@ -521,7 +523,7 @@ namespace MonoDevelop.Ide
 
 					if (closeProjectFiles && documentManager != null) {
 						foreach (Document doc in documentManager.Documents.ToArray ()) {
-							if (!await doc.Close ())
+							if (!await doc.Close (force))
 								return false;
 						}
 					}
@@ -532,6 +534,7 @@ namespace MonoDevelop.Ide
 							it.Dispose ();
 						} catch (Exception ex) {
 							MessageService.ShowError (GettextCatalog.GetString ("Could not close solution '{0}'.", it.Name), ex);
+							return false;
 						}
 					}
 				} finally {

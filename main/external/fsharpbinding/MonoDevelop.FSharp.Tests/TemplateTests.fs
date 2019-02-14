@@ -18,7 +18,7 @@ open MonoDevelop.FSharp.Shared
 open NUnit.Framework
 open MonoDevelop.Ide.TypeSystem
 
-[<TestFixture; UnitTests.RequireService(typeof<TypeSystemService>)>]
+[<TestFixture; UnitTests.RequireService(typeof<TypeSystemService>); UnitTests.RequireService(typeof<RootWorkspace>)>]
 type ``Template tests``() =
     inherit UnitTests.TestBase()
     let toTask computation : Task = Async.StartImmediateAsTask computation :> _
@@ -147,13 +147,6 @@ type ``Template tests``() =
         //"Could not install package 'FSharp.Core 4.3.3'. You are trying to install this package into a project that targets '.NETFramework,Version=v4.0',"
         MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
             <- Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
-
-    [<TestFixtureTearDown>]
-    member x.TestFixtureTearDown() =
-        IdeApp.Exit()
-        |> Async.AwaitTask
-        |> Async.Ignore
-        |> Async.RunSynchronously
 
     [<Test;AsyncStateMachine(typeof<Task>)>]
     member x.``FSharp portable project``() =
