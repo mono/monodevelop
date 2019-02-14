@@ -189,8 +189,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			var document = await ShowView (fileOpenInfo);
 
-			document.Editor.Encoding = Encoding.UTF8;
-			document.DocumentContext.ReparseDocument ();
+			if (document.Editor != null)
+				document.Editor.Encoding = Encoding.UTF8;
+			if (document.DocumentContext != null)
+				document.DocumentContext.ReparseDocument ();
 			return document;
 		}
 
