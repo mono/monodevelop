@@ -64,7 +64,8 @@ namespace MonoDevelop.TextEditor
 			".css",
 			".json",
 			".js",
-			".ts"
+			".ts",
+			".xaml"
 		};
 
 		bool IsSupportedFileExtension (FilePath fileName)
