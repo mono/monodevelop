@@ -305,6 +305,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			ClearSolutionData ();
+			MonoDevelopSolution = null;
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
