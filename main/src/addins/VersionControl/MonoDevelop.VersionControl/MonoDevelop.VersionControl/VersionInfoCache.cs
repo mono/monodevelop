@@ -96,12 +96,13 @@ namespace MonoDevelop.VersionControl
 			try {
 				fileLock.EnterWriteLock ();
 
+				if (!versionInfo.IsInitialized)
+					versionInfo.Init (repo);
 				VersionInfo vi;
 				if (fileStatus.TryGetValue (versionInfo.LocalPath, out vi) && vi.Equals (versionInfo)) {
 					vi.RequiresRefresh = false;
 					return;
 				}
-				versionInfo.Init (repo);
 				fileStatus [versionInfo.LocalPath] = versionInfo;
 			} finally {
 				fileLock.ExitWriteLock ();
@@ -118,12 +119,13 @@ namespace MonoDevelop.VersionControl
 			try {
 				fileLock.EnterWriteLock ();
 				foreach (var versionInfo in versionInfos) {
+					if (!versionInfo.IsInitialized)
+						versionInfo.Init (repo);
 					VersionInfo vi;
 					if (fileStatus.TryGetValue (versionInfo.LocalPath, out vi) && vi.Equals (versionInfo)) {
 						vi.RequiresRefresh = false;
 						continue;
 					}
-					versionInfo.Init (repo);
 					fileStatus [versionInfo.LocalPath] = versionInfo;
 					var a = new FileUpdateEventArgs (repo, versionInfo.LocalPath, versionInfo.IsDirectory);
 					if (args == null)
