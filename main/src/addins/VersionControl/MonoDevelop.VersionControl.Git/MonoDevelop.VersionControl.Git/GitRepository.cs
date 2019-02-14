@@ -202,7 +202,7 @@ namespace MonoDevelop.VersionControl.Git
 		const CheckoutNotifyFlags refreshFlags = CheckoutNotifyFlags.Updated | CheckoutNotifyFlags.Conflict | CheckoutNotifyFlags.Untracked | CheckoutNotifyFlags.Dirty;
 		bool RefreshFile (string path, CheckoutNotifyFlags flags)
 		{
-			return RunOperation (RootPath, rootRepository => RefreshFile (rootRepository, path, flags));
+			return RefreshFile (RootRepository, path, flags);
 		}
 
 		bool RefreshFile (LibGit2Sharp.Repository repository, string path, CheckoutNotifyFlags flags)
@@ -266,7 +266,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public StashApplyStatus ApplyStash (ProgressMonitor monitor, int stashIndex)
 		{
-			return RunBlockingOperation (() => ApplyStash (RootRepository, monitor, stashIndex));
+			return RunBlockingOperation (() => ApplyStash (RootRepository, monitor, stashIndex), true);
 		}
 
 		StashApplyStatus ApplyStash (LibGit2Sharp.Repository repository, ProgressMonitor monitor, int stashIndex)
@@ -300,11 +300,11 @@ namespace MonoDevelop.VersionControl.Git
 				return RootRepository.Stashes.Pop (stashIndex, new StashApplyOptions {
 					CheckoutOptions = new CheckoutOptions {
 						OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-						OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (RootRepository, path, flags),
+						OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
 						CheckoutNotifyFlags = refreshFlags,
 					},
 				});
-			});
+			}, true);
 
 			if (monitor != null)
 				monitor.EndTask ();
@@ -357,6 +357,12 @@ namespace MonoDevelop.VersionControl.Git
 			return cachedSubmodules;
 		}
 
+		void EnsureBackgroundThread ()
+		{
+			if (Runtime.IsMainThread)
+				throw new InvalidOperationException ("Deadlock prevention: this shall not run on the UI thread");
+		}
+
 		internal void RunSafeOperation (Action action)
 		{
 			action ();
@@ -367,43 +373,59 @@ namespace MonoDevelop.VersionControl.Git
 			return action ();
 		}
 
-		internal void RunOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action)
+		internal void RunOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			readingOperationFactory.StartNew (() => action (GetRepository (localPath))).Wait ();
 		}
 
-		internal void RunOperation (Action action)
+		internal void RunOperation (Action action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			readingOperationFactory.StartNew (action).Wait ();
 		}
 
-		internal T RunOperation<T> (Func<T> action)
+		internal T RunOperation<T> (Func<T> action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			return readingOperationFactory.StartNew (action).Result;
 		}
 
-		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action)
+		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			return readingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
 		}
 
-		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action)
+		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Wait ();
 		}
 
-		internal void RunBlockingOperation (Action action)
+		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			blockingOperationFactory.StartNew (action).Wait ();
 		}
 
-		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action)
+		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
 		}
 
-		internal T RunBlockingOperation<T> (Func<T> action)
+		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false)
 		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
 			return blockingOperationFactory.StartNew (action).Result;
 		}
 
@@ -836,7 +858,7 @@ namespace MonoDevelop.VersionControl.Git
 					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 					OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
 				}, string.Empty));
-			});
+			}, true);
 			monitor.Step (1);
 			monitor.EndTask ();
 		}
@@ -908,7 +930,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stashIndex != -1) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					ApplyStash (RootRepository, monitor, stashIndex);
+					ApplyStash (monitor, stashIndex);
 					// FIXME: No StashApplyStatus.Conflicts here.
 					if (RootRepository.Index.Conflicts.Any () && !ConflictResolver (RootRepository, monitor, oldHead, string.Empty))
 						PopStash (monitor, stashIndex);
@@ -948,13 +970,13 @@ namespace MonoDevelop.VersionControl.Git
 						monitor.Log.WriteLine (GettextCatalog.GetString ("Cherry-picking {0} - {1}/{2}", com.Id, i, count));
 						CherryPickResult cherryRes = RootRepository.CherryPick (com, com.Author, new CherryPickOptions {
 							CheckoutNotifyFlags = refreshFlags,
-							OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (RootRepository, path, flags),
+							OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
 						});
 						if (cherryRes.Status == CherryPickStatus.Conflicts)
 							ConflictResolver (RootRepository, monitor, toApply.Last (), RootRepository.Info.Message ?? com.Message);
 						++i;
 					}
-				});
+				}, true);
 			} finally {
 				CommonPostMergeRebase (stashIndex, options, monitor, oldHead);
 			}
@@ -977,8 +999,8 @@ namespace MonoDevelop.VersionControl.Git
 				MergeResult mergeResult = RunBlockingOperation (() =>
 					RootRepository.Merge (branch, sig, new MergeOptions {
 						CheckoutNotifyFlags = refreshFlags,
-						OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (RootRepository, path, flags),
-					}));
+						OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
+					}), true);
 				if (mergeResult.Status == MergeStatus.Conflicts)
 						ConflictResolver (RootRepository, monitor, RootRepository.Head.Tip, RootRepository.Info.Message);
 			} finally {
@@ -1228,7 +1250,7 @@ namespace MonoDevelop.VersionControl.Git
 							CheckoutNotifyFlags = refreshFlags,
 							OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
 								if ((notifyFlags & CheckoutNotifyFlags.Untracked) == 0)
-									return RefreshFile (repository, path, notifyFlags); // TODO: potential deadlock due to blocking op running?
+									return RefreshFile (repository, path, notifyFlags);
 								return true;
 							}
 						});
@@ -1237,7 +1259,7 @@ namespace MonoDevelop.VersionControl.Git
 
 					if (toUnstage.Any ())
 						LibGit2Sharp.Commands.Unstage (repository, repository.ToGitPath (toUnstage).ToArray ());
-				});
+				}, true);
 				monitor.EndTask ();
 			}
 		}
@@ -1394,7 +1416,7 @@ namespace MonoDevelop.VersionControl.Git
 						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
 					})
 				);
-			});
+			}, true);
 
 			if (!success)
 				return;
@@ -1529,7 +1551,7 @@ namespace MonoDevelop.VersionControl.Git
 				RetryUntilSuccess (null, credType => RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
 					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 				}));
-			});
+			}, true);
 		}
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
@@ -1572,9 +1594,9 @@ namespace MonoDevelop.VersionControl.Git
 				int progress = 0;
 				RunBlockingOperation (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-					OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (RootRepository, path, flags),
+					OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
 					CheckoutNotifyFlags = refreshFlags,
-				}));
+				}), true);
 			} finally {
 				// Restore the branch stash
 				if (GitService.StashUnstashWhenSwitchingBranches) {
