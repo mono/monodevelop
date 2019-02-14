@@ -86,6 +86,7 @@ namespace MonoDevelop.Ide.Editor
 		Task Init (TextEditor editor, ITextEditorImpl editorImpl)
 		{
 			this.textEditor = editor;
+			textEditor.FileName = FilePath;
 			this.textEditorImpl = editorImpl;
 			editorImpl.DocumentController = this;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
