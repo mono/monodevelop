@@ -111,9 +111,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var projectId = projectMap.GetOrCreateId (p, oldProject);
 
-				var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+				var config = IdeApp.IsInitialized ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
-				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
+				FilePath fileName = IdeApp.IsInitialized ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
 
