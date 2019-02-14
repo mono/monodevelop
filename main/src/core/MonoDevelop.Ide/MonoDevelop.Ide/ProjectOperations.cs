@@ -48,6 +48,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide
 {
@@ -75,6 +76,11 @@ namespace MonoDevelop.Ide
 			workspace = await serviceProvider.GetService<RootWorkspace> ();
 			workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			workspace.ItemUnloading += IdeAppWorkspaceItemUnloading;
+			await Task.WhenAll (new Task [] {
+				serviceProvider.GetService<DocumentManager> (),
+				serviceProvider.GetService<ProgressMonitorManager> (),
+				serviceProvider.GetService<TaskService> ()
+			});
 		}
 
 		protected override Task OnDispose ()
@@ -180,7 +186,7 @@ namespace MonoDevelop.Ide
 			if (owner == target)
 				return true;
 			else if (target is RootWorkspace)
-				return ContainsTarget (owner, IdeApp.ProjectOperations.CurrentSelectedSolution);
+				return ContainsTarget (owner, IdeServices.ProjectOperations.CurrentSelectedSolution);
 			else if (owner is WorkspaceItem)
 				return ((WorkspaceItem)owner).ContainsItem (target);
 			return false;
@@ -240,7 +246,7 @@ namespace MonoDevelop.Ide
 				}
 				if (fileName == null)
 					return;
-				var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project as Project));
+				var doc = await IdeServices.DocumentManager.OpenDocument (new FileOpenInformation (fileName, project as Project));
 
 				if (doc != null) {
 					doc.RunWhenLoaded (delegate {
@@ -257,12 +263,12 @@ namespace MonoDevelop.Ide
 			if (project is SolutionFolderItem item && item.ParentSolution != null) {
 				string projectedName;
 				int projectedOffset;
-				if (IdeApp.TypeSystemService.GetWorkspace (item.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
+				if (IdeServices.TypeSystemService.GetWorkspace (item.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
 					filePath = projectedName;
 					offset = projectedOffset;
 				}
 			}
-			await IdeApp.Workbench.OpenDocument (new FileOpenInformation (filePath, project as Project) {
+			await IdeServices.DocumentManager.OpenDocument (new FileOpenInformation (filePath, project as Project) {
 				Offset = offset
 			});
 		}
@@ -274,7 +280,7 @@ namespace MonoDevelop.Ide
 			var locations = symbol.Locations;
 			
 			if (askIfMultipleLocations && locations.Length > 1) {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				using (var monitor = IdeServices.ProgressMonitorManager.GetSearchProgressMonitor (true, true)) {
 					foreach (var part in locations) {
 						if (monitor.CancellationToken.IsCancellationRequested)
 							return;
@@ -306,7 +312,7 @@ namespace MonoDevelop.Ide
 			}
 			if (fileName == null || !File.Exists (fileName))
 				return;
-			var doc = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
+			var doc = await IdeServices.DocumentManager.OpenDocument (new FileOpenInformation (fileName));
 			if (doc != null) {
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
@@ -338,7 +344,7 @@ namespace MonoDevelop.Ide
 			
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-					using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true)) {
+					using (ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetToolOutputProgressMonitor (true)) {
 						await Services.ProjectService.Export (monitor, item.FileName, dlg.TargetFolder, dlg.Format);
 					}
 				}
@@ -373,7 +379,7 @@ namespace MonoDevelop.Ide
 			if (!AllowSave (entry))
 				return;
 			
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetSaveProgressMonitor (true);
 			try {
 				await entry.SaveAsync (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
@@ -399,7 +405,7 @@ namespace MonoDevelop.Ide
 			if (!AllowSave (item))
 				return;
 			
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetSaveProgressMonitor (true);
 			try {
 				await item.SaveAsync (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
@@ -454,7 +460,7 @@ namespace MonoDevelop.Ide
 				items = notSavedEntries;
 			}
 			
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetSaveProgressMonitor (true);
 			try {
 				var tasks = new List<Task> ();
 				monitor.BeginTask (null, count);
@@ -501,7 +507,7 @@ namespace MonoDevelop.Ide
 			if (!AllowSave (item))
 				return;
 			
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetSaveProgressMonitor (true);
 			try {
 				await item.SaveAsync (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Item saved."));
@@ -727,7 +733,7 @@ namespace MonoDevelop.Ide
 
 		public async Task<WorkspaceItem> AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
-			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetProjectLoadProgressMonitor (true)) {
 				WorkspaceItem it = await Services.ProjectService.ReadWorkspaceItem (monitor, itemFileName);
 				if (it != null) {
 					parentWorkspace.Items.Add (it);
@@ -815,7 +821,7 @@ namespace MonoDevelop.Ide
 				AddingEntryToCombine (this, args);
 			if (args.Cancel)
 				return null;
-			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetProjectLoadProgressMonitor (true)) {
 				return await folder.AddItem (monitor, args.FileName, true);
 			}
 		}
@@ -941,12 +947,12 @@ namespace MonoDevelop.Ide
 		
 		async Task RemoveItemFromSolution (SolutionFolderItem prj)
 		{
-			foreach (var doc in IdeApp.Workbench.Documents.Where (d => d.Owner == prj).ToArray ())
+			foreach (var doc in IdeServices.DocumentManager.Documents.Where (d => d.Owner == prj).ToArray ())
 				await doc.Close ();
 			Solution sol = prj.ParentSolution;
 			prj.ParentFolder.Items.Remove (prj);
 			prj.Dispose ();
-			await IdeApp.ProjectOperations.SaveAsync (sol);
+			await SaveAsync (sol);
 		}
 		
 		/// <summary>
@@ -974,13 +980,13 @@ namespace MonoDevelop.Ide
 
 		public bool CanExecute (IBuildTarget entry)
 		{
-			ExecutionContext context = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeServices.ProgressMonitorManager.ConsoleFactory, workspace.ActiveExecutionTarget);
 			return CanExecute (entry, context);
 		}
 		
 		public bool CanExecute (IBuildTarget entry, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeServices.ProgressMonitorManager.ConsoleFactory, workspace.ActiveExecutionTarget);
 			return entry.CanExecute (context, workspace.ActiveConfiguration);
 		}
 		
@@ -996,13 +1002,13 @@ namespace MonoDevelop.Ide
 		
 		public AsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler, bool buildBeforeExecuting = true)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeServices.ProgressMonitorManager.ConsoleFactory, workspace.ActiveExecutionTarget);
 			return Execute (entry, context, buildBeforeExecuting);
 		}
 
 		public AsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler, ConfigurationSelector configuration = null, RunConfiguration runConfiguration = null, bool buildBeforeExecuting = true)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeServices.ProgressMonitorManager.ConsoleFactory, workspace.ActiveExecutionTarget);
 			return Execute (entry, context, configuration, runConfiguration, buildBeforeExecuting);
 		}
 
@@ -1118,7 +1124,7 @@ namespace MonoDevelop.Ide
 
 		public bool CanExecuteFile (string file, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeServices.ProgressMonitorManager.ConsoleFactory, workspace.ActiveExecutionTarget);
 			return CanExecuteFile (file, context);
 		}
 
@@ -1132,7 +1138,7 @@ namespace MonoDevelop.Ide
 
 		public AsyncOperation ExecuteFile (string file, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeServices.ProgressMonitorManager.ConsoleFactory, workspace.ActiveExecutionTarget);
 			return ExecuteFile (file, context);
 		}
 
@@ -1155,7 +1161,7 @@ namespace MonoDevelop.Ide
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Cleaning " + entry.Name);
 			try {
 				var cs = new CancellationTokenSource ();
-				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetCleanProgressMonitor ().WithCancellationSource (cs);
+				ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetCleanProgressMonitor ().WithCancellationSource (cs);
 
 				OnStartClean (monitor, tt);
 
@@ -1259,7 +1265,8 @@ namespace MonoDevelop.Ide
 
 			IdeServices.TaskService.Errors.AddRange (tasks);
 			IdeServices.TaskService.Errors.ResetLocationList ();
-			IdeApp.Workbench.ActiveLocationList = IdeServices.TaskService.Errors;
+			if (IdeApp.IsInitialized)
+				IdeApp.Workbench.ActiveLocationList = IdeServices.TaskService.Errors;
 			return tasks;
 		}
 
@@ -1296,7 +1303,7 @@ namespace MonoDevelop.Ide
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 
 			var cs = new CancellationTokenSource ();
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRebuildProgressMonitor ().WithCancellationSource (cs);
+			ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetRebuildProgressMonitor ().WithCancellationSource (cs);
 
 			var t = RebuildAsync (entry, monitor, operationContext);
 			t = t.ContinueWith (ta => {
@@ -1595,7 +1602,7 @@ namespace MonoDevelop.Ide
 				var cs = new CancellationTokenSource ();
 				if (cancellationToken != null)
 					cs = CancellationTokenSource.CreateLinkedTokenSource (cs.Token, cancellationToken.Value);
-				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ().WithCancellationSource (cs);
+				ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetBuildProgressMonitor ().WithCancellationSource (cs);
 				BeginBuild (monitor, tt, false);
 				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext);
 				currentBuildOperation = new AsyncOperation<BuildResult> (t, cs);
@@ -1652,9 +1659,9 @@ namespace MonoDevelop.Ide
 			if (ctx.ExecutionTarget == null) {
 				var item = target as SolutionItem;
 				if (item != null)
-					ctx.ExecutionTarget = IdeApp.Workspace.GetActiveExecutionTarget (item);
+					ctx.ExecutionTarget = IdeServices.Workspace.GetActiveExecutionTarget (item);
 				else
-					ctx.ExecutionTarget = IdeApp.Workspace.ActiveExecutionTarget;
+					ctx.ExecutionTarget = IdeServices.Workspace.ActiveExecutionTarget;
 			}
 			return (T)ctx;
 		}
@@ -1664,7 +1671,7 @@ namespace MonoDevelop.Ide
 		{
 			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
 			
-			foreach (var doc in IdeApp.Workbench.Documents) {
+			foreach (var doc in IdeServices.DocumentManager.Documents) {
 				if (doc.IsDirty && doc.Owner != null) {
 					if (MessageService.AskQuestion (GettextCatalog.GetString ("Save changed documents before building?"),
 					                                GettextCatalog.GetString ("Some of the open documents have unsaved changes."),
@@ -1684,7 +1691,7 @@ namespace MonoDevelop.Ide
 		{
 			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
 			
-			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
+			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeServices.DocumentManager.Documents)) {
 				if (doc.IsDirty && doc.Owner != null) {
 					await doc.Save ();
 					if (doc.IsDirty) {
@@ -2575,12 +2582,10 @@ namespace MonoDevelop.Ide
 
 		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
-			if (IdeApp.IsInitialized) {
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (doc.FileName == filePath) {
-						var ef = doc.Editor;
-						if (ef != null) return ef;
-					}
+			foreach (var doc in IdeServices.DocumentManager.Documents) {
+				if (doc.FileName == filePath) {
+					var ef = doc.Editor;
+					if (ef != null) return ef;
 				}
 			}
 
@@ -2621,7 +2626,7 @@ namespace MonoDevelop.Ide
 		{
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
-			foreach (var doc in IdeApp.Workbench.Documents) {
+			foreach (var doc in IdeServices.DocumentManager.Documents) {
 				if (IsSearchedDocument (doc, filePath)) {
 					return doc.Editor;
 				}
@@ -2632,12 +2637,10 @@ namespace MonoDevelop.Ide
 
 		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
-			if (IdeApp.Workbench != null) {
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					if (IsSearchedDocument (doc, filePath)) {
-						isOpen = true;
-						return doc.Editor;
-					}
+			foreach (var doc in IdeServices.DocumentManager.Documents) {
+				if (IsSearchedDocument (doc, filePath)) {
+					isOpen = true;
+					return doc.Editor;
 				}
 			}
 

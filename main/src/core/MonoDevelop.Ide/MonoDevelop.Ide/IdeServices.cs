@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide
 		static RootWorkspace workspace;
 		static ProgressMonitorManager progressMonitorManager;
 		static TaskService taskService;
+		static ProjectOperations projectOperations;
 
 		static IdeServices ()
 		{
@@ -71,6 +72,7 @@ namespace MonoDevelop.Ide
 			Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => workspace = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<ProgressMonitorManager> (s => progressMonitorManager = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<TaskService> (s => taskService = s);
+			Runtime.ServiceProvider.WhenServiceInitialized<ProjectOperations> (s => projectOperations = s);
 		}
 
 		public static TextEditorService TextEditorService => Initialized (textEditorService);
@@ -98,6 +100,8 @@ namespace MonoDevelop.Ide
 		public static DocumentManager DocumentManager => Initialized (documentManager);
 
 		public static TaskService TaskService => Initialized (taskService);
+
+		public static ProjectOperations ProjectOperations => Initialized (projectOperations);
 
 		static T Initialized<T> (T s) where T : class
 		{

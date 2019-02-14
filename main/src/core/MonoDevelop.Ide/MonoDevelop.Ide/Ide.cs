@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide
 	{
 		static bool isInitialized;
 		static Workbench workbench;
-		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
 		static CommandManager commandService;
 		static IdeAppServices ideServices;
@@ -134,10 +133,8 @@ namespace MonoDevelop.Ide
 		public static Workbench Workbench {
 			get { return workbench; }
 		}
-		
-		public static ProjectOperations ProjectOperations {
-			get { return projectOperations; }
-		}
+
+		public static ProjectOperations ProjectOperations => IdeServices.ProjectOperations;
 
 		public static RootWorkspace Workspace => IdeServices.Workspace;
 
@@ -231,7 +228,7 @@ namespace MonoDevelop.Ide
 			await Runtime.GetService<RootWorkspace> ();
 
 			Counters.Initialization.Trace ("Creating Services");
-			projectOperations = await Runtime.GetService<ProjectOperations> ();
+			await Runtime.GetService<ProjectOperations> ();
 			helpOperations = new HelpOperations ();
 			ideServices = new IdeAppServices ();
 			await ideServices.Initialize ();
