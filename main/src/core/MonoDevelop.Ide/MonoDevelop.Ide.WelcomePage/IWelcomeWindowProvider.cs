@@ -31,12 +31,20 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomeWindowShowOptions
 	{
-		public WelcomeWindowShowOptions (bool closeSolution)
+		public WelcomeWindowShowOptions (bool closeSolution, bool userInitated = false)
 		{
 			CloseSolution = closeSolution;
+			UserInitiated = userInitated;
 		}
 
 		public bool CloseSolution { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the user initiated the
+		/// operation (i.e. Window->Start Window menu)
+		/// </summary>
+		/// <value><c>true</c> if user initiated; otherwise, <c>false</c>.</value>
+		public bool UserInitiated { get; set; }
 	}
 
 	[TypeExtensionPoint]
