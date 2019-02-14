@@ -1,4 +1,7 @@
 <ExtensionModel>
+	<Runtime>
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
+	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="../../../bin/Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll"/>
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
