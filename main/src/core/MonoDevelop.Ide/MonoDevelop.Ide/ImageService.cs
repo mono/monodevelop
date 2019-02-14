@@ -174,6 +174,8 @@ namespace MonoDevelop.Ide
 			return GetIcon (name).WithSize (size);
 		}
 
+		public static bool TryGetImage (ImageId imageId, out Xwt.Drawing.Image image) => TryGetImage (imageId, true, out image, out _);
+
 		public static bool TryGetImage (ImageId imageId, bool generateDefaultIcon, out Xwt.Drawing.Image image) => TryGetImage (imageId, generateDefaultIcon, out image, out _);
 
 		public static bool TryGetImage (ImageId imageId, bool generateDefaultIcon, out Xwt.Drawing.Image image, out string name)
