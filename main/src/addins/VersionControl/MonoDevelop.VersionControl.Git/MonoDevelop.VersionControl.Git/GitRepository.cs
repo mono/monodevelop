@@ -591,19 +591,24 @@ namespace MonoDevelop.VersionControl.Git
 			// TODO: Make it work differently for submodules.
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 
-			if (RootRepository.Head.IsTracking) {
-				Fetch (monitor, RootRepository.Head.Remote.Name);
+			try {
+				if (RootRepository.Head.IsTracking) {
+					Fetch (monitor, RootRepository.Head.Remote.Name);
 
-				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
-				if (GitService.UseRebaseOptionWhenPulling)
-					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
-				else
-					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
+					if (GitService.UseRebaseOptionWhenPulling)
+						Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					else
+						Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
 
-				monitor.Step (1);
+					monitor.Step (1);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Update operation failed", ex);
+				monitor.ReportError (GettextCatalog.GetString ("Update operation failed."), null);
+			} finally {
+				monitor.EndTask ();
 			}
-
-			monitor.EndTask ();
 		}
 
 		static bool HandleAuthenticationException (AuthenticationException e)
@@ -956,7 +961,10 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
 
 				RecursivelyCloneSubmodules (RootPath, monitor);
-			} finally {
+			} catch(Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Clone failed."), ex);
+			}
+			 finally {
 				monitor.EndTask ();
 			}
 		}
