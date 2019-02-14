@@ -8,6 +8,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9D360D43-0
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Core", "src\core\MonoDevelop.Core\MonoDevelop.Core.csproj", "{7525BB88-6142-4A26-93B9-A30C6983390A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{37E01D0B-8C44-441F-9F5D-56C36AB0B918} = {37E01D0B-8C44-441F-9F5D-56C36AB0B918}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Ide", "src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj", "{27096E7F-C91C-4AC6-B289-6897A701DF21}"
 EndProject
