@@ -7,6 +7,10 @@
     <ProjectGuid>{7FCDB0D9-AA7D-44E4-BE74-55312B432389}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.GtkCore</OutputPath>
+    <!--
+    This needs to be ported to Roslyn, and currently makes use of many, many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

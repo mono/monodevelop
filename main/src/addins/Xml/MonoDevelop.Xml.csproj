@@ -8,6 +8,10 @@
     <OutputType>Library</OutputType>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\Xml</OutputPath>
+    <!--
+    This needs to be ported to the new editor, and currently makes use of many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

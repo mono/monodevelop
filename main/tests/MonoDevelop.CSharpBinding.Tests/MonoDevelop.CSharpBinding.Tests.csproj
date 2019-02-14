@@ -11,6 +11,10 @@
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <OutputPath>..\..\build\tests</OutputPath>
     <RARResolveFromOutputDirectory>true</RARResolveFromOutputDirectory>
+    <!--
+    This contains many tests for the deprecated old editor APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
