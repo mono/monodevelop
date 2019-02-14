@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Result = new List<MonoDevelopMetadataReference> (),
 					Project = netProject,
 					Visited = new HashSet<string> (FilePath.PathComparer),
-					ConfigurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default,
+					ConfigurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default,
 					Token = token,
 				};
 
@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				List<MonoDevelop.Projects.AssemblyReference> references;
 				try {
-					var config = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
+					var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
 					references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting referenced projects.", e);
