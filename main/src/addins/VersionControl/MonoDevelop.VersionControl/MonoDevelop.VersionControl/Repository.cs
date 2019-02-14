@@ -225,6 +225,8 @@ namespace MonoDevelop.VersionControl
 			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
 				// We shouldn't use IEnumerable because elements don't save property modifications.
 				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ToList ();
+				foreach (var vi in res)
+					if (!vi.IsInitialized) vi.Init (this);
 				infoCache.SetStatus (res);
 				return res;
 			}
@@ -411,7 +413,9 @@ namespace MonoDevelop.VersionControl
 					foreach (var group in groups) {
 						if (Disposed)
 							break;
-						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
+						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key).ToList ();
+						foreach (var vi in status)
+							if (!vi.IsInitialized) vi.Init (this);
 						infoCache.SetStatus (status);
 					}
 
@@ -419,6 +423,8 @@ namespace MonoDevelop.VersionControl
 						if (Disposed)
 							break;
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
+						foreach (var vi in status)
+							if (!vi.IsInitialized) vi.Init (this);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
 
@@ -427,6 +433,8 @@ namespace MonoDevelop.VersionControl
 							if (Disposed)
 								continue;
 							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
+							foreach (var vi in item.Result)
+								if (!vi.IsInitialized) vi.Init (this);
 						} finally {
 							item.ResetEvent.Set ();
 						}

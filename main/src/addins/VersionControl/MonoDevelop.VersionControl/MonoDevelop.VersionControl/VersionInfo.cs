@@ -46,7 +46,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		internal bool RequiresRefresh { get; set; }
-		
+
+		internal bool IsInitialized => ownerRepository != null;
+
 		public bool IsVersioned {
 			get { return (Status & VersionStatus.Versioned) != 0; }
 		}
