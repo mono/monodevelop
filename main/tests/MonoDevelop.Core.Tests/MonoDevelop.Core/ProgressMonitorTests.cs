@@ -1,4 +1,4 @@
-﻿//
+//
 // ProgressMonitorTests.cs
 //
 // Author:
@@ -114,24 +114,44 @@ namespace MonoDevelop.Core
 		public void TestLogSynchronizationContextThroughWrites ()
 		{
 			using (var ctx = new TestSingleThreadSynchronizationContext ()) {
+				int offset;
+
 				using (var mon = new ChainedProgressMonitor (ctx)) {
 					// These call once into Write.
 					mon.Log.Write ("a");
+					Assert.AreEqual (1, ctx.CallCount);
+
 					mon.Log.Write ('a');
+					Assert.AreEqual (2, ctx.CallCount);
+
 					mon.Log.Write (new [] { 'a' }, 0, 1);
+					Assert.AreEqual (3, ctx.CallCount);
+
+					offset = 3;
+
+					// This calls twice into Write in newer versions of the BCL,
+					//  and once in older versions.
 					mon.Log.WriteLine ("a");
+					Assert.IsTrue (ctx.CallCount - offset <= 2, "WriteLine should produce 1-2 calls");
+					offset = ctx.CallCount;
 
 					// These 2 call twice into Write.
 					mon.Log.WriteLine ('a');
+					Assert.AreEqual (2, ctx.CallCount - offset);
+					offset = ctx.CallCount;
+
 					mon.Log.WriteLine (new [] { 'a' }, 0, 1);
+					Assert.AreEqual (2, ctx.CallCount - offset);
+					offset = ctx.CallCount;
 
-					Assert.AreEqual (8, ctx.CallCount);
-
+					// Flush performs one call
 					mon.Log.Flush ();
-					Assert.AreEqual (9, ctx.CallCount);
+					Assert.AreEqual (1, ctx.CallCount - offset);
+					offset = ctx.CallCount;
 				}
+
 				// Once for completed, once for Dispose.
-				Assert.AreEqual (11, ctx.CallCount);
+				Assert.AreEqual (2, ctx.CallCount - offset);
 			}
 		}
 	}

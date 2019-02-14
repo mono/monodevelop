@@ -26,7 +26,6 @@
 
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
-using NuGet.Protocol.VisualStudio;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -41,7 +40,7 @@ namespace MonoDevelop.PackageManagement
 		public static ISourceRepositoryProvider CreateSourceRepositoryProvider (ISettings settings)
 		{
 			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
-			return new SourceRepositoryProvider (packageSourceProvider, Repository.Provider.GetVisualStudio ());
+			return new SourceRepositoryProvider (packageSourceProvider, Repository.Provider.GetMonoDevelop ());
 		}
 	}
 }

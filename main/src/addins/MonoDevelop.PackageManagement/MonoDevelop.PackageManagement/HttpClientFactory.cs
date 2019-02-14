@@ -25,14 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using NuGet.Common;
 using NuGet.Configuration;
+using NuGet.Credentials;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
-using NuGet.Common;
-using NuGet.Credentials;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -47,37 +48,23 @@ namespace MonoDevelop.PackageManagement
 		{
 			var httpClient = new HttpClient (CreateHttpMessageHandler (packageSource, credentialService));
 			UserAgent.SetUserAgent (httpClient);
+			SetAcceptLanguage (httpClient);
 
 			return httpClient;
 		}
 
+		static void SetAcceptLanguage (HttpClient httpClient)
+		{
+			string acceptLanguage = CultureInfo.CurrentUICulture.ToString ();
+			if (!string.IsNullOrEmpty (acceptLanguage)) {
+				httpClient.DefaultRequestHeaders.AcceptLanguage.ParseAdd (acceptLanguage);
+			}
+		}
+
 		static HttpMessageHandler CreateHttpMessageHandler (PackageSource packageSource, ICredentialService credentialService)
 		{
-			var proxy = ProxyCache.Instance.GetProxy (packageSource.SourceUri);
-
-			var clientHandler = new HttpClientHandler {
-				Proxy = proxy,
-				AutomaticDecompression = (DecompressionMethods.GZip | DecompressionMethods.Deflate)
-			};
-
-			HttpMessageHandler messageHandler = clientHandler;
-
-			if (proxy != null) {
-				messageHandler = new ProxyAuthenticationHandler (clientHandler, credentialService, ProxyCache.Instance);
-			}
-
-			HttpMessageHandler innerHandler = messageHandler;
-			messageHandler = new StsAuthenticationHandler (packageSource, TokenStore.Instance) {
-				InnerHandler = messageHandler
-			};
-
-			innerHandler = messageHandler;
-
-			messageHandler = new HttpSourceAuthenticationHandler (packageSource, clientHandler, credentialService) {
-				InnerHandler = innerHandler
-			};
-
-			return messageHandler;
+			HttpHandlerResourceV3 resource = MonoDevelopHttpHandlerResourceV3Provider.CreateResource (packageSource, credentialService, nonInteractive: true);
+			return resource.MessageHandler;
 		}
 
 		public static ICredentialService CreateNonInteractiveCredentialService ()
