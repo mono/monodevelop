@@ -39,7 +39,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include=Moq"" Version="4.7.145" />
+    <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="Mono.Cecil" Version="$(NuGetVerionCecil)" />
   </ItemGroup>
