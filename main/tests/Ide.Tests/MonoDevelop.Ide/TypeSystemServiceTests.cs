@@ -269,6 +269,36 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		[Test]
+		public async Task WorkspaceManagerFunctionalityTesting ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol1 = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var sol2 = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				await RunIteration (sol1, sol2);
+				await RunIteration (sol2, sol1);
+			}
+
+			async Task RunIteration (Solution sol1, Solution sol2)
+			{
+				try {
+					// The first workspace registration will be a primary workspace one.
+					var primaryWorkspace = await TypeSystemServiceTestExtensions.LoadSolution (sol1);
+
+					Assert.IsTrue (primaryWorkspace.IsPrimaryWorkspace);
+
+					// The secondary and others will not be.
+					var secondaryWorkspace = await TypeSystemServiceTestExtensions.LoadSolution (sol2);
+
+					Assert.IsFalse (secondaryWorkspace.IsPrimaryWorkspace);
+				} finally {
+					// Unload in reverse order to test insertion of primary workspace at the beginning.
+					TypeSystemServiceTestExtensions.UnloadSolution (sol2);
+					TypeSystemServiceTestExtensions.UnloadSolution (sol1);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Tests that if the parser takes a long time to return a projection it is ignored instead
 		/// of being used by the type system.

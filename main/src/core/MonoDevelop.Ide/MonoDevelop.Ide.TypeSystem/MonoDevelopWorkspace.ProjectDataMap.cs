@@ -48,6 +48,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				Workspace = workspace;
 			}
 
+			internal void Clear()
+			{
+				lock (gate) {
+					foreach (var kvp in projectIdToMdProjectMap) {
+						var projectId = kvp.Key;
+						RemoveProject (projectId);
+						RemoveData (projectId);
+					}
+				}
+			}
+
 			internal ProjectId GetId (MonoDevelop.Projects.Project p)
 			{
 				lock (gate) {
@@ -85,17 +96,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal void RemoveProject (MonoDevelop.Projects.Project project, ProjectId id)
+			internal MonoDevelop.Projects.Project RemoveProject (ProjectId id)
 			{
+				MonoDevelop.Projects.Project actualProject;
+
 				lock (gate) {
-					if (projectIdMap.TryGetValue (project, out ProjectId val))
-						projectIdMap.Remove (project);
-					projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (val);
+					if (projectIdToMdProjectMap.TryGetValue (id, out actualProject)) {
+						projectIdMap.Remove (actualProject);
+						projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (id);
+					}
 				}
 
 				lock (updatingProjectDataLock) {
 					projectDataMap.Remove (id);
 				}
+				return actualProject;
 			}
 
 			internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)

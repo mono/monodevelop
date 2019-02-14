@@ -41,10 +41,50 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static partial class TypeSystemService
 	{
+		class WorkspaceManager
+		{
+			readonly List<MonoDevelopWorkspace> reusableWorkspaces = new List<MonoDevelopWorkspace> ();
+
+			public MonoDevelopWorkspace Get (MonoDevelop.Projects.Solution solution)
+			{
+				lock (reusableWorkspaces) {
+					MonoDevelopWorkspace workspace;
+
+					// Get the last available workspace.
+					if (reusableWorkspaces.Count > 0) {
+						int index = reusableWorkspaces.Count - 1;
+
+						workspace = reusableWorkspaces [index];
+						reusableWorkspaces.RemoveAt (index);
+					} else
+						workspace = new MonoDevelopWorkspace (solution);
+
+					workspace.SetSolution (solution);
+					return workspace;
+				}
+			}
+
+			public void Put (MonoDevelopWorkspace workspace)
+			{
+				lock (reusableWorkspaces) {
+					workspace.SetSolution (null);
+
+					// We want the primary workspace to have priority on being used, which would be at the end, otherwise insert before it.
+					int index = 0;
+					if (reusableWorkspaces.Count > 0)
+						index = workspace.IsPrimaryWorkspace ? reusableWorkspaces.Count : reusableWorkspaces.Count - 1;
+
+					reusableWorkspaces.Insert (index, workspace);
+				}
+			}
+		}
+
 		//Internal for unit test
 		internal static readonly MonoDevelopWorkspace emptyWorkspace;
 
 		static object workspaceLock = new object();
+
+		static WorkspaceManager workspaceManager = new WorkspaceManager ();
 		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
 		static ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> workspaceRequests = new ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> ();
 
@@ -135,7 +175,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is MonoDevelop.Projects.Solution solution) {
-				var workspace = new MonoDevelopWorkspace (solution);
+				var workspace = workspaceManager.Get (solution);
 				lock (workspaceLock)
 					workspaces = workspaces.Add (workspace);
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -176,7 +216,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (result != emptyWorkspace) {
 						lock (workspaceLock)
 							workspaces = workspaces.Remove (result);
-						result.Dispose ();
+						workspaceManager.Put (result);
 					}
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
 					solution.SolutionItemRemoved -= OnSolutionItemRemoved;

@@ -81,7 +81,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
-		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; }
+		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
+
+		internal bool IsPrimaryWorkspace => ProjectHandler.IsPrimaryWorkspace;
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
@@ -102,7 +104,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelopWorkspace (MonoDevelop.Projects.Solution solution) : base (HostServices, WorkspaceKind.Host)
 		{
-			this.MonoDevelopSolution = solution;
+			SetSolution (solution);
+
 			this.Id = WorkspaceId.Next ();
 
 			Projections = new ProjectionData ();
@@ -112,7 +115,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			manager = new Lazy<MonoDevelopMetadataReferenceManager> (() => Services.GetService<MonoDevelopMetadataReferenceManager> ());
 			metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (MetadataReferenceManager, ProjectMap));
 
-			if (IdeApp.Workspace != null && solution != null) {
+			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}
 			backgroundCompiler = new BackgroundCompiler (this);
@@ -146,8 +149,31 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var factory in AddinManager.GetExtensionObjects<Microsoft.CodeAnalysis.Options.IDocumentOptionsProviderFactory>("/MonoDevelop/Ide/TypeService/OptionProviders"))
 				Services.GetRequiredService<Microsoft.CodeAnalysis.Options.IOptionService> ().RegisterDocumentOptionsProvider (factory.Create (this));
 
-			if (solution != null)
-				DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+		}
+
+		internal void SetSolution (MonoDevelop.Projects.Solution solution)
+		{
+			if (MonoDevelopSolution == solution)
+				return;
+
+			MonoDevelopSolution = solution;
+			OnSolutionRemoved ();
+
+			// We don't want to do anything else.
+			if (solution == null) {
+				return;
+			}
+
+			// The OnSolutionAdded is handled by the ProjectSystemHandler once the actual load is done.
+
+			DesktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged;
+		}
+
+		// This is called by OnSolutionRemoved.
+		protected override void ClearSolutionData ()
+		{
+			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
+			base.ClearSolutionData ();
 		}
 
 		bool lowMemoryLogged;
@@ -318,6 +344,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
+			if (MonoDevelopSolution == null)
+				return;
+
 			ShowStatusIcon ();
 			CancelLoad ();
 			var token = src.Token;
@@ -1110,15 +1139,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var id = GetProjectId (project);
 			if (id != null) {
-				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
-					ClearOpenDocument (docId);
-				}
-
-				ProjectMap.RemoveProject (project, id);
-				UnloadMonoProject (project);
-
 				OnProjectRemoved (id);
 			}
+		}
+
+		// This is called by OnProjectRemoved.
+		protected override void ClearProjectData (ProjectId projectId)
+		{
+			var actualProject = ProjectMap.RemoveProject (projectId);
+			UnloadMonoProject (actualProject);
+
+			base.ClearProjectData (projectId);
 		}
 
 		#region Project modification handlers

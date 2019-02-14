@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
 			IDisposable persistentStorageLocationServiceRegistration;
 
+			internal bool IsPrimaryWorkspace => persistentStorageLocationServiceRegistration != null;
+
 			bool added;
 			readonly object addLock = new object ();
 
