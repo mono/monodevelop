@@ -1,4 +1,8 @@
 <ExtensionModel>
+	<Runtime>
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Controls.macOS.dll" />
+	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Language.dll" />
