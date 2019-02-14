@@ -13,10 +13,10 @@ namespace MonoDevelop.SourceEditor
     public interface IMDSpaceReservationAgent
     {
         /// <summary>
-        /// Positions and displays the contents of the the <see cref="ISpaceReservationAgent"/>.
+        /// Positions and displays the contents of the the <see cref="IMDSpaceReservationAgent"/>.
         /// </summary>
         /// <param name="reservedSpace">Currently reserved space.</param>
-        /// <returns>The space. If null is returned, the <see cref="ISpaceReservationManager"/> will remove the agent.</returns>
+        /// <returns>The space. If null is returned, the <see cref="IMDSpaceReservationManager"/> will remove the agent.</returns>
         /// <remarks>If an agent does not want to be removed, but also does not wish to request any additional space, it can return a non-null but empty Geometry.</remarks>
         Geometry PositionAndDisplay(Geometry reservedSpace);
 
