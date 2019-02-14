@@ -299,6 +299,23 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		[Test]
+		public async Task WorkspaceManagerClearsData ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol1 = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var primaryWorkspace = await TypeSystemServiceTestExtensions.LoadSolution (sol1);
+
+				var solution = primaryWorkspace.CurrentSolution;
+
+				TypeSystemServiceTestExtensions.UnloadSolution (sol1);
+
+				Assert.AreNotSame (solution, primaryWorkspace.CurrentSolution);
+				Assert.IsNull (primaryWorkspace.MonoDevelopSolution);
+				Assert.AreEqual (0, primaryWorkspace.CurrentSolution.Projects.Count ());
+			}
+		}
+
 		/// <summary>
 		/// Tests that if the parser takes a long time to return a projection it is ignored instead
 		/// of being used by the type system.
