@@ -340,6 +340,8 @@ namespace MonoDevelop.Core
 		public static void NotifyFilesRemoved (IEnumerable<FilePath> files)
 		{
 			try {
+				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
+					fsFiles.Key.NotifyFilesChanged (fsFiles);
 				OnFileRemoved (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File remove notification failed", ex);
@@ -349,6 +351,8 @@ namespace MonoDevelop.Core
 		internal static void NotifyDirectoryRenamed (string oldPath, string newPath)
 		{
 			try {
+				var file = GetFileSystemForPath (newPath, false);
+				file.NotifyFilesChanged (new List<FilePath> { newPath });
 				OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, true));
 				OnFileCreated (new FileEventArgs (newPath, true));
 				OnFileRemoved (new FileEventArgs (oldPath, true));
@@ -376,10 +380,13 @@ namespace MonoDevelop.Core
 		/// </summary>
 		internal static void NotifyFileRenamedExternally (string oldPath, string newPath)
 		{
+			var file = GetFileSystemForPath (newPath, false);
+			file.NotifyFilesChanged (new List<FilePath> { newPath });
+
 			OnFileRenamed (new FileCopyEventArgs (oldPath, newPath, false) { IsExternal = true });
 		}
 
-/*
+		/*
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
 		public static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
@@ -414,7 +421,8 @@ namespace MonoDevelop.Core
 			if (result.Length == 0)
 				return ".";
 			return result.ToString ();
-		}*/
+		}
+		*/
 
 		static bool IsSeparator (char ch)
 		{
