@@ -53,6 +53,7 @@ using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CodeActions
 {
+	[Obsolete ("Old editor")]
 	internal static class CodeFixMenuService
 	{
 		public static CodeFixMenu CreateFixMenu (Ide.Editor.TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))

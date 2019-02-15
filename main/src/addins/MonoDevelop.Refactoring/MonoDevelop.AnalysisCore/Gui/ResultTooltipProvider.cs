@@ -48,6 +48,7 @@ using System.Windows.Input;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+	[Obsolete ("Old editor")]
 	partial class ResultTooltipProvider : TooltipProvider
 	{
 		#region ITooltipProvider implementation 

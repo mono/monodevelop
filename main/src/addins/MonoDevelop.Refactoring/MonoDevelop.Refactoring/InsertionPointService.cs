@@ -1,4 +1,4 @@
-﻿//
+//
 // InsertionPointService.cs
 //
 // Author:
@@ -37,6 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
+	[Obsolete ("Not supported in new editor")]
 	public static class InsertionPointService
 	{
 		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, SemanticModel model, ITypeSymbol type, Location location)
