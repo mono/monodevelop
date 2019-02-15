@@ -7,6 +7,8 @@
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.AzureFunctions/azure-functions-cli
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.UnitTesting/NUnit3/Mono.Cecil.dll
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.UnitTesting/VsTestConsole/Microsoft.VisualStudio.QualityTools.Common.dll
+!Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.UnitTesting/VsTestConsole/Extensions/Microsoft.TestPlatform.TestHostRuntimeProvider.dll
+!Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.UnitTesting/VsTestConsole/Extensions/Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.Unity/Editor
 !Contents/Resources/lib/monodevelop/AddIns/Xamarin.Ide.Identity
 !Contents/Resources/lib/monodevelop/AddIns/Xamarin.Interactive.XS/Xamarin Inspector.app

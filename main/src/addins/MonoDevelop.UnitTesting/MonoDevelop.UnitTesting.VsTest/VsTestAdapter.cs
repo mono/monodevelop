@@ -210,6 +210,8 @@ namespace MonoDevelop.UnitTesting.VsTest
 		{
 			string vsTestConsoleExeFolder = Path.Combine (Path.GetDirectoryName (typeof (VsTestAdapter).Assembly.Location), "VsTestConsole");
 			string vsTestConsoleExe = Path.Combine (vsTestConsoleExeFolder, "vstest.console.exe");
+			if (!File.Exists (vsTestConsoleExe))
+				LoggingService.LogError ("vstest.console.exe not found : " + vsTestConsoleExe);
 			var executionCommand = Runtime.ProcessService.CreateCommand (vsTestConsoleExe);
 			executionCommand.Arguments = GetVSTestArguments (vsTestConsoleExe, port);
 			executionCommand.WorkingDirectory = vsTestConsoleExeFolder;
