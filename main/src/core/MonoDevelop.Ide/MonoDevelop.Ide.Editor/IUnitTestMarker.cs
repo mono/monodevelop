@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Old editor")]
 	public interface IUnitTestMarker : ITextLineMarker
 	{
 		UnitTestLocation UnitTest { get; }
@@ -10,6 +11,7 @@ namespace MonoDevelop.Ide.Editor
 		void UpdateState ();
 	}
 
+	[Obsolete ("Old editor")]
 	public abstract class UnitTestMarkerHost
 	{
 		public abstract Xwt.Drawing.Image GetStatusIcon (string unitTestIdentifier, string caseId = null);
@@ -20,6 +22,7 @@ namespace MonoDevelop.Ide.Editor
 		public abstract void PopupContextMenu (UnitTestLocation unitTest, int x, int y);
 	}
 
+	[Obsolete ("Old editor")]
 	public class UnitTestLocation
 	{
 		public int Offset { get; set; }

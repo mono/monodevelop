@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextSegmentMarker.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	public interface ITextSegmentMarker : ISegment
 	{
 		bool IsVisible {
@@ -47,7 +48,9 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler<TextMarkerMouseEventArgs> MouseHover;
 	}
 
-	public enum TextSegmentMarkerEffect {
+	[Obsolete ("Use Visual Studio Editor APIs")]
+	public enum TextSegmentMarkerEffect
+	{
 		/// <summary>
 		/// The region is marked as waved underline.
 		/// </summary>
@@ -74,6 +77,7 @@ namespace MonoDevelop.Ide.Editor
 		Background
 	}
 
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	public interface IGenericTextSegmentMarker : ITextSegmentMarker
 	{
 		TextSegmentMarkerEffect Effect { get; }
@@ -81,11 +85,13 @@ namespace MonoDevelop.Ide.Editor
 		HslColor Color { get; set; }
 	}
 
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	public interface IErrorMarker : ITextSegmentMarker
 	{
 		Error Error { get; }
 	}
 
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	public interface ISmartTagMarker : ITextSegmentMarker
 	{
 		bool IsInsideSmartTag (double x, double y);
@@ -94,6 +100,7 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler CancelPopup;
 	}
 
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	public interface ILinkTextMarker : ITextSegmentMarker
 	{
 		bool OnlyShowLinkOnHover { get; set; }
