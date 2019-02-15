@@ -166,7 +166,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		{
 			if (IdeApp.Workbench?.ActiveDocument == null)
 				return "";
-			var ws = IdeApp.Workbench.ActiveDocument.RoslynWorkspace;
+			var ws = IdeApp.Workbench.ActiveDocument.DocumentContext.RoslynWorkspace;
 
 			var displayService = ws.Services.GetLanguageServices (LanguageNames.CSharp).GetService<ISymbolDisplayService> ();
 

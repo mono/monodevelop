@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpFormattingPolicy.cs
 //  
 // Author:
@@ -33,11 +33,12 @@ using System.Text;
 using System.Linq;
 using MonoDevelop.Projects.Policies;
 using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -99,8 +100,11 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static CSharpFormattingPolicy ()
 		{
-			if (!PolicyService.InvariantPolicies.ReadOnly)
-				 PolicyService.InvariantPolicies.Set<CSharpFormattingPolicy> (new CSharpFormattingPolicy (), "text/x-csharp");
+			Runtime.ServiceProvider.WhenServiceInitialized<TypeSystemService> (s => {
+				// Avoid deadlock in the creation of CSharpFormattingPolicy
+				if (!PolicyService.InvariantPolicies.ReadOnly)
+					PolicyService.InvariantPolicies.Set<CSharpFormattingPolicy> (new CSharpFormattingPolicy (), "text/x-csharp");
+			});
 		}
 		
 		public CSharpFormattingPolicy (OptionSet options)
@@ -602,7 +606,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public CSharpFormattingPolicy ()
 		{
-			this.options = TypeSystemService.Workspace?.Options;
+			this.options = IdeApp.TypeSystemService.Workspace?.Options;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

@@ -1,4 +1,4 @@
-//
+﻿//
 // BasicChart.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using System.Collections;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Chart
 {
@@ -631,7 +632,7 @@ namespace MonoDevelop.Components.Chart
 			
 			if (showLabels) {
 				layout = new Pango.Layout (this.PangoContext);
-				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+				layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			}
 			
 			bool isX = pos == AxisPosition.Top || pos == AxisPosition.Bottom;
@@ -768,7 +769,7 @@ namespace MonoDevelop.Components.Chart
 		{
 			int max = 0;
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+			layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			
 			double start = GetStart (ad);
 			double end = GetEnd (ad);
@@ -881,7 +882,7 @@ namespace MonoDevelop.Components.Chart
 
 					if (text != null && text.Length > 0) {
 						Pango.Layout layout = new Pango.Layout (this.PangoContext);
-						layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+						layout.FontDescription = IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 						layout.SetMarkup (text);
 
 						int tw, th;

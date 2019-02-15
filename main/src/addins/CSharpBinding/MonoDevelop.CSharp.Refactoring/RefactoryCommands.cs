@@ -70,13 +70,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		protected override async Task UpdateAsync (CommandArrayInfo ainfo, CancellationToken cancelToken)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = doc.DocumentContext.AnalysisDocument;
 			if (doc == null || doc.FileName == FilePath.Null || analysisDocument == null)
 				return;
 			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancelToken);
 			if (semanticModel == null)
 				return;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
 					foreach (var part in type.Locations) {
 						var loc = part.GetLineSpan ();
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), loc.StartLinePosition.Line + 1), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Project)));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), loc.StartLinePosition.Line + 1), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Owner)));
 					}
 					ainfo.Add (declSet);
 				} else {
@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
-			if (doc.HasProject && sym != null) {
+			if (doc.DocumentContext.HasProject && sym != null) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
 
 					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {

@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {

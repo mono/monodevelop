@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 						data.InsertText (data.Length, ch.ToString ());
 					}
 				}
-				var model = await doc.AnalysisDocument.GetSemanticModelAsync ();
+				var model = await doc.DocumentContext.AnalysisDocument.GetSemanticModelAsync ();
 				var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
 				var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
 				if (type != null) {

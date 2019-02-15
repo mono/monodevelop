@@ -81,7 +81,7 @@ namespace MonoDevelop.CSharp
 		internal static async void Run (Ide.Gui.Document doc)
 		{
 			var selectionRange = doc.Editor.SelectionRange;
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = doc.DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
 			var model = await analysisDocument.GetSemanticModelAsync ();
@@ -125,7 +125,7 @@ namespace MonoDevelop.CSharp
 		internal static async Task Run (Ide.Gui.Document doc)
 		{
 			var selectionRange = doc.Editor.CaretOffset;
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = doc.DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
 			var parsedDocument = await analysisDocument.GetSyntaxTreeAsync ();

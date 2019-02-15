@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Navigation
 		{
 			if (doc == null)
 				return null;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor);
 
 			if (info.Node?.Parent.IsKind (SyntaxKind.SimpleBaseType) != true)
 				return null;

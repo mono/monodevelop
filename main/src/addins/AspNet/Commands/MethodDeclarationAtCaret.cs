@@ -61,7 +61,7 @@ namespace MonoDevelop.AspNet.Commands
 
 		public static MethodDeclarationAtCaret Create (MonoDevelop.Ide.Gui.Document doc)
 		{
-			var parsedDocument = doc.AnalysisDocument;
+			var parsedDocument = doc.DocumentContext.AnalysisDocument;
 			if (parsedDocument == null)
 				return NullMethodDeclaration;
 

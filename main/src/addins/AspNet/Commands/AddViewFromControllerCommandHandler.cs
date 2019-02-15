@@ -43,7 +43,7 @@ namespace MonoDevelop.AspNet.Commands
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var project = (DotNetProject)doc.Project;
+			var project = (DotNetProject)doc.Owner;
 
 			var method = MethodDeclarationAtCaret.Create (doc);
 			string controllerName = method.GetParentMvcControllerName ();

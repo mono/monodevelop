@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FindReferencesHandler.cs
 //  
 // Author:
@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 				owningMonitor = true;
 			}
-			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
+			var workspace = IdeApp.TypeSystemService.Workspace as MonoDevelopWorkspace;
 			if (workspace == null)
 				return Task.CompletedTask;
 			return Task.Run (async delegate {
@@ -197,11 +197,11 @@ namespace MonoDevelop.CSharp.Refactoring
 		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
+			if (doc == null || doc.FileName == FilePath.Null || doc.DocumentContext.ParsedDocument == null) {
 				info.Enabled = false;
 				return;
 			}
-			info.Enabled = doc.AnalysisDocument != null;
+			info.Enabled = doc.DocumentContext.AnalysisDocument != null;
 		}
 
 		public void Run (object data)
@@ -210,11 +210,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null) {
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-					FindRefs (new [] { SymbolAndProjectId.Create (sym, doc.AnalysisDocument.Project.Id) }, doc.AnalysisDocument.Project.Solution).Ignore ();
+					FindRefs (new [] { SymbolAndProjectId.Create (sym, doc.DocumentContext.AnalysisDocument.Project.Id) }, doc.DocumentContext.AnalysisDocument.Project.Solution).Ignore ();
 				} else {
 					RefactoringService.FindReferencesAsync (FilterSymbolForFindReferences (sym).GetDocumentationCommentId ()).Ignore ();
 				}
@@ -236,11 +236,11 @@ namespace MonoDevelop.CSharp.Refactoring
 		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
+			if (doc == null || doc.FileName == FilePath.Null || doc.DocumentContext.ParsedDocument == null) {
 				info.Enabled = false;
 				return;
 			}
-			info.Enabled = doc.AnalysisDocument != null;
+			info.Enabled = doc.DocumentContext.AnalysisDocument != null;
 		}
 
 		public void Run (object data)
@@ -249,11 +249,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc.DocumentContext, doc.Editor).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null) {
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
-					FindReferencesHandler.FindRefs (new [] { SymbolAndProjectId.Create (sym, doc.AnalysisDocument.Project.Id) }, doc.AnalysisDocument.Project.Solution).Ignore ();
+					FindReferencesHandler.FindRefs (new [] { SymbolAndProjectId.Create (sym, doc.DocumentContext.AnalysisDocument.Project.Id) }, doc.DocumentContext.AnalysisDocument.Project.Solution).Ignore ();
 				} else {
 					RefactoringService.FindAllReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ()).Ignore ();
 				}

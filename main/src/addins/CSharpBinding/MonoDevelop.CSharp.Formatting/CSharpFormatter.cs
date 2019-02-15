@@ -1,4 +1,4 @@
-//
+﻿//
 // CSharpFormatter.cs
 //
 // Author:
@@ -24,30 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Editor.Shared.Preview;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Shared.Extensions;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects.Policies;
 using Roslyn.Utilities;
 using System.Threading;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.CSharp.OptionProvider;
-using Microsoft.VisualStudio.CodingConventions;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Formatting.Rules;
 using MonoDevelop.Ide.Completion.Presentation;
@@ -70,7 +62,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
-			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Wait ();
+			CorrectIndentingImplementationAsync (editor, doc.DocumentContext, line, line, default).Wait ();
 		}
 
 		protected async override Task CorrectIndentingImplementationAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
@@ -130,14 +122,14 @@ namespace MonoDevelop.CSharp.Formatting
 			var inputTree = CSharpSyntaxTree.ParseText (input);
 
 			var root = inputTree.GetRoot ();
-			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, optionSet);
+			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), IdeApp.TypeSystemService.Workspace, optionSet);
 			var result = doc.ToFullString ();
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
 		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
-			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var chain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (chain);
 			var textPolicy = policyParent.Get<TextStylePolicy> (chain);
 			var optionSet = policy.CreateOptions (textPolicy);

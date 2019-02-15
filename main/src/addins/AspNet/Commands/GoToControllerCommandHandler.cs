@@ -1,4 +1,4 @@
-//
+﻿//
 // GoToControllerCommandHandler.cs
 //
 // Author:
@@ -42,11 +42,11 @@ namespace MonoDevelop.AspNet.Commands
 		protected override void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.Project == null) {
+			if (doc == null || doc.Owner == null) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
-			var aspFlavor = doc.Project.GetService<AspNetAppProjectFlavor> ();
+			var aspFlavor = doc.Owner.GetService<AspNetAppProjectFlavor> ();
 			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
@@ -60,17 +60,17 @@ namespace MonoDevelop.AspNet.Commands
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var name = doc.FileName.ParentDirectory.FileName;
-			var controller = await FindController (doc.Project, name);
+			var controller = await FindController ((MonoDevelop.Projects.Project)doc.Owner, name);
 
 			if (controller != null)
-				await RefactoringService.RoslynJumpToDeclaration (controller, doc.Project);
+				await RefactoringService.RoslynJumpToDeclaration (controller, doc.Owner);
 			else
 				MessageService.ShowError (GettextCatalog.GetString ("Matching controller cannot be found."));
 		}
 
 		async Task<INamedTypeSymbol> FindController (MonoDevelop.Projects.Project project, string name)
 		{
-			var compilation = await TypeSystemService.GetCompilationAsync (project);
+			var compilation = await IdeApp.TypeSystemService.GetCompilationAsync (project);
 			if (compilation == null)
 				return null;
 
