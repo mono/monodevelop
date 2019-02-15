@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			eventTracker.Reset ();
 
-			bool result = await doc.Close (true);
+			bool result = await doc.Close ();
 			Assert.IsFalse (result);
 
 			Assert.AreEqual (1, shell.Windows.Count);

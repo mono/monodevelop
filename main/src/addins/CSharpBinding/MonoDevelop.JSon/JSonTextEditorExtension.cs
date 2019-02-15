@@ -52,7 +52,7 @@ namespace MonoDevelop.JSon
 			if (!jsonExtensionInstalled)
 			{
 				IStateMachineIndentEngine indentEngine;
-				indentEngine = new JSonIndentEngine(Editor, DocumentContext);
+				indentEngine = new JSonIndentEngine(Editor);
 				stateTracker = new CacheIndentEngine(indentEngine);
 				Editor.IndentationTracker = new JSonIndentationTracker(Editor, stateTracker);
 			}

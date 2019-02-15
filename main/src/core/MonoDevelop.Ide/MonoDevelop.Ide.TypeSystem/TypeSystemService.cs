@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Gtk.Application.Invoke ((o, args) => {
 						if (documentManager != null) {
 							foreach (var w in documentManager.Documents)
-								w.DocumentContext.ReparseDocument ();
+								w.DocumentContext?.ReparseDocument ();
 						}
 					});
 				} catch (Exception) { }

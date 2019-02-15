@@ -466,7 +466,7 @@ namespace MonoDevelop.Ide.Gui
 			var args = new DocumentCloseEventArgs (this, force, wasActive);
 			args.Cancel = false;
 			await OnClosing (args);
-			if (args.Cancel)
+			if (!force && args.Cancel)
 				return false;
 
 			// Show the File not Saved UI

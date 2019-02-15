@@ -77,7 +77,7 @@ namespace MonoDevelop.SourceEditor
 					TabSize = 4
 				};
 
-				var csi = new JSonIndentEngine (content.Editor, test.testCase.Document.DocumentContext);
+				var csi = new JSonIndentEngine (content.Editor);
 				var result = new CacheIndentEngine (csi);
 				result.Update (content.Editor, offset);
 				test.Engine = result;

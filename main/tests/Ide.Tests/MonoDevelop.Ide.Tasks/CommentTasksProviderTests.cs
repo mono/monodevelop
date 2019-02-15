@@ -51,6 +51,12 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 
+		[TearDown]
+		public void TearDown ()
+		{
+			CommentTasksProvider.ResetCachedContents (null);
+		}
+
 		[TestCase(false)]
 		[TestCase(true)]
 		public async Task TestToDoCommentsAreReported (bool withToDos)
