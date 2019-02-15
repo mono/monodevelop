@@ -321,17 +321,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 		}
 
-		[Obsolete]
+
 		protected override bool OnPagerLeftClicked ()
 		{
+#pragma warning disable CS0612 // Type or member is obsolete
 			OverloadLeft ();
+#pragma warning restore CS0612 // Type or member is obsolete
 			return base.OnPagerLeftClicked ();
 		}
 
-		[Obsolete]
 		protected override bool OnPagerRightClicked ()
 		{
+#pragma warning disable CS0612 // Type or member is obsolete
 			OverloadRight ();
+#pragma warning restore CS0612 // Type or member is obsolete
 			return base.OnPagerRightClicked ();
 		}
 
