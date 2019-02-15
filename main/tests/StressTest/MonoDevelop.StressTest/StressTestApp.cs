@@ -56,7 +56,7 @@ namespace MonoDevelop.StressTest
 		public int Iterations { get; set; } = 1;
 		ProfilerProcessor profilerProcessor;
 
-		const int cleanupIteration = int.MaxValue;
+		const int cleanupIteration = int.MinValue;
 
 		public void Start ()
 		{
@@ -91,6 +91,8 @@ namespace MonoDevelop.StressTest
 			for (int i = 0; i < Iterations; ++i) {
 				scenario.Run ();
 				ReportMemoryUsage (i);
+				// This is to prevent leaking of AppQuery instances.
+				TestService.Session.DisconnectQueries ();
 			}
 
 			UserInterfaceTests.Ide.CloseAll (exit: false);
