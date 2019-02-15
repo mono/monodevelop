@@ -101,7 +101,7 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			// Process is still alive hence we succesfully connected inside loop to web server, launch browser
-			DesktopService.ShowUrl (launchUri.AbsoluteUri);
+			IdeServices.DesktopService.ShowUrl (launchUri.AbsoluteUri);
 		}
 	}
 }

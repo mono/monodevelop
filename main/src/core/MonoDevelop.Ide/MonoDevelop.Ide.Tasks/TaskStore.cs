@@ -469,7 +469,7 @@ namespace MonoDevelop.Ide.Tasks
 				return false;
 
 			//only files for which we have a default internal display binding
-			var binding = IdeApp.Services.DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
+			var binding = IdeServices.DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
 			if (binding == null || !binding.CanUseAsDefault || binding is IExternalDisplayBinding)
 				return false;
 

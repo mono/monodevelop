@@ -107,13 +107,13 @@ namespace MonoDevelop.Ide
 		/// Font to use for treeview pads. Returns null if no custom font is set.
 		/// </summary>
 		public ConfigurationProperty<Pango.FontDescription> CustomPadFont => customPadFont.Value;
-		readonly Lazy<ConfigurationProperty<Pango.FontDescription>> customPadFont = new Lazy<ConfigurationProperty<Pango.FontDescription>> (() => IdeApp.FontService.GetFontProperty ("Pad"));
+		readonly Lazy<ConfigurationProperty<Pango.FontDescription>> customPadFont = new Lazy<ConfigurationProperty<Pango.FontDescription>> (() => IdeServices.FontService.GetFontProperty ("Pad"));
 
 		/// <summary>
 		/// Font to use for output pads. Returns null if no custom font is set.
 		/// </summary>
 		public ConfigurationProperty<Pango.FontDescription> CustomOutputPadFont => customOutputPadFont.Value;
-		readonly Lazy<ConfigurationProperty<Pango.FontDescription>> customOutputPadFont = new Lazy<ConfigurationProperty<Pango.FontDescription>> (() => IdeApp.FontService.GetFontProperty ("OutputPad"));
+		readonly Lazy<ConfigurationProperty<Pango.FontDescription>> customOutputPadFont = new Lazy<ConfigurationProperty<Pango.FontDescription>> (() => IdeServices.FontService.GetFontProperty ("OutputPad"));
 
 		public readonly ConfigurationProperty<bool> EnableCompletionCategoryMode = ConfigurationProperty.Create ("EnableCompletionCategoryMode", false);
 		public readonly ConfigurationProperty<bool> ForceSuggestionMode = ConfigurationProperty.Create ("ForceCompletionSuggestionMode", false);

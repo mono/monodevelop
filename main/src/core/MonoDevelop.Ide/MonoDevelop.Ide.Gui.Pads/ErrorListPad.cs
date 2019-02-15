@@ -1,4 +1,4 @@
-// ErrorListPad.cs
+﻿// ErrorListPad.cs
 //  
 // Author:
 //       Todd Berman <tberman@sevenl.net>
@@ -298,10 +298,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
-			TaskService.Errors.TasksRemoved += ShowResults;
-			TaskService.Errors.TasksAdded += TaskAdded;
-			TaskService.Errors.TasksChanged += TaskChanged;
-			TaskService.Errors.CurrentLocationTaskChanged += HandleTaskServiceErrorsCurrentLocationTaskChanged;
+			IdeServices.TaskService.Errors.TasksRemoved += ShowResults;
+			IdeServices.TaskService.Errors.TasksAdded += TaskAdded;
+			IdeServices.TaskService.Errors.TasksChanged += TaskChanged;
+			IdeServices.TaskService.Errors.CurrentLocationTaskChanged += HandleTaskServiceErrorsCurrentLocationTaskChanged;
 
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtn.Active = OutputViewVisible;
 
 			// Load existing tasks
-			foreach (TaskListEntry t in TaskService.Errors) {
+			foreach (TaskListEntry t in IdeServices.TaskService.Errors) {
 				AddTask (t);
 			}
 		}
@@ -347,10 +347,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.ProjectOperations.StartBuild -= OnBuildStarted;
 			IdeApp.ProjectOperations.StartClean -= OnBuildStarted;
 
-			TaskService.Errors.TasksRemoved -= ShowResults;
-			TaskService.Errors.TasksAdded -= TaskAdded;
-			TaskService.Errors.TasksChanged -= TaskChanged;
-			TaskService.Errors.CurrentLocationTaskChanged -= HandleTaskServiceErrorsCurrentLocationTaskChanged;
+			IdeServices.TaskService.Errors.TasksRemoved -= ShowResults;
+			IdeServices.TaskService.Errors.TasksAdded -= TaskAdded;
+			IdeServices.TaskService.Errors.TasksChanged -= TaskChanged;
+			IdeServices.TaskService.Errors.CurrentLocationTaskChanged -= HandleTaskServiceErrorsCurrentLocationTaskChanged;
 
 			buildOutput?.Dispose ();
 			buildOutputViewContent?.Dispose ();
@@ -404,7 +404,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
 		{
-			if (TaskService.Errors.CurrentLocationTask == null) {
+			if (IdeServices.TaskService.Errors.CurrentLocationTask == null) {
 				view.Selection.UnselectAll ();
 				return;
 			}
@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return;
 			do {
 				TaskListEntry t = (TaskListEntry)view.Model.GetValue (it, DataColumns.Task);
-				if (t == TaskService.Errors.CurrentLocationTask) {
+				if (t == IdeServices.TaskService.Errors.CurrentLocationTask) {
 					view.Selection.SelectIter (it);
 					view.ScrollToCell (view.Model.GetPath (it), view.Columns [0], false, 0, 0);
 					it = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (it));
@@ -518,7 +518,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
-					OpenBuildOutputViewDocument ();
+					await OpenBuildOutputViewDocument ();
 					if (task.Severity == TaskSeverity.Error) {
 						await buildOutputViewContent.GoToError (task.Message, task.GetProjectWithExtension ());
 					} else if (task.Severity == TaskSeverity.Warning) {
@@ -605,7 +605,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			string reference = null;
 			if (GetSelectedErrorReference (out reference) && reference != null)
-				DesktopService.ShowUrl (reference);
+				IdeServices.DesktopService.ShowUrl (reference);
 		}
 
 		bool GetSelectedErrorReference (out string reference)
@@ -640,10 +640,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				store.SetValue (iter, DataColumns.Read, true);
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
-					TaskService.ShowStatus (task);
+					IdeServices.TaskService.ShowStatus (task);
 					task.JumpToPosition ();
-					TaskService.Errors.CurrentLocationTask = task;
-					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
+					IdeServices.TaskService.Errors.CurrentLocationTask = task;
+					IdeApp.Workbench.ActiveLocationList = IdeServices.TaskService.Errors;
 				}
 			}
 		}
@@ -865,7 +865,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Clear();
 
-			AddTasks (TaskService.Errors);
+			AddTasks (IdeServices.TaskService.Errors);
 		}
 
 		private void Clear()
@@ -983,7 +983,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (view.Model.GetIterFromString (out iter, args.Path)) {
 				TaskListEntry task = (TaskListEntry)view.Model.GetValue (iter, DataColumns.Task);
 				task.Completed = !task.Completed;
-				TaskService.FireTaskToggleEvent (this, new TaskEventArgs (task));
+				IdeServices.TaskService.FireTaskToggleEvent (this, new TaskEventArgs (task));
 			}
 		}
 
@@ -1057,15 +1057,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void HandleBinLogClicked (object sender, EventArgs e)
 		{
 			if (BuildOutput.IsFeatureEnabled) {
-				OpenBuildOutputViewDocument ();
+				OpenBuildOutputViewDocument ().Ignore ();
 			}
 		}
 
-		void OpenBuildOutputViewDocument () 
+		async Task OpenBuildOutputViewDocument () 
 		{
 			if (buildOutputViewContent == null) {
 				buildOutputViewContent = new BuildOutputViewContent (buildOutput);
-				buildOutputDoc = IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
+				buildOutputDoc = await IdeApp.Workbench.OpenDocument (buildOutputViewContent, true);
 				buildOutputDoc.Closed += BuildOutputDocClosed;
 			} else if (buildOutputDoc != null) {
 				buildOutputDoc.Select ();

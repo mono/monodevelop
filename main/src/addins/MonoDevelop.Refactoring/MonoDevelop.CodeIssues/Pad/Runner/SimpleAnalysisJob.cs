@@ -1,4 +1,4 @@
-//
+﻿//
 // AbstractAnalysisJob.cs
 //
 // Author:
@@ -81,7 +81,7 @@ namespace MonoDevelop.CodeIssues
 
 		public IEnumerable<BaseCodeIssueProvider> GetIssueProviders (ProjectFile file)
 		{
-			return RefactoringService.GetInspectors (DesktopService.GetMimeTypeForUri (file.Name))
+			return RefactoringService.GetInspectors (IdeServices.DesktopService.GetMimeTypeForUri (file.Name))
 				.Where (provider => {
 					var severity = provider.GetSeverity ();
 					if (severity == Severity.None || !provider.GetIsEnabled ())

@@ -1,4 +1,4 @@
-//
+﻿//
 // ExceptionCaughtDialog.cs
 //
 // Authors: Lluis Sanchez Gual <lluis@novell.com>
@@ -116,7 +116,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			var textColor = Styles.ExceptionCaughtDialog.HeaderTextColor.ToGdkColor ();
 
 			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ());
-			ExceptionHelpLinkLabel.SetLinkHandler ((str) => DesktopService.ShowUrl (str));
+			ExceptionHelpLinkLabel.SetLinkHandler ((str) => IdeServices.DesktopService.ShowUrl (str));
 			ExceptionTypeLabel.ModifyFg (StateType.Normal, textColor);
 			ExceptionMessageLabel.ModifyFg (StateType.Normal, textColor);
 			ExceptionHelpLinkLabel.ModifyFg (StateType.Normal, textColor);
@@ -431,7 +431,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			InnerExceptionHelpLinkLabel.CanFocus = false;
 			InnerExceptionHelpLinkLabel.Xalign = 0;
 			InnerExceptionHelpLinkLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			InnerExceptionHelpLinkLabel.SetLinkHandler ((str) => DesktopService.ShowUrl (str));
+			InnerExceptionHelpLinkLabel.SetLinkHandler ((str) => IdeServices.DesktopService.ShowUrl (str));
 
 			vboxAroundInnerExceptionMessage.PackStart (hbox, false, true, 0);
 			vboxAroundInnerExceptionMessage.PackStart (InnerExceptionMessageLabel, true, true, 10);
@@ -900,7 +900,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 			if (button == null) {
 				button = new ExceptionCaughtButton (ex, this, File, Line);
-				TextEditorService.RegisterExtension (button);
+				IdeServices.TextEditorService.RegisterExtension (button);
 				button.ScrollToView ();
 			}
 			if (miniButton != null) {
@@ -922,7 +922,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			}
 			if (miniButton == null) {
 				miniButton = new ExceptionCaughtMiniButton (this, File, Line);
-				TextEditorService.RegisterExtension (miniButton);
+				IdeServices.TextEditorService.RegisterExtension (miniButton);
 				miniButton.ScrollToView ();
 			}
 		}

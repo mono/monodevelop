@@ -1,4 +1,4 @@
-//
+﻿//
 // SystemFileNodeBuilder.cs
 //
 // Author:
@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = (SystemFile) dataObject;
 			nodeInfo.Label = GLib.Markup.EscapeText (file.Name);
 			
-			nodeInfo.Icon = DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
+			nodeInfo.Icon = IdeServices.DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
 			
 			if (file.ShowTransparent) {
 				var gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");

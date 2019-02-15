@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.DesignerSupport
 {

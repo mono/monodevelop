@@ -1,4 +1,4 @@
-
+﻿
 // 
 // ComparisonWidget.cs
 //  
@@ -84,7 +84,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public override void Dispose()
 		{
-			FontService.RemoveCallback (UpdateFont);
+			IdeServices.FontService.RemoveCallback (UpdateFont);
 		}
 
 		void UpdateFont ()

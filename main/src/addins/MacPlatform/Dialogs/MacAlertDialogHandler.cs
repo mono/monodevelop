@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacAlertFileDialogHandler.cs
 //  
 // Author:
@@ -187,7 +187,7 @@ namespace MonoDevelop.MacIntegration
 					var sheet = IdeTheme.UserInterfaceTheme != Theme.Dark || MacSystemInformation.OsVersion != MacSystemInformation.HighSierra;
 
 					// We have an issue with accessibility when using sheets, so disable it here
-					sheet &= !DesktopService.AccessibilityInUse;
+					sheet &= !IdeServices.DesktopService.AccessibilityInUse;
 
 					if (!sheet || nativeParent == null) {
 						// Force the alert window to be focused for accessibility
@@ -240,7 +240,7 @@ namespace MonoDevelop.MacIntegration
 				if (nativeParent != null)
 					nativeParent.MakeKeyAndOrderFront (nativeParent);
 				else
-					DesktopService.FocusWindow (parent);
+					IdeServices.DesktopService.FocusWindow (parent);
 
 			}
 

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProjectCommentTags.cs
 //  
 // Author:
@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Tasks
 				if (list == null && oldList == null)
 					return;
 				tags[fileName] = list;
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, tagComments, project));
+				IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, tagComments, project));
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Tasks
 				tags[fileName] = null;
 			}
 			
-			TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, null, project));
+			IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, null, project));
 		}
 
 		internal async Task UpdateAsync (Project project, ProjectFile[] files, CancellationToken token = default (CancellationToken))
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Tasks
 			foreach (var file in files) {
 				if (file.BuildAction == BuildAction.None)
 					continue;
-				var pd = await TypeSystemService.ParseFile (project, file.FilePath, token).ConfigureAwait (false);
+				var pd = await IdeApp.TypeSystemService.ParseFile (project, file.FilePath, token).ConfigureAwait (false);
 				if (pd != null) {
 					var commentTagList = await pd.GetTagCommentsAsync (token).ConfigureAwait (false);
 					changes.Add (new CommentTaskChange (file.FilePath, commentTagList, project));
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			await Runtime.RunInMainThread (delegate {
 				this.tags = newTags;
-				TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
+				IdeServices.TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (changes));
 			}).ConfigureAwait (false);
 		}
 	}

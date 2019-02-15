@@ -1,4 +1,4 @@
-// 
+﻿// 
 // NavigationHistoryService.cs
 //  
 // Author:
@@ -56,8 +56,8 @@ namespace MonoDevelop.Ide.Navigation
 		public void Show ()
 		{
 			if (NavigationPoint is DocumentNavigationPoint) {
-				if (!NavigationHistoryService.IsCurrent (this))
-					NavigationHistoryService.MoveTo (this);
+				if (!IdeServices.NavigationHistoryService.IsCurrent (this))
+					IdeServices.NavigationHistoryService.MoveTo (this);
 			}
 			NavigationPoint.ShowDocument ();
 		}

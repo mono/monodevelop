@@ -31,6 +31,8 @@ using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using IdeUnitTests;
+using MonoDevelop.Ide;
+using UnitTests;
 
 namespace MonoDevelop.DotNetCore.Tests
 {

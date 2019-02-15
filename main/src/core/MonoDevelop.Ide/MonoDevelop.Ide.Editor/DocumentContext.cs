@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace
 		{
-			get { return TypeSystemService.GetWorkspace (workspaceId); }
+			get { return IdeApp.TypeSystemService.GetWorkspace (workspaceId); }
 			protected set { workspaceId = ((MonoDevelopWorkspace)value).Id; }
 		}
 

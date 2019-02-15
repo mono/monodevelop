@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -108,7 +108,7 @@ namespace MonoDevelop.MacIntegration
 					};
 
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
-						DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+						IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 						return false;
 					}
 					if (!pathAlreadySet)
@@ -124,7 +124,7 @@ namespace MonoDevelop.MacIntegration
 							state.CurrentViewers [(int)state.ViewerSelector.IndexOfSelectedItem] : null;
 					}
 
-					DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error in Open File dialog", ex);
@@ -207,7 +207,7 @@ namespace MonoDevelop.MacIntegration
 			int i = 0;
 			bool hasWorkbenchViewer = false;
 
-			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (filename)) {
+			if (IdeServices.ProjectService.IsWorkspaceItemFile (filename) || IdeServices.ProjectService.IsSolutionItemFile (filename)) {
 				button.Menu.AddItem (new NSMenuItem { Title = GettextCatalog.GetString ("Solution Workbench") });
 				currentViewers.Add (null);
 				
@@ -220,7 +220,7 @@ namespace MonoDevelop.MacIntegration
 				i++;
 			}
 			
-			foreach (var vw in DisplayBindingService.GetFileViewers (filename, null)) {
+			foreach (var vw in IdeServices.DisplayBindingService.GetFileViewers (filename, null).Result) {
 				if (!vw.IsExternal) {
 					button.Menu.AddItem (new NSMenuItem { Title = vw.Title });
 					currentViewers.Add (vw);

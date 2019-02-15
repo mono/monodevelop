@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FileProvider.cs
 //  
 // Author:
@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		Task<Document> SearchDocument ()
 		{
 			string fullPath = Path.GetFullPath (FileName);
-			return Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
+			return Runtime.RunInMainThread (() => IdeServices.DocumentManager.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
 		}
 
 		Document document;
@@ -215,9 +215,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 			if (buffer != null && somethingReplaced) {
-				object attributes = DesktopService.GetFileAttributes (FileName);
+				object attributes = IdeServices.DesktopService.GetFileAttributes (FileName);
 				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding ?? Encoding.UTF8);
-				DesktopService.SetFileAttributes (FileName, attributes);
+				IdeServices.DesktopService.SetFileAttributes (FileName, attributes);
 			}
 			buffer = null;
 		}

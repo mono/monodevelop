@@ -1,4 +1,4 @@
-// 
+﻿// 
 // SolutionFolderFileNodeBuilder.cs
 //  
 // Author:
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nodeInfo.Label = file.Name;
 			if (!System.IO.File.Exists (file.Path))
 				nodeInfo.Label = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + nodeInfo.Label + "</span>";
-			nodeInfo.Icon = DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
+			nodeInfo.Icon = IdeServices.DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
 		}
 		
 		public override object GetParentObject (object dataObject)

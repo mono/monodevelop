@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public IList<SolutionTemplate> GetTemplates ()
 		{
-			var categories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ();
+			var categories = IdeServices.TemplatingService.GetProjectTemplateCategories ();
 			return GetTemplates (categories);
 		}
 

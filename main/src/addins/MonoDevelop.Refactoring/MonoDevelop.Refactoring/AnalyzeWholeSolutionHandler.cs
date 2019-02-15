@@ -52,7 +52,7 @@ namespace MonoDevelop.Refactoring
 		{
 			var providers = new List<DiagnosticAnalyzer> ();
 			var alreadyAdded = new HashSet<Type> ();
-			var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+			var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
 			var diagnostics = options.AllDiagnostics.Where (x => x.Languages.Contains (LanguageNames.CSharp));
 			var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 			foreach (var diagnostic in diagnostics) {
@@ -115,7 +115,7 @@ namespace MonoDevelop.Refactoring
 
 		internal static async void Execute ()
 		{
-			var workspace = TypeSystemService.Workspace;
+			var workspace = IdeApp.TypeSystemService.Workspace;
 			try {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false, true, false, null, true)) {
 					CancellationToken token = monitor.CancellationToken;
@@ -147,8 +147,8 @@ namespace MonoDevelop.Refactoring
 		internal static void Report (ProgressMonitor monitor, List<Diagnostic> allDiagnostics, Projects.WorkspaceObject parent)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Reporting results..."), allDiagnostics.Count);
-			TaskService.Errors.Clear ();
-			TaskService.Errors.AddRange (allDiagnostics.Select (diagnostic => {
+			IdeServices.TaskService.Errors.Clear ();
+			IdeServices.TaskService.Errors.AddRange (allDiagnostics.Select (diagnostic => {
 				var startLinePosition = diagnostic.Location.GetLineSpan ().StartLinePosition;
 				return new TaskListEntry (
 					diagnostic.Location.SourceTree.FilePath,
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 
 		static void ShowAnalyzationResults ()
 		{
-			TaskService.ShowErrors ();
+			IdeServices.TaskService.ShowErrors ();
 			var errorsPad = IdeApp.Workbench.GetPad<ErrorListPad> ().Content as ErrorListPad;
 			errorsPad.SetFilter (true, true, true);
 		}
@@ -207,7 +207,7 @@ namespace MonoDevelop.Refactoring
 
 			public override Projects.Project Project {
 				get {
-					return TypeSystemService.GetMonoProject (project);
+					return IdeApp.TypeSystemService.GetMonoProject (project);
 				}
 			}
 

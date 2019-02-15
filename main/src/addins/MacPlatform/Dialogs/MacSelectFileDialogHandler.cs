@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -61,12 +61,12 @@ namespace MonoDevelop.MacIntegration
 		{
 			using (var panel = CreatePanel (data, out var saveState)) {
 				if (panel.RunModal () == 0) {
-					DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
 
 				data.SelectedFiles = GetSelectedFiles (panel);
-				DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+				IdeServices.DesktopService.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			}
 		}
@@ -105,9 +105,9 @@ namespace MonoDevelop.MacIntegration
 					return true;
 				
 				if (mimetypes != null) {
-					var mimetype = DesktopService.GetMimeTypeForUri (path);
+					var mimetype = IdeServices.DesktopService.GetMimeTypeForUri (path);
 					if (mimetype != null) {
-						var chain = DesktopService.GetMimeTypeInheritanceChain (mimetype);
+						var chain = IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimetype);
 						if (mimetypes.Any (m => chain.Any (c => c == m)))
 							return true;
 					}

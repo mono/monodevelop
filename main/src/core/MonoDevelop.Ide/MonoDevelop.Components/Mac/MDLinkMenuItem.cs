@@ -1,4 +1,4 @@
-//
+﻿//
 // MDLinkMenuItem.cs
 //
 // Author:
@@ -47,7 +47,7 @@ namespace MonoDevelop.Components.Mac
 		[Export (MDMenuItem.ActionSelName)]
 		public void Run (NSObject dummy)
 		{
-			MonoDevelop.Ide.DesktopService.ShowUrl (lce.Url);
+			MonoDevelop.Ide.IdeServices.DesktopService.ShowUrl (lce.Url);
 		}
 
 		public void Update (MDMenu parent, ref int index)

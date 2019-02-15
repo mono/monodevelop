@@ -748,7 +748,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string FontName {
 			get {
-				return IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
+				return IdeServices.FontService.FilterFontName (IdeServices.FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -757,7 +757,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string GutterFontName {
 			get {
-				return IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
+				return IdeServices.FontService.FilterFontName (IdeServices.FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -851,7 +851,7 @@ namespace MonoDevelop.Ide.Editor
 		
 		public void Dispose ()
 		{
-			IdeApp.FontService.RemoveCallback (UpdateFont);
+			IdeServices.FontService.RemoveCallback (UpdateFont);
 			IdeApp.Preferences.ColorScheme.Changed -= OnColorSchemeChanged;
 			if (context != null)
 				context.CodingConventionsChangedAsync -= UpdateContextOptions;

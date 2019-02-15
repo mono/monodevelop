@@ -1,4 +1,4 @@
-// ProjectFileDescriptor.cs
+﻿// ProjectFileDescriptor.cs
 //
 //Author:
 //  Lluis Sanchez Gual
@@ -90,8 +90,8 @@ namespace MonoDevelop.DesignerSupport
 		[LocalizedDescription ("Type of the file.")]
 		public string FileType {
 			get {
-				string type = DesktopService.GetMimeTypeForUri (file.Name);
-				return DesktopService.GetMimeTypeDescription (type); 
+				string type = IdeServices.DesktopService.GetMimeTypeForUri (file.Name);
+				return IdeServices.DesktopService.GetMimeTypeDescription (type); 
 			}
 		}
 		

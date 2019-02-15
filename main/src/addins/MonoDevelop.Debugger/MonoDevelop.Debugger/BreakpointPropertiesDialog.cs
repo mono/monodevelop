@@ -1,4 +1,4 @@
-//
+﻿//
 // BreakpointsPropertiesDialog.cs
 //
 // Author:
@@ -624,7 +624,7 @@ namespace MonoDevelop.Debugger
 
 				var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (project != null) {
-					var roslynProj = TypeSystemService.GetProject (project);
+					var roslynProj = IdeApp.TypeSystemService.GetProject (project);
 					if (roslynProj != null) {
 						workspace = (MonoDevelopWorkspace)roslynProj.Solution.Workspace;
 						compilation = await roslynProj.GetCompilationAsync ();

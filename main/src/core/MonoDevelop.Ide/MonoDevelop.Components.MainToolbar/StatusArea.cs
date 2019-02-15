@@ -1,4 +1,4 @@
-//
+﻿//
 // StatusArea.cs
 //
 // Author:
@@ -318,7 +318,7 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
 
-				foreach (TaskListEntry t in TaskService.Errors) {
+				foreach (TaskListEntry t in IdeServices.TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
@@ -326,7 +326,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 
-				using (var font = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11)) {
+				using (var font = IdeServices.FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11)) {
 					errors.Visible = ec > 0;
 					errors.ModifyFont (font);
 					errors.Text = ec.ToString ();
@@ -345,15 +345,15 @@ namespace MonoDevelop.Components.MainToolbar
 
 			updateHandler (null, null);
 
-			TaskService.Errors.TasksAdded += updateHandler;
-			TaskService.Errors.TasksRemoved += updateHandler;
+			IdeServices.TaskService.Errors.TasksAdded += updateHandler;
+			IdeServices.TaskService.Errors.TasksRemoved += updateHandler;
 
 			currentApplicationName = BrandingService.ApplicationLongName;
 			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 			
 			box.Destroyed += delegate {
-				TaskService.Errors.TasksAdded -= updateHandler;
-				TaskService.Errors.TasksRemoved -= updateHandler;
+				IdeServices.TaskService.Errors.TasksAdded -= updateHandler;
+				IdeServices.TaskService.Errors.TasksRemoved -= updateHandler;
 				BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			};
 

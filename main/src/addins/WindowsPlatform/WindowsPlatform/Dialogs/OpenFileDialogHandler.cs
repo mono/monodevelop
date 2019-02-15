@@ -1,4 +1,4 @@
-// 
+﻿// 
 // OpenFileDialogHandler.cs
 //  
 // Authors:
@@ -236,7 +236,7 @@ namespace MonoDevelop.Platform
 			int selected = -1;
 			int i = 0;
 			bool hasBench = false;
-			var projectService = IdeApp.Services.ProjectService;
+			var projectService = IdeServices.ProjectService;
 			if (projectService.IsWorkspaceItemFile (fileName) || projectService.IsSolutionItemFile (fileName)) {
 				hasBench = true;
 				combo.Items.Add (new ViewerComboItem (null, GettextCatalog.GetString ("Solution Workbench")));

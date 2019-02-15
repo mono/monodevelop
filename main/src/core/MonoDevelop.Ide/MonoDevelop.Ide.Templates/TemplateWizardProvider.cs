@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Templates
 
 		protected virtual TemplateWizard GetWizard (string id)
 		{
-			return IdeApp.Services.TemplatingService.GetWizard (id);
+			return IdeServices.TemplatingService.GetWizard (id);
 		}
 
 		void Reset ()

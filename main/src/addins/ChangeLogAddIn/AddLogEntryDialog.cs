@@ -1,4 +1,4 @@
-// AddLogEntryDialog.cs
+﻿// AddLogEntryDialog.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -47,7 +47,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			Build ();
 			
-			textview.ModifyFont (FontService.MonospaceFont);
+			textview.ModifyFont (IdeServices.FontService.MonospaceFont);
 			textview.WrapMode = WrapMode.None;
 			textview.AcceptsTab = true;
 			Pango.TabArray tabs = new Pango.TabArray (1, true);

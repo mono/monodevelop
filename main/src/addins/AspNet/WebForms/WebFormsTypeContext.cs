@@ -1,4 +1,4 @@
-//
+﻿//
 // DocumentReferenceManager.cs: Handles web type lookups for ASP.NET documents.
 //
 // Authors:
@@ -47,6 +47,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -382,7 +383,7 @@ namespace MonoDevelop.AspNet.WebForms
 			var references = new HashSet<MetadataReference> ();
 
 			if (project != null) {
-				var result = await TypeSystemService.GetCompilationAsync (project, token);
+				var result = await IdeApp.TypeSystemService.GetCompilationAsync (project, token);
 				if (result != null)
 					references.Add (result.ToMetadataReference ());
 			}
@@ -439,7 +440,7 @@ namespace MonoDevelop.AspNet.WebForms
 						var p = reference.ResolveProject (project.ParentSolution) as DotNetProject;
 						if (p == null)
 							continue;
-						var result = await TypeSystemService.GetCompilationAsync (p);
+						var result = await IdeApp.TypeSystemService.GetCompilationAsync (p);
 						if (result != null) {
 							return result.ToMetadataReference ();
 						}
@@ -452,7 +453,7 @@ namespace MonoDevelop.AspNet.WebForms
 
 		MetadataReference LoadMetadataReference (string path)
 		{
-			var roslynProject = TypeSystemService.GetProject (Project);
+			var roslynProject = IdeApp.TypeSystemService.GetProject (Project);
 			var workspace = (MonoDevelopWorkspace)roslynProject.Solution.Workspace;
 			var reference = workspace.MetadataReferenceManager.GetOrCreateMetadataReferenceSnapshot (path, MetadataReferenceProperties.Assembly);
 

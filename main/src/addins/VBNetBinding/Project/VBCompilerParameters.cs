@@ -1,4 +1,4 @@
-//  VBCompilerParameters.cs
+﻿//  VBCompilerParameters.cs
 //
 //  This file was derived from a file from #Develop, and relicensed
 //  by Markus Palme to MIT/X11
@@ -36,6 +36,7 @@ using MonoDevelop.Core.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using System.Collections.Immutable;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VBNetBinding
 {
@@ -204,7 +205,7 @@ namespace MonoDevelop.VBNetBinding
 		public override CompilationOptions CreateCompilationOptions ()
 		{
 			var project = (VBProject)ParentProject;
-			var workspace = Ide.TypeSystem.TypeSystemService.GetWorkspace (project.ParentSolution);
+			var workspace = IdeApp.TypeSystemService.GetWorkspace (project.ParentSolution);
 
 			var options = new VisualBasicCompilationOptions (
 				OutputKind.ConsoleApplication,

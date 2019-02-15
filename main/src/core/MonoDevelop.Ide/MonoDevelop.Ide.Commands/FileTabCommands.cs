@@ -1,4 +1,4 @@
-//
+﻿//
 // FileTabCommands.cs
 //
 // Author:
@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -50,7 +52,7 @@ namespace MonoDevelop.Ide.Commands
 	
 	class CloseAllHandler : CommandHandler
 	{
-		protected virtual ViewContent GetDocumentException ()
+		protected virtual Document GetDocumentException ()
 		{
 			return null;
 		}
@@ -65,7 +67,7 @@ namespace MonoDevelop.Ide.Commands
 			var except = GetDocumentException ();
 
 			var docs = IdeApp.Workbench.Documents
-				.Where (doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && (except == null || doc.Window.ViewContent != except))
+				.Where (doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && (except == null || doc != except))
 				.ToArray ();
 
 			var dirtyDialogShown = docs.Count (doc => doc.IsDirty) > 1;
@@ -78,7 +80,7 @@ namespace MonoDevelop.Ide.Commands
 			
 			foreach (Document doc in docs)
 				if (dirtyDialogShown)
-					doc.Window.CloseWindow (true);
+					doc.Close (true).Ignore ();
 				else
 					doc.Close ().Ignore();
 		}
@@ -86,10 +88,9 @@ namespace MonoDevelop.Ide.Commands
 	
 	class CloseAllButThisHandler : CloseAllHandler
 	{
-		protected override ViewContent GetDocumentException ()
+		protected override Document GetDocumentException ()
 		{
-			var active = IdeApp.Workbench.ActiveDocument;
-			return active == null ? null : active.Window.ViewContent;
+			return IdeApp.Workbench.ActiveDocument;
 		}
 	}
 	
@@ -122,12 +123,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.OpenLastClosedDocument ();
+			IdeServices.NavigationHistoryService.OpenLastClosedDocument ();
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.HasClosedDocuments;
+			info.Enabled = IdeServices.NavigationHistoryService.HasClosedDocuments;
 		}
 	}
 }

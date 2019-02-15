@@ -1,4 +1,4 @@
-// SolutionNodeBuilder.cs
+﻿// SolutionNodeBuilder.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnOpenFolder ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			DesktopService.OpenFolder (solution.BaseDirectory, solution.FileName);
+			IdeServices.DesktopService.OpenFolder (solution.BaseDirectory, solution.FileName);
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]

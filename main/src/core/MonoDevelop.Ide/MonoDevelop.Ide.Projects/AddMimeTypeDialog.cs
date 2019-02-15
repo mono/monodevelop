@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AddMimeTypeDialog.cs
 //  
 // Author:
@@ -62,13 +62,13 @@ namespace MonoDevelop.Ide.Projects
 			
 			string mt = TryGetFileType (name);
 			if (mt != null && mt != "text/plain") {
-				desc = DesktopService.GetMimeTypeDescription (mt);
-				img = DesktopService.GetIconForType (mt, Gtk.IconSize.Menu);
+				desc = IdeServices.DesktopService.GetMimeTypeDescription (mt);
+				img = IdeServices.DesktopService.GetIconForType (mt, Gtk.IconSize.Menu);
 				mimeType = mt;
 			}
 			else if (name.IndexOf ('/') != -1) {
-				desc = DesktopService.GetMimeTypeDescription (name);
-				img = DesktopService.GetIconForType (name, Gtk.IconSize.Menu);
+				desc = IdeServices.DesktopService.GetMimeTypeDescription (name);
+				img = IdeServices.DesktopService.GetIconForType (name, Gtk.IconSize.Menu);
 				mimeType = name;
 			} else {
 				img = ImageService.GetIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Projects
 				string f = System.IO.Path.ChangeExtension (tmpFile, "." + name);
 				File.Move (tmpFile, f);
 				tmpFile = f;
-				return DesktopService.GetMimeTypeForUri (tmpFile);
+				return IdeServices.DesktopService.GetMimeTypeForUri (tmpFile);
 			} catch {
 				return null;
 			} finally {

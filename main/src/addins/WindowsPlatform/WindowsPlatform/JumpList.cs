@@ -1,4 +1,4 @@
-// 
+﻿// 
 // JumpList.cs
 //  
 // Author:
@@ -40,7 +40,7 @@ namespace MonoDevelop.Platform
 			this.updateTimer.Elapsed += this.OnUpdateTimerEllapsed;
 			this.updateTimer.AutoReset = false;
 			
-			this.recentFiles = DesktopService.RecentFiles;
+			this.recentFiles = IdeServices.DesktopService.RecentFiles;
 			this.recentFiles.Changed += this.OnRecentFilesChanged;
 
 			try {

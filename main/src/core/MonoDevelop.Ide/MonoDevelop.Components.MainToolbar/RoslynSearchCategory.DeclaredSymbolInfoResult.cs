@@ -132,11 +132,11 @@ namespace MonoDevelop.Components.MainToolbar
 				var filePath = result.NavigableItem.Document.FilePath;
 				var offset = result.NavigableItem.SourceSpan.Start;
 
-				var proj = TypeSystemService.GetMonoProject (result.NavigableItem.Document.Project);
+				var proj = IdeApp.TypeSystemService.GetMonoProject (result.NavigableItem.Document.Project);
 				if (proj?.ParentSolution != null) {
 					string projectedName;
 					int projectedOffset;
-					if (TypeSystemService.GetWorkspace (proj.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
+					if (IdeApp.TypeSystemService.GetWorkspace (proj.ParentSolution).TryGetOriginalFileFromProjection (filePath, offset, out projectedName, out projectedOffset)) {
 						filePath = projectedName;
 						offset = projectedOffset;
 					}

@@ -1,4 +1,4 @@
-// NavigationCommands.cs
+﻿// NavigationCommands.cs
 //
 // Author:
 //   Jeffrey Stedfast  <fejj@novell.com>
@@ -48,12 +48,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.MoveBack ();
+			IdeServices.NavigationHistoryService.MoveBack ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.CanMoveBack;
+			info.Enabled = IdeServices.NavigationHistoryService.CanMoveBack;
 		}
 	}
 	
@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.MoveForward ();
+			IdeServices.NavigationHistoryService.MoveForward ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.CanMoveForward;
+			info.Enabled = IdeServices.NavigationHistoryService.CanMoveForward;
 		}
 	}
 	
@@ -76,13 +76,13 @@ namespace MonoDevelop.Ide.Commands
 		{
 			NavigationHistoryItem nav = ob as NavigationHistoryItem;
 			if (nav != null)
-				NavigationHistoryService.MoveTo (nav);
+				IdeServices.NavigationHistoryService.MoveTo (nav);
 		}
 		
 		protected override void Update (CommandArrayInfo info)
 		{
 			int currentIndex;
-			IList<NavigationHistoryItem> points = NavigationHistoryService.GetNavigationList (15, out currentIndex);
+			IList<NavigationHistoryItem> points = IdeServices.NavigationHistoryService.GetNavigationList (15, out currentIndex);
 			
 			if (points.Count < 1) {
 				Document doc = IdeApp.Workbench.ActiveDocument;
@@ -104,12 +104,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NavigationHistoryService.Clear ();
+			IdeServices.NavigationHistoryService.Clear ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationHistoryService.CanMoveForward || NavigationHistoryService.CanMoveBack;
+			info.Enabled = IdeServices.NavigationHistoryService.CanMoveForward || IdeServices.NavigationHistoryService.CanMoveBack;
 		}
 	}
 }

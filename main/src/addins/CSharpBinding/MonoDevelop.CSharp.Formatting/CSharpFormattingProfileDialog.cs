@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpFormattingProfileDialog.cs
 //  
 // Author:
@@ -666,7 +666,7 @@ namespace MonoDevelop.CSharp.Formatting
 				text = "";
 			}
 
-			var types = DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var types = IdeServices.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 			var textPolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 
 			texteditor.Text = CSharpFormatter.FormatText (profile.CreateOptions (textPolicy), text, 0, text.Length);

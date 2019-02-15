@@ -1,4 +1,4 @@
-//
+﻿//
 // WelcomePageLinkButton.cs
 //
 // Author:
@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					var cmdId = uri.Substring ("monodevelop://".Length);
 					IdeApp.CommandService.DispatchCommand (cmdId, MonoDevelop.Components.Commands.CommandSource.WelcomePage);
 				} else {
-					DesktopService.ShowUrl (uri);
+					IdeServices.DesktopService.ShowUrl (uri);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (GettextCatalog.GetString ("Could not open the url '{0}'", uri), ex);

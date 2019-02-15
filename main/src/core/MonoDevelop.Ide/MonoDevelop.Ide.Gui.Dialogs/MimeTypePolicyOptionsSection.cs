@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IMimeTypePolicyOptionsPanel.cs
 //  
 // Author:
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Get the panels for all mime types
 			
 			List<string> types = new List<string> ();
-			types.AddRange (DesktopService.GetMimeTypeInheritanceChain (mimeType));
+			types.AddRange (IdeServices.DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			
 			panelData.SectionLoaded = true;
 			panels = panelData.Panels;

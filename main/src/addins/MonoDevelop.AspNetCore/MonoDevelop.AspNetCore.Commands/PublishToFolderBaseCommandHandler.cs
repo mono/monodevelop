@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
@@ -133,7 +133,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			}
 
 			if (Directory.Exists (path))
-				DesktopService.OpenFolder (path);
+				IdeServices.DesktopService.OpenFolder (path);
 			else
 				LoggingService.LogError ("Trying to open {0} but it does not exists.", path);
 		}

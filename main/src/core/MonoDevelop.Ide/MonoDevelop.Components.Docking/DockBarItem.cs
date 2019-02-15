@@ -1,4 +1,4 @@
-//
+﻿//
 // DockBarItem.cs
 //
 // Author:
@@ -38,6 +38,7 @@ using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Docking
 {	
@@ -253,7 +254,7 @@ namespace MonoDevelop.Components.Docking
 				label = new Label (it.Label);
 				label.Accessible.SetShouldIgnore (true);
 				label.UseMarkup = true;
-				label.ModifyFont (FontService.SansFont.CopyModified (Styles.FontScale11));
+				label.ModifyFont (IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11));
 
 				if (bar.Orientation == Orientation.Vertical)
 					label.Angle = 270;

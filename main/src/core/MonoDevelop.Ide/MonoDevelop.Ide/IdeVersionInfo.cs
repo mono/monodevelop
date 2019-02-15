@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IdeVersionInfo.cs
 //  
 // Author:
@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide
 				else
 					sb.AppendLine ();
 
-				var nativeRuntime = DesktopService.GetNativeRuntimeDescription ();
+				var nativeRuntime = IdeServices.DesktopService.GetNativeRuntimeDescription ();
 				if (!string.IsNullOrEmpty (nativeRuntime)) {
 					sb.Append ('\t');
 					sb.AppendLine (nativeRuntime);

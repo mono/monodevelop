@@ -1,4 +1,4 @@
-//
+﻿//
 // BindingService.cs: Utility methods for binding CodeBehind members.
 //
 // Authors:
@@ -167,7 +167,7 @@ namespace MonoDevelop.DesignerSupport
 //			if (!isChildClass)
 //				throw new ArgumentException ("Class specificPartToAffect is not a part of class cls");
 //			
-//			var dom = TypeSystemService.GetCompilation (project);
+//			var dom = IdeApp.TypeSystemService.GetCompilation (project);
 //			var existingMember = GetCompatibleMemberInClass (dom, cls, member);
 //			
 //			if (existingMember == null)

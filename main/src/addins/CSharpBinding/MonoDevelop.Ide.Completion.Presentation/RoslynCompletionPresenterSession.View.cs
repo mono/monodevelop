@@ -1,4 +1,4 @@
-//
+﻿//
 // RoslynCompletionPresenterSession.View.cs
 //
 // Author:
@@ -83,8 +83,8 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			if (noMatchFont != null)
 				noMatchFont.Dispose ();
 
-			itemFont = FontService.MonospaceFont.Copy ();
-			noMatchFont = FontService.SansFont.CopyModified (Styles.FontScale11);
+			itemFont = IdeServices.FontService.MonospaceFont.Copy ();
+			noMatchFont = IdeServices.FontService.SansFont.CopyModified (Styles.FontScale11);
 
 			var newItemFontSize = itemFont.Size;
 			var newNoMatchFontSize = noMatchFont.Size;

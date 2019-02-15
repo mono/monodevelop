@@ -1,4 +1,4 @@
-//
+﻿//
 // ContextMenuExtensionsMac.cs
 //
 // Author:
@@ -86,7 +86,7 @@ namespace MonoDevelop.Components
 				if (toplevel.TypeHint == Gdk.WindowTypeHint.Toolbar && toplevel.Type == Gtk.WindowType.Toplevel && toplevel.Decorated == false) {
 					// Undecorated toplevel toolbars are used for auto-hide pad windows. Don't add a titlebar offset for them.
 					titleBarOffset = 0;
-				} else if (MonoDevelop.Ide.DesktopService.GetIsFullscreen (toplevel)) {
+				} else if (MonoDevelop.Ide.IdeServices.DesktopService.GetIsFullscreen (toplevel)) {
 					titleBarOffset = 0;
 				} else {
 					titleBarOffset = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight () + 12;

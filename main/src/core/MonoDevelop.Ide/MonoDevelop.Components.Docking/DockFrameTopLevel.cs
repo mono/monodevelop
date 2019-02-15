@@ -1,4 +1,4 @@
-//
+﻿//
 // DockFrameTopLevel.cs
 //
 // Author:
@@ -130,7 +130,7 @@ namespace MonoDevelop.Components.Docking
 					repositionRequested = true;
 					Application.Invoke ((o, args) => {
 						var pos = frame.GetScreenCoordinates (new Gdk.Point (x, y));
-						DesktopService.PlaceWindow (ContainerWindow, pos.X, pos.Y, width, height);
+						IdeServices.DesktopService.PlaceWindow (ContainerWindow, pos.X, pos.Y, width, height);
 						repositionRequested = false;
 					});
 				}

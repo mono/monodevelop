@@ -161,7 +161,7 @@ namespace MonoDevelop.Components.MainToolbar
 				try {
 					var kinds = GetTagKinds (searchPattern.Tag);
 					// Maybe use language services instead of AbstractNavigateToSearchService
-					var aggregatedResults = await Task.WhenAll (TypeSystemService.AllWorkspaces
+					var aggregatedResults = await Task.WhenAll (IdeApp.TypeSystemService.AllWorkspaces
 										.Select (ws => ws.CurrentSolution)
 										.SelectMany (sol => sol.Projects)
 										.Select (async proj => {

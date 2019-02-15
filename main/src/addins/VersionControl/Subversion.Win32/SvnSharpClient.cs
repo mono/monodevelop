@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -77,7 +77,7 @@ namespace SubversionAddinWindows
 						AlertButton.Ok);
 
 					if (res == db) {
-						DesktopService.ShowUrl ("https://www.microsoft.com/en-us/download/details.aspx?id=5555");
+						IdeServices.DesktopService.ShowUrl ("https://www.microsoft.com/en-us/download/details.aspx?id=5555");
 					}
 				}
 				return !installError;

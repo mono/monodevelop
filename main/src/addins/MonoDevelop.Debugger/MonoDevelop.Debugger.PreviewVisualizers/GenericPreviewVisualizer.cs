@@ -28,6 +28,7 @@ using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using Gtk;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
@@ -68,7 +69,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			
 			label = new Label ();
 			label.Text = value;
-			label.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
+			label.ModifyFont (IdeServices.FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 			label.ModifyFg (StateType.Normal, col);
 			label.SetPadding (4, 4);
 

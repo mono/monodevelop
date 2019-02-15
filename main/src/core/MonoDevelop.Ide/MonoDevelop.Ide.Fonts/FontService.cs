@@ -1,5 +1,5 @@
 ﻿// 
-// IdeApp.FontService.cs
+// IdeServices.FontService.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -204,17 +204,17 @@ namespace MonoDevelop.Ide.Fonts
 		public FontConfigurationProperty (string name)
 		{
 			this.name = name;
-			IdeApp.FontService.RegisterFontChangedCallback (name, OnChanged);
+			IdeServices.FontService.RegisterFontChangedCallback (name, OnChanged);
 		}
 
 		protected override FontDescription OnGetValue ()
 		{
-			return IdeApp.FontService.GetFontDescription (name);
+			return IdeServices.FontService.GetFontDescription (name);
 		}
 
 		protected override bool OnSetValue (FontDescription value)
 		{
-			IdeApp.FontService.SetFont (name, value.ToString ());
+			IdeServices.FontService.SetFont (name, value.ToString ());
 			return true;
 		}
 	}

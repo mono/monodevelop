@@ -37,6 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis.Editor.Shared.Options;
 using Microsoft.CodeAnalysis;
 using System;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -71,7 +72,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			public OnTheFlyFormattingPanelWidget ()
 			{
-				OptionService = TypeSystemService.Workspace.Services.GetService<IOptionService> ();
+				OptionService = IdeApp.TypeSystemService.Workspace.Services.GetService<IOptionService> ();
 				formatOnTypeCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format when typing"));
 				formatOnTypeCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.AutoFormattingOnTyping, LanguageNames.CSharp);
 				formatOnTypeCheckBox.Toggled += FormatOnTypeCheckBox_Toggled;

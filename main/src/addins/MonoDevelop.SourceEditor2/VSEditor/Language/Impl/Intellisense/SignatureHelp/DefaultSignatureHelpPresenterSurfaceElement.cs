@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,14 +86,14 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
             if (!scheme.FitsIdeTheme(IdeApp.Preferences.UserInterfaceTheme))
                 scheme = SyntaxHighlightingService.GetDefaultColorStyle(IdeApp.Preferences.UserInterfaceTheme);
             Theme.SetSchemeColors(scheme);
-            Theme.Font = FontService.SansFont.CopyModified(Styles.FontScale11).ToXwtFont();
+            Theme.Font = IdeServices.FontService.SansFont.CopyModified(Styles.FontScale11).ToXwtFont();
             Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
             foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor();
 
             if (DataContext != null)
             {
                 DataContext.SignatureWpfViewVisualElement.ModifyFg(StateType.Normal, foreColor.ToGdkColor());
-                DataContext.SignatureWpfViewVisualElement.FontDescription = FontService.GetFontDescription("Editor").CopyModified(Styles.FontScale11);
+                DataContext.SignatureWpfViewVisualElement.FontDescription = IdeServices.FontService.GetFontDescription("Editor").CopyModified(Styles.FontScale11);
             }
             //if (this.Visible)
             //	QueueDraw ();

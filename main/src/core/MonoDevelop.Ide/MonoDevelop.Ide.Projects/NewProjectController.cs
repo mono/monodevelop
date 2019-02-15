@@ -338,7 +338,7 @@ namespace MonoDevelop.Ide.Projects
 				if (templatingService != null)
 					return templatingService;
 
-				return IdeApp.Services.TemplatingService;
+				return IdeServices.TemplatingService;
 			}
 			set { templatingService = value; }
 		}
