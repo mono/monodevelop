@@ -27,10 +27,11 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
-	class VersionInfoCache
+	class VersionInfoCache : IDisposable
 	{
 		ReaderWriterLockSlim fileLock = new ReaderWriterLockSlim();
 		Dictionary<FilePath,VersionInfo> fileStatus = new Dictionary<FilePath, VersionInfo> ();
@@ -168,6 +169,27 @@ namespace MonoDevelop.VersionControl
 			} finally {
 				directoryLock.ExitWriteLock ();
 			}
+		}
+
+		public void Dispose ()
+		{
+			if (fileLock != null) {
+				fileLock.Dispose ();
+				fileLock = null;
+			}
+			if (directoryLock != null) {
+				directoryLock.Dispose ();
+				directoryLock = null;
+			}
+			if (fileStatus != null) {
+				fileStatus.Clear ();
+				fileStatus = null;
+			}
+			if (directoryStatus != null) {
+				directoryStatus.Clear ();
+				directoryStatus = null;
+			}
+			repo = null;
 		}
 	}
 
