@@ -33,6 +33,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Old editor")]
 	public sealed class ChunkStyle
 	{
 		public ScopeStack ScopeStack { get; set; }
