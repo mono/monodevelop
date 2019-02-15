@@ -135,6 +135,7 @@ namespace MonoDevelop.Refactoring
 						if (temp.LineKind == LineKind.Normal && temp.TextMarkup == null) {
 							var newText = editor.GetMarkup (temp.Offset, temp.Length, new MarkupOptions (MarkupFormat.Pango, false));
 							diff.LineResults [i] = new LineResult (newText, temp.Offset, temp.Length, temp.LineKind, temp.XNeedsMeasure);
+							QueueResize ();
 						}
 					}
 
