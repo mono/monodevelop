@@ -1,4 +1,4 @@
-﻿//
+//
 // Error.cs
 //
 // Author:
@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// <summary>
 	/// Enum that describes the type of an error.
 	/// </summary>
+	[Obsolete("Use Visual Studio Editor APIs")]
 	public enum ErrorType
 	{
 		Unknown,
@@ -43,6 +44,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// Descibes an error during parsing.
 	/// </summary>
 	[Serializable]
+	[Obsolete("Use Visual Studio Editor APIs")]
 	public class Error
 	{
 		readonly ErrorType errorType;
