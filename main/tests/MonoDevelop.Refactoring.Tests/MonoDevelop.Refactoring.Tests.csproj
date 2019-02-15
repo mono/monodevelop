@@ -9,6 +9,9 @@
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <OutputPath>..\..\build\tests</OutputPath>
+    <!--
+    This contains tests for many deprecated editor APIs, disable deprecation warnings for now.
+    -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
