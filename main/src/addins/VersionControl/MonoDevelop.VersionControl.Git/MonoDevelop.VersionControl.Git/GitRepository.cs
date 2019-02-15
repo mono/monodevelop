@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using ProgressMonitor = MonoDevelop.Core.ProgressMonitor;
 using LibGit2Sharp;
 using System.Threading.Tasks;
+using System.Runtime.ExceptionServices;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -377,56 +378,56 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			readingOperationFactory.StartNew (() => action (GetRepository (localPath))).Wait ();
+			readingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			readingOperationFactory.StartNew (action).Wait ();
+			readingOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal T RunOperation<T> (Func<T> action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return readingOperationFactory.StartNew (action).Result;
+			return readingOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return readingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
+			return readingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			blockingOperationFactory.StartNew (action).Wait ();
+			blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Wait ();
+			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return blockingOperationFactory.StartNew (action).Result;
+			return blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
 		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
+			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
 		}
 
 		LibGit2Sharp.Repository GetRepository (FilePath localPath)
@@ -1896,6 +1897,30 @@ namespace MonoDevelop.VersionControl.Git
 				throw new ArgumentException ("Commit does not belog to the repository", nameof (repository));
 			var id = repository.Lookup<Commit> (rev)?.Parents.FirstOrDefault ();
 			return id == null ? null : new GitRevision (Repository, GitRepository, id);
+		}
+	}
+
+	static class TaskFailureExtensions
+	{
+		public static void RunWaitAndCapture (this Task task)
+		{
+			try {
+				task.Wait ();
+			} catch (AggregateException ex) {
+				var exception = ex.FlattenAggregate ().InnerException;
+				ExceptionDispatchInfo.Capture (exception).Throw ();
+			}
+		}
+
+		public static T RunWaitAndCapture<T> (this Task<T> task)
+		{
+			try {
+				return task.Result;
+			} catch (AggregateException ex) {
+				var exception = ex.FlattenAggregate ().InnerException;
+				ExceptionDispatchInfo.Capture (exception).Throw ();
+				throw;
+			}
 		}
 	}
 }
