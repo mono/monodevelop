@@ -93,14 +93,17 @@ namespace MonoDevelop.VersionControl
 		public virtual void Dispose ()
 		{
 			Disposed = true;
-			if (!queryRunning)
-				return;
 
-			lock (queryLock) {
-				fileQueryQueue.Clear ();
-				directoryQueryQueue.Clear ();
-				recursiveDirectoryQueryQueue.Clear ();
+			if (queryRunning) {
+				lock (queryLock) {
+					fileQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
+					recursiveDirectoryQueryQueue.Clear ();
+				}
 			}
+
+			infoCache?.Dispose ();
+			infoCache = null;
 		}
 		
 		// Display name of the repository
