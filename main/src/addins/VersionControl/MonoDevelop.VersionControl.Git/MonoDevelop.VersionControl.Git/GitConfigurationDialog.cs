@@ -364,12 +364,20 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected async void OnButtonFetchClicked (object sender, EventArgs e)
 		{
-			TreeIter it;
-			if (!treeRemotes.Selection.GetSelected (out it))
+			if (!treeRemotes.Selection.GetSelected (out var it))
 				return;
 
-			string remoteName = (string) storeRemotes.GetValue (it, 4);
-			if (remoteName == null)
+			bool toplevel = !storeRemotes.IterParent (out var parent, it);
+
+			string remoteName = string.Empty;
+
+			if (toplevel) {
+				remoteName = (string)storeRemotes.GetValue (it, 4);
+			} else {
+				remoteName = (string)storeRemotes.GetValue (parent, 4);
+			}
+
+			if (string.IsNullOrEmpty(remoteName))
 				return;
 
 			await System.Threading.Tasks.Task.Run (() => repo.Fetch (VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")), remoteName));
