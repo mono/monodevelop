@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.RepresentationModel;
@@ -11,6 +11,7 @@ using System.Globalization;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Old editor")]
 	static class Sublime3Format
 	{
 		public static SyntaxHighlightingDefinition ReadHighlighting (TextReader input)

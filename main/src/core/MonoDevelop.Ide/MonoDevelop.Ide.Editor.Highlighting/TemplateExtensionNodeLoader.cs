@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Old editor")]
 	static class TemplateExtensionNodeLoader
 	{
 		static bool initialized = false;

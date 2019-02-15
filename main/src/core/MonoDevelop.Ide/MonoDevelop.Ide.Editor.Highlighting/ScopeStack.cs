@@ -1,4 +1,4 @@
-﻿//
+//
 // ScopeStack.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using System.Collections;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+
 	public sealed class ScopeStack : IEnumerable<string>
 	{
 		public static readonly ScopeStack Empty = new ScopeStack (null, ImmutableStack<string>.Empty, 0, null);

@@ -1,4 +1,4 @@
-﻿//
+//
 // StackMatchExpression.cs
 //
 // Author:

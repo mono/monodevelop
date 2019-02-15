@@ -1,4 +1,4 @@
-﻿//
+//
 // ISyntaxHighlightingDefinitionProvider.cs
 //
 // Author:
@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Old editor")]
 	interface ISyntaxHighlightingDefinitionProvider
 	{
 		string Name { get; }
@@ -45,6 +46,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition ();
 	}
 
+	[Obsolete ("Old editor")]
 	enum SyntaxHighlightingDefinitionFormat
 	{
 		TextMate,
@@ -52,6 +54,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		Sublime3
 	}
 
+	[Obsolete ("Old editor")]
 	abstract class AbstractSyntaxHighlightingDefinitionProvider : ISyntaxHighlightingDefinitionProvider
 	{
 		readonly Func<IStreamProvider> getStreamProvider;

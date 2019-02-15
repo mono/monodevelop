@@ -35,6 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Old editor")]
 	public sealed class HighlightedLine
 	{
 		public ISegment TextSegment { get; }
@@ -71,6 +72,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// <summary>
 	/// The basic interface for all syntax modes
 	/// </summary>
+	[Obsolete ("Old editor")]
 	public interface ISyntaxHighlighting : IDisposable
 	{
 		/// <summary>
@@ -85,11 +87,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		event EventHandler<LineEventArgs> HighlightingStateChanged;
 	}
 
+	[Obsolete ("Old editor")]
 	interface ISyntaxHighlighting2 : ISyntaxHighlighting
 	{
 		bool IsUpdatingOnTextChange { get; }
 	}
 
+	[Obsolete ("Old editor")]
 	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
 	{
 		public static readonly DefaultSyntaxHighlighting Instance = new DefaultSyntaxHighlighting ();

@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMateBundleOptionsPanelWidget.cs
 //
 // Author:
@@ -90,10 +90,12 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			if (success) {
 				var bundle = SyntaxHighlightingService.LoadStyleOrMode (SyntaxHighlightingService.userThemeBundle, newFileName) as LanguageBundle;
 				if (bundle != null) {
+#pragma warning disable CS0618 // Type or member is obsolete
 					foreach (var h in bundle.Highlightings) {
 						var def = h as SyntaxHighlightingDefinition;
 						def?.PrepareMatches ();
 					}
+#pragma warning restore CS0618 // Type or member is obsolete
 					FillBundles ();
 				} else {
 					MessageService.ShowError (GettextCatalog.GetString ("Invalid bundle: {0}", dialog.SelectedFile.FileName));
