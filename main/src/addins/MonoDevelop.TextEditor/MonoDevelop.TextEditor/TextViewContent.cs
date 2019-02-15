@@ -88,6 +88,8 @@ namespace MonoDevelop.TextEditor
 			TextBuffer = TextDocument.TextBuffer;
 
 			var roles = GetAllPredefinedRoles ();
+			//we have multiple copies of VacuousTextDataModel for back-compat reasons
+			#pragma warning disable CS0436 // Type conflicts with imported type
 			var dataModel = new VacuousTextDataModel (TextBuffer);
 			var viewModel = UIExtensionSelector.InvokeBestMatchingFactory (
 				Imports.TextViewModelProviders,
@@ -97,6 +99,7 @@ namespace MonoDevelop.TextEditor
 				Imports.ContentTypeRegistryService,
 				Imports.GuardedOperations,
 				this) ?? new VacuousTextViewModel (dataModel);
+			#pragma warning restore CS0436 // Type conflicts with imported type
 
 			TextView = CreateTextView (viewModel, roles);
 			control = CreateControl ();
