@@ -246,6 +246,28 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
 
+		// This is called by OnSolutionRemoved and on Dispose.
+		protected override void ClearSolutionData ()
+		{
+			if (MonoDevelopSolution != null) {
+				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
+					ProjectMap.RemoveProject (prj);
+					UnloadMonoProject (prj);
+				}
+			}
+
+			base.ClearSolutionData ();
+		}
+
+		// This is called by OnProjectRemoved.
+		protected override void ClearProjectData (ProjectId projectId)
+		{
+			var actualProject = ProjectMap.RemoveProject (projectId);
+			UnloadMonoProject (actualProject);
+
+			base.ClearProjectData (projectId);
+		}
+
 		protected override void Dispose (bool finalize)
 		{
 			if (disposed)
@@ -270,12 +292,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
-			}
-			if (MonoDevelopSolution != null) {
-				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
-					UnloadMonoProject (prj);
-				}
-				MonoDevelopSolution = null;
 			}
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
