@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using LibGit2Sharp;
 using MonoDevelop.Components;
 
@@ -32,17 +33,21 @@ namespace MonoDevelop.VersionControl.Git
 {
 	partial class EditRemoteDialog : Gtk.Dialog
 	{
+		GitRepository repo;
+
 		// TODO: Add user possibility to choose refspecs.
-		public EditRemoteDialog () : this (null)
+		public EditRemoteDialog () : this (null, null)
 		{
 		}
 
 		bool sameUrls;
-		public EditRemoteDialog (Remote remote)
+		public EditRemoteDialog (GitRepository repository, Remote remote)
 		{
 			this.Build ();
 
 			this.UseNativeContextMenus ();
+
+			repo = repository;
 
 			if (remote != null) {
 				entryName.Text = remote.Name;
@@ -111,7 +116,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		bool IsValidUrl (string url)
 		{
-			return Uri.TryCreate (url, UriKind.Absolute, out var dummy);
+			if (repo == null)
+				return url.Length > 0;
+			return repo.IsUrlValid (url);
 		}
 	}
 }
