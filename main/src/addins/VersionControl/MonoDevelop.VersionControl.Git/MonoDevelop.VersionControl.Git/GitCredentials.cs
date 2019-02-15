@@ -135,16 +135,21 @@ namespace MonoDevelop.VersionControl.Git
 						};
 						result = Runtime.RunInMainThread (delegate {
 
-							var credDlg = new XwtCredentialsDialog (url, types, cred);
-							var nativeWindow = Xwt.Toolkit.CurrentEngine.GetNativeWindow (credDlg);
+							bool response = false;
 
-							var response = MessageService.ShowCustomDialog (nativeWindow as Gtk.Dialog) == (int)Gtk.ResponseType.Ok;
-							credDlg.Dispose ();
+							var engine = Platform.IsMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+							engine.Invoke (() => {
+								var xwtDialog = new XwtCredentialsDialog (url, types, cred) {
+									TransientFor = MessageService.RootWindow
+								};
+								xwtDialog.Show ();
+								response = xwtDialog.Run (/*MonoDevelop.Ide.IdeApp.Workbench.RootWindow*/) != Xwt.Command.Ok;
+								xwtDialog.Dispose ();
+							});
 
 							return response;
+						}).Result;
 
-							}).Result;
-					
 						if (result)
 							return cred;
 						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
