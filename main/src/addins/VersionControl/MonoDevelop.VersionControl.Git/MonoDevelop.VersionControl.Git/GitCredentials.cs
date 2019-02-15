@@ -127,30 +127,24 @@ namespace MonoDevelop.VersionControl.Git
 					if (state.KeyUsed + 1 < Keys.Count)
 						state.KeyUsed++;
 					else {
-						SelectFileDialog dlg = null;
-						bool success = Runtime.RunInMainThread (() => {
-							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
-							dlg.ShowHidden = true;
-							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-							return dlg.Run ();
-						}).Result;
-						if (!success || !File.Exists (dlg.SelectedFile + ".pub"))
-							throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
 
 						cred = new SshUserKeyCredentials {
 							Username = userFromUrl,
 							Passphrase = "",
-							PrivateKey = dlg.SelectedFile,
-							PublicKey = dlg.SelectedFile + ".pub",
+						
 						};
+						result = Runtime.RunInMainThread (delegate {
 
-						if (KeyHasPassphrase (dlg.SelectedFile)) {
-							result = Runtime.RunInMainThread (delegate {
-								using (var credDlg = new CredentialsDialog (url, types, cred))
-									return MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
+							var credDlg = new XwtCredentialsDialog (url, types, cred);
+							var nativeWindow = Xwt.Toolkit.CurrentEngine.GetNativeWindow (credDlg);
+
+							var response = MessageService.ShowCustomDialog (nativeWindow as Gtk.Dialog) == (int)Gtk.ResponseType.Ok;
+							credDlg.Dispose ();
+
+							return response;
+
 							}).Result;
-						}
-
+					
 						if (result)
 							return cred;
 						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
@@ -185,7 +179,7 @@ namespace MonoDevelop.VersionControl.Git
 			throw new VersionControlException (GettextCatalog.GetString ("Operation cancelled by the user"));
 		}
 
-		static bool KeyHasPassphrase (string key)
+		internal static bool KeyHasPassphrase (string key)
 		{
 			return File.ReadAllText (key).Contains ("Proc-Type: 4,ENCRYPTED");
 		}
