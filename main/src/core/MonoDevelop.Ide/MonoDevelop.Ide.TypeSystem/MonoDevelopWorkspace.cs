@@ -1127,13 +1127,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var id = GetProjectId (project);
 			if (id != null) {
-				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
-					ClearOpenDocument (docId);
-				}
-
-				ProjectMap.RemoveProject (project, id);
-				UnloadMonoProject (project);
-
 				OnProjectRemoved (id);
 			}
 		}
