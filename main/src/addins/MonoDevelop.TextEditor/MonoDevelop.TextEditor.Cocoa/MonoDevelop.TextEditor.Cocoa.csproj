@@ -40,6 +40,7 @@
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextModel\TextModelImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextSearch\TextSearchImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\VisibleWhitespace\VisibleWhitespaceImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\XPlat\MultiCaretImpl\MultiCaretImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextLogicUtil\TextLogicUtil.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj" />

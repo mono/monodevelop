@@ -482,6 +482,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTools", "src\tools
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDBuildTasks", "msbuild\MDBuildTasks\MDBuildTasks.csproj", "{37E01D0B-8C44-441F-9F5D-56C36AB0B918}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisibleWhitespaceImpl", "external\vs-editor-core\src\Editor\Text\Impl\VisibleWhitespace\VisibleWhitespaceImpl.csproj", "{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}"
+EndProject
 
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -2783,6 +2785,10 @@ Global
 		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3004,6 +3010,7 @@ Global
 		{A10C6E18-A872-4D43-9BB2-2B28C70C7BF7} = {5A92B792-BF17-4748-B29E-34C99B2E8722}
 		{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
+		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902} = {32539734-6484-4451-9EF3-61610CA25BBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}
