@@ -196,7 +196,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public StashCollection GetStashes ()
 		{
-			return RunOperation (RootPath, repo => repo.Stashes);
+			return RunOperation (() => RootRepository.Stashes);
 		}
 
 		const CheckoutNotifyFlags refreshFlags = CheckoutNotifyFlags.Updated | CheckoutNotifyFlags.Conflict | CheckoutNotifyFlags.Untracked | CheckoutNotifyFlags.Dirty;
@@ -401,13 +401,6 @@ namespace MonoDevelop.VersionControl.Git
 			return readingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
 		}
 
-		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
-		{
-			if (hasUICallbacks)
-				EnsureBackgroundThread ();
-			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Wait ();
-		}
-
 		internal void RunBlockingOperation (Action action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
@@ -415,11 +408,11 @@ namespace MonoDevelop.VersionControl.Git
 			blockingOperationFactory.StartNew (action).Wait ();
 		}
 
-		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
+		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
+			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Wait ();
 		}
 
 		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false)
@@ -427,6 +420,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			return blockingOperationFactory.StartNew (action).Result;
+		}
+
+		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
+		{
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
+			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).Result;
 		}
 
 		LibGit2Sharp.Repository GetRepository (FilePath localPath)
@@ -459,15 +459,15 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
 		{
-			return RunOperation (RootPath, rootRepository => {
-				var hc = GetHeadCommit (rootRepository);
+			return RunOperation (() => {
+				var hc = GetHeadCommit (RootRepository);
 				if (hc == null)
 					return new GitRevision [0];
 
-				var sinceRev = since != null ? ((GitRevision)since).GetCommit (rootRepository) : null;
-				IEnumerable<Commit> commits = rootRepository.Commits.QueryBy (new CommitFilter { SortBy = CommitSortStrategies.Topological });
+				var sinceRev = since != null ? ((GitRevision)since).GetCommit (RootRepository) : null;
+				IEnumerable<Commit> commits = RootRepository.Commits.QueryBy (new CommitFilter { SortBy = CommitSortStrategies.Topological });
 				if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
-					var localPath = rootRepository.ToGitPath (localFile);
+					var localPath = RootRepository.ToGitPath (localFile);
 					commits = commits.Where (c => {
 						int count = c.Parents.Count ();
 						if (count > 1)
@@ -492,7 +492,7 @@ namespace MonoDevelop.VersionControl.Git
 						shortMessage = shortMessage.Substring (0, 50) + "…";
 					}
 
-					var rev = new GitRevision (this, rootRepository.Info.WorkingDirectory, commit, author.When.LocalDateTime, author.Name, commit.Message) {
+					var rev = new GitRevision (this, RootRepository.Info.WorkingDirectory, commit, author.When.LocalDateTime, author.Name, commit.Message) {
 						Email = author.Email,
 						ShortMessage = shortMessage,
 						FileForChanges = localFile,
@@ -505,27 +505,27 @@ namespace MonoDevelop.VersionControl.Git
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
 		{
 			var rev = (GitRevision) revision;
-			return RunOperation (RootPath, repository => {
-				var commit = rev.GetCommit (repository);
+			return RunOperation (() => {
+				var commit = rev.GetCommit (RootRepository);
 				if (commit == null)
 					return new RevisionPath [0];
 
 				var paths = new List<RevisionPath> ();
 				var parent = commit.Parents.FirstOrDefault ();
-				var changes = repository.Diff.Compare<TreeChanges> (parent != null ? parent.Tree : null, commit.Tree);
+				var changes = RootRepository.Diff.Compare<TreeChanges> (parent != null ? parent.Tree : null, commit.Tree);
 
 				foreach (var entry in changes.Added)
-					paths.Add (new RevisionPath (repository.FromGitPath (entry.Path), RevisionAction.Add, null));
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Add, null));
 				foreach (var entry in changes.Copied)
-					paths.Add (new RevisionPath (repository.FromGitPath (entry.Path), RevisionAction.Add, null));
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Add, null));
 				foreach (var entry in changes.Deleted)
-					paths.Add (new RevisionPath (repository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
 				foreach (var entry in changes.Renamed)
-					paths.Add (new RevisionPath (repository.FromGitPath (entry.Path), repository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RootRepository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
 				foreach (var entry in changes.Modified)
-					paths.Add (new RevisionPath (repository.FromGitPath (entry.Path), RevisionAction.Modify, null));
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
 				foreach (var entry in changes.TypeChanged)
-					paths.Add (new RevisionPath (repository.FromGitPath (entry.Path), RevisionAction.Modify, null));
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
 				return paths.ToArray ();
 			});
 		}
@@ -1346,7 +1346,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
 			var gitRev = (GitRevision)revision;
-			return RunOperation (RootPath, rootRepository => GetCommitTextContent (gitRev.GetCommit (rootRepository), repositoryPath, rootRepository));
+			return RunOperation (repositoryPath, repository => GetCommitTextContent (gitRev.GetCommit (repository), repositoryPath, repository));
 		}
 
 		public override DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
