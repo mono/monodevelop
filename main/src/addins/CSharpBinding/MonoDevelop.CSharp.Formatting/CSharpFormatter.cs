@@ -44,6 +44,8 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Formatting.Rules;
 using MonoDevelop.Ide.Completion.Presentation;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.CodingConventions;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -138,7 +140,7 @@ namespace MonoDevelop.CSharp.Formatting
 				try {
 					var conventions = EditorConfigService.GetEditorConfigContext (doc.FileName).WaitAndGetResult ();
 					if (conventions != null)
-						optionSet = new FormattingDocumentOptionSet (optionSet, new CSharpDocumentOptionsProvider.DocumentOptions (optionSet, conventions.CurrentConventions));
+						optionSet = new FormattingDocumentOptionSet (optionSet, new DocumentOptions (optionSet, conventions.CurrentConventions));
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading coding conventions.", e);
 				}
@@ -147,12 +149,49 @@ namespace MonoDevelop.CSharp.Formatting
 			return new StringTextSource (FormatText (optionSet, input.Text, startOffset, startOffset + length));
 		}
 
+		sealed class DocumentOptions : IDocumentOptions
+		{
+			readonly OptionSet optionSet;
+			readonly ICodingConventionsSnapshot codingConventionsSnapshot;
+
+			public DocumentOptions (OptionSet optionSet, ICodingConventionsSnapshot codingConventionsSnapshot)
+			{
+				this.optionSet = optionSet;
+				this.codingConventionsSnapshot = codingConventionsSnapshot;
+			}
+
+			public bool TryGetDocumentOption (OptionKey option, OptionSet underlyingOptions, out object value)
+			{
+				if (codingConventionsSnapshot != null) {
+					var editorConfigPersistence = option.Option.StorageLocations.OfType<IEditorConfigStorageLocation> ().SingleOrDefault ();
+					if (editorConfigPersistence != null) {
+						var allRawConventions = codingConventionsSnapshot.AllRawConventions;
+						try {
+							var underlyingOption = underlyingOptions.GetOption (option);
+							if (editorConfigPersistence.TryGetOption (underlyingOption, allRawConventions, option.Option.Type, out value))
+								return true;
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while getting editor config preferences.", ex);
+						}
+					}
+				}
+
+				var result = optionSet.GetOption (option);
+				if (result == underlyingOptions.GetOption (option)) {
+					value = null;
+					return false;
+				}
+				value = result;
+				return true;
+			}
+		}
+
 		sealed class FormattingDocumentOptionSet : OptionSet
 		{
 			readonly OptionSet fallbackOptionSet;
-			readonly CSharpDocumentOptionsProvider.DocumentOptions optionsProvider;
+			readonly IDocumentOptions optionsProvider;
 
-			internal FormattingDocumentOptionSet (OptionSet fallbackOptionSet, CSharpDocumentOptionsProvider.DocumentOptions optionsProvider)
+			internal FormattingDocumentOptionSet (OptionSet fallbackOptionSet, IDocumentOptions optionsProvider)
 			{
 				this.fallbackOptionSet = fallbackOptionSet;
 				this.optionsProvider = optionsProvider;

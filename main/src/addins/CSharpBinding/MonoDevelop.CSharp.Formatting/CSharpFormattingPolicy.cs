@@ -46,7 +46,13 @@ namespace MonoDevelop.CSharp.Formatting
 	public sealed class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		OptionSet options;
-		
+
+		public OptionSet OptionSet {
+			get {
+				return options;
+			}
+		}
+
 		public string Name {
 			get;
 			set;
