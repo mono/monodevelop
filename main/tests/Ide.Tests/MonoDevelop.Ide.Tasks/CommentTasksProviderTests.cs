@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Tasks
 				await helper.SetupProject (withToDos);
 
 				await helper.LoadProject ();
-				await IdeApp.Workspace.Close ();
+				await IdeApp.Workspace.Close (false, false, true);
 
 				await helper.LoadProject ();
 			});
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Tasks
 				await tcs.Task;
 				Assert.AreEqual (options.ExpectedFiles.Length, CommentTasksProvider.GetCachedContentsCount ());
 
-				await IdeApp.Workspace.Close ();
+				await IdeApp.Workspace.Close (false, false, true);
 				Assert.AreEqual (0, CommentTasksProvider.GetCachedContentsCount ());
 
 				done = true;

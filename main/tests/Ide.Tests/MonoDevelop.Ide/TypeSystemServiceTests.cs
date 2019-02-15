@@ -154,6 +154,7 @@ namespace MonoDevelop.Ide
 		[Test]
 		public async Task TestWorkspaceImmediatelyAvailable ()
 		{
+			await IdeServices.Workspace.Close (false, true, true);
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			var tcs = new TaskCompletionSource<bool> ();
 			IdeServices.Workspace.SolutionLoaded += (s, e) => {
