@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
-		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; }
+		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
@@ -275,6 +275,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
 					UnloadMonoProject (prj);
 				}
+				MonoDevelopSolution = null;
 			}
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
