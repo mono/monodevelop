@@ -236,7 +236,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected virtual void OnButtonAddRemoteClicked (object sender, EventArgs e)
 		{
-			var dlg = new EditRemoteDialog ();
+			var dlg = new EditRemoteDialog (repo, null);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					repo.AddRemote (dlg.RemoteName, dlg.RemoteUrl, dlg.ImportTags);
@@ -258,7 +258,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (remote == null)
 				return;
 
-			var dlg = new EditRemoteDialog (remote);
+			var dlg = new EditRemoteDialog (repo, remote);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (remote.Url != dlg.RemoteUrl)
