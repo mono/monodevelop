@@ -1393,6 +1393,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		public string GetCurrentRemote ()
 		{
+			var headRemote = RunSafeOperation (() => RootRepository.Head?.RemoteName);
+			if (!string.IsNullOrEmpty (headRemote))
+				return headRemote;
+
 			var remotes = new List<string> (GetRemotes ().Select (r => r.Name));
 			if (remotes.Count == 0)
 				return null;
