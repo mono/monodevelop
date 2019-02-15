@@ -22,13 +22,13 @@
       <HintPath>..\..\..\..\packages\Microsoft.Web.Xdt.2.1.2\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Versioning.4.8.2-rtm.5835\lib\net46\NuGet.Versioning.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Frameworks">
-      <HintPath>..\..\..\..\packages\NuGet.Frameworks.4.8.0\lib\net46\NuGet.Frameworks.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Frameworks.4.8.2-rtm.5835\lib\net46\NuGet.Frameworks.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Packaging.Core">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.4.8.0\lib\net46\NuGet.Packaging.Core.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.4.8.2-rtm.5835\lib\net46\NuGet.Packaging.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.IO.Compression">
@@ -36,39 +36,39 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.4.8.0\lib\net46\NuGet.Packaging.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Packaging.4.8.2-rtm.5835\lib\net46\NuGet.Packaging.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Configuration">
-      <HintPath>..\..\..\..\packages\NuGet.Configuration.4.8.0\lib\net46\NuGet.Configuration.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Configuration.4.8.2-rtm.5835\lib\net46\NuGet.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="NuGet.PackageManagement">
-      <HintPath>..\..\..\..\packages\NuGet.PackageManagement.4.8.0\lib\net46\NuGet.PackageManagement.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.PackageManagement.4.8.2-rtm.5835\lib\net46\NuGet.PackageManagement.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Protocol">
-      <HintPath>..\..\..\..\packages\NuGet.Protocol.4.8.0\lib\net46\NuGet.Protocol.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Protocol.4.8.2-rtm.5835\lib\net46\NuGet.Protocol.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Common">
-      <HintPath>..\..\..\..\packages\NuGet.Common.4.8.0\lib\net46\NuGet.Common.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Common.4.8.2-rtm.5835\lib\net46\NuGet.Common.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Resolver">
-      <HintPath>..\..\..\..\packages\NuGet.Resolver.4.8.0\lib\net46\NuGet.Resolver.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Resolver.4.8.2-rtm.5835\lib\net46\NuGet.Resolver.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.ProjectModel">
-      <HintPath>..\..\..\..\packages\NuGet.ProjectModel.4.8.0\lib\net46\NuGet.ProjectModel.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.ProjectModel.4.8.2-rtm.5835\lib\net46\NuGet.ProjectModel.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.LibraryModel">
-      <HintPath>..\..\..\..\packages\NuGet.LibraryModel.4.8.0\lib\net46\NuGet.LibraryModel.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.LibraryModel.4.8.2-rtm.5835\lib\net46\NuGet.LibraryModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Commands">
-      <HintPath>..\..\..\..\packages\NuGet.Commands.4.8.0\lib\net46\NuGet.Commands.dll</HintPath>
+      <HintPath>..\..\..\..\packages\NuGet.Commands.4.8.2-rtm.5835\lib\net46\NuGet.Commands.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

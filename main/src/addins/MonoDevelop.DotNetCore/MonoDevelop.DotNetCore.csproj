@@ -26,7 +26,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Versioning.4.8.2-rtm.5835\lib\net46\NuGet.Versioning.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
