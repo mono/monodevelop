@@ -293,6 +293,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}		
 	}
 		
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	class MethodData
 	{
 		public ParameterHintingResult MethodProvider;

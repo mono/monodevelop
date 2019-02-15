@@ -42,6 +42,7 @@ using MonoDevelop.UnitTesting.Commands;
 
 namespace MonoDevelop.UnitTesting
 {
+	[Obsolete ("Needs to be ported to new editor")]
 	public abstract class AbstractUnitTestTextEditorExtension : TextEditorExtension
 	{
 		const string TestMarkersPath = "/MonoDevelop/UnitTesting/UnitTestMarkers";

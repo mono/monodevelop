@@ -202,6 +202,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// Reassembles the old skip char system - shouldn't be used by new features anymore.
 	/// </summary>
+	[Obsolete ("Use Visual Studio Editor APIs")]
 	class SkipCharSession : PairInsertEditSession
 	{
 		readonly char ch;
