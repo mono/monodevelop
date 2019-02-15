@@ -27,6 +27,7 @@ internal
 class RegexMatchTimeoutException : TimeoutException {
 #else
 [Serializable]
+[Obsolete ("Old editor")]
 public class RegexMatchTimeoutException : TimeoutException, ISerializable {
 #endif
 

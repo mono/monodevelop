@@ -17,7 +17,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
     ///       [To be supplied]
     ///    </para>
     /// </devdoc>
-    [ Serializable() ] 
+    [ Serializable() ]
+	[Obsolete ("Old editor")]
     class RegexCompilationInfo { 
         private String           pattern;
         private RegexOptions     options;

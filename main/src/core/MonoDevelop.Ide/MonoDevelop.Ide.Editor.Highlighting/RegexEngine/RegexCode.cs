@@ -27,7 +27,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
     using System.Diagnostics;
     using System.Globalization;
 
-    internal sealed class RegexCode {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexCode
+	{
         // the following primitive operations come directly from the parser
 
         // lef/back operands        description

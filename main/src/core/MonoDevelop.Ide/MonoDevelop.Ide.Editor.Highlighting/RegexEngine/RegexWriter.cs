@@ -23,7 +23,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
     using System.Collections;
     using System.Globalization;
     
-    internal sealed class RegexWriter {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexWriter
+	{
         internal int[]       _intStack;
         internal int         _depth;
         internal int[]       _emitted;

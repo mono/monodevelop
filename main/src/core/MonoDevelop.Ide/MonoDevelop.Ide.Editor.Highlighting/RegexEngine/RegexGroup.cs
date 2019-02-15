@@ -23,6 +23,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
 	[ Serializable() ] 
 #endif
+	[Obsolete ("Old editor")]
     class Group : Capture {
         // the empty group object
 		internal static Group   _emptygroup = new Group("", new int[0], 0);

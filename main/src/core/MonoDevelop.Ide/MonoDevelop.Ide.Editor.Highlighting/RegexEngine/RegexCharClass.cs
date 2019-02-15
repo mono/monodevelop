@@ -31,7 +31,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
     using System.Globalization;
     using System.Diagnostics;
 
-    internal sealed class RegexCharClass {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexCharClass
+	{
         // instance data
         private List<SingleRange>          _rangelist;
         private StringBuilder      _categories;

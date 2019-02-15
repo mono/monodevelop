@@ -20,7 +20,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	using System.Collections;
     using System.Globalization;
     
-    internal sealed class RegexFCD {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexFCD
+	{
         private int[]      _intStack;
         private int        _intDepth;    
         private RegexFC[]  _fcStack;
@@ -494,6 +496,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         }
     }
 
+	[Obsolete ("Old editor")]
     internal sealed class RegexFC {
         internal RegexCharClass _cc;
         internal bool _nullable;
@@ -562,7 +565,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         }
     }
 
-    internal sealed class RegexPrefix {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexPrefix
+	{
         internal String _prefix;
         internal bool _caseInsensitive;
 

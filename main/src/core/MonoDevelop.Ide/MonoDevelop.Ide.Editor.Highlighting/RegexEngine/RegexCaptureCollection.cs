@@ -27,6 +27,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
     [ Serializable() ]
 #endif
+	[Obsolete ("Old editor")]
     class CaptureCollection : ICollection {
         internal Group _group;
         internal int _capcount;
@@ -165,6 +166,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
     [ Serializable() ]
 #endif
+	[Obsolete ("Old editor")]
     internal class CaptureEnumerator : IEnumerator {
         internal CaptureCollection _rcc;
         internal int _curindex;

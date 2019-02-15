@@ -21,7 +21,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
     using System.Collections.Generic;
     using System.Globalization;
         
-    internal sealed class RegexParser {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexParser
+	{
         internal RegexNode _stack;
         internal RegexNode _group;
         internal RegexNode _alternation;
