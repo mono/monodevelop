@@ -41,7 +41,6 @@ namespace MonoDevelop.VersionControl.Git
 		readonly TextEntry privateKeyLocationTextEntry;
 		readonly TextEntry publicKeyLocationTextEntry;
 		readonly PasswordEntry passwordEntry;
-		readonly Label errorLabel;
 		readonly Credentials cred;
 		readonly DialogButton okButton;
 		readonly DialogButton cancelButton;
@@ -50,6 +49,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		TextEntry userTextEntry;
 		const string credentialMarkupFormat = "<b>{0}</b>";
+
+		readonly Components.InformationPopoverWidget warningPublicKey = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
+		readonly Components.InformationPopoverWidget warningPrivateKey = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
 
 		public XwtCredentialsDialog (string uri, SupportedCredentialTypes supportedCredential, Credentials credentials)
 		{
@@ -90,6 +92,7 @@ namespace MonoDevelop.VersionControl.Git
 			privateKeyLocationTextEntry.KeyPressed += PrivateKeyLocationTextEntry_Changed;
 			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true);
 
+			privateKeyLocationContainer.PackStart (warningPrivateKey);
 			privateKeyLocationButton = new Button ("…");
 			privateKeyLocationContainer.PackStart (privateKeyLocationButton);
 
@@ -107,16 +110,9 @@ namespace MonoDevelop.VersionControl.Git
 			publicKeyLocationTextEntry.KeyPressed += PublicKeyLocationTextEntry_KeyPressed;
 			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true);
 
+			publicKeyLocationContainer.PackStart (warningPublicKey);
 			publicKeyLocationButton = new Button ("…");
 			publicKeyLocationContainer.PackStart (publicKeyLocationButton);
-
-			//error message
-			errorLabel = new Label {
-				TextColor = Xwt.Drawing.Colors.Red,
-				Visible = false
-			};
-			mainContainer.PackStart (errorLabel);
-			errorLabel.MarginLeft = DefaultlLabelWidth;
 
 			//user container
 			var userContainer = new HBox () { VerticalPlacement = WidgetPlacement.Center };
@@ -145,7 +141,7 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			passwordContainer.PackStart (passwordLabel);
 
-			passwordEntry = new PasswordEntry ();
+			passwordEntry = new PasswordEntry () { MarginTop = 5 };
 			passwordContainer.PackStart (passwordEntry, true);
 			passwordEntry.Changed += PasswordEntry_Changed;
 
@@ -159,7 +155,7 @@ namespace MonoDevelop.VersionControl.Git
 			okButton.Clicked += OkButton_Clicked;
 
 			privateKeyLocationButton.Clicked += PrivateKeyLocationButton_Clicked;
-			publicKeyLocationButton.Clicked += PublicKeyLocationButton_Clicked;;
+			publicKeyLocationButton.Clicked += PublicKeyLocationButton_Clicked;
 			RefreshPasswordState ();
 		}
 
@@ -181,6 +177,8 @@ namespace MonoDevelop.VersionControl.Git
 				? System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text) 
 				: Environment.GetFolderPath (Environment.SpecialFolder.Personal)
 			};
+			dialog.AddFilter (GettextCatalog.GetString ("Public Key Files (.pub)"), "*.pub");
+
 			if (dialog.Run ()) {
 				publicKeyLocationTextEntry.Text = dialog.SelectedFile;
 				RefreshPasswordState ();
@@ -212,6 +210,7 @@ namespace MonoDevelop.VersionControl.Git
 				CurrentFolder = System.IO.File.Exists (privateKeyLocationTextEntry.Text) ?
 				System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text) : Environment.GetFolderPath (Environment.SpecialFolder.Personal)
 			};
+			dialog.AddFilter (GettextCatalog.GetString ("Private Key Files"), "*");
 			if (dialog.Run ()) {
 				privateKeyLocationTextEntry.Text = dialog.SelectedFile;
 				if (System.IO.File.Exists (privateKeyLocationTextEntry.Text + ".pub")) {
@@ -240,27 +239,28 @@ namespace MonoDevelop.VersionControl.Git
 
 		void RefreshPasswordState ()
 		{
+			okButton.Sensitive = false;
+			bool hasPassphrase = false;
 			if (System.IO.File.Exists (privateKeyLocationTextEntry.Text)) {
-				var hasPassphrase = passwordEntry.Sensitive = GitCredentials.KeyHasPassphrase (privateKeyLocationTextEntry.Text);
+				hasPassphrase = passwordEntry.Sensitive = GitCredentials.KeyHasPassphrase (privateKeyLocationTextEntry.Text);
 				if (!hasPassphrase) {
 					passwordEntry.Password = "";
+					passwordEntry.Sensitive = false;
 				}
-				if (System.IO.File.Exists (publicKeyLocationTextEntry.Text)) {
-					errorLabel.Visible = false;
-					okButton.Sensitive = !hasPassphrase || passwordEntry.Password.Length > 0;
-				} else {
-					errorLabel.Text = GettextCatalog.GetString ("The public key (.pub) is missing in the selected location");
-					errorLabel.Visible = true;
-					okButton.Sensitive = false;
-				}
-				return;
+				warningPrivateKey.Hide ();
+			} else {
+				warningPrivateKey.Message = GettextCatalog.GetString ("No private key file in the selected location");
+				warningPrivateKey.Visible = true;
 			}
 
-			errorLabel.Text = GettextCatalog.GetString ("No private key file in the selected location");
-			errorLabel.Visible = true;
-			okButton.Sensitive = false;
-			passwordEntry.Sensitive = false;
-			passwordEntry.Password = "";
+			if (System.IO.File.Exists (publicKeyLocationTextEntry.Text)) {
+				okButton.Sensitive = !hasPassphrase || passwordEntry.Password.Length > 0;
+				warningPublicKey.Hide ();
+			} else {
+				okButton.Sensitive = false;
+				warningPublicKey.Message = GettextCatalog.GetString ("The public key (.pub) is missing in the selected location");
+				warningPublicKey.Show ();
+			}
 		}
 
 		protected override void Dispose (bool disposing)
