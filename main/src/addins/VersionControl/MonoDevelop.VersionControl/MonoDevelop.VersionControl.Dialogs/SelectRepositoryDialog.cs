@@ -112,15 +112,14 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 		}
 
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
-			base.Dispose ();
-
 			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
 			if (edit != null) {
 				edit.UrlChanged -= OnEditUrlChanged;
 				edit.PathChanged -= OnPathChanged;
 			}
+			base.Destroy ();
 		}
 
 		protected virtual void OnRepComboChanged(object sender, System.EventArgs e)
