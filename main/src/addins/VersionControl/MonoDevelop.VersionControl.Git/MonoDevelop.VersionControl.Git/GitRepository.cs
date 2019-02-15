@@ -51,8 +51,20 @@ namespace MonoDevelop.VersionControl.Git
 
 	public sealed class GitRepository : UrlBasedRepository
 	{
+		LibGit2Sharp.Repository rootRepository;
 		internal LibGit2Sharp.Repository RootRepository {
-			get; set;
+			get { return rootRepository; }
+			private set {
+				if (rootRepository == value)
+					return;
+				if (watcher != null) {
+					watcher.EnableRaisingEvents = false;
+					watcher.Dispose ();
+					watcher = null;
+				}
+
+				rootRepository = value;
+			}
 		}
 
 		public static event EventHandler BranchSelectionChanged;
@@ -66,6 +78,9 @@ namespace MonoDevelop.VersionControl.Git
 		public GitRepository ()
 		{
 			Url = "git://";
+			scheduler = new ConcurrentExclusiveSchedulerPair ();
+			blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
+			readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
 		}
 
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
@@ -77,6 +92,16 @@ namespace MonoDevelop.VersionControl.Git
 			scheduler = new ConcurrentExclusiveSchedulerPair ();
 			blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
 			readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
+
+			InitFileWatcher ();
+		}
+
+		void InitFileWatcher ()
+		{
+			if (RootPath.IsNullOrEmpty)
+				throw new InvalidOperationException ($"{nameof (RootPath)} not set, FileSystemWantcher can not be initialized");
+			if (!RootPath.IsDirectory || !RootPath.Combine (".git").IsDirectory)
+				throw new InvalidOperationException ($"{nameof (RootPath)} is not a valid Git repository, FileSystemWantcher can not be initialized");
 
 			watcher = new FileSystemWatcher (RootPath.Combine (".git"), "*.lock");
 			watcher.Created += HandleGitLockCreated;
@@ -170,8 +195,11 @@ namespace MonoDevelop.VersionControl.Git
 
 			var r = (GitRepository)other;
 			RootPath = r.RootPath;
-			if (!RootPath.IsNullOrEmpty)
+			if (!RootPath.IsNullOrEmpty) {
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
+				if (RootPath.Combine (".git").IsDirectory)
+					InitFileWatcher ();
+			}
 		}
 
 		public override string LocationDescription {
@@ -738,8 +766,9 @@ namespace MonoDevelop.VersionControl.Git
 		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
 			// Initialize the repository
-			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
 			RootPath = localPath;
+			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
+			InitFileWatcher ();
 			RootRepository.Network.Remotes.Add ("origin", Url);
 
 			// Add the project files
@@ -1125,7 +1154,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				monitor.BeginTask ("Cloning...", 2);
 
-				RetryUntilSuccess (monitor, credType => {
+				RunOperation (() => RetryUntilSuccess (monitor, credType => {
 					RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
 						CredentialsProvider = (url, userFromUrl, types) => {
 							transferProgress = checkoutProgress = 0;
@@ -1145,17 +1174,18 @@ namespace MonoDevelop.VersionControl.Git
 							});
 						},
 					});
-				});
+				}), true);
 
 				if (monitor.CancellationToken.IsCancellationRequested || RootPath.IsNull)
 					return;
 
 				monitor.Step (1);
 
-				RootPath = RootPath.ParentDirectory;
+				RootPath = RootPath.CanonicalPath.ParentDirectory;
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
+				InitFileWatcher ();
 
-				RecursivelyCloneSubmodules (RootRepository, monitor);
+				RunOperation (() => RecursivelyCloneSubmodules (RootRepository, monitor), true);
 			} finally {
 				monitor.EndTask ();
 			}
