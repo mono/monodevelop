@@ -578,6 +578,7 @@ namespace MonoDevelop.AspNet.Razor
 			return base.GetCurrentParameterIndex (startOffset, token);
 		}
 
+		[Obsolete]
 		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (
 			CodeCompletionContext completionContext, char completionChar, CancellationToken token)
 		{
