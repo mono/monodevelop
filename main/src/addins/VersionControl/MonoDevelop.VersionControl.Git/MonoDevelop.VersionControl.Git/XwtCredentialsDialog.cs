@@ -140,7 +140,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			var passwordLabel = new Label () {
 				TextAlignment = Alignment.End,
-				Text = GettextCatalog.GetString (type == SupportedCredentialTypes.Ssh ? "Passphrase:" : "Password:"),
+				Text = type == SupportedCredentialTypes.Ssh ? GettextCatalog.GetString ("Passphrase:") : GettextCatalog.GetString ("Password:"),
 				WidthRequest = DefaultlLabelWidth
 			};
 			passwordContainer.PackStart (passwordLabel);
@@ -177,8 +177,9 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var dialog = new Components.SelectFileDialog (GettextCatalog.GetString ("Select a public SSH key to use.")) {
 				ShowHidden = true,
-				CurrentFolder = System.IO.File.Exists (privateKeyLocationTextEntry.Text) ? 
-				System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text) : Environment.GetFolderPath (Environment.SpecialFolder.Personal)
+				CurrentFolder = System.IO.File.Exists (privateKeyLocationTextEntry.Text) 
+				? System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text) 
+				: Environment.GetFolderPath (Environment.SpecialFolder.Personal)
 			};
 			if (dialog.Run ()) {
 				publicKeyLocationTextEntry.Text = dialog.SelectedFile;
@@ -188,13 +189,7 @@ namespace MonoDevelop.VersionControl.Git
 						passwordEntry.SetFocus ();
 					}
 				} else {
-					if (type == SupportedCredentialTypes.Ssh) {
-						if (passwordEntry.Sensitive == true) {
-							passwordEntry.SetFocus ();
-						}
-					} else {
-						userTextEntry?.SetFocus ();
-					}
+					userTextEntry?.SetFocus ();
 				}
 			};
 		}
