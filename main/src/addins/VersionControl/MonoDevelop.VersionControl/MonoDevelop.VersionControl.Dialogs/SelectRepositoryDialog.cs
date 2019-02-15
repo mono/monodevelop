@@ -119,7 +119,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				edit.UrlChanged -= OnEditUrlChanged;
 				edit.PathChanged -= OnPathChanged;
 			}
-			base.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		protected virtual void OnRepComboChanged(object sender, System.EventArgs e)
