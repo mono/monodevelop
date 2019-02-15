@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using MonoDevelop.Core;
 using Microsoft.VisualStudio.Text.Editor;
+using Gtk;
 
 namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 {
@@ -13,6 +14,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		readonly DebuggerQuickInfoSourceProvider provider;
 		readonly ITextBuffer textBuffer;
 		DebugValueWindow window;
+		ITextView lastView;
 
 		public DebuggerQuickInfoSource (DebuggerQuickInfoSourceProvider provider, ITextBuffer textBuffer)
 		{
@@ -20,6 +22,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			this.textBuffer = textBuffer;
 			DebuggingService.CurrentFrameChanged += CurrentFrameChanged;
 			DebuggingService.StoppedEvent += TargetProcessExited;
+
 		}
 
 		void CurrentFrameChanged (object sender, EventArgs e)
@@ -45,21 +48,11 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		{
 			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
 			DebuggingService.StoppedEvent -= TargetProcessExited;
-			if (window != null)
-				Runtime.RunInMainThread (() => {
-					window?.Destroy ();
-					window = null;
-				}).Ignore ();
+			Runtime.RunInMainThread (DestroyWindow).Ignore ();
 		}
 
 		public async Task<QuickInfoItem> GetQuickInfoItemAsync (IAsyncQuickInfoSession session, CancellationToken cancellationToken)
 		{
-			Task destroyTask = null;
-			if (window != null)
-				destroyTask = Runtime.RunInMainThread (() => {
-					window?.Destroy ();
-					window = null;
-				});
 			if (DebuggingService.CurrentFrame == null)
 				return null;
 			var view = session.TextView;
@@ -92,13 +85,16 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				// return value, we don't want that for debugger value hovering, hence we dismiss AsyncQuickInfo
 				// and do our own thing, notice VS does same thing
 				await session.DismissAsync ();
-				if (destroyTask != null)
-					await destroyTask;
 				await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
+				DestroyWindow ();
+				this.lastView = view;
 				val.Name = debugInfo.Text;
 				window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
 				Ide.IdeApp.CommandService.RegisterTopWindow (window);
 				var bounds = view.TextViewLines.GetCharacterBounds (point);
+				view.LostAggregateFocus += DestroyWindow;
+				view.LayoutChanged += LayoutChanged;
+				window.LeaveNotifyEvent += LeaveNotifyEvent;
 #if MAC
 				var cocoaView = ((ICocoaTextView)view);
 				var cgPoint = cocoaView.VisualElement.ConvertPointToView (new CoreGraphics.CGPoint (bounds.Left - view.ViewportLeft, bounds.Top - view.ViewportTop), cocoaView.VisualElement.Superview);
@@ -110,6 +106,42 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				return null;
 			}
 			return null;
+		}
+
+		private void LayoutChanged (object sender, TextViewLayoutChangedEventArgs e)
+		{
+			if (e.OldViewState.ViewportLeft != e.NewViewState.ViewportLeft ||
+				e.OldViewState.ViewportWidth != e.NewViewState.ViewportWidth ||
+				e.OldViewState.ViewportTop != e.NewViewState.ViewportTop ||
+				e.OldViewState.ViewportHeight != e.NewViewState.ViewportHeight)
+				DestroyWindow ();
+		}
+
+		private void LeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
+		{
+			if(args.Event.Detail != Gdk.NotifyType.Nonlinear)
+				return;
+			DestroyWindow ();
+		}
+
+		void DestroyWindow(object sender, EventArgs args)
+		{
+			DestroyWindow ();
+		}
+
+		void DestroyWindow ()
+		{
+			Runtime.AssertMainThread ();
+			if (window != null) {
+				window.Destroy ();
+				window.LeaveNotifyEvent -= LeaveNotifyEvent;
+				window = null;
+			}
+			if (lastView != null) {
+				lastView.LayoutChanged -= LayoutChanged;
+				lastView.LostAggregateFocus -= DestroyWindow;
+				lastView = null;
+			}
 		}
 	}
 }
