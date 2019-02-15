@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.VisualStudio.CodingConventions;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -52,25 +53,25 @@ namespace MonoDevelop.Ide.Editor
 	public sealed class DefaultSourceEditorOptions : ITextEditorOptions
 	{
 		static DefaultSourceEditorOptions instance;
-		//static TextStylePolicy defaultPolicy;
+		static ITextEditorOptions plainEditor;
 		static bool inited;
 		ICodingConventionContext context;
 
 		public static DefaultSourceEditorOptions Instance {
-			get { return instance; }
+			get {
+				Init ();
+				return instance;
+			}
 		}
 
 		public static ITextEditorOptions PlainEditor {
-			get;
-			private set;
+			get {
+				Init ();
+				return plainEditor;
+			}
 		}
 
-		static DefaultSourceEditorOptions ()
-		{
-			Init ();
-		}
-
-		public static void Init ()
+		static void Init ()
 		{
 			if (inited)
 				return;
@@ -80,7 +81,7 @@ namespace MonoDevelop.Ide.Editor
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 
-			PlainEditor = new PlainEditorOptions ();
+			plainEditor = new PlainEditorOptions ();
 		}
 
 		internal void FireChange ()
@@ -266,8 +267,10 @@ namespace MonoDevelop.Ide.Editor
 			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", WordNavigationStyle.Windows);
 			
 			UpdateStylePolicy (currentPolicy);
-			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
-			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+			Runtime.ServiceProvider.WhenServiceInitialized<FontService> (s => {
+				s.RegisterFontChangedCallback ("Editor", UpdateFont);
+				s.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+			});
 
 			IdeApp.Preferences.ColorScheme.Changed += OnColorSchemeChanged;
 		}
@@ -745,7 +748,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string FontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+				return IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -754,7 +757,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string GutterFontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+				return IdeApp.FontService.FilterFontName (IdeApp.FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -848,7 +851,7 @@ namespace MonoDevelop.Ide.Editor
 		
 		public void Dispose ()
 		{
-			FontService.RemoveCallback (UpdateFont);
+			IdeApp.FontService.RemoveCallback (UpdateFont);
 			IdeApp.Preferences.ColorScheme.Changed -= OnColorSchemeChanged;
 			if (context != null)
 				context.CodingConventionsChangedAsync -= UpdateContextOptions;

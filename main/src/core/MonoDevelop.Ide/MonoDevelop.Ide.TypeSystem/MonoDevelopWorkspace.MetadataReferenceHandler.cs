@@ -1,4 +1,4 @@
-//
+﻿//
 // MonoDevelopWorkspace.MetadataReferenceHandler.cs
 //
 // Author:
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Result = new List<MonoDevelopMetadataReference> (),
 					Project = netProject,
 					Visited = new HashSet<string> (FilePath.PathComparer),
-					ConfigurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default,
+					ConfigurationSelector = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default,
 					Token = token,
 				};
 
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (data.Token.IsCancellationRequested)
 							return false;
 
-						if (!(pr is MonoDevelop.Projects.DotNetProject referencedProject) || !TypeSystemService.IsOutputTrackedProject (referencedProject))
+						if (!(pr is MonoDevelop.Projects.DotNetProject referencedProject) || !IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
 							continue;
 
 						var fileName = referencedProject.GetOutputFileName (data.ConfigurationSelector);
@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				List<MonoDevelop.Projects.AssemblyReference> references;
 				try {
-					var config = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
+					var config = IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : MonoDevelop.Projects.ConfigurationSelector.Default;
 					references = await netProj.GetReferences (config, token).ConfigureAwait (false);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting referenced projects.", e);
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (!addedProjects.Add (referencedProject))
 						continue;
 
-					if (TypeSystemService.IsOutputTrackedProject (referencedProject))
+					if (IdeApp.TypeSystemService.IsOutputTrackedProject (referencedProject))
 						continue;
 
 					var aliases = pr.EnumerateAliases ();

@@ -1,4 +1,4 @@
-//
+﻿//
 // MonoDevelopWorkspace.ProjectSystemHandler.cs
 //
 // Author:
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projections = projections;
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
-				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, Composition.CompositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
+				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, workspace.compositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
 			}
 
 			#region Solution mapping
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			static async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 			{
 				var sol = (MonoDevelop.Projects.Solution)args.Item;
-				var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
+				var workspace = await IdeApp.TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
 				var solId = workspace.ProjectHandler.GetSolutionId (sol);
 				if (solId == null)
 					return;
@@ -111,9 +111,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var projectId = projectMap.GetOrCreateId (p, oldProject);
 
-				var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+				var config = IdeApp.IsInitialized ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 				MonoDevelop.Projects.DotNetCompilerParameters cp = config?.CompilationParameters;
-				FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
+				FilePath fileName = IdeApp.IsInitialized ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
 				if (fileName.IsNullOrEmpty)
 					fileName = new FilePath (p.Name + ".dll");
 
@@ -291,8 +291,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
 			{
-				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
-				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+				var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (f.FilePath);
+				var node = IdeApp.TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node?.Parser == null)
 					return false;
 				return node.Parser.CanGenerateAnalysisDocument (mimeType, f.BuildAction, p.SupportedLanguages);
@@ -339,8 +339,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IEnumerable<DocumentInfo> GenerateProjections (MonoDevelop.Projects.ProjectFile f, DocumentMap documentMap, MonoDevelop.Projects.Project p, ProjectData oldProjectData, HashSet<DocumentId> duplicates)
 			{
-				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
-				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+				var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (f.FilePath);
+				var node = IdeApp.TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					yield break;
 				var options = new ParseOptions {
