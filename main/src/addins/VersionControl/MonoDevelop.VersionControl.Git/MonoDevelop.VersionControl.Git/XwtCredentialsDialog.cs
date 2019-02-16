@@ -162,9 +162,9 @@ namespace MonoDevelop.VersionControl.Git
 		void PasswordEntry_Changed (object sender, EventArgs e)
 		{
 			if (cred is UsernamePasswordCredentials usernamePasswordCredentials) {
-				usernamePasswordCredentials.Password = passwordEntry.Password ?? "";
+				usernamePasswordCredentials.Password = passwordEntry.Password ?? string.Empty;
 			} else if (cred is SshUserKeyCredentials userKeyCredentials) {
-				userKeyCredentials.Passphrase = passwordEntry.Password ?? "";
+				userKeyCredentials.Passphrase = passwordEntry.Password ?? string.Empty;
 			}
 			RefreshPasswordState ();
 		}
@@ -178,6 +178,7 @@ namespace MonoDevelop.VersionControl.Git
 				: Environment.GetFolderPath (Environment.SpecialFolder.Personal)
 			};
 			dialog.AddFilter (GettextCatalog.GetString ("Public Key Files (.pub)"), "*.pub");
+			dialog.AddAllFilesFilter ();
 
 			if (dialog.Run ()) {
 				publicKeyLocationTextEntry.Text = dialog.SelectedFile;
@@ -249,7 +250,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				warningPrivateKey.Hide ();
 			} else {
-				warningPrivateKey.Message = GettextCatalog.GetString ("No private key file in the selected location");
+				warningPrivateKey.Message = GettextCatalog.GetString ("Please select a valid private key file");
 				warningPrivateKey.Visible = true;
 			}
 
@@ -258,7 +259,7 @@ namespace MonoDevelop.VersionControl.Git
 				warningPublicKey.Hide ();
 			} else {
 				okButton.Sensitive = false;
-				warningPublicKey.Message = GettextCatalog.GetString ("The public key (.pub) is missing in the selected location");
+				warningPublicKey.Message = GettextCatalog.GetString ("Please select a valid public key (.pub) file");
 				warningPublicKey.Show ();
 			}
 		}
