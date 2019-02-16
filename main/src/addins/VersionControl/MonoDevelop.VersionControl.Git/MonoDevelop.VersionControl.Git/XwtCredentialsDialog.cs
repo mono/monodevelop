@@ -34,9 +34,7 @@ namespace MonoDevelop.VersionControl.Git
 	public class XwtCredentialsDialog : Xwt.Dialog
 	{
 		const int DefaultlLabelWidth = 100;
-		const int DefaultlErrorLabelWidth = DefaultlLabelWidth + 30;
-		const int KeyLocationContainerHeight = 24;
-		const int KeyLocationContainerTopMargin = 10;
+		const int InputContainerContainerSpacing = 10;
 		readonly SupportedCredentialTypes type;
 		readonly TextEntry privateKeyLocationTextEntry;
 		readonly TextEntry publicKeyLocationTextEntry;
@@ -79,14 +77,18 @@ namespace MonoDevelop.VersionControl.Git
 			mainContainer.PackStart (credentialValue);
 
 			//Private key location
-			var privateKeyLocationContainer = new HBox () { HeightRequest = KeyLocationContainerHeight, MarginTop = KeyLocationContainerTopMargin, VerticalPlacement = WidgetPlacement.Center };
-			mainContainer.PackStart (privateKeyLocationContainer);
+			var inputContainer = new Table () { DefaultRowSpacing = InputContainerContainerSpacing };
+			mainContainer.PackStart (inputContainer, marginTop: InputContainerContainerSpacing);
+			int inputContainerCurrentRow = 0;
 
 			var privateKeyLocationLabel = new Label (GettextCatalog.GetString ("Private Key:")) {
-				WidthRequest = DefaultlLabelWidth,
+				MinWidth = DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
-			privateKeyLocationContainer.PackStart (privateKeyLocationLabel, vpos: WidgetPlacement.Center);
+			inputContainer.Add (privateKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+
+			var privateKeyLocationContainer = new HBox ();
+			inputContainer.Add (privateKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
 
 			privateKeyLocationTextEntry = new TextEntry ();
 			privateKeyLocationTextEntry.Accessible.LabelWidget = privateKeyLocationLabel;
@@ -99,16 +101,17 @@ namespace MonoDevelop.VersionControl.Git
 			privateKeyLocationButton.Accessible.LabelWidget = privateKeyLocationLabel;
 			privateKeyLocationButton.Accessible.Title = GettextCatalog.GetString ("Select a key file");
 			privateKeyLocationContainer.PackStart (privateKeyLocationButton);
+			inputContainerCurrentRow++;
 
 			//Public key location
-			var publicKeyLocationContainer = new HBox () { HeightRequest = KeyLocationContainerHeight, MarginTop = KeyLocationContainerTopMargin, VerticalPlacement = WidgetPlacement.Center };
-			mainContainer.PackStart (publicKeyLocationContainer);
-
 			var publicKeyLocationLabel = new Label (GettextCatalog.GetString ("Public Key:")) {
-				WidthRequest = DefaultlLabelWidth,
+				MinWidth = DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
-			publicKeyLocationContainer.PackStart (publicKeyLocationLabel, vpos: WidgetPlacement.Center);
+			inputContainer.Add (publicKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+
+			var publicKeyLocationContainer = new HBox ();
+			inputContainer.Add (publicKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
 
 			publicKeyLocationTextEntry = new TextEntry ();
 			publicKeyLocationTextEntry.Accessible.LabelWidget = publicKeyLocationLabel;
@@ -121,37 +124,33 @@ namespace MonoDevelop.VersionControl.Git
 			publicKeyLocationButton.Accessible.LabelWidget = publicKeyLocationLabel;
 			publicKeyLocationButton.Accessible.Title = GettextCatalog.GetString ("Select a key file");
 			publicKeyLocationContainer.PackStart (publicKeyLocationButton);
+			inputContainerCurrentRow++;
 
 			//user container
-			var userContainer = new HBox () { VerticalPlacement = WidgetPlacement.Center };
-			mainContainer.PackStart (userContainer);
-
 			if (type == SupportedCredentialTypes.UsernamePassword) {
 				var userLabel = new Label (GettextCatalog.GetString ("Username:")) {
-					WidthRequest = DefaultlLabelWidth
+					MinWidth = DefaultlLabelWidth
 				};
-				userContainer.PackStart (userLabel);
+				inputContainer.Add (userLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 				userLabel.TextAlignment = Alignment.End;
 				userTextEntry = new TextEntry ();
-				userContainer.PackStart (userTextEntry, true);
+				inputContainer.Add (userTextEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 1 : -1);
 
 				userTextEntry.KeyPressed += UserTextEntry_KeyPressed;
+				inputContainerCurrentRow++;
 			}
 
 			//password container
-			var passwordContainer = new HBox () { VerticalPlacement = WidgetPlacement.Center };
-			mainContainer.PackStart (passwordContainer);
-
 			var passwordLabel = new Label () {
 				TextAlignment = Alignment.End,
 				Text = type == SupportedCredentialTypes.Ssh ? GettextCatalog.GetString ("Passphrase:") : GettextCatalog.GetString ("Password:"),
-				WidthRequest = DefaultlLabelWidth
+				MinWidth = DefaultlLabelWidth
 			};
-			passwordContainer.PackStart (passwordLabel, vpos: WidgetPlacement.Center);
+			inputContainer.Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 
 			passwordEntry = new PasswordEntry () { MarginTop = 5 };
 			passwordEntry.Accessible.LabelWidget = passwordLabel;
-			passwordContainer.PackStart (passwordEntry, true, vpos: WidgetPlacement.Center);
+			inputContainer.Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 1 : -1);
 			passwordEntry.Changed += PasswordEntry_Changed;
 
 			//Buttons
