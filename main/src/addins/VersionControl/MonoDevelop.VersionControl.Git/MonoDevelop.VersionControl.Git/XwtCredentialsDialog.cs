@@ -238,11 +238,23 @@ namespace MonoDevelop.VersionControl.Git
 		void PrivateKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
 		void PublicKeyLocationTextEntry_KeyPressed (object sender, KeyEventArgs e) => RefreshPasswordState ();
 
+		static bool ValidatePrivateKey (FilePath privateKey)
+		{
+			if (privateKey.IsNullOrEmpty)
+				return false;
+			var finfo = new System.IO.FileInfo (privateKey);
+			if (!finfo.Exists)
+				return false;
+			if (finfo.Length > 512 * 1024) // let's don't allow anything bigger than 512kb
+				return false;
+			return true;
+		}
+
 		void RefreshPasswordState ()
 		{
 			okButton.Sensitive = false;
 			bool hasPassphrase = false;
-			if (System.IO.File.Exists (privateKeyLocationTextEntry.Text)) {
+			if (ValidatePrivateKey (privateKeyLocationTextEntry.Text)) {
 				hasPassphrase = passwordEntry.Sensitive = GitCredentials.KeyHasPassphrase (privateKeyLocationTextEntry.Text);
 				if (!hasPassphrase) {
 					passwordEntry.Password = "";
