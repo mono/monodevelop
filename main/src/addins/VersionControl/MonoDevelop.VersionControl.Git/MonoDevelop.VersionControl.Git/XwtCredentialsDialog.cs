@@ -272,15 +272,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void Dispose (bool disposing)
 		{
-			privateKeyLocationTextEntry.Changed -= PrivateKeyLocationTextEntry_Changed;
-			publicKeyLocationTextEntry.Changed -= PublicKeyLocationTextEntry_Changed;
-			if (userTextEntry != null) {
-				userTextEntry.KeyPressed -= UserTextEntry_KeyPressed;
+			if (disposing && !IsDisposed) {
+				privateKeyLocationTextEntry.Changed -= PrivateKeyLocationTextEntry_Changed;
+				publicKeyLocationTextEntry.Changed -= PublicKeyLocationTextEntry_Changed;
+				if (userTextEntry != null) {
+					userTextEntry.KeyPressed -= UserTextEntry_KeyPressed;
+				}
+				passwordEntry.Changed -= PasswordEntry_Changed;
+				privateKeyLocationButton.Clicked -= PrivateKeyLocationButton_Clicked;
+				publicKeyLocationButton.Clicked -= PublicKeyLocationButton_Clicked;
 			}
-			passwordEntry.Changed -= PasswordEntry_Changed;
-			privateKeyLocationButton.Clicked -= PrivateKeyLocationButton_Clicked;
-			publicKeyLocationButton.Clicked -= PublicKeyLocationButton_Clicked;
-
 			base.Dispose (disposing);
 		}
 	}
