@@ -86,12 +86,12 @@ namespace MonoDevelop.VersionControl.Git
 				WidthRequest = DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
-			privateKeyLocationContainer.PackStart (privateKeyLocationLabel);
+			privateKeyLocationContainer.PackStart (privateKeyLocationLabel, vpos: WidgetPlacement.Center);
 
 			privateKeyLocationTextEntry = new TextEntry ();
 			privateKeyLocationTextEntry.Accessible.LabelWidget = privateKeyLocationLabel;
 			privateKeyLocationTextEntry.KeyPressed += PrivateKeyLocationTextEntry_Changed;
-			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true);
+			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
 
 			warningPrivateKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
 			privateKeyLocationContainer.PackStart (warningPrivateKey);
@@ -108,12 +108,12 @@ namespace MonoDevelop.VersionControl.Git
 				WidthRequest = DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
-			publicKeyLocationContainer.PackStart (publicKeyLocationLabel);
+			publicKeyLocationContainer.PackStart (publicKeyLocationLabel, vpos: WidgetPlacement.Center);
 
 			publicKeyLocationTextEntry = new TextEntry ();
 			publicKeyLocationTextEntry.Accessible.LabelWidget = publicKeyLocationLabel;
 			publicKeyLocationTextEntry.KeyPressed += PublicKeyLocationTextEntry_KeyPressed;
-			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true);
+			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
 
 			warningPublicKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
 			publicKeyLocationContainer.PackStart (warningPublicKey);
@@ -147,11 +147,11 @@ namespace MonoDevelop.VersionControl.Git
 				Text = type == SupportedCredentialTypes.Ssh ? GettextCatalog.GetString ("Passphrase:") : GettextCatalog.GetString ("Password:"),
 				WidthRequest = DefaultlLabelWidth
 			};
-			passwordContainer.PackStart (passwordLabel);
+			passwordContainer.PackStart (passwordLabel, vpos: WidgetPlacement.Center);
 
 			passwordEntry = new PasswordEntry () { MarginTop = 5 };
 			passwordEntry.Accessible.LabelWidget = passwordLabel;
-			passwordContainer.PackStart (passwordEntry, true);
+			passwordContainer.PackStart (passwordEntry, true, vpos: WidgetPlacement.Center);
 			passwordEntry.Changed += PasswordEntry_Changed;
 
 			//Buttons
