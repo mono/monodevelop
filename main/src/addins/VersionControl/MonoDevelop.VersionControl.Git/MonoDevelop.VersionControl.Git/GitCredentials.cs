@@ -133,21 +133,8 @@ namespace MonoDevelop.VersionControl.Git
 							Passphrase = "",
 						
 						};
-						result = Runtime.RunInMainThread (delegate {
 
-							bool response = false;
-
-							var engine = Platform.IsMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
-							engine.Invoke (() => {
-								using (var xwtDialog = new XwtCredentialsDialog (url, types, cred)) {
-									response = xwtDialog.Run (MessageService.RootWindow) == Xwt.Command.Ok;
-								}
-							});
-
-							return response;
-						}).Result;
-
-						if (result)
+						if (XwtCredentialsDialog.Run (url, types, cred).Result)
 							return cred;
 						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
 					}

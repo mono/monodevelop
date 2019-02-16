@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using LibGit2Sharp;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Xwt;
 
@@ -33,23 +35,13 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public class XwtCredentialsDialog : Xwt.Dialog
 	{
-		const int DefaultlLabelWidth = 100;
-		const int InputContainerContainerSpacing = 10;
-		readonly SupportedCredentialTypes type;
-		readonly TextEntry privateKeyLocationTextEntry;
-		readonly TextEntry publicKeyLocationTextEntry;
-		readonly PasswordEntry passwordEntry;
-		readonly Credentials cred;
+		internal const int DefaultlLabelWidth = 100;
+		internal const int InputContainerContainerSpacing = 10;
 		readonly DialogButton okButton;
-		readonly DialogButton cancelButton;
-		readonly Button privateKeyLocationButton;
-		readonly Button publicKeyLocationButton;
 
-		TextEntry userTextEntry;
+		readonly ICredentialsWidget credentialsWidget;
+
 		const string credentialMarkupFormat = "<b>{0}</b>";
-
-		readonly Components.InformationPopoverWidget warningPublicKey;
-		readonly Components.InformationPopoverWidget warningPrivateKey;
 
 		public XwtCredentialsDialog (string uri, SupportedCredentialTypes supportedCredential, Credentials credentials)
 		{
@@ -57,9 +49,6 @@ namespace MonoDevelop.VersionControl.Git
 			Resizable = false;
 
 			Width = 500;
-
-			type = supportedCredential;
-			cred = credentials;
 
 			var mainContainer = new VBox ();
 			Content = mainContainer;
@@ -76,26 +65,177 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			mainContainer.PackStart (credentialValue);
 
-			//Private key location
-			var inputContainer = new Table () { DefaultRowSpacing = InputContainerContainerSpacing };
-			mainContainer.PackStart (inputContainer, marginTop: InputContainerContainerSpacing);
+			if (supportedCredential.HasFlag (SupportedCredentialTypes.UsernamePassword))
+				credentialsWidget = new UserPasswordCredentialsWidget (credentials as UsernamePasswordCredentials);
+			else
+				credentialsWidget = new SshCredentialsWidget (credentials as SshUserKeyCredentials);
+
+			credentialsWidget.CredentialsChanged += OnCredentialsChanged;
+			mainContainer.PackStart (credentialsWidget.Widget, marginTop: InputContainerContainerSpacing);
+
+			//Buttons
+			Buttons.Add (new DialogButton (Command.Cancel));
+			Buttons.Add (okButton = new DialogButton (Command.Ok));
+			DefaultCommand = Command.Ok;
+
+			okButton.Sensitive = credentialsWidget.CredentialsAreValid;
+		}
+
+		void OnCredentialsChanged (object sender, EventArgs e)
+		{
+			okButton.Sensitive = credentialsWidget.CredentialsAreValid;
+		}
+
+		public static Task<bool> Run (string url, SupportedCredentialTypes types, Credentials cred, Components.Window parentWindow = null)
+		{
+			return Runtime.RunInMainThread (() => {
+				var engine = Platform.IsMac ? Toolkit.NativeEngine : Toolkit.CurrentEngine;
+				var response = false;
+				engine.Invoke (() => {
+					using (var xwtDialog = new XwtCredentialsDialog (url, types, cred)) {
+						response = xwtDialog.Run (parentWindow ?? Ide.MessageService.RootWindow) == Command.Ok;
+					}
+				});
+				return response;
+			});
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing && !IsDisposed) {
+				credentialsWidget.CredentialsChanged -= OnCredentialsChanged;
+				credentialsWidget.Dispose ();
+			}
+			base.Dispose (disposing);
+		}
+	}
+
+	interface ICredentialsWidget : IDisposable
+	{
+		Widget Widget { get; }
+		Credentials Credentials { get; }
+		bool CredentialsAreValid { get; }
+		event EventHandler CredentialsChanged;
+	}
+
+	class UserPasswordCredentialsWidget : Table, ICredentialsWidget
+	{
+		readonly PasswordEntry passwordEntry;
+		readonly TextEntry userTextEntry;
+
+		public Widget Widget => this;
+
+		public UsernamePasswordCredentials Credentials { get; private set; }
+
+		Credentials ICredentialsWidget.Credentials => Credentials;
+
+		public bool CredentialsAreValid {
+			get {
+				return true;
+				// TODO: should we check the strings?
+				//return !string.IsNullOrEmpty (Credentials?.Username) && !string.IsNullOrEmpty (Credentials?.Password);
+			}
+		}
+
+		public event EventHandler CredentialsChanged;
+
+		public UserPasswordCredentialsWidget (UsernamePasswordCredentials creds)
+		{
+			Credentials = creds ?? new UsernamePasswordCredentials ();
+
+			DefaultRowSpacing = XwtCredentialsDialog.InputContainerContainerSpacing;
+
+			int inputContainerCurrentRow = 0;
+			//user container
+			var userLabel = new Label (GettextCatalog.GetString ("Username:")) {
+				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth
+			};
+			Add (userLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+			userLabel.TextAlignment = Alignment.End;
+			userTextEntry = new TextEntry { Text = creds?.Username ?? string.Empty };
+			Add (userTextEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 10 : -1);
+
+			userTextEntry.Changed += UserTextEntry_Changed;
+			inputContainerCurrentRow++;
+
+			//password container
+			var passwordLabel = new Label () {
+				TextAlignment = Alignment.End,
+				Text = GettextCatalog.GetString ("Password:"),
+				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth
+			};
+			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+
+			passwordEntry = new PasswordEntry () { Password = creds?.Password ?? string.Empty, MarginTop = 5 };
+			passwordEntry.Accessible.LabelWidget = passwordLabel;
+			Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 10 : -1);
+			passwordEntry.Changed += PasswordEntry_Changed;
+		}
+
+		void UserTextEntry_Changed (object sender, EventArgs e) => OnCredentialsChanged ();
+		void PasswordEntry_Changed (object sender, EventArgs e) => OnCredentialsChanged ();
+
+		void OnCredentialsChanged ()
+		{
+			Credentials.Username = userTextEntry.Text;
+			Credentials.Password = passwordEntry.Password;
+			CredentialsChanged?.Invoke (this, EventArgs.Empty);
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing && !IsDisposed) {
+				userTextEntry.KeyPressed -= UserTextEntry_Changed;
+				passwordEntry.Changed -= PasswordEntry_Changed;
+			}
+			base.Dispose (disposing);
+		}
+	}
+
+	class SshCredentialsWidget : Table, ICredentialsWidget
+	{
+		readonly TextEntry privateKeyLocationTextEntry;
+		readonly TextEntry publicKeyLocationTextEntry;
+		readonly PasswordEntry passphraseEntry;
+		readonly Button privateKeyLocationButton;
+		readonly Button publicKeyLocationButton;
+
+		readonly InformationPopoverWidget warningPublicKey;
+		readonly InformationPopoverWidget warningPrivateKey;
+
+		public Widget Widget => this;
+
+		public SshUserKeyCredentials Credentials { get; private set; }
+
+		Credentials ICredentialsWidget.Credentials => Credentials;
+
+		public bool CredentialsAreValid { get; private set; }
+
+		public event EventHandler CredentialsChanged;
+
+		public SshCredentialsWidget (SshUserKeyCredentials creds)
+		{
+			Credentials = creds ?? new SshUserKeyCredentials ();
+
+			DefaultRowSpacing = XwtCredentialsDialog.InputContainerContainerSpacing;
+
 			int inputContainerCurrentRow = 0;
 
 			var privateKeyLocationLabel = new Label (GettextCatalog.GetString ("Private Key:")) {
-				MinWidth = DefaultlLabelWidth,
+				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
-			inputContainer.Add (privateKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+			Add (privateKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 
 			var privateKeyLocationContainer = new HBox ();
-			inputContainer.Add (privateKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
+			Add (privateKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
 
 			privateKeyLocationTextEntry = new TextEntry ();
 			privateKeyLocationTextEntry.Accessible.LabelWidget = privateKeyLocationLabel;
 			privateKeyLocationTextEntry.Changed += PrivateKeyLocationTextEntry_Changed;
 			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
 
-			warningPrivateKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
+			warningPrivateKey = new InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
 			privateKeyLocationContainer.PackStart (warningPrivateKey);
 			privateKeyLocationButton = new Button ("…");
 			privateKeyLocationButton.Accessible.LabelWidget = privateKeyLocationLabel;
@@ -105,20 +245,20 @@ namespace MonoDevelop.VersionControl.Git
 
 			//Public key location
 			var publicKeyLocationLabel = new Label (GettextCatalog.GetString ("Public Key:")) {
-				MinWidth = DefaultlLabelWidth,
+				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth,
 				TextAlignment = Alignment.End
 			};
-			inputContainer.Add (publicKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+			Add (publicKeyLocationLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 
 			var publicKeyLocationContainer = new HBox ();
-			inputContainer.Add (publicKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
+			Add (publicKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
 
 			publicKeyLocationTextEntry = new TextEntry ();
 			publicKeyLocationTextEntry.Accessible.LabelWidget = publicKeyLocationLabel;
 			publicKeyLocationTextEntry.Changed += PublicKeyLocationTextEntry_Changed;
 			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
 
-			warningPublicKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
+			warningPublicKey = new InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
 			publicKeyLocationContainer.PackStart (warningPublicKey);
 			publicKeyLocationButton = new Button ("…");
 			publicKeyLocationButton.Accessible.LabelWidget = publicKeyLocationLabel;
@@ -126,85 +266,32 @@ namespace MonoDevelop.VersionControl.Git
 			publicKeyLocationContainer.PackStart (publicKeyLocationButton);
 			inputContainerCurrentRow++;
 
-			//user container
-			if (type == SupportedCredentialTypes.UsernamePassword) {
-				var userLabel = new Label (GettextCatalog.GetString ("Username:")) {
-					MinWidth = DefaultlLabelWidth
-				};
-				inputContainer.Add (userLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
-				userLabel.TextAlignment = Alignment.End;
-				userTextEntry = new TextEntry ();
-				inputContainer.Add (userTextEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 1 : -1);
-
-				userTextEntry.KeyPressed += UserTextEntry_KeyPressed;
-				inputContainerCurrentRow++;
-			}
-
 			//password container
 			var passwordLabel = new Label () {
 				TextAlignment = Alignment.End,
-				Text = type == SupportedCredentialTypes.Ssh ? GettextCatalog.GetString ("Passphrase:") : GettextCatalog.GetString ("Password:"),
-				MinWidth = DefaultlLabelWidth
+				Text = GettextCatalog.GetString ("Passphrase:"),
+				MinWidth = XwtCredentialsDialog.DefaultlLabelWidth
 			};
-			inputContainer.Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
+			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 
-			passwordEntry = new PasswordEntry () { MarginTop = 5 };
-			passwordEntry.Accessible.LabelWidget = passwordLabel;
-			inputContainer.Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 1 : -1);
-			passwordEntry.Changed += PasswordEntry_Changed;
-
-			//Buttons
-			Buttons.Add (new DialogButton (Command.Cancel));
-			Buttons.Add (okButton = new DialogButton (Command.Ok));
-			DefaultCommand = Command.Ok;
+			passphraseEntry = new PasswordEntry () { MarginTop = 5 };
+			passphraseEntry.Accessible.LabelWidget = passwordLabel;
+			Add (passphraseEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 1 : -1);
+			passphraseEntry.Changed += PasswordEntry_Changed;
 
 			privateKeyLocationButton.Clicked += PrivateKeyLocationButton_Clicked;
 			publicKeyLocationButton.Clicked += PublicKeyLocationButton_Clicked;
-			RefreshPasswordState ();
+
+			OnCredentialsChanged ();
 		}
 
-		void PublicKeyLocationButton_Clicked (object sender, EventArgs e)
-		{
-			var dialog = new Components.SelectFileDialog (GettextCatalog.GetString ("Select a public SSH key to use.")) {
-				ShowHidden = true,
-				CurrentFolder = System.IO.File.Exists (privateKeyLocationTextEntry.Text) 
-				? System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text) 
-				: Environment.GetFolderPath (Environment.SpecialFolder.Personal)
-			};
-			dialog.AddFilter (GettextCatalog.GetString ("Public Key Files (.pub)"), "*.pub");
-			dialog.AddAllFilesFilter ();
-
-			if (dialog.Run ()) {
-				publicKeyLocationTextEntry.Text = dialog.SelectedFile;
-				RefreshPasswordState ();
-				if (type == SupportedCredentialTypes.Ssh) {
-					if (passwordEntry.Sensitive == true) {
-						passwordEntry.SetFocus ();
-					}
-				} else {
-					userTextEntry?.SetFocus ();
-				}
-			};
-		}
-
-		protected override void OnCommandActivated (Command cmd)
-		{
-			if (cmd == Command.Ok) {
-				if (cred is SshUserKeyCredentials ssh) {
-					ssh.PrivateKey = privateKeyLocationTextEntry.Text;
-					ssh.PublicKey = publicKeyLocationTextEntry.Text;
-					ssh.Passphrase = passwordEntry.Password ?? string.Empty;
-				} else if (cred is UsernamePasswordCredentials basic) {
-					basic.Username = userTextEntry.Text;
-					basic.Password = passwordEntry.Password ?? string.Empty;
-				}
-			}
-			base.OnCommandActivated (cmd);
-		}
+		void PrivateKeyLocationTextEntry_Changed (object sender, EventArgs e) => OnCredentialsChanged ();
+		void PublicKeyLocationTextEntry_Changed (object sender, EventArgs e) => OnCredentialsChanged ();
+		void PasswordEntry_Changed (object sender, EventArgs e) => OnCredentialsChanged ();
 
 		void PrivateKeyLocationButton_Clicked (object sender, EventArgs e)
 		{
-			var dialog = new Components.SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use.")) {
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use.")) {
 				ShowHidden = true,
 				CurrentFolder = System.IO.File.Exists (privateKeyLocationTextEntry.Text) ?
 				System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text) : Environment.GetFolderPath (Environment.SpecialFolder.Personal)
@@ -212,24 +299,36 @@ namespace MonoDevelop.VersionControl.Git
 			dialog.AddFilter (GettextCatalog.GetString ("Private Key Files"), "*");
 			if (dialog.Run ()) {
 				privateKeyLocationTextEntry.Text = dialog.SelectedFile;
-				if (System.IO.File.Exists (privateKeyLocationTextEntry.Text + ".pub")) {
+				if (System.IO.File.Exists (privateKeyLocationTextEntry.Text + ".pub"))
 					publicKeyLocationTextEntry.Text = privateKeyLocationTextEntry.Text + ".pub";
-				}
-				RefreshPasswordState ();
-				if (type == SupportedCredentialTypes.Ssh) {
-					if (passwordEntry.Sensitive == true) {
-						passwordEntry.SetFocus ();
-					}
-				} else {
-					userTextEntry?.SetFocus ();
-				}
+				
+				OnCredentialsChanged ();
+
+				if (string.IsNullOrEmpty (Credentials.PublicKey))
+					publicKeyLocationTextEntry.SetFocus ();
+				else if (passphraseEntry.Sensitive)
+					passphraseEntry.SetFocus ();
 			};
 		}
 
-		void PrivateKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
-		void PublicKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
-		void UserTextEntry_KeyPressed (object sender, KeyEventArgs e) => RefreshPasswordState ();
-		void PasswordEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
+		void PublicKeyLocationButton_Clicked (object sender, EventArgs e)
+		{
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Select a public SSH key to use.")) {
+				ShowHidden = true,
+				CurrentFolder = System.IO.File.Exists (privateKeyLocationTextEntry.Text)
+				? System.IO.Path.GetDirectoryName (privateKeyLocationTextEntry.Text)
+				: Environment.GetFolderPath (Environment.SpecialFolder.Personal)
+			};
+			dialog.AddFilter (GettextCatalog.GetString ("Public Key Files (.pub)"), "*.pub");
+			dialog.AddAllFilesFilter ();
+
+			if (dialog.Run ()) {
+				publicKeyLocationTextEntry.Text = dialog.SelectedFile;
+				OnCredentialsChanged ();
+				if (passphraseEntry.Sensitive == true)
+					passphraseEntry.SetFocus ();
+			};
+		}
 
 		static bool ValidatePrivateKey (FilePath privateKey)
 		{
@@ -243,16 +342,21 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		void RefreshPasswordState ()
+		void OnCredentialsChanged ()
 		{
-			okButton.Sensitive = false;
+			Credentials.PrivateKey = privateKeyLocationTextEntry.Text ?? string.Empty;
+			Credentials.PublicKey = publicKeyLocationTextEntry.Text ?? string.Empty;
+			Credentials.Passphrase = passphraseEntry.Password ?? string.Empty;
+
+			bool privateKeyIsValid = ValidatePrivateKey (Credentials.PrivateKey);
+			bool publicKeyIsValid = System.IO.File.Exists (Credentials.PublicKey);
 			bool hasPassphrase = false;
-			if (ValidatePrivateKey (privateKeyLocationTextEntry.Text)) {
-				hasPassphrase = passwordEntry.Sensitive = GitCredentials.KeyHasPassphrase (privateKeyLocationTextEntry.Text);
+
+			if (privateKeyIsValid) {
+				hasPassphrase = passphraseEntry.Sensitive = GitCredentials.KeyHasPassphrase (Credentials.PrivateKey);
 				if (!hasPassphrase) {
-					passwordEntry.Password = "";
-					passwordEntry.PlaceholderText = passwordEntry.Accessible.Description = GettextCatalog.GetString ("Private Key is not encrypted");
-					passwordEntry.Sensitive = false;
+					passphraseEntry.Password = "";
+					passphraseEntry.PlaceholderText = passphraseEntry.Accessible.Description = GettextCatalog.GetString ("Private Key is not encrypted");
 				}
 				warningPrivateKey.Hide ();
 			} else {
@@ -260,14 +364,16 @@ namespace MonoDevelop.VersionControl.Git
 				warningPrivateKey.Visible = true;
 			}
 
-			if (System.IO.File.Exists (publicKeyLocationTextEntry.Text)) {
-				okButton.Sensitive = !hasPassphrase || passwordEntry.Password.Length > 0;
+			if (publicKeyIsValid)
 				warningPublicKey.Hide ();
-			} else {
-				okButton.Sensitive = false;
+			else {
 				warningPublicKey.Message = GettextCatalog.GetString ("Please select a valid public key (.pub) file");
 				warningPublicKey.Show ();
 			}
+
+			CredentialsAreValid = privateKeyIsValid && publicKeyIsValid && (!hasPassphrase || Credentials.Passphrase.Length > 0);
+
+			CredentialsChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void Dispose (bool disposing)
@@ -275,10 +381,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (disposing && !IsDisposed) {
 				privateKeyLocationTextEntry.Changed -= PrivateKeyLocationTextEntry_Changed;
 				publicKeyLocationTextEntry.Changed -= PublicKeyLocationTextEntry_Changed;
-				if (userTextEntry != null) {
-					userTextEntry.KeyPressed -= UserTextEntry_KeyPressed;
-				}
-				passwordEntry.Changed -= PasswordEntry_Changed;
+				passphraseEntry.Changed -= PasswordEntry_Changed;
 				privateKeyLocationButton.Clicked -= PrivateKeyLocationButton_Clicked;
 				publicKeyLocationButton.Clicked -= PublicKeyLocationButton_Clicked;
 			}
