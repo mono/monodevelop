@@ -150,12 +150,7 @@ namespace MonoDevelop.VersionControl.Git
 				return cred;
 			}
 
-			result = Runtime.RunInMainThread (delegate {
-				using (var credDlg = new CredentialsDialog (url, types, cred))
-					return MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
-			}).Result;
-
-			if (result) {
+			if (XwtCredentialsDialog.Run (url, types, cred).Result) {
 				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
 					var upcred = (UsernamePasswordCredentials)cred;
 					if (!string.IsNullOrEmpty (upcred.Password) && uri != null) {
