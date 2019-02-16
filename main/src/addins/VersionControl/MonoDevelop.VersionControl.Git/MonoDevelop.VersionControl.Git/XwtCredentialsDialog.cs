@@ -50,8 +50,8 @@ namespace MonoDevelop.VersionControl.Git
 		TextEntry userTextEntry;
 		const string credentialMarkupFormat = "<b>{0}</b>";
 
-		readonly Components.InformationPopoverWidget warningPublicKey = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
-		readonly Components.InformationPopoverWidget warningPrivateKey = new Components.InformationPopoverWidget () { Severity = Ide.Tasks.TaskSeverity.Warning };
+		readonly Components.InformationPopoverWidget warningPublicKey;
+		readonly Components.InformationPopoverWidget warningPrivateKey;
 
 		public XwtCredentialsDialog (string uri, SupportedCredentialTypes supportedCredential, Credentials credentials)
 		{
@@ -89,11 +89,15 @@ namespace MonoDevelop.VersionControl.Git
 			privateKeyLocationContainer.PackStart (privateKeyLocationLabel);
 
 			privateKeyLocationTextEntry = new TextEntry ();
+			privateKeyLocationTextEntry.Accessible.LabelWidget = privateKeyLocationLabel;
 			privateKeyLocationTextEntry.KeyPressed += PrivateKeyLocationTextEntry_Changed;
 			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true);
 
+			warningPrivateKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
 			privateKeyLocationContainer.PackStart (warningPrivateKey);
 			privateKeyLocationButton = new Button ("…");
+			privateKeyLocationButton.Accessible.LabelWidget = privateKeyLocationLabel;
+			privateKeyLocationButton.Accessible.Title = GettextCatalog.GetString ("Select a key file");
 			privateKeyLocationContainer.PackStart (privateKeyLocationButton);
 
 			//Public key location
@@ -107,11 +111,15 @@ namespace MonoDevelop.VersionControl.Git
 			publicKeyLocationContainer.PackStart (publicKeyLocationLabel);
 
 			publicKeyLocationTextEntry = new TextEntry ();
+			publicKeyLocationTextEntry.Accessible.LabelWidget = publicKeyLocationLabel;
 			publicKeyLocationTextEntry.KeyPressed += PublicKeyLocationTextEntry_KeyPressed;
 			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true);
 
+			warningPublicKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
 			publicKeyLocationContainer.PackStart (warningPublicKey);
 			publicKeyLocationButton = new Button ("…");
+			publicKeyLocationButton.Accessible.LabelWidget = publicKeyLocationLabel;
+			publicKeyLocationButton.Accessible.Title = GettextCatalog.GetString ("Select a key file");
 			publicKeyLocationContainer.PackStart (publicKeyLocationButton);
 
 			//user container
@@ -142,6 +150,7 @@ namespace MonoDevelop.VersionControl.Git
 			passwordContainer.PackStart (passwordLabel);
 
 			passwordEntry = new PasswordEntry () { MarginTop = 5 };
+			passwordEntry.Accessible.LabelWidget = passwordLabel;
 			passwordContainer.PackStart (passwordEntry, true);
 			passwordEntry.Changed += PasswordEntry_Changed;
 
@@ -258,6 +267,7 @@ namespace MonoDevelop.VersionControl.Git
 				hasPassphrase = passwordEntry.Sensitive = GitCredentials.KeyHasPassphrase (privateKeyLocationTextEntry.Text);
 				if (!hasPassphrase) {
 					passwordEntry.Password = "";
+					passwordEntry.PlaceholderText = passwordEntry.Accessible.Description = GettextCatalog.GetString ("Private Key is not encrypted");
 					passwordEntry.Sensitive = false;
 				}
 				warningPrivateKey.Hide ();
