@@ -25,18 +25,19 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
 	public class DefaultLogViewHandler : IVersionControlViewHandler
 	{
-		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
+		public bool CanHandle (VersionControlItem item, DocumentController primaryView)
 		{
 			return true;
 		}
 
-		public BaseViewContent CreateView (VersionControlDocumentInfo info)
+		public DocumentController CreateView (VersionControlDocumentInfo info)
 		{
 			return new LogView (info);
 		}

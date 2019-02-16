@@ -1,4 +1,4 @@
-
+﻿
 //
 // EditorCompareWidgetBase.cs
 //
@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.info = info;
 
-			var mimeType = DesktopService.GetMimeTypeForUri (info.Item.Path);
+			var mimeType = IdeServices.DesktopService.GetMimeTypeForUri (info.Item.Path);
 			foreach (var editor in editors) {
 				editor.Document.IgnoreFoldings = true;
 				editor.Document.MimeType = mimeType;
@@ -606,7 +606,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void UpdateLocalText ()
 		{
-			var text = info.Document.GetContent<ITextFile> ();
+			var text = info.Controller.GetContent<ITextFile> ();
 			foreach (var data in dict.Values) {
 				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 				data.Document.Text = text.Text;
@@ -621,7 +621,7 @@ namespace MonoDevelop.VersionControl.Views
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
 			dict[data.Document] = data;
 			
-			var editor = info.Document.ParentDocument.Editor;
+			var editor = info.Document.Editor;
 			if (editor != null) {
 				data.Document.Text = editor.Text;
 				data.Document.IsReadOnly = editor.IsReadOnly;
@@ -635,7 +635,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
-			var editor = info.Document.ParentDocument.Editor;
+			var editor = info.Document.Editor;
 			foreach (var change in e.TextChanges.Reverse ()) {
 				editor.ReplaceText (change.Offset, change.RemovalLength, change.InsertedText);
 			}

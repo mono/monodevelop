@@ -26,13 +26,14 @@
 
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl {
 	
 	public interface IVersionControlViewHandler
 	{
-		bool CanHandle (VersionControlItem item, DocumentView primaryView);
-		BaseViewContent CreateView (VersionControlDocumentInfo info);
+		bool CanHandle (VersionControlItem item, DocumentController controller);
+		DocumentController CreateView (VersionControlDocumentInfo info);
 	}
 }
 

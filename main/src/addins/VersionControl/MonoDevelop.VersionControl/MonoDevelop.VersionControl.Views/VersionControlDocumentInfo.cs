@@ -29,6 +29,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -36,10 +37,17 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		bool alreadyStarted = false;
 		
-		public DocumentView Document {
+		public Document Document {
 			get;
 			set;
 		}
+
+		public VersionControlDocumentController VersionControlExtension {
+			get;
+			set;
+		}
+
+		public DocumentController Controller { get; }
 
 		public VersionControlItem Item {
 			get;
@@ -60,9 +68,10 @@ namespace MonoDevelop.VersionControl.Views
 			get { return alreadyStarted; }
 		}
 
-		public VersionControlDocumentInfo (DocumentView document, VersionControlItem item, Repository repository)
+		public VersionControlDocumentInfo (VersionControlDocumentController versionControlExtension, DocumentController controller, VersionControlItem item, Repository repository)
 		{
-			this.Document = document;
+			this.VersionControlExtension = versionControlExtension;
+			Controller = controller;
 			this.Item = item;
 			item.Repository = repository;
 		}

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -36,26 +37,31 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
+	class DiffView : DocumentController, IDiffView, IUndoHandler, IClipboardHandler
 	{
 		DiffWidget widget;
 
-		public override Control Control { 
-			get {
-				if (widget == null) {
-					widget = new DiffWidget (info);
-					
-					ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
-					ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
-					widget.ShowAll ();
-					widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
-				}
-				return widget;
+		void CreateWiget ()
+		{
+			if (widget == null) {
+				widget = new DiffWidget (info);
+
+				ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
+				ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
+				widget.ShowAll ();
 			}
 		}
-		
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			CreateWiget ();
+			widget.SetToolbar (view.GetToolbar ());
+			return widget;
+		}
+
 		public ComparisonWidget ComparisonWidget {
 			get {
+				CreateWiget ();
 				return this.widget.ComparisonWidget;
 			}
 		}
@@ -67,19 +73,9 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		VersionControlDocumentInfo info;
-		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"), GettextCatalog.GetString ("Shows the differences in the code between the current code and the version in the repository"))
+		public DiffView (VersionControlDocumentInfo info)
 		{
 			this.info = info;
-		}
-		
-		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base (GettextCatalog.GetString ("Changes"))
-		{
-			this.info = info;
-			widget = new DiffWidget (info);
-			ComparisonWidget.SetRevision (ComparisonWidget.DiffEditor, baseRev);
-			ComparisonWidget.SetRevision (ComparisonWidget.OriginalEditor, toRev);
-			
-			widget.ShowAll ();
 		}
 		
 		#region IAttachableViewContent implementation
@@ -94,7 +90,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
-			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
 				int line = loc.Line < 1 ? 1 : loc.Line;
@@ -114,7 +110,7 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
 			ComparisonWidget.SizeAllocated -= HandleComparisonWidgetSizeAllocated;
-			var sourceEditorView = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			var sourceEditorView = info.Controller.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditorView != null) {
 				int line = GetLineInCenter (sourceEditorView.TextEditor);
 				ComparisonWidget.OriginalEditor.CenterTo (line, 1);
@@ -124,7 +120,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void OnDeselected ()
 		{
-			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
+			var sourceEditor = info.Controller.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (sourceEditor != null) {
 				sourceEditor.TextEditor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
 				
