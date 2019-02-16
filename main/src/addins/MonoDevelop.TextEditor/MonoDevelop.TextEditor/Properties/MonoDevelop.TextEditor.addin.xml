@@ -83,6 +83,7 @@
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeSignatureHelpCommandArgs" />
 
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickFixCommandArgs" />
 	</Extension>
