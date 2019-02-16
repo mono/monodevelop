@@ -140,7 +140,7 @@ namespace MonoDevelop.VersionControl.Git
 							var engine = Platform.IsMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
 							engine.Invoke (() => {
 								using (var xwtDialog = new XwtCredentialsDialog (url, types, cred)) {
-									response = xwtDialog.Run (MessageService.RootWindow) != Xwt.Command.Ok;
+									response = xwtDialog.Run (MessageService.RootWindow) == Xwt.Command.Ok;
 								}
 							});
 

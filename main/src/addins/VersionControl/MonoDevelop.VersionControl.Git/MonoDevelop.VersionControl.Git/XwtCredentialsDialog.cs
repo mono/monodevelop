@@ -154,26 +154,12 @@ namespace MonoDevelop.VersionControl.Git
 			passwordEntry.Changed += PasswordEntry_Changed;
 
 			//Buttons
-			cancelButton = new Xwt.DialogButton (Command.Cancel);
-			Buttons.Add (cancelButton);
-			cancelButton.Clicked += CancelButton_Clicked;
-
-			okButton = new Xwt.DialogButton (Command.Ok);
-			Buttons.Add (okButton);
-			okButton.Clicked += OkButton_Clicked;
+			Buttons.Add (new DialogButton (Command.Cancel));
+			Buttons.Add (okButton = new DialogButton (Command.Ok));
+			DefaultCommand = Command.Ok;
 
 			privateKeyLocationButton.Clicked += PrivateKeyLocationButton_Clicked;
 			publicKeyLocationButton.Clicked += PublicKeyLocationButton_Clicked;
-			RefreshPasswordState ();
-		}
-
-		void PasswordEntry_Changed (object sender, EventArgs e)
-		{
-			if (cred is UsernamePasswordCredentials usernamePasswordCredentials) {
-				usernamePasswordCredentials.Password = passwordEntry.Password ?? string.Empty;
-			} else if (cred is SshUserKeyCredentials userKeyCredentials) {
-				userKeyCredentials.Passphrase = passwordEntry.Password ?? string.Empty;
-			}
 			RefreshPasswordState ();
 		}
 
@@ -201,16 +187,20 @@ namespace MonoDevelop.VersionControl.Git
 			};
 		}
 
-		void OkButton_Clicked (object sender, EventArgs e)
+		protected override void OnCommandActivated (Command cmd)
 		{
-			if (cred is SshUserKeyCredentials ssh) {
-				ssh.PrivateKey = privateKeyLocationTextEntry.Text;
-				ssh.PublicKey = publicKeyLocationTextEntry.Text;
+			if (cmd == Command.Ok) {
+				if (cred is SshUserKeyCredentials ssh) {
+					ssh.PrivateKey = privateKeyLocationTextEntry.Text;
+					ssh.PublicKey = publicKeyLocationTextEntry.Text;
+					ssh.Passphrase = passwordEntry.Password ?? string.Empty;
+				} else if (cred is UsernamePasswordCredentials basic) {
+					basic.Username = userTextEntry.Text;
+					basic.Password = passwordEntry.Password ?? string.Empty;
+				}
 			}
-			Close ();
+			base.OnCommandActivated (cmd);
 		}
-
-		void CancelButton_Clicked (object sender, EventArgs e) => Close ();
 
 		void PrivateKeyLocationButton_Clicked (object sender, EventArgs e)
 		{
@@ -236,15 +226,10 @@ namespace MonoDevelop.VersionControl.Git
 			};
 		}
 
-		void UserTextEntry_KeyPressed (object sender, KeyEventArgs e)
-		{
-			if (cred is UsernamePasswordCredentials usernamePasswordCredentials) {
-				usernamePasswordCredentials.Username = userTextEntry.Text;
-			}
-		}
-
 		void PrivateKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
 		void PublicKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
+		void UserTextEntry_KeyPressed (object sender, KeyEventArgs e) => RefreshPasswordState ();
+		void PasswordEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
 
 		static bool ValidatePrivateKey (FilePath privateKey)
 		{
@@ -293,8 +278,6 @@ namespace MonoDevelop.VersionControl.Git
 				userTextEntry.KeyPressed -= UserTextEntry_KeyPressed;
 			}
 			passwordEntry.Changed -= PasswordEntry_Changed;
-			okButton.Clicked -= OkButton_Clicked;
-			cancelButton.Clicked -= CancelButton_Clicked;
 			privateKeyLocationButton.Clicked -= PrivateKeyLocationButton_Clicked;
 			publicKeyLocationButton.Clicked -= PublicKeyLocationButton_Clicked;
 
