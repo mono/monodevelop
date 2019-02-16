@@ -33,6 +33,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using Microsoft.VisualStudio.Text;
 
 namespace Mono.TextEditor
 {
@@ -148,6 +149,7 @@ namespace Mono.TextEditor
 		bool resetCaret = true;
 		readonly int caretOffset;
 		readonly ITextSourceVersion caretOffsetVersion;
+		ITextBuffer buffer;
 
 		public EditMode OldMode {
 			get;
@@ -278,9 +280,10 @@ namespace Mono.TextEditor
 					textLinkMarkers.Add (marker);
 				}
 			}
-			
+
+			buffer = Editor.Document.TextBuffer;
 			editor.Document.BeforeUndoOperation += HandleEditorDocumentBeginUndo;
-			Editor.Document.TextBuffer.Changed += UpdateLinksOnTextReplace;
+			buffer.Changed += UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
 			this.HandlePositionChanged (null, null);
@@ -318,7 +321,7 @@ namespace Mono.TextEditor
 			isExited = true;
 
 			Editor.Document.BeforeUndoOperation -= HandleEditorDocumentBeginUndo;
-			Editor.Document.TextBuffer.Changed -= UpdateLinksOnTextReplace;
+			buffer.Changed -= UpdateLinksOnTextReplace;
 			Editor.Caret.PositionChanged -= HandlePositionChanged;
 			DestroyHelpWindow ();
 			textLinkMarkers.ForEach (m => Editor.Document.RemoveMarker (m));

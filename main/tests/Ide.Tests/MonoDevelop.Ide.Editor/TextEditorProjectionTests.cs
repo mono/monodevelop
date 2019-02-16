@@ -36,6 +36,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.Editor
 	public class TextEditorProjectionTests : IdeTestBase
 	{
 		[Test]
-		public void TestProjectionUpdate ()
+		public async Task TestProjectionUpdate ()
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.Text = "1234567890";
@@ -58,13 +59,11 @@ namespace MonoDevelop.Ide.Editor
 				segments.Add (new ProjectedSegment (i * 2, 2 + i * 4, 2));
 			}
 			var projection = new Projection.Projection (projectedDocument, segments);
-			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			tww.ViewContent = content;
+			await content.Initialize (new FileDescriptor ("Foo.cs", null, null));
 
-			var originalContext = new Document (tww);
-
-			using (var testCase = new TextEditorExtensionTestCase (originalContext, content, tww, null, false)) {
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var originalContext = testCase.Document.DocumentContext;
 				var projectedEditor = projection.CreateProjectedEditor (originalContext);
 				editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.All);
 				editor.InsertText (1, "foo");
@@ -80,7 +79,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
-		public void TestProjectionHighlighting ()
+		public async Task TestProjectionHighlighting ()
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var options = new CustomEditorOptions (editor.Options);
@@ -98,12 +97,12 @@ namespace MonoDevelop.Ide.Editor
 				segments.Add (new ProjectedSegment (i * 2, 2 + i * 4, 2));
 			}
 			var projection = new Projection.Projection (projectedDocument, segments);
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
 
-			var originalContext = new Document (tww);
-			using (var testCase = new TextEditorExtensionTestCase (originalContext, content, tww, null, false)) {
+			var content = new TestViewContent ();
+			await content.Initialize (new FileDescriptor ("Foo.cs", null, null));
+
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
+				var originalContext = testCase.Document.DocumentContext;
 				var projectedEditor = projection.CreateProjectedEditor (originalContext);
 				projectedEditor.SemanticHighlighting = new TestSemanticHighlighting (projectedEditor, originalContext);
 				editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
@@ -135,7 +134,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
-		public void TestProjectionCompletion ()
+		public async Task TestProjectionCompletion ()
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var options = new CustomEditorOptions (editor.Options);
@@ -153,30 +152,32 @@ namespace MonoDevelop.Ide.Editor
 				segments.Add (new ProjectedSegment (i * 2, 2 + i * 4, 2));
 			}
 			var projection = new Projection.Projection (projectedDocument, segments);
-			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-			tww.ViewContent = content;
+			await content.Initialize (new FileDescriptor ("Foo.cs", null, null));
 
-			var originalContext = new Document (tww);
-			var projectedEditor = projection.CreateProjectedEditor (originalContext);
-			TestCompletionExtension orignalExtension;
-			editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (editor)  } });
-			TestCompletionExtension projectedExtension;
-			projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (projectedEditor) } });
+			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 
-			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
-			editor.CaretOffset = 1;
+				var originalContext = testCase.Document.DocumentContext;
+				var projectedEditor = projection.CreateProjectedEditor (originalContext);
+				TestCompletionExtension orignalExtension;
+				editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (editor) } });
+				TestCompletionExtension projectedExtension;
+				projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) { CompletionWidget = new EmptyCompletionWidget (projectedEditor) } });
 
-			var service = new CommandManager ();
-			service.LoadCommands ("/MonoDevelop/Ide/Commands");
-			service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
-			Assert.IsFalse (orignalExtension.CompletionRun);
-			Assert.IsTrue (projectedExtension.CompletionRun);
+				editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
+				editor.CaretOffset = 1;
 
-			editor.CaretOffset = 15;
-			CompletionWindowManager.HideWindow ();
-			service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
-			Assert.IsTrue (orignalExtension.CompletionRun);
+				var service = new CommandManager ();
+				service.LoadCommands ("/MonoDevelop/Ide/Commands");
+				service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
+				Assert.IsFalse (orignalExtension.CompletionRun);
+				Assert.IsTrue (projectedExtension.CompletionRun);
+
+				editor.CaretOffset = 15;
+				CompletionWindowManager.HideWindow ();
+				service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
+				Assert.IsTrue (orignalExtension.CompletionRun);
+			}
 		}
 
 		class TestCompletionExtension : CompletionTextEditorExtension

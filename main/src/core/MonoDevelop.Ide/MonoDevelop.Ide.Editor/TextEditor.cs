@@ -1,4 +1,4 @@
-//
+﻿//
 // ITextEditor.cs
 //
 // Author:
@@ -1087,16 +1087,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		TextEditorViewContent viewContent;
-		internal ViewContent GetViewContent ()
-		{
-			if (viewContent == null) {
-				viewContent = new TextEditorViewContent (this, textEditorImpl);
-			}
-
-			return viewContent;
-		}
-
 		internal IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false)
 		{
 			return textEditorImpl.CreateFoldSegment (offset, length, isFolded);
@@ -1169,7 +1159,7 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+			var mimetypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			var newExtensions = new List<TextEditorExtension> ();
 
 			foreach (TextEditorExtensionNode extNode in extensions) {

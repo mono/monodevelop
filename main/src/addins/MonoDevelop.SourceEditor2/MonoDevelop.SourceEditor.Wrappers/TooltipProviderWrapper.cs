@@ -73,7 +73,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
-			var task = provider.GetItem (wrappedEditor, doc, offset, token);
+			var task = provider.GetItem (wrappedEditor, doc.DocumentContext, offset, token);
 			if (task == null) {
 				LoggingService.LogWarning ("Tooltip provider " + provider + " gave back null on GetItem (should always return a non null task).");
 				return null;
@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
 				return null;
-			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, item, offset, modifierState.ToXwtValue ());
+			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument.DocumentContext, item, offset, modifierState.ToXwtValue ());
 			if (control == null)
 				return null;
 			return control;

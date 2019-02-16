@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Editor
 					RemoveTrailingWhitespaces = true
 				};
 				doc.Editor.IndentationTracker = new TestIndentTracker ("    ");
-				await doc.UpdateParseDocument ();
+				await doc.DocumentContext.UpdateParseDocument ();
 				snippet.Insert (doc);
 				return doc.Editor;
 			}
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Editor
 				var doc = testCase.Document;
 				doc.Editor.CaretOffset = doc.Editor.Length;
 				var extensibleEditor = doc.Editor.GetContent<SourceEditorView> ().TextEditor;
-				Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document));
+				Assert.IsTrue (extensibleEditor.DoInsertTemplate (doc.Editor, testCase.Document.DocumentContext));
 			}
 		}
 
