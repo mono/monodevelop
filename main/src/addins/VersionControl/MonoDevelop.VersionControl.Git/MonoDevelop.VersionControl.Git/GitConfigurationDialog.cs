@@ -363,7 +363,7 @@ namespace MonoDevelop.VersionControl.Git
 			System.Threading.Tasks.Task.Run (() => {
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Pushing Tag"), 1);
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Pushing Tag '{0}' to '{0}'", tagName, repo.Url));
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Pushing Tag '{0}' to '{1}'", tagName, repo.Url));
 					repo.PushTag (tagName);
 					monitor.Step (1);
 					monitor.EndTask ();
