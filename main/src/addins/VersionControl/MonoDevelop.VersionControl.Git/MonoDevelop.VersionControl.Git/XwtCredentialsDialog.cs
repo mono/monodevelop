@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			privateKeyLocationTextEntry = new TextEntry ();
 			privateKeyLocationTextEntry.Accessible.LabelWidget = privateKeyLocationLabel;
-			privateKeyLocationTextEntry.KeyPressed += PrivateKeyLocationTextEntry_Changed;
+			privateKeyLocationTextEntry.Changed += PrivateKeyLocationTextEntry_Changed;
 			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
 
 			warningPrivateKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			publicKeyLocationTextEntry = new TextEntry ();
 			publicKeyLocationTextEntry.Accessible.LabelWidget = publicKeyLocationLabel;
-			publicKeyLocationTextEntry.KeyPressed += PublicKeyLocationTextEntry_KeyPressed;
+			publicKeyLocationTextEntry.Changed += PublicKeyLocationTextEntry_Changed;
 			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
 
 			warningPublicKey = new Components.InformationPopoverWidget { Severity = Ide.Tasks.TaskSeverity.Warning };
@@ -244,7 +244,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 		void PrivateKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
-		void PublicKeyLocationTextEntry_KeyPressed (object sender, KeyEventArgs e) => RefreshPasswordState ();
+		void PublicKeyLocationTextEntry_Changed (object sender, EventArgs e) => RefreshPasswordState ();
 
 		static bool ValidatePrivateKey (FilePath privateKey)
 		{
@@ -287,8 +287,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void Dispose (bool disposing)
 		{
-			privateKeyLocationTextEntry.KeyPressed -= PrivateKeyLocationTextEntry_Changed;
-			publicKeyLocationTextEntry.KeyPressed -= PublicKeyLocationTextEntry_KeyPressed;
+			privateKeyLocationTextEntry.Changed -= PrivateKeyLocationTextEntry_Changed;
+			publicKeyLocationTextEntry.Changed -= PublicKeyLocationTextEntry_Changed;
 			if (userTextEntry != null) {
 				userTextEntry.KeyPressed -= UserTextEntry_KeyPressed;
 			}
