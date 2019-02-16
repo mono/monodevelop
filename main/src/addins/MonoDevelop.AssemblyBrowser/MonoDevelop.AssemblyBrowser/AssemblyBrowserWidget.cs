@@ -1,4 +1,4 @@
-//
+﻿//
 // AssemblyBrowserWidget.cs
 //
 // Author:
@@ -883,7 +883,7 @@ namespace MonoDevelop.AssemblyBrowser
 							assemblyBrowserView.Load (cu.FileName);
 						}
 						IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-						((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (link);
+						Open (link);
 					} else {
 						this.Open (link, loader);
 					}
@@ -1244,7 +1244,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!suspendNavigation) {
 				var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IMemberDefinition;
 				if (selectedEntity != null)
-					NavigationHistoryService.LogActiveDocument ();
+					IdeServices.NavigationHistoryService.LogActiveDocument ();
 			}
 			notebook1.Page = 0;
 			GenerateOutput ();
