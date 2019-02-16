@@ -49,13 +49,14 @@
     <Compile Include="Mono.MHex\HexEditorOptions.cs" />
     <Compile Include="Mono.MHex\DeleteActions.cs" />
     <Compile Include="Mono.MHex.Data\ReplaceEventArgs.cs" />
-    <Compile Include="MonoDevelop.HexEditor\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorView.cs" />
     <Compile Include="MonoDevelop.HexEditor\MonoDevelopHexEditorStyle.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorNodeExtension.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorVisualizer.cs" />
     <Compile Include="Mono.MHex\HexEditorDebugger.cs" />
+    <Compile Include="Mono.MHex.Data\ByteBufferModel.cs" />
+    <Compile Include="Mono.MHex.Data\ByteBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
