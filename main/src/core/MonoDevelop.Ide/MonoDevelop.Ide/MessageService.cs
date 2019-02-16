@@ -407,31 +407,44 @@ namespace MonoDevelop.Ide
 		/// <summary>Centers a window relative to its parent.</summary>
 		static void CenterWindow (Window childControl, Window parentControl)
 		{
+			var gtkChild = childControl?.nativeWidget as Gtk.Window;
+			var gtkParent = parentControl?.nativeWidget as Gtk.Window;
 #if MAC
-			NSWindow nsChild = childControl, nsParent = parentControl;
-			if (nsParent == null || !nsParent.IsVisible) {
-				nsChild.Center ();
-			} else {
-				int x = (int) (Math.Max (0, (nsParent.Frame.Width - nsChild.Frame.Width) / 2) + nsParent.Frame.X);
-				int y = (int) (Math.Max (0, (nsParent.Frame.Height - nsChild.Frame.Height) / 2) + nsParent.Frame.Y);
-				nsChild.SetFrame (new CoreGraphics.CGRect (x, y, nsChild.Frame.Width, nsChild.Frame.Height), true);
+			var nsChild = childControl?.nativeWidget as NSWindow;
+			var nsParent = parentControl?.nativeWidget as NSWindow;
+
+			if (nsChild != null) {
+				if (nsParent == null || !nsParent.IsVisible) {
+					nsChild.Center ();
+				} else {
+					int x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2));
+					int y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2));
+					nsChild.SetFrame (new CoreGraphics.CGRect (x, y, nsChild.Frame.Width, nsChild.Frame.Height), true);
+				}
+
+				return;
 			}
-#else
-			if (childControl.nativeWidget is Gtk.Window gtkChild) {
+#endif
+			if (gtkChild != null) {
 				gtkChild.Child.Show ();
 				int x, y;
 				gtkChild.GetSize (out var w, out var h);
-				if (parentControl?.nativeWidget is Gtk.Window gtkParent) {
+				if (gtkParent != null) {
 					gtkParent.GetSize (out var winw, out var winh);
 					gtkParent.GetPosition (out var winx, out var winy);
 					x = Math.Max (0, (winw - w) / 2) + winx;
 					y = Math.Max (0, (winh - h) / 2) + winy;
 					gtkChild.Move (x, y);
+#if MAC
+				} else if (nsParent != null) {
+					x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2));
+					y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2));
+					gtkChild.Move (x, y);
+#endif
 				} else {
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
 				}
 			}
-#endif
 		}
 		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)
