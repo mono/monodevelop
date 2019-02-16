@@ -303,6 +303,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			base.Dispose (finalize);
+
+			// Do this at the end so solution removal from base disposal is done properly.
+			MonoDevelopSolution = null;
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
