@@ -4,41 +4,32 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.WebBrowser;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.GettingStarted
 {
-	public class GettingStartedViewContent : ViewContent
+	public class GettingStartedViewContent : DocumentController
 	{
 		Control gettingStartedWidget;
-		
+
+
 		public GettingStartedViewContent (Project project, GettingStartedProvider provider)
 		{
-			Project = project;
+			Owner = project;
 			gettingStartedWidget = provider.GetGettingStartedWidget (project);
-			ContentName = GettextCatalog.GetString ("Getting Started");
-		}
-
-		public override Control Control {
-			get {
-				return gettingStartedWidget;
-			}
-		}
-
-		public override bool IsViewOnly {
-			get {
-				return true;
-			}
-		}
-
-		public override bool IsFile {
-			get {
-				return false;
-			}
+			DocumentTitle = GettextCatalog.GetString ("Getting Started");
+			IsReadOnly = true;
 		}
 
 		public override object GetDocumentObject ()
 		{
-			return Project.GetGettingStartedNode ();
+			return ((Project)Owner).GetGettingStartedNode ();
+		}
+
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			return gettingStartedWidget;
 		}
 	}
 }
