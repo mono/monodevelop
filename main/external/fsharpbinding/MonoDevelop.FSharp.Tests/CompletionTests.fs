@@ -8,10 +8,17 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
 
 type ParseBeforeCompletion = Parse | NoParse
 
 type ``Completion Tests``() =
+
+    [<SetUp;AsyncStateMachine(typeof<Task>)>]
+    let ``run before test``() =
+        FixtureSetup.initialiseMonoDevelopAsync()
+
     let getParseResults (documentContext:DocumentContext, _text) =
         async {
             return documentContext.TryGetAst()
