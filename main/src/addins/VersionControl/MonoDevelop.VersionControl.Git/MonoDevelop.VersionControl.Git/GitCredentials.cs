@@ -59,6 +59,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		// Gather keys on initialize.
 		static readonly List<string> Keys = new List<string> ();
+		static readonly List<string> PublicKeys = new List<string> ();
 
 		static Dictionary<GitCredentialsType, GitCredentialsState> credState = new Dictionary<GitCredentialsType, GitCredentialsState> ();
 
@@ -71,10 +72,12 @@ namespace MonoDevelop.VersionControl.Git
 					return;
 			}
 
-			foreach (var privateKey in Directory.EnumerateFiles (keyStorage)) {
+			foreach (FilePath privateKey in Directory.EnumerateFiles (keyStorage)) {
 				string publicKey = privateKey + ".pub";
-				if (File.Exists (publicKey) && !KeyHasPassphrase (privateKey))
+				if (File.Exists (publicKey) && (!KeyHasPassphrase (privateKey) || privateKey.FileName == "id_rsa")) { // always add the default key
 					Keys.Add (privateKey);
+					PublicKeys.Add (publicKey);
+				}
 			}
 		}
 
@@ -122,31 +125,55 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				}
 
-				int key;
-				if (!state.KeyForUrl.TryGetValue (url, out key)) {
+				int keyIndex;
+				if (state.KeyForUrl.TryGetValue (url, out keyIndex))
+					state.KeyUsed = keyIndex;
+				else {
 					if (state.KeyUsed + 1 < Keys.Count)
 						state.KeyUsed++;
 					else {
-
-						cred = new SshUserKeyCredentials {
+						var sshCred = new SshUserKeyCredentials {
 							Username = userFromUrl,
-							Passphrase = "",
-						
+							Passphrase = string.Empty
 						};
+						cred = sshCred;
 
-						if (XwtCredentialsDialog.Run (url, types, cred).Result)
+						if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+							keyIndex = Keys.IndexOf (sshCred.PrivateKey);
+							if (keyIndex < 0) {
+								Keys.Add (sshCred.PrivateKey);
+								PublicKeys.Add (sshCred.PublicKey);
+								state.KeyUsed++;
+							} else
+								state.KeyUsed = keyIndex;
 							return cred;
+						}
 						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
 					}
-				} else
-					state.KeyUsed = key;
+				}
 
+				var key = Keys [state.KeyUsed];
 				cred = new SshUserKeyCredentials {
 					Username = userFromUrl,
-					Passphrase = "",
-					PrivateKey = Keys [state.KeyUsed],
-					PublicKey = Keys [state.KeyUsed] + ".pub",
+					Passphrase = string.Empty,
+					PrivateKey = key,
+					PublicKey = PublicKeys [state.KeyUsed]
 				};
+
+				if (KeyHasPassphrase (key)) {
+					if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+						var sshCred = (SshUserKeyCredentials)cred;
+						keyIndex = Keys.IndexOf (sshCred.PrivateKey);
+						if (keyIndex < 0) {
+							Keys.Add (sshCred.PrivateKey);
+							PublicKeys.Add (sshCred.PublicKey);
+							state.KeyUsed++;
+						} else
+							state.KeyUsed = keyIndex;
+					} else
+						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+				}
+
 				return cred;
 			}
 
