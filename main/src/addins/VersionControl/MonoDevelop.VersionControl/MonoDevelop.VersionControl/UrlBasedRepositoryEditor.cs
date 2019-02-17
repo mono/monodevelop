@@ -11,6 +11,7 @@ namespace MonoDevelop.VersionControl
 	{
 		UrlBasedRepository repo;
 		public event EventHandler<EventArgs> PathChanged;
+		public event EventHandler<EventArgs> UrlChanged;
 		bool updating;
 		List<string> protocols = new List<string> ();
 
@@ -53,6 +54,10 @@ namespace MonoDevelop.VersionControl
 			get { return repositoryPathEntry.Text; }
 		}
 
+		public string RepositoryServer {
+			get { return repositoryServerEntry.Text; }
+		}
+
 		bool ParseSSHUrl (string url)
 		{
 			if (!url.Contains (':'))
@@ -81,6 +86,7 @@ namespace MonoDevelop.VersionControl
 			comboProtocol.Active = protocols.IndexOf ("ssh");
 			comboProtocol.Sensitive = false;
 			PathChanged?.Invoke (this, EventArgs.Empty);
+			UrlChanged?.Invoke (this, EventArgs.Empty);
 			return true;
 		}
 		
@@ -133,6 +139,7 @@ namespace MonoDevelop.VersionControl
 					repo.Name = repo.Uri.Host;
 			}
 			updating = false;
+			UrlChanged?.Invoke (this, EventArgs.Empty);
 		}
 		
 		void UpdateControls ()
