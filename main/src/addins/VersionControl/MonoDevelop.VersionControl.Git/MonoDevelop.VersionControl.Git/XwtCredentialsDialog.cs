@@ -152,7 +152,7 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			Add (userLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 			userLabel.TextAlignment = Alignment.End;
-			userTextEntry = new TextEntry { Text = creds?.Username ?? string.Empty };
+			userTextEntry = new TextEntry { Text = Credentials.Username ?? string.Empty };
 			Add (userTextEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 10 : -1);
 
 			userTextEntry.Changed += UserTextEntry_Changed;
@@ -166,7 +166,7 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			Add (passwordLabel, 0, inputContainerCurrentRow, hexpand: false, vpos: WidgetPlacement.Center);
 
-			passwordEntry = new PasswordEntry () { Password = creds?.Password ?? string.Empty, MarginTop = 5 };
+			passwordEntry = new PasswordEntry () { Password = Credentials.Password ?? string.Empty, MarginTop = 5 };
 			passwordEntry.Accessible.LabelWidget = passwordLabel;
 			Add (passwordEntry, 1, inputContainerCurrentRow, hexpand: true, vpos: WidgetPlacement.Center, marginRight: Toolkit.CurrentEngine.Type == ToolkitType.XamMac ? 10 : -1);
 			passwordEntry.Changed += PasswordEntry_Changed;
@@ -230,7 +230,7 @@ namespace MonoDevelop.VersionControl.Git
 			var privateKeyLocationContainer = new HBox ();
 			Add (privateKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
 
-			privateKeyLocationTextEntry = new TextEntry ();
+			privateKeyLocationTextEntry = new TextEntry { Text = Credentials.PrivateKey ?? string.Empty };
 			privateKeyLocationTextEntry.Accessible.LabelWidget = privateKeyLocationLabel;
 			privateKeyLocationTextEntry.Changed += PrivateKeyLocationTextEntry_Changed;
 			privateKeyLocationContainer.PackStart (privateKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
@@ -253,7 +253,7 @@ namespace MonoDevelop.VersionControl.Git
 			var publicKeyLocationContainer = new HBox ();
 			Add (publicKeyLocationContainer, 1, inputContainerCurrentRow, hexpand: true);
 
-			publicKeyLocationTextEntry = new TextEntry ();
+			publicKeyLocationTextEntry = new TextEntry { Text = Credentials.PublicKey ?? string.Empty };
 			publicKeyLocationTextEntry.Accessible.LabelWidget = publicKeyLocationLabel;
 			publicKeyLocationTextEntry.Changed += PublicKeyLocationTextEntry_Changed;
 			publicKeyLocationContainer.PackStart (publicKeyLocationTextEntry, true, vpos: WidgetPlacement.Center);
