@@ -52,51 +52,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		public override IWorkspaceTaskScheduler CreateEventingTaskQueue ()
 		{
-			// When we are creating the workspace, we might not actually have established what the UI thread is, since
-			// we might be getting created via MEF. So we'll allow the queue to be created now, and once we actually need
-			// to queue something we'll then start using the task queue from there.
-			// In Visual Studio, we raise these events on the UI thread. At this point we should know
-			// exactly which thread that is.
-			return new MonoDevelopTaskScheduler (this);
-		}
-
-		class MonoDevelopTaskScheduler : IWorkspaceTaskScheduler
-		{
-			readonly Lazy<WorkspaceTaskQueue> _queue;
-			readonly MonoDevelopTaskSchedulerFactory _factory;
-
-			public MonoDevelopTaskScheduler (MonoDevelopTaskSchedulerFactory factory)
-			{
-				_factory = factory;
-				_queue = new Lazy<WorkspaceTaskQueue> (CreateQueue);
-			}
-
-			WorkspaceTaskQueue CreateQueue ()
-			{
-				// At this point, we have to know what the UI thread is.
-				Contract.ThrowIfFalse (_factory._threadingContext.HasMainThread);
-				return new WorkspaceTaskQueue (_factory, new JoinableTaskFactoryTaskScheduler (_factory._threadingContext.JoinableTaskFactory));
-			}
-
-			public Task ScheduleTask (Action taskAction, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskAction, taskName, cancellationToken);
-			}
-
-			public Task<T> ScheduleTask<T> (Func<T> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
-			}
-
-			public Task ScheduleTask (Func<Task> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
-			}
-
-			public Task<T> ScheduleTask<T> (Func<Task<T>> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
-			}
+			return new WorkspaceTaskQueue(this, new JoinableTaskFactoryTaskScheduler(_threadingContext.JoinableTaskFactory));
 		}
 
 		class JoinableTaskFactoryTaskScheduler : TaskScheduler
