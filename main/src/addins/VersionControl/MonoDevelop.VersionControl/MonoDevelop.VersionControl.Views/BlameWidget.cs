@@ -532,12 +532,11 @@ namespace MonoDevelop.VersionControl.Views
 			protected void OnShowBlameBefore ()
 			{
 				var current = menuAnnotation?.Revision;
-				history.Push (current);
-
 				var rev = current?.GetPrevious () ?? widget.info.History.FirstOrDefault ();
 				if (rev == null)
 					return;
-				
+
+				history.Push (current);
 				widget.revision = rev;
 				UpdateAnnotations ();
 			}
