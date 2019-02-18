@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections;
 using System.Collections.Specialized;
@@ -129,7 +129,7 @@ namespace MonoDevelop.Deployment.Linux
 			sortedmt.Sort ();
 			
 			foreach (string mt in sortedmt) {
-				string desc = DesktopService.GetMimeTypeDescription (mt);
+				string desc = IdeServices.DesktopService.GetMimeTypeDescription (mt);
 				storeMimeTypes.AppendValues (mt, desc);
 			}
 			
@@ -305,7 +305,7 @@ namespace MonoDevelop.Deployment.Linux
 					if (!entry.MimeTypes.Contains (mt)) {
 						entry.MimeTypes.Add (mt);
 						storeMimeTypes.SetValue (iter, 0, mt);
-						storeMimeTypes.SetValue (iter, 1, DesktopService.GetMimeTypeDescription (mt));
+						storeMimeTypes.SetValue (iter, 1, IdeServices.DesktopService.GetMimeTypeDescription (mt));
 						
 						if (!string.IsNullOrEmpty (oldmt))
 							// It is a modification. Remove the old name.
