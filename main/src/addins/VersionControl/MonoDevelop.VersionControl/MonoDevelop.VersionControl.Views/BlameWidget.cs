@@ -560,7 +560,7 @@ namespace MonoDevelop.VersionControl.Views
 			[CommandUpdateHandler (BlameCommands.ShowPreviousBlame)]
 			protected void OnUpdateShowPreviousBlame (CommandInfo cinfo)
 			{
-				cinfo.Enabled = history.Count == 0;
+				cinfo.Enabled = history.Count > 0;
 			}
 
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
