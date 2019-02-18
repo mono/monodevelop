@@ -568,6 +568,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				Assert.That (exception.InnerException, Is.InstanceOf<LibGit2Sharp.NotFoundException> ().Or.Message.EqualTo("reference 'refs/heads/master' not found"));
 				return;
 			} finally {
+				toCheckout.Dispose ();
 				Directory.Delete (directory, true);
 			}
 
