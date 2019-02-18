@@ -40,51 +40,57 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Refactoring;
-
+using MonoDevelop.Ide.Gui.Documents;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class ActionGroupDisplayBinding : IViewDisplayBinding
+	[ExportDocumentControllerFactory (FileExtension = ".cs")]
+	public class ActionGroupDisplayBinding : FileDocumentControllerFactory
 	{
 		bool excludeThis = false;
 		
-		public string Name {
-			get { return MonoDevelop.Core.GettextCatalog.GetString ("Action Group Editor"); }
-		}
-		
-		public bool CanUseAsDefault {
-			get { return true; }
-		}
-		
-		public bool CanHandle (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
+		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor file)
 		{
+			var list = ImmutableList<DocumentControllerDescription>.Empty;
+
 			if (excludeThis)
-				return false;
-			
-			if (fileName.IsNullOrEmpty)
-				return false;
-			
+				return list;
+
+			if (file.FilePath.IsNullOrEmpty || !(file.Owner is DotNetProject))
+				return list;
+
 			if (!IdeApp.Workspace.IsOpen)
-				return false;
-			
-			if (GetActionGroup (fileName) == null)
-				return false;
-			
+				return list;
+
+			if (GetActionGroup (file.FilePath) == null)
+				return list;
+
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
+			var db = (await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			excludeThis = false;
-			return db != null;
+			if (db != null) {
+				list = list.Add (
+				new DocumentControllerDescription {
+					CanUseAsDefault = true,
+					Role = DocumentControllerRole.VisualDesign,
+					Name = MonoDevelop.Core.GettextCatalog.GetString ("Action Group Editor")
+				});
+			}
+			return list;
 		}
-		
-		public ViewContent CreateContent (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
+
+		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
-			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) ownerProject);
+			var db = (await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
+			var info = GtkDesignInfo.FromProject ((DotNetProject)file.Owner);
 			
-			var content = db.CreateContent (fileName, mimeType, ownerProject);
-			content.Binding = db;
-			ActionGroupView view = new ActionGroupView (content, GetActionGroup (fileName), info.GuiBuilderProject);
+			var content = await db.CreateController (file);
+			var view = new ActionGroupView (content, GetActionGroup (file.FilePath), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;
 		}
