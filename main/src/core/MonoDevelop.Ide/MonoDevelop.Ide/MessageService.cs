@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide
 		static Window defaultRootWindow;
 		public static Window RootWindow {
 			get {
-				if (WelcomePageService.WelcomePageVisible)
+				if (WelcomePageService.WelcomeWindowVisible)
 					return WelcomePageService.WelcomeWindow;
 				return defaultRootWindow;
 			}
