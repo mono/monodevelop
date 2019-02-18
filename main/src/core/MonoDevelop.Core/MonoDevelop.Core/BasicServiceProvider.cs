@@ -37,7 +37,7 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public class BasicServiceProvider : ServiceProvider
 	{
-		List<object> services = new List<object> ();
+		readonly List<object> services = new List<object> ();
 		Dictionary<Type, Type> serviceTypes = new Dictionary<Type, Type> ();
 		Dictionary<object, TaskCompletionSource<object>> initializationTasks = new Dictionary<object, TaskCompletionSource<object>> ();
 		Dictionary<Type, object> servicesByType = new Dictionary<Type, object> ();
