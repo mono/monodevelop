@@ -1,4 +1,4 @@
-﻿//
+//
 // ServiceProvider.cs
 //
 // Author:
@@ -37,10 +37,9 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public class BasicServiceProvider : ServiceProvider
 	{
-		readonly List<object> services = new List<object> ();
 		Dictionary<Type, Type> serviceTypes = new Dictionary<Type, Type> ();
 		Dictionary<object, TaskCompletionSource<object>> initializationTasks = new Dictionary<object, TaskCompletionSource<object>> ();
-		Dictionary<Type, object> servicesByType = new Dictionary<Type, object> ();
+		readonly Dictionary<Type, object> servicesByType = new Dictionary<Type, object> ();
 		Dictionary<Type, List<object>> initializationCallbacks = new Dictionary<Type, List<object>> ();
 		bool disposing;
 
@@ -49,32 +48,27 @@ namespace MonoDevelop.Core
 			CheckValid ();
 			Task<object> currentInitTask = null;
 
-			lock (services) {
+			lock (servicesByType) {
 				// Fast path, try to get a service for this specific type
 				if (!servicesByType.TryGetValue (typeof (T), out var service)) {
-					// Look in all registered services
-					service = services.OfType<T> ().FirstOrDefault ();
-					if (service == null) {
-						// Create a new service instance
-						LoggingService.LogInfo ("Creating service: " + typeof (T));
-						service = (T)Activator.CreateInstance (GetImplementationType (typeof (T)), true);
-						services.Add (service);
-						servicesByType [typeof (T)] = service;
-						if (service is IService serviceInstance) {
-							var timer = Stopwatch.StartNew ();
-							var completionTask = new TaskCompletionSource<object> ();
-							initializationTasks [service] = completionTask;
-							serviceInstance.Initialize (this).ContinueWith (t => {
-								LoggingService.LogInfo ($"Service {typeof (T)} initialized in {timer.ElapsedMilliseconds} ms.");
-								timer.Stop ();
-								if (t.IsFaulted)
-									completionTask.SetException (t.Exception);
-								else
-									OnServiceInitialized (completionTask, (T)service);
-							});
-						} else {
-							OnServiceInitialized (null, (T)service);
-						}
+					// Create a new service instance
+					LoggingService.LogInfo ("Creating service: " + typeof (T));
+					service = (T)Activator.CreateInstance (GetImplementationType (typeof (T)), true);
+					servicesByType [typeof (T)] = service;
+					if (service is IService serviceInstance) {
+						var timer = Stopwatch.StartNew ();
+						var completionTask = new TaskCompletionSource<object> ();
+						initializationTasks [service] = completionTask;
+						serviceInstance.Initialize (this).ContinueWith (t => {
+							LoggingService.LogInfo ($"Service {typeof (T)} initialized in {timer.ElapsedMilliseconds} ms.");
+							timer.Stop ();
+							if (t.IsFaulted)
+								completionTask.SetException (t.Exception);
+							else
+								OnServiceInitialized (completionTask, (T)service);
+						});
+					} else {
+						OnServiceInitialized (null, (T)service);
 					}
 				}
 
@@ -92,13 +86,11 @@ namespace MonoDevelop.Core
 		{
 			CheckValid ();
 
-			lock (services) {
+			lock (servicesByType) {
 				// Fast path, try to get a service for this specific type
 				if (servicesByType.TryGetValue (typeof (T), out var service))
 					return (T)service;
-
-				// Look in all registered services
-				return services.OfType<T> ().FirstOrDefault ();
+				return null;
 			}
 		}
 
@@ -108,21 +100,56 @@ namespace MonoDevelop.Core
 		/// <param name="action">Action to run</param>
 		/// <typeparam name="T">Service type</typeparam>
 		/// <remarks>This method does not cause the initialization of the service.</remarks>
-		public override void WhenServiceInitialized<T> (Action<T> action)
+		public override IDisposable WhenServiceInitialized<T> (Action<T> action)
 		{
-			lock (services) {
+			lock (servicesByType) {
 				if (servicesByType.TryGetValue (typeof (T), out var service)) {
 					// Service already requested
-					if (initializationTasks.TryGetValue (service, out var initTask))
-						initTask.Task.ContinueWith (t => action ((T)service), TaskScheduler.Current);
-					else
+					if (initializationTasks.TryGetValue (service, out var initTask)) {
+						var callbackRegistration = new CallbackRegistration { ServiceType = typeof (T), Action = action, ServiceProvider = this };
+						initTask.Task.ContinueWith (t => {
+							if (!callbackRegistration.Disposed)
+								action ((T)service);
+						}, TaskScheduler.Current);
+						return callbackRegistration;
+					} else {
 						action ((T)service);
+						return CallbackRegistration.NullCallbackRegistration;
+					}
 				} else {
 					// Service not yet requested, register the callback
 					if (!initializationCallbacks.TryGetValue (typeof (T), out var list))
 						initializationCallbacks [typeof (T)] = list = new List<object> ();
 					list.Add (action);
+					return new CallbackRegistration { ServiceType = typeof (T), Action = action, ServiceProvider = this };
 				}
+			}
+		}
+
+		void UnregisterCallback (Type serviceType, object callback)
+		{
+			lock (servicesByType) {
+				if (initializationCallbacks.TryGetValue (serviceType, out var list)) {
+					list.Remove (callback);
+					if (list.Count == 0)
+						initializationCallbacks.Remove (serviceType);
+				}
+			}
+		}
+
+		class CallbackRegistration: IDisposable
+		{
+			public Type ServiceType;
+			public object Action;
+			public BasicServiceProvider ServiceProvider;
+			public bool Disposed;
+			public readonly static CallbackRegistration NullCallbackRegistration = new CallbackRegistration ();
+
+			public void Dispose ()
+			{
+				Disposed = true;
+				if (ServiceProvider != null)
+					ServiceProvider.UnregisterCallback (ServiceType, Action);
 			}
 		}
 
@@ -130,7 +157,7 @@ namespace MonoDevelop.Core
 		{
 			List<object> callbacks = null;
 
-			lock (services) {
+			lock (servicesByType) {
 				if (completionTask != null) {
 					completionTask.SetResult (service);
 					initializationTasks.Remove (service);
@@ -176,34 +203,38 @@ namespace MonoDevelop.Core
 				serviceTypes [typeof (T)] = typeof (TImpl);
 		}
 
-		public void RegisterService (IService service)
+		public void RegisterService<T> (object service)
 		{
-			lock (services) {
-				CheckValid ();
-				services.Add (service);
-			}
+			RegisterService (typeof (T), service);
 		}
 
-		public void UnregisterService (IService service)
+		public void RegisterService (Type serviceType, object service)
 		{
-			lock (services) {
+			lock (servicesByType) {
 				CheckValid ();
-				services.Remove (service);
+				servicesByType [serviceType] = service;
 			}
 		}
 
 		public async Task Dispose ()
 		{
 			List<object> list;
-			lock (services) {
+			lock (servicesByType) {
 				if (disposing)
 					return;
-				list = services.ToList ();
-				services.Clear ();
+				list = servicesByType.Values.ToList ();
+				servicesByType.Clear ();
 				disposing = true;
 			}
 
 			await Task.WhenAll (list.OfType<IService> ().Select (s => s.Dispose ()));
+			foreach (var s in list.OfType<IDisposable> ().Where (ns => !(ns is IService))) {
+				try {
+					s.Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Service disposal failed", ex);
+				}
+			}
 		}
 
 		void CheckValid ()

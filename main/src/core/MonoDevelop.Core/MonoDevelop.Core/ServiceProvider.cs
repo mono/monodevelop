@@ -54,7 +54,8 @@ namespace MonoDevelop.Core
 		/// </summary>
 		/// <param name="action">Action to run</param>
 		/// <typeparam name="T">Service type</typeparam>
+		/// <returns>A registration object that can be disposed to unregister the callback</returns>
 		/// <remarks>This method does not cause the initialization of the service.</remarks>
-		public abstract void WhenServiceInitialized<T> (Action<T> action) where T : class;
+		public abstract IDisposable WhenServiceInitialized<T> (Action<T> action) where T : class;
 	}
 }

@@ -569,9 +569,14 @@ namespace MonoDevelop.Core
 			mainServiceProvider.RegisterServiceType (typeof (ServiceType), typeof (ImplementationType));
 		}
 
-		public static void RegisterService (IService service)
+		public static void RegisterService<T> (object service)
 		{
-			mainServiceProvider.RegisterService (service);
+			mainServiceProvider.RegisterService<T> (service);
+		}
+
+		public static void RegisterService (Type serviceType, object service)
+		{
+			mainServiceProvider.RegisterService (serviceType, service);
 		}
 
 		/// <summary>
