@@ -16,7 +16,7 @@
 [submodule "main/external/libgit2sharp"]
 	path = main/external/libgit2sharp
 	url = git://github.com/mono/libgit2sharp.git
-	branch = vs-8.0-v1
+	branch = vs-8.0-v0.26
 [submodule "main/external/macdoc"]
 	path = main/external/macdoc
 	url = git://github.com/xamarin/macdoc
