@@ -66,6 +66,10 @@ namespace MonoDevelop.VersionControl.Tests
 				Repo.Dispose ();
 				Repo = null;
 			}
+			if (Repo2 != null) {
+				Repo2.Dispose ();
+				Repo2 = null;
+			}
 			DeleteDirectory (RemotePath);
 			DeleteDirectory (LocalPath);
 			AddedItems.Clear ();
