@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 
@@ -110,11 +111,10 @@ namespace MonoDevelop.Ide.Templates
 
 		public virtual void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
 		{
-			var solution = (Solution)items.FirstOrDefault ();
-			if (solution == null)
+			if (!(items.FirstOrDefault () is Solution solution))
 				return;
 
-			MultiProjectStartUp (solution);
+			CreateMultiProjectStartUp (solution);
 		}
 
 		/// <summary>
@@ -122,9 +122,9 @@ namespace MonoDevelop.Ide.Templates
 		/// more than one project and one of them is a Backend project
 		/// </summary>
 		/// <param name="solution">Solution.</param>
-		void MultiProjectStartUp (Solution solution)
+		void CreateMultiProjectStartUp (Solution solution)
 		{
-			if (Parameters ["CreateBackEndProject"] != "True" || Parameters ["IncludeBackEndProject"] != "True")
+			if (Parameters.GetBoolValue ("CreateBackEndProject") != true || Parameters.GetBoolValue ("IncludeBackEndProject") != true)
 				return;
 
 			var config = new MultiItemSolutionRunConfiguration ("multiprojId", GettextCatalog.GetString ("Multiple Projects"));
