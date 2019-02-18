@@ -47,9 +47,14 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class TaskStore: IEnumerable<TaskListEntry>, ILocationList
+	public class TaskStore: IEnumerable<TaskListEntry>, ILocationList, IDisposable
 	{
 		int taskUpdateCount;
+		RootWorkspace workspace;
+		IDisposable workspaceReg;
+		TextEditorService textEditorService;
+		IDisposable textEditorServiceReg;
+
 		List<TaskListEntry> tasks = new List<TaskListEntry> ();
 		Dictionary<FilePath,TaskListEntry[]> taskIndex = new Dictionary<FilePath, TaskListEntry[]> ();
 		
@@ -62,12 +67,33 @@ namespace MonoDevelop.Ide.Tasks
 
 		public TaskStore ()
 		{
-			IdeServices.Workspace.FileRenamedInProject += ProjectFileRenamed;
-			IdeServices.Workspace.FileRemovedFromProject += ProjectFileRemoved;
+			workspaceReg = Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				workspace = s;
+				workspace.FileRenamedInProject += ProjectFileRenamed;
+				workspace.FileRemovedFromProject += ProjectFileRemoved;
+			});
 
-			IdeServices.TextEditorService.LineCountChangesCommitted += TextEditorService_LineCountChangesCommitted;
-			IdeServices.TextEditorService.LineCountChangesReset += TextEditorService_LineCountChangesReset;
-			IdeServices.TextEditorService.LineCountChanged += TextEditorService_LineCountChanged;
+			textEditorServiceReg = Runtime.ServiceProvider.WhenServiceInitialized<TextEditorService> (s => {
+				textEditorService = s;
+				textEditorService.LineCountChangesCommitted += TextEditorService_LineCountChangesCommitted;
+				textEditorService.LineCountChangesReset += TextEditorService_LineCountChangesReset;
+				textEditorService.LineCountChanged += TextEditorService_LineCountChanged;
+			});
+		}
+
+		public void Dispose ()
+		{
+			workspaceReg.Dispose ();
+			textEditorServiceReg.Dispose ();
+			if (workspace != null) {
+				workspace.FileRenamedInProject -= ProjectFileRenamed;
+				workspace.FileRemovedFromProject -= ProjectFileRemoved;
+			}
+			if (textEditorService != null) {
+				textEditorService.LineCountChangesCommitted -= TextEditorService_LineCountChangesCommitted;
+				textEditorService.LineCountChangesReset -= TextEditorService_LineCountChangesReset;
+				textEditorService.LineCountChanged -= TextEditorService_LineCountChanged;
+			}
 		}
 
 		void TextEditorService_LineCountChangesCommitted (object sender, TextFileEventArgs args)

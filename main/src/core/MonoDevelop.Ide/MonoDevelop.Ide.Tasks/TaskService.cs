@@ -66,6 +66,8 @@ namespace MonoDevelop.Ide.Tasks
 				rootWorkspace.WorkspaceItemLoaded -= OnWorkspaceItemLoaded;
 				rootWorkspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
 			}
+			errors.Dispose ();
+			userTasks.Dispose ();
 			return base.OnDispose ();
 		}
 

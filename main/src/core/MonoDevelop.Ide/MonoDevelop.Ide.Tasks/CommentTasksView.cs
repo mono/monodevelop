@@ -154,6 +154,7 @@ namespace MonoDevelop.Ide.Tasks
 				IdeApp.Workspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
 				comments.TasksAdded -= GeneratedTaskAdded;
 				comments.TasksRemoved -= GeneratedTaskRemoved;
+				comments.Dispose ();
 
 				IdeApp.Preferences.UserTasksHighPrioColor.Changed -= OnPropertyUpdated;
 				IdeApp.Preferences.UserTasksNormalPrioColor.Changed -= OnPropertyUpdated;
