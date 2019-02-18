@@ -122,6 +122,7 @@
     <Compile Include="MonoDevelop.Core.Instrumentation\BucketTimingsTests.cs" />
     <Compile Include="MonoDevelop.Utilities\RaceCheckerTests.cs" />
     <Compile Include="MonoDevelop.Core\FeatureSwitchServiceTests.cs" />
+    <Compile Include="MonoDevelop.Core\ServiceProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
