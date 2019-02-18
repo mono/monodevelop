@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	[DefaultServiceImplementation]
 	public class DocumentModelRegistry: Service
 	{
-		SemaphoreSlim dataLock = new SemaphoreSlim (1);
+		SemaphoreSlim dataLock = new SemaphoreSlim (1, 1);
 		Dictionary<object, DocumentModel.DocumentModelData> dataModels = new Dictionary<object, DocumentModel.DocumentModelData> ();
 
 		public Task<T> GetSharedFileModel<T> (FilePath filePath) where T:FileModel, new()

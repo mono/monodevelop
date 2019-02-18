@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal DocumentModel.DocumentModelData DocumentModelData { get; set; }
 
-		internal protected SemaphoreSlim WaitHandle { get; } = new SemaphoreSlim (1);
+		internal protected SemaphoreSlim WaitHandle { get; } = new SemaphoreSlim (1, 1);
 
 		public object Id => DocumentModelData.Id;
 
