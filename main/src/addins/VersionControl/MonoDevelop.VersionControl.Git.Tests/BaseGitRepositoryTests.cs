@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			// Check out the repository.
 			Checkout (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
-			((GitRepository)Repo).RootRepository.Config.Set ("core.ignorecase", false);
+			((GitRepository)Repo).RunOperation (() => ((GitRepository)Repo).RootRepository.Config.Set ("core.ignorecase", false));
 			ModifyPath (Repo, ref LocalPath);
 			DotDir = ".git";
 
@@ -91,8 +91,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			var repo2 = (GitRepository)repo;
 			old = repo2.RootRepository.Info.WorkingDirectory;
-			repo2.RootRepository.Config.Set<string> ("user.name", Author);
-			repo2.RootRepository.Config.Set<string> ("user.email", Email);
+			repo2.SetUserInfo (Author, Email);
 		}
 
 		protected override void CheckLog (Repository repo)
