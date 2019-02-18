@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using NUnit.Framework;
 
@@ -34,11 +35,11 @@ namespace MonoDevelop.Ide.TypeSystem
 	public class MonoDevelopWorkspaceProjectDataTests : IdeTestBase
 	{
 		[Test]
-		public void TestEmptyMetadataCreation ()
+		public async Task TestEmptyMetadataCreation ()
 		{
 			var pid = ProjectId.CreateNewId ();
 
-			using (var workspace = new MonoDevelopWorkspace (null)) {
+			using (var workspace = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var data = new MonoDevelopWorkspace.ProjectData (pid, ImmutableArray<MonoDevelopMetadataReference>.Empty, workspace);
 				data.Disconnect ();
 				// Do nothing, we just want to see it construct and dispose properly.

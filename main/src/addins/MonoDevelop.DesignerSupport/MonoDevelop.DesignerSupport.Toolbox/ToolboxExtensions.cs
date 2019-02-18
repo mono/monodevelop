@@ -25,6 +25,7 @@
 
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		/// </summary>
 		public static T GetContent<T> (this IToolboxConsumer consumer) where T : class
 		{
-			return (consumer as ViewContent)?.GetContent<T> ();
+			return (consumer as DocumentController)?.GetContent<T> ();
 		}
 
 		/// <summary>
@@ -46,7 +47,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		/// </summary>
 		public static Document GetDocument (this IToolboxConsumer consumer)
 		{
-			return (consumer as ViewContent)?.WorkbenchWindow?.Document;
+			return (consumer as DocumentController)?.Document;
 		}
 
 		/// <summary>

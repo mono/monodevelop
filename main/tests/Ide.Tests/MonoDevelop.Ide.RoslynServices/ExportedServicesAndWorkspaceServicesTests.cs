@@ -30,6 +30,7 @@ using Microsoft.CodeAnalysis.Notification;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.Composition;
 using Microsoft.CodeAnalysis.Host;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.RoslynServices.Options
 {
@@ -42,9 +43,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		public async Task ServiceIsRegistered ()
 		{
 			// Initialize MEF
-			await CompositionManager.InitializeAsync ();
-
-			CompositionManager.Instance.AssertExportsContains<IOptionPersister, MonoDevelopGlobalOptionPersister> ();
+			var manager = await Runtime.GetService<CompositionManager> ();
+			manager.AssertExportsContains<IOptionPersister, MonoDevelopGlobalOptionPersister> ();
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 				void AssertWorkspaceService<TExport, TActual> () where TExport : IWorkspaceService
 				{
-					var actual = doc.RoslynWorkspace.Services.GetService<TExport> ();
+					var actual = doc.DocumentContext.RoslynWorkspace.Services.GetService<TExport> ();
 					Assert.That (actual, Is.TypeOf<TActual> ());
 				}
 			}

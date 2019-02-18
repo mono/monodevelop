@@ -28,6 +28,7 @@ using Microsoft.CodeAnalysis.Shared.Options;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.TypeSystem;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.RoslynServices.Options
 {
@@ -36,12 +37,12 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 	{
 		[TestCase (LanguageNames.CSharp, false)]
 		[TestCase (LanguageNames.VisualBasic, true)]
-		public void TestFullSolutionAnalysis (string language, bool enabledByDefault)
+		public async Task TestFullSolutionAnalysis (string language, bool enabledByDefault)
 		{
 			var pref = IdeApp.Preferences.Roslyn;
 			var perLanguagePref = pref.For (language);
 
-			using (var mdw = new MonoDevelopWorkspace (null)) {
+			using (var mdw = await IdeApp.TypeSystemService.CreateEmptyWorkspace ()) {
 				var key = new OptionKey (ServiceFeatureOnOffOptions.ClosedFileDiagnostic, language);
 
 				var old = mdw.Options.GetOption (key);
