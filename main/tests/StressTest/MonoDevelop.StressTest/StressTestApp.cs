@@ -90,10 +90,6 @@ namespace MonoDevelop.StressTest
 			ReportMemoryUsage (-1);
 			for (int i = 0; i < Iterations; ++i) {
 				scenario.Run ();
-
-				// This is to prevent leaking of AppQuery instances.
-				TestService.Session.DisconnectQueries ();
-
 				ReportMemoryUsage (i);
 			}
 
@@ -167,6 +163,9 @@ namespace MonoDevelop.StressTest
 
 		void ReportMemoryUsage (int iteration)
 		{
+			// This is to prevent leaking of AppQuery instances.
+			TestService.Session.DisconnectQueries ();
+
 			UserInterfaceTests.Ide.WaitForIdeIdle ();//Make sure IDE stops doing what it was doing
 			if (profilerProcessor != null) {
 				profilerProcessor.TakeHeapshotAndMakeReport ().Wait ();
