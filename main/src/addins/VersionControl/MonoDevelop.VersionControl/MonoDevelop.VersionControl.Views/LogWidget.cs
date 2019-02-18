@@ -884,11 +884,7 @@ namespace MonoDevelop.VersionControl.Views
 		static string GetSelectedTextFromTextView (TextView textView)
 		{
 			textView.Buffer.GetSelectionBounds (out var A, out var B);
-			var result = textView.Buffer.GetText (A, B, true);
-			if (!string.IsNullOrEmpty (result)) {
-				return result;
-			}
-			return null;
+			return textView.Buffer.GetText (A, B, true);
 		}
 
 		internal string GetSelectedText ()
