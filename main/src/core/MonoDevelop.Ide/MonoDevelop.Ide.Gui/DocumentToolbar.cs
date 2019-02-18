@@ -28,6 +28,7 @@ using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -36,24 +37,12 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.Widget frame;
 		Box box;
 		bool empty = true;
+		readonly IShellDocumentToolbar shellToolbar;
 
-		internal DocumentToolbar ()
+		internal DocumentToolbar (IShellDocumentToolbar shellToolbar)
 		{
-			box = new HBox ();
-			box.Spacing = 3;
-			box.Show ();
-			var al = new ToolbarBox (0, 0, 1, 1);
-			al.LeftPadding = 5;
-			al.TopPadding = 4;
-			al.BottomPadding = 4;
-			al.Add (box);
-			frame = al;
+			this.shellToolbar = shellToolbar;
 		}
-		
-		internal Control Container {
-			get { return frame; }
-		}
-		
 		public void Add (Control widget)
 		{
 			Add (widget, false);
@@ -66,127 +55,45 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Add (Control widget, bool fill, int padding)
 		{
-			Add (widget, fill, padding, -1);
+			shellToolbar.Add (widget, fill, padding);
 		}
 		
-		void Add (Control control, bool fill, int padding, int index)
-		{
-			int defaultPadding = 3;
-
-			Gtk.Widget widget = control;
-			if (widget is Button) {
-				((Button)widget).Relief = ReliefStyle.None;
-				((Button)widget).FocusOnClick = false;
-				defaultPadding = 0;
-				ChangeColor (widget);
-			}
-			else if (widget is Entry) {
-				((Entry)widget).HasFrame = false;
-			}
-			else if (widget is ComboBox) {
-				((ComboBox)widget).HasFrame = false;
-			}
-			else if (widget is VSeparator) {
-				((VSeparator)widget).HeightRequest = 10;
-				ChangeColor (widget);
-			}
-			else
-				ChangeColor (widget);
-			
-			if (padding == -1)
-				padding = defaultPadding;
-			
-			box.PackStart (widget, fill, fill, (uint)padding);
-			if (empty) {
-				empty = false;
-				frame.Show ();
-			}
-			if (index != -1) {
-				Box.BoxChild bc = (Box.BoxChild) box [widget];
-				bc.Position = index;
-			}
-		}
-
 		public void AddSpace ()
 		{
-			var spacer = new HBox ();
-			spacer.Accessible.SetShouldIgnore (true);
-			Add (spacer, true); 
+			shellToolbar.AddSpace ();
 		}
 
-		void ChangeColor (Gtk.Widget w)
-		{
-			w.Realized += delegate {
-				var textColor = Styles.BreadcrumbTextColor.ToGdkColor ();
-				if (Core.Platform.IsMac && w is CheckButton) {
-					// the Gtk.CheckButton Text color is the color of the check mark
-					// and the Fg color is used for the label.
-					w.ModifyFg (StateType.Prelight, textColor);
-					w.ModifyFg (StateType.Active, textColor);
-				} else
-					w.ModifyText (StateType.Normal, textColor);
-				w.ModifyFg (StateType.Normal, textColor);
-			};
-			if (w is Gtk.Container) {
-				foreach (var c in ((Gtk.Container)w).Children)
-					ChangeColor (c);
-			}
-		}
-		
 		public void Insert (Control w, int index)
 		{
-			Add (w, false, 0, index);
+			shellToolbar.Insert (w, index);
 		}
 		
 		public void Remove (Control widget)
 		{
-			box.Remove (widget);
+			shellToolbar.Remove (widget);
 		}
 		
 		public bool Visible {
 			get {
-				return empty || frame.Visible;
+				return shellToolbar.Visible;
 			}
 			set {
-				frame.Visible = value;
+				shellToolbar.Visible = value;
 			}
 		}
 		
 		public bool Sensitive {
-			get { return frame.Sensitive; }
-			set { frame.Sensitive = value; }
+			get { return shellToolbar.Sensitive; }
+			set { shellToolbar.Sensitive = value; }
 		}
 		
 		public void ShowAll ()
 		{
-			frame.ShowAll ();
+			shellToolbar.Visible = true;
 		}
 		
 		public Control[] Children {
-			get { return box.Children.Select (w => (Control)w).ToArray (); }
-		}
-
-		class ToolbarBox: Gtk.Alignment
-		{
-			public ToolbarBox (float xa, float ya, float sx, float sy): base (xa, ya, sx, sy)
-			{
-			}
-
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-			{
-				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-					ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-					ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor.ToCairoColor ());
-					ctx.Fill ();
-
-					ctx.MoveTo (0.5, Allocation.Height - 0.5);
-					ctx.RelLineTo (Allocation.Width, 0);
-					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
-					ctx.LineWidth = 1;
-					ctx.Stroke ();
-				}
-				return base.OnExposeEvent (evnt);
-			}
+			get { return shellToolbar.Children; }
 		}
 	}
 

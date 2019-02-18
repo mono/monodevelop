@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using System.Linq;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -91,7 +92,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			foreach (var d in documents) {
 				if (howManyDirtyFiles > 1)
-					d.Window.CloseWindow (true);
+					d.Close (true).Ignore ();
 				else {
 					// d.Close() could leave the UI synchronization context, letting the Gtk signal handler pass
 					// and Gtk would destroy the window immediately. Since we need to preserve the window

@@ -1,9 +1,10 @@
-﻿// IWorkbenchWindow.cs
+//
+// ProjectReloadCapability.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Components.Docking;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.Gui.Documents;
-using MonoDevelop.Components.DockNotebook;
-using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Ide.Gui
 {
-	interface IWorkbenchWindow
+	public enum ProjectReloadCapability
 	{
-		Document Document { get; set; }
-		string Title { get; }
-		bool ShowNotification { get; set; }
-		IShellNotebook Notebook { get; }
+		None = 0,
 
-		void SelectWindow ();
+		/// <summary>
+		/// It can keep unsaved data. Some status (such as undo queue) may be lost.
+		/// </summary>
+		UnsavedData = 1,
 
-		IShellDocumentViewContent CreateViewContent ();
-		IShellDocumentViewContainer CreateViewContainer ();
-
-		void SetRootView (IShellDocumentViewItem view);
-
-		event EventHandler CloseRequested;
-		event EventHandler<NotebookChangeEventArgs> NotebookChanged;
-	}
-
-	internal class NotebookChangeEventArgs : EventArgs
-	{
-		public IShellNotebook OldNotebook { get; set; }
-		public IShellNotebook NewNotebook { get; set; }
+		/// <summary>
+		/// It can keep unsaved data and status.
+		/// </summary>
+		Full = 2
 	}
 }

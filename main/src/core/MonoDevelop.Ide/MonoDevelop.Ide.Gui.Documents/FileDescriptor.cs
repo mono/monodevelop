@@ -1,9 +1,10 @@
-﻿// IWorkbenchWindow.cs
+//
+// FileDescriptor.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Components.Docking;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.Gui.Documents;
-using MonoDevelop.Components.DockNotebook;
-using MonoDevelop.Ide.Gui.Shell;
-
-namespace MonoDevelop.Ide.Gui
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using System.IO;
+using System.Text;
+namespace MonoDevelop.Ide.Gui.Documents
 {
-	interface IWorkbenchWindow
+	/// <summary>
+	/// Describes a file
+	/// </summary>
+	public class FileDescriptor : ModelDescriptor
 	{
-		Document Document { get; set; }
-		string Title { get; }
-		bool ShowNotification { get; set; }
-		IShellNotebook Notebook { get; }
+		public FileDescriptor (FilePath filePath, string mimeType, WorkspaceObject owner)
+		{
+			FilePath = filePath;
+			MimeType = mimeType;
+			Owner = owner;
+		}
 
-		void SelectWindow ();
+		public FileDescriptor (string fileName, string mimeType, Stream content, WorkspaceObject owner)
+		{
+			FilePath = fileName;
+			MimeType = mimeType;
+			Owner = owner;
+			Content = content;
+		}
 
-		IShellDocumentViewContent CreateViewContent ();
-		IShellDocumentViewContainer CreateViewContainer ();
-
-		void SetRootView (IShellDocumentViewItem view);
-
-		event EventHandler CloseRequested;
-		event EventHandler<NotebookChangeEventArgs> NotebookChanged;
-	}
-
-	internal class NotebookChangeEventArgs : EventArgs
-	{
-		public IShellNotebook OldNotebook { get; set; }
-		public IShellNotebook NewNotebook { get; set; }
+		public FilePath FilePath { get; }
+		public string MimeType { get; }
+		public WorkspaceObject Owner { get; }
+		public Stream Content { get; }
+		public Encoding Encoding { get; set; }
 	}
 }

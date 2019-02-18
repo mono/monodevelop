@@ -25,39 +25,27 @@
 //
 //
 
-using System;
 using System.ComponentModel;
-using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Components.Docking;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.Gui.Documents;
-using MonoDevelop.Components.DockNotebook;
-using MonoDevelop.Ide.Gui.Shell;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Documents
 {
-	interface IWorkbenchWindow
+	/// <summary>
+	/// Arguments for the document close event
+	/// </summary>
+	public class DocumentCloseEventArgs : CancelEventArgs
 	{
-		Document Document { get; set; }
-		string Title { get; }
-		bool ShowNotification { get; set; }
-		IShellNotebook Notebook { get; }
+		public Document Document { get; set; }
+		public bool Forced { get; }
+		public bool WasActive { get; }
 
-		void SelectWindow ();
-
-		IShellDocumentViewContent CreateViewContent ();
-		IShellDocumentViewContainer CreateViewContainer ();
-
-		void SetRootView (IShellDocumentViewItem view);
-
-		event EventHandler CloseRequested;
-		event EventHandler<NotebookChangeEventArgs> NotebookChanged;
+		public DocumentCloseEventArgs (Document document, bool forced, bool wasActive)
+		{
+			Document = document;
+			Forced = forced;
+			WasActive = wasActive;
+		}
 	}
 
-	internal class NotebookChangeEventArgs : EventArgs
-	{
-		public IShellNotebook OldNotebook { get; set; }
-		public IShellNotebook NewNotebook { get; set; }
-	}
+	public delegate Task DocumentCloseAsyncEventHandler (object o, DocumentCloseEventArgs e);
 }

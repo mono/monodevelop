@@ -52,6 +52,13 @@
 		<ExtensionNode name="DisplayBinding" type="MonoDevelop.Ide.Codons.DisplayBindingCodon" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/DocumentControllerFactories" name = "Document controller factories">
+		<Description>Document controller factories.</Description>
+		<ExtensionNode name="Factory" customAttributeType="MonoDevelop.Ide.Gui.Documents.ExportDocumentControllerFactoryAttribute" />
+		<ExtensionNode name="Controller" customAttributeType="MonoDevelop.Ide.Gui.Documents.ExportFileDocumentControllerAttribute" />
+		<ExtensionNode name="Marker" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/StartupHandlers" name = "Startup handlers">
 		<Description>Commands to be automatically executed when the IDE starts.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Components.Commands.CommandHandler" customAttributeType="MonoDevelop.Ide.Extensions.StartupHandlerExtensionAttribute">
@@ -262,6 +269,10 @@
 		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
 		<DisplayBinding id = "TextEditor"
 						class = "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/DocumentControllerFactories">
+		<Marker id = "DefaultDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

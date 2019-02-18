@@ -1,4 +1,4 @@
-//  DefaultWorkbench.cs
+﻿//  DefaultWorkbench.cs
 //
 // Author:
 //   Mike Krüger
@@ -48,13 +48,14 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Documents;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Shell
 {
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal partial class DefaultWorkbench : WorkbenchWindow, ICommandRouter, IInfoBarHost
+	internal partial class DefaultWorkbench : WorkbenchWindow, ICommandRouter, IInfoBarHost, IShell, IService
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
@@ -72,7 +73,7 @@ namespace MonoDevelop.Ide.Gui
 		List<string> layouts = new List<string> ();
 		
 		List<PadCodon> padContentCollection      = new List<PadCodon> ();
-		List<ViewContent> viewContentCollection = new List<ViewContent> ();
+		List<SdiWorkspaceWindow> viewContentCollection = new List<SdiWorkspaceWindow> ();
 		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
 		
@@ -103,7 +104,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		public event EventHandler WorkbenchTabsChanged;
-		
+		public event EventHandler<NotebookEventArgs> NotebookClosed;
+
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
 				return toolbar.StatusBar;
@@ -134,7 +136,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal IWorkbenchWindow ActiveWorkbenchWindow {
+		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
 				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTabIndex < 0 || DockNotebook.ActiveNotebook.CurrentTabIndex >= DockNotebook.ActiveNotebook.TabCount)  {
 					return null;
@@ -149,10 +151,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool FullScreen {
 			get {
-				return DesktopService.GetIsFullscreen (this);
+				return IdeServices.DesktopService.GetIsFullscreen (this);
 			}
 			set {
-				DesktopService.SetIsFullscreen (this, value);
+				IdeServices.DesktopService.SetIsFullscreen (this, value);
 			}
 		}
 
@@ -196,25 +198,18 @@ namespace MonoDevelop.Ide.Gui
 				return padContentCollection;
 			}
 		}
-		
-		internal List<ViewContent> InternalViewContentCollection {
-			get {
-				Debug.Assert(viewContentCollection != null);
-				return viewContentCollection;
-			}
-		}
-		
-		public DefaultWorkbench()
+
+		Task IService.Initialize (ServiceProvider serviceProvider)
 		{
 			Title = BrandingService.ApplicationLongName;
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
-			
+
 			WidthRequest = normalBounds.Width;
 			HeightRequest = normalBounds.Height;
 
 			DeleteEvent += new Gtk.DeleteEventHandler (OnClosing);
 			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
-			
+
 			SetAppIcons ();
 
 			IdeApp.CommandService.SetRootWindow (this);
@@ -223,6 +218,12 @@ namespace MonoDevelop.Ide.Gui
 			Drag.DestSet (this, DestDefaults.All, targetEntryTypes, Gdk.DragAction.Copy);
 
 			Accessible.SetIsMainWindow (true);
+			return Task.CompletedTask;
+		}
+
+		Task IService.Dispose ()
+		{
+			return Task.CompletedTask;
 		}
 
 		void NotebookPagesChanged (object sender, EventArgs e)
@@ -272,14 +273,10 @@ namespace MonoDevelop.Ide.Gui
 			// FIXME: GTKize
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
-			FileService.FileRemoved += CheckRemovedFile;
-			FileService.FileMoved += CheckRenamedFile;
-			FileService.FileRenamed += CheckRenamedFile;
-			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 			
-			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
+			if (!IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
 				CreateMenuBar ();
 			}
 			
@@ -292,7 +289,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
 			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath)) {
-				if (DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
+				if (IdeServices.DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
 					return;
 				
 				UninstallMenuBar ();
@@ -355,119 +352,72 @@ namespace MonoDevelop.Ide.Gui
 			void OnDispose () => deduplicationMap.Remove (dedupId);
 		}
 		
-		public void CloseContent (ViewContent content)
+		public Task<IWorkbenchWindow> ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler)
 		{
-			if (viewContentCollection.Contains(content)) {
-				if (content.Project != null)
-					content.Project.NameChanged -= HandleProjectNameChanged;
-				viewContentCollection.Remove(content);
-			}
-		}
-		
-		public void CloseAllViews()
-		{
-			try {
-				closeAll = true;
-				List<ViewContent> fullList = new List<ViewContent>(viewContentCollection);
-				foreach (ViewContent content in fullList) {
-					IWorkbenchWindow window = content.WorkbenchWindow;
-					if (window != null)
-						window.CloseWindow(true);
-				}
-			} finally {
-				closeAll = false;
-				OnActiveWindowChanged (null, null);
-			}
-		}
+			var mimeimage = controller.DocumentIcon.WithSize (Gtk.IconSize.Menu);
 
-		private Xwt.Drawing.Image PrepareShowView (ViewContent content)
-		{
-			viewContentCollection.Add (content);
-
-			if (IdeApp.Preferences.LoadDocumentUserProperties && content is IMementoCapable) {
-				try {
-					Properties memento = GetStoredMemento(content);
-					if (memento != null) {
-						((IMementoCapable)content).Memento = memento;
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't get/set memento : " + e.ToString());
-				}
-			}
-
-			Xwt.Drawing.Image mimeimage = null;
-
-			if (content.StockIconId != null ) {
-				mimeimage = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
-			}
-			else if (content.IsUntitled && content.UntitledName == null) {
-				mimeimage = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
-			} else {
-				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
-			}
-
-			return mimeimage;
-		}
-
-		public virtual void ShowView (ViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
-		{
-			bool isFile = content.IsFile;
-			if (!isFile) {
-				try {
-					isFile = File.Exists (content.ContentName);
-				} catch { /*Ignore*/ }
-			}
-
-			string type;
-			if (isFile) {
-				type = System.IO.Path.GetExtension (content.ContentName);
-				var mt = DesktopService.GetMimeTypeForUri (content.ContentName);
-				if (!string.IsNullOrEmpty (mt))
-					type += " (" + mt + ")";
-			} else
-				type = "(not a file)";
-
-			var metadata = new Dictionary<string,string> () {
-				{ "FileType", type },
-				{ "DisplayBinding", content.GetType ().FullName },
-			};
-
-			if (isFile)
-				metadata ["DisplayBindingAndType"] = type + " | " + content.GetType ().FullName;
-
-			Counters.DocumentOpened.Inc (metadata);
-
-			var mimeimage = PrepareShowView (content);
-			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
+			var addToControl = (DockNotebook) notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
 			var tab = addToControl.AddTab ();
 
-			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
+			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, controller, addToControl, tab);
+			sdiWorkspaceWindow.ViewCommandHandler = viewCommandHandler;
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
-			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			sdiWorkspaceWindow.Show ();
-			if (binding != null)
-				DisplayBindingService.AttachSubWindows (sdiWorkspaceWindow, binding);
-
-			sdiWorkspaceWindow.CreateCommandHandler ();
+			viewContentCollection.Add (sdiWorkspaceWindow);
 
 			tab.Content = sdiWorkspaceWindow;
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
-			if (content.Project != null)
-				content.Project.NameChanged += HandleProjectNameChanged;
-			if (bringToFront)
-				content.WorkbenchWindow.SelectWindow();
+			SubscribeControllerEvents (controller);
 
 			// The insertion of the tab may have changed the active view (or maybe not, this is checked in OnActiveWindowChanged)
 			OnActiveWindowChanged (null, null);
+
+			return Task.FromResult< IWorkbenchWindow> (sdiWorkspaceWindow);
+		}
+
+		public void CloseView (IWorkbenchWindow view, bool animate)
+		{
+			var window = (SdiWorkspaceWindow)view;
+			viewContentCollection.Remove (window);
+			RemoveTab (window.TabControl, window.DockNotebookTab.Index, animate);
+			window.Close ();
 		}
 
 		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
 		{
 			SetWorkbenchTitle ();
 		}
-		
+
+		void OwnerChanged (object sender, EventArgs e)
+		{
+			var controller = (DocumentController)sender;
+			SubscribeControllerEvents (controller);
+			SetWorkbenchTitle ();
+		}
+
+		Project subscribedProject;
+
+		void SubscribeControllerEvents (DocumentController controller)
+		{
+			UnsubscribeControllerEvents (controller);
+			controller.OwnerChanged += OwnerChanged;
+			subscribedProject = controller.Owner as Project;
+			if (subscribedProject != null)
+				subscribedProject.NameChanged += HandleProjectNameChanged;
+
+		}
+
+		void UnsubscribeControllerEvents (DocumentController controller)
+		{
+			controller.OwnerChanged -= OwnerChanged;
+			if (subscribedProject != null) {
+				subscribedProject.NameChanged -= HandleProjectNameChanged;
+				subscribedProject = null;
+			}
+		}
+
 		void ShowPadNode (ExtensionNode node)
 		{
 			if (node is PadCodon) {
@@ -565,28 +515,34 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal static string GetTitle (IWorkbenchWindow window)
 		{
-			if (window.ViewContent.IsUntitled)
+			var controller = window.Document.DocumentController;
+			if (string.IsNullOrEmpty (controller.DocumentTitle))
 				return GetDefaultTitle ();
 			string post = String.Empty;
-			if (window.ViewContent.IsDirty) {
+			if (controller.HasUnsavedChanges) {
 				post = "*";
 			}
-			if (window.ViewContent.Project != null) {
-				return window.ViewContent.Project.Name + " – " + window.ViewContent.PathRelativeToProject + post + " – " + BrandingService.ApplicationLongName;
+			if (controller.Owner is Project project) {
+				var fileController = controller as FileDocumentController;
+				if (fileController != null)
+					return project.Name + " – " + fileController.FilePath.ToRelative (project.BaseDirectory) + post + " – " + BrandingService.ApplicationLongName;
+				else
+					return project.Name + " – " + controller.DocumentTitle + post + " – " + BrandingService.ApplicationLongName;
 			}
-			return window.ViewContent.ContentName + post + " – " + BrandingService.ApplicationLongName;
+			return controller.DocumentTitle + post + " – " + BrandingService.ApplicationLongName;
 		}
 
-		void SetAccessibilityDetails (IWorkbenchWindow window)
+		void SetAccessibilityDetails (SdiWorkspaceWindow window)
 		{
-			string documentUrl, filename;
-			if (window.ViewContent.Project != null) {
-				documentUrl = "file://" + window.ViewContent.Project.FileName;
-				filename = System.IO.Path.GetFileName (window.ViewContent.PathRelativeToProject);
-			} else {
-				documentUrl = string.Empty;
-				filename = string.Empty;
-			}
+			var controller = window.DocumentController;
+
+			string documentUrl = string.Empty, filename = string.Empty;
+
+			if (controller.Owner is Project project)
+				documentUrl = "file://" + project.FileName;
+
+			if (controller is FileDocumentController file)
+				filename = file.FilePath.FileName;
 
 			Accessible.SetDocument (documentUrl);
 			Accessible.SetFilename (filename);
@@ -595,9 +551,9 @@ namespace MonoDevelop.Ide.Gui
 		void SetWorkbenchTitle ()
 		{
 			try {
-				IWorkbenchWindow window = ActiveWorkbenchWindow;
+				var window = (SdiWorkspaceWindow) ActiveWorkbenchWindow;
 				if (window != null) {
-					if (window.ActiveViewContent.Control.GetNativeWidget<Gtk.Widget> ().Toplevel == this)
+					if (window.Toplevel == this)
 						Title = GetTitle (window);
 
 					SetAccessibilityDetails (window);
@@ -628,23 +584,6 @@ namespace MonoDevelop.Ide.Gui
 			SetWorkbenchTitle ();
 		}
 		
-		public Properties GetStoredMemento (ViewContent content)
-		{
-			if (content != null && content.ContentName != null) {
-				string directory = UserProfile.Current.CacheDir.Combine ("temp");
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
-				}
-				string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
-				string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
-				// check the file name length because it could be more than the maximum length of a file name
-				if (FileService.IsValidPath(fullFileName) && File.Exists(fullFileName)) {
-					return Properties.Load (fullFileName);
-				}
-			}
-			return null;
-		}
-		
 		public ICustomXmlSerializer Memento {
 			get {
 				var memento  = new WorkbenchMemento (new Properties ());
@@ -666,7 +605,7 @@ namespace MonoDevelop.Ide.Gui
 					WorkbenchMemento memento = new WorkbenchMemento ((Properties)value);
 					
 					normalBounds = memento.Bounds;
-					DesktopService.PlaceWindow (this, normalBounds.X, normalBounds.Y, normalBounds.Width, normalBounds.Height);
+					IdeServices.DesktopService.PlaceWindow (this, normalBounds.X, normalBounds.Y, normalBounds.Width, normalBounds.Height);
 					
 					// HACK: don't restore Gdk.WindowState.Maximized on OS X, because there's a bug in 
 					// GdkWindow.State that means it doesn't reflect the real state, it only reflects values set
@@ -683,80 +622,21 @@ namespace MonoDevelop.Ide.Gui
 				Decorated = true;
 			}
 		}
-		
-		void CheckRemovedFile (object sender, FileEventArgs args)
-		{
-			foreach (var e in args) {
-				if (e.IsDirectory) {
-					var views = new ViewContent [viewContentCollection.Count];
-					viewContentCollection.CopyTo (views, 0);
-					foreach (var content in views) {
-						if (content.ContentName.StartsWith (e.FileName, StringComparison.CurrentCulture)) {
-							if (content.IsDirty) {
-								content.UntitledName = content.ContentName;
-								content.ContentName = null;
-							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
-							}
-						}
-					}
-				} else {
-					foreach (var content in viewContentCollection) {
-						if (content.ContentName != null &&
-							content.ContentName == e.FileName) {
-							if (content.IsDirty) {
-								content.UntitledName = content.ContentName;
-								content.ContentName = null;
-							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
-							}
-							return;
-						}
-					}
-				}
-			}
-		}
-		
-		void CheckRenamedFile(object sender, FileCopyEventArgs args)
-		{
-			foreach (FileCopyEventInfo e in args) {
-				if (e.IsDirectory) {
-					foreach (ViewContent content in viewContentCollection) {
-						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
-							content.ContentName = e.TargetFile.Combine (((FilePath) content.ContentName).FileName);
-						}
-					}
-				} else {
-					foreach (ViewContent content in viewContentCollection) {
-						if (content.ContentName != null &&
-						    content.ContentName == e.SourceFile) {
-							content.ContentName = e.TargetFile;
-							return;
-						}
-					}
-				}
-			}
-		}
 
-		bool closing;
-		protected /*override*/ async void OnClosing(object o, Gtk.DeleteEventArgs e)
+		void OnClosing (object o, Gtk.DeleteEventArgs e)
 		{
-			// close the window in case DeleteEvent fires again after a successful close
-			if (closing) 
-				return;
-			
 			// don't allow Gtk to close the workspace, in case Close() leaves the synchronization context
 			// Gtk.Application.Quit () will handle it for us.
 			e.RetVal = true;
-			if (await Close ()) {
-				closing = true;
-				Destroy (); // default delete action
-				Gtk.Application.Quit ();
-			}
+
+			IdeApp.Exit ().Ignore ();
 		}
 		
-		protected void OnClosed(EventArgs e)
+		public void Close()
 		{
+			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
+			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
+
 			//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
 			foreach (var fv in dock.Layouts)
 				if (fv.EndsWith (fullViewModeTag))
@@ -768,58 +648,16 @@ namespace MonoDevelop.Ide.Gui
 			}
 			UninstallMenuBar ();
 			Remove (rootWidget);
-			
+
 			foreach (PadCodon content in PadContentCollection) {
 				if (content.Initialized)
-					content.PadContent.Dispose();
+					content.PadContent.Dispose ();
 			}
 
 			rootWidget.Destroy ();
 			Destroy ();
 		}
-		
-		public async Task<bool> Close()
-		{
-			if (!IdeApp.OnExit ())
-				return false;
 
-			IdeApp.Workspace.SavePreferences ();
-
-			bool showDirtyDialog = false;
-
-			foreach (ViewContent content in viewContentCollection)
-			{
-				if (content.IsDirty) {
-					showDirtyDialog = true;
-					break;
-				}
-			}
-
-			if (showDirtyDialog) {
-				using (DirtyFilesDialog dlg = new DirtyFilesDialog ()) {
-					dlg.Modal = true;
-					if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
-						return false;
-				}
-			}
-			
-			if (!await IdeApp.Workspace.Close (false, false))
-				return false;
-			
-			CloseAllViews ();
-
-			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
-			
-			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
-
-			IdeApp.OnExited ();
-			OnClosed (null);
-			
-			IdeApp.CommandService.Dispose ();
-			
-			return true;
-		}
-		
 		int activeWindowChangeLock = 0;
 
 		public void LockActiveWindowChangeEvent ()
@@ -915,9 +753,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			InstallMenuBar ();
 			Realize ();
-			toolbar = DesktopService.CreateMainToolbar (this);
-			DesktopService.SetMainWindowDecorations (this);
-			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
+			toolbar = IdeServices.DesktopService.CreateMainToolbar (this);
+			IdeServices.DesktopService.SetMainWindowDecorations (this);
+			IdeServices.DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 
 
 			infoBarFrame = new VBox (false, 0);
@@ -1142,9 +980,33 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnTabsReordered (DockNotebookTab widget, int oldPlacement, int newPlacement)
 		{
-			IdeApp.Workbench.ReorderDocuments (oldPlacement, newPlacement);
+			WindowReordered?.Invoke (this, new WindowReorderedEventArgs { OldPosition = oldPlacement, NewPosition = newPlacement });
 		}
-		
+
+		internal string GetUniqueTabName (FilePath fileName)
+		{
+			string baseName = fileName.FileNameWithoutExtension;
+			int number = 1;
+			bool found = true;
+			var myUntitledTitle = baseName + fileName.Extension;
+			while (found) {
+				found = false;
+				foreach (var window in viewContentCollection) {
+					string title = window.Title;
+					if (title == myUntitledTitle) {
+						myUntitledTitle = baseName + number + fileName.Extension;
+						found = true;
+						++number;
+						break;
+					}
+				}
+			}
+			return myUntitledTitle;
+		}
+
+		public event EventHandler<WindowReorderedEventArgs> WindowReordered;
+
+
 		bool IsInFullViewMode {
 			get {
 				return dock.CurrentLayout.EndsWith (fullViewModeTag);
@@ -1345,18 +1207,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		#region View management
 		
-		void CloseWindowEvent (object sender, WorkbenchWindowEventArgs e)
-		{
-			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
-			if (f.ViewContent != null)
-				CloseContent (f.ViewContent);
-		}
-		
 		internal void CloseClicked (object o, TabEventArgs e)
 		{
 			if (e.Tab.Content != null) {
 				if (e.Tab.Content is SdiWorkspaceWindow sdiWorkspace) {
-					sdiWorkspace.CloseWindow (false, true).Ignore ();
+					sdiWorkspace.RequestClose ();
 				} else {
 					LoggingService.LogError ($"Tab content is not an SdiWorkspaceWindow, is {e.Tab.Content.GetType ()}");
 				}
@@ -1677,7 +1532,7 @@ namespace MonoDevelop.Ide.Gui
 		public object GetDelegatedCommandTarget ()
 		{
 			SdiWorkspaceWindow win = CurrentTab != null ? (SdiWorkspaceWindow) CurrentTab.Content : null;
-			return win != null ? win.CommandHandler : null;
+			return win != null ? win.ViewCommandHandler : null;
 		}
 		
 		#region ICommandBar implementation

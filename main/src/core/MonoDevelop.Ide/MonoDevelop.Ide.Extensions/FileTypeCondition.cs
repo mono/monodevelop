@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FileTypeCondition.cs
 //  
 // Author:
@@ -34,7 +34,16 @@ namespace MonoDevelop.Ide.Extensions
 	{
 		string fileName;
 		List<string> mimeTypeChain;
-		
+
+		public FileTypeCondition ()
+		{
+		}
+
+		public FileTypeCondition (string file)
+		{
+			SetFileName (file);
+		}
+
 		public void SetFileName (string file)
 		{
 			if (file != fileName) {
@@ -63,7 +72,7 @@ namespace MonoDevelop.Ide.Extensions
 			string[] allowedMimes = conditionNode.GetAttribute ("mimeTypes").Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 			if (allowedMimes.Length > 0) {
 				if (mimeTypeChain == null) {
-					mimeTypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (fileName).ToList ();
+					mimeTypeChain = IdeServices.DesktopService.GetMimeTypeInheritanceChainForFile (fileName).ToList ();
 				}
 				foreach (var mimeType in mimeTypeChain) {
 					foreach (var allowedMime in allowedMimes) {

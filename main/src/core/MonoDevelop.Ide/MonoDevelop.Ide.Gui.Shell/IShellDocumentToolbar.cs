@@ -1,10 +1,10 @@
 //
-// DocumentView.cs
+// IDocumentToolbar.cs
 //
 // Author:
-//       Lluis Sanchez <lluis@xamarin.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2012 Xamarin Inc
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +23,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Shell
 {
-	public class DocumentView
+	interface IShellDocumentToolbar
 	{
-		BaseViewContent content;
-		Document document;
-
-		internal DocumentView (Document doc, BaseViewContent content)
-		{
-			document = doc;
-			this.content = content;
-		}
-
-		internal BaseViewContent BaseContent {
-			get { return content; }
-		}
-
-		public Document ParentDocument {
-			get { return document; }
-		}
-
-		public T GetContent<T> () where T : class
-		{
-			return content.GetContent (typeof(T)) as T;
-		}
-
-		public void Select ()
-		{
-			if (content is BaseViewContent)
-				document.Window.SwitchView ((BaseViewContent)content);
-			else
-				document.Window.SwitchView (0);
-		}
+		void Add (Control control, bool fill, int padding);
+		void AddSpace ();
+		void Insert (Control w, int index);
+		void Remove (Control widget);
+		bool Visible { get; set; }
+		bool Sensitive { get; set; }
+		Control [] Children { get; }
 	}
 }
-

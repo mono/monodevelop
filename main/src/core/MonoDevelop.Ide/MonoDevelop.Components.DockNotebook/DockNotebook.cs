@@ -35,12 +35,13 @@ using System.IO;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Shell;
 
 namespace MonoDevelop.Components.DockNotebook
 {
 	delegate void TabsReorderedHandler (DockNotebookTab tab, int oldPlacement, int newPlacement);
 
-	class DockNotebook : Gtk.VBox
+	class DockNotebook : Gtk.VBox, IShellNotebook
 	{
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
 		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();

@@ -50,23 +50,9 @@ namespace MonoDevelop.Ide.Gui
 		bool CanUseAsDefault { get; }
 	}
 	
-	///<summary>A display binding that opens a new view within the workspace.</summary>
-	public interface IViewDisplayBinding : IDisplayBinding
-	{
-		ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
-		string Name { get; }
-	}
-	
 	///<summary>A display binding that opens an external application.</summary>
 	public interface IExternalDisplayBinding : IDisplayBinding
 	{
 		DesktopApplication GetApplication (FilePath fileName, string mimeType, Project ownerProject);
-	}
-	
-	///<summary>A display binding that attaches to an existing view in the workspace.</summary>
-	public interface IAttachableDisplayBinding
-	{
-		bool CanAttachTo (ViewContent content);
-		BaseViewContent CreateViewContent (ViewContent viewContent);
 	}
 }

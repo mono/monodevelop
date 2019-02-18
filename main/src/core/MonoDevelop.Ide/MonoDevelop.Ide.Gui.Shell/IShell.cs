@@ -1,9 +1,10 @@
-﻿// IWorkbenchWindow.cs
+//
+// IWorkbench.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +23,39 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Components.Docking;
 using System.Threading.Tasks;
-using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Components.DockNotebook;
-using MonoDevelop.Ide.Gui.Shell;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Documents;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Shell
 {
-	interface IWorkbenchWindow
+	[DefaultServiceImplementation (typeof (DefaultWorkbench))]
+	internal interface IShell
 	{
-		Document Document { get; set; }
-		string Title { get; }
-		bool ShowNotification { get; set; }
-		IShellNotebook Notebook { get; }
+		IWorkbenchWindow ActiveWorkbenchWindow { get; }
 
-		void SelectWindow ();
+		event EventHandler ActiveWorkbenchWindowChanged;
 
-		IShellDocumentViewContent CreateViewContent ();
-		IShellDocumentViewContainer CreateViewContainer ();
+		Task<IWorkbenchWindow> ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler);
+		void CloseView (IWorkbenchWindow window, bool animate);
 
-		void SetRootView (IShellDocumentViewItem view);
-
-		event EventHandler CloseRequested;
-		event EventHandler<NotebookChangeEventArgs> NotebookChanged;
+		void Present ();
+	
+		event EventHandler<WindowReorderedEventArgs> WindowReordered;
+		event EventHandler<NotebookEventArgs> NotebookClosed;
 	}
 
-	internal class NotebookChangeEventArgs : EventArgs
+	internal class WindowReorderedEventArgs: EventArgs
 	{
-		public IShellNotebook OldNotebook { get; set; }
-		public IShellNotebook NewNotebook { get; set; }
+		public int OldPosition { get; set; }
+		public int NewPosition { get; set; }
+	}
+
+	internal class NotebookEventArgs : EventArgs
+	{
+		public IShellNotebook Notebook { get; set; }
 	}
 }
