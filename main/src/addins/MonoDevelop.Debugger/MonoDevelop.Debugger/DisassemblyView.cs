@@ -45,10 +45,12 @@ using Gdk;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Gui.Documents;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
-	public class DisassemblyView: ViewContent, IClipboardHandler
+	public class DisassemblyView: DocumentController, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
 		TextEditor editor;
@@ -69,7 +71,8 @@ namespace MonoDevelop.Debugger
 		
 		public DisassemblyView ()
 		{
-			ContentName = GettextCatalog.GetString ("Disassembly");
+			DocumentTitle = GettextCatalog.GetString ("Disassembly");
+
 			sw = new Gtk.ScrolledWindow ();
 			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
@@ -92,22 +95,9 @@ namespace MonoDevelop.Debugger
 			DebuggingService.StoppedEvent += OnStop;
 		}
 
-		public override string TabPageLabel {
-			get {
-				return GettextCatalog.GetString ("Disassembly");
-			}
-		}
-		
-		public override Control Control {
-			get {
-				return sw;
-			}
-		}
-
-		public override bool IsFile {
-			get {
-				return false;
-			}
+		protected override Control OnGetViewControl (DocumentViewContent view)
+		{
+			return sw;
 		}
 
 		public void Update ()
@@ -341,15 +331,12 @@ namespace MonoDevelop.Debugger
 			cachedLines.Clear ();
 			session = null;
 		}
-		
-		public override bool IsReadOnly {
-			get { return true; }
-		}
 
-		
-		public override void Dispose ()
+		protected override bool ControllerIsViewOnly => true;
+
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
+			base.OnDispose ();
 			DebuggingService.StoppedEvent -= OnStop;
 			session = null;
 		}
