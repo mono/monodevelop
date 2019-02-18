@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Tests
 		public virtual void Setup ()
 		{
 			var vcs = Repo.VersionControlSystem;
-			Console.WriteLine ("Running tests for {0} (v{1})", vcs.Name, vcs.Version);
+			Console.WriteLine ("Running {0} for {1} (v{2})", TestContext.CurrentContext.Test.FullName, vcs.Name, vcs.Version);
 		}
 
 		[TearDown]
