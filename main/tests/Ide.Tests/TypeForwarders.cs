@@ -31,6 +31,4 @@ using System.Runtime.CompilerServices;
 [assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.TextEditorExtensionTestBase))]
 [assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.TypeSystemServiceTestExtensions))]
 
-[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.Gui.TestDocument))]
 [assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.Gui.TestViewContent))]
-[assembly: TypeForwardedTo (typeof (MonoDevelop.Ide.Gui.TestWorkbenchWindow))]

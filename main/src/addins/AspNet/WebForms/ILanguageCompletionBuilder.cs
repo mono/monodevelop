@@ -47,8 +47,7 @@ namespace MonoDevelop.AspNet.WebForms
 		public ParsedDocument ParsedLocalDocument { get; set; }
 		public int CaretPosition { get; set; }
 		public int OriginalCaretPosition { get; set; }
-		public HiddenDocument HiddenDocument { get; set; }
-		
+
 		public List<OffsetInfo> OffsetInfos = new List<OffsetInfo> ();
 		
 		public class OffsetInfo 
@@ -205,20 +204,6 @@ namespace MonoDevelop.AspNet.WebForms
 					return b;
 			}
 			return null;
-		}
-	}
-	
-	public class HiddenDocument : MonoDevelop.Ide.Gui.Document
-	{
-		internal ParsedDocument HiddenParsedDocument;
-		public override ParsedDocument ParsedDocument {
-			get {
-				return HiddenParsedDocument;
-			}
-		}
-		
-		public HiddenDocument (MonoDevelop.Ide.Gui.IWorkbenchWindow window) : base(window)
-		{
 		}
 	}
 }

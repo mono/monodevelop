@@ -28,20 +28,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.Ide.Tasks
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
+	[RequireService (typeof (TaskService))]
 	partial class CommentTasksProviderTests : Ide.IdeTestBase
 	{
-		[SetUp]
-		public void SetUp ()
-		{
-			//Initialize IdeApp so IdeApp.Workspace is not null, comment tasks listen to root workspace events.
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		static async Task RunTest (Func<Controller, Task> act)
 		{
 			// Keep the current special comment tags and restore them after.
@@ -54,6 +49,12 @@ namespace MonoDevelop.Ide.Tasks
 				await helper.DisposeAsync ();
 				CommentTag.SpecialCommentTags = oldTags;
 			}
+		}
+
+		[TearDown]
+		public void TearDown ()
+		{
+			CommentTasksProvider.ResetCachedContents (null);
 		}
 
 		[TestCase(false)]
@@ -89,7 +90,7 @@ namespace MonoDevelop.Ide.Tasks
 				await helper.SetupProject (withToDos);
 
 				await helper.LoadProject ();
-				await IdeApp.Workspace.Close ();
+				await IdeApp.Workspace.Close (false, false, true);
 
 				await helper.LoadProject ();
 			});
@@ -188,7 +189,7 @@ namespace MonoDevelop.Ide.Tasks
 				await tcs.Task;
 				Assert.AreEqual (options.ExpectedFiles.Length, CommentTasksProvider.GetCachedContentsCount ());
 
-				await IdeApp.Workspace.Close ();
+				await IdeApp.Workspace.Close (false, false, true);
 				Assert.AreEqual (0, CommentTasksProvider.GetCachedContentsCount ());
 
 				done = true;

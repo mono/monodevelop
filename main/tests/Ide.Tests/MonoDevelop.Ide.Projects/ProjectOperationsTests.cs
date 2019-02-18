@@ -27,20 +27,14 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.Ide.Projects
 {
 	[TestFixture]
+	[RequireService(typeof(ProjectOperations))]
 	public class ProjectOperationsTests : IdeTestBase
 	{
-		[TestFixtureSetUp]
-		public void SetUp ()
-		{
-			if (!IdeApp.IsInitialized) {
-				IdeApp.Initialize (new ProgressMonitor ());
-			}
-		}
-
 		Solution CreateSimpleSolutionWithItems (params SolutionItem[] items)
 		{
 			var sln = new Solution ();
@@ -61,7 +55,7 @@ namespace MonoDevelop.Ide.Projects
 			using (var executing = new ProjectWithExecutionDeps ("Executing"))
 			using (var sln = CreateSimpleSolutionWithItems (other, executing)) {
 
-				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				var success = await IdeServices.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
 
 				Assert.IsTrue (success);
 				Assert.IsFalse (other.WasBuilt);
@@ -78,7 +72,7 @@ namespace MonoDevelop.Ide.Projects
 
 				executing.OverrideExecutionDependencies = new [] { executionDep };
 
-				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				var success = await IdeServices.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
 
 				Assert.IsTrue (success);
 				Assert.IsTrue (executionDep.WasBuilt);
@@ -96,7 +90,7 @@ namespace MonoDevelop.Ide.Projects
 				executing.OverrideExecutionDependencies = new [] { executionDep };
 				executionDep.ItemDependencies.Add (executing);
 
-				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				var success = await IdeServices.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
 				Assert.IsTrue (success);
 				Assert.IsTrue (executionDep.WasBuilt);
 				Assert.IsTrue (executing.WasBuilt);
@@ -114,7 +108,7 @@ namespace MonoDevelop.Ide.Projects
 				executing.OverrideExecutionDependencies = new [] { executionDep };
 				executionDep.ItemDependencies.Add (executing);
 
-				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				var success = await IdeServices.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
 				Assert.IsTrue (success);
 				Assert.IsTrue (executionDep.WasBuilt);
 
@@ -123,7 +117,7 @@ namespace MonoDevelop.Ide.Projects
 
 				executionDep.WasBuilt = executing.WasBuilt = false;
 
-				success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
+				success = await IdeServices.ProjectOperations.CheckAndBuildForExecute (new [] { executing }, ConfigurationSelector.Default);
 				Assert.IsTrue (success);
 				Assert.IsFalse (executionDep.WasBuilt);
 				Assert.IsFalse (executing.WasBuilt);
@@ -257,7 +251,7 @@ namespace MonoDevelop.Ide.Projects
 				Assert.AreEqual (null, proj.BuildPropertyValue);
 				Assert.AreEqual (null, proj.CheckPropertyValue);
 
-				var success = await IdeApp.ProjectOperations.CheckAndBuildForExecute (new [] { proj }, ConfigurationSelector.Default);
+				var success = await IdeServices.ProjectOperations.CheckAndBuildForExecute (new [] { proj }, ConfigurationSelector.Default);
 				Assert.IsTrue (success);
 				Assert.AreEqual (true, proj.BuildPropertyValue);
 				Assert.AreEqual (true, proj.CheckPropertyValue);
@@ -265,7 +259,7 @@ namespace MonoDevelop.Ide.Projects
 				proj.CheckPropertyValue = null;
 				proj.BuildPropertyValue = null;
 
-				var result = await IdeApp.ProjectOperations.Build (proj).Task;
+				var result = await IdeServices.ProjectOperations.Build (proj).Task;
 				Assert.IsFalse (result.Failed);
 				Assert.AreEqual (false, proj.BuildPropertyValue);
 				Assert.AreEqual (false, proj.CheckPropertyValue);

@@ -31,7 +31,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.AspNet.Razor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -47,7 +49,10 @@ namespace MonoDevelop.AspNet.Tests.Razor
 		[TearDown]
 		public override void TearDown ()
 		{
-			TypeSystemServiceTestExtensions.UnloadSolution (solution);
+			if (solution != null) {
+				TypeSystemServiceTestExtensions.UnloadSolution (solution);
+				solution.Dispose ();
+			}
 			base.TearDown ();
 		}
 
@@ -75,16 +80,9 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				projectFile.Generator = "RazorTemplatePreprocessor";
 
 			var sev = new TestViewContent ();
-			sev.Project = project;
-			sev.ContentName = file;
+			await sev.Initialize (new FileDescriptor (file, null, project), null);
 			sev.Text = text;
-
-			var tww = new TestWorkbenchWindow ();
-			tww.ViewContent = sev;
-
-			var doc = new TestDocument (tww);
-			doc.Editor.FileName = sev.ContentName;
-			doc.UpdateProject (project);
+			sev.Editor.FileName = sev.FilePath;
 
 			solution = new MonoDevelop.Projects.Solution ();
 			solution.DefaultSolutionFolder.AddItem (project);
@@ -92,7 +90,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			await TypeSystemServiceTestExtensions.LoadSolution (solution);
 
 			var parser = new RazorTestingParser {
-				Doc = doc
+				Editor = sev.Editor
 			};
 			var options = new ParseOptions {
 				Project = project,
@@ -100,6 +98,18 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				Content = new StringTextSource (text)
 			};
 			return (RazorCSharpParsedDocument)parser.Parse (options, default(CancellationToken)).Result;
+		}
+	}
+
+	public class RazorTestingParser : RazorCSharpParser
+	{
+		public TextEditor Editor { get; set; }
+
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
+		{
+			Editor.FileName = parseOptions.FileName;
+			OpenDocuments.Add (new OpenRazorDocument (Editor));
+			return base.Parse (parseOptions, cancellationToken);
 		}
 	}
 }

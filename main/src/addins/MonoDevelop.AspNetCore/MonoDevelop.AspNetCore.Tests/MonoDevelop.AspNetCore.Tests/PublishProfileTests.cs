@@ -1,4 +1,4 @@
-//
+﻿//
 // PublishProfileTests.cs
 //
 // Author:
@@ -40,16 +40,9 @@ using MonoDevelop.Core;
 namespace MonoDevelop.AspNetCore.Tests
 {
 	[TestFixture]
-	class PublishProfileTests
+	[RequireService(typeof(RootWorkspace))]
+	class PublishProfileTests: TestBase
 	{
-		[SetUp]
-		public void SetUp ()
-		{
-			DesktopService.Initialize ();
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-		}
-
 		[TestCase ("Debug", "Any CPU", "netcoreapp2.0", "bin/Debug/netcoreapp2.0/publish")]
 		[TestCase ("Release", "x86", "netcoreapp2.1", "bin/Debug/netcoreapp2.1/publish")]
 		public void PublishProfilesCanBeRead (string configuration, string platform, string targetFramework, string publishDir)
@@ -87,15 +80,12 @@ namespace MonoDevelop.AspNetCore.Tests
 
 			//if there is NOT a Release configuration id, the expected relative path should follow: "bin/<CurrentActiveConfig>/<netcore-version>/publish"
 			project.Configurations.Remove ("Release");
-			IdeApp.Workspace.ActiveConfigurationId = "Debug";
+			IdeServices.Workspace.ActiveConfigurationId = "Debug";
 			expected = $"bin/{project.GetActiveConfiguration ()}/{GetShortFrameworkIdentifier (project.TargetFramework.Id)}/publish";
 			Assert.That (resolver.GetDefaultFolder (UriKind.Relative) == expected);
 
 			solution.Dispose ();
 		}
-
-		[TearDown]
-		public async Task TearDown () => await IdeApp.Workspace.Close ();
 
 		string GetShortFrameworkIdentifier (TargetFrameworkMoniker framework)
 		{

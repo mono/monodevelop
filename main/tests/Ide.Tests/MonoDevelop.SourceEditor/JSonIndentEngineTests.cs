@@ -30,118 +30,146 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.JSon;
 using ICSharpCode.NRefactory6.CSharp;
+using System;
+using System.Threading.Tasks;
+using UnitTests;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.SourceEditor
 {
 	[TestFixture]
+	[RequireService(typeof(TextEditorService))]
 	public class JSonIndentEngineTests : IdeTestBase
 	{
 		const string indentString = "\t";
 
-		internal static IDocumentIndentEngine CreateEngine (string text, bool tabsToSpaces = false)
+		class TestCase : IDisposable
 		{
-			var sb = new StringBuilder ();
-			int offset = 0;
-			for (int i = 0; i < text.Length; i++) {
-				var ch = text [i];
-				if (ch == '$') {
-					offset = i;
-					continue;
+			TextEditorExtensionTestCase testCase;
+
+			public IDocumentIndentEngine Engine { get; set; }
+
+			public static async Task<TestCase> Create (string text, bool tabsToSpaces = false)
+			{
+				var test = new TestCase ();
+				var sb = new StringBuilder ();
+				int offset = 0;
+				for (int i = 0; i < text.Length; i++) {
+					var ch = text [i];
+					if (ch == '$') {
+						offset = i;
+						continue;
+					}
+					sb.Append (ch);
 				}
-				sb.Append (ch);
+
+				var content = new TestViewContent ();
+				await content.Initialize (new FileDescriptor ("/a.json", null, null));
+				content.Editor.MimeType = "application/json";
+
+				content.Editor.Text = sb.ToString ();
+
+				test.testCase = await TextEditorExtensionTestCase.Create (content, null, false);
+
+				test.testCase.Document.Editor.Options = new CustomEditorOptions {
+					TabsToSpaces = tabsToSpaces,
+					TabSize = 4
+				};
+
+				var csi = new JSonIndentEngine (content.Editor);
+				var result = new CacheIndentEngine (csi);
+				result.Update (content.Editor, offset);
+				test.Engine = result;
+
+				return test;
 			}
 
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.json";
-			content.Data.MimeType = "application/json";
-
-			content.Data.Text = sb.ToString ();
-			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-			doc.Editor.Options = new CustomEditorOptions {
-				TabsToSpaces = tabsToSpaces,
-				TabSize = 4
-			};
-			var csi = new JSonIndentEngine (content.Data, doc);
-			var result = new CacheIndentEngine (csi);
-			result.Update (content.Data, offset);
-			return result;
+			public void Dispose ()
+			{
+				testCase.Dispose ();
+			}
 		}
 
 		[Test]
-		public void TestBracketIndentation ()
+		public async Task TestBracketIndentation ()
 		{
-			var engine = CreateEngine (
+			using (var testCase = await TestCase.Create (
 				@"
 {
 $
-");
-			Assert.AreEqual (indentString, engine.ThisLineIndent);
-			Assert.AreEqual (indentString, engine.NextLineIndent);
+")) {
+				Assert.AreEqual (indentString, testCase.Engine.ThisLineIndent);
+				Assert.AreEqual (indentString, testCase.Engine.NextLineIndent);
+			}
 		}
 
 		[Test]
-		public void TestBodyIndentation ()
+		public async Task TestBodyIndentation ()
 		{
-			var engine = CreateEngine (
+			using (var testCase = await TestCase.Create (
 				@"
 {
 " + indentString + @"""foo"":""bar"",
 $
-");
-			Assert.AreEqual (indentString, engine.ThisLineIndent);
-			Assert.AreEqual (indentString, engine.NextLineIndent);
+")) {
+				Assert.AreEqual (indentString, testCase.Engine.ThisLineIndent);
+				Assert.AreEqual (indentString, testCase.Engine.NextLineIndent);
+			}
 		}
 
 		[Test]
-		public void TestArrayIndentation ()
+		public async Task TestArrayIndentation ()
 		{
-			var engine = CreateEngine (
+			using (var testCase = await TestCase.Create (
 				@"
 {
 " + indentString + @"""test"":[
 $
-");
-			Assert.AreEqual (indentString + indentString, engine.ThisLineIndent);
-			Assert.AreEqual (indentString + indentString, engine.NextLineIndent);
+")) {
+				Assert.AreEqual (indentString + indentString, testCase.Engine.ThisLineIndent);
+				Assert.AreEqual (indentString + indentString, testCase.Engine.NextLineIndent);
+			}
 		}
 
 		[Test]
-		public void TestWindowsEOL ()
+		public async Task TestWindowsEOL ()
 		{
-			var engine = CreateEngine ("\r\n{\r\n$\r\n");
-			Assert.AreEqual (indentString, engine.ThisLineIndent);
-			Assert.AreEqual (indentString, engine.NextLineIndent);
+			using (var testCase = await TestCase.Create ("\r\n{\r\n$\r\n")) {
+				Assert.AreEqual (indentString, testCase.Engine.ThisLineIndent);
+				Assert.AreEqual (indentString, testCase.Engine.NextLineIndent);
+			}
 		}
 
 		/// <summary>
 		/// Bug 40892 - json indenter should not indent multi-line strings
 		/// </summary>
 		[Test]
-		public void TestBug40892 ()
+		public async Task TestBug40892 ()
 		{
-			var engine = CreateEngine (
+			using (var testCase = await TestCase.Create (
 				@"
 {
 " + indentString + @"""test"":""
 $
-");
-			Assert.AreEqual ("", engine.ThisLineIndent);
-			Assert.AreEqual ("", engine.NextLineIndent);
+")) {
+				Assert.AreEqual ("", testCase.Engine.ThisLineIndent);
+				Assert.AreEqual ("", testCase.Engine.NextLineIndent);
+			}
 		}
 
 
 		[Test]
-		public void TestSpaceIndentation()
+		public async Task TestSpaceIndentation ()
 		{
-			var engine = CreateEngine(
+			using (var testCase = await TestCase.Create (
 				@"
 {
 $
-", true);
-			Assert.AreEqual("    ", engine.ThisLineIndent);
-			Assert.AreEqual(engine.ThisLineIndent, engine.NextLineIndent);
+", true)) {
+				Assert.AreEqual ("    ", testCase.Engine.ThisLineIndent);
+				Assert.AreEqual (testCase.Engine.ThisLineIndent, testCase.Engine.NextLineIndent);
+			}
 		}
 
 	}

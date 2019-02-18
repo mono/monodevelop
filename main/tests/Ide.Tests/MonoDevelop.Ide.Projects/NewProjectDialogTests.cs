@@ -28,6 +28,7 @@ using UnitTests;
 using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -38,9 +39,9 @@ namespace MonoDevelop.Ide.Projects
 		bool useGitOriginalValue;
 		bool useGitIgnoreOriginalValue;
 
-		protected override void InternalSetup (string rootDir)
+		protected override async Task InternalSetup (string rootDir)
 		{
-			base.InternalSetup (rootDir);
+			await base.InternalSetup (rootDir);
 
 			createProjectDirectoryOriginalValue = PropertyService.Get (
 				NewProjectDialogController.CreateProjectSubDirectoryPropertyName,

@@ -44,6 +44,7 @@ using System.Collections.Immutable;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
+	[RequireService(typeof(RootWorkspace))]
 	class TypeSystemServiceTests : IdeTestBase
 	{
 		class TrackTestProject : DotNetProject
@@ -75,18 +76,18 @@ namespace MonoDevelop.Ide
 		[Test]
 		public void TestOuptutTracking_ProjectType ()
 		{
-			TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { ProjectType = "TestProjectType" });
+			IdeApp.TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { ProjectType = "TestProjectType" });
 
-			Assert.IsFalse (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "Bar")));
-			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "TestProjectType")));
+			Assert.IsFalse (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "Bar")));
+			Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("C#", "TestProjectType")));
 		}
 
 		[Test]
 		public void TestOuptutTracking_LanguageName ()
 		{
-			TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { LanguageName = "IL" });
+			IdeApp.TypeSystemService.AddOutputTrackingNode (new TypeSystemOutputTrackingNode { LanguageName = "IL" });
 
-			Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("IL", "Bar")));
+			Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (new TrackTestProject ("IL", "Bar")));
 		}
 
 		[Test]
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide
 			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
-				Assert.IsTrue (TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
+				Assert.IsTrue (IdeApp.TypeSystemService.IsOutputTrackedProject (fsharpLibrary));
 			}
 		}
 
@@ -127,7 +128,7 @@ namespace MonoDevelop.Ide
 				if (System.IO.File.Exists (storageLocation))
 					System.IO.File.Delete (storageLocation);
 				
-				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.Instance.GetExportedValue<ISolutionSizeTracker> ();
 
 				// This will return the tracker, since it's a singleton.
 				var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
@@ -153,23 +154,23 @@ namespace MonoDevelop.Ide
 		[Test]
 		public async Task TestWorkspaceImmediatelyAvailable ()
 		{
-			//Initialize IdeApp so IdeApp.Workspace is not null
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
+			await IdeServices.Workspace.Close (false, true, true);
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			var tcs = new TaskCompletionSource<bool> ();
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				var workspace = TypeSystemService.GetWorkspace (e.Solution);
+			IdeServices.Workspace.SolutionLoaded += (s, e) => {
+				var workspace = IdeApp.TypeSystemService.GetWorkspace (e.Solution);
 				Assert.IsNotNull (workspace);
-				Assert.AreNotSame (workspace, TypeSystemService.emptyWorkspace);
+				Assert.AreNotSame (workspace, IdeApp.TypeSystemService.emptyWorkspace);
 				workspace.Dispose ();
 				tcs.SetResult (true);
 			};
 			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
-				await tcs.Task;
+				if (!await IdeServices.Workspace.OpenWorkspaceItem (solFile))
+					Assert.Fail ("Solution load failed");
+				if (await Task.WhenAny (tcs.Task, Task.Delay (10000)) != tcs.Task)
+					Assert.Fail ("Solution did not load");
 			} finally {
-				await IdeApp.Workspace.Close (false);
+				await IdeServices.Workspace.Close (false);
 			}
 		}
 
@@ -178,16 +179,15 @@ namespace MonoDevelop.Ide
 		{
 			// Fix for VSTS 603762 - LoadProject is called twice on solution load due to configuration change.
 
-			if (!IdeApp.IsInitialized)
-				IdeApp.Initialize (new ProgressMonitor ());
-
 			MonoDevelopWorkspace workspace;
 			bool reloaded = false;
 			bool solutionLoaded = false;
 			bool workspaceLoaded = false;
 
-			IdeApp.Workspace.SolutionLoaded += (s, e) => {
-				workspace = TypeSystemService.GetWorkspace (e.Solution);
+			await IdeServices.Workspace.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
+
+			IdeServices.Workspace.SolutionLoaded += (s, e) => {
+				workspace = IdeServices.TypeSystemService.GetWorkspace (e.Solution);
 				workspace.WorkspaceChanged += (sender, ea) => {
 					// If SolutionReloaded event is raised while opening the solution, we are doing something wrong
 					if (ea.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.SolutionReloaded)
@@ -206,17 +206,21 @@ namespace MonoDevelop.Ide
 			File.WriteAllText (Path.Combine (prefsPath, "UserPrefs.xml"), "<Properties><MonoDevelop.Ide.Workspace ActiveConfiguration='Release' /></Properties>");
 
 			try {
-				await IdeApp.Workspace.OpenWorkspaceItem (solFile);
+				await IdeServices.Workspace.OpenWorkspaceItem (solFile);
 
 				// Check that the user prefs file has been loaded
-				Assert.AreEqual ("Release", IdeApp.Workspace.ActiveConfiguration.ToString ());
+				Assert.AreEqual ("Release", IdeServices.Workspace.ActiveConfiguration.ToString ());
 
 				// Wait for the roslyn workspace to be loaded
-				while (!workspaceLoaded)
+				int timeout = 100;
+				while (!workspaceLoaded && --timeout > 0)
 					await Task.Delay (100);
 
+				if (timeout <= 0)
+						Assert.Fail ("Workspace did not load");
+
 			} finally {
-				await IdeApp.Workspace.Close (false);
+				await IdeServices.Workspace.Close (false);
 			}
 
 			Assert.IsTrue (solutionLoaded);
@@ -278,7 +282,7 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			var parsers = TypeSystemService.Parsers;
+			var parsers = IdeApp.TypeSystemService.Parsers;
 			try {
 				var projectionParser = new TypeSystemParserNode ();
 				projectionParser.BuildActions = new [] { "Compile" };
@@ -290,7 +294,7 @@ namespace MonoDevelop.Ide
 
 				var newParsers = new List<TypeSystemParserNode> ();
 				newParsers.Add (projectionParser);
-				TypeSystemService.Parsers = newParsers;
+				IdeApp.TypeSystemService.Parsers = newParsers;
 
 				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 					using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
@@ -301,13 +305,13 @@ namespace MonoDevelop.Ide
 						var options = new ParseOptions {
 							FileName = "first.xaml.cs"
 						};
-						var task1 = TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
+						var task1 = IdeApp.TypeSystemService.ParseProjection (options, "text/csharp", source1.Token);
 						source1.Cancel ();
 
 						options = new ParseOptions {
 							FileName = "second.xaml.cs"
 						};
-						var task2 = TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
+						var task2 = IdeApp.TypeSystemService.ParseProjection (options, "text/csharp", source2.Token);
 
 						var result1 = await task1;
 						var result2 = await task2;
@@ -317,7 +321,7 @@ namespace MonoDevelop.Ide
 					}
 				}
 			} finally {
-				TypeSystemService.Parsers = parsers;
+				IdeApp.TypeSystemService.Parsers = parsers;
 			}
 		}
 

@@ -32,6 +32,8 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Tests.WebForms
 {
@@ -89,27 +91,26 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			project.AddFile (file);
 
 			sev = new TestViewContent ();
-			sev.Project = project;
-			sev.ContentName = file;
+			await sev.Initialize (new FileDescriptor (file, null, project), null);
+
 			sev.Text = editorText;
 			sev.CursorPosition = cursorPosition;
 
-			var tww = new TestWorkbenchWindow ();
-			tww.ViewContent = sev;
-
-			var doc = new TestDocument (tww);
-			doc.Editor.FileName = sev.ContentName;
 			var parser = new WebFormsParser ();
 			var options = new ParseOptions {
 				Project = project,
-				FileName = sev.ContentName,
+				FileName = file,
 				Content = new StringTextSource (parsedText)
 			};
+			sev.Editor.FileName = sev.FilePath;
+
 			var parsedDoc = await parser.Parse (options, default(CancellationToken)) as WebFormsParsedDocument;
-			doc.HiddenParsedDocument = parsedDoc;
+
+			var documentContext = sev.GetContent<RoslynDocumentContext> ();
+			documentContext.SetParsedDocument (parsedDoc);
 
 			return new CreateEditorResult {
-				Extension = new WebFormsTestingEditorExtension (doc),
+				Extension = new WebFormsTestingEditorExtension (sev.Editor, documentContext),
 				EditorText = editorText,
 				ViewContent = sev
 			};
@@ -117,9 +118,9 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 
 		public class WebFormsTestingEditorExtension : WebFormsEditorExtension
 		{
-			public WebFormsTestingEditorExtension (Document doc)
+			public WebFormsTestingEditorExtension (TextEditor editor, DocumentContext documentContext)
 			{
-				Initialize (doc.Editor, doc);
+				Initialize (editor, documentContext);
 			}
 
 			public CodeCompletionContext GetCodeCompletionContext (TestViewContent sev)
