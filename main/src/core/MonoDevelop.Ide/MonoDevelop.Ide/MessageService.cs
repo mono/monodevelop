@@ -411,7 +411,7 @@ namespace MonoDevelop.Ide
 			var gtkParent = parentControl?.nativeWidget as Gtk.Window;
 #if MAC
 			var nsChild = childControl?.nativeWidget as NSWindow;
-			var nsParent = parentControl?.nativeWidget as NSWindow;
+			var nsParent = parentControl?.nativeWidget as NSWindow ?? parentControl;
 
 			if (nsChild != null) {
 				if (nsParent == null || !nsParent.IsVisible) {
