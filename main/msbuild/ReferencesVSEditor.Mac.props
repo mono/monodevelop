@@ -29,6 +29,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
