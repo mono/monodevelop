@@ -103,7 +103,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!RootPath.IsDirectory || !RootPath.Combine (".git").IsDirectory)
 				throw new InvalidOperationException ($"{nameof (RootPath)} is not a valid Git repository, FileSystemWantcher can not be initialized");
 
-			watcher = new FileSystemWatcher (RootPath.Combine (".git"), "*.lock");
+			watcher = new FileSystemWatcher (RootPath, Path.Combine (".git",  "*.lock"));
 			watcher.Created += HandleGitLockCreated;
 			watcher.Deleted += HandleGitLockDeleted;
 			watcher.Renamed += HandleGitLockRenamed;
