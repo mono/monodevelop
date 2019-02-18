@@ -72,12 +72,33 @@ namespace MonoDevelop.VersionControl.Git
 					return;
 			}
 
+			var defaultKey = FilePath.Null;
+
 			foreach (FilePath privateKey in Directory.EnumerateFiles (keyStorage)) {
 				string publicKey = privateKey + ".pub";
-				if (File.Exists (publicKey) && (!KeyHasPassphrase (privateKey) || privateKey.FileName == "id_rsa")) { // always add the default key
-					Keys.Add (privateKey);
-					PublicKeys.Add (publicKey);
+				if (File.Exists (publicKey)) {
+					if (privateKey.FileName == "id_rsa")
+						defaultKey = privateKey;
+					else if (!KeyHasPassphrase (privateKey)) {
+						Keys.Add (privateKey);
+						PublicKeys.Add (publicKey);
+					}
 				}
+			}
+
+			if (defaultKey.IsNotNull) {
+				var publicKey = defaultKey + ".pub";
+				// if the default key has no passphrase, make it the first key to try when authenticating,
+				// or the last one otherwise, to make sure that we try the unprotected keys first, before prompting
+				// for the passphrase.
+				if (KeyHasPassphrase (defaultKey)) {
+					Keys.Add (defaultKey);
+					PublicKeys.Add (publicKey);
+				} else {
+					Keys.Insert (0, defaultKey);
+					PublicKeys.Insert (0, publicKey);
+				}
+
 			}
 		}
 
