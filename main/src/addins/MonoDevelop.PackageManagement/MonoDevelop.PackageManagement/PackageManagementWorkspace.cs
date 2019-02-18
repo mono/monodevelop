@@ -39,15 +39,13 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageManagementWorkspace ()
 		{
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
-				IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
-				IdeApp.Workspace.ItemAddedToSolution += SolutionItemAddedOrRemoved;
-				IdeApp.Workspace.ItemRemovedFromSolution += SolutionItemAddedOrRemoved;
-				IdeApp.Workspace.ActiveConfigurationChanged += ActiveConfigurationChanged;
-			} else {
-				LoggingService.LogError ("IdeApp workspace is not available when creating PackageManagementWorkspace.");
-			}
+			Runtime.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				s.SolutionLoaded += SolutionLoaded;
+				s.SolutionUnloaded += SolutionUnloaded;
+				s.ItemAddedToSolution += SolutionItemAddedOrRemoved;
+				s.ItemRemovedFromSolution += SolutionItemAddedOrRemoved;
+				s.ActiveConfigurationChanged += ActiveConfigurationChanged;
+			});
 		}
 
 		void ActiveConfigurationChanged (object sender, EventArgs e)
