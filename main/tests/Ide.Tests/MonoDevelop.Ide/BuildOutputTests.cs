@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide
 		[Test]
 		public void FeatureTogglesAsExpected ()
 		{
-			if (Version.Parse (BuildInfo.FullVersion) >= Version.Parse ("8.0")) {
+			if (Version.Parse (BuildInfo.FullVersion) >= Version.Parse ("8.1")) {
 				Assert.True (BuildOutput.IsFeatureEnabled);
 			} else {
 				Assert.False (BuildOutput.IsFeatureEnabled);
