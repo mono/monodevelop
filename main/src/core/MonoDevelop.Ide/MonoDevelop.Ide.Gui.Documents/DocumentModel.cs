@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			ImmutableList<DocumentModel> linkedModels = ImmutableList<DocumentModel>.Empty;
 			Dictionary <Type, ModelRepresentation> representations = new Dictionary<Type, ModelRepresentation> ();
-			SemaphoreSlim dataLock = new SemaphoreSlim (1);
+			SemaphoreSlim dataLock = new SemaphoreSlim (1, 1);
 
 			ModelRepresentation lastChangedRepresentation;
 			int changeVersion;
