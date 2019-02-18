@@ -26,6 +26,7 @@
 
 using MonoDevelop.Components;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	[TypeExtensionPoint]
 	public interface IWelcomeWindowProvider
 	{
-		Window CreateWindow ();
+		Task<Window> CreateWindow ();
 		void ShowWindow (Window window, WelcomeWindowShowOptions options);
 		void HideWindow (Window window);
 	}

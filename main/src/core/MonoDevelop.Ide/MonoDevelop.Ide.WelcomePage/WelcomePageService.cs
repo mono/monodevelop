@@ -28,6 +28,8 @@ using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Shell;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -74,14 +76,14 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static bool HasWindowImplementation => AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().Any ();
 
-		public static void ShowWelcomePageOrWindow (WelcomeWindowShowOptions options = null)
+		public static async void ShowWelcomePageOrWindow (WelcomeWindowShowOptions options = null)
 		{
 			if (options == null) {
 				options = new WelcomeWindowShowOptions (true);
 			}
 
 			// Try to get a dialog version of the "welcome screen" first
-			if (!ShowWelcomeWindow (options)) {
+			if (!await ShowWelcomeWindow (options)) {
 				ShowWelcomePage (true);
 			}
 		}
@@ -123,7 +125,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			WelcomePageHidden?.Invoke (welcomePage, EventArgs.Empty);
 		}
 
-		public static bool ShowWelcomeWindow (WelcomeWindowShowOptions options)
+		public static async Task<bool> ShowWelcomeWindow (WelcomeWindowShowOptions options)
 		{
 			if (welcomeWindowProvider == null) {
 				welcomeWindowProvider = AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().FirstOrDefault ();
@@ -132,7 +134,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			if (welcomeWindow == null) {
-				welcomeWindow = welcomeWindowProvider.CreateWindow ();
+				welcomeWindow = await welcomeWindowProvider.CreateWindow ();
 				if (welcomeWindow == null)
 					return false;
 			}

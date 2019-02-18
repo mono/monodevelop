@@ -1,4 +1,4 @@
-//
+﻿//
 // MacPlatformService.cs
 //
 // Author:
@@ -589,20 +589,8 @@ namespace MonoDevelop.MacIntegration
 				};
 
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
-					if (Ide.WelcomePage.WelcomePageService.HasWindowImplementation && !(IdeApp.Workbench.RootWindow?.Visible ?? false)) {
-						if (IdeApp.Workbench.RootWindow != null) {
-							IdeApp.Workbench.RootWindow.Visible = false;
-						}
-						Ide.WelcomePage.WelcomePageService.ShowWelcomeWindow (new Ide.WelcomePage.WelcomeWindowShowOptions (true));
-
-						e.Handled = true;
-					} else if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
-						IdeApp.Workbench.RootWindow.Deiconify ();
-						IdeApp.Workbench.RootWindow.Visible = true;
-
-						IdeApp.Workbench.RootWindow.Present ();
-						e.Handled = true;
-					}
+					e.Handled = true;
+					IdeApp.BringToFront ();
 				};
 
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
@@ -1165,7 +1153,7 @@ namespace MonoDevelop.MacIntegration
 				Arguments = "--start-app-bundle",
 			};
 
-			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			var recentWorkspace = reopen ? IdeServices.DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
 			if (!string.IsNullOrEmpty (recentWorkspace))
 				psi.Arguments += " " + recentWorkspace;
 
