@@ -1236,10 +1236,13 @@ namespace MonoDevelop.Ide.Editor
 			return GetContents<T> ().FirstOrDefault ();
 		}
 
-		public IEnumerable<T> GetContents<T>() where T : class
+		public IEnumerable<T> GetContents<T> () where T : class
 		{
-			T result = textEditorImpl as T;
-			if (result != null)
+			if (isDisposed) {
+				LoggingService.LogError ($"Error retrieving TextEditor.GetContents<{typeof(T)}>\n {Environment.StackTrace}");
+				yield break;
+			}
+			if (textEditorImpl is T result)
 				yield return result;
 			var ext = textEditorImpl.EditorExtension;
 			while (ext != null) {
@@ -1253,6 +1256,10 @@ namespace MonoDevelop.Ide.Editor
 		public IEnumerable<object> GetContents (Type type)
 		{
 			var res = Enumerable.Empty<object> ();
+			if (isDisposed) {
+				LoggingService.LogError ($"Error retrieving TextEditor.GetContents({type})\n {Environment.StackTrace}");
+				return res;
+			}
 			if (type.IsInstanceOfType (textEditorImpl))
 				res = res.Concat (textEditorImpl);
 			
