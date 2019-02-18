@@ -1,10 +1,10 @@
-﻿//
-// RoslynTestBase.cs
+//
+// RequireServiceAttribute.cs
 //
 // Author:
-//       Marius Ungureanu <maungu@microsoft.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Inc.
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading.Tasks;
-using UnitTests;
 
-namespace MonoDevelop.Ide
+namespace UnitTests
 {
-	public class RoslynTestBase : TestBase
+	[AttributeUsage (AttributeTargets.Class, AllowMultiple = true)]
+	public class RequireServiceAttribute: Attribute
 	{
-		protected override Task InternalSetup (string rootDir)
+		public RequireServiceAttribute (Type serviceType)
 		{
-			RoslynServices.RoslynService.Initialize ();
-			return base.InternalSetup (rootDir);
+			ServiceType = serviceType;
 		}
+
+		public Type ServiceType { get; }
 	}
 }

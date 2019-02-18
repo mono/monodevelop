@@ -35,20 +35,15 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class TestViewContent : ViewContent
+	public class TestViewContent : FileDocumentController
 	{
 		TextEditor data;
 		
-		public override Control Control {
-			get {
-				return null;
-			}
-		}
-		
-		public TextEditor Data {
+		public TextEditor Editor {
 			get {
 				return this.data;
 			}
@@ -56,23 +51,24 @@ namespace MonoDevelop.Ide.Gui
 		public TestViewContent ()
 		{
 			data = TextEditorFactory.CreateNewEditor ();
-			Contents.Add (data);;
+			AddContent (data);;
 			Name = "";
 		}
 
 		public TestViewContent (IReadonlyTextDocument doc)
 		{
 			data = TextEditorFactory.CreateNewEditor (doc);
-			Contents.Add (data);
+			AddContent (data);
 			Name = "";
 		}
 
-		protected override void OnContentNameChanged ()
+		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
-			base.OnContentNameChanged ();
-			Name = ContentName;
+			if (modelDescriptor is FileDescriptor file && !file.FilePath.IsNullOrEmpty)
+				data.FileName = file.FilePath;
+			return base.OnInitialize (modelDescriptor, status);
 		}
-		
+
 		FilePath name;
 		public FilePath Name { 
 			get { return name; }
@@ -203,11 +199,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public List<object> Contents = new List<object> ();
+		List<object> contents = new List<object> ();
+
+		public void AddContent (object content)
+		{
+			contents.Add (content);
+			OnContentChanged ();
+		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.OnGetContents (type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
+			return base.OnGetContents (type).Concat (contents.Where (c => type.IsInstanceOfType (c))).Concat (Editor.GetContents (type));
 		}
 
 		public IDisposable OpenUndoGroup ()

@@ -1,10 +1,10 @@
-﻿//
-// IdeTestBase.cs
+//
+// ServiceHelper.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,46 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using UnitTests;
-using MonoDevelop.Ide.Gui.Documents;
+using System;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Ide.Gui.Shell;
-using IdeUnitTests;
 using MonoDevelop.Ide.Gui;
-using NUnit.Framework;
+using MonoDevelop.Ide.Gui.Shell;
 
-namespace MonoDevelop.Ide
+namespace IdeUnitTests
 {
-	[RequireService (typeof (DesktopService))]
-	[RequireService (typeof (TypeSystemService))]
-	[RequireService (typeof (FontService))]
-	public class IdeTestBase: RoslynTestBase
+	public class ServiceHelper
 	{
-		protected override async Task InternalSetup(string rootDir)
+		public static BasicServiceProvider SetupMockShell ()
 		{
-			Runtime.RegisterServiceType<IShell, MockShell> ();
-			Runtime.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager> ();
+			var serviceProvider = new BasicServiceProvider ();
 
-			await base.InternalSetup(rootDir);
+			serviceProvider.RegisterServiceType<IShell, MockShell> ();
+			serviceProvider.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager>();
 
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
-		}
-
-		[TearDown]
-		async Task CloseWorkspace ()
-		{
-			var ws = Runtime.PeekService<RootWorkspace> ();
-			if (ws != null)
-				await ws.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
-			var dm = Runtime.PeekService<DocumentManager> ();
-			if (dm != null) {
-				while (dm.Documents.Count > 0)
-					await dm.Documents [0].Close (true);
-			}
+			return serviceProvider;
 		}
 	}
 }

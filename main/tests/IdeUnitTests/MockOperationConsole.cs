@@ -1,10 +1,10 @@
-﻿//
-// RoslynTestBase.cs
+//
+// MockOperationConsole.cs
 //
 // Author:
-//       Marius Ungureanu <maungu@microsoft.com>
+//       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft Inc.
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading.Tasks;
-using UnitTests;
+using System.IO;
+using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Ide
+namespace IdeUnitTests
 {
-	public class RoslynTestBase : TestBase
+	public class MockOperationConsole: OperationConsole
 	{
-		protected override Task InternalSetup (string rootDir)
-		{
-			RoslynServices.RoslynService.Initialize ();
-			return base.InternalSetup (rootDir);
-		}
+		public TextReader InReader { get; set; } = new StringReader ("");
+		public StringWriter OutWriter { get; set; } = new StringWriter ();
+		public StringWriter ErrorWriter { get; set; } = new StringWriter ();
+		public StringWriter LogWriter { get; set; } = new StringWriter ();
+
+		public override TextReader In => InReader;
+
+		public override TextWriter Out => OutWriter;
+
+		public override TextWriter Error => ErrorWriter;
+
+		public override TextWriter Log => LogWriter;
 	}
 }

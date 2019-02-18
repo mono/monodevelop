@@ -1,10 +1,10 @@
-﻿//
-// IdeTestBase.cs
+//
+// TestHelper.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,46 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using UnitTests;
-using MonoDevelop.Ide.Gui.Documents;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Ide.Gui.Shell;
-using IdeUnitTests;
-using MonoDevelop.Ide.Gui;
-using NUnit.Framework;
+using System;
+using System.IO;
 
 namespace MonoDevelop.Ide
 {
-	[RequireService (typeof (DesktopService))]
-	[RequireService (typeof (TypeSystemService))]
-	[RequireService (typeof (FontService))]
-	public class IdeTestBase: RoslynTestBase
+	public static class TestHelper
 	{
-		protected override async Task InternalSetup(string rootDir)
+		public static Stream ToStream (string text)
 		{
-			Runtime.RegisterServiceType<IShell, MockShell> ();
-			Runtime.RegisterServiceType<ProgressMonitorManager, MockProgressMonitorManager> ();
-
-			await base.InternalSetup(rootDir);
-
-			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
-			Gtk.Application.Init();
+			var mem = new MemoryStream ();
+			var w = new StreamWriter (mem);
+			w.Write (text);
+			w.Flush ();
+			mem.Position = 0;
+			return mem;
 		}
 
-		[TearDown]
-		async Task CloseWorkspace ()
+		public static string FromStream (Stream stream)
 		{
-			var ws = Runtime.PeekService<RootWorkspace> ();
-			if (ws != null)
-				await ws.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
-			var dm = Runtime.PeekService<DocumentManager> ();
-			if (dm != null) {
-				while (dm.Documents.Count > 0)
-					await dm.Documents [0].Close (true);
-			}
+			var r = new StreamReader (stream);
+			return r.ReadToEnd ();
 		}
 	}
 }

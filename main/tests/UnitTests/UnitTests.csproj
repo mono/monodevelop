@@ -40,6 +40,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestSingleThreadSynchronizationContext.cs" />
     <Compile Include="ObjectReference.cs" />
+    <Compile Include="RequireServiceAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
