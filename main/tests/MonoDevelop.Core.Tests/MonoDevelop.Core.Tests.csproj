@@ -41,7 +41,7 @@
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
-    <PackageReference Include="Mono.Cecil" Version="$(NuGetVerionCecil)" />
+    <PackageReference Include="Mono.Cecil" Version="$(NuGetVersionCecil)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
