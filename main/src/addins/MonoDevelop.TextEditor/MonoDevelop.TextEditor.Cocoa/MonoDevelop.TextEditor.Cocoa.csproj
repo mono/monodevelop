@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOperations\EditorOperationsImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOptions\EditorOptionsImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorPrimitives\EditorPrimitivesImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Find\Find.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Navigation\NavigationImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\NavigationProviders\NavigationProvidersImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Outlining\Outlining.csproj" />
