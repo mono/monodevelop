@@ -1096,7 +1096,7 @@ namespace MonoDevelop.VersionControl.Git
 			string name = null;
 			string email = null;
 			try {
-				RunSafeOperation (() => {
+				RunOperation (() => {
 					name = RootRepository.Config.Get<string> ("user.name").Value;
 					email = RootRepository.Config.Get<string> ("user.email").Value;
 				});
@@ -1110,7 +1110,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			try {
 				string lname = null, lemail = null;
-				RunSafeOperation (() => {
+				RunOperation (() => {
 					lname = RootRepository.Config.Get<string> ("user.name").Value;
 					lemail = RootRepository.Config.Get<string> ("user.email").Value;
 				});
@@ -1140,7 +1140,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void SetUserInfo (string name, string email)
 		{
-			RunSafeOperation (() => {
+			RunOperation (() => {
 				RootRepository.Config.Set ("user.name", name);
 				RootRepository.Config.Set ("user.email", email);
 			});
