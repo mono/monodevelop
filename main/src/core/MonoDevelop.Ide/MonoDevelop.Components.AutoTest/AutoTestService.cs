@@ -163,9 +163,11 @@ namespace MonoDevelop.Components.AutoTest
 		
 		public void DetachClient (IAutoTestClient client)
 		{
-			if (client == this.client)
+			if (client == this.client) {
 				this.client = null;
-			else
+				currentSession?.Dispose ();
+				currentSession = null;
+			} else
 				throw new InvalidOperationException ("Not connected");
 		}
 	}

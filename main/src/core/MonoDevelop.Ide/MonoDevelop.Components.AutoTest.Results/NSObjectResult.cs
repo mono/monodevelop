@@ -366,7 +366,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			pinfo.SetValue (ResultObject, runtime);
 			return true;
 		}
-#endregion
+		#endregion
+
+		protected override void Dispose (bool disposing)
+		{
+			ResultObject = null;
+			base.Dispose (disposing);
+		}
 	}
 }
 
