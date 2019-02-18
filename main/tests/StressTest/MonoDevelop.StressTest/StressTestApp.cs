@@ -90,9 +90,11 @@ namespace MonoDevelop.StressTest
 			ReportMemoryUsage (-1);
 			for (int i = 0; i < Iterations; ++i) {
 				scenario.Run ();
-				ReportMemoryUsage (i);
+
 				// This is to prevent leaking of AppQuery instances.
 				TestService.Session.DisconnectQueries ();
+
+				ReportMemoryUsage (i);
 			}
 
 			UserInterfaceTests.Ide.CloseAll (exit: false);
