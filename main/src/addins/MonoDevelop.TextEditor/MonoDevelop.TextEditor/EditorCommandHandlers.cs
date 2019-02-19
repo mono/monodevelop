@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -79,9 +79,9 @@ namespace MonoDevelop.TextEditor.Cocoa
 
         string INamed.DisplayName => "Standalone Editor command handlers";
 
-        public IEditorOperations GetOperations(ITextView textView)
+        public IEditorOperations3 GetOperations (ITextView textView)
         {
-            return OperationsService.GetEditorOperations(textView);
+            return (IEditorOperations3)OperationsService.GetEditorOperations(textView);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
         bool ICommandHandler<MoveSelectedLinesDownCommandArgs>.ExecuteCommand(MoveSelectedLinesDownCommandArgs args, CommandExecutionContext executionContext)
         {
-            GetOperations(args.TextView).MoveLineDown(extendSelection: false);
+            GetOperations (args.TextView).MoveSelectedLinesDown ();
             return true;
         }
 
@@ -279,7 +279,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
         bool ICommandHandler<MoveSelectedLinesUpCommandArgs>.ExecuteCommand(MoveSelectedLinesUpCommandArgs args, CommandExecutionContext executionContext)
         {
-            GetOperations(args.TextView).MoveLineUp(extendSelection: false);
+            GetOperations (args.TextView).MoveSelectedLinesUp ();
             return true;
         }
 
