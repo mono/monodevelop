@@ -75,6 +75,8 @@ namespace MonoDevelop.VersionControl.Git
 			var defaultKey = FilePath.Null;
 
 			foreach (FilePath privateKey in Directory.EnumerateFiles (keyStorage)) {
+				if (privateKey.Extension == ".pub")
+					continue;
 				string publicKey = privateKey + ".pub";
 				if (File.Exists (publicKey)) {
 					if (privateKey.FileName == "id_rsa")
