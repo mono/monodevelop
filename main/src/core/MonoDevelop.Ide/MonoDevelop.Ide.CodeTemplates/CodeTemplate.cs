@@ -320,11 +320,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 								s = variableDecarations [name].Default;
 						}
 						if (s != null) {
-							link.AddLink (new TextSegment (sb.Length, s.Length));
-							if (isNew) {
-								link.GetStringFunc = delegate (Func<string, string> callback) {
-									return expansion.RunFunction (context, callback, variableDecarations [name].Function);
-								};
+							if (!link.IsEditable) {
+								result.TextLinks.Remove (link);
+							} else {
+								link.AddLink (new TextSegment (sb.Length, s.Length));
+								if (isNew) {
+									link.GetStringFunc = delegate (Func<string, string> callback) {
+										return expansion.RunFunction (context, callback, variableDecarations [name].Function);
+									};
+								}
 							}
 							sb.Append (s);
 						}

@@ -73,10 +73,12 @@ namespace MonoDevelop.Ide.Editor
 
 	public class CaretLocationEventArgs : DocumentLocationEventArgs
 	{
+		public Microsoft.VisualStudio.Text.ITextSnapshot Snapshot { get; }
 		public CaretChangeReason CaretChangeReason { get; } 
 
-		public CaretLocationEventArgs (DocumentLocation location, CaretChangeReason reason) : base (location)
+		public CaretLocationEventArgs (DocumentLocation location, Microsoft.VisualStudio.Text.ITextSnapshot textSnapshot, CaretChangeReason reason) : base (location)
 		{
+			Snapshot = textSnapshot;
 			CaretChangeReason = reason;
 		}
 	}
