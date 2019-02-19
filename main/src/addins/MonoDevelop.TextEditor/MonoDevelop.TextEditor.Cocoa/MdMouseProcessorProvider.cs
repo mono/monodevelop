@@ -88,5 +88,11 @@ namespace MonoDevelop.TextEditor.Cocoa
 				commandEntrySet,
 				view);
 		}
+
+		public override void PostprocessMouseLeftButtonUp (MouseEvent e)
+		{
+			if (e.Event.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ControlKeyMask))
+				PreprocessMouseRightButtonUp (e);
+		}
 	}
 }
