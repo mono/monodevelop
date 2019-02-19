@@ -39,11 +39,6 @@ namespace MonoDevelop.Ide.FindInFiles
 	[RequireService (typeof(TextEditorService))]
 	class SearchResultWidgetTests : IdeTestBase
 	{
-		[SetUp]
-		public async Task SetUp ()
-		{
-		}
-
 		[Test]
 		public void TestSimple ()
 		{

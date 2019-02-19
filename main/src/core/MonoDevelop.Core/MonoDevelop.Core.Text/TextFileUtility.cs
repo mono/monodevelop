@@ -325,9 +325,10 @@ namespace MonoDevelop.Core.Text
 				if (bom != null && bom.Length > 0)
 					stream.Write (bom, 0, bom.Length);
 			}
-			var sw = new StreamWriter (stream, encoding);
-			sw.Write (text);
-			sw.Flush ();
+			using (var sw = new StreamWriter (stream, encoding, 1024, true)) {
+				sw.Write (text);
+				sw.Flush ();
+			}
 		}
 
 		static void EnsureDirectoryExists (FilePath directoryName)

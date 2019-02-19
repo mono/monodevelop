@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected override void OnCreateNew ()
 			{
-				content = new byte [0];
+				content = Array.Empty<byte> ();
 			}
 
 			protected override Task OnSave ()

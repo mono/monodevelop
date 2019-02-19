@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui
 		DocumentManager documentManager;
 		DocumentContext documentContext;
 		bool checkedDocumentContext;
+		IDisposable callbackRegistration;
 
 		internal IWorkbenchWindow Window {
 			get { return window; }
@@ -148,6 +149,11 @@ namespace MonoDevelop.Ide.Gui
 			this.documentControllerDescription = controllerDescription;
 			this.controller = controller;
 			controller.Document = this;
+
+			callbackRegistration = documentManager.ServiceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				s.ItemRemovedFromSolution += OnEntryRemoved;
+				callbackRegistration = null;
+			});
 		}
 
 		internal async Task InitializeWindow (IWorkbenchWindow window)
@@ -161,10 +167,6 @@ namespace MonoDevelop.Ide.Gui
 
 			LastTimeActive = DateTime.Now;
 			this.window.CloseRequested += Window_CloseRequested;
-
-			var workspace = Runtime.PeekService<RootWorkspace> ();
-			if (workspace != null)
-				workspace.ItemRemovedFromSolution += OnEntryRemoved;
 
 			SubscribeControllerEvents ();
 			DocumentRegistry.Add (this);
@@ -545,6 +547,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void Dispose ()
 		{
 			DocumentRegistry.Remove (this);
+			callbackRegistration?.Dispose ();
 			var workspace = Runtime.PeekService<RootWorkspace> ();
 			if (workspace != null)
 				workspace.ItemRemovedFromSolution -= OnEntryRemoved;

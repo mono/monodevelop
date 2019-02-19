@@ -781,7 +781,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <param name="type">Type.</param>
 		protected virtual bool OnCanAssignModel (Type type)
 		{
-			return Model?.GetType () == type;
+			return false;
 		}
 
 		protected virtual void OnOwnerChanged ()

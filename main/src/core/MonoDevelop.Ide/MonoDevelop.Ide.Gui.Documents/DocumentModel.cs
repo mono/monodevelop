@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			ModelRepresentation lastChangedRepresentation;
 			int changeVersion;
-			object changeLock = new object ();
+			readonly object changeLock = new object ();
 
 			public bool IsShared => linkedModels.Count > 1;
 
@@ -488,8 +488,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			void RaiseChangedEvent (Type repType)
 			{
-				foreach (var m in linkedModels.Where (m => m.RepresentationType == repType))
-					m.RaiseChangeEvent ();
+				foreach (var m in linkedModels)
+					if (m.RepresentationType == repType)
+						m.RaiseChangeEvent ();
 			}
 		}
 	}

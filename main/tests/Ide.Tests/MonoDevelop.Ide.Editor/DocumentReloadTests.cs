@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Editor
 
 			public async Task Load ()
 			{
-				var content = await TextFileUtility.ReadAllTextAsync (FilePath);
 				Document.Editor.Text = (await TextFileUtility.ReadAllTextAsync (FilePath)).Text;
 			}
 		}
