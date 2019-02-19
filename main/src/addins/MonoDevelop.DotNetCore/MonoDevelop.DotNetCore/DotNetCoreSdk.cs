@@ -36,11 +36,10 @@ namespace MonoDevelop.DotNetCore
 	public static class DotNetCoreSdk
 	{
 		static readonly Version DotNetCoreVersion2_1 = new Version (2, 1, 0);
-		static readonly DotNetCoreSdkPaths sdkPaths;
 
 		static DotNetCoreSdk ()
 		{
-			sdkPaths = new DotNetCoreSdkPaths ();
+			var sdkPaths = new DotNetCoreSdkPaths ();
 			sdkPaths.ResolveSDK ();
 			Update (sdkPaths);
 		}
@@ -82,9 +81,11 @@ namespace MonoDevelop.DotNetCore
 		{
 		}
 
-		internal static DotNetCoreSdkPaths FindSdkPaths (string sdk)
+		internal static DotNetCoreSdkPaths FindSdkPaths (string[] sdks)
 		{
-			sdkPaths.FindSdkPaths (sdk);
+			var sdkPaths = new DotNetCoreSdkPaths ();
+			sdkPaths.ResolveSDK ();
+			sdkPaths.FindSdkPaths (sdks);
 			return sdkPaths;
 		}
 

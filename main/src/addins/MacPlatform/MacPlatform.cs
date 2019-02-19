@@ -266,6 +266,7 @@ namespace MonoDevelop.MacIntegration
 						e.Reply = NSApplicationTerminateReply.Now;
 					}
 				};
+				appDelegate.ShowDockMenu += AppDelegate_ShowDockMenu;
 			}
 
 			// Listen to the AtkCocoa notification for the presence of VoiceOver
@@ -297,6 +298,27 @@ namespace MonoDevelop.MacIntegration
 
 			return loaded;
 		}
+
+		void AppDelegate_ShowDockMenu (object sender, ShowDockMenuArgs e)
+		{
+			if (((FilePath)NSBundle.MainBundle.BundlePath).Extension != ".app")
+				return;
+			var menu = new NSMenu ();
+			var newInstanceMenuItem = new NSMenuItem ();
+			newInstanceMenuItem.Title = GettextCatalog.GetString ("New Instance");
+			newInstanceMenuItem.Activated += NewInstanceMenuItem_Activated;
+			menu.AddItem (newInstanceMenuItem);
+			e.DockMenu = menu;
+		}
+
+		static void NewInstanceMenuItem_Activated (object sender, EventArgs e)
+		{
+			var bundlePath = NSBundle.MainBundle.BundlePath;
+			NSWorkspace.SharedWorkspace.LaunchApplication (NSUrl.FromFilename (bundlePath), NSWorkspaceLaunchOptions.NewInstance, new NSDictionary (), out NSError error);
+			if (error != null)
+				LoggingService.LogError ($"Failed to start new instance: {error.LocalizedDescription}");
+		}
+
 
 		const string EnabledKey = "com.monodevelop.AccessibilityEnabled";
 		static void ShowVoiceOverNotice ()
@@ -946,6 +968,16 @@ namespace MonoDevelop.MacIntegration
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
 		}
 
+		public override Window GetParentForModalWindow ()
+		{
+			return NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+		}
+
+		public override Window GetFocusedTopLevelWindow ()
+		{
+			return NSApplication.SharedApplication.KeyWindow;
+		}
+
 		public override void FocusWindow (Window window)
 		{
 			try {
@@ -1337,6 +1369,14 @@ namespace MonoDevelop.MacIntegration
 
 	public class ThemedMacDialogBackend : Xwt.Mac.DialogBackend
 	{
+		public ThemedMacDialogBackend ()
+		{
+		}
+
+		public ThemedMacDialogBackend (IntPtr ptr) : base (ptr)
+		{
+		}
+
 		public override void InitializeBackend (object frontend, Xwt.Backends.ApplicationContext context)
 		{
 			base.InitializeBackend (frontend, context);
@@ -1346,6 +1386,14 @@ namespace MonoDevelop.MacIntegration
 
 	public class ThemedMacAlertDialogBackend : Xwt.Mac.AlertDialogBackend
 	{
+		public ThemedMacAlertDialogBackend ()
+		{
+		}
+
+		public ThemedMacAlertDialogBackend (IntPtr ptr) : base (ptr)
+		{
+		}
+
 		public override void Initialize (Xwt.Backends.ApplicationContext actx)
 		{
 			base.Initialize (actx);

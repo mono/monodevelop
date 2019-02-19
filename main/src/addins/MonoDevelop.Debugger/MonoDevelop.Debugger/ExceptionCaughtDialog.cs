@@ -41,6 +41,8 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Text;
 
 namespace MonoDevelop.Debugger
 {
@@ -765,7 +767,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			Context = ctx;
 		}
 
-		string GetMethodMarkup (bool selected)
+		string GetMethodMarkup (bool selected, string foregroundColor)
 		{
 			if (Markup != null)
 				return $"<span foreground='{Styles.ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false)}'>{Markup}</span>";
@@ -777,30 +779,28 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 			var markup = $"<b>{GLib.Markup.EscapeText (methodName)}</b> {GLib.Markup.EscapeText (parameters)}";
 
-			if (selected)
-				markup = $"<span foreground='#FFFFFF'>{markup}</span>";
-			else {
-				var textColor = IsUserCode ? Ide.Gui.Styles.BaseForegroundColor.ToHexString (false) : Styles.ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false);
-				markup = $"<span foreground='{textColor}'>{markup}</span>";
+			if (string.IsNullOrEmpty (foregroundColor)) {
+				return markup;
 			}
-
-			return markup;
+			return $"<span foreground='{foregroundColor}'>{markup}</span>";
 		}
 
-		string GetFileMarkup (bool selected)
+		string GetFileMarkup (bool selected, string foregroundColor)
 		{
 			if (Frame == null || string.IsNullOrEmpty (Frame.File)) {
 				return "";
 			}
 
-			var markup = string.Format ("<span foreground='{0}'>{1}", selected ? "#FFFFFF" : Styles.ExceptionCaughtDialog.LineNumberTextColor.ToHexString (false), GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
+			var markup = GLib.Markup.EscapeText (Path.GetFileName (Frame.File));
 			if (Frame.Line > 0) {
 				markup += ":" + Frame.Line;
 				if (Frame.Column > 0)
 					markup += "," + Frame.Column;
 			}
-			markup += "</span>";
-			return markup;
+			if (string.IsNullOrEmpty (foregroundColor)) {
+				return markup;
+			}
+			return $"<span foreground='{foregroundColor}'>{markup}</span>";
 		}
 
 		public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
@@ -808,7 +808,11 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			using (var layout = new Pango.Layout (Context)) {
 				Pango.Rectangle ink, logical;
 				layout.FontDescription = font;
-				layout.SetMarkup (GetMethodMarkup (false));
+
+				var selected = false;
+				var foregroundColor = Styles.GetStackFrameForegroundHexColor (selected, IsUserCode);
+
+				layout.SetMarkup (GetMethodMarkup (selected, foregroundColor));
 				layout.GetPixelExtents (out ink, out logical);
 
 				height = logical.Height;
@@ -821,10 +825,20 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
 			using (var cr = Gdk.CairoHelper.Create (window)) {
+				if (!widget.HasFocus) {
+					cr.Rectangle (background_area.ToCairoRect ());
+					cr.SetSourceColor (Styles.ObjectValueTreeDisabledBackgroundColor);
+					cr.Fill ();
+				}
+
 				Pango.Rectangle ink, logical;
 				using (var layout = new Pango.Layout (Context)) {
 					layout.FontDescription = font;
-					layout.SetMarkup (GetFileMarkup ((flags & CellRendererState.Selected) != 0));
+
+					var selected = (flags & CellRendererState.Selected) != 0;
+					var foregroundColor = Styles.GetStackFrameForegroundHexColor (selected, IsUserCode);
+
+					layout.SetMarkup (GetFileMarkup (selected, foregroundColor));
 					layout.GetPixelExtents (out ink, out logical);
 					var width = widget.Allocation.Width;
 					cr.Translate (width - logical.Width - 10, cell_area.Y);
@@ -832,7 +846,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 					cr.IdentityMatrix ();
 
-					layout.SetMarkup (GetMethodMarkup ((flags & CellRendererState.Selected) != 0));
+					layout.SetMarkup (GetMethodMarkup (selected, foregroundColor));
 					layout.Width = (int)((width - logical.Width - 35) * Pango.Scale.PangoScale);
 					layout.Ellipsize = Pango.EllipsizeMode.Middle;
 					cr.Translate (cell_area.X + 10, cell_area.Y);
@@ -1105,12 +1119,19 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 	{
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
+			if (DebuggingService.ExceptionCaughtMessage != null &&
 				!DebuggingService.ExceptionCaughtMessage.IsMinimized &&
 				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath (DocumentContext.Name).CanonicalPath) {
 
-				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
-				return true;
+				if (descriptor.SpecialKey == SpecialKey.Escape) {
+					DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
+					return true;
+				}
+
+				if (descriptor.SpecialKey == SpecialKey.Return) {
+					DebuggingService.ExceptionCaughtMessage.ShowDialog ();
+					return false;
+				}
 			}
 
 			return base.KeyPress (descriptor);

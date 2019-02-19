@@ -65,7 +65,14 @@ namespace MonoDevelop.Ide
 		Compact,
 		VeryCompact
 	}
-	
+
+	public enum OnStartupBehaviour
+	{
+		ShowStartWindow,
+		LoadPreviousSolution,
+		EmptyEnvironment
+	}
+
 	public class IdePreferences
 	{
 		internal IdePreferences ()
@@ -95,7 +102,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
 		public readonly ConfigurationProperty<string> UserInterfaceThemeName = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
-		public readonly ConfigurationProperty<bool> LoadPrevSolutionOnStartup = ConfigurationProperty.Create ("SharpDevelop.LoadPrevProjectOnStartup", false);
+		public readonly ConfigurationProperty<OnStartupBehaviour> StartupBehaviour = ConfigurationProperty.Create ("MonoDevelop.Ide.StartupBehaviour", OnStartupBehaviour.ShowStartWindow);
 		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
 		public ConfigurationProperty<bool> LoadDocumentUserProperties => IdeApp.Workbench.DocumentManager.Preferences.LoadDocumentUserProperties;
 		public readonly ConfigurationProperty<bool> EnableDocumentSwitchDialog = ConfigurationProperty.Create ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);

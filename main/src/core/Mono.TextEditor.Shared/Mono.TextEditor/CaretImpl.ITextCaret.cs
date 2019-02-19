@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
@@ -116,8 +117,14 @@ namespace Mono.TextEditor
 			insertionPoint = vsp;
 			if (args.CaretChangeReason == CaretChangeReason.Movement) {
 				oldCaretLocation = args.Location;
-				var oldOffset = TextEditor.LocationToOffset (args.Location);
-				var snapshotPoint = new SnapshotPoint (TextEditor.TextSnapshot, oldOffset);
+				var snapShot = args.Snapshot;
+				var snapshotLine = snapShot.GetLineFromLineNumber (args.Location.Line - 1);
+				if (snapshotLine == null) {
+					LoggingService.LogError ("PositionChanged_ITextCaret line number : " + args.Location.Line + " is out of range.");
+					return;
+				}
+				var oldOffset = snapshotLine.Start.Position + Math.Min (snapshotLine.Length, args.Location.Column - 1);
+				var snapshotPoint = new SnapshotPoint (snapShot, oldOffset);
 				var mappingPoint = TextEditor.BufferGraph.CreateMappingPoint (snapshotPoint, PointTrackingMode.Positive);
 				var oldCaretPosition = new CaretPosition (vsp, mappingPoint, _caretAffinity);
 				var eventArgs = new CaretPositionChangedEventArgs (TextEditor, oldCaretPosition, ((ITextCaret)this).Position);

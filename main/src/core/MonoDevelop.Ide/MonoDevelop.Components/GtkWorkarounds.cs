@@ -1538,7 +1538,11 @@ namespace MonoDevelop.Components
 		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gdk_event_free (IntPtr raw);
 
-		public static void FreeEvent (IntPtr raw) => gdk_event_free (raw);
+		public static void FreeEvent (IntPtr raw)
+		{
+			if (raw != IntPtr.Zero)
+				gdk_event_free (raw);
+		}
 	}
 
 	public readonly struct KeyboardShortcut : IEquatable<KeyboardShortcut>

@@ -372,7 +372,8 @@ namespace MonoDevelop.CSharp.Completion.Provider
 		{
 			(string beforeText, string afterText, string newMethod) = await GetInsertText (item.Properties);
 			TextChange change;
-			if (newMethod != null && CompletionWindowManager.IsVisible) { // check for completion window manager to prevent the insertion cursor popup when the changes are queried by code diagnostics.
+
+			if (newMethod != null && RoslynCompletionData.RequestInsertText) { // check for completion window manager to prevent the insertion cursor popup when the changes are queried by code diagnostics.
 				change = new TextChange (new TextSpan (item.Span.Start, item.Span.Length), item.Properties [MethodNameKey] + ";");
 				var semanticModel = await doc.GetSemanticModelAsync (cancellationToken);
 				if (!doc.IsOpen () || await doc.IsForkedDocumentWithSyntaxChangesAsync (cancellationToken))

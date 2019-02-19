@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		public MultiTaskDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, IDictionary<string, string> taskLabelAliases): base (Runtime.MainSynchronizationContext)
 		{
 			if (showProgress) {
-				var parent = MessageService.GetDefaultModalParent ();
+				var parent = DesktopService.GetParentForModalWindow ();
 				dialog = new MultiTaskProgressDialog (allowCancel, showDetails, taskLabelAliases) {
 					DestroyWithParent = true,
 					Modal = true,

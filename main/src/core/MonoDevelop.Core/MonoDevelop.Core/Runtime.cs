@@ -44,6 +44,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Setup;
+using MonoDevelop.Core.Web;
 
 namespace MonoDevelop.Core
 {
@@ -128,8 +129,9 @@ namespace MonoDevelop.Core
 				PropertyService.Initialize ();
 
 				WebRequestHelper.Initialize ();
-				Mono.Addins.Setup.WebRequestHelper.SetRequestHandler (WebRequestHelper.GetResponse);
-				
+				Web.HttpClientProvider.Initialize ();
+				Mono.Addins.Setup.HttpClientProvider.SetHttpClientFactory (Web.HttpClientProvider.CreateHttpClient);
+
 				//have to do this after the addin service and property service have initialized
 				if (UserDataMigrationService.HasSource) {
 					Counters.RuntimeInitialization.Trace ("Migrating User Data from MD " + UserDataMigrationService.SourceVersion);
@@ -217,7 +219,7 @@ namespace MonoDevelop.Core
 
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string, string> {
+			Counters.AddinsLoaded.Inc (1, "Add-in loaded: " + args.AddinId, new Dictionary<string, object> {
 				{ "AddinId", args.AddinId },
 				{ "LoadTrace", Environment.StackTrace },
 			});
@@ -251,7 +253,6 @@ namespace MonoDevelop.Core
 				ShuttingDown (null, EventArgs.Empty);
 			
 			PropertyService.SaveProperties ();
-			FSW.OSX.FileSystemWatcher.DisposeAll ();
 			
 			if (processService != null) {
 				processService.Dispose ();

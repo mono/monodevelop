@@ -66,9 +66,12 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var editorFont = Xwt.Drawing.Font.FromName(fontName);
 
-			using (var nsFont = NSFont.FromFontName(editorFont.Family, (nfloat)editorFont.Size))
-				using (var lm = new NSLayoutManager())
-			 		return lm.DefaultLineHeightForFont(nsFont);
+			using (var nsFont = NSFont.FromFontName (editorFont.Family, (nfloat)editorFont.Size)) {
+				if (nsFont == null)
+					return -1;
+				using (var lm = new NSLayoutManager ())
+					return lm.DefaultLineHeightForFont (nsFont);
+			}
 		}
 	}
 }

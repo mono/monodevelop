@@ -40,36 +40,129 @@ using Microsoft.CodeAnalysis.SQLite;
 using Microsoft.CodeAnalysis.Storage;
 using Microsoft.CodeAnalysis.SolutionSize;
 using MonoDevelop.Core;
+using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[ExportWorkspaceService (typeof (IPersistentStorageLocationService), ServiceLayer.Host), Shared]
 	class MonoDevelopPersistentStorageLocationService : IPersistentStorageLocationService
 	{
-		public bool IsSupported (Workspace workspace) => workspace is MonoDevelopWorkspace;
-
-		// PERF: cache for the solution location. This is needed due to roslyn querying GetStorageLocation a lot of times.
-		internal ConditionalWeakTable<SolutionId, string> storageMap = new ConditionalWeakTable<SolutionId, string> ();
+		private readonly object _gate = new object ();
+		private WorkspaceId primaryWorkspace = WorkspaceId.Empty;
+		private SolutionId _currentSolutionId = null;
+		private string _currentWorkingFolderPath = null;
 
 		public event EventHandler<PersistentStorageLocationChangingEventArgs> StorageLocationChanging;
 
-		internal void NotifyStorageLocationChanging (SolutionId sol, string path)
+		[ImportingConstructor]
+		[Obsolete (MefConstruction.ImportingConstructorMessage, error: true)]
+		public MonoDevelopPersistentStorageLocationService ()
 		{
-			lock (storageMap) {
-				if (storageMap.TryGetValue (sol, out string cached) && path == cached)
-					return;
+		}
 
-				StorageLocationChanging?.Invoke (this, new PersistentStorageLocationChangingEventArgs (sol, path, true));
-				storageMap.Remove (sol);
-				storageMap.Add (sol, path);
+		public IDisposable RegisterPrimaryWorkspace (WorkspaceId id)
+		{
+			if (primaryWorkspace.Equals (WorkspaceId.Empty)) {
+				primaryWorkspace = id;
+				return new WorkspaceRegistration (this);
+			}
+			return null;
+		}
+
+		class WorkspaceRegistration : IDisposable
+		{
+			readonly MonoDevelopPersistentStorageLocationService service;
+			bool disposed;
+
+			public WorkspaceRegistration (MonoDevelopPersistentStorageLocationService service) => this.service = service;
+
+			public void Dispose ()
+			{
+				if (!disposed) {
+					service.DisconnectCurrentStorage ();
+					disposed = true;
+				}
 			}
 		}
 
+		public bool IsSupported (Workspace workspace) => workspace is MonoDevelopWorkspace;
+
 		public string TryGetStorageLocation (SolutionId solutionId)
 		{
-			lock (storageMap) {
-				storageMap.TryGetValue (solutionId, out var path);
-				return path;
+			lock (_gate) {
+				if (solutionId == _currentSolutionId) {
+					return _currentWorkingFolderPath;
+				}
+			}
+
+			return null;
+		}
+
+		internal void SetupSolution (MonoDevelopWorkspace visualStudioWorkspace)
+		{
+			lock (_gate) {
+				// Don't trigger events for workspaces other than those we want to inspect.
+				if (!primaryWorkspace.Equals (visualStudioWorkspace.Id))
+					return;
+
+				if (visualStudioWorkspace.CurrentSolution.Id == _currentSolutionId && _currentWorkingFolderPath != null) {
+					return;
+				}
+
+				var solution = visualStudioWorkspace.MonoDevelopSolution;
+				solution.Modified += OnSolutionModified;
+				if (string.IsNullOrWhiteSpace (solution.BaseDirectory))
+					return;
+
+				var workingFolderPath = solution.GetPreferencesDirectory ();
+
+				try {
+					if (!string.IsNullOrWhiteSpace (workingFolderPath)) {
+						OnWorkingFolderChanging_NoLock (
+							new PersistentStorageLocationChangingEventArgs (
+								visualStudioWorkspace.CurrentSolution.Id,
+								workingFolderPath,
+								mustUseNewStorageLocationImmediately: false));
+					}
+				} catch {
+					// don't crash just because solution having problem getting working folder information
+				}
+			}
+		}
+
+		async void OnSolutionModified (object sender, MonoDevelop.Projects.WorkspaceItemEventArgs args)
+		{
+			var sol = (MonoDevelop.Projects.Solution)args.Item;
+			var workspace = await TypeSystemService.GetWorkspaceAsync (sol, CancellationToken.None);
+			if (workspace.Id.Equals (primaryWorkspace)) {
+				DisconnectCurrentStorage ();
+			}
+		}
+
+		private void OnWorkingFolderChanging_NoLock (PersistentStorageLocationChangingEventArgs eventArgs)
+		{
+			StorageLocationChanging?.Invoke (this, eventArgs);
+
+			_currentSolutionId = eventArgs.SolutionId;
+			_currentWorkingFolderPath = eventArgs.NewStorageLocation;
+		}
+
+		void DisconnectCurrentStorage ()
+		{
+			lock (_gate) {
+				var workspace = TypeSystemService.GetWorkspace (primaryWorkspace);
+				var solution = workspace.MonoDevelopSolution;
+				if (solution != null)
+					solution.Modified -= OnSolutionModified;
+
+				// We want to make sure everybody synchronously detaches
+				OnWorkingFolderChanging_NoLock (
+					new PersistentStorageLocationChangingEventArgs (
+						_currentSolutionId,
+						newStorageLocation: null,
+						mustUseNewStorageLocationImmediately: true));
+				primaryWorkspace = WorkspaceId.Empty;
 			}
 		}
 	}

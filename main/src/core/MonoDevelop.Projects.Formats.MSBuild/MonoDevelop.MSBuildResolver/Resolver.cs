@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.MSBuild
 			// Pick the SDK with the highest version
 
 			foreach (var sdk in sdkFetcher ()) {
-				if (sdk.Name == sdkReference.Name) {
+				if (StringComparer.OrdinalIgnoreCase.Equals (sdk.Name, sdkReference.Name)) {
 					if (sdk.Version != null) {
 						// If the sdk has a version, it must satisfy the min version requirement
 						if (minVersion != null && sdk.Version < minVersion)

@@ -53,8 +53,31 @@
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory">
       <HintPath>..\..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
+    when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
+    Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway
+    -->
+    <Reference Include="Microsoft.Build">
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework">
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Utilities.Core">
+      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -123,6 +146,11 @@
     <Compile Include="MonoDevelop.Utilities\RaceCheckerTests.cs" />
     <Compile Include="MonoDevelop.Core\FeatureSwitchServiceTests.cs" />
     <Compile Include="MonoDevelop.Core\ServiceProviderTests.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ProxyAuthenticationHandlerTests.cs" />
+    <Compile Include="MonoDevelop.Core.Web\TestProxy.cs" />
+    <Compile Include="MonoDevelop.Core.Web\LambdaMessageHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\HttpSourceAuthenticationHandlerTests.cs" />
+    <Compile Include="MonoDevelop.Core\SdkResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

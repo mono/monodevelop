@@ -198,19 +198,19 @@ namespace Microsoft.VisualStudio.Platform
 			}
 		}
 
-        private void OnClassificationChanged(object sender, ClassificationChangedEventArgs args)
-        {
-            var handler = _highlightingStateChanged;
-            if (handler != null)
-            {
-                foreach (Mono.TextEditor.MdTextViewLineCollection.MdTextViewLine line in textView.TextViewLines)
-                {
-                    if (line.Start.Position > args.ChangeSpan.End.Position || line.End.Position < args.ChangeSpan.Start)
+        private void OnClassificationChanged (object sender, ClassificationChangedEventArgs args)
+		{
+			var handler = _highlightingStateChanged;
+			if (handler != null) {
+				foreach (Mono.TextEditor.MdTextViewLineCollection.MdTextViewLine line in textView.TextViewLines) {
+					if (!line.HasDrawn) {
+                        line.HasDrawn = true;
+                        handler(this, new LineEventArgs(line.line));
                         continue;
-                    handler(this, new LineEventArgs(line.line));
-                }
-            }
-        }
+                    }
+				}
+			}
+		}
 
 		private ScopeStack GetScopeStackFromClassificationType (IClassificationType classificationType)
 		{

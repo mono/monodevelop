@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Projects
 	partial class GtkNewProjectDialogBackend : INewProjectDialogBackend
 	{
 		INewProjectDialogController controller;
-		Menu popupMenu;
+		Xwt.Menu popupMenu;
 		bool isLastPressedKeySpace;
 
 		public GtkNewProjectDialogBackend ()
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowDialog ()
 		{
-			MessageService.ShowCustomDialog (this);
+			MessageService.ShowCustomDialog (this, DesktopService.GetFocusedTopLevelWindow ());
 		}
 
 		public void CloseDialog ()
@@ -150,23 +150,24 @@ namespace MonoDevelop.Ide.Projects
 
 		void HandlePopup (SolutionTemplate template, uint eventTime)
 		{
-			if (popupMenu == null) {
-				popupMenu = new Menu ();
-				popupMenu.AttachToWidget (this, null);
-			}
-			ClearPopupMenuItems ();
-			AddLanguageMenuItems (popupMenu, template);
-			popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToGdkColor ());
-			popupMenu.ShowAll ();
-
-			MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
+			var engine = Platform.IsMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine;
+			var xwtParent = Xwt.Toolkit.CurrentEngine.WrapWidget (templatesTreeView);
+			engine.Invoke (() => {
+				if (popupMenu == null) {
+					popupMenu = new Xwt.Menu ();
+				}
+				ClearPopupMenuItems ();
+				AddLanguageMenuItems (popupMenu, template);
 				Gdk.Rectangle rect = languageCellRenderer.GetLanguageRect ();
-				Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
-				x = screenRect.X;
-				y = screenRect.Bottom;
-				pushIn = false;
-			};
-			popupMenu.Popup (null, null, posFunc, 0, eventTime);
+
+				try {
+					popupMenu.Popup (xwtParent, rect.X, rect.Bottom);
+				} catch {
+					// popup at mouse position if the toolkit is not supported
+					popupMenu.Popup ();
+				}
+
+			});
 		}
 
 		[GLib.ConnectBefore]
@@ -203,9 +204,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void ClearPopupMenuItems ()
 		{
-			foreach (Widget widget in popupMenu.Children) {
-				widget.Destroy ();
-			}
+			popupMenu.Items.Clear ();
 		}
 
 		void PerformShowMenu (object sender, EventArgs args)
@@ -218,17 +217,18 @@ namespace MonoDevelop.Ide.Projects
 			HandlePopup (template, Gdk.EventHelper.GetTime (null));
 		}
 
-		void AddLanguageMenuItems (Menu menu, SolutionTemplate template)
+		void AddLanguageMenuItems (Xwt.Menu menu, SolutionTemplate template)
 		{
 			foreach (string language in template.AvailableLanguages.OrderBy (item => item)) {
-				var menuItem = new MenuItem (language);
-				menuItem.Activated += (o, e) => {
+				var menuItem = new Xwt.MenuItem (language);
+				menuItem.Accessible.Label = LanguageCellRenderer.GetAccessibleLanguageName (language);
+				menuItem.Clicked += (o, e) => {
 					languageCellRenderer.SelectedLanguage = language;
 					controller.SelectedLanguage = language;
 					templatesTreeView.QueueDraw ();
 					ShowSelectedTemplate ();
 				};
-				menu.Append (menuItem);
+				menu.Items.Add (menuItem);
 			}
 		}
 
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Projects
 		protected override void OnDestroyed ()
 		{
 			if (popupMenu != null) {
-				popupMenu.Destroy ();
+				popupMenu.Dispose ();
 				popupMenu = null;
 			}
 

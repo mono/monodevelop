@@ -930,7 +930,7 @@ namespace MonoDevelop.Debugger
 					ExpandRow (store.GetPath (it), false);
 				}
 			} else {
-				RefreshRow (it);
+				RefreshRow (it, val);
 			}
 		}
 
@@ -977,10 +977,11 @@ namespace MonoDevelop.Debugger
 				enumerableLoading.Remove (value);
 			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
 		}
-		
-		void RefreshRow (TreeIter iter)
+
+		void RefreshRow (TreeIter iter, ObjectValue val)
 		{
-			var val = (ObjectValue) store.GetValue (iter, ObjectColumn);
+			if (val == null)
+				return;
 			UnregisterValue (val);
 			
 			RemoveChildren (iter);
@@ -1013,8 +1014,7 @@ namespace MonoDevelop.Debugger
 
 			while (store.IterChildren (out citer, iter)) {
 				var val = (ObjectValue) store.GetValue (citer, ObjectColumn);
-				if (val != null)
-					UnregisterValue (val);
+				UnregisterValue (val);
 				RemoveChildren (citer);
 				store.Remove (ref citer);
 			}
@@ -1030,6 +1030,8 @@ namespace MonoDevelop.Debugger
 
 		void UnregisterValue (ObjectValue val)
 		{
+			if (val == null)
+				return;
 			val.ValueChanged -= OnValueUpdated;
 			nodes.Remove (val);
 		}
@@ -1904,7 +1906,7 @@ namespace MonoDevelop.Debugger
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					if (DebuggingService.ShowValueVisualizer (val)) {
 						UpdateParentValue (it);
-						RefreshRow (it);
+						RefreshRow (it, val);
 					}
 				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);

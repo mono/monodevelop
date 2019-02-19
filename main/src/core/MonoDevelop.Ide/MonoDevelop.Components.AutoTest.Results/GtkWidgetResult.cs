@@ -530,6 +530,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			base.SetProperty (resultWidget, propertyName, value);
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			resultWidget = null;
+			base.Dispose (disposing);
+		}
 	}
 }
 

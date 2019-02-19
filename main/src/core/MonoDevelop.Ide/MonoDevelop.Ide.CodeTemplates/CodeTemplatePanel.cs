@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -177,7 +178,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					GLib.Markup.EscapeText (GettextCatalog.GetString (template.Description)) + ")";
 			} else {
 				crt.Markup =  GLib.Markup.EscapeText (template.Shortcut) + " <span foreground=\"" + 
-					GetColorString (Style.Text (StateType.Insensitive)) + "\">(" 
+					Styles.SecondaryTextColorHexString + "\">(" 
 					+ GLib.Markup.EscapeText (GettextCatalog.GetString (template.Description)) + ")</span>";
 			}
 		}
@@ -208,11 +209,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 				} while (templateStore.IterNext (ref iter));
 			}
 			return templateStore.AppendValues (null, groupName, "<b>" + groupName + "</b>");
-		}
-		
-		internal static string GetColorString (Gdk.Color color)
-		{
-			return string.Format ("#{0:X02}{1:X02}{2:X02}", color.Red / 256, color.Green / 256, color.Blue / 256);
 		}
 		
 		TreeIter InsertTemplate (CodeTemplate template)

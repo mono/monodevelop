@@ -1236,10 +1236,13 @@ namespace MonoDevelop.Ide.Editor
 			return GetContents<T> ().FirstOrDefault ();
 		}
 
-		public IEnumerable<T> GetContents<T>() where T : class
+		public IEnumerable<T> GetContents<T> () where T : class
 		{
-			T result = textEditorImpl as T;
-			if (result != null)
+			if (isDisposed) {
+				LoggingService.LogError ($"Error retrieving TextEditor.GetContents<{typeof(T)}>\n {Environment.StackTrace}");
+				yield break;
+			}
+			if (textEditorImpl is T result)
 				yield return result;
 			var ext = textEditorImpl.EditorExtension;
 			while (ext != null) {
@@ -1253,6 +1256,10 @@ namespace MonoDevelop.Ide.Editor
 		public IEnumerable<object> GetContents (Type type)
 		{
 			var res = Enumerable.Empty<object> ();
+			if (isDisposed) {
+				LoggingService.LogError ($"Error retrieving TextEditor.GetContents({type})\n {Environment.StackTrace}");
+				return res;
+			}
 			if (type.IsInstanceOfType (textEditorImpl))
 				res = res.Concat (textEditorImpl);
 			
@@ -1272,7 +1279,7 @@ namespace MonoDevelop.Ide.Editor
 			return GetMarkup (offset, length, new MarkupOptions (MarkupFormat.Pango, fitIdeStyle));
 		}
 
-		[Obsolete ("Use GetMarkup")]
+		[Obsolete ("Use GetMarkupAsync")]
 		public string GetPangoMarkup (ISegment segment, bool fitIdeStyle = false)
 		{
 			if (segment == null)
@@ -1294,6 +1301,22 @@ namespace MonoDevelop.Ide.Editor
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
 			return textEditorImpl.GetMarkup (segment.Offset, segment.Length, options);
+		}
+
+		public Task<string> GetMarkupAsync (int offset, int length, MarkupOptions options, CancellationToken cancellationToken = default)
+		{
+			if (options == null)
+				throw new ArgumentNullException (nameof (options));
+			return textEditorImpl.GetMarkupAsync (offset, length, options, cancellationToken);
+		}
+
+		public Task<string> GetMarkupAsync (ISegment segment, MarkupOptions options, CancellationToken cancellationToken = default)
+		{
+			if (options == null)
+				throw new ArgumentNullException (nameof (options));
+			if (segment == null)
+				throw new ArgumentNullException (nameof (segment));
+			return textEditorImpl.GetMarkupAsync (segment.Offset, segment.Length, options, cancellationToken);
 		}
 
 		public static implicit operator Microsoft.CodeAnalysis.Text.SourceText (TextEditor editor)

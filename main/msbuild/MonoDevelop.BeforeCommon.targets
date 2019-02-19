@@ -59,4 +59,20 @@
 	<PropertyGroup Condition="$(Configuration.Contains('Gnome'))">
 		<DefineConstants>$(DefineConstants);GNOME;LINUX</DefineConstants>
 	</PropertyGroup>
+
+	<Target Name="RemoveNoisyAnalyzers" BeforeTargets="CoreCompile">
+		<ItemGroup>
+			<!--
+			This analyzer gets pulled in by Microsoft.VisualStudio.Threading, propagates
+			through most of the solution, and produces an overwhelming amount of noise.
+			Disable it for now until someone can go audit all its warnings.
+			-->
+			<Analyzer Remove="@(Analyzer->WithMetadataValue('Filename', 'Microsoft.VisualStudio.Threading.Analyzers.CodeFixes'))" />
+			<Analyzer Remove="@(Analyzer->WithMetadataValue('Filename', 'Microsoft.VisualStudio.Threading.Analyzers'))" />
+			<Analyzer Remove="@(Analyzer->WithMetadataValue('Filename', 'Microsoft.VisualStudio.Threading.Analyzers.resources'))" />
+			<!-- thes analyzers are pulled in by Roslyn but aren't particularly relevant and have some internal errors -->
+			<Analyzer Remove="@(Analyzer->WithMetadataValue('Filename', 'Microsoft.CodeAnalysis.CSharp.Analyzers'))" />
+			<Analyzer Remove="@(Analyzer->WithMetadataValue('Filename', 'Microsoft.CodeAnalysis.Analyzers'))" />
+		</ItemGroup>
+	</Target>
 </Project>
