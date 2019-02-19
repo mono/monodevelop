@@ -28,21 +28,16 @@
 
 
 using System;
-
-
 using MonoDevelop.Core;
-
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Templates;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.RoslynServices;
-using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Ide.TextEditing;
-using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide
 {
@@ -59,6 +54,7 @@ namespace MonoDevelop.Ide
 		static ProgressMonitorManager progressMonitorManager;
 		static TaskService taskService;
 		static ProjectOperations projectOperations;
+		static HelpOperations helpOperations;
 
 		static IdeServices ()
 		{
@@ -73,6 +69,7 @@ namespace MonoDevelop.Ide
 			Runtime.ServiceProvider.WhenServiceInitialized<ProgressMonitorManager> (s => progressMonitorManager = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<TaskService> (s => taskService = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<ProjectOperations> (s => projectOperations = s);
+			Runtime.ServiceProvider.WhenServiceInitialized<HelpOperations> (s => helpOperations = s);
 		}
 
 		public static TextEditorService TextEditorService => Initialized (textEditorService);
@@ -102,6 +99,10 @@ namespace MonoDevelop.Ide
 		public static TaskService TaskService => Initialized (taskService);
 
 		public static ProjectOperations ProjectOperations => Initialized (projectOperations);
+
+		public static HelpOperations HelpOperations => Initialized (helpOperations);
+
+		public static HelpService HelpService => Core.CoreServices.HelpService;
 
 		static T Initialized<T> (T s) where T : class
 		{

@@ -33,34 +33,31 @@ using Mono.Addins;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
-	public static class HelpService
+	[DefaultServiceImplementation]
+	public class HelpService: Service
 	{
-		static RootTree helpTree;
-		static bool helpTreeInitialized;
-		static object helpTreeLock = new object ();
-		static HashSet<string> sources = new HashSet<string> ();
-		
-		/// <summary>
-		/// Starts loading the MonoDoc tree in the background.
-		/// </summary>
-		public static void AsyncInitialize ()
+		RootTree helpTree;
+		bool helpTreeInitialized;
+		object helpTreeLock = new object ();
+		HashSet<string> sources = new HashSet<string> ();
+
+		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			lock (helpTreeLock) {
-				if (helpTreeInitialized)
-					return;
-			}
+			// Starts loading the MonoDoc tree in the background.
 			ThreadPool.QueueUserWorkItem (delegate {
 				// Load the help tree asynchronously. Reduces startup time.
 				InitializeHelpTree ();
 			});
+			return Task.CompletedTask;
 		}
 		
 		//FIXME: allow adding sources without restart when extension installed (will need to be async)
 		// will also be tricky we cause we'll also have update any running MonoDoc viewer
-		static void InitializeHelpTree ()
+		void InitializeHelpTree ()
 		{
 			lock (helpTreeLock) {
 				if (helpTreeInitialized)
@@ -113,7 +110,7 @@ namespace MonoDevelop.Projects
 		/// The tree is background-loaded the help service, and accessing the property will block until it is finished 
 		/// loading. If you don't wish to block, check the <see cref="TreeInitialized"/> property first.
 		///  </remarks>
-		public static RootTree HelpTree {
+		public RootTree HelpTree {
 			get {
 				lock (helpTreeLock) {
 					if (!helpTreeInitialized)
@@ -126,19 +123,19 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Whether the MonoDoc docs tree has finished loading.
 		/// </summary>
-		public static bool TreeInitialized {
+		public bool TreeInitialized {
 			get {
 				return helpTreeInitialized;
 			}
 		}
 		
-		public static IEnumerable<string> Sources {
+		public IEnumerable<string> Sources {
 			get { return sources; }
 		}
 		
 		//note: this method is very careful to check that the generated URLs exist in MonoDoc
 		//because if we send nonexistent URLS to MonoDoc, it shows empty pages
-		public static string GetMonoDocHelpUrl (Microsoft.CodeAnalysis.ISymbol result)
+		public string GetMonoDocHelpUrl (Microsoft.CodeAnalysis.ISymbol result)
 		{
 			if (result == null)
 				return null;
