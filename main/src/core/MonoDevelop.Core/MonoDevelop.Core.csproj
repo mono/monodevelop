@@ -749,6 +749,7 @@
     <Compile Include="MonoDevelop.Core\IService.cs" />
     <Compile Include="MonoDevelop.Core\BasicServiceProvider.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PlatformConditionAttribute.cs" />
+    <Compile Include="MonoDevelop.Core\CoreServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

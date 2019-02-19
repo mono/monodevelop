@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			XmlDocument doc = null;
 			try {
-				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
+				var helpTree = IdeServices.HelpService.HelpTree;
 				if (helpTree == null)
 					return null;
 #pragma warning disable 618
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return result;
 			XmlDocument doc = null;
 			try {
-				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
+				var helpTree = IdeServices.HelpService.HelpTree;
 				if (helpTree == null)
 					return null;
 #pragma warning disable 618

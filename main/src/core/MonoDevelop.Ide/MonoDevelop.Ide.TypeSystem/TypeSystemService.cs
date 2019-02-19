@@ -106,6 +106,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			FileService.FileChanged += FileService_FileChanged;
 
 			desktopService = await serviceProvider.GetService<DesktopService> ();
+
+			await serviceProvider.GetService<HelpService> ();
 		}
 
 		protected override Task OnDispose ()

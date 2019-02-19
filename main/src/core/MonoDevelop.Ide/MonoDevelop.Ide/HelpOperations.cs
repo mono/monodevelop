@@ -38,7 +38,8 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide
 {
-	public class HelpOperations
+	[DefaultServiceImplementation]
+	public class HelpOperations: Service
 	{
 		ProcessWrapper pw;
 		TextWriter outWriter;
@@ -194,7 +195,7 @@ namespace MonoDevelop.Ide
 
 		void AddDirArgs (ProcessArgumentBuilder pb)
 		{
-			foreach (var dir in HelpService.Sources)
+			foreach (var dir in IdeServices.HelpService.Sources)
 				pb.AddQuotedFormat ("--docdir={0}", dir);
 		}
 

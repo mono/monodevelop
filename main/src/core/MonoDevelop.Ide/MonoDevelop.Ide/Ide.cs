@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide
 	{
 		static bool isInitialized;
 		static Workbench workbench;
-		static HelpOperations helpOperations;
 		static CommandManager commandService;
 		static TypeSystemService typeSystemService;
 
@@ -137,10 +136,6 @@ namespace MonoDevelop.Ide
 
 		public static RootWorkspace Workspace => IdeServices.Workspace;
 
-		public static HelpOperations HelpOperations {
-			get { return helpOperations; }
-		}
-		
 		public static CommandManager CommandService {
 			get { return commandService; }
 		}
@@ -201,24 +196,29 @@ namespace MonoDevelop.Ide
 			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
 			DispatchService.Initialize ();
 
+			Counters.Initialization.Trace ("Creating Services");
+
+			var serviceInitialization = Task.WhenAll (
+				Runtime.GetService<DesktopService> (),
+				Runtime.GetService<FontService> (),
+				Runtime.GetService<TaskService> (),
+				Runtime.GetService<ProjectOperations> (),
+				Runtime.GetService<TextEditorService> (),
+				Runtime.GetService<NavigationHistoryService> (),
+				Runtime.GetService<DisplayBindingService> (),
+				Runtime.GetService<RootWorkspace> (),
+				Runtime.GetService<HelpOperations> (),
+				Runtime.GetService<HelpService> ()
+			);
+
+			await serviceInitialization;
+
 			commandService = await Runtime.GetService<CommandManager> ();
-			await Runtime.GetService<DesktopService> ();
-			await Runtime.GetService<FontService> ();
-			await Runtime.GetService<TaskService> ();
 
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 
 			Counters.Initialization.Trace ("Creating Root Workspace");
-			await Runtime.GetService<RootWorkspace> ();
-
-			Counters.Initialization.Trace ("Creating Services");
-			await Runtime.GetService<ProjectOperations> ();
-			helpOperations = new HelpOperations ();
-
-			await Runtime.GetService<TextEditorService> ();
-			await Runtime.GetService<NavigationHistoryService> ();
-			await Runtime.GetService<DisplayBindingService> ();
 
 			CustomToolService.Init ();
 			
@@ -288,9 +288,6 @@ namespace MonoDevelop.Ide
 
 			monitor.EndTask ();
 
-			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
-			MonoDevelop.Projects.HelpService.AsyncInitialize ();
-			
 			UpdateInstrumentationIcon ();
 			IdeApp.Preferences.EnableInstrumentation.Changed += delegate {
 				UpdateInstrumentationIcon ();

@@ -1322,16 +1322,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			MonoDevelop.Ide.Editor.DocumentRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-			string url = HelpService.GetMonoDocHelpUrl (res);
+			string url = IdeServices.HelpService.GetMonoDocHelpUrl (res);
 			if (url != null)
-				IdeApp.HelpOperations.ShowHelp (url);
+				IdeServices.HelpOperations.ShowHelp (url);
 		}
 		
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
 			MonoDevelop.Ide.Editor.DocumentRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-			if (HelpService.GetMonoDocHelpUrl (res) == null)
+			if (IdeServices.HelpService.GetMonoDocHelpUrl (res) == null)
 				cinfo.Bypass = true;
 		}
 		
