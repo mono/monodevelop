@@ -368,8 +368,9 @@ namespace Mono.TextEditor
 			//}
 			var curVersion = TextEditorData.Version;
 			var newOffset = e.GetNewOffset (caretOffset);
-			if (newOffset == caretOffset || !AutoUpdatePosition)
+			if (!AutoUpdatePosition) 
 				return;
+
 			DocumentLocation old = Location;
 			var newLocation = TextEditorData.OffsetToLocation (newOffset);
 			int newColumn = newLocation.Column;

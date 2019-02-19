@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Linq;
 using LibGit2Sharp;
 using MonoDevelop.Components;
 
@@ -31,17 +33,21 @@ namespace MonoDevelop.VersionControl.Git
 {
 	partial class EditRemoteDialog : Gtk.Dialog
 	{
+		GitRepository repo;
+
 		// TODO: Add user possibility to choose refspecs.
-		public EditRemoteDialog () : this (null)
+		public EditRemoteDialog () : this (null, null)
 		{
 		}
 
 		bool sameUrls;
-		public EditRemoteDialog (Remote remote)
+		public EditRemoteDialog (GitRepository repository, Remote remote)
 		{
 			this.Build ();
 
 			this.UseNativeContextMenus ();
+
+			repo = repository;
 
 			if (remote != null) {
 				entryName.Text = remote.Name;
@@ -80,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void UpdateButtons ()
 		{
-			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0 && entryPushUrl.Text.Length > 0;
+			buttonOk.Sensitive = entryName.Text.Length > 0 && IsValidUrl (entryUrl.Text) && IsValidUrl(entryPushUrl.Text);
 		}
 
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
@@ -106,6 +112,13 @@ namespace MonoDevelop.VersionControl.Git
 			SetPushUrlTextStyle (sameUrls);
 
 			UpdateButtons ();
+		}
+
+		bool IsValidUrl (string url)
+		{
+			if (repo == null)
+				return url.Length > 0;
+			return repo.IsUrlValid (url);
 		}
 	}
 }

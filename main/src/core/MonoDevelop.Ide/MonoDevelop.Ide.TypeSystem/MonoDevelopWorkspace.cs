@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
-		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; }
+		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 		internal static HostServices HostServices => CompositionManager.Instance.HostServices;
@@ -253,6 +253,28 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
 
+		// This is called by OnSolutionRemoved and on Dispose.
+		protected override void ClearSolutionData ()
+		{
+			if (MonoDevelopSolution != null) {
+				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
+					ProjectMap.RemoveProject (prj);
+					UnloadMonoProject (prj);
+				}
+			}
+
+			base.ClearSolutionData ();
+		}
+
+		// This is called by OnProjectRemoved.
+		protected override void ClearProjectData (ProjectId projectId)
+		{
+			var actualProject = ProjectMap.RemoveProject (projectId);
+			UnloadMonoProject (actualProject);
+
+			base.ClearProjectData (projectId);
+		}
+
 		protected override void Dispose (bool finalize)
 		{
 			if (disposed)
@@ -278,11 +300,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
-			if (MonoDevelopSolution != null) {
-				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
-					UnloadMonoProject (prj);
-				}
-			}
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
 			solutionCrawler.Unregister (this);
@@ -293,6 +310,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			base.Dispose (finalize);
+
+			// Do this at the end so solution removal from base disposal is done properly.
+			MonoDevelopSolution = null;
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
@@ -1144,13 +1164,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var id = GetProjectId (project);
 			if (id != null) {
-				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
-					ClearOpenDocument (docId);
-				}
-
-				ProjectMap.RemoveProject (project, id);
-				UnloadMonoProject (project);
-
 				OnProjectRemoved (id);
 			}
 		}

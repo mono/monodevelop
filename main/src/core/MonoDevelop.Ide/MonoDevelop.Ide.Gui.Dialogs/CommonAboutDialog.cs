@@ -59,7 +59,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Name = "wizard_dialog";
 			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationLongName);
-			TransientFor = IdeApp.Workbench.RootWindow;
 			AllowGrow = false;
 			HasSeparator = false;
 			BorderWidth = 0;
@@ -118,21 +117,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					ChangeColor (cw);
 			}
 		}
-		
+
 		static CommonAboutDialog instance;
-		
+
 		public static void ShowAboutDialog ()
 		{
 			if (Platform.IsMac) {
 				if (instance == null) {
 					instance = new CommonAboutDialog ();
-					MessageService.PlaceDialog (instance, IdeApp.Workbench.RootWindow);
+					MessageService.PlaceDialog (instance, WelcomePage.WelcomePageService.WelcomeWindow ?? IdeApp.Workbench.RootWindow);
 					instance.Response += delegate {
 						instance.Destroy ();
 						instance.Dispose ();
 						instance = null;
 					};
 				}
+
 				instance.Present ();
 				return;
 			}

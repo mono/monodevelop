@@ -968,6 +968,16 @@ namespace MonoDevelop.MacIntegration
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
 		}
 
+		public override Window GetParentForModalWindow ()
+		{
+			return NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+		}
+
+		public override Window GetFocusedTopLevelWindow ()
+		{
+			return NSApplication.SharedApplication.KeyWindow;
+		}
+
 		public override void FocusWindow (Window window)
 		{
 			try {
