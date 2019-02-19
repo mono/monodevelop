@@ -57,6 +57,8 @@ namespace MonoDevelop.VersionControl.Git
 
 	static class GitCredentials
 	{
+		internal static readonly string UserCancelledExceptionMessage = GettextCatalog.GetString("Operation cancelled");
+
 		// Gather keys on initialize.
 		static readonly List<string> Keys = new List<string> ();
 		static readonly List<string> PublicKeys = new List<string> ();
@@ -171,7 +173,7 @@ namespace MonoDevelop.VersionControl.Git
 								state.KeyUsed = keyIndex;
 							return cred;
 						}
-						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+						throw new UserCancelledException (UserCancelledExceptionMessage);
 					}
 				}
 
@@ -194,7 +196,7 @@ namespace MonoDevelop.VersionControl.Git
 						} else
 							state.KeyUsed = keyIndex;
 					} else
-						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+						throw new UserCancelledException (UserCancelledExceptionMessage);
 				}
 
 				return cred;
@@ -210,7 +212,7 @@ namespace MonoDevelop.VersionControl.Git
 				return cred;
 			}
 
-			throw new VersionControlException (GettextCatalog.GetString ("Operation cancelled by the user"));
+			throw new UserCancelledException (UserCancelledExceptionMessage);
 		}
 
 		internal static bool KeyHasPassphrase (string key)

@@ -640,6 +640,9 @@ namespace MonoDevelop.VersionControl.Git
 					} catch (LibGit2SharpException e) {
 						GitCredentials.InvalidateCredentials (credType);
 
+						if (e.Message == GettextCatalog.GetString (GitCredentials.UserCancelledExceptionMessage))
+							throw new UserCancelledException (e.Message, e);
+
 						if (credType == GitCredentialsType.Tfs) {
 							retry = true;
 							tfsSession.Dispose ();
