@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
       <IncludeCopyLocal Include="Moq.dll" />
+      <IncludeCopyLocal Include="Castle.Core.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
