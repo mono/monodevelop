@@ -77,6 +77,8 @@
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.PageDownKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentStartCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentEndCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesUpCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesDownCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Delete" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
