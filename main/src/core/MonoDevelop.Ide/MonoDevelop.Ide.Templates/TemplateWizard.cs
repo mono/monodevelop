@@ -28,6 +28,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 
@@ -109,6 +111,34 @@ namespace MonoDevelop.Ide.Templates
 
 		public virtual void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
 		{
+			if (!(items.FirstOrDefault () is Solution solution))
+				return;
+
+			CreateMultiProjectStartUp (solution);
+		}
+
+		/// <summary>
+		/// Adds MultiStartupConfiguration when there are 
+		/// more than one project and one of them is a Backend project
+		/// </summary>
+		/// <param name="solution">Solution.</param>
+		void CreateMultiProjectStartUp (Solution solution)
+		{
+			if (Parameters.GetBoolValue ("CreateBackEndProject") != true || Parameters.GetBoolValue ("IncludeBackEndProject") != true)
+				return;
+
+			var config = new MultiItemSolutionRunConfiguration ("multiprojId", GettextCatalog.GetString ("Multiple Projects"));
+			foreach (var proj in solution.GetAllProjects ()) {
+				if (!proj.SupportsExecute ())
+					continue;
+				var startupItem = new StartupItem (proj, null);
+				config.Items.Add (startupItem);
+			}
+
+			solution.MultiStartupRunConfigurations.Add (config);
+			solution.StartupConfiguration = config;
+
+			solution.SaveAsync (new ProgressMonitor ()).Ignore ();
 		}
 
 		public virtual IEnumerable<ProjectConfigurationControl> GetFinalPageControls ()
