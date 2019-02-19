@@ -10,8 +10,17 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DiagnosticMargin" Version="1.0.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="16.0.27828" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Internal" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Language" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Find\Find.csproj" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
@@ -20,5 +29,17 @@
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="DiagnosticMargin.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="**\*.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Find\FindUI.xaml.cs">
+      <DependentUpon>FindUI.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

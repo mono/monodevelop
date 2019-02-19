@@ -19,6 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 
@@ -32,6 +34,20 @@ namespace MonoDevelop.TextEditor
 {
 	class WpfTextViewDisplayBinding : TextViewDisplayBinding<WpfTextViewImports>
 	{
+		static WpfTextViewDisplayBinding ()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+		}
+
+		private static Assembly OnAssemblyResolve (object sender, ResolveEventArgs args)
+		{
+			if (args.Name == "MonoDevelop.TextEditor.Wpf, Version=2.6.0, Culture=neutral") {
+				return typeof (WpfTextViewDisplayBinding).Assembly;
+			}
+
+			return null;
+		}
+
 		protected override ViewContent CreateContent (WpfTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new WpfTextViewContent (imports, fileName, mimeType, ownerProject);

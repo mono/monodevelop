@@ -19,6 +19,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Data.Utilities.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
+		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Find.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
