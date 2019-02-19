@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Views
 			get {
 				return revision;
 			}
-			set {
+			private set {
 				revision = value;
 			}
 		}
