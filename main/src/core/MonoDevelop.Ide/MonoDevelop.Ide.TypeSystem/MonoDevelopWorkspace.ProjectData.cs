@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				lock (this.metadataReferences) {
 					foreach (var metadataReference in metadataReferences) {
-						AddMetadataReference_NoLock (metadataReference, ws);
+						AddMetadataReference_NoLock (metadataReference);
 					}
 				}
 			}
@@ -59,20 +59,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var reference = (MonoDevelopMetadataReference)sender;
 				// If we didn't contain the reference, bail
-				if (!workspaceRef.TryGetTarget (out var workspace))
+				if (!workspaceRef.TryGetTarget (out var workspace) || workspace == null)
 					return;
 
 				lock (metadataReferences) {
-					if (!RemoveMetadataReference_NoLock (reference, workspace))
+					if (!RemoveMetadataReference_NoLock (reference))
 						return;
 					workspace.OnMetadataReferenceRemoved (projectId, args.OldSnapshot);
 
-					AddMetadataReference_NoLock (reference, workspace);
+					AddMetadataReference_NoLock (reference);
 					workspace.OnMetadataReferenceAdded (projectId, args.NewSnapshot.Value);
 				}
 			}
 
-			void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
+			void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference)
 			{
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (metadataReferences));
 
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				metadataReference.SnapshotUpdated += OnMetadataReferenceUpdated;
 			}
 
-			bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
+			bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference)
 			{
 				System.Diagnostics.Debug.Assert (Monitor.IsEntered (metadataReferences));
 
@@ -90,12 +90,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void Disconnect ()
 			{
-				if (!workspaceRef.TryGetTarget (out var ws))
-					return;
+				workspaceRef.SetTarget (null);
 
 				lock (metadataReferences) {
 					foreach (var reference in metadataReferences)
 						reference.SnapshotUpdated -= OnMetadataReferenceUpdated;
+					metadataReferences.Clear ();
 				}
 			}
 		}

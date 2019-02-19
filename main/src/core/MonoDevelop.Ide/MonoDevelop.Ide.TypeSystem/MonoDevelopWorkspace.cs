@@ -76,10 +76,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal readonly SemaphoreSlim LoadLock = new SemaphoreSlim (1, 1);
 		Lazy<MonoDevelopMetadataReferenceManager> manager;
 		Lazy<MetadataReferenceHandler> metadataHandler;
-		ProjectionData Projections { get; }
-		OpenDocumentsData OpenDocuments { get; }
-		ProjectDataMap ProjectMap { get; }
-		ProjectSystemHandler ProjectHandler { get; }
+		ProjectionData Projections { get; set; }
+		OpenDocumentsData OpenDocuments { get; set; }
+		ProjectDataMap ProjectMap { get; set; }
+		ProjectSystemHandler ProjectHandler { get; set; }
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
 
@@ -304,6 +304,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			base.Dispose (finalize);
+
+			OpenDocuments = null;
+			Projections = null;
+			ProjectHandler = null;
+			ProjectMap = null;
+			metadataHandler = null;
+			manager = null;
 
 			// Do this at the end so solution removal from base disposal is done properly.
 			MonoDevelopSolution = null;
