@@ -294,22 +294,22 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				return;
 			}
-			PopulateLabelMenuAndRaisePopup (labelRevision, xwtLabelRevision, args);
+			PopulateLabelMenuAndRaisePopup (labelRevision, args);
 		}
 
 		[GLib.ConnectBeforeAttribute]
 		void LabelAuthor_ButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
-			PopulateLabelMenuAndRaisePopup (labelAuthor, xwtLabelAuthor, args);
+			PopulateLabelMenuAndRaisePopup (labelAuthor, args);
 		}
 
 		[GLib.ConnectBeforeAttribute]
 		void LabelDate_ButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
-			PopulateLabelMenuAndRaisePopup (labelDate, xwtLabelDate, args);
+			PopulateLabelMenuAndRaisePopup (labelDate, args);
 		}
 
-		void PopulateLabelMenuAndRaisePopup (Label label, Xwt.Widget labelWidget, ButtonPressEventArgs args)
+		void PopulateLabelMenuAndRaisePopup (Label label, ButtonPressEventArgs args)
 		{
 			if (args.Event.Button == 3) {
 				var selectedText = GetSelectedTextFromLabel (label);
@@ -317,7 +317,7 @@ namespace MonoDevelop.VersionControl.Views
 					args.RetVal = true;
 					return;
 				}
-				PopulateMenuAndRaisePopup (label, labelWidget, selectedText, args);
+				PopulateMenuAndRaisePopup (label, selectedText, args);
 			}
 		}
 
@@ -330,11 +330,11 @@ namespace MonoDevelop.VersionControl.Views
 					args.RetVal = true;
 					return;
 				}
-				PopulateMenuAndRaisePopup (textviewDetails, xwtTextviewDetails, selectedText, args);
+				PopulateMenuAndRaisePopup (textviewDetails, selectedText, args);
 			}
 		}
 
-		void PopulateMenuAndRaisePopup (Gtk.Widget gtkWidget, Xwt.Widget xwtWidget, string selectedText, ButtonPressEventArgs args)
+		void PopulateMenuAndRaisePopup (Gtk.Widget gtkWidget, string selectedText, ButtonPressEventArgs args)
 		{
 			popupMenu.Items.Clear ();
 
