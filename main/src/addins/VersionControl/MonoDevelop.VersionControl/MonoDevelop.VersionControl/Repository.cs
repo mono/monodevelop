@@ -519,7 +519,7 @@ namespace MonoDevelop.VersionControl
 		// repository directory (must use absolute local paths).
 		public Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
-			var metadata = new PublishMetadata (VersionControlSystem) { PathsCount = files.Length, SubFolder = localPath.IsChildPathOf (RootPath) };
+			var metadata = new PublishMetadata (VersionControlSystem) { PathsCount = files.Length, SubFolder = localPath.IsChildPathOf(RootPath) };
 			using (var tracker = Instrumentation.PublishCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					var res = OnPublish (serverPath, localPath, files, message, monitor);

@@ -572,18 +572,31 @@ namespace MonoDevelop.VersionControl.Git
 
 			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
 
-			RetryUntilSuccess (monitor, credType => RootRepository.Network.Push (RootRepository.Head, new PushOptions {
-				OnPushStatusError = delegate (PushStatusError e) {
-					RootRepository.Dispose ();
-					RootRepository = null;
-					if (RootPath.Combine (".git").IsDirectory)
-						Directory.Delete (RootPath.Combine (".git"), true);
-					throw new VersionControlException (e.Message);
-				},
-				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
-			}));
+			RetryUntilSuccess (monitor, credType => {
+
+				try {
+					RootRepository.Network.Push (RootRepository.Head, new PushOptions {
+						OnPushStatusError = delegate (PushStatusError e) {
+							throw new VersionControlException (e.Message);
+						},
+						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
+					});
+				} catch(VersionControlException vcex) {
+					LoggingService.LogError ("Failed to publish to the repository", vcex);
+					DeleteGitFolder ();
+					throw;
+				}
+			});
 
 			return this;
+		}
+
+		void DeleteGitFolder()
+		{
+			RootRepository.Dispose ();
+			RootRepository = null;
+			if (RootPath.Combine (".git").IsDirectory)
+				Directory.Delete (RootPath.Combine (".git"), true);
 		}
 
 		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
