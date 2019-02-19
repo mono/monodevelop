@@ -195,7 +195,7 @@
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowBlameBefore"
 			_label = "Show _Authors prior to this change"/>			
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowPreviousBlame"
-			_label = "Show _Previous Blame"/>
+			_label = "Back to _Previous view"/>
 		</Category>
 	</Extension>
 
