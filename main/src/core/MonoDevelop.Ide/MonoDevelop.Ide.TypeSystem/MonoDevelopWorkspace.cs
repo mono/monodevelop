@@ -332,6 +332,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void HideStatusIcon ()
 		{
 			TypeSystemService.HideTypeInformationGatheringIcon (() => {
+				if (disposed)
+					return;
+
 				LoadingFinished?.Invoke (this, EventArgs.Empty);
 				WorkspaceLoaded?.Invoke (this, EventArgs.Empty);
 			});
