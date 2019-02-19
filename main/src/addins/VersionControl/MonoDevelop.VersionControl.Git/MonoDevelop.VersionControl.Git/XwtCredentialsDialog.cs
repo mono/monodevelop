@@ -30,6 +30,7 @@ using LibGit2Sharp;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using Xwt;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -93,7 +94,7 @@ namespace MonoDevelop.VersionControl.Git
 				var response = false;
 				engine.Invoke (() => {
 					using (var xwtDialog = new XwtCredentialsDialog (url, types, cred)) {
-						response = xwtDialog.Run (parentWindow ?? Ide.MessageService.RootWindow) == Command.Ok;
+						response = xwtDialog.Run (parentWindow ?? DesktopService.GetFocusedTopLevelWindow ()) == Command.Ok;
 					}
 				});
 				return response;
