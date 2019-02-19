@@ -70,10 +70,6 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool currentRevisionShortened;
 
-		readonly Xwt.Widget xwtTextviewDetails;
-		readonly Xwt.Widget xwtLabelRevision;
-		readonly Xwt.Widget xwtLabelDate;
-		readonly Xwt.Widget xwtLabelAuthor;
 		readonly Xwt.Menu popupMenu;
 
 		class RevisionGraphCellRenderer : Gtk.CellRenderer
@@ -248,7 +244,6 @@ namespace MonoDevelop.VersionControl.Views
 			textviewDetails.WrapMode = Gtk.WrapMode.Word;
 			textviewDetails.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
 			textviewDetails.ButtonPressEvent += TextviewDetails_ButtonPressEvent;
-			xwtTextviewDetails = Xwt.Toolkit.CurrentEngine.WrapWidget (textviewDetails);
 
 			labelAuthor.Text = "";
 			labelDate.Text = "";
@@ -256,15 +251,12 @@ namespace MonoDevelop.VersionControl.Views
 
 			labelDate.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
 			labelDate.ButtonPressEvent += LabelDate_ButtonPressEvent;
-			xwtLabelDate = Xwt.Toolkit.CurrentEngine.WrapWidget (labelDate);
 
 			labelAuthor.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
 			labelAuthor.ButtonPressEvent += LabelAuthor_ButtonPressEvent;
-			xwtLabelAuthor = Xwt.Toolkit.CurrentEngine.WrapWidget (labelAuthor);
 
 			labelRevision.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
 			labelRevision.ButtonPressEvent += LabelRevision_ButtonPressEvent;
-			xwtLabelRevision = Xwt.Toolkit.CurrentEngine.WrapWidget (labelRevision);
 
 			vbox2.Remove (scrolledwindow1);
 			HeaderBox tb = new HeaderBox ();
