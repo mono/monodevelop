@@ -204,6 +204,7 @@ namespace MonoDevelop.Ide.CustomTools
 			var result = new SingleFileCustomToolResult ();
 			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
 
+			FileService.FreezeEvents ();
 			try {
 				await tool.Generate (monitor, file.Project, file, result);
 				if (!monitor.HasErrors && !monitor.HasWarnings) {
@@ -225,6 +226,8 @@ namespace MonoDevelop.Ide.CustomTools
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
 				UpdateCompleted (monitor, file, genFile, result, true);
+			} finally {
+				FileService.ThawEvents ();
 			}
 		}
 
@@ -334,6 +337,7 @@ namespace MonoDevelop.Ide.CustomTools
 			monitor.WithCancellationSource (cs);
 
 			try {
+				FileService.FreezeEvents ();
 				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
 
 				try {
@@ -361,6 +365,7 @@ namespace MonoDevelop.Ide.CustomTools
 				result.UnhandledException = ex;
 				UpdateCompleted (monitor, file, genFile, result, false);
 			} finally {
+				FileService.ThawEvents ();
 				if (error == null)
 					newTask.SetResult (true);
 				else {
