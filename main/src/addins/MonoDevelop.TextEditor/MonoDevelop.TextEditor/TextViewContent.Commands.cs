@@ -122,8 +122,18 @@ namespace MonoDevelop.TextEditor
 
 		#region Command Mapping Handlers
 
+		bool EditorIsFirstResponder {
+			get {
+				var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (TextView);
+				return findPresenter == null || !findPresenter.IsFocused;
+			}
+		}
+
 		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
 		{
+			if (!EditorIsFirstResponder)
+				return null;
+
 			if (CommandMappings.Instance.HasMapping (commandId) || EditorOperationCommands.ContainsKey (commandId))
 				return this;
 
@@ -132,7 +142,12 @@ namespace MonoDevelop.TextEditor
 
 		ICommandUpdater ICustomCommandTarget.GetCommandUpdater (object commandId)
 		{
-			if (CommandMappings.Instance.HasMapping (commandId))
+			if (!EditorIsFirstResponder)
+				return null;
+
+			if (CommandMappings.Instance.HasMapping (commandId) ||
+				(EditorOperationCommands.TryGetValue (commandId, out var editorOperationCommand) &&
+				editorOperationCommand.Update != null))
 				return this;
 
 			return null;

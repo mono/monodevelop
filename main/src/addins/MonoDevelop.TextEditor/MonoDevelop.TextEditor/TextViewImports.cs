@@ -22,7 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Platform;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
@@ -30,6 +30,7 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Text.Find;
 
 namespace MonoDevelop.TextEditor
 {
@@ -67,5 +68,8 @@ namespace MonoDevelop.TextEditor
 
 		[Import]
 		internal IEditorFormatMapService EditorFormatMapService { get; set; }
+
+		[Import]
+		internal IFindPresenterFactory FindPresenterFactory { get; set; }
 	}
 }
