@@ -32,8 +32,18 @@ namespace MonoDevelop.VersionControl.Git
 {
 	abstract class GitVersionControl : VersionControlSystem
 	{
+		string version = null;
+
 		public override string Name {
 			get { return "Git"; }
+		}
+
+		public override string Version {
+			get {
+				if (version == null)
+					version = LibGit2Sharp.GlobalSettings.Version.InformationalVersion;
+				return version;
+			}
 		}
 
 		public override bool IsInstalled {

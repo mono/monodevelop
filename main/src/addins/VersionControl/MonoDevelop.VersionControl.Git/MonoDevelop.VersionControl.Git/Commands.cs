@@ -187,7 +187,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var repo = UpdateVisibility (info);
 			if (repo != null)
-				info.Enabled = !repo.RootRepository.Info.IsHeadUnborn;
+				info.Enabled = repo.RunOperation (repo.RootPath, repository => !repository.Info.IsHeadUnborn);
 		}
 	}
 
