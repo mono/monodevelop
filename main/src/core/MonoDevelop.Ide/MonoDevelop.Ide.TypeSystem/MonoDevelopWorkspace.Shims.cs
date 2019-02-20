@@ -35,23 +35,23 @@ namespace MonoDevelop.Ide.TypeSystem
 	public partial class MonoDevelopWorkspace
 	{
 		internal bool Contains (ProjectId projectId)
-			=> ProjectMap.Contains (projectId);
+			=> (ProjectMap?.Contains (projectId)).GetValueOrDefault ();
 
 		internal ProjectId GetProjectId (MonoDevelop.Projects.Project project)
-			=> ProjectMap.GetId (project);
+			=> ProjectMap?.GetId (project);
 
 		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
 			=> GetMonoProject (project.Id);
 
 		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
-			=> ProjectMap.GetMonoProject (projectId);
+			=> ProjectMap?.GetMonoProject (projectId);
 
 		internal Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token, MonoDevelop.Projects.Project oldProject)
 			=> ProjectHandler.LoadProject (p, token, oldProject);
 
 		internal DocumentId GetDocumentId (ProjectId projectId, string name)
 		{
-			var projectData = ProjectMap.GetData (projectId);
+			var projectData = ProjectMap?.GetData (projectId);
 			return projectData?.DocumentData.Get (name);
 		}
 
