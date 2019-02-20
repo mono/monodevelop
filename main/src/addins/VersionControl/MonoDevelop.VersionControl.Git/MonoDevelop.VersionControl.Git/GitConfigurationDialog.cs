@@ -358,8 +358,21 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listTags.Selection.GetSelected (out it))
 				return;
 
-			string tagName = (string) storeTags.GetValue (it, 0);
-			repo.PushTag (tagName);
+			string tagName = (string)storeTags.GetValue (it, 0);
+			var monitor = new Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, false, false, true);
+			System.Threading.Tasks.Task.Run (() => {
+				try {
+					monitor.BeginTask (GettextCatalog.GetString ("Pushing Tag"), 1);
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Pushing Tag '{0}' to '{1}'", tagName, repo.Url));
+					repo.PushTag (tagName);
+					monitor.Step (1);
+					monitor.EndTask ();
+				} catch (Exception ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Pushing tag failed"), ex);
+				} finally {
+					monitor.Dispose ();
+				}
+			});
 		}
 
 		protected async void OnButtonFetchClicked (object sender, EventArgs e)
@@ -380,7 +393,16 @@ namespace MonoDevelop.VersionControl.Git
 			if (string.IsNullOrEmpty(remoteName))
 				return;
 
-			await System.Threading.Tasks.Task.Run (() => repo.Fetch (VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")), remoteName));
+			var monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote..."));
+			await System.Threading.Tasks.Task.Run (() => {
+				try {
+					repo.Fetch (monitor, remoteName);
+				} catch (Exception ex) {
+					monitor.ReportError (GettextCatalog.GetString ("Fetching remote failed"), ex);
+				} finally {
+					monitor.Dispose ();
+				}
+			});
 			FillRemotes ();
 		}
 	}
