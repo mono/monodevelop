@@ -639,7 +639,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				InnerExceptionTypeLabel.Markup = "<b>" + GLib.Markup.EscapeText (ex.Type) + "</b>";
 				InnerExceptionMessageLabel.Text = ex.Message;
 				if (!string.IsNullOrEmpty (ex.HelpLink)) {
-					InnerExceptionHelpLinkButton.Label = GettextCatalog.GetString ("Read More...");
+					InnerExceptionHelpLinkButton.Label = GettextCatalog.GetString ("Read More…");
 					innerExceptionHelpLink = ex.HelpLink;
 					InnerExceptionHelpLinkButton.Show ();
 				} else {
