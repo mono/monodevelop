@@ -927,6 +927,7 @@ namespace MonoDevelop.Core
 				throw new InvalidOperationException ();
 		}
 
+		[DebuggerDisplay("{DebuggerDisplay,nq}")]
 		internal class FileEventData : EventData
 		{
 			public FileService.EventDataKind Kind;
@@ -951,6 +952,18 @@ namespace MonoDevelop.Core
 
 				return shouldMerge;
 			}
+
+			private string DebuggerDisplay => string.Format (
+				"{0}: {1}",
+				Kind.ToString (),
+				string.Join (
+					", ",
+					Args.Select (x => x.SourceFile == x.TargetFile
+						? x.FileName.ToString ()
+						: string.Format ("{0} -> {1}", x.SourceFile.ToString (), x.TargetFile.ToString ())
+					)
+				)
+			);
 		}
 
 		sealed class EmptyEventData : EventData
