@@ -66,6 +66,8 @@ namespace MonoDevelop.TextEditor.Wpf.Find
 
 		public bool IsVisible => findUI.IsVisible;
 
+		public bool IsFocused => findUI.IsKeyboardFocusWithin;
+
 		public void ShowFind ()
 		{
 			findUI.ShowAdornment ((IWpfTextView)textView);
