@@ -840,7 +840,14 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+#if !WINDOWS
 		ConfigurationProperty<ShowWhitespaces> showWhitespaces = IdeApp.Preferences.Editor.ShowWhitespaces;
+		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = IdeApp.Preferences.Editor.IncludeWhitespaces;
+#else
+		ConfigurationProperty<ShowWhitespaces> showWhitespaces = ConfigurationProperty.Create ("ShowWhitespaces", ShowWhitespaces.Never);
+		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = ConfigurationProperty.Create ("IncludeWhitespaces", IncludeWhitespaces.All);
+#endif
+
 		public ShowWhitespaces ShowWhitespaces {
 			get {
 				return showWhitespaces;
@@ -851,7 +858,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = IdeApp.Preferences.Editor.IncludeWhitespaces;
 		public IncludeWhitespaces IncludeWhitespaces {
 			get {
 				return includeWhitespaces;

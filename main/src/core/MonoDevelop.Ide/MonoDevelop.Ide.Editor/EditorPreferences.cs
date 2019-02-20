@@ -58,8 +58,10 @@ namespace MonoDevelop.Ide.Editor
 		public readonly ConfigurationProperty<int> TabSize;
 		public readonly ConfigurationProperty<bool> TrimTrailingWhitespace;
 		public readonly ConfigurationProperty<WordWrapStyles> WordWrapStyle;
+#if !WINDOWS
 		public readonly ConfigurationProperty<ShowWhitespaces> ShowWhitespaces;
 		public readonly ConfigurationProperty<IncludeWhitespaces> IncludeWhitespaces;
+#endif
 		// TODO: Maybe per language preferences?
 		#endregion
 
@@ -92,8 +94,10 @@ namespace MonoDevelop.Ide.Editor
 			// UseVirtualSpace should be a combination of IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Smart && RemoveTrailingWhitespaces
 			WordWrapStyle = Wrap<WordWrapStyles> ("WordWrapStyle", DefaultTextViewOptions.WordWrapStyleName);
 			TabSize = Wrap<int> ("TabSize", DefaultOptions.TabSizeOptionName);
+#if !WINDOWS
 			ShowWhitespaces = new ShowWhitespacesProperty (this);
 			IncludeWhitespaces = new IncludeWhitespacesProperty (this);
+#endif
 
 			LogNonMappedOptions ();
 		}
@@ -190,6 +194,7 @@ namespace MonoDevelop.Ide.Editor
 			return property;
 		}
 
+#if !WINDOWS
 		class IncludeWhitespacesProperty : ConfigurationProperty<IncludeWhitespaces>
 		{
 			IncludeWhitespaces propertyValue;
@@ -306,6 +311,7 @@ namespace MonoDevelop.Ide.Editor
 				editorPreferences.globalOptions.SetOptionValue (DefaultTextViewOptions.UseVisibleWhitespaceOnlyWhenSelectedName, value == Editor.ShowWhitespaces.Selection);
 			}
 		}
+#endif
 		#endregion
 	}
 }
