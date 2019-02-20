@@ -53,9 +53,19 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				selectedLanguage = value;
-				Text = value;
+				Text = GetAccessibleLanguageName (value);
 			}
 		}
+
+		internal static string GetAccessibleLanguageName (string language)
+		{
+			switch (language) {
+			case "C#": return "C Sharp";
+			case "F#": return "F Sharp";
+			default: return language;
+			}
+		}
+
 		public bool RenderRecentTemplate { get; set; }
 
 		int textWidth = 0;

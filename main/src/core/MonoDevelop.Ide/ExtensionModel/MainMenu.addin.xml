@@ -205,6 +205,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy" />
 		<SeparatorItem id = "PolicyToolsEnd" />
 		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetStartupProjects" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" />
 		<SeparatorItem id = "ProjectToolsSeparator" />

@@ -1,4 +1,4 @@
-// ExportProjectDialog.cs
+﻿// ExportProjectDialog.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.Build();
 			
-			labelNewFormat.Text = selectedFormat.ProductDescription;
+			labelNewFormat.Text = selectedFormat?.ProductDescription ?? item.FileFormat.ProductDescription;
 			
 			formats = MSBuildFileFormat.GetSupportedFormats (item).ToArray ();
 			foreach (var format in formats) {

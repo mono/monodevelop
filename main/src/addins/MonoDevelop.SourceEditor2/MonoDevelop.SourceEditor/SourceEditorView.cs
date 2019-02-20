@@ -1,4 +1,4 @@
-﻿// SourceEditorView.cs
+// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -68,7 +68,7 @@ using MonoDevelop.Ide.Gui.Documents;
 namespace MonoDevelop.SourceEditor
 {
 	partial class SourceEditorView : IBookmarkBuffer, IClipboardHandler, ITextFile,
-		ICompletionWidget2, ISplittable, IFoldable, IToolboxDynamicProvider,
+		ICompletionWidget2, ISplittable, IFoldable, IToolboxDynamicProvider, IToolboxDynamicProviderDeleteSupport,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, IPrintable,
 	ITextEditorImpl, ITextMarkerFactory, IUndoHandler
@@ -3111,14 +3111,20 @@ namespace MonoDevelop.SourceEditor
 
 		string ITextEditorImpl.GetMarkup (int offset, int length, MarkupOptions options)
 		{
+			return GetMarkupAsync (offset, length, options, default).WaitAndGetResult (default);
+		}
+
+		public async Task<string> GetMarkupAsync (int offset, int length, MarkupOptions options, CancellationToken cancellationToken = default)
+		{
+			Runtime.AssertMainThread ();
 			var data = TextEditor.GetTextEditorData ();
 			switch (options.MarkupFormat) {
 			case MarkupFormat.Pango:
-				return data.GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle);
+				return await data.GetMarkupAsync (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle, cancellationToken: cancellationToken);
 			case MarkupFormat.Html:
-				return HtmlWriter.GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
+				return HtmlWriter.GenerateHtml (await ClipboardColoredText.GetChunks (data, new TextSegment (offset, length), cancellationToken), data.ColorStyle, data.Options);
 			case MarkupFormat.RichText:
-				return RtfWriter.GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)).WaitAndGetResult (default (System.Threading.CancellationToken)), data.ColorStyle, data.Options);
+				return RtfWriter.GenerateRtf (await ClipboardColoredText.GetChunks (data, new TextSegment (offset, length), cancellationToken), data.ColorStyle, data.Options);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -3412,6 +3418,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			return TextEditor.GetLineHeight (line);
 		}
+
+		public bool DeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.DeleteItem (node);
+
+		public bool CanDeleteDynamicItem (ItemToolboxNode node) => ClipboardRingService.GetToolboxItems ().Contains (node);
 
 		public bool HasFocus {
 			get {

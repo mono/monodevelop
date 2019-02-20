@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Projects;
 using NUnit.Framework;
@@ -35,32 +36,9 @@ namespace MonoDevelop.Core.Assemblies
 	[TestFixture]
 	public class SystemAssemblyServiceTests
 	{
-		[TestCase(true, "System.Collections.Immutable.dll")]
-		[TestCase(false, "MonoDevelop.Core.dll")]
-		public void ImmutableCollectionsContainReferenceToSystemRuntime (bool withSystemRuntime, string relativeDllPath)
-		{
-			var result = SystemAssemblyService.ContainsReferenceToSystemRuntime(relativeDllPath);
-			Assert.That(result, Is.EqualTo(withSystemRuntime));
-		}
-
-		[TestCase(true, "System.Collections.Immutable.dll")]
-		[TestCase(false, "MonoDevelop.Core.dll")]
-		public async Task ImmutableCollectionsContainReferenceToSystemRuntimeAsync (bool withSystemRuntime, string relativeDllPath)
-		{
-			var result = await SystemAssemblyService.ContainsReferenceToSystemRuntimeAsync(relativeDllPath);
-			Assert.That(result, Is.EqualTo(withSystemRuntime));
-		}
-
 		[TestCase (true, "System.Collections.Immutable.dll")]
 		[TestCase (false, "MonoDevelop.Core.dll")]
-		public void RequiresFacadeAssemblies (bool addFacades, string relativeDllPath)
-		{
-			var result = SystemAssemblyService.RequiresFacadeAssemblies (relativeDllPath);
-			Assert.That (result, Is.EqualTo (addFacades));
-		}
-
-		[TestCase (true, "System.Collections.Immutable.dll")]
-		[TestCase (false, "MonoDevelop.Core.dll")]
+		[TestCase (false, "NonExistingDll.dll")]
 		public async Task RequiresFacadeAssembliesAsync (bool addFacades, string relativeDllPath)
 		{
 			var result = await SystemAssemblyService.RequiresFacadeAssembliesAsync (relativeDllPath);
@@ -78,6 +56,49 @@ namespace MonoDevelop.Core.Assemblies
 
 			var references = SystemAssemblyService.GetAssemblyReferences(Path.Combine(Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Cecil.dll"));
 			Assert.That(references, Is.EquivalentTo(names));
+		}
+
+		[Test]
+		public void CheckAssemblyReferences ()
+		{
+			var result = SystemAssemblyService.GetAssemblyReferences ("Mono.Addins.dll");
+
+			Assert.AreEqual (4, result.Length);
+			Assert.That (result, Contains.Item ("mscorlib"));
+			Assert.That (result, Contains.Item ("System"));
+			Assert.That (result, Contains.Item ("System.Core"));
+			Assert.That (result, Contains.Item ("System.Xml"));
+		}
+
+		[Test]
+		public void GetManifestResources ()
+		{
+			var result = SystemAssemblyService.GetAssemblyManifestResources ("MonoDevelop.Core.dll").ToArray ();
+
+			Assert.That (result.Length, Is.GreaterThanOrEqualTo (1));
+
+			var addinXml = result.SingleOrDefault (x => x.Name == "MonoDevelop.Core.addin.xml");
+			Assert.IsNotNull (addinXml);
+
+			string fromReader, actual;
+
+			using (var streamReader = new StreamReader (addinXml.Open ())) {
+				fromReader = streamReader.ReadToEnd ();
+			}
+			using (var streamReader = new StreamReader (typeof (SystemAssemblyService).Assembly.GetManifestResourceStream ("MonoDevelop.Core.addin.xml"))) {
+				actual = streamReader.ReadToEnd ();
+			}
+
+			Assert.AreEqual (actual, fromReader);
+		}
+
+		[Test]
+		public void TestFrameworkVersion ()
+		{
+			var result = new SystemAssemblyService ().GetTargetFrameworkForAssembly (null, "Xwt.dll");
+
+			Assert.AreEqual (TargetFrameworkMoniker.ID_NET_FRAMEWORK, result.Identifier);
+			Assert.AreEqual ("4.6.1", result.Version);
 		}
 	}
 }

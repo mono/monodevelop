@@ -1149,8 +1149,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 	}
 
-	[Obsolete("This class should never have been public")]
-	public class Item : IComparable<Item>
+	class Item : IComparable<Item>
 	{
 		ToolboxWidgetItem inner;
 

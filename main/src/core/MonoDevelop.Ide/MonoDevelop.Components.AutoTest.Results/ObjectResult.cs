@@ -132,5 +132,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			SetProperty (value, propertyName, newValue);
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			value = null;
+			base.Dispose (disposing);
+		}
 	}
 }

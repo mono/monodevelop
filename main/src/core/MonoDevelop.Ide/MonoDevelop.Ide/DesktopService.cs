@@ -1,4 +1,4 @@
-﻿//
+//
 // IdeApp.DesktopService.cs
 //
 // Author:
@@ -142,13 +142,6 @@ namespace MonoDevelop.Ide
 
 		public string PlatformName {
 			get { return PlatformService.Name; }
-		}
-
-		[Obsolete]
-		public string DefaultControlLeftRightBehavior {
-			get {
-				return PlatformService.DefaultControlLeftRightBehavior;
-			}
 		}
 
 		public void ShowUrl (string url)
@@ -362,6 +355,16 @@ namespace MonoDevelop.Ide
 		internal void GrabDesktopFocus (Gtk.Window window)
 		{
 			PlatformService.GrabDesktopFocus (window);
+		}
+
+		public Window GetParentForModalWindow ()
+		{
+			return PlatformService.GetParentForModalWindow ();
+		}
+
+		public Window GetFocusedTopLevelWindow ()
+		{
+			return PlatformService.GetFocusedTopLevelWindow ();
 		}
 
 		public void FocusWindow (Window window)

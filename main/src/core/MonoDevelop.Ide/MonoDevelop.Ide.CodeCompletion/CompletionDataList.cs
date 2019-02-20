@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			// default - word with highest match rating in the list.
 			int idx = -1;
-			if (DefaultCompletionString != null && DefaultCompletionString.StartsWith (partialWord, StringComparison.OrdinalIgnoreCase)) {
+			if (DefaultCompletionString != null && string.IsNullOrEmpty(partialWord)) {
 				partialWord = DefaultCompletionString;
 			}
 			CompletionDataMatcher matcher = null;

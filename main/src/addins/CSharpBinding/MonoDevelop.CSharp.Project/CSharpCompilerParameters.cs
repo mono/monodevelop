@@ -187,11 +187,10 @@ namespace MonoDevelop.CSharp.Project
 			var items = warnings.Split (new [] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Distinct ();
 
 			foreach (string warning in items) {
-				if (warning.StartsWith ("CS", StringComparison.OrdinalIgnoreCase)) {
-					yield return warning;
-				} else {
+				if (int.TryParse (warning, out _))
 					yield return "CS" + warning;
-				}
+				else
+					yield return warning;
 			}
 		}
 

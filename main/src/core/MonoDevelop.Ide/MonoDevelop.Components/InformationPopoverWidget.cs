@@ -108,11 +108,24 @@ namespace MonoDevelop.Components
 			ShowPopover ();
 		}
 
+		bool WorkaroundNestedDialogFlickering ()
+		{
+			// There seems to be a problem with Gdk.Window focus events when the parent
+			// window is transient for another modal window (i.e. dialogs on top of the Ide preferences window).
+			// A native tooltip seems to confuse Gdk in this case and it rapidly fires LeaveNotify/EnterNotify
+			// events leading to fast flickering of the tooltip.
+			if (ParentWindow != null && Surface.ToolkitEngine.GetNativeWindow (ParentWindow) is Gtk.Window gtkWindow) {
+				if (gtkWindow.TransientFor?.TransientFor != null)
+					return true;
+			}
+			return false;
+		}
+
 		void ShowPopover ()
 		{
 			if (popover != null)
 				popover.Destroy ();
-			popover = TooltipPopoverWindow.Create ();
+			popover = TooltipPopoverWindow.Create (!WorkaroundNestedDialogFlickering ());
 			popover.ShowArrow = true;
 			popover.Text = message;
 			popover.Severity = severity;
@@ -135,6 +148,13 @@ namespace MonoDevelop.Components
 		{
 			base.OnMouseExited (args);
 			DestroyPopover ();
+		}
+
+		protected override void OnPreferredSizeChanged ()
+		{
+			base.OnPreferredSizeChanged ();
+			if (!Visible)
+				DestroyPopover ();
 		}
 
 		void DestroyPopover ()

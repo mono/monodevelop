@@ -44,7 +44,7 @@ namespace MonoDevelop.UnitTesting.Commands
 		GoToFailure,
 		RerunTest,
 	}
-	
+
 	public enum TestChartCommands
 	{
 		ShowResults,
@@ -55,13 +55,20 @@ namespace MonoDevelop.UnitTesting.Commands
 		ShowFailedTests,
 		ShowIgnoredTests
 	}
-	
+
 	public enum NUnitProjectCommands
 	{
 		AddAssembly
 	}
-	
-	class RunAllTestsHandler: CommandHandler
+
+	public enum TextEditorCommands
+	{
+		RunTestAtCaret,
+		DebugTestAtCaret,
+		SelectTestAtCaret
+	}
+
+	class RunAllTestsHandler : CommandHandler
 	{
 		protected override void Run ()
 		{

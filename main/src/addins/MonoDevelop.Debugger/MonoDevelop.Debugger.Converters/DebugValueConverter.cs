@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
@@ -33,6 +35,11 @@ namespace MonoDevelop.Debugger
 		public abstract bool CanGetValue (ObjectValue val);
 
 		public abstract T GetValue (ObjectValue val);
+
+		public virtual Task<T> GetValueAsync (ObjectValue val, CancellationToken token = default (CancellationToken))
+		{
+			return Task.FromResult (GetValue (val));
+		}
 
 		public virtual bool CanSetValue (ObjectValue val)
 		{

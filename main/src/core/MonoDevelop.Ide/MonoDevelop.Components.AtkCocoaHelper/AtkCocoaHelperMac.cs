@@ -37,6 +37,7 @@ using Foundation;
 using Gdk;
 using ObjCRuntime;
 using MetalPerformanceShaders;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components.AtkCocoaHelper
 {
@@ -291,6 +292,25 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			nsa.AccessibilityOrientation = orientation == Gtk.Orientation.Vertical ? NSAccessibilityOrientation.Vertical : NSAccessibilityOrientation.Horizontal;
 		}
 
+		static NSArray ToAccessibilityArray (this Atk.Object[] objects)
+		{
+			if (objects == null)
+				return null;
+
+			var array = new NSMutableArray ((nuint)objects.Length);
+
+			foreach (var obj in objects) {
+				var nsao = GetNSAccessibilityElement (obj);
+				if (nsao == null) {
+					continue;
+				}
+
+				array.Add ((NSObject)nsao);
+			}
+			return array;
+		}
+
+		static readonly IntPtr selSetAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("setAccessibilityServesAsTitleForUIElements:");
 		public static void SetTitleFor (this Atk.Object o, params Atk.Object [] objects)
 		{
 			var nsa = GetNSAccessibilityElement (o);
@@ -298,22 +318,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			NSObject [] titleElements = new NSObject [objects.Length];
-			int idx = 0;
-
-			foreach (var obj in objects) {
-				var nsao = GetNSAccessibilityElement (obj);
-				if (nsao == null) {
-					return;
-				}
-
-				titleElements [idx] = (NSObject)nsao;
-				idx++;
+			using (var titleElements = objects.ToAccessibilityArray ()) {
+				nsa.SendSelector (selSetAccessibilityServesAsTitleForUIElements_Handle, titleElements);
 			}
-
-			nsa.AccessibilityServesAsTitleForUIElements = titleElements;
 		}
 
+		static readonly IntPtr selSetAccessibilityTabs_Handle = Selector.GetHandle ("setAccessibilityTabs:");
 		public static void SetTabs (this Atk.Object o, params AccessibilityElementProxy [] tabs)
 		{
 			var nsa = GetNSAccessibilityElement (o);
@@ -321,7 +331,9 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityTabs = ConvertToRealProxyArray (tabs);
+			using (var realTabs = tabs.ConvertToRealProxyArray ()) {
+				nsa.SendSelector (selSetAccessibilityTabs_Handle, realTabs);
+			}
 		}
 
 		public static void SetTabs (this Atk.Object o, params Atk.Object [] tabs)
@@ -331,16 +343,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			NSObject [] realTabs = new NSObject [tabs.Length];
-			int i = 0;
-			foreach (var tab in tabs) {
-				realTabs [i] = (NSObject)GetNSAccessibilityElement (tab);
-				i++;
+			using (var realTabs = tabs.ToAccessibilityArray ()) {
+				nsa.SendSelector (selSetAccessibilityTabs_Handle, realTabs);
 			}
-
-			nsa.AccessibilityTabs = realTabs;
 		}
 
+		static readonly IntPtr selAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("setAccessibilityServesAsTitleForUIElements:");
 		public static void AddElementToTitle (this Atk.Object title, Atk.Object o)
 		{
 			var titleNsa = GetNSAccessibilityElement (title);
@@ -350,20 +358,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			NSObject [] oldElements = titleNsa.AccessibilityServesAsTitleForUIElements;
-			int length = oldElements != null ? oldElements.Length : 0;
-
-			if (oldElements != null && oldElements.IndexOf ((NSObject)nsa) != -1) {
-				return;
+			IntPtr ptr = Messaging.IntPtr_objc_msgSend (titleNsa.Handle, selAccessibilityServesAsTitleForUIElements_Handle);
+			using (var array = Runtime.GetNSObject<NSArray> (ptr))
+			using (var copy = array != null ? (NSMutableArray)array.MutableCopy () : new NSMutableArray (1)) {
+				copy.Add ((NSObject)nsa);
+				nsa.SendSelector (selSetAccessibilityServesAsTitleForUIElements_Handle, copy);
 			}
-
-			NSObject [] titleElements = new NSObject [length + 1];
-			if (oldElements != null) {
-				oldElements.CopyTo (titleElements, 0);
-			}
-			titleElements [length] = (NSObject)nsa;
-
-			titleNsa.AccessibilityServesAsTitleForUIElements = titleElements;
 		}
 
 		public static void RemoveElementFromTitle (this Atk.Object title, Atk.Object o)
@@ -375,48 +375,56 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			if (titleNsa.AccessibilityServesAsTitleForUIElements == null) {
-				return;
+			IntPtr ptr = Messaging.IntPtr_objc_msgSend (titleNsa.Handle, selAccessibilityServesAsTitleForUIElements_Handle);
+			using (var array = Runtime.GetNSObject<NSArray> (ptr)) {
+				if (array == null)
+					return;
+
+				var nso = (NSObject)nsa;
+				var index = (nint)array.IndexOf (nso);
+				if (index == NSRange.NotFound)
+					return;
+
+				using (var copy = (NSMutableArray)array.MutableCopy ())
+				using (var set = NSIndexSet.FromIndex (index)) {
+					copy.RemoveObjectsAtIndexes (set);
+
+					nsa.SendSelector (selSetAccessibilityServesAsTitleForUIElements_Handle, copy);
+				}
 			}
-
-			List<NSObject> oldElements = new List<NSObject> (titleNsa.AccessibilityServesAsTitleForUIElements);
-			oldElements.Remove ((NSObject)nsa);
-
-			titleNsa.AccessibilityServesAsTitleForUIElements = oldElements.ToArray ();
 		}
 
-		static RealAccessibilityElementProxy [] ConvertToRealProxyArray (AccessibilityElementProxy [] proxies)
+		static NSArray ConvertToRealProxyArray (this AccessibilityElementProxy [] proxies)
 		{
 			if (proxies == null) {
 				return null;
 			}
 
-			var realProxies = new RealAccessibilityElementProxy [proxies.Length];
-			int idx = 0;
+			var array = new NSMutableArray ((nuint)proxies.Length);
 			foreach (var p in proxies) {
-				var rp = p.Proxy as RealAccessibilityElementProxy;
-				if (rp == null) {
+				if (!(p.Proxy is RealAccessibilityElementProxy rp)) {
 					throw new Exception ($"Invalid type {p.GetType ()} in accessibleChildren");
 				}
 
-				realProxies [idx] = rp;
-				idx++;
+				array.Add (rp);
 			}
 
-			return realProxies;
+			return array;
 		}
 
+		static void SendSelector (this INSAccessibility nsa, IntPtr selectorHandle, NSArray array)
+		{
+			Messaging.void_objc_msgSend_IntPtr (nsa.Handle, selectorHandle, array != null ? array.Handle : IntPtr.Zero);
+		}
+
+		static readonly IntPtr selAccessibilityChildren_Handle = Selector.GetHandle ("accessibilityChildren");
+		static readonly IntPtr selSetAccessibilityChildren_Handle = Selector.GetHandle ("setAccessibilityChildren:");
 		public static void ReplaceAccessibilityElements (this Atk.Object parent, AccessibilityElementProxy [] children)
 		{
-			var nsa = GetNSAccessibilityElement (parent);
-
-			if (nsa == null) {
-				return;
-			}
-
-			nsa.AccessibilityChildren = ConvertToRealProxyArray (children);
+			parent.SetAccessibleChildren (children);
 		}
 
+		static readonly IntPtr selSetAccessibilityColumns_Handle = Selector.GetHandle ("setAccessibilityColumns:");
 		public static void SetColumns (this Atk.Object parent, AccessibilityElementProxy [] columns)
 		{
 			var nsa = GetNSAccessibilityElement (parent);
@@ -425,9 +433,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityColumns = ConvertToRealProxyArray (columns);
+			using (var array = columns.ConvertToRealProxyArray ()) {
+				nsa.SendSelector (selSetAccessibilityColumns_Handle, array);
+			}
 		}
 
+		static readonly IntPtr selSetAccessibilityRows_Handle = Selector.GetHandle ("setAccessibilityRows:");
 		public static void SetRows (this Atk.Object parent, AccessibilityElementProxy [] rows)
 		{
 			var nsa = GetNSAccessibilityElement (parent);
@@ -436,7 +447,9 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityRows = ConvertToRealProxyArray (rows);
+			using (var array = rows.ConvertToRealProxyArray ()) {
+				nsa.SendSelector (selSetAccessibilityRows_Handle, array);
+			}
 		}
 
 		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
@@ -460,34 +473,27 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			var children = nsa.AccessibilityChildren;
-
-			if (children == null || children.Length == 0) {
-				return;
-			}
-
 			var p = child.Proxy as RealAccessibilityElementProxy;
 			if (p == null) {
 				throw new Exception ($"Invalid proxy child type {p.GetType ()}");
 			}
 
-			var idx = children.IndexOf (p);
-			if (idx == -1) {
-				return;
-			}
+			var childrenHandle = Messaging.IntPtr_objc_msgSend (nsa.Handle, selAccessibilityChildren_Handle);
+			using (var array = Runtime.GetNSObject<NSArray> (childrenHandle)) {
+				if (array == null)
+					return;
 
-			var newChildren = new NSObject [children.Length - 1];
+				var nso = (NSObject)nsa;
+				var index = (nint)array.IndexOf (nso);
+				if (index == NSRange.NotFound)
+					return;
 
-			for (int i = 0, j = 0; i < children.Length; i++) {
-				if (i == idx) {
-					continue;
+				using (var copy = (NSMutableArray)array.MutableCopy ())
+				using (var set = NSIndexSet.FromIndex (index)) {
+					copy.RemoveObjectsAtIndexes (set);
+					nsa.SendSelector (selSetAccessibilityChildren_Handle, array);
 				}
-
-				newChildren [j] = children [i];
-				j++;
 			}
-
-			nsa.AccessibilityChildren = newChildren;
 		}
 
 		public static void TransferAccessibleChild (this Atk.Object from, Atk.Object to, Atk.Object child)
@@ -500,21 +506,28 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			var fromChildren = fromNsa.AccessibilityChildren;
+			var fromChildren = Messaging.IntPtr_objc_msgSend (fromNsa.Handle, selAccessibilityChildren_Handle);
+			using (var fromArray = Runtime.GetNSObject<NSArray> (fromChildren)) {
+				if (fromArray == null)
+					return;
 
-			if (fromChildren == null || fromChildren.Length == 0) {
-				return;
+				var nso = (NSObject)childNsa;
+				var index = (nint)fromArray.IndexOf (nso);
+				if (index != NSRange.NotFound) {
+					using (var copy = (NSMutableArray)fromArray.MutableCopy ())
+					using (var set = NSIndexSet.FromIndex (index)) {
+						copy.RemoveObjectsAtIndexes (set);
+						fromNsa.SendSelector (selSetAccessibilityChildren_Handle, copy);
+					}
+				}
 			}
 
-			var fromList = fromChildren.ToList ();
-			fromList.Remove ((NSObject) childNsa);
-			fromNsa.AccessibilityChildren = fromList.ToArray ();
-
-			var toChildren = toNsa.AccessibilityChildren;
-			List<NSObject> toList = toChildren == null ? new List<NSObject> () : toChildren.ToList ();
-
-			toList.Add ((NSObject)childNsa);
-			toNsa.AccessibilityChildren = toList.ToArray ();
+			var toChildren = Messaging.IntPtr_objc_msgSend (fromNsa.Handle, selAccessibilityChildren_Handle);
+			using (var toArray = Runtime.GetNSObject<NSArray> (toChildren))
+			using (var copy = toArray != null ? (NSMutableArray)toArray.MutableCopy () : new NSMutableArray (1)) {
+				copy.Add ((NSObject)childNsa);
+				toNsa.SendSelector (selSetAccessibilityChildren_Handle, copy);
+			}
 		}
 
 		public static void SetAccessibleChildren (this Atk.Object o, AccessibilityElementProxy [] children)
@@ -524,9 +537,13 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			nsa.AccessibilityChildren = ConvertToRealProxyArray (children);
+			using (var array = children.ConvertToRealProxyArray ()) {
+				nsa.SendSelector (selSetAccessibilityChildren_Handle, array);
+			}
 		}
 
+		static readonly IntPtr selAccessibilityLinkedUIElements_Handle = Selector.GetHandle ("accessibilityLinkedUIElements");
+		static readonly IntPtr selSetAccessibilityLinkedUIElements_Handle = Selector.GetHandle ("setAccessibilityLinkedUIElements:");
 		public static void AddLinkedUIElement (this Atk.Object o, Atk.Object linked)
 		{
 			var nsa = GetNSAccessibilityElement (o);
@@ -535,18 +552,12 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			var current = nsa.AccessibilityLinkedUIElements;
-			NSObject [] newLinkedElements;
-			if (current != null) {
-				int length = nsa.AccessibilityLinkedUIElements.Length;
-				newLinkedElements = new NSObject [length + 1];
-				Array.Copy (nsa.AccessibilityLinkedUIElements, newLinkedElements, length);
-				newLinkedElements [length] = (NSObject)linkedNSA;
-			} else {
-				newLinkedElements = new NSObject [] { (NSObject)linkedNSA };
+			var current = Messaging.IntPtr_objc_msgSend (nsa.Handle, selAccessibilityLinkedUIElements_Handle);
+			using (var array = Runtime.GetNSObject<NSArray> (current))
+			using (var copy = array != null ? (NSMutableArray)array.MutableCopy () : new NSMutableArray (1)) {
+				copy.Add ((NSObject)linkedNSA);
+				nsa.SendSelector (selSetAccessibilityLinkedUIElements_Handle, copy);
 			}
-
-			nsa.AccessibilityLinkedUIElements = newLinkedElements;
 		}
 
 		public static void AddLinkedUIElement (this Atk.Object o, params Atk.Object [] linked)
@@ -556,23 +567,15 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				return;
 			}
 
-			var current = nsa.AccessibilityLinkedUIElements;
-
-			int length = current != null ? current.Length : 0;
-			var newLinkedElements = new NSObject [length + linked.Length];
-
-			if (current != null) {
-				Array.Copy (current, newLinkedElements, length);
+			var current = Messaging.IntPtr_objc_msgSend (nsa.Handle, selAccessibilityLinkedUIElements_Handle);
+			using (var array = Runtime.GetNSObject<NSArray> (current))
+			using (var copy = array != null ? (NSMutableArray)array.MutableCopy () : new NSMutableArray ((nuint)linked.Length)) {
+				foreach (var e in linked) {
+					var nsaLinked = GetNSAccessibilityElement (e);
+					copy.Add ((NSObject)nsaLinked);
+				}
+				nsa.SendSelector (selSetAccessibilityLinkedUIElements_Handle, copy);
 			}
-
-			int idx = length;
-			foreach (var e in linked) {
-				var nsaLinked = GetNSAccessibilityElement (e);
-				newLinkedElements [idx] = (NSObject)nsaLinked;
-				idx++;
-			}
-
-			nsa.AccessibilityLinkedUIElements = newLinkedElements;
 		}
 
 		public static void MakeAccessibilityAnnouncement (this Atk.Object o,  string message)

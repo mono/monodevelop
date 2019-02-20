@@ -150,7 +150,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		#region Member Variables
-		const string homeUrl = "https://www.w3schools.com/xml/tempconvert.asmx?WSDL";
+		const string homeUrl = "https://www.w3schools.com/xml/tempconvert.asmx";
 		WebServiceDiscoveryResult selectedService;
 //		protected Gtk.Alignment frmBrowserAlign;
 		#endregion
@@ -637,52 +637,6 @@ namespace MonoDevelop.WebReferences.Dialogs
 			btnHome.Activated -= Browser_HomeButtonClicked;
 
 			base.OnDestroyed ();
-		}
-	}
-	
-	class AskCredentials: GuiSyncObject, ICredentials
-	{
-		static readonly Dictionary<string,NetworkCredential> credentials = new Dictionary<string, NetworkCredential> ();
-		
-		readonly Dictionary<string,NetworkCredential> tempCredentials = new Dictionary<string, NetworkCredential> ();
-		
-		public bool Canceled;
-		
-		public void Reset ()
-		{
-			tempCredentials.Clear ();
-		}
-		
-		public void Store ()
-		{
-			foreach (var creds in tempCredentials)
-				credentials [creds.Key] = creds.Value;
-		}
-		
-		public NetworkCredential GetCredential (Uri uri, string authType)
-		{
-			NetworkCredential nc;
-			if (tempCredentials.TryGetValue (uri.Host + uri.AbsolutePath, out nc))
-				return nc; // Exact match
-			
-			var dlg = new UserPasswordDialog (uri.Host);
-			if (tempCredentials.TryGetValue (uri.Host, out nc) || credentials.TryGetValue (uri.Host, out nc)) {
-				dlg.User = nc.UserName;
-				dlg.Password = nc.Password;
-			}
-			try {
-				if (MessageService.RunCustomDialog (dlg) == (int)ResponseType.Ok) {
-					nc = new NetworkCredential (dlg.User, dlg.Password);
-					tempCredentials [uri.Host + uri.AbsolutePath] = nc;
-					tempCredentials [uri.Host] = nc;
-					return nc;
-				}
-				Canceled = true;
-				return null;
-			} finally {
-				dlg.Destroy ();
-				dlg.Dispose ();
-			}
 		}
 	}
 }

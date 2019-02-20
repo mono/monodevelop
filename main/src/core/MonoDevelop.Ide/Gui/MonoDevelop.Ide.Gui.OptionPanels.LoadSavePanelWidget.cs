@@ -10,15 +10,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.VBox vbox18;
 		private global::Gtk.Label loadLabel;
 		private global::Gtk.HBox hbox14;
-		private global::Gtk.Label label25;
 		private global::Gtk.HBox hbox10;
 		private global::Gtk.VBox vbox65;
 		private global::Gtk.CheckButton loadUserDataCheckButton;
-		private global::Gtk.CheckButton loadPrevProjectCheckButton;
+		private global::Gtk.RadioButton openStartWindowRadioButton;
+		private global::Gtk.RadioButton loadPrevProjectRadioButton;
+		private global::Gtk.RadioButton emptyEnvironmentRadioButton;
 		private global::Gtk.VBox vbox19;
 		private global::Gtk.Label saveLabel;
 		private global::Gtk.HBox hbox11;
-		private global::Gtk.Label label21;
 		private global::Gtk.VBox vbox20;
 		private global::Gtk.CheckButton createBackupCopyCheckButton;
 
@@ -43,24 +43,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.locationLabel.Yalign = 0F;
 			this.locationLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Default _Solution location");
 			this.locationLabel.UseUnderline = true;
-			this.vbox26.Add (this.locationLabel);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox26 [this.locationLabel]));
-			w1.Position = 0;
-			w1.Expand = false;
-			w1.Fill = false;
+			this.vbox26.PackStart (this.locationLabel, false, false, 0);
+
 			// Container child vbox26.Gtk.Box+BoxChild
 			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderEntry.Name = "folderEntry";
 			this.folderEntry.DisplayAsRelativePath = false;
-			this.vbox26.Add (this.folderEntry);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox26 [this.folderEntry]));
-			w2.Position = 1;
-			w2.Expand = false;
-			w2.Fill = false;
-			this.vbox17.Add (this.vbox26);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox17 [this.vbox26]));
-			w3.Position = 0;
-			w3.Expand = false;
+			this.vbox26.PackStart (this.folderEntry, false, false, 0);
+			this.vbox17.PackStart (this.vbox26, false, false, 0);
 			// Container child vbox17.Gtk.Box+BoxChild
 			this.vbox18 = new global::Gtk.VBox ();
 			this.vbox18.Name = "vbox18";
@@ -72,26 +62,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.loadLabel.Yalign = 0F;
 			this.loadLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Load</b>");
 			this.loadLabel.UseMarkup = true;
-			this.vbox18.Add (this.loadLabel);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox18 [this.loadLabel]));
-			w4.Position = 0;
-			w4.Expand = false;
-			w4.Fill = false;
+			this.vbox18.PackStart (this.loadLabel, false, false, 0);
 			// Container child vbox18.Gtk.Box+BoxChild
 			this.hbox14 = new global::Gtk.HBox ();
 			this.hbox14.Name = "hbox14";
 			this.hbox14.Spacing = 6;
-			// Container child hbox14.Gtk.Box+BoxChild
-			this.label25 = new global::Gtk.Label ();
-			this.label25.Name = "label25";
-			this.label25.Xalign = 0F;
-			this.label25.Yalign = 0F;
-			this.label25.LabelProp = "    ";
-			this.hbox14.Add (this.label25);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox14 [this.label25]));
-			w5.Position = 0;
-			w5.Expand = false;
-			w5.Fill = false;
 			// Container child hbox14.Gtk.Box+BoxChild
 			this.hbox10 = new global::Gtk.HBox ();
 			this.hbox10.Name = "hbox10";
@@ -106,37 +81,59 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.loadUserDataCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Load user-specific settings with the document");
 			this.loadUserDataCheckButton.DrawIndicator = true;
 			this.loadUserDataCheckButton.UseUnderline = true;
-			this.vbox65.Add (this.loadUserDataCheckButton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.loadUserDataCheckButton]));
-			w6.Position = 0;
-			w6.Expand = false;
-			w6.Fill = false;
+			this.vbox65.PackStart (this.loadUserDataCheckButton, false, false, 0);
+
+			// Startup options
+			var startSectionVbox = new global::Gtk.VBox ();
+			startSectionVbox.Name = "startVbox";
+			startSectionVbox.Spacing = 6;
+
+			var startSectionLabel = new global::Gtk.Label ();
+			startSectionLabel.Name = "startSectionLabel";
+			startSectionLabel.Xalign = 0F;
+			startSectionLabel.Yalign = 0F;
+			startSectionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Start</b>");
+			startSectionLabel.UseMarkup = true;
+			startSectionVbox.PackStart (startSectionLabel, false, false, 0);
+
+			var startContentHbox = new global::Gtk.HBox ();
+			startSectionVbox.PackStart (startContentHbox, false, false, 0);
+
+			var startContentVbox = new global::Gtk.VBox ();
+			startContentVbox.Name = "startContentVbox";
+			startContentVbox.Spacing = 6;
+			startContentHbox.PackStart (startContentVbox, false, false, 24);
+
+			this.openStartWindowRadioButton = new global::Gtk.RadioButton ((global::Gtk.RadioButton) null) {
+				Name = "openStartWindowCheckButton",
+				Label = global::Mono.Unix.Catalog.GetString ("_Always show me the Start Window"),
+				DrawIndicator = true,
+				UseUnderline = true
+			};
+			startContentVbox.PackStart (this.openStartWindowRadioButton, false, false, 0);
+
 			// Container child vbox65.Gtk.Box+BoxChild
-			this.loadPrevProjectCheckButton = new global::Gtk.CheckButton ();
-			this.loadPrevProjectCheckButton.Name = "loadPrevProjectCheckButton";
-			this.loadPrevProjectCheckButton.Label = global::Mono.Unix.Catalog.GetString ("_Load previous solution on startup");
-			this.loadPrevProjectCheckButton.DrawIndicator = true;
-			this.loadPrevProjectCheckButton.UseUnderline = true;
-			this.vbox65.Add (this.loadPrevProjectCheckButton);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.loadPrevProjectCheckButton]));
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
-			this.hbox10.Add (this.vbox65);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox10 [this.vbox65]));
-			w8.Position = 0;
-			w8.Expand = false;
-			w8.Fill = false;
-			this.hbox14.Add (this.hbox10);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox14 [this.hbox10]));
-			w9.Position = 1;
-			this.vbox18.Add (this.hbox14);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox18 [this.hbox14]));
-			w10.Position = 1;
-			this.vbox17.Add (this.vbox18);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox17 [this.vbox18]));
-			w11.Position = 1;
-			w11.Expand = false;
+			this.loadPrevProjectRadioButton = new global::Gtk.RadioButton (this.openStartWindowRadioButton);
+			this.loadPrevProjectRadioButton.Name = "loadPrevProjectCheckButton";
+			this.loadPrevProjectRadioButton.Label = global::Mono.Unix.Catalog.GetString ("_Load previous solution on startup");
+			this.loadPrevProjectRadioButton.DrawIndicator = true;
+			this.loadPrevProjectRadioButton.UseUnderline = true;
+			startContentVbox.PackStart (this.loadPrevProjectRadioButton, false, false, 0);
+
+			this.emptyEnvironmentRadioButton = new global::Gtk.RadioButton (this.openStartWindowRadioButton) {
+				Name = "emptyEnvironmentCheckButton",
+				Label = global::Mono.Unix.Catalog.GetString ("_Show empty environment"),
+				DrawIndicator = true,
+				UseUnderline = true
+			};
+			startContentVbox.PackStart (this.emptyEnvironmentRadioButton, false, false, 0);
+
+			this.hbox10.PackStart (this.vbox65, false, false, 0);
+			this.hbox14.PackStart (this.hbox10, false, false, 24);
+			this.vbox18.PackStart (this.hbox14, false, false, 0);
+			this.vbox17.PackStart (startSectionVbox, false, false, 0);
+			this.vbox17.PackStart (this.vbox18, false, false, 0);
+
 			// Container child vbox17.Gtk.Box+BoxChild
 			this.vbox19 = new global::Gtk.VBox ();
 			this.vbox19.Name = "vbox19";
@@ -148,26 +145,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.saveLabel.Yalign = 0F;
 			this.saveLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Save</b>");
 			this.saveLabel.UseMarkup = true;
-			this.vbox19.Add (this.saveLabel);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox19 [this.saveLabel]));
-			w12.Position = 0;
-			w12.Expand = false;
-			w12.Fill = false;
+			this.vbox19.PackStart (this.saveLabel, false, false, 0);
 			// Container child vbox19.Gtk.Box+BoxChild
 			this.hbox11 = new global::Gtk.HBox ();
 			this.hbox11.Name = "hbox11";
 			this.hbox11.Spacing = 6;
-			// Container child hbox11.Gtk.Box+BoxChild
-			this.label21 = new global::Gtk.Label ();
-			this.label21.Name = "label21";
-			this.label21.Xalign = 0F;
-			this.label21.Yalign = 0F;
-			this.label21.LabelProp = "    ";
-			this.hbox11.Add (this.label21);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox11 [this.label21]));
-			w13.Position = 0;
-			w13.Expand = false;
-			w13.Fill = false;
 			// Container child hbox11.Gtk.Box+BoxChild
 			this.vbox20 = new global::Gtk.VBox ();
 			this.vbox20.Name = "vbox20";
@@ -178,20 +160,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.createBackupCopyCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Always create backup copy");
 			this.createBackupCopyCheckButton.DrawIndicator = true;
 			this.createBackupCopyCheckButton.UseUnderline = true;
-			this.vbox20.Add (this.createBackupCopyCheckButton);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox20 [this.createBackupCopyCheckButton]));
-			w14.Position = 0;
-			w14.Expand = false;
-			w14.Fill = false;
-			this.hbox11.Add (this.vbox20);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox11 [this.vbox20]));
-			w15.Position = 1;
-			this.vbox19.Add (this.hbox11);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox19 [this.hbox11]));
-			w16.Position = 1;
-			this.vbox17.Add (this.vbox19);
+			this.vbox20.PackStart (this.createBackupCopyCheckButton, false, false, 0);
+			this.hbox11.PackStart (this.vbox20, false, false, 24);
+			this.vbox19.PackStart (this.hbox11, false, false, 0);
+			this.vbox17.PackStart (this.vbox19, false, false, 0);
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox17 [this.vbox19]));
-			w17.Position = 2;
+			w17.Position = 3;
 			this.Add (this.vbox17);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

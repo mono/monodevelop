@@ -175,8 +175,10 @@ namespace MonoDevelop.Platform
 				CreateNoWindow = true,
 				UseShellExecute = false,
 			};
-			foreach (var env in environmentVariables)
-				psi.EnvironmentVariables [env.Key] = env.Value;
+			if (environmentVariables != null) {
+				foreach (var env in environmentVariables)
+					psi.EnvironmentVariables [env.Key] = env.Value;
+			}
 			
 			ProcessWrapper proc = new ProcessWrapper ();
 			if (terminal_command.Contains ("gnome-terminal")) {

@@ -1,4 +1,4 @@
-﻿//
+//
 // TextEditorViewContent.cs
 //
 // Author:
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			// Calling base class after initializing the editor extension chain
-			// so that it picks additional content from the extensionasdfas dfasdf asdf asdf asdf asdf sadfsaf
+			// so that it picks additional content from the extension
 			base.OnContentChanged ();
 		}
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Editor
 			if (textEditor != null) {
 				if (FilePath != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
 					AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-				textEditor.FileName = FilePath;
+				textEditor.FileName = FilePath; // TOTEST: VSTS #770920
 				if (documentContext != null)
 					textEditor.InitializeExtensionChain (documentContext);
 				UpdateTextEditorOptions (null, null);
@@ -372,8 +372,10 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#endregion
-	
 
-
+		protected override void OnGrabFocus ()
+		{
+			textEditor.GrabFocus ();
+		}
 	}
 }

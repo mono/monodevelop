@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			if (alreadyAddedReference.Any (reference => SystemAssemblyService.ContainsReferenceToSystemRuntime (reference))) {
+			if (alreadyAddedReference.Any (reference => SystemAssemblyService.RequiresFacadeAssembliesAsync (reference).WaitAndGetResult (monitor.CancellationToken))) {
 				LoggingService.LogInfo ("Found PCLv2 assembly.");
 				var facades = runtime.FindFacadeAssembliesForPCL (project.TargetFramework);
 				foreach (var facade in facades)

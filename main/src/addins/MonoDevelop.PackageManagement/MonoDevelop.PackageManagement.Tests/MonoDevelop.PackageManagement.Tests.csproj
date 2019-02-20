@@ -1,5 +1,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <ProjectGuid>{2645C9F3-9ED5-4806-AB09-DAD9BE90C67B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -70,6 +71,14 @@
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\..\packages\NuGet.Commands.4.8.0\lib\net46\NuGet.Commands.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\..\..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="Moq">
+      <HintPath>..\..\..\..\packages\Moq.4.7.145\lib\net45\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -183,6 +192,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageAssetSourceFilesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetAwareProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetSdkResolverTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetHttpSourceAuthenticationHandlerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\LambdaMessageHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestProxy.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\AssemblyReferenceWithConditionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectReferenceMaintainerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FullyQualifiedReferencePathTests.cs" />
@@ -212,6 +224,15 @@
       <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
       <Name>UnitTests</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

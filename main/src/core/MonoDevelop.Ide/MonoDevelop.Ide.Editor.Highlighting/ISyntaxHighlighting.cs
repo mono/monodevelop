@@ -61,6 +61,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			TextSegment = textSegment;
 			Segments = segments;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[HighlightedLine: TextSegment={0}, #Segments={1}, IsContinuedBeyondLineEnd={2}]", TextSegment, Segments?.Count, IsContinuedBeyondLineEnd);
+		}
 	}
 
 	/// <summary>

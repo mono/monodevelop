@@ -32,6 +32,7 @@ using Cairo;
 using Gtk;
 using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide;
@@ -258,7 +259,11 @@ namespace MonoDevelop.Components
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (hoverTab != null) {
-				ActiveTab = tabs.IndexOf (hoverTab);
+				try {
+					ActiveTab = tabs.IndexOf (hoverTab);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);	
+				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}

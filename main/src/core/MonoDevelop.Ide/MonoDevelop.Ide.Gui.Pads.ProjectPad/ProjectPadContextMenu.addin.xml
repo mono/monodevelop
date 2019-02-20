@@ -52,6 +52,9 @@
 	<Condition id="ItemType" value="Project">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
 	</Condition>
+	<Condition id="ItemType" value="Solution">
+		<CommandItem id="MonoDevelop.Ide.Commands.ProjectCommands.SetStartupProjects" />
+	</Condition>
 	<SeparatorItem id = "RunSectionEnd" />
 	
 	<!-- Publish section -->
@@ -151,7 +154,7 @@
 	</Condition>
 	<Condition id="ItemType" value="IBuildTarget">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
-	</Condition>
+	</Condition>	
 	<Condition id="ItemType" value="ProjectItem">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ShowProperties" />
 	</Condition>

@@ -66,17 +66,6 @@ namespace MonoDevelop.Xml.Completion
 		}
 		
 		/// <summary>
-		/// Creates completion data from the schema passed in 
-		/// via the reader object.
-		/// </summary>
-		[Obsolete ("Please pass in a TextReader instead")]
-		public XmlSchemaCompletionData(XmlTextReader reader)
-		{
-			reader.XmlResolver = new LocalOnlyXmlResolver ();
-			ReadSchema(reader);
-		}
-		
-		/// <summary>
 		/// Creates the completion data from the specified schema file.
 		/// </summary>
 		public XmlSchemaCompletionData (string fileName) : this (String.Empty, fileName)

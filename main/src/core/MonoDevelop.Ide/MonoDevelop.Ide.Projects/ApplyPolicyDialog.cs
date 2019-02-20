@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -59,6 +60,22 @@ namespace MonoDevelop.Ide.Projects
 			combPolicies.Active = 0;
 			OnRadioCustomToggled (null, null);
 			UpdateContentLabels ();
+
+			combPolicies.Accessible.Name = "ApplyPolicyDialog.PolicyCombo";
+			combPolicies.SetAccessibilityLabelRelationship (label2);
+			CombPolicies_Changed (null, null);
+			combPolicies.Changed += CombPolicies_Changed;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			combPolicies.Changed -= CombPolicies_Changed;
+			base.OnDestroyed ();
+		}
+
+		void CombPolicies_Changed (object sender, EventArgs e)
+		{
+			combPolicies.Accessible.Description = GettextCatalog.GetString ("Select policy, current: {0}", combPolicies.ActiveText);
 		}
 
 		protected void OnRadioCustomToggled (object sender, System.EventArgs e)
@@ -189,7 +206,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public PoliciesListSummaryTree () : base (new Gtk.ListStore (typeof (string)))
 		{
-			CanFocus = false;
+			CanFocus = true;
 			HeadersVisible = false;
 			store = (Gtk.ListStore) Model;
 			this.AppendColumn ("", new Gtk.CellRendererText (), "text", 0);
@@ -204,6 +221,8 @@ namespace MonoDevelop.Ide.Projects
 			var win = evnt.Window;
 			win.Clear ();
 			if (string.IsNullOrEmpty (message)) {
+				if (ShowEmptyItem)
+					return base.OnExposeEvent (evnt);
 				return true;
 			}
 			
@@ -233,7 +252,9 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 		}
-		
+
+		bool ShowEmptyItem { get; set; }
+
 		public void SetPolicies (PolicyContainer pset)
 		{
 			if (pset == null) {
@@ -279,6 +300,13 @@ namespace MonoDevelop.Ide.Projects
 			}
 			StringBuilderCache.Free (sb);
 			HasPolicies = sorted.Count > 0;
+			if (!HasPolicies) {
+				store.AppendValues (GettextCatalog.GetString ("No policies"));
+				ShowEmptyItem = true;
+			}
+			if (store.GetIterFirst (out var iter)) {
+				Selection.SelectIter (iter);
+			}
 		}
 	}
 }

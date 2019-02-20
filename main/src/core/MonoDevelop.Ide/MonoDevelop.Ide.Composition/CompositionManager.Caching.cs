@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Composition;
 using Mono.Addins;
@@ -52,18 +54,20 @@ namespace MonoDevelop.Ide.Composition
 		/// </summary>
 		internal class Caching
 		{
-			internal static bool writeCache;
 			readonly ICachingFaultInjector cachingFaultInjector;
 			Task saveTask;
-			public HashSet<Assembly> Assemblies { get; }
+			readonly HashSet<Assembly> loadedAssemblies;
+			public HashSet<Assembly> MefAssemblies { get; }
 			internal string MefCacheFile { get; }
 			internal string MefCacheControlFile { get; }
 
-			public Caching (HashSet<Assembly> assemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
+			public Caching (HashSet<Assembly> mefAssemblies, Func<string, string> getCacheFilePath = null, ICachingFaultInjector cachingFaultInjector = null)
 			{
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
 
-				Assemblies = assemblies;
+				loadedAssemblies = new HashSet<Assembly> (AppDomain.CurrentDomain.GetAssemblies ());
+
+				MefAssemblies = mefAssemblies;
 				MefCacheFile = getCacheFilePath ("mef-cache");
 				MefCacheControlFile = getCacheFilePath ("mef-cache-control");
 				this.cachingFaultInjector = cachingFaultInjector;
@@ -100,58 +104,77 @@ namespace MonoDevelop.Ide.Composition
 				if (!File.Exists (MefCacheControlFile) || !File.Exists (MefCacheFile))
 					return false;
 
-				using (var timer = Counters.CompositionCacheControl.BeginTiming ()) {
-					// Read the cache from disk
-					var serializer = new JsonSerializer ();
-					MefControlCache controlCache;
+				// Read the cache from disk
+				var serializer = new JsonSerializer ();
+				MefControlCache controlCache;
 
-					try {
-						using (var sr = File.OpenText (MefCacheControlFile)) {
-							controlCache = (MefControlCache)serializer.Deserialize (sr, typeof(MefControlCache));
-						}
-					} catch (Exception ex) {
-						LoggingService.LogError ("Could not deserialize MEF cache control", ex);
-						DeleteFiles ();
-						return false;
+				try {
+					using (var sr = File.OpenText (MefCacheControlFile)) {
+						controlCache = (MefControlCache)serializer.Deserialize (sr, typeof (MefControlCache));
 					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not deserialize MEF cache control", ex);
+					DeleteFiles ();
+					return false;
+				}
 
-					//this can return null (if the cache format changed?). clean up and start over.
-					if (controlCache == null) {
-						LoggingService.LogError ("MEF cache control deserialized as null");
-						DeleteFiles ();
-						return false;
-					}
+				//this can return null (if the cache format changed?). clean up and start over.
+				if (controlCache == null) {
+					LoggingService.LogError ("MEF cache control deserialized as null");
+					DeleteFiles ();
+					return false;
+				}
 
-					var currentAssemblies = new HashSet<string> (Assemblies.Select (asm => asm.Location));
-
+				try {
 					// Short-circuit on number of assemblies change
-					if (controlCache.AssemblyInfos.Length != currentAssemblies.Count)
+					if (controlCache.MefAssemblyInfos.Count != MefAssemblies.Count)
 						return false;
 
-					// Validate that the assemblies match and we have the same time stamps on them.
-					foreach (var assemblyInfo in controlCache.AssemblyInfos) {
-						cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
-						if (!currentAssemblies.Contains (assemblyInfo.Location))
-							return false;
+					if (!ValidateAssemblyCacheListIntegrity (MefAssemblies, controlCache.MefAssemblyInfos, cachingFaultInjector))
+						return false;
 
-						if (File.GetLastWriteTimeUtc (assemblyInfo.Location) != assemblyInfo.LastWriteTimeUtc)
-							return false;
-					}
+					if (!ValidateAssemblyCacheListIntegrity (loadedAssemblies, controlCache.AdditionalInputAssemblyInfos, cachingFaultInjector))
+						return false;
+				} catch (Exception e) {
+					LoggingService.LogError ("MEF cache validation failed", e);
+					return false;
 				}
 
 				return true;
 			}
 
-			internal Task Write (RuntimeComposition runtimeComposition, CachedComposition cacheManager)
+			static bool ValidateAssemblyCacheListIntegrity (HashSet<Assembly> assemblies, List<MefControlCacheAssemblyInfo> cachedAssemblyInfos, ICachingFaultInjector cachingFaultInjector)
+			{
+				var currentAssemblies = new Dictionary<string, Guid> (assemblies.Count);
+				foreach (var asm in assemblies) {
+					if (asm.IsDynamic)
+						continue;
+
+					currentAssemblies.Add (asm.Location, asm.ManifestModule.ModuleVersionId);
+				}
+
+				foreach (var assemblyInfo in cachedAssemblyInfos) {
+					cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
+
+					if (!currentAssemblies.TryGetValue (assemblyInfo.Location, out var mvid))
+						return false;
+
+					if (mvid != assemblyInfo.ModuleVersionId)
+						return false;
+				}
+				return true;
+			}
+
+			internal Task Write (RuntimeComposition runtimeComposition, ComposableCatalog catalog, CachedComposition cacheManager)
 			{
 				return Runtime.RunInMainThread (async () => {
 					IdeApp.Exiting += IdeApp_Exiting;
 
 					saveTask = Task.Run (async () => {
 						try {
-							await WriteMefCache (runtimeComposition, cacheManager);
+							await WriteMefCache (runtimeComposition, catalog, cacheManager);
 						} catch (Exception ex) {
-							LoggingService.LogError ("Failed to write MEF cache", ex);
+							LoggingService.LogInternalError ("Failed to write MEF cache", ex);
 						}
 					});
 					await saveTask;
@@ -161,10 +184,10 @@ namespace MonoDevelop.Ide.Composition
 				});
 			}
 
-			async Task WriteMefCache (RuntimeComposition runtimeComposition, CachedComposition cacheManager)
+			async Task WriteMefCache (RuntimeComposition runtimeComposition, ComposableCatalog catalog, CachedComposition cacheManager)
 			{
 				using (var timer = Counters.CompositionSave.BeginTiming ()) {
-					WriteMefCacheControl (timer);
+					WriteMefCacheControl (catalog, timer);
 
 					// Serialize the MEF cache.
 					using (var stream = File.Open (MefCacheFile, FileMode.Create)) {
@@ -173,14 +196,41 @@ namespace MonoDevelop.Ide.Composition
 				}
 			}
 
-			void WriteMefCacheControl (ITimeTracker timer)
+			void WriteMefCacheControl (ComposableCatalog catalog, ITimeTracker timer)
 			{
+				var mefAssemblyNames = new HashSet<string> ();
+				var mefAssemblyInfos = new List<MefControlCacheAssemblyInfo> ();
+
+				foreach (var assembly in MefAssemblies) {
+					mefAssemblyNames.Add (assembly.GetName ().ToString ());
+
+					mefAssemblyInfos.Add (new MefControlCacheAssemblyInfo {
+						Location = assembly.Location,
+						ModuleVersionId = assembly.ManifestModule.ModuleVersionId,
+					});
+				}
+
+				var additionalInputAssemblies = new List<MefControlCacheAssemblyInfo> ();
+				var loadedMap = loadedAssemblies.ToDictionary (x => x.GetName ().ToString (), x => x);
+
+				foreach (var asm in catalog.GetInputAssemblies ()) {
+					var assemblyName = asm.ToString ();
+					if (mefAssemblyNames.Contains (assemblyName))
+						continue;
+
+					bool found = loadedMap.TryGetValue (assemblyName, out var assembly);
+					System.Diagnostics.Debug.Assert (found);
+
+					additionalInputAssemblies.Add (new MefControlCacheAssemblyInfo {
+						Location = assembly.Location,
+						ModuleVersionId = assembly.ManifestModule.ModuleVersionId,
+					});
+				}
+
 				// Create cache control data.
 				var controlCache = new MefControlCache {
-					AssemblyInfos = Assemblies.Select (asm => new MefControlCacheAssemblyInfo {
-						Location = asm.Location,
-						LastWriteTimeUtc = File.GetLastWriteTimeUtc (asm.Location),
-					}).ToArray (),
+					MefAssemblyInfos = mefAssemblyInfos,
+					AdditionalInputAssemblyInfos = additionalInputAssemblies,
 				};
 
 				var serializer = new JsonSerializer ();
@@ -197,7 +247,10 @@ namespace MonoDevelop.Ide.Composition
 		class MefControlCache
 		{
 			[JsonRequired]
-			public MefControlCacheAssemblyInfo [] AssemblyInfos;
+			public List<MefControlCacheAssemblyInfo> MefAssemblyInfos;
+
+			[JsonRequired]
+			public List<MefControlCacheAssemblyInfo> AdditionalInputAssemblyInfos;
 		}
 
 		[Serializable]
@@ -207,7 +260,7 @@ namespace MonoDevelop.Ide.Composition
 			public string Location;
 
 			[JsonRequired]
-			public DateTime LastWriteTimeUtc;
+			public Guid ModuleVersionId;
 		}
 	}
 }

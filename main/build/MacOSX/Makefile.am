@@ -27,20 +27,13 @@ EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCES = monostub-utils.h
 
-all: monostub monostub-nogui monostub-test libsystemnative.dylib
+all: monostub monostub-nogui monostub-test
 
 render.exe: render.cs
 	mcs -r:System.Drawing render.cs
 
 dmg: render.exe app
 	./make-dmg-bundle.sh
-
-System_Native.o: System_Native.cpp
-	g++ -std=c++14 -c -Wall -mmacosx-version-min=10.10 -o $@ $^
-
-libsystemnative.dylib: System_Native.o
-	clang++ -dynamiclib -undefined dynamic_lookup $^ -o $@
-	cp $@ ../bin
 
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
 	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm

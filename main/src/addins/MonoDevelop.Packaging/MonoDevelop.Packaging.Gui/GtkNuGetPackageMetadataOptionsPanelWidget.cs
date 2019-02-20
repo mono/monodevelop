@@ -42,6 +42,8 @@ namespace MonoDevelop.Packaging.Gui
 		NuGetPackageMetadata metadata;
 		bool projectOriginallyHadMetadata;
 		bool hasPackageId;
+		List<CultureInfo> languages;
+		ListStore languagesListStore;
 
 		public GtkNuGetPackageMetadataOptionsPanelWidget ()
 		{
@@ -58,85 +60,68 @@ namespace MonoDevelop.Packaging.Gui
 			packageReleaseNotesPaddingLabel.Accessible.Role = Atk.Role.Filler;
 
 			packageIdTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.ID",
-			                                                   GettextCatalog.GetString ("ID"),
-			                                                   GettextCatalog.GetString ("Enter the ID of the NuGet package"));
-			packageIdTextBox.SetAccessibilityLabelRelationship (packageIdLabel);
+				packageIdLabel,
+				GettextCatalog.GetString ("Enter the ID of the NuGet package"));
 
 			packageVersionTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Version",
-			                                                        GettextCatalog.GetString ("Version"),
-			                                                        GettextCatalog.GetString ("Enter the version of the NuGet package"));
-			packageVersionTextBox.SetAccessibilityLabelRelationship (packageVersionLabel);
+				packageVersionLabel,
+				GettextCatalog.GetString ("Enter the version of the NuGet package"));
 
 			packageAuthorsTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Authors",
-			                                                        GettextCatalog.GetString ("Authors"),
-			                                                        GettextCatalog.GetString ("Enter the authors of the NuGet package"));
-			packageAuthorsTextBox.SetAccessibilityLabelRelationship (packageAuthorsLabel);
+				packageAuthorsLabel,
+				GettextCatalog.GetString ("Enter the authors of the NuGet package"));
 
 			packageDescriptionTextView.SetCommonAccessibilityAttributes ("NuGetMetadata.Description",
-			                                                             GettextCatalog.GetString ("Description"),
-			                                                             GettextCatalog.GetString ("Enter the description of the NuGet package"));
-			packageDescriptionTextView.SetAccessibilityLabelRelationship (packageDescriptionLabel);
+				packageDescriptionLabel,
+				GettextCatalog.GetString ("Enter the description of the NuGet package"));
 
 			packageOwnersTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Owners",
-			                                                       GettextCatalog.GetString ("Owners"),
-			                                                       GettextCatalog.GetString ("Enter the owners of the NuGet package"));
-			packageOwnersTextBox.SetAccessibilityLabelRelationship (packageOwnersLabel);
+				packageOwnersLabel,
+				GettextCatalog.GetString ("Enter the owners of the NuGet package"));
 
 			packageCopyrightTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Copyright",
-			                                                          GettextCatalog.GetString ("Copyright"),
-			                                                          GettextCatalog.GetString ("Enter the copyright statement for the NuGet package"));
-			packageCopyrightTextBox.SetAccessibilityLabelRelationship (packageCopyrightLabel);
+				packageCopyrightLabel,
+				GettextCatalog.GetString ("Enter the copyright statement for the NuGet package"));
 
 			packageTitleTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Title",
-			                                                      GettextCatalog.GetString ("Title"),
-			                                                      GettextCatalog.GetString ("Enter the title of the NuGet package"));
-			packageTitleTextBox.SetAccessibilityLabelRelationship (packageTitleLabel);
+				packageTitleLabel,
+				GettextCatalog.GetString ("Enter the title of the NuGet package"));
 
 			packageSummaryTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Summary",
-			                                                        GettextCatalog.GetString ("Summary"),
-			                                                        GettextCatalog.GetString ("Enter the summary for the NuGet package"));
-			packageSummaryTextBox.SetAccessibilityLabelRelationship (packageSummaryLabel);
+				packageSummaryLabel,
+				GettextCatalog.GetString ("Enter the summary for the NuGet package"));
 
 			packageProjectUrlTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.URL",
-			                                                           GettextCatalog.GetString ("Project URL"),
-			                                                           GettextCatalog.GetString ("Enter the project URL for the NuGet package"));
-			packageProjectUrlTextBox.SetAccessibilityLabelRelationship (packageProjectUrlLabel);
+				packageProjectUrlLabel,
+				GettextCatalog.GetString ("Enter the project URL for the NuGet package"));
 
 			packageIconUrlTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Icon",
-			                                                        GettextCatalog.GetString ("Icon URL"),
-			                                                        GettextCatalog.GetString ("Enter the URL for the NuGet package's icon"));
-			packageIconUrlTextBox.SetAccessibilityLabelRelationship (packageIconUrlLabel);
+				packageIconUrlLabel,
+				GettextCatalog.GetString ("Enter the URL for the NuGet package's icon"));
 
 			packageLicenseUrlTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.licence",
-			                                                           GettextCatalog.GetString ("License URL"),
-			                                                           GettextCatalog.GetString ("Enter the URL for the NuGet package's license"));
-			packageLicenseUrlTextBox.SetAccessibilityLabelRelationship (packageLicenseUrlLabel);
+				packageLicenseUrlLabel,
+				GettextCatalog.GetString ("Enter the URL for the NuGet package's license"));
 
 			packageRequireLicenseAcceptanceCheckBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Acceptance",
-			                                                                          GettextCatalog.GetString ("Require License Acceptance"),
-			                                                                          GettextCatalog.GetString ("Check to require the user to accept the NuGet package's license"));
-			packageRequireLicenseAcceptanceCheckBox.SetAccessibilityLabelRelationship (packageRequireLicenseAcceptanceLabel);
+				packageRequireLicenseAcceptanceLabel,
+				GettextCatalog.GetString ("Check to require the user to accept the NuGet package's license"));
 
 			packageDevelopmentDependencyCheckBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Development",
-			                                                                       GettextCatalog.GetString ("Development Dependency"),
-			                                                                       GettextCatalog.GetString ("Check to indicate that this is a development dependency"));
-			packageDevelopmentDependencyCheckBox.SetAccessibilityLabelRelationship (packageDevelopmentDependencyLabel);
+				packageDevelopmentDependencyLabel,
+				GettextCatalog.GetString ("Check to indicate that this is a development dependency"));
 
 			packageTagsTextBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Tags",
-			                                                     GettextCatalog.GetString ("Tags"),
-			                                                     GettextCatalog.GetString ("Enter the tags for this NuGet package"));
-			packageTagsTextBox.SetAccessibilityLabelRelationship (packageTagsLabel);
+				packageTagsLabel,
+				GettextCatalog.GetString ("Enter the tags for this NuGet package"));
 
 			packageLanguageComboBox.SetCommonAccessibilityAttributes ("NuGetMetadata.Language",
-			                                                          GettextCatalog.GetString ("Language"),
-			                                                          GettextCatalog.GetString ("Select the language for this NuGet package"));
-			packageLanguageComboBox.SetAccessibilityLabelRelationship (packageLanguageLabel);
+				packageLanguageLabel,
+				GettextCatalog.GetString ("Select the language for this NuGet package"));
 
 			packageReleaseNotesTextView.SetCommonAccessibilityAttributes ("NuGetMetadata.ReleaseNotes",
-			                                                              GettextCatalog.GetString ("Release Notes"),
-			                                                              GettextCatalog.GetString ("Enter the release notes for this NuGet package"));
-			packageReleaseNotesTextView.SetAccessibilityLabelRelationship (packageReleaseNotesLabel);
-
+				packageReleaseNotesLabel,
+				GettextCatalog.GetString ("Enter the release notes for this NuGet package"));
 		}
 
 		internal static System.Action<bool> OnProjectHasMetadataChanged;
@@ -168,7 +153,7 @@ namespace MonoDevelop.Packaging.Gui
 			packageCopyrightTextBox.Text = GetTextBoxText (metadata.Copyright);
 			packageDevelopmentDependencyCheckBox.Active = metadata.DevelopmentDependency;
 			packageIconUrlTextBox.Text = GetTextBoxText (metadata.IconUrl);
-			packageLanguageComboBox.Entry.Text = GetTextBoxText (metadata.Language);
+			LoadLanguage (metadata.Language);
 			packageLicenseUrlTextBox.Text = GetTextBoxText (metadata.LicenseUrl);
 			packageOwnersTextBox.Text = GetTextBoxText (metadata.Owners);
 			packageProjectUrlTextBox.Text = GetTextBoxText (metadata.ProjectUrl);
@@ -182,6 +167,35 @@ namespace MonoDevelop.Packaging.Gui
 		static string GetTextBoxText (string text)
 		{
 			return text ?? string.Empty;
+		}
+
+		void LoadLanguage (string language)
+		{
+			if (string.IsNullOrEmpty (language)) {
+				packageLanguageComboBox.Active = 0;
+				return;
+			}
+
+			int index = GetLanguageIndex (language);
+			if (index >= 0) {
+				packageLanguageComboBox.Active = index + 1;
+				return;
+			}
+
+			// Language does not match so we need to add it to the combo box.
+			TreeIter iter = languagesListStore.AppendValues (language);
+			packageLanguageComboBox.SetActiveIter (iter);
+		}
+
+		int GetLanguageIndex (string language)
+		{
+			for (int i = 0; i < languages.Count; ++i) {
+				CultureInfo culture = languages [i];
+				if (string.Equals (culture.Name, language, StringComparison.OrdinalIgnoreCase)) {
+					return i;
+				}
+			}
+			return -1;
 		}
 
 		internal void Save (PackagingProject project)
@@ -220,7 +234,7 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Copyright = packageCopyrightTextBox.Text;
 			metadata.DevelopmentDependency = packageDevelopmentDependencyCheckBox.Active;
 			metadata.IconUrl = packageIconUrlTextBox.Text;
-			metadata.Language = packageLanguageComboBox.Entry.Text;
+			metadata.Language = GetSelectedLanguage ();
 			metadata.LicenseUrl = packageLicenseUrlTextBox.Text;
 			metadata.Owners = packageOwnersTextBox.Text;
 			metadata.ProjectUrl = packageProjectUrlTextBox.Text;
@@ -231,20 +245,49 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Title = packageTitleTextBox.Text;
 		}
 
+		string GetSelectedLanguage ()
+		{
+			if (packageLanguageComboBox.Active == 0) {
+				// 'None' selected.
+				return string.Empty;
+			}
+
+			int languageIndex = packageLanguageComboBox.Active - 1;
+			if (languageIndex < languages.Count) {
+				return languages [languageIndex].Name;
+			}
+
+			// No match for language so just return the combo box text.
+			return packageLanguageComboBox.ActiveText;
+		}
+
 		void PopulateLanguages ()
 		{
-			var languagesListStore = new ListStore (typeof (string));
+			languagesListStore = new ListStore (typeof (string));
 			packageLanguageComboBox.Model = languagesListStore;
 
-			List<string> languages = CultureInfo.GetCultures(CultureTypes.AllCultures)
-				.Select (c => c.Name)
-				.ToList ();
+			languages = new List<CultureInfo> ();
 
-			languages.Sort ();
-
-			foreach (string language in languages) {
-				languagesListStore.AppendValues (language);
+			foreach (CultureInfo culture in CultureInfo.GetCultures (CultureTypes.AllCultures)) {
+				if (!string.IsNullOrEmpty (culture.Name)) {
+					languages.Add (culture);
+				}
 			}
+
+			languages.Sort (CompareLanguages);
+
+			languagesListStore.AppendValues (GettextCatalog.GetString ("None"));
+
+			foreach (CultureInfo language in languages) {
+				languagesListStore.AppendValues (language.DisplayName);
+			}
+
+			packageLanguageComboBox.Active = 0;
+		}
+
+		static int CompareLanguages (CultureInfo x, CultureInfo y)
+		{
+			return string.Compare (x.DisplayName, y.DisplayName, StringComparison.CurrentCulture);
 		}
 
 		bool ProjectHasMetadata ()

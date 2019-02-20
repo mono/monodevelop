@@ -9,7 +9,7 @@
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
     <UsePartialTypes>False</UsePartialTypes>
-    <RestorePackages>true</RestorePackages>
+    <RestorePackages>False</RestorePackages>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <SignAssembly>true</SignAssembly>

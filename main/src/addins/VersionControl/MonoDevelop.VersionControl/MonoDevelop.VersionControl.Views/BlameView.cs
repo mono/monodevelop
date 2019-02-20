@@ -28,6 +28,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Documents;
+using System;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -60,19 +62,30 @@ namespace MonoDevelop.VersionControl.Views
 
 			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
-				var loc = buffer.CaretLocation;
-				int line = loc.Line < 1 ? 1 : loc.Line;
-				int column = loc.Column < 1 ? 1 : loc.Column;
-				widget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
+				if (!(buffer.TextView is MonoTextEditor)) {
+					//compatibility for other not MonoTextEditor editors
+					var loc = buffer.CaretLocation;
+					int line = loc.Line < 1 ? 1 : loc.Line;
+					int column = loc.Column < 1 ? 1 : loc.Column;
+					widget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
+				}
 			}
 		}
 
 		protected override void OnDeselected ()
 		{
-			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> () ;
 			if (buffer != null) {
-				buffer.SetCaretLocation (widget.Editor.Caret.Line, widget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
-				buffer.ScrollTo (new Ide.Editor.DocumentLocation (widget.Editor.YToLine (widget.Editor.VAdjustment.Value), 1));
+				if (buffer.TextView is MonoTextEditor exEditor) {
+					if (widget.Revision == null)
+						exEditor.Document.UpdateFoldSegments (widget.Editor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
+					exEditor.SetCaretTo (widget.Editor.Caret.Line, widget.Editor.Caret.Column);
+					exEditor.VAdjustment.Value = widget.Editor.VAdjustment.Value;
+				} else {
+					//compatibility for other not MonoTextEditor editors
+					buffer.ScrollTo (new Ide.Editor.DocumentLocation (widget.Editor.YToLine (widget.Editor.VAdjustment.Value), 1));
+					buffer.SetCaretLocation (widget.Editor.Caret.Line, widget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
+				}
 			}
 		}
 

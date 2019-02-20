@@ -40,6 +40,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 
 using System.Xml;
+using System.Runtime.Remoting;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -58,6 +59,8 @@ namespace MonoDevelop.Components.AutoTest
 			set { SessionDebug.DebugObject = value; }
 		}
 
+		readonly List<AppQuery> queries = new List<AppQuery> ();
+
 		public AutoTestSession ()
 		{
 		}
@@ -65,6 +68,40 @@ namespace MonoDevelop.Components.AutoTest
 		public override object InitializeLifetimeService ()
 		{
 			return null;
+		}
+
+		~AutoTestSession()
+		{
+			Dispose (false);
+		}
+
+		public void Dispose()
+		{
+			GC.SuppressFinalize (this);
+			Dispose (true);
+		}
+
+		public void DisconnectQueries()
+		{
+			lock (queries) {
+				foreach (var query in queries) {
+					RemotingServices.Disconnect (query);
+					query.Dispose ();
+				}
+				queries.Clear ();
+			}
+		}
+
+		bool disposed;
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposed)
+				return;
+
+			disposed = true;
+			RemotingServices.Disconnect (this);
+
+			DisconnectQueries ();
 		}
 
 		[Serializable]
@@ -334,6 +371,8 @@ namespace MonoDevelop.Components.AutoTest
 			AppQuery query = new AppQuery ();
 			query.SessionDebug = SessionDebug;
 
+			lock (queries)
+				queries.Add (query);
 			return query;
 		}
 

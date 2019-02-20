@@ -62,7 +62,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler<Gtk.TargetEntry []> DragSourceSet;
 		public event EventHandler ContentFocused;
 
-		public ItemToolboxNode selectedNode;
+		public ItemToolboxNode SelectedNode => toolboxWidget.SelectedItem?.Node;
 
 		NativeViews.ToggleButton catToggleButton;
 		NativeViews.ToggleButton compactModeToggleButton;
@@ -180,7 +180,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			filterEntry.Changed += FilterEntry_Changed;
 
-			toolboxWidget.SelectedItemChanged += ToolboxWidget_SelectedItemChanged;
 			toolboxWidget.DragBegin += ToolboxWidget_DragBegin;
 			toolboxWidget.MouseDownActivated += ToolboxWidget_MouseDownActivated;
 			toolboxWidget.ActivateSelectedItem += ToolboxWidget_ActivateSelectedItem;
@@ -205,15 +204,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Refresh ();
 		}
 
-		void ToolboxWidget_SelectedItemChanged (object sender, EventArgs e)
-		{
-			selectedNode = this.toolboxWidget.SelectedItem != null ? this.toolboxWidget.SelectedItem.Tag as ItemToolboxNode : null;
-			toolboxService.SelectItem (selectedNode);
-		}
-
 		void ToolboxWidget_ActivateSelectedItem (object sender, EventArgs e)
 		{
-			toolboxService.UseSelectedItem ();
+			var selectedNode = SelectedNode;
+			if (selectedNode != null) {
+				DesignerSupport.Service.ToolboxService.SelectItem (selectedNode);
+				toolboxService.UseSelectedItem ();
+			}
 		}
 
 		void FilterEntry_Changed (object sender, EventArgs e)
@@ -438,16 +435,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
 		internal void OnDeleteItem ()
 		{
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the selected Item?"), AlertButton.Delete))
-				toolboxService.RemoveUserItem (selectedNode);
+			var selectedNode = SelectedNode;
+			if (selectedNode != null) {
+				if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the selected Item?"), AlertButton.Delete))
+					toolboxService.RemoveUserItem (SelectedNode);
+			}
 		}
 
 		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
 		internal void OnUpdateDeleteItem (CommandInfo info)
 		{
+			var selectedNode = SelectedNode;
 			// Hack manually filter out gtk# widgets & container since they cannot be re added
 			// because they're missing the toolbox attributes.
-			info.Enabled = selectedNode != null
+			info.Enabled = selectedNode != null && toolboxService.CanRemoveUserItem (selectedNode)
 				&& (selectedNode.ItemDomain != GtkWidgetDomain
 					|| (selectedNode.Category != "Widgets" && selectedNode.Category != "Container"));
 		}
@@ -540,7 +541,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				toolboxAddButton.Activated -= ToolboxAddButton_Clicked;
 				toolboxAddButton.Focused -= ToolboxAddButton_Focused;
 
-				toolboxWidget.SelectedItemChanged -= ToolboxWidget_SelectedItemChanged;
 				toolboxWidget.ActivateSelectedItem -= ToolboxWidget_ActivateSelectedItem;
 				toolboxWidget.MenuOpened -= ToolboxWidget_MenuOpened;
 				toolboxWidget.MouseDownActivated -= ToolboxWidget_MouseDownActivated;
@@ -560,12 +560,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		object IPropertyPadProvider.GetActiveComponent ()
 		{
-			return selectedNode;
+			return SelectedNode;
 		}
 
 		object IPropertyPadProvider.GetProvider ()
 		{
-			return selectedNode;
+			return SelectedNode;
 		}
 
 		void IPropertyPadProvider.OnEndEditing (object obj)

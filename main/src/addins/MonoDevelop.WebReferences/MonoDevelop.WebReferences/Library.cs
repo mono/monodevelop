@@ -18,14 +18,14 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Read the service description for a specified uri.</summary>
 		/// <param name="uri">A string containing the unique reference identifier for the service.</param>
 		/// <returns>A ServiceDescription for the specified uri.</returns>
+		[Obsolete]
 		public static ServiceDescription ReadServiceDescription(string uri) 
 		{
 			var desc = new ServiceDescription();
 			try 
 			{
-				var request = (HttpWebRequest)WebRequest.Create(uri);
-				WebResponse response  = request.GetResponse();
-			
+				WebResponse response = WebRequestHelper.GetResponse (() => (HttpWebRequest)WebRequest.Create (uri));
+
 				desc = ServiceDescription.Read(response.GetResponseStream());
 				response.Close();
 				desc.RetrievalUrl = uri;

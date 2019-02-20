@@ -29,9 +29,6 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using System.Linq;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -39,7 +36,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public static void Show ()
 		{
-			WelcomePageService.ShowWelcomePageOrWindow (options: new WelcomeWindowShowOptions (false));
+			WelcomePageService.ShowWelcomePageOrWindow (options: new WelcomeWindowShowOptions (false, true));
 		}
 		
 		protected override void Run()

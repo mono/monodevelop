@@ -40,7 +40,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		IEnumerable<ToolboxWidgetCategory> Categories { get; }
 		IEnumerable<ToolboxWidgetItem> AllItems { get; }
 
-		event EventHandler SelectedItemChanged;
 		event EventHandler ActivateSelectedItem;
 
 		void AddCategory (ToolboxWidgetCategory category);

@@ -46,8 +46,8 @@
     <Reference Include="Microsoft.VisualStudio.Composition, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.6.36\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.6.46\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.Threading, Version=15.8.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.8.209\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
@@ -135,6 +135,7 @@
     <Reference Include="YamlDotNet">
       <HintPath>..\..\..\packages\YamlDotNet.Signed.5.2.1\lib\net45\YamlDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -4276,6 +4277,9 @@
     <Compile Include="MonoDevelop.Ide.Extensions\StartupInfo.cs" />
     <Compile Include="MonoDevelop.Ide\IdeServices.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskSeverity.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewSolutionRunConfigurationDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />

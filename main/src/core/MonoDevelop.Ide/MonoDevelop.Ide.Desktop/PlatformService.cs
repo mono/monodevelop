@@ -59,13 +59,6 @@ namespace MonoDevelop.Ide.Desktop
 
 		public abstract string Name { get; }
 
-		[Obsolete]
-		public virtual string DefaultControlLeftRightBehavior {
-			get {
-				return "MonoDevelop";
-			}
-		}
-
 		public virtual void Initialize ()
 		{
 		}
@@ -503,6 +496,25 @@ namespace MonoDevelop.Ide.Desktop
 
 		internal virtual void SetMainWindowDecorations (Gtk.Window window)
 		{
+		}
+
+		public virtual Window GetParentForModalWindow ()
+		{
+			foreach (var w in Gtk.Window.ListToplevels ())
+				if (w.Visible && w.HasToplevelFocus && w.Modal)
+					return w;
+
+			return GetFocusedTopLevelWindow ();
+		}
+
+		public virtual Window GetFocusedTopLevelWindow ()
+		{
+			// use the first "normal" toplevel window (skipping docks, popups, etc.) or the main IDE window
+			Window gtkToplevel = Gtk.Window.ListToplevels ().FirstOrDefault (w => w.Visible && w.HasToplevelFocus &&
+																(w.TypeHint == Gdk.WindowTypeHint.Dialog ||
+																 w.TypeHint == Gdk.WindowTypeHint.Normal ||
+																 w.TypeHint == Gdk.WindowTypeHint.Utility));
+			return gtkToplevel ?? IdeApp.Workbench.RootWindow;
 		}
 
 		public virtual void FocusWindow (Window window)

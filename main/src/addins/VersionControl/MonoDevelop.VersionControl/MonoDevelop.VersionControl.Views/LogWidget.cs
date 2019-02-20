@@ -36,6 +36,7 @@ using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Fonts;
+using Humanizer;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -368,7 +369,9 @@ namespace MonoDevelop.VersionControl.Views
 			doc?.GetContent<VersionControlDocumentController> ()?.ShowDiffView (SelectedRevision.GetPrevious (), SelectedRevision, line);
 		}
 
+		const int colFile = 3;
 		const int colOperation = 4;
+		const int colOperationText = 1;
 		const int colPath = 5;
 		const int colDiff = 6;
 		
@@ -497,21 +500,15 @@ namespace MonoDevelop.VersionControl.Views
 		
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			CellRendererText renderer = (CellRendererText)cell;
-			var rev = (Revision)model.GetValue (iter, 0);
-			string day;
-
+			var renderer = (CellRendererText)cell;
+			var revision = (Revision)model.GetValue (iter, 0);
 			// Grab today's day and the start of tomorrow's day to make Today/Yesterday calculations.
 			var now = DateTime.Now;
-			var age = new DateTime (now.Year, now.Month, now.Day).AddDays(1) - rev.Time;
-			if (age.Days >= 0 && age.Days < 1) { // Check whether it's a commit that's less than a day away. Also discard future commits.
-				day = GettextCatalog.GetString ("Today");
-			} else if (age.Days < 2) { // Check whether it's a commit from yesterday.
-				day = GettextCatalog.GetString ("Yesterday");
-			} else {
-				day = rev.Time.ToShortDateString ();
-			}
-			renderer.Text = string.Format ("{0} {1:HH:mm}", day, rev.Time);
+			var age = new DateTime (now.Year, now.Month, now.Day).AddDays (1) - revision.Time;
+
+			renderer.Text = age.Days >= 2 ?
+				revision.Time.ToShortDateString () :
+				revision.Time.Humanize (utcDate: false, dateToCompareAgainst: now);
 		}	
 		
 		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -777,16 +774,60 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		internal string DiffText {
-			get {
-				TreeIter iter;
-				if (treeviewFiles.Selection.GetSelected (out iter)) {
-					string [] items = changedpathstore.GetValue (iter, colDiff) as string [];
-					if (items != null)
-						return String.Join (Environment.NewLine, items);
+		internal string GetSelectedText ()
+		{
+			if (treeviewFiles.HasFocus ) {
+				if (treeviewFiles.Selection.GetSelected (out var iter)) {
+					if (changedpathstore.GetValue (iter, colDiff) is string [] items) {
+						return string.Join (Environment.NewLine, items);
+					}
+					if (changedpathstore.GetValue (iter, colFile) is string file) {
+						var path = changedpathstore.GetValue (iter, colPath) as string;
+						var operation = changedpathstore.GetValue (iter, colOperationText) as string;
+						return string.Format ("{0}, {1}, {2}", file, operation, path);
+					}
 				}
-				return null;
 			}
+
+			if (treeviewLog.HasFocus) {
+				if (treeviewLog.Selection.GetSelected (out var iter)) {
+					if (logstore.GetValue (iter, 0) is Revision revision) {
+						return string.Format ("{0}, {1}, {2}", revision.ShortMessage, revision.Time, revision.Author);
+					}
+				}
+			}
+
+			if (textviewDetails.HasFocus) {
+				textviewDetails.Buffer.GetSelectionBounds (out var A, out var B);
+				var result = textviewDetails.Buffer.GetText (A, B, true);
+				if (!string.IsNullOrEmpty (result)) {
+					return result;
+				}
+			}
+
+			int start, end;
+			if (labelDate.HasFocus) {
+				labelDate.GetSelectionBounds (out start, out end);
+				if (start != end) {
+					return labelDate.Text.Substring (start, end - start);
+				}
+			}
+
+			if (labelAuthor.HasFocus) {
+				labelAuthor.GetSelectionBounds (out start, out end);
+				if (start != end) {
+					return labelAuthor.Text.Substring (start, end - start);
+				}
+			}
+
+			if (labelRevision.HasFocus) {
+				labelRevision.GetSelectionBounds (out start, out end);
+				if (start != end) {
+					return labelRevision.Text.Substring (start, end - start);
+				}
+			}
+		
+			return null;
 		}
 	}
 }

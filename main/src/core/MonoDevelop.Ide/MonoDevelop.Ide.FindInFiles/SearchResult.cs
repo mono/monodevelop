@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		const int maximumMarkupLength = 78;
 
-		void CreateMarkup (SearchResultWidget widget, TextEditor doc, Editor.IDocumentLine line)
+		async void CreateMarkup (SearchResultWidget widget, TextEditor doc, Editor.IDocumentLine line)
 		{
 			int startIndex = 0, endIndex = 0;
 
@@ -175,35 +175,31 @@ namespace MonoDevelop.Ide.FindInFiles
 			markup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, searchColor), trimStart, trimEnd, tabSize);
 			selectedMarkup = FormatMarkup (PangoHelper.ColorMarkupBackground (selectedMarkup, (int)startIndex, (int)endIndex, selectedSearchColor), trimStart, trimEnd, tabSize);
 
-			Task.Run (delegate {
-				var newMarkup = doc.GetMarkup (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
-				Runtime.RunInMainThread (delegate {
-					newMarkup = widget.AdjustColors (newMarkup);
+			var newMarkup = await doc.GetMarkupAsync (line.Offset + markupStartOffset + indent, length, new MarkupOptions (MarkupFormat.Pango));
+			newMarkup = widget.AdjustColors (newMarkup);
 
-					try {
-						double delta = Math.Abs (b1 - b2);
-						if (delta < 0.1) {
-							var color1 = SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.FindHighlight);
-							if (color1.L + 0.5 > 1.0) {
-								color1.L -= 0.5;
-							} else {
-								color1.L += 0.5;
-							}
-							searchColor = color1;
-						}
-						if (startIndex != endIndex) {
-							newMarkup = PangoHelper.ColorMarkupBackground (newMarkup, (int)startIndex, (int)endIndex, searchColor);
-						}
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while setting the text renderer markup to: " + newMarkup, e);
+			try {
+				double delta = Math.Abs (b1 - b2);
+				if (delta < 0.1) {
+					var color1 = SyntaxHighlightingService.GetColor (widget.HighlightStyle, EditorThemeColors.FindHighlight);
+					if (color1.L + 0.5 > 1.0) {
+						color1.L -= 0.5;
+					} else {
+						color1.L += 0.5;
 					}
+					searchColor = color1;
+				}
+				if (startIndex != endIndex) {
+					newMarkup = PangoHelper.ColorMarkupBackground (newMarkup, (int)startIndex, (int)endIndex, searchColor);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while setting the text renderer markup to: " + newMarkup, e);
+			}
 
-					newMarkup = FormatMarkup (newMarkup, trimStart, trimEnd, tabSize);
+			newMarkup = FormatMarkup (newMarkup, trimStart, trimEnd, tabSize);
 
-					this.markup = newMarkup;
-					widget.QueueDraw ();
-				});
-			});
+			this.markup = newMarkup;
+			widget.QueueDraw ();
 		}
 
 		static string FormatMarkup (string str, bool trimeStart, bool trimEnd, int tabSize)

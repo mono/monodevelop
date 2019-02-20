@@ -1,4 +1,4 @@
-﻿//  DefaultWorkbench.cs
+//  DefaultWorkbench.cs
 //
 // Author:
 //   Mike Krüger
@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		IWorkbenchWindow lastActive;
 
 		bool closeAll;
+		bool? fullScreenState = null;
 
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
@@ -148,13 +149,20 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public DockFrame DockFrame {
 			get { return dock; }
 		}
-		
+
 		public bool FullScreen {
 			get {
 				return IdeServices.DesktopService.GetIsFullscreen (this);
 			}
 			set {
-				IdeServices.DesktopService.SetIsFullscreen (this, value);
+				// If this window is not visible, don't set full screen mode
+				// until it is, as that would conflict with other windows we
+				// might be opening before (Start Window, for instance)
+				if (Visible) {
+					IdeServices.DesktopService.SetIsFullscreen (this, value);
+				} else {
+					fullScreenState = value;
+				}
 			}
 		}
 
@@ -623,6 +631,16 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			if (fullScreenState != null && fullScreenState != IdeServices.DesktopService.GetIsFullscreen (this)) {
+				IdeServices.DesktopService.SetIsFullscreen (this, (bool)fullScreenState);
+				fullScreenState = null;
+			}
+		}
+
+		bool closing;
 		void OnClosing (object o, Gtk.DeleteEventArgs e)
 		{
 			// don't allow Gtk to close the workspace, in case Close() leaves the synchronization context

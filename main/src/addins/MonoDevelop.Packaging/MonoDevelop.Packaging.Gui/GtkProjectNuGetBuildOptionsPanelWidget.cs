@@ -44,9 +44,13 @@ namespace MonoDevelop.Packaging.Gui
 			SetupAccessibility ();
 		}
 
-		void SetupAccessibility ()
+		void SetupAccessibility (bool includeMissingMetadataLabelText = false)
 		{
-			packOnBuildButton.SetCommonAccessibilityAttributes ("NugetBuildOptionsPanel.PackOnBuild", "",
+			string accessibilityLabel = packOnBuildButton.Label;
+			if (includeMissingMetadataLabelText) {
+				accessibilityLabel += " " + missingMetadataLabel.Text;
+			}
+			packOnBuildButton.SetCommonAccessibilityAttributes ("NugetBuildOptionsPanel.PackOnBuild", accessibilityLabel,
 			                                                    GettextCatalog.GetString ("Check to create a NuGet package when building"));
 		}
 
@@ -73,10 +77,15 @@ namespace MonoDevelop.Packaging.Gui
 
 		void UpdateMissingMetadataLabelVisibility ()
 		{
-			if (packOnBuildButton.Active) {
-				missingMetadataLabel.Visible = !ProjectHasMetadata;
+			bool visible = packOnBuildButton.Active && !ProjectHasMetadata;
+			missingMetadataLabel.Visible = visible;
+
+			// Refresh accessibility information so missing metadata label text is available to Voice Over
+			// when the check box is selected.
+			if (visible) {
+				SetupAccessibility (includeMissingMetadataLabelText: true);
 			} else {
-				missingMetadataLabel.Visible = false;
+				SetupAccessibility ();
 			}
 		}
 

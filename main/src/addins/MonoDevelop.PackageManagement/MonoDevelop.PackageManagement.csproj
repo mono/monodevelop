@@ -370,6 +370,10 @@
     <Compile Include="MonoDevelop.PackageManagement\ItemTemplateNuGetPackageInstaller.cs" />
     <Compile Include="Gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
     <Compile Include="Gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RepositoryProviderFactoryExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpHandlerResourceV3Provider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopServerWarningLogHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetHttpSourceAuthenticationHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProjectReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IHasProjectReferenceMaintainer.cs" />

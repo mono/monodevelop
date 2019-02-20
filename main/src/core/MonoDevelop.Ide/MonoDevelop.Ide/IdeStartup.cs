@@ -1,4 +1,4 @@
-﻿//
+//
 // IdeStartup.cs
 //
 // Author:
@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide
 		static Stopwatch timeToCodeTimer = new Stopwatch ();
 		static Dictionary<string, long> sectionTimings = new Dictionary<string, long> ();
 		static bool hideWelcomePage;
+		static StartupInfo startupInfo;
 
 		static TimeToCodeMetadata ttcMetadata;
 
@@ -121,7 +122,7 @@ namespace MonoDevelop.Ide
 
 			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
 
-			var startupInfo = new StartupInfo (options, args);
+			startupInfo = new StartupInfo (options, args);
 
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			try {
@@ -282,8 +283,9 @@ namespace MonoDevelop.Ide
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
-				hideWelcomePage = startupInfo.HasFiles;
+				hideWelcomePage = startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				await IdeApp.Initialize (monitor);
+
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
 				startupSectionTimer.Restart ();
 
@@ -303,7 +305,7 @@ namespace MonoDevelop.Ide
 
 				// load previous combine
 				RecentFile openedProject = null;
-				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
+				if (IdeApp.Preferences.StartupBehaviour.Value == OnStartupBehaviour.LoadPreviousSolution && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = IdeServices.DesktopService.RecentFiles.MostRecentlyUsedProject;
 					if (openedProject != null) {
 						var metadata = GetOpenWorkspaceOnStartupMetadata ();
@@ -463,19 +465,21 @@ namespace MonoDevelop.Ide
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.Initialization.Trace ("Showed welcome page");
 				IdeApp.Workbench.Show ();
+			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
+				IdeApp.Workbench.Show ();
 			}
 
 			return false;
 		}
 
-		void CreateStartupMetadata (StartupInfo startupInfo, Dictionary<string, long> timings)
+		void CreateStartupMetadata (StartupInfo si, Dictionary<string, long> timings)
 		{
 			var result = IdeServices.DesktopService.PlatformTelemetry;
 			if (result == null) {
 				return;
 			}
 
-			var startupMetadata = GetStartupMetadata (startupInfo, result, timings);
+			var startupMetadata = GetStartupMetadata (si, result, timings);
 			Counters.Startup.Inc (startupMetadata);
 
 			if (ttcMetadata != null) {
@@ -880,7 +884,8 @@ namespace MonoDevelop.Ide
 				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
 				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
 				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
-				Timings = timings
+				Timings = timings,
+				StartupBehaviour = IdeApp.Preferences.StartupBehaviour.Value
 			};
 		}
 

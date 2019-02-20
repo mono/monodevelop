@@ -64,7 +64,6 @@ namespace MonoDevelop.Ide.Projects
 			
 			tree.SetPolicies (policyProvider.Policies);
 			if (!tree.HasPolicies) {
-				tree.Message = GettextCatalog.GetString ("No policies");
 				buttonOk.Sensitive = false;
 			}
 			

@@ -37,6 +37,8 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects;
 using Mono.Addins;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.UnitTesting.Commands;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -136,6 +138,36 @@ namespace MonoDevelop.UnitTesting
 		}
 
 		List<IUnitTestMarker> currentMarker = new List<IUnitTestMarker>();
+
+		TestRunner GetTestRunnerAtCaret (bool debug)
+		{
+			var line = Editor.GetLine (Editor.CaretLine);
+			if (line == null)
+				return null;
+			foreach (var marker in Editor.GetLineMarkers (line)) {
+				if (marker is IUnitTestMarker result)
+					return new TestRunner (result.UnitTest.UnitTestIdentifier, DocumentContext.Project, debug);
+			}
+			return null;
+		}
+
+		[CommandHandler (TextEditorCommands.RunTestAtCaret)]
+		protected void OnRunTestAtCaret ()
+		{
+			GetTestRunnerAtCaret (false)?.Run (this, EventArgs.Empty);
+		}
+
+		[CommandHandler (TextEditorCommands.DebugTestAtCaret)]
+		protected void OnDebugTestAtCaret ()
+		{
+			GetTestRunnerAtCaret (true)?.Run (this, EventArgs.Empty);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectTestAtCaret)]
+		protected void OnSelectTestAtCaret ()
+		{
+			GetTestRunnerAtCaret (false)?.Select (this, EventArgs.Empty);
+		}
 
 		class UnitTestMarkerHostImpl : UnitTestMarkerHost
 		{
@@ -277,82 +309,70 @@ namespace MonoDevelop.UnitTesting
 
 			#endregion
 
-			class TestRunner
+		}
+		class TestRunner
+		{
+			readonly string testCase;
+			readonly bool debug;
+			IBuildTarget project;
+
+			public TestRunner (string testCase, IBuildTarget project, bool debug)
 			{
-				readonly string testCase;
-				readonly bool debug;
-				IBuildTarget project;
+				this.testCase = testCase;
+				this.debug = debug;
+				this.project = project;
+			}
 
-				public TestRunner (string testCase, IBuildTarget project, bool debug)
-				{
-					this.testCase = testCase;
-					this.debug = debug;
-					this.project = project;
+			internal async void Run (object sender, EventArgs e)
+			{
+				if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) ||
+					IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
+					return;
+
+				var foundTest = UnitTestService.SearchTestByDocumentId (testCase);
+				if (foundTest != null) {
+					RunTest (foundTest);
+					return;
 				}
 
-				bool TimeoutHandler ()
-				{
-					var test = UnitTestService.SearchTestByDocumentId (testCase);
-					if (test != null) {
-						RunTest (test); 
-						timeoutHandler = 0;
-					} else {
-						return true;
-					}
-					return false;
+				bool buildBeforeExecuting = IdeApp.Preferences.BuildBeforeRunningTests;
+
+				if (buildBeforeExecuting) {
+					await IdeApp.ProjectOperations.Build (project).Task;
+					await UnitTestService.RefreshTests (CancellationToken.None);
 				}
 
-				internal async void Run (object sender, EventArgs e)
-				{
-					if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) || 
-						IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
-						return;
+				foundTest = UnitTestService.SearchTestByDocumentId (testCase);
+				if (foundTest != null)
+					RunTest (foundTest);
+				else
+					UnitTestService.ReportExecutionError (GettextCatalog.GetString ("Unit test '{0}' could not be loaded.", testCase));
+			}
 
-					var foundTest = UnitTestService.SearchTestByDocumentId (testCase);
-					if (foundTest != null) {
-						RunTest (foundTest);
-						return;
-					}
+			internal void Select (object sender, EventArgs e)
+			{
+				var test = UnitTestService.SearchTestByDocumentId (testCase);
+				if (test == null)
+					return;
+				UnitTestService.CurrentSelectedTest = test;
+			}
 
-					bool buildBeforeExecuting = IdeApp.Preferences.BuildBeforeRunningTests;
-
-					if (buildBeforeExecuting) {
-						await IdeApp.ProjectOperations.Build (project).Task;
-						await UnitTestService.RefreshTests (CancellationToken.None);
-					}
-
-					foundTest = UnitTestService.SearchTestByDocumentId (testCase);
-					if (foundTest != null)
-						RunTest (foundTest);
-					else
-						UnitTestService.ReportExecutionError (GettextCatalog.GetString ("Unit test '{0}' could not be loaded.", testCase));
-				}
-
-				internal void Select (object sender, EventArgs e)
-				{
-					var test = UnitTestService.SearchTestByDocumentId (testCase);
-					if (test == null)
-						return;
-					UnitTestService.CurrentSelectedTest = test;
-				}
-
-				void RunTest (UnitTest test)
-				{
-					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
-					Core.Execution.IExecutionHandler ctx = null;
-					if (debug && debugModeSet != null) {
-						foreach (var executionMode in debugModeSet.ExecutionModes) {
-							if (test.CanRun (executionMode.ExecutionHandler)) {
-								ctx = executionMode.ExecutionHandler;
-								break;
-							}
+			void RunTest (UnitTest test)
+			{
+				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+				Core.Execution.IExecutionHandler ctx = null;
+				if (debug && debugModeSet != null) {
+					foreach (var executionMode in debugModeSet.ExecutionModes) {
+						if (test.CanRun (executionMode.ExecutionHandler)) {
+							ctx = executionMode.ExecutionHandler;
+							break;
 						}
 					}
-					// NUnitService.Instance.RunTest (test, ctx);
-					var pad = IdeApp.Workbench.GetPad<TestPad> ();
-					var content = (TestPad)pad.Content;
-					content.RunTest (test, ctx);
 				}
+				// NUnitService.Instance.RunTest (test, ctx);
+				var pad = IdeApp.Workbench.GetPad<TestPad> ();
+				var content = (TestPad)pad.Content;
+				content.RunTest (test, ctx);
 			}
 		}
 	}

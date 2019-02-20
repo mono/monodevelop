@@ -14,7 +14,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class ToolboxProvider: IToolboxDynamicProvider, IToolboxDefaultProvider
+	public class ToolboxProvider: IToolboxDynamicProvider, IToolboxDefaultProvider, IToolboxDynamicProviderDeleteSupport
 	{
 		internal static ToolboxProvider Instance;
 		
@@ -82,7 +82,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			yield return typeof(Stetic.Wrapper.Widget).Assembly.Location;
 		}
-		
+
+		public virtual bool DeleteDynamicItem (ItemToolboxNode node) => false;
+
+		public virtual bool CanDeleteDynamicItem (ItemToolboxNode node) => false;
+
 		public event EventHandler ItemsChanged;
 	}
 	

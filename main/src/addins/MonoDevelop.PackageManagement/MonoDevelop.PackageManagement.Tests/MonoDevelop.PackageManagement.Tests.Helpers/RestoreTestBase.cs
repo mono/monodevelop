@@ -30,6 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
@@ -42,7 +43,7 @@ using UnitTests;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public abstract class RestoreTestBase : TestBase
+	public abstract class RestoreTestBase : IdeTestBase
 	{
 		protected Solution solution;
 

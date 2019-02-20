@@ -64,7 +64,7 @@ namespace MonoDevelop.UnitTesting
 		public override void Dispose ()
 		{
 			folder.NameChanged -= OnCombineRenamed;
-			if (folder.IsRoot) {
+			if (folder.IsRoot && folder.ParentSolution != null) {
 				folder.ParentSolution.SolutionItemAdded -= OnEntryChanged;
 				folder.ParentSolution.SolutionItemRemoved -= OnEntryChanged;
 			}

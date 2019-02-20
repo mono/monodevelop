@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Text;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		bool TryFormat (IEditorFormattingService formattingService, char typedChar, int position, bool formatOnReturn, CancellationToken cancellationToken)
 		{
 			var document = DocumentContext.AnalysisDocument;
-			IList<TextChange> changes;
+			IEnumerable<TextChange> changes;
 			if (formatOnReturn) {
 				if (!formattingService.SupportsFormatOnReturn)
 					return false;
@@ -75,12 +76,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 				if (!formattingService.SupportsFormattingOnTypedCharacter (document, typedChar))
 					return false;
 				changes = formattingService.GetFormattingChangesAsync (document, typedChar, position, cancellationToken).WaitAndGetResult (cancellationToken);
+				var line = Editor.GetLineByOffset (position);
+				if (typedChar == '#') {
+					changes = changes.Where (c => c.Span.Start >= line.Offset);
+				}
 			}
 
-			if (changes == null || changes.Count == 0) {
+			if (changes == null) {
 				return false;
 			}
-
 			Editor.ApplyTextChanges (changes);
 			return true;
 		}

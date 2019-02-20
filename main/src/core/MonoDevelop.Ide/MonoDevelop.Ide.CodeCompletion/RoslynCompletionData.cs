@@ -245,6 +245,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		public static bool RequestInsertText { get; internal set; }
+
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var document = IdeApp.Workbench.ActiveDocument;
@@ -258,7 +260,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void InsertCompletionText (TextEditor editor, DocumentContext context, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			var completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
+			CompletionChange completionChange;
+			try {
+				RequestInsertText = true;
+				completionChange = Provider.GetChangeAsync (doc, CompletionItem, null, default (CancellationToken)).WaitAndGetResult (default (CancellationToken));
+			} finally {
+				RequestInsertText = false;
+			}
 
 			var currentBuffer = editor.GetPlatformTextBuffer ();
 			var textChange = completionChange.TextChange;

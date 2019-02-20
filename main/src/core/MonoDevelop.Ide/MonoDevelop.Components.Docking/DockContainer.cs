@@ -1,5 +1,4 @@
 //
-// DockContainer.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -36,6 +35,7 @@ using Gtk;
 using Gdk;
 using System.Linq;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
@@ -52,8 +52,8 @@ namespace MonoDevelop.Components.Docking
 
 		bool needsRelayout = true;
 
-		PlaceholderWindow placeholderWindow;
-		PadTitleWindow padTitleWindow;
+		volatile PlaceholderWindow placeholderWindow;
+		volatile PadTitleWindow padTitleWindow;
 		
 		public DockContainer (DockFrame frame)
 		{
@@ -403,7 +403,15 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool UpdatePlaceholder (DockItem item, Gdk.Size size, bool allowDocking)
 		{
-			if (placeholderWindow == null)
+			if (!Runtime.IsMainThread) {
+				var msg = "UpdatePlaceholder called from background thread.";
+				LoggingService.LogInternalError ($"{msg}\n{Environment.StackTrace}", new InvalidOperationException (msg));
+			}
+
+			var placeholderWindow = this.placeholderWindow;
+			var padTitleWindow = this.padTitleWindow;
+
+			if (placeholderWindow == null || padTitleWindow == null)
 				return false;
 			
 			int px, py;

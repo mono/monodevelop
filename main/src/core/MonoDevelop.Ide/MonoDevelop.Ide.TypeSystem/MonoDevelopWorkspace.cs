@@ -1,4 +1,4 @@
-﻿//
+//
 // MonoDevelopWorkspace.cs
 //
 // Author:
@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool disposed;
-		readonly object updatingProjectDataLock = new object ();
+
+		internal readonly SemaphoreSlim LoadLock = new SemaphoreSlim (1, 1);
 		Lazy<MonoDevelopMetadataReferenceManager> manager;
 		Lazy<MetadataReferenceHandler> metadataHandler;
 		ProjectionData Projections { get; }
@@ -83,7 +84,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		ProjectDataMap ProjectMap { get; }
 		ProjectSystemHandler ProjectHandler { get; }
 
-		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; }
+		public MonoDevelop.Projects.Solution MonoDevelopSolution { get; private set; }
 
 		internal MonoDevelopMetadataReferenceManager MetadataReferenceManager => manager.Value;
 
@@ -260,14 +261,43 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected internal override bool PartialSemanticsEnabled => backgroundCompiler != null;
 
+		// This is called by OnSolutionRemoved and on Dispose.
+		protected override void ClearSolutionData ()
+		{
+			if (MonoDevelopSolution != null) {
+				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
+					ProjectMap.RemoveProject (prj);
+					UnloadMonoProject (prj);
+				}
+			}
+
+			base.ClearSolutionData ();
+		}
+
+		// This is called by OnProjectRemoved.
+		protected override void ClearProjectData (ProjectId projectId)
+		{
+			var actualProject = ProjectMap.RemoveProject (projectId);
+			UnloadMonoProject (actualProject);
+
+			base.ClearProjectData (projectId);
+		}
+
 		protected override void Dispose (bool finalize)
 		{
-			base.Dispose (finalize);
 			if (disposed)
 				return;
 
 			disposed = true;
 
+			var cacheService = Services.GetService<IWorkspaceCacheService> ();
+			if (cacheService != null)
+				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
+
+			var cacheHostService = Services.GetService<IProjectCacheHostService> () as IDisposable;
+			cacheHostService?.Dispose ();
+
+			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
 			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
@@ -275,14 +305,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			desktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			CancelLoad ();
-
-			if (workspace != null)
+			if (workspace != null) {
 				workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
-
-			if (MonoDevelopSolution != null) {
-				foreach (var prj in MonoDevelopSolution.GetAllProjects ()) {
-					UnloadMonoProject (prj);
-				}
 			}
 
 			var solutionCrawler = Services.GetService<ISolutionCrawlerRegistrationService> ();
@@ -292,6 +316,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				backgroundCompiler.Dispose ();
 				backgroundCompiler = null; // PartialSemanticsEnabled will now return false
 			}
+
+			base.Dispose (finalize);
+
+			// Do this at the end so solution removal from base disposal is done properly.
+			MonoDevelopSolution = null;
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
@@ -1070,13 +1099,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
-		internal Task UpdateFileContent (string fileName, string text)
+		internal async Task UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
 			var tasks = new List<Task> ();
-			lock (updatingProjectDataLock) {
-				foreach (var kv in ProjectMap.projectDataMap) {
-					var projectId = kv.Key;
+			try {
+				await LoadLock.WaitAsync ();
+				foreach (var projectId in ProjectMap.GetProjectIds ()) {
 					var docId = this.GetDocumentId (projectId, fileName);
 					if (docId != null) {
 						try {
@@ -1102,22 +1131,17 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 				}
+			} finally {
+				LoadLock.Release ();
 			}
 
-			return Task.WhenAll (tasks);
+			await Task.WhenAll (tasks);
 		}
 
 		internal void RemoveProject (MonoDevelop.Projects.Project project)
 		{
 			var id = GetProjectId (project);
 			if (id != null) {
-				foreach (var docId in GetOpenDocumentIds (id).ToList ()) {
-					ClearOpenDocument (docId);
-				}
-
-				ProjectMap.RemoveProject (project, id);
-				UnloadMonoProject (project);
-
 				OnProjectRemoved (id);
 			}
 		}

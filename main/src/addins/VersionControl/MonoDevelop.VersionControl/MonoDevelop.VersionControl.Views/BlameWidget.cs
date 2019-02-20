@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -49,6 +50,13 @@ namespace MonoDevelop.VersionControl.Views
 	class BlameWidget : Bin
 	{
 		Revision revision;
+
+		public Revision Revision {
+			get {
+				return revision;
+			}
+		}
+
 		Adjustment vAdjustment;
 		Gtk.VScrollbar vScrollBar;
 		
@@ -131,7 +139,11 @@ namespace MonoDevelop.VersionControl.Views
 				IsReadOnly = true,
 				MimeType = sourceEditor.TextEditor.Document.MimeType,
 			};
-			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);
+			var options = new CustomEditorOptions (DefaultSourceEditorOptions.Instance);
+			options.TabsToSpaces = false;
+
+			editor = new MonoTextEditor (doc, new SourceEditor.StyledSourceEditorOptions (options));
+
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -412,17 +424,14 @@ namespace MonoDevelop.VersionControl.Views
 					WidthRequest = newWidthRequest;
 					QueueResize ();
 				}
-				int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
-				var ann = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
-				if (ann != null)
+
+				GetAnnotationFromY (evnt.Y, out var annotation, out var startLine);
+
+				if (annotation != null)
 					TooltipText = GetCommitMessage (startLine - 1, true);
 
-				highlightPositon = evnt.Y;
-				if (highlightAnnotation != ann) {
-					highlightAnnotation = ann;
-					widget.QueueDraw ();
-				}
-				
+				SetHighlight (annotation, startLine, evnt.Y, highlightAnnotation != annotation);
+
 				return base.OnMotionNotifyEvent (evnt);
 			}
 			
@@ -438,8 +447,8 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				if (evnt.TriggersContextMenu ()) {
-					int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
-					menuAnnotation = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
+
+					GetAnnotationFromY (evnt.Y, out menuAnnotation, out var startLine);
 
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
@@ -556,6 +565,11 @@ namespace MonoDevelop.VersionControl.Views
 							document.Text = widget.VersionControlItem.Repository.GetTextAtRevision (widget.Document.FileName, widget.revision);
 						} else {
 							document.Text = widget.Document.Editor.Text;
+							if (widget.Document.Editor.TextView is MonoTextEditor exEditor) {
+								document.UpdateFoldSegments (exEditor.Document.FoldSegments.Select (f => new Mono.TextEditor.FoldSegment (f)));
+								widget.Editor.SetCaretTo (exEditor.Caret.Line, exEditor.Caret.Column);
+								widget.Editor.VAdjustment.Value = exEditor.VAdjustment.Value;
+							}
 						}
 						widget.editor.Caret.Location = location;
 						widget.editor.VAdjustment.Value = adj;
@@ -773,7 +787,26 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				return true;
 			}
-			
+
+			int YToStartLine (double y) => widget.Editor.YToLine (widget.Editor.VAdjustment.Value + y);
+
+			void GetAnnotationFromY (double y, out Annotation annotation, out int startLine)
+			{
+				startLine = YToStartLine (y);
+				annotation = GetAnnotationFromLine (startLine);
+			}
+
+			internal Annotation GetAnnotationFromLine (int startLine) =>
+				startLine > 0 && startLine <= annotations.Count ? annotations [startLine - 1] : null;
+
+			internal void SetHighlight (Annotation annotation, int line, double y, bool needsRedraw)
+			{
+				highlightPositon = y;
+				highlightAnnotation = annotation;
+				if (needsRedraw) {
+					widget.QueueDraw ();
+				}
+			}
 		}	
 	}
 }

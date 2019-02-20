@@ -64,5 +64,11 @@ namespace MonoDevelop.Ide
 					await dm.Documents [0].Close (true);
 			}
 		}
+
+		public override void TearDown ()
+		{
+			IdeApp.OnExit ();
+			base.TearDown ();
+		}
 	}
 }

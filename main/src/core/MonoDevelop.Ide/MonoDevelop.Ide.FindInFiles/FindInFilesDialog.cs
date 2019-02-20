@@ -242,33 +242,37 @@ namespace MonoDevelop.Ide.FindInFiles
 		void SetupAccessibility ()
 		{
 			comboboxentryFind.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryFind",
-												"Find",
+												labelFind,
 												GettextCatalog.GetString ("Enter string to find"));
-			comboboxentryFind.SetAccessibilityLabelRelationship (labelFind);
+
+			comboboxScope.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxScope",
+				labelScope,
+				GettextCatalog.GetString ("Select where to search"));
 		}
 
 		void SetupAccessibilityForReplace ()
 		{
 			comboboxentryReplace.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryReplace",
-											"Replace",
+											labelReplace,
 											GettextCatalog.GetString ("Enter string to replace"));
-			comboboxentryReplace.SetAccessibilityLabelRelationship (labelReplace);
 		}
 
 		void SetupAccessibilityForPath ()
 		{
 			comboboxentryPath.SetCommonAccessibilityAttributes ("FindInFilesDialog.comboboxentryPath",
-												"Path",
+												labelPath,
 												GettextCatalog.GetString ("Enter the Path"));
-			comboboxentryPath.SetAccessibilityLabelRelationship (labelPath);
+
+			buttonBrowsePaths.SetCommonAccessibilityAttributes ("FindInFilesDialog.buttonBrowsePaths",
+				GettextCatalog.GetString ("Browse Path"),
+				GettextCatalog.GetString ("Select a folder"));
 		}
 
 		void SetupAccessibilityForSearch ()
 		{
-			searchentryFileMask.SetCommonAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
-				"File Mask",
+			searchentryFileMask.SetEntryAccessibilityAttributes ("FindInFilesDialog.searchentryFileMask",
+				labelFileMask.Text,
 				GettextCatalog.GetString ("Enter the file mask"));
-			searchentryFileMask.SetAccessibilityLabelRelationship (labelFileMask);
 		}
 
 		static void TableAddRow (Table table, uint row, Widget column1, Widget column2)
@@ -432,9 +436,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			labelPath.MnemonicWidget = comboboxentryPath;
 
-			SetupAccessibilityForPath ();
-			
-			buttonBrowsePaths = new Button { Label = "..." };
+			buttonBrowsePaths = new Button { Label = "…" };
 			buttonBrowsePaths.Clicked += ButtonBrowsePathsClicked;
 			buttonBrowsePaths.Show ();
 			hboxPath.PackStart (buttonBrowsePaths, false, false, 0);
@@ -454,6 +456,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			checkbuttonRecursively.Show ();
 			
 			TableAddRow (tableFindAndReplace, row, null, checkbuttonRecursively);
+
+			SetupAccessibilityForPath ();
 		}
 		
 		void HideDirectoryPathUI ()

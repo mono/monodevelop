@@ -538,7 +538,10 @@ namespace MonoDevelop.Projects
 			// Move directory outside the project's directory.
 			var renamedDirectory = project.ParentSolution.BaseDirectory.Combine ("RenamedSrc");
 			var renamedCSharpFileName = renamedDirectory.Combine ("NewCSharpFile.cs");
+			var renamedTask = WaitForSingleDirectoryRemoved ();
 			Directory.Move (directory, renamedDirectory);
+
+			await renamedTask;
 
 			// Create new file in project directory.
 			fileAdded = WaitForSingleFileAdded (project);

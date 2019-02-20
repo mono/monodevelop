@@ -48,7 +48,7 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.HBox packageLanguageHBox;
 
-		private global::Gtk.ComboBoxEntry packageLanguageComboBox;
+		private global::Gtk.ComboBox packageLanguageComboBox;
 
 		private global::Gtk.Label packageLanguageLabel;
 
@@ -321,7 +321,7 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageLanguageHBox.Name = "packageLanguageHBox";
 			this.packageLanguageHBox.Spacing = 6;
 			// Container child packageLanguageHBox.Gtk.Box+BoxChild
-			this.packageLanguageComboBox = global::Gtk.ComboBoxEntry.NewText();
+			this.packageLanguageComboBox = global::Gtk.ComboBox.NewText();
 			this.packageLanguageComboBox.Name = "packageLanguageComboBox";
 			this.packageLanguageHBox.Add(this.packageLanguageComboBox);
 			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.packageLanguageHBox[this.packageLanguageComboBox]));

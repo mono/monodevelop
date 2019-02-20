@@ -2405,7 +2405,7 @@ namespace MonoDevelop.Components.Commands
 			// It then queries widgets, which resurrects widget wrappers, which breaks on managed widgets
 			if (this.disposed)
 				return;
-			
+
 			var activeWidget = GetActiveWidget (rootWidget);
 			foreach (ICommandBar toolbar in toolbars) {
 				toolbar.Update (activeWidget);

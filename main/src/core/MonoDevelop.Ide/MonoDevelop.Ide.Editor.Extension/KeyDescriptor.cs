@@ -59,6 +59,74 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return string.Format ("[KeyDescriptor: SpecialKey={0}, KeyChar={1}, ModifierKeys={2}]", SpecialKey, KeyChar, ModifierKeys);
 		}
 
+		#region XWT
+		public static KeyDescriptor FromXwt (Xwt.Key key, char c, Xwt.ModifierKeys modifiers)
+		{
+			return new KeyDescriptor (ConvertKey (key), c, ConvertModifiers (modifiers), Tuple.Create (key, modifiers));
+		}
+
+		static SpecialKey ConvertKey (Xwt.Key key)
+		{
+			switch (key) {
+			case Xwt.Key.BackSpace:
+				return SpecialKey.BackSpace;
+			case Xwt.Key.Tab:
+			case Xwt.Key.NumPadTab:
+				return SpecialKey.Tab;
+			case Xwt.Key.Return:
+			case Xwt.Key.NumPadEnter:
+				return SpecialKey.Return;
+			case Xwt.Key.Escape:
+				return SpecialKey.Escape;
+			case Xwt.Key.Space:
+			case Xwt.Key.NumPadSpace:
+				return SpecialKey.Space;
+			case Xwt.Key.PageUp:
+				return SpecialKey.PageUp;
+			case Xwt.Key.PageDown:
+				return SpecialKey.PageDown;
+			case Xwt.Key.End:
+			case Xwt.Key.NumPadEnd:
+				return SpecialKey.End;
+			case Xwt.Key.Home:
+			case Xwt.Key.NumPadHome:
+				return SpecialKey.Home;
+			case Xwt.Key.Left:
+			case Xwt.Key.NumPadLeft:
+				return SpecialKey.Left;
+			case Xwt.Key.Up:
+			case Xwt.Key.NumPadUp:
+				return SpecialKey.Up;
+			case Xwt.Key.Right:
+			case Xwt.Key.NumPadRight:
+				return SpecialKey.Right;
+			case Xwt.Key.Down:
+			case Xwt.Key.NumPadDown:
+				return SpecialKey.Down;
+			case Xwt.Key.Delete:
+			case Xwt.Key.NumPadDelete:
+				return SpecialKey.Delete;
+			}
+			return SpecialKey.None;
+		}
+
+		static ModifierKeys ConvertModifiers (Xwt.ModifierKeys s)
+		{
+			ModifierKeys m = ModifierKeys.None;
+			if ((s & Xwt.ModifierKeys.Shift) != 0)
+				m |= ModifierKeys.Shift;
+			if ((s & Xwt.ModifierKeys.Control) != 0)
+				m |= ModifierKeys.Control;
+			if ((s & Xwt.ModifierKeys.Alt) != 0)
+				m |= ModifierKeys.Alt;
+			if ((s & Xwt.ModifierKeys.Command) != 0)
+				m |= ModifierKeys.Command;
+			if ((s & Xwt.ModifierKeys.Command) != 0)
+				m |= ModifierKeys.Command;
+			return m;
+		}
+		#endregion
+
 		#region GTK
 		public static KeyDescriptor FromGtk (Gdk.Key key, char ch, Gdk.ModifierType state)
 		{

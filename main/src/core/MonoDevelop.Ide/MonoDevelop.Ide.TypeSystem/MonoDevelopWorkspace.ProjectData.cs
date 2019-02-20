@@ -48,9 +48,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				DocumentData = new DocumentMap (projectId);
 				this.metadataReferences = new List<MonoDevelopMetadataReference> (metadataReferences.Length);
 
-				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
-				foreach (var metadataReference in metadataReferences) {
-					AddMetadataReference_NoLock (metadataReference, ws);
+				lock (this.metadataReferences) {
+					foreach (var metadataReference in metadataReferences) {
+						AddMetadataReference_NoLock (metadataReference, ws);
+					}
 				}
 			}
 
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!workspaceRef.TryGetTarget (out var workspace))
 					return;
 
-				lock (workspace.updatingProjectDataLock) {
+				lock (metadataReferences) {
 					if (!RemoveMetadataReference_NoLock (reference, workspace))
 						return;
 					workspace.OnMetadataReferenceRemoved (projectId, args.OldSnapshot);
@@ -73,7 +74,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			void AddMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
-				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (metadataReferences));
 
 				metadataReferences.Add (metadataReference);
 				metadataReference.SnapshotUpdated += OnMetadataReferenceUpdated;
@@ -81,7 +82,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			bool RemoveMetadataReference_NoLock (MonoDevelopMetadataReference metadataReference, MonoDevelopWorkspace ws)
 			{
-				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
+				System.Diagnostics.Debug.Assert (Monitor.IsEntered (metadataReferences));
 
 				metadataReference.SnapshotUpdated -= OnMetadataReferenceUpdated;
 				return metadataReferences.Remove (metadataReference);
@@ -92,9 +93,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!workspaceRef.TryGetTarget (out var ws))
 					return;
 
-				System.Diagnostics.Debug.Assert (Monitor.IsEntered (ws.updatingProjectDataLock));
-				foreach (var reference in metadataReferences)
-					reference.SnapshotUpdated -= OnMetadataReferenceUpdated;
+				lock (metadataReferences) {
+					foreach (var reference in metadataReferences)
+						reference.SnapshotUpdated -= OnMetadataReferenceUpdated;
+				}
 			}
 		}
 	}

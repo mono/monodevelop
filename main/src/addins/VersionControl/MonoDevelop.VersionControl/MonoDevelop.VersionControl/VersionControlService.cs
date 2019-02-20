@@ -226,7 +226,6 @@ namespace MonoDevelop.VersionControl
 			return repo;
 		}
 
-		readonly static Counter<RepositoryMetadata> Repositories = InstrumentationService.CreateCounter<RepositoryMetadata> ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
 		internal static readonly Dictionary<FilePath,Repository> repositoryCache = new Dictionary<FilePath,Repository> ();
 		public static Repository GetRepositoryReference (string path, string id)
 		{
@@ -257,10 +256,7 @@ namespace MonoDevelop.VersionControl
 				var repo = detectedVCS?.GetRepositoryReference (bestMatch, id);
 				if (repo != null) {
 					repositoryCache.Add (bestMatch, repo);
-					Repositories.Inc (new RepositoryMetadata {
-						Type = detectedVCS.Name,
-						Version = detectedVCS.Version,
-					});
+					Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
 				}
 				return repo;
 			} catch (Exception e) {
@@ -841,10 +837,17 @@ namespace MonoDevelop.VersionControl
 		Other
 	}
 
-	public class RepositoryMetadata : CounterMetadata
+	class RepositoryMetadata : CounterMetadata
 	{
 		public RepositoryMetadata ()
 		{
+			throw new InvalidOperationException ();
+		}
+
+		public RepositoryMetadata (VersionControlSystem versionControl)
+		{
+			Type = versionControl?.Name;
+			Version = versionControl?.Version;
 		}
 
 		public string Type {

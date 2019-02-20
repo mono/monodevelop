@@ -26,6 +26,7 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Composition;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
@@ -44,22 +45,21 @@ namespace MonoDevelop.Ide.RoslynServices
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
 			// we support active document tracking only for visual studio workspace host.
-			if (workspaceServices.Workspace is MonoDevelopWorkspace) {
+			if (workspaceServices.Workspace is MonoDevelopWorkspace monoDevelopWorkspace) {
 				// We will finish setting this up in VisualStudioWorkspaceImpl.DeferredInitializationState
-				var projectCacheService = new ProjectCacheService (workspaceServices.Workspace, ImplicitCacheTimeoutInMS);
+				var projectCacheService = new MonoDevelopProjectCacheService (monoDevelopWorkspace, ImplicitCacheTimeoutInMS);
 				var documentTrackingService = workspaceServices.GetService<IDocumentTrackingService> ();
 
 				// Subscribe to events so that we can cache items from the active document's project
 				var manager = new ActiveProjectCacheManager (documentTrackingService, projectCacheService);
+				projectCacheService.Manager = manager;
 
 				// Subscribe to requests to clear the cache
 				var workspaceCacheService = workspaceServices.GetService<IWorkspaceCacheService> ();
-				if (workspaceCacheService != null) {
-					workspaceCacheService.CacheFlushRequested += (s, e) => manager.Clear ();
-				}
+				projectCacheService.SubscribeToFlushRequested (workspaceCacheService);
 
 				// Also clear the cache when the solution is cleared or removed.
-				workspaceServices.Workspace.WorkspaceChanged += (s, e) => {
+				monoDevelopWorkspace.WorkspaceChanged += (s, e) => {
 					if (e.Kind == WorkspaceChangeKind.SolutionCleared || e.Kind == WorkspaceChangeKind.SolutionRemoved) {
 						manager.Clear ();
 					}
@@ -71,7 +71,45 @@ namespace MonoDevelop.Ide.RoslynServices
 			return new ProjectCacheService (workspaceServices.Workspace);
 		}
 
-		class ActiveProjectCacheManager
+		class MonoDevelopProjectCacheService : ProjectCacheService, IDisposable
+		{
+			internal ActiveProjectCacheManager Manager { get; set; }
+			IWorkspaceCacheService cacheService;
+
+			public MonoDevelopProjectCacheService (Workspace workspace) : base (workspace)
+			{
+			}
+
+			public MonoDevelopProjectCacheService (Workspace workspace, int implicitCacheTimeout) : base (workspace, implicitCacheTimeout)
+			{
+			}
+
+			public void SubscribeToFlushRequested (IWorkspaceCacheService cacheService)
+			{
+				this.cacheService = cacheService;
+				cacheService.CacheFlushRequested += OnCacheFlushRequested;
+			}
+
+			void OnCacheFlushRequested (object sender, EventArgs args)
+			{
+				Manager.Clear ();
+			}
+
+			public void Dispose()
+			{
+				if (cacheService != null) {
+					cacheService.CacheFlushRequested -= OnCacheFlushRequested;
+					cacheService = null;
+				}
+
+				Manager?.Dispose ();
+				Manager = null;
+			}
+		}
+
+		//public void GetManager
+
+		class ActiveProjectCacheManager : IDisposable
 		{
 			readonly IDocumentTrackingService _documentTrackingService;
 			readonly ProjectCacheService _projectCacheService;
@@ -88,6 +126,13 @@ namespace MonoDevelop.Ide.RoslynServices
 				if (documentTrackingService != null) {
 					documentTrackingService.ActiveDocumentChanged += UpdateCache;
 					UpdateCache (null, documentTrackingService.GetActiveDocument ());
+				}
+			}
+
+			public void Dispose ()
+			{
+				if (_documentTrackingService != null) {
+					_documentTrackingService.ActiveDocumentChanged -= UpdateCache;
 				}
 			}
 

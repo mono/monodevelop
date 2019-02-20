@@ -212,7 +212,9 @@ namespace PerformanceDiagnosticsAddIn
 		{
 			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
 			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
+				Directory.CreateDirectory (Options.OutputPath);
 				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
+
 				using (var sr = new StreamReader (fileName))
 				using (var sw = new StreamWriter (outputFilename)) {
 					string line;

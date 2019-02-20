@@ -35,11 +35,13 @@ using System.Text;
 using Mono.Addins;
 using Mono.Unix.Native;
 using MonoDevelop.Core.FileSystem;
+using MonoDevelop.Core.Web;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
+using System.Net.Http;
 
 namespace MonoDevelop.Core
 {
@@ -808,24 +810,27 @@ namespace MonoDevelop.Core
 		{
 			bool deleteTempFile = true;
 			var tempFile = cacheFile + ".temp";
+			HttpClient client = null;
 			try {
-				var response = await WebRequestHelper.GetResponseAsync (
-					() => (HttpWebRequest)WebRequest.Create (url),
-					r => {
-						//check to see if the online file has been modified since it was last downloaded
-						var localNewsXml = new FileInfo (cacheFile);
-						if (localNewsXml.Exists)
-							r.IfModifiedSince = localNewsXml.LastWriteTime;
-					},
-					ct
-				).ConfigureAwait (false);
+				client = HttpClientProvider.CreateHttpClient (url);
+				//check to see if the online file has been modified since it was last downloaded
+				var localNewsXml = new FileInfo (cacheFile);
+				if (localNewsXml.Exists)
+					client.DefaultRequestHeaders.IfModifiedSince = localNewsXml.LastWriteTime;
+				using (var response = await client.GetAsync (url, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait (false)) {
 
-				ct.ThrowIfCancellationRequested ();
+					ct.ThrowIfCancellationRequested ();
 
-				//TODO: limit this size in case open wifi hotspots provide junk data
-				if (response.StatusCode == HttpStatusCode.OK) {
-					using (var fs = File.Create (tempFile))
-						response.GetResponseStream ().CopyTo (fs, 2048);
+					//TODO: limit this size in case open wifi hotspots provide junk data
+					if (response.StatusCode == HttpStatusCode.OK) {
+						using (var fs = File.Create (tempFile))
+							await response.Content.CopyToAsync (fs);
+					} else if (response.StatusCode == HttpStatusCode.NotModified) {
+						return false;
+					} else {
+						LoggingService.LogWarning ("FileService.UpdateDownloadedCacheFile. Unexpected status code {0}", response.StatusCode);
+						return false;
+					}
 				}
 
 				//check the document is valid, might get bad ones from wifi hotspots etc
@@ -850,13 +855,8 @@ namespace MonoDevelop.Core
 				SystemRename (tempFile, cacheFile);
 				deleteTempFile = false;
 				return true;
-			} catch (Exception ex) {
-				if (ex.FlattenAggregate ().InnerException is WebException wex) {
-					if (wex.Response is HttpWebResponse resp && resp.StatusCode == HttpStatusCode.NotModified)
-						return false;
-				}
-				throw;
 			} finally {
+				client?.Dispose ();
 				if (deleteTempFile) {
 					try {
 						File.Delete (tempFile);

@@ -86,6 +86,7 @@
     <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs" />
     <Compile Include="Gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
     <Compile Include="MonoDevelop.WebReferences\WebReferencesProjectExtension.cs" />
+    <Compile Include="MonoDevelop.WebReferences\MonoDevelopDiscoveryClientProtocol.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml" />

@@ -221,6 +221,10 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.SolutionItemOptionsHandler"
 			_label = "_Options"
 			_description = "Show options window" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SetStartupProjects"
+			defaultHandler = "MonoDevelop.Ide.Commands.SetStartupProjectsHandler"
+			_label = "Se_t Startup Projects..."
+			_description = "Set multiple startup projects" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions"
 			defaultHandler = "MonoDevelop.Ide.Commands.SolutionOptionsHandler"
 			icon = "gtk-preferences"
@@ -252,7 +256,7 @@
 			_description = "Adds and existing folder and its contents"
 			_label = "_Add Existing Folder..." />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
-			_label = "New _Folder"
+			_label = "New _Folder…"
 			_description = "Create a new folder"
 			icon  = "md-new-folder" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"

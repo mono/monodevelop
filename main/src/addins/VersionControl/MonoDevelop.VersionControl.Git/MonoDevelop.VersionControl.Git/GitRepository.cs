@@ -478,9 +478,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		static void GetFilesVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, List<FilePath> localPaths, List<VersionInfo> versions)
 		{
-			foreach (var file in repo.ToGitPath (localPaths)) {
-				var status = repo.RetrieveStatus (file);
-				AddStatus (repo, rev, file, versions, status, null);
+			foreach (var localPath in localPaths) {
+				if (!localPath.IsDirectory) {
+					var file = repo.ToGitPath (localPath);
+					var status = repo.RetrieveStatus (file);
+					AddStatus (repo, rev, file, versions, status, null);
+				}
 			}
 		}
 
@@ -518,6 +521,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var relativePath = repo.ToGitPath (directory);
 			var status = repo.RetrieveStatus (new StatusOptions {
+				DisablePathSpecMatch = true,
 				PathSpec = relativePath != "." ? new [] { relativePath } : null,
 				IncludeUnaltered = true,
 			});
@@ -664,11 +668,13 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Fetching"), 1);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
+
 			int progress = 0;
 			RetryUntilSuccess (monitor, credType => RootRepository.Fetch (remote, new FetchOptions {
 				CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 				OnTransferProgress = tp => OnTransferProgress (tp, monitor, ref progress),
 			}));
+
 			monitor.Step (1);
 			monitor.EndTask ();
 		}

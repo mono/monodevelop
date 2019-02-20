@@ -3,13 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.Build.Framework;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -24,6 +24,7 @@ namespace MonoDevelop.Projects.MSBuild
 		readonly object _lockObject = new object ();
 		IList<SdkResolver> _resolvers;
 		TargetRuntime runtime;
+		Version msbuildVersion;
 
 		internal SdkResolution (TargetRuntime runtime)
 		{
@@ -58,7 +59,7 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				var buildEngineLogger = new SdkLoggerImpl (logger, buildEventContext);
 				foreach (var sdkResolver in _resolvers) {
-					var context = new SdkResolverContextImpl (buildEngineLogger, projectFile, solutionPath);
+					var context = new SdkResolverContextImpl (buildEngineLogger, projectFile, solutionPath, msbuildVersion);
 					var resultFactory = new SdkResultFactoryImpl (sdk);
 					try {
 						var result = (SdkResultImpl)sdkResolver.Resolve (sdk, context, resultFactory);
@@ -96,8 +97,19 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			lock (_lockObject) {
 				if (_resolvers != null) return;
+				msbuildVersion = GetMSBuildVersion ();
 				_resolvers = LoadResolvers (logger);
 			}
+		}
+
+		Version GetMSBuildVersion ()
+		{
+			var msbuildFileName = MSBuildProcessService.GetMSBuildBinPath (runtime);
+			if (!File.Exists (msbuildFileName))
+				return null;
+
+			var versionInfo = FileVersionInfo.GetVersionInfo (msbuildFileName);
+			return new Version (versionInfo.FileMajorPart, versionInfo.FileMinorPart, versionInfo.FileBuildPart, versionInfo.FilePrivatePart);
 		}
 
 		IList<SdkResolver> LoadResolvers (ILoggingService logger)
@@ -282,16 +294,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 			public SdkReference Sdk { get; }
 
-			public string Path { get; }
-
-			public string Version { get; }
-
 			public IEnumerable<string> Errors { get; }
 
 			public IEnumerable<string> Warnings { get; }
 		}
 
-		class SdkResultFactoryImpl : SdkResultFactory
+		internal class SdkResultFactoryImpl : SdkResultFactory
 		{
 			readonly SdkReference _sdkReference;
 
@@ -313,11 +321,12 @@ namespace MonoDevelop.Projects.MSBuild
 
 		sealed class SdkResolverContextImpl : SdkResolverContext
 		{
-			public SdkResolverContextImpl (SdkLogger logger, string projectFilePath, string solutionPath)
+			public SdkResolverContextImpl (SdkLogger logger, string projectFilePath, string solutionPath, Version msbuildVersion)
 			{
 				Logger = logger;
 				ProjectFilePath = projectFilePath;
 				SolutionFilePath = solutionPath;
+				MSBuildVersion = msbuildVersion;
 			}
 		}
 	}

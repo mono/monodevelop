@@ -30,12 +30,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Threading;
 using Mono.Addins;
-using Mono.Cecil;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Assemblies
@@ -369,29 +371,54 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			if (!File.Exists (file))
 				return TargetFrameworkMoniker.UNKNOWN;
-			AssemblyDefinition assembly = null;
+
 			try {
-				assembly = AssemblyDefinition.ReadAssembly (file);
-				var att = assembly.CustomAttributes.FirstOrDefault (a =>
-					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
-				);
-				if (att != null) {
-					if (att.ConstructorArguments.Count == 1) {
-						var v = att.ConstructorArguments[0].Value as string;
-						TargetFrameworkMoniker m;
-						if (v != null && TargetFrameworkMoniker.TryParse (v, out m)) {
+				using (var reader = new PEReader (File.OpenRead (file))) {
+					var mr = reader.GetMetadataReader ();
+
+					foreach (var customAttributeHandle in mr.GetAssemblyDefinition ().GetCustomAttributes ()) {
+						var customAttribute = mr.GetCustomAttribute (customAttributeHandle);
+
+						var ctorHandle = customAttribute.Constructor;
+						if (ctorHandle.Kind != HandleKind.MemberReference)
+							continue;
+
+						var ctor = mr.GetMemberReference ((MemberReferenceHandle)ctorHandle);
+						var attrType = mr.GetTypeReference ((TypeReferenceHandle)ctor.Parent);
+
+						var ns = mr.GetString (attrType.Namespace);
+						if (ns != "System.Runtime.Versioning")
+							continue;
+
+						var typeName = mr.GetString (attrType.Name);
+						if (typeName != "TargetFrameworkAttribute")
+							continue;
+
+						var provider = new StringParameterValueTypeProvider (mr, customAttribute.Value);
+						var signature = ctor.DecodeMethodSignature (provider, null);
+						var parameterTypes = signature.ParameterTypes;
+						if (parameterTypes.Length != 1)
+							continue;
+
+						var value = parameterTypes [0];
+						if (value != null && TargetFrameworkMoniker.TryParse (value, out var m)) {
 							return m;
 						}
+						LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0} - {1}", file, value);
 					}
-					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
-				}
-				if (tr != null) {
-					foreach (var r in assembly.MainModule.AssemblyReferences) {
-						if (r.Name == "mscorlib") {
+
+					if (tr != null) {
+						foreach (var assemblyReferenceHandle in mr.AssemblyReferences) {
+							var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+
+							var name = mr.GetString (assemblyReference.Name);
+							if (name != "mscorlib")
+								continue;
+
 							TargetFramework compatibleFramework = null;
 							// If there are several frameworks that can run the file, pick one that is installed
 							foreach (TargetFramework tf in GetKnownFrameworks ()) {
-								if (tf.GetCorlibVersion () == r.Version.ToString ()) {
+								if (tf.GetCorlibVersion () == assemblyReference.Version.ToString ()) {
 									compatibleFramework = tf;
 									if (tr.IsInstalled (tf))
 										return tf.Id;
@@ -405,125 +432,66 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error determining target framework for assembly {0}: {1}", file, ex);
-				return TargetFrameworkMoniker.UNKNOWN;
-			} finally {
-				assembly?.Dispose ();
 			}
-			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
 
 		/// <summary>
 		/// Simply get all assembly reference names from an assembly given it's file name.
 		/// </summary>
-		public static IEnumerable<string> GetAssemblyReferences (string fileName)
+		public static ImmutableArray<string> GetAssemblyReferences (string fileName)
 		{
-			AssemblyDefinition assembly = null;
 			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return Enumerable.Empty<string> ();
-				}
-				return assembly.MainModule.AssemblyReferences.Select (x => x.Name);
-			} finally {
-				assembly?.Dispose ();
-			}
-		}
+				using (var reader = new PEReader (File.OpenRead (fileName))) {
+					var mr = reader.GetMetadataReader ();
+					var assemblyReferences = mr.AssemblyReferences;
 
-		static Dictionary<string, bool> referenceDict = new Dictionary<string, bool> ();
+					var builder = ImmutableArray.CreateBuilder<string> (assemblyReferences.Count);
 
-		static bool ContainsReferenceToSystemRuntimeInternal (string fileName)
-		{
-			bool result;
-			if (referenceDict.TryGetValue (fileName, out result))
-				return result;
-
-			//const int cacheLimit = 4096;
-			//if (referenceDict.Count > cacheLimit)
-			//	referenceDict = ImmutableDictionary<string, bool>.Empty
-
-			AssemblyDefinition assembly = null;
-			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return false;
-				}
-				foreach (var r in assembly.MainModule.AssemblyReferences) {
-					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name.Equals ("System.Runtime")) {
-						referenceDict [fileName] = true; ;
-						return true;
+					foreach (var assemblyReferenceHandle in assemblyReferences) {
+						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+						builder.Add (mr.GetString (assemblyReference.Name));
 					}
+
+					return builder.MoveToImmutable();
 				}
-			} finally {
-				assembly?.Dispose ();
+			} catch {
+				return ImmutableArray<string>.Empty;
 			}
-			referenceDict [fileName] = false;
-			return false;
 		}
 
 		static Dictionary<string, bool> facadeReferenceDict = new Dictionary<string, bool> ();
 
 		static bool RequiresFacadeAssembliesInternal (string fileName)
 		{
-			bool result;
-			if (facadeReferenceDict.TryGetValue (fileName, out result))
+			if (facadeReferenceDict.TryGetValue (fileName, out var result))
 				return result;
 
-			AssemblyDefinition assembly = null;
 			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					return false;
-				}
-				foreach (var r in assembly.MainModule.AssemblyReferences) {
-					// Don't compare the version number since it may change depending on the version of .net standard
-					if (r.Name.Equals ("System.Runtime") || r.Name.Equals ("netstandard")) {
-						facadeReferenceDict [fileName] = true; ;
-						return true;
+				using (var reader = new PEReader (File.OpenRead (fileName))) {
+					var mr = reader.GetMetadataReader ();
+
+					foreach (var assemblyReferenceHandle in mr.AssemblyReferences) {
+						var assemblyReference = mr.GetAssemblyReference (assemblyReferenceHandle);
+						var name = mr.GetString (assemblyReference.Name);
+
+						// Don't compare the version number since it may change depending on the version of .net standard
+						if (name.Equals ("System.Runtime") || name.Equals ("netstandard")) {
+							facadeReferenceDict [fileName] = true;
+							return true;
+						}
 					}
 				}
-			} finally {
-				assembly?.Dispose ();
+			} catch {
+				return false;
 			}
+
 			facadeReferenceDict [fileName] = false;
 			return false;
 		}
 
-		static object referenceLock = new object ();
-
-		[Obsolete ("Use RequiresFacadeAssemblies (string fileName)")]
-		public static bool ContainsReferenceToSystemRuntime (string fileName)
-		{
-			lock (referenceLock) {
-				return ContainsReferenceToSystemRuntimeInternal (fileName);
-			}
-		}
-
-		static SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
-
-		[Obsolete ("Use RequiresFacadeAssembliesAsync (string fileName)")]
-		public static async System.Threading.Tasks.Task<bool> ContainsReferenceToSystemRuntimeAsync (string filename)
-		{
-			try {
-				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
-				return ContainsReferenceToSystemRuntimeInternal (filename);
-			} finally {
-				referenceLockAsync.Release ();
-			}
-		}
-
-		internal static bool RequiresFacadeAssemblies (string fileName)
-		{
-			lock (referenceLock) {
-				return RequiresFacadeAssembliesInternal (fileName);
-			}
-		}
-
-		internal static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
+		static readonly SemaphoreSlim referenceLockAsync = new SemaphoreSlim (1, 1);
+		public static async System.Threading.Tasks.Task<bool> RequiresFacadeAssembliesAsync (string filename)
 		{
 			try {
 				await referenceLockAsync.WaitAsync ().ConfigureAwait (false);
@@ -557,24 +525,50 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
 		{
-			AssemblyDefinition assembly = null;
-			try {
-				try {
-					assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-				} catch {
-					yield break;
-				}
-				foreach (var r in assembly.MainModule.Resources) {
-					if (r.ResourceType == ResourceType.Embedded) {
-						var er = (EmbeddedResource)r;
+			using (var reader = new PEReader (File.OpenRead (fileName))) {
+				var mr = reader.GetMetadataReader ();
 
-						// Explicitly create a capture and query it here so the stream isn't queried after the module is disposed.
-						var rs = er.GetResourceStream ();
-						yield return new ManifestResource (er.Name, () => rs);
+				var headers = reader.PEHeaders;
+				var resources = headers.CorHeader.ResourcesDirectory;
+				var sectionData = reader.GetSectionData (resources.RelativeVirtualAddress);
+				if (sectionData.Length == 0)
+					return Array.Empty<ManifestResource> (); // RVA could not be found in any section
+
+				var sectionReader = sectionData.GetReader ();
+				var manifestResources = mr.ManifestResources;
+				var result = new List<ManifestResource> (manifestResources.Count);
+
+				foreach (var manifestResourceHandle in manifestResources) {
+					var manifestResource = mr.GetManifestResource (manifestResourceHandle);
+
+					// This means the type is Embedded.
+					var isEmbeddedResource = manifestResource.Implementation.IsNil;
+					if (!isEmbeddedResource)
+						continue;
+
+					int offset = (int)manifestResource.Offset;
+					sectionReader.Offset += offset;
+					try {
+						int length = sectionReader.ReadInt32 ();
+						if ((uint)length > sectionReader.RemainingBytes) {
+							LoggingService.LogError ("Resource stream invalid length {0}", length.ToString ());
+							continue;
+						}
+
+						var name = mr.GetString (manifestResource.Name);
+						unsafe {
+							using (var unmanagedStream = new UnmanagedMemoryStream (sectionReader.CurrentPointer, length, length, FileAccess.Read)) {
+								var memoryStream = new MemoryStream (length);
+								unmanagedStream.CopyTo (memoryStream);
+								memoryStream.Position = 0;
+								result.Add (new ManifestResource (name, () => memoryStream));
+							}
+						}
+					} finally {
+						sectionReader.Offset -= offset;
 					}
 				}
-			} finally {
-				assembly?.Dispose ();
+				return result;
 			}
 		}
 
@@ -582,6 +576,38 @@ namespace MonoDevelop.Core.Assemblies
 		public Assembly LoadAssemblyFrom (string asmPath)
 		{
 			return Runtime.LoadAssemblyFrom (asmPath);
+		}
+
+		sealed class StringParameterValueTypeProvider : ISignatureTypeProvider<string, object>
+		{
+			readonly BlobReader valueReader;
+
+			public StringParameterValueTypeProvider (MetadataReader reader, BlobHandle value)
+			{
+				valueReader = reader.GetBlobReader (value);
+
+				var prolog = valueReader.ReadUInt16 ();
+				if (prolog != 1)
+					throw new BadImageFormatException ("Invalid custom attribute prolog.");
+			}
+
+			public string GetPrimitiveType (PrimitiveTypeCode typeCode) => typeCode != PrimitiveTypeCode.String ? "" : valueReader.ReadSerializedString ();
+			public string GetArrayType (string elementType, ArrayShape shape) => "";
+			public string GetByReferenceType (string elementType) => "";
+			public string GetFunctionPointerType (MethodSignature<string> signature) => "";
+			public string GetGenericInstance (string genericType, ImmutableArray<string> typestrings) => "";
+			public string GetGenericInstantiation (string genericType, ImmutableArray<string> typeArguments) { throw new NotImplementedException (); }
+			public string GetGenericMethodParameter (int index) => "";
+			public string GetGenericMethodParameter (object genericContext, int index) { throw new NotImplementedException (); }
+			public string GetGenericTypeParameter (int index) => "";
+			public string GetGenericTypeParameter (object genericContext, int index) { throw new NotImplementedException (); }
+			public string GetModifiedType (string modifier, string unmodifiedType, bool isRequired) => "";
+			public string GetPinnedType (string elementType) => "";
+			public string GetPointerType (string elementType) => "";
+			public string GetSZArrayType (string elementType) => "";
+			public string GetTypeFromDefinition (MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) => "";
+			public string GetTypeFromReference (MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) => "";
+			public string GetTypeFromSpecification (MetadataReader reader, object genericContext, TypeSpecificationHandle handle, byte rawTypeKind) => "";
 		}
 	}
 }

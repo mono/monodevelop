@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using System.Linq;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -102,6 +103,8 @@ namespace MonoDevelop.SourceEditor
 			return clipboardRing;
 		}
 
+		internal static bool DeleteItem (ItemToolboxNode node) => clipboardRing.Remove (node as ClipboardToolboxNode);
+		
 		class ClipboardToolboxNode : ItemToolboxNode, ITextToolboxNode, ICustomTooltipToolboxNode
 		{
 			static readonly ToolboxItemFilterAttribute filterAtt = new ToolboxItemFilterAttribute ("text/plain", ToolboxItemFilterType.Allow);

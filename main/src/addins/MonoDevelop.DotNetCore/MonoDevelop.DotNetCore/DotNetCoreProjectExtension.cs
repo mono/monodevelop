@@ -93,7 +93,7 @@ namespace MonoDevelop.DotNetCore
 		/// </summary>
 		bool IsSdkProject (DotNetProject project)
 		{
-			return project.MSBuildProject.GetReferencedSDKs ().Any ();
+			return project.MSBuildProject.GetReferencedSDKs ().Length > 0;
 		}
 
 		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
@@ -409,7 +409,12 @@ namespace MonoDevelop.DotNetCore
 			if (ProjectNeedsRestore ()) {
 				return CreateNuGetRestoreRequiredBuildResult ();
 			}
-			if ((HasSdk && !IsDotNetCoreSdkInstalled ()) || sdkPaths.IsUnsupportedSdkVersion) {
+
+			if (!Project.TargetFramework.Id.IsNetStandardOrNetCoreApp ()) {
+				return null;
+			}
+
+			if ((HasSdk && !IsDotNetCoreSdkInstalled ()) || (sdkPaths != null && sdkPaths.IsUnsupportedSdkVersion)) {
 				return CreateDotNetCoreSdkRequiredBuildResult ();
 			}
 			return null;
@@ -468,13 +473,10 @@ namespace MonoDevelop.DotNetCore
 
 		protected override void OnBeginLoad ()
 		{
-			dotNetCoreMSBuildProject.Sdk = Project.MSBuildProject.Sdk;
 			base.OnBeginLoad ();
 		}
 
-		public bool HasSdk {
-			get { return dotNetCoreMSBuildProject.HasSdk; }
-		}
+		public bool HasSdk => Project.MSBuildProject.GetReferencedSDKs ().Length > 0;
 
 		protected bool IsWebProject (DotNetProject project)
 		{
@@ -491,10 +493,11 @@ namespace MonoDevelop.DotNetCore
 
 			if (!HasSdk)
 				return;
-		
-			sdkPaths = DotNetCoreSdk.FindSdkPaths (dotNetCoreMSBuildProject.Sdk);
-		}
 
+			var referencedSdks = project.GetReferencedSDKs ();
+			sdkPaths = DotNetCoreSdk.FindSdkPaths (referencedSdks);
+			dotNetCoreMSBuildProject.HasSdk = referencedSdks.Length > 0;
+		}
 		protected override async Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var sourceFiles = await base.OnGetSourceFiles (monitor, configuration);
@@ -608,7 +611,14 @@ namespace MonoDevelop.DotNetCore
 
 		bool IsFSharpSdkProject ()
 		{
-			return HasSdk && dotNetCoreMSBuildProject.Sdk.Contains ("FSharp");
+			if (HasSdk) {
+				var sdks = Project.MSBuildProject.GetReferencedSDKs ();
+				for (var i = 0; i < sdks.Length; i++) {
+					if (sdks [i].Contains ("FSharp"))
+						return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>

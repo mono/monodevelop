@@ -263,12 +263,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			controller.HideWindow ();
 		}
 
-		[Obsolete("Use CompletionWindowManager.ToggleCategoryMode")]
-		public void ToggleCategoryMode ()
-		{
-			controller.ToggleCategoryMode ();
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating that shift was pressed during enter.
 		/// </summary>

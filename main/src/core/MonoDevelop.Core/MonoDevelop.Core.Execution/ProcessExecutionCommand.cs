@@ -29,6 +29,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Execution
 {
+	public enum ProcessExecutionArchitecture
+	{
+		Unspecified,
+		X86,
+		X64
+	}
+
 	public class ProcessExecutionCommand: ExecutionCommand
 	{
 		IDictionary<string, string> environmentVariables;
@@ -69,7 +76,9 @@ namespace MonoDevelop.Core.Execution
 		}
 		
 		public string WorkingDirectory { get; set; }
-		
+
+		public ProcessExecutionArchitecture ProcessExecutionArchitecture { get; set; }
+
 		public IDictionary<string, string> EnvironmentVariables {
 			get {
 				if (environmentVariables == null)

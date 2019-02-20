@@ -30,6 +30,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -46,7 +47,11 @@ namespace MonoDevelop.VersionControl.Views
 			if (widget == null) {
 				widget = new DiffWidget (info);
 
-				ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
+				try {
+					ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Error fetching text from repository ", ex);
+				}
 				ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
 				widget.ShowAll ();
 			}

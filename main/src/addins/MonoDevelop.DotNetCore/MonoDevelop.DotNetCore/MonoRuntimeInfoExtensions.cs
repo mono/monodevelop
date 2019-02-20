@@ -34,7 +34,7 @@ namespace MonoDevelop.DotNetCore
 		static readonly Version MonoVersion5_4 = new Version (5, 4, 0);
 		static readonly Version DotNetCore2_1 = new Version (2, 1);
 
-		internal static Version CurrentRuntimeVersion { get; set; } = MonoRuntimeInfo.FromCurrentRuntime ().RuntimeVersion;
+		internal static Version CurrentRuntimeVersion { get; set; } = MonoRuntimeInfo.FromCurrentRuntime ()?.RuntimeVersion ?? new Version ();
 
 		public static bool SupportsNetStandard20 (this Version monoVersion)
 		{

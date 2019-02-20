@@ -135,6 +135,7 @@ namespace MonoDevelop.Refactoring
 						if (temp.LineKind == LineKind.Normal && temp.TextMarkup == null) {
 							var newText = editor.GetMarkup (temp.Offset, temp.Length, new MarkupOptions (MarkupFormat.Pango, false));
 							diff.LineResults [i] = new LineResult (newText, temp.Offset, temp.Length, temp.LineKind, temp.XNeedsMeasure);
+							QueueResize ();
 						}
 					}
 
@@ -353,7 +354,7 @@ namespace MonoDevelop.Refactoring
 					return;
 				}
 
-				drawingLayout.SetMarkup (lineResult.TextMarkup);
+				drawingLayout.SetMarkup (lineResult.TextMarkup ?? "");
 				drawingLayout.GetPixelSize (out int w, out int h);
 				x = Math.Max (x, w);
 				y += lineHeight;
@@ -398,7 +399,7 @@ namespace MonoDevelop.Refactoring
 		{
 			using (var drawingLayout = new Pango.Layout (PangoContext)) {
 				drawingLayout.FontDescription = fontDescription;
-				drawingLayout.SetMarkup (lineResult.TextMarkup);
+				drawingLayout.SetMarkup (lineResult.TextMarkup ?? "");
 
 				g.Save ();
 				g.Translate (textBorder, y);

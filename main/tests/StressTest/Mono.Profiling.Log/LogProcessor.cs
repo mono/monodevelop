@@ -52,6 +52,16 @@ namespace Mono.Profiler.Log {
 			}
 		}
 
+		void ProcessEvents (List<LogEvent> events, CancellationToken token)
+		{
+			foreach (var ev in events.OrderBy (x => x.Timestamp)) {
+				token.ThrowIfCancellationRequested ();
+				ProcessEvent (SortedVisitor, ev);
+			}
+
+			events.Clear ();
+		}
+
 		public void Process (CancellationToken token)
 		{
 			if (_used)
@@ -61,6 +71,8 @@ namespace Mono.Profiler.Log {
 			_reader = new LogReader (Stream, true);
 
 			StreamHeader = new LogStreamHeader (_reader);
+
+			var events = new List<LogEvent> (Environment.ProcessorCount * 1000);
 
 			while (!Stream.EndOfStream) {
 				token.ThrowIfCancellationRequested ();
@@ -87,11 +99,17 @@ namespace Mono.Profiler.Log {
 						var ev = ReadEvent ();
 
 						ProcessEvent (ImmediateVisitor, ev);
+						events.Add (ev);
+
+						if (ev is SynchronizationPointEvent)
+							ProcessEvents (events, token);
 					}
 
 					_reader = oldReader;
 				}
 			}
+
+			ProcessEvents (events, token);
 		}
 
 		LogEvent ReadEvent ()
@@ -214,10 +232,18 @@ namespace Mono.Profiler.Log {
 					break;
 				case LogMetadataType.Image:
 					if (load) {
-						ev = new ImageLoadEvent {
+						var ile = new ImageLoadEvent {
 							ImagePointer = ReadPointer (),
 							Name = _reader.ReadCString (),
 						};
+
+						if (StreamHeader.FormatVersion >= 16) {
+							var guid = _reader.ReadCString ();
+
+							ile.ModuleVersionId = guid == string.Empty ? Guid.Empty : Guid.Parse (guid);
+						}
+
+						ev = ile;
 					} else if (unload) {
 						ev = new ImageUnloadEvent {
 							ImagePointer = ReadPointer (),
@@ -390,6 +416,7 @@ namespace Mono.Profiler.Log {
 						ClassPointer = StreamHeader.FormatVersion < 15 ? ReadPointer () : 0,
 						VTablePointer = StreamHeader.FormatVersion >= 15 ? ReadPointer () : 0,
 						ObjectSize = (long) _reader.ReadULeb128 (),
+						Generation = StreamHeader.FormatVersion >= 16 ? _reader.ReadByte () : 0,
 					};
 
 					var list = new HeapObjectEvent.HeapObjectReference [(int) _reader.ReadULeb128 ()];
@@ -416,7 +443,7 @@ namespace Mono.Profiler.Log {
 
 					for (var i = 0; i < list.Length; i++) {
 						list [i] = new HeapRootsEvent.HeapRoot {
-							AddressPointer = StreamHeader.FormatVersion >= 15 ? ReadPointer () : 0,
+							SlotPointer = StreamHeader.FormatVersion >= 15 ? ReadPointer () : 0,
 							ObjectPointer = ReadObject (),
 							Attributes = StreamHeader.FormatVersion < 15 ?
 							             (StreamHeader.FormatVersion == 13 ?
@@ -443,7 +470,7 @@ namespace Mono.Profiler.Log {
 					break;
 				case LogEventType.HeapRootUnregister:
 					ev = new HeapRootUnregisterEvent {
-						StartPointer = ReadPointer (),
+						RootPointer = ReadPointer (),
 					};
 					break;
 				default:
@@ -557,6 +584,9 @@ namespace Mono.Profiler.Log {
 				case LogEventType.RuntimeJitHelper: {
 					var helperType = (LogJitHelper) _reader.ReadByte ();
 
+					if (StreamHeader.FormatVersion < 14)
+						helperType--;
+
 					ev = new JitHelperEvent {
 						Type = helperType,
 						BufferPointer = ReadPointer (),
@@ -574,6 +604,11 @@ namespace Mono.Profiler.Log {
 				case LogEventType.MetaSynchronizationPoint:
 					ev = new SynchronizationPointEvent {
 						Type = (LogSynchronizationPoint) _reader.ReadByte (),
+					};
+					break;
+				case LogEventType.MetaAotId:
+					ev = new AotIdEvent {
+						AotId = Guid.Parse (_reader.ReadCString ()),
 					};
 					break;
 				default:

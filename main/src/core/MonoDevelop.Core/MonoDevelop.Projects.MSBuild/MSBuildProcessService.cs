@@ -63,9 +63,19 @@ namespace MonoDevelop.Projects.MSBuild
 			return MSBuildProjectService.GetMSBuildBinPath (Runtime.SystemAssemblyService.CurrentRuntime);
 		}
 
+		static FilePath GetMSBuildBinDirectory (TargetRuntime runtime)
+		{
+			return MSBuildProjectService.GetMSBuildBinPath (runtime);
+		}
+
 		static FilePath GetMSBuildBinPath ()
 		{
-			FilePath binDirectory = GetMSBuildBinDirectory ();
+			return GetMSBuildBinPath (Runtime.SystemAssemblyService.CurrentRuntime);
+		}
+
+		internal static FilePath GetMSBuildBinPath (TargetRuntime runtime)
+		{
+			FilePath binDirectory = GetMSBuildBinDirectory (runtime);
 			FilePath binPath = binDirectory.Combine ("MSBuild.dll");
 			if (File.Exists (binPath)) {
 				return binPath;

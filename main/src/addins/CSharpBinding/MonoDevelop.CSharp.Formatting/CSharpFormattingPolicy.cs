@@ -594,22 +594,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		#endregion
 
-		#region Code Style options
-		bool placeSystemDirectiveFirst = true;
-		[Obsolete("Not used anymore.")]
-		[ItemProperty]
-		public bool PlaceSystemDirectiveFirst {
-			get {
-				return placeSystemDirectiveFirst;
-			}
-
-			set {
-				placeSystemDirectiveFirst = value;
-			}
-		}
-
-		#endregion
-
 		public CSharpFormattingPolicy ()
 		{
 			this.options = IdeApp.TypeSystemService.Workspace?.Options;

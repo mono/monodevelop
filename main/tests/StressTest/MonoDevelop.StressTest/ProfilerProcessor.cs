@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -166,9 +166,9 @@ namespace MonoDevelop.StressTest
 		{
 			switch (Options.Type) {
 				case StressTestOptions.ProfilerOptions.ProfilerType.HeapOnly:
-					return $"--profile=log:heapshot=ondemand,noalloc,nocalls,maxframes=0,output=\"{Options.MlpdOutputPath}\"";
+					return $"--profile=log:nodefaults,heapshot=ondemand,output=\"{Options.MlpdOutputPath}\"";
 				case StressTestOptions.ProfilerOptions.ProfilerType.All:
-					return $"--profile=log:heapshot=ondemand,alloc,nocalls,maxframes={Options.MaxFrames},output=\"{Options.MlpdOutputPath}\"";
+					return $"--profile=log:nodefaults,heapshot-on-shutdown,heapshot=ondemand,gcalloc,gcmove,gcroot,counter,maxframes={Options.MaxFrames},output=\"{Options.MlpdOutputPath}\"";
 				case StressTestOptions.ProfilerOptions.ProfilerType.Custom:
 					return Options.CustomProfilerArguments;
 				default:

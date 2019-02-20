@@ -1,5 +1,5 @@
 # Xamarin Studio Dark Mac GTK Theme
-# Copyright 2012-2016 Xamarin Inc.
+# Copyright 2012-2019 Xamarin Inc.
 # Authors:
 #   Christian Kellner <christian.kellner@lanedo.com>
 #   Carlos Garnacho <carlos.garnacho@lanedo.com>
@@ -14,8 +14,8 @@ fg_color: #d7d7d7
 base_color: #404040
 text_color: #d7d7d7
 link_color: #ace2ff
-dim_color: #777777
-selected_bg_color: #5189ed
+dim_color: #ababab
+selected_bg_color: #2257c9
 selected_fg_color: #fff
 tooltip_bg_color: #5a5a5a
 tooltip_fg_color: #d2d5cd

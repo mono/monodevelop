@@ -282,6 +282,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				base.SetProperty (modelValue, propertyName, value);
 			}
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			ParentWidget = null;
+			TModel = null;
+			base.Dispose (disposing);
+		}
 	}
 }
 

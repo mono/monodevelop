@@ -35,7 +35,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	
+	public interface IToolboxDynamicProviderDeleteSupport
+	{
+		bool DeleteDynamicItem (ItemToolboxNode node);
+
+		bool CanDeleteDynamicItem (ItemToolboxNode node);
+	}
+
 	//Used to fetch or generate the default toolbox items at the beginning of each MD session
 	public interface IToolboxDefaultProvider
 	{
@@ -53,7 +59,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		//This method will be called each time the consumer changes. Return null if not
 		//returning any items for a specific consumer.
 		IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer);
-		
+
 		event EventHandler ItemsChanged;
 	}
 }

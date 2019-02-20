@@ -88,11 +88,10 @@ namespace MonoDevelop.DotNetCore.Tests
 				"</Project>");
 
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 
 			Assert.AreEqual ("15.0", project.ToolsVersion);
 			Assert.IsFalse (project.IsOutputTypeDefined);
-			Assert.AreEqual ("Microsoft.NET.Sdk", project.Sdk);
 			Assert.IsTrue (project.HasSdk);
 		}
 
@@ -112,6 +111,24 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.IsTrue (project.IsOutputTypeDefined);
 			Assert.AreEqual ("netcoreapp1.0", project.TargetFrameworks.Single ());
+		}
+
+		[Test]
+		public void ReadProject_ExplicityReferences ()
+		{
+			CreateMSBuildProject (
+				"<Project ToolsVersion=\"15.0\">\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"      <OutputType>Exe</OutputType>\r\n" +
+				"      <TargetFramework>netcoreapp1.0</TargetFramework>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				" <Import Sdk=\"Microsoft.NET.Sdk\" Project=\"Sdk.targets\" />" +
+				"</Project>");
+			msbuildProject.Evaluate ();
+
+			ReadProject ();
+
+			Assert.That (msbuildProject.GetReferencedSDKs (), Is.Not.Empty);
 		}
 
 		[Test]
@@ -313,7 +330,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 			msbuildProject.ToolsVersion = "4.0";
 
 			WriteProject ();
@@ -332,7 +349,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"  </PropertyGroup>\r\n" +
 				"</Project>");
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 			var projectReferenceItem = msbuildProject.AddNewItem ("ProjectReference", @"Lib\Lib.csproj");
 			projectReferenceItem.Metadata.SetValue ("Name", "Lib");
 			projectReferenceItem.Metadata.SetValue ("Project", "{F109E7DF-F561-4CD6-A46E-CFB27A8B6F2C}");
@@ -359,7 +376,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"</Project>");
 			msbuildProject.Evaluate ();
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 
 			WriteProject (".NETCoreApp,Version=v1.1");
 
@@ -380,7 +397,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"</Project>");
 			msbuildProject.Evaluate ();
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 
 			WriteProject (".NETCoreApp,Version=v1.1");
 			WriteProject (".NETCoreApp,Version=v1.0");
@@ -402,7 +419,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"</Project>");
 			msbuildProject.Evaluate ();
 			ReadProject (".NET Standard,Version=v1.0");
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 
 			WriteProject (".NETStandard,Version=v1.6");
 
@@ -423,7 +440,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"</Project>");
 			msbuildProject.Evaluate ();
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 
 			WriteProject (".NETFramework,Version=v4.6");
 
@@ -444,7 +461,7 @@ namespace MonoDevelop.DotNetCore.Tests
 				"</Project>");
 			msbuildProject.Evaluate ();
 			ReadProject ();
-			project.Sdk = "Microsoft.NET.Sdk";
+			project.HasSdk = true;
 
 			WriteProject (".NETCoreApp,Version=v1.1");
 

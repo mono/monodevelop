@@ -36,12 +36,11 @@ using System;
 using System.Collections;
 
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
-	
 	public class DesignerSupportService
 	{
 		PropertyPad propertyPad = null;
@@ -78,10 +77,17 @@ namespace MonoDevelop.DesignerSupport
 					propertyPad.PropertyGrid.Changed += OnPropertyGridChanged;		
 				}
 				else if (lastCustomProvider != null) {
-					propertyPad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
-					var customizer = lastCustomProvider as IPropertyPadCustomizer;
-					if (customizer != null)
-						customizer.Customize (pad.PadWindow, null);
+					try {
+						var currentCustomWidget = lastCustomProvider.GetCustomPropertyWidget ();
+						if (currentCustomWidget != null) {
+							propertyPad.UseCustomWidget (currentCustomWidget);
+							if (lastCustomProvider is IPropertyPadCustomizer customizer)
+								customizer.Customize (pad.PadWindow, null);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
+						ReSetPad ();
+					}
 				}
 			}
 		}
@@ -174,12 +180,24 @@ namespace MonoDevelop.DesignerSupport
 				lastCustomProvider = provider;
 				
 				if (propertyPad != null) {
-					propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
-					propertyPad.CommandRouteOrigin = commandRouteOrigin;
-				
-					var customizer = provider as IPropertyPadCustomizer;
-					if (customizer != null)
-						customizer.Customize (propertyPad.PadWindow, null);
+					try {
+						var customWidget = provider.GetCustomPropertyWidget ();
+						if (customWidget != null) {
+							propertyPad.UseCustomWidget (customWidget);
+							propertyPad.CommandRouteOrigin = commandRouteOrigin;
+
+							var customizer = provider as IPropertyPadCustomizer;
+							if (customizer != null)
+								customizer.Customize (propertyPad.PadWindow, null);
+						} else {
+							propertyPad?.BlankPad ();
+							return;
+						}
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ($"There was an error trying to GetCustomPropertyWidget from '{lastCustomProvider.GetType ()}' provider", ex);
+						propertyPad?.BlankPad ();
+						return;
+					}
 				}
 			}
 			else {

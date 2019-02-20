@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide
 		static Window defaultRootWindow;
 		public static Window RootWindow {
 			get {
-				if (WelcomePageService.WelcomePageVisible)
+				if (WelcomePageService.WelcomeWindowVisible)
 					return WelcomePageService.WelcomeWindow;
 				return defaultRootWindow;
 			}
@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide
 			// if dialog is modal, make sure it's parented on any existing modal dialog
 			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
-				parent = GetDefaultModalParent ();
+				parent = IdeServices.DesktopService.GetParentForModalWindow ();
 			}
 
 			//ensure the dialog has a parent
@@ -355,10 +355,13 @@ namespace MonoDevelop.Ide
 			}).Wait ();
 			#endif
 
+			var initialRootWindow = Xwt.MessageDialog.RootWindow;
 			try {
+				Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (dialog);
 				IdeApp.DisableIdleActions ();
 				return GtkWorkarounds.RunDialogWithNotification (dialog);
 			} finally {
+				Xwt.MessageDialog.RootWindow = initialRootWindow;
 				IdeApp.EnableIdleActions ();
 			}
 		}
@@ -381,28 +384,6 @@ namespace MonoDevelop.Ide
 			dialog.Shown -= HandleShown;
 		}
 		#endif
-
-		/// <summary>
-		/// Gets a default parent for modal dialogs.
-		/// </summary>
-		public static Window GetDefaultModalParent ()
-		{
-			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
-				if (w.Visible && w.HasToplevelFocus && w.Modal)
-					return w;
-			return GetFocusedToplevel ();
-		}
-
-		static Window GetFocusedToplevel ()
-		{
-			// TODO: support native toplevels
-			// use the first "normal" toplevel window (skipping docks, popups, etc.) or the main IDE window
-			Window gtkToplevel = Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus &&
-																(w.TypeHint == Gdk.WindowTypeHint.Dialog ||
-																 w.TypeHint == Gdk.WindowTypeHint.Normal ||
-																 w.TypeHint == Gdk.WindowTypeHint.Utility));
-			return gtkToplevel ?? RootWindow;
-		}
 		
 		/// <summary>
 		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
@@ -413,39 +394,57 @@ namespace MonoDevelop.Ide
 			if (!Platform.IsMac)
 				return;
 
-			Gtk.Window child = childControl;
-			//modal windows should always be placed o top of existing modal windows
-			if (child.Modal)
-				parent = GetDefaultModalParent ();
+			if (parent == null) {
+				if (childControl.nativeWidget is Gtk.Window gtkChild) {
+					if (gtkChild.Modal)
+						parent = IdeServices.DesktopService.GetParentForModalWindow ();
+				}
+			}
 
-			//else center on the focused toplevel
-			if (parent == null)
-				parent = GetFocusedToplevel ();
-
-			if (parent != null)
-				CenterWindow (child, parent);
+			CenterWindow (childControl, parent);
 		}
-		
+
 		/// <summary>Centers a window relative to its parent.</summary>
 		static void CenterWindow (Window childControl, Window parentControl)
 		{
-			// TODO: support cross-toolkit centering
-			if (!(parentControl.nativeWidget is Gtk.Window)) {
-				// FIXME: center on screen if no Gtk parent given for a Gtk dialog
-				if (childControl.nativeWidget is Gtk.Window gtkChild)
-					gtkChild.WindowPosition = Gtk.WindowPosition.Center;
+			var gtkChild = childControl?.nativeWidget as Gtk.Window;
+			var gtkParent = parentControl?.nativeWidget as Gtk.Window;
+#if MAC
+			var nsChild = childControl?.nativeWidget as NSWindow;
+			var nsParent = parentControl?.nativeWidget as NSWindow ?? parentControl;
+
+			if (nsChild != null) {
+				if (nsParent == null || !nsParent.IsVisible) {
+					nsChild.Center ();
+				} else {
+					int x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2));
+					int y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2));
+					nsChild.SetFrame (new CoreGraphics.CGRect (x, y, nsChild.Frame.Width, nsChild.Frame.Height), true);
+				}
+
 				return;
 			}
-			Gtk.Window child = childControl;
-			Gtk.Window parent = parentControl;
-			child.Child.Show ();
-			int w, h, winw, winh, x, y, winx, winy;
-			child.GetSize (out w, out h);
-			parent.GetSize (out winw, out winh);
-			parent.GetPosition (out winx, out winy);
-			x = Math.Max (0, (winw - w) /2) + winx;
-			y = Math.Max (0, (winh - h) /2) + winy;
-			child.Move (x, y);
+#endif
+			if (gtkChild != null) {
+				gtkChild.Child.Show ();
+				int x, y;
+				gtkChild.GetSize (out var w, out var h);
+				if (gtkParent != null) {
+					gtkParent.GetSize (out var winw, out var winh);
+					gtkParent.GetPosition (out var winx, out var winy);
+					x = Math.Max (0, (winw - w) / 2) + winx;
+					y = Math.Max (0, (winh - h) / 2) + winy;
+					gtkChild.Move (x, y);
+#if MAC
+				} else if (nsParent != null) {
+					x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2));
+					y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2));
+					gtkChild.Move (x, y);
+#endif
+				} else {
+					gtkChild.SetPosition (Gtk.WindowPosition.Center);
+				}
+			}
 		}
 		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)
@@ -560,7 +559,7 @@ namespace MonoDevelop.Ide
 			return messageService.GetTextResponse (parent, question, caption, initialValue, isPassword);
 		}
 		
-		#region Internal GUI object
+#region Internal GUI object
 		static InternalMessageService mso;
 		static InternalMessageService messageService
 		{
@@ -577,7 +576,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? GetDefaultModalParent ()
+					TransientFor = parent ?? IdeServices.DesktopService.GetParentForModalWindow ()
 				};
 				return dialog.Run ();
 			}
@@ -589,14 +588,14 @@ namespace MonoDevelop.Ide
 					Caption = caption,
 					Value = initialValue,
 					IsPassword = isPassword,
-					TransientFor = parent ?? GetDefaultModalParent ()
+					TransientFor = parent ?? IdeServices.DesktopService.GetParentForModalWindow ()
 				};
 				if (dialog.Run ())
 					return dialog.Value;
 				return null;
 			}
 		}
-		#endregion
+#endregion
 	}
 	
 	public class MessageDescription

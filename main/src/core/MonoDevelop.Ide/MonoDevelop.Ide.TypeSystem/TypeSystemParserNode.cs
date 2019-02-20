@@ -84,16 +84,5 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return false;
 		}
-
-		[Obsolete ("Use p.IsCompileable")]
-		public static bool IsCompileableFile (ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
-			=> IsCompileableFile (null, file, out sck);
-
-		[Obsolete ("Use p.IsCompileable")]
-		public static bool IsCompileableFile (MonoDevelop.Projects.Project p, ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
-		{
-			sck = file.SourceCodeKind;
-			return p.IsCompileable (file.FilePath);
-		}
 	}
 }

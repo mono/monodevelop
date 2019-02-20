@@ -53,11 +53,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			Solution = (Solution)dataObject;
 
-			foreach (var rc in Solution.MultiStartupRunConfigurations)
-				configs.Add (new SolutionRunConfigInfo { ProjectConfig = rc, EditedConfig = new MultiItemSolutionRunConfiguration (rc) });
-		
-			foreach (var c in configs)
+			foreach (var rc in Solution.MultiStartupRunConfigurations) {
+				var c = new SolutionRunConfigInfo { ProjectConfig = rc, EditedConfig = new MultiItemSolutionRunConfiguration (rc) };
+				configs.Add (c);
 				AddPanel (c);
+			}
 			ParentDialog.ExpandChildren (this);
 		}
 
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		internal void ShowConfiguration (MultiItemSolutionRunConfiguration editedConfig)
 		{
-			var rc = configs.First (ci => ci.EditedConfig == editedConfig);
+			var rc = configs.First (ci => ci.EditedConfig.Name == editedConfig.Name);
 			var section = sections [rc];
 			ParentDialog.ShowPage (section);
 		}

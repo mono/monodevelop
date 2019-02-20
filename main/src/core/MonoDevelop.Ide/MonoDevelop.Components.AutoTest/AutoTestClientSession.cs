@@ -122,6 +122,8 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
+		public void DisconnectQueries () => session.DisconnectQueries ();
+
 		public void Stop ()
 		{
 			if (service != null)

@@ -830,7 +830,7 @@ namespace MonoDevelop.Debugger
 
 			void UpdateDebugSessionCounter ()
 			{
-				var metadata = new Dictionary<string, string> ();
+				var metadata = new Dictionary<string, object> ();
 				metadata ["Success"] = (!SessionError).ToString ();
 				metadata ["DebuggerType"] = Engine.Id;
 
@@ -843,7 +843,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 
-				Counters.DebugSession.Inc (metadata);
+				Counters.DebugSession.Inc (1, null, metadata);
 			}
 
 			void UpdateEvaluationStatsCounter ()
@@ -853,7 +853,7 @@ namespace MonoDevelop.Debugger
 					return;
 				}
 
-				var metadata = new Dictionary<string, string> ();
+				var metadata = new Dictionary<string, object> ();
 				metadata ["DebuggerType"] = Engine.Id;
 				metadata ["AverageDuration"] = Session.EvaluationStats.AverageTime.ToString ();
 				metadata ["MaximumDuration"] = Session.EvaluationStats.MaxTime.ToString ();
@@ -861,7 +861,7 @@ namespace MonoDevelop.Debugger
 				metadata ["FailureCount"] = Session.EvaluationStats.FailureCount.ToString ();
 				metadata ["SuccessCount"] = Session.EvaluationStats.TimingsCount.ToString ();
 
-				Counters.EvaluationStats.Inc (metadata);
+				Counters.EvaluationStats.Inc (1, null, metadata);
 			}
 
 			bool ExceptionHandler (Exception ex)

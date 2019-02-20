@@ -496,5 +496,41 @@ class MyContext
 			}, policy);
 		}
 
+		/// <summary>
+		/// Fixes VSTS Bug 780196: [Feedback] ディレクティブの入力時に他のregionが開く-Another #6998
+		/// </summary>
+		[Test]
+		public async Task TestBug780196 ()
+		{
+			await Simulate (@"class Foo
+{
+#region foo
+	void Test()
+	{
+	}
+#endregion
+
+	#$
+
+}", (content, ext) => {
+				content.Editor.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'#', '#', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
+{
+#region foo
+	void Test()
+	{
+	}
+#endregion
+
+#
+
+}", newText);
+			});
+		}
 	}
 }

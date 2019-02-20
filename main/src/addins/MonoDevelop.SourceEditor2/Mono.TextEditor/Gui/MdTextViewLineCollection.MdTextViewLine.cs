@@ -50,6 +50,7 @@ namespace Mono.TextEditor
 			/// 1-based
 			/// </summary>
 			public int LineNumber { get; private set; }
+			public bool HasDrawn { get; set; }
 
 			public MdTextViewLine(MdTextViewLineCollection collection, MonoTextEditor textEditor, DocumentLine line, int lineNumber, TextViewMargin.LayoutWrapper layoutWrapper)
 			{

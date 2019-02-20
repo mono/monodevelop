@@ -26,6 +26,7 @@
 
 using MonoDevelop.Ide;
 using Xwt.Drawing;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -94,13 +95,33 @@ namespace MonoDevelop.Debugger
 				ExceptionCaughtDialog.ValueTreeBackgroundColor = Color.FromName ("#525252");
 			}
 
+			//Disabled state
+			ObjectValueTreeDisabledBackgroundColor = new Cairo.Color (0.64f, 0.64f, 0.64f);
+
 			// Shared
+			ObjectValueTreeSelectedTextColor = Ide.Gui.Styles.BaseSelectionTextColor.ToHexString (false);
+			ObjectValueTreeForegroundTextColor = Ide.Gui.Styles.BaseSelectionTextColor.ToHexString (false);
+			ObjectValueTreeExternalCodeForegroundTextColor = ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false);
 
 			ObjectValueTreeValueErrorText = Ide.Gui.Styles.WarningForegroundColor;
 
 			PreviewVisualizerBackgroundColor = Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
 			PreviewVisualizerTextColor = Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
 			PreviewVisualizerHeaderTextColor = Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
+		}
+
+		public static string ObjectValueTreeSelectedTextColor { get; private set; }
+		public static string ObjectValueTreeForegroundTextColor { get; private set; }
+		public static string ObjectValueTreeExternalCodeForegroundTextColor { get; private set; }
+
+		public static Cairo.Color ObjectValueTreeDisabledBackgroundColor { get; private set; }
+
+		internal static string GetStackFrameForegroundHexColor (bool selected, bool isUserCode)
+		{
+			if (selected) {
+				return ObjectValueTreeSelectedTextColor;
+			}
+			return isUserCode ? ObjectValueTreeForegroundTextColor : ObjectValueTreeExternalCodeForegroundTextColor;
 		}
 	}
 }

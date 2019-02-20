@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectOperations.cs
 //
 // Author:
@@ -49,6 +49,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Projects.OptionPanels;
 
 namespace MonoDevelop.Ide
 {
@@ -58,13 +59,13 @@ namespace MonoDevelop.Ide
 	[DefaultServiceImplementation]
 	public partial class ProjectOperations: Service
 	{
-		RootWorkspace workspace;
-
-		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
+		static AsyncOperation<BuildResult> DefaultBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
+		AsyncOperation<BuildResult> currentBuildOperation = DefaultBuildOperation;
 		MultipleAsyncOperation currentRunOperation = MultipleAsyncOperation.CompleteMultipleOperation;
 		IBuildTarget currentBuildOperationOwner;
 		List<IBuildTarget> currentRunOperationOwners = new List<IBuildTarget> ();
-		
+		RootWorkspace workspace;
+
 		SelectReferenceDialog selDialog = null;
 		
 		internal ProjectOperations ()
@@ -148,6 +149,12 @@ namespace MonoDevelop.Ide
 		public AsyncOperation CurrentRunOperation {
 			get { return currentRunOperation; }
 			set { AddRunOperation (value); }
+		}
+
+		void ResetCurrentBuildOperation ()
+		{
+			currentBuildOperation = DefaultBuildOperation;
+			currentBuildOperationOwner = null;
 		}
 
 		public void AddRunOperation (AsyncOperation runOperation)
@@ -340,17 +347,18 @@ namespace MonoDevelop.Ide
 		
 		public async void Export (IMSBuildFileObject item, MSBuildFileFormat format)
 		{
-			ExportSolutionDialog dlg = new ExportSolutionDialog (item, format);
-			
+			ExportSolutionDialog dlg = null;
 			try {
+				dlg = new ExportSolutionDialog (item, format);
+
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					using (ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetToolOutputProgressMonitor (true)) {
 						await Services.ProjectService.Export (monitor, item.FileName, dlg.TargetFolder, dlg.Format);
 					}
 				}
 			} finally {
-				dlg.Destroy ();
-				dlg.Dispose ();
+				dlg?.Destroy ();
+				dlg?.Dispose ();
 			}
 		}
 		
@@ -652,6 +660,35 @@ namespace MonoDevelop.Ide
 					optionsDialog.Destroy ();
 					optionsDialog.Dispose ();
 				}
+			}
+		}
+
+		public async void ShowRunConfiguration (Solution solution, MultiItemSolutionRunConfiguration runConfiguration)
+		{
+			var optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, solution);
+			optionsDialog.CurrentConfig = IdeApp.Workspace.ActiveConfigurationId;
+			try {
+				optionsDialog.SelectPanel ("Run");
+				if (runConfiguration != null) {
+					void shownCallback (object sender, EventArgs args)
+					{
+						var panel = optionsDialog.GetPanel<SolutionRunConfigurationsPanel> ("General");
+						if (panel != null) {
+							panel.ShowConfiguration (runConfiguration);
+						}
+						optionsDialog.Shown -= shownCallback;
+					}
+
+					optionsDialog.Shown += shownCallback;
+				}
+
+				if (MessageService.RunCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
+					await SaveAsync (solution);
+					await IdeApp.Workspace.SavePreferences (solution);
+				}
+			} finally {
+				optionsDialog.Destroy ();
+				optionsDialog.Dispose ();
 			}
 		}
 
@@ -1167,21 +1204,17 @@ namespace MonoDevelop.Ide
 
 				var t = CleanAsync (entry, monitor, tt, false, operationContext);
 
-				t = t.ContinueWith (ta => {
-					currentBuildOperationOwner = null;
-					return ta.Result; 
-				});
-
 				var op = new AsyncOperation<BuildResult> (t, cs);
 				currentBuildOperation = op;
 				currentBuildOperationOwner = entry;
+
+				t.ContinueWith (ta => { ResetCurrentBuildOperation (); });
+				return op;
 			}
 			catch {
 				tt.End ();
 				throw;
 			}
-			
-			return currentBuildOperation;
 		}
 		
 		async Task<BuildResult> CleanAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool isRebuilding, OperationContext operationContext)
@@ -1306,14 +1339,13 @@ namespace MonoDevelop.Ide
 			ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetRebuildProgressMonitor ().WithCancellationSource (cs);
 
 			var t = RebuildAsync (entry, monitor, operationContext);
-			t = t.ContinueWith (ta => {
-				currentBuildOperationOwner = null;
-				return ta.Result;
-			});
 
 			var op = new AsyncOperation<BuildResult> (t, cs);
+			currentBuildOperation = op;
+			currentBuildOperationOwner = entry;
 
-			return currentBuildOperation = op;
+			t.ContinueWith (ta => { ResetCurrentBuildOperation (); });
+			return op;
 		}
 		
 		async Task<BuildResult> RebuildAsync (IBuildTarget entry, ProgressMonitor monitor, OperationContext operationContext)
@@ -1604,15 +1636,19 @@ namespace MonoDevelop.Ide
 					cs = CancellationTokenSource.CreateLinkedTokenSource (cs.Token, cancellationToken.Value);
 				ProgressMonitor monitor = IdeServices.ProgressMonitorManager.GetBuildProgressMonitor ().WithCancellationSource (cs);
 				BeginBuild (monitor, tt, false);
+
 				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext);
-				currentBuildOperation = new AsyncOperation<BuildResult> (t, cs);
+
+				var op = new AsyncOperation<BuildResult> (t, cs);
+				currentBuildOperation = op;
 				currentBuildOperationOwner = entry;
-				t.ContinueWith ((ta) => currentBuildOperationOwner = null);
+
+				t.ContinueWith (ta => { ResetCurrentBuildOperation (); });
+				return op;
 			} catch {
 				tt.End ();
 				throw;
 			}
-			return currentBuildOperation;
 		}
 		
 		async Task<BuildResult> BuildSolutionItemAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false, OperationContext operationContext = null)
@@ -1739,7 +1775,6 @@ namespace MonoDevelop.Ide
 			tt.Trace ("Begin reporting build result");
 			try {
 				if (result != null) {
-					var lastResult = result;
 					monitor.Log.WriteLine ();
 
 					var msg = GettextCatalog.GetString (
@@ -1759,7 +1794,7 @@ namespace MonoDevelop.Ide
 
 					if (monitor.CancellationToken.IsCancellationRequested) {
 						monitor.ReportError (GettextCatalog.GetString ("Build canceled."), null);
-					} else if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
+					} else if (result.ErrorCount == 0 && result.WarningCount == 0 && result.FailedBuildCount == 0) {
 						monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
 					} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
 						monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
@@ -1769,7 +1804,7 @@ namespace MonoDevelop.Ide
 						monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 					}
 					tt.Trace ("End build event");
-					OnEndBuild (monitor, lastResult.FailedBuildCount == 0, lastResult, entry as SolutionFolderItem);
+					OnEndBuild (monitor, result.FailedBuildCount == 0, result, entry as SolutionFolderItem);
 				} else {
 					tt.Trace ("End build event");
 					OnEndBuild (monitor, false);
@@ -2550,13 +2585,14 @@ namespace MonoDevelop.Ide
 		public void AddOperation (AsyncOperation op)
 		{
 			Operations.Add (op);
-			op.Task.ContinueWith (CheckForCompletion);
+			op.Task.ContinueWith (t => CheckForCompletion (t));
 		}
 
 		void CheckForCompletion (Task obj)
 		{
-			if (Operations.All (op => op.IsCompleted))
+			if (Operations.All (op => op.IsCompleted)) {
 				TaskCompletionSource.SetResult (0);
+			}
 		}
 
 		void MultiCancel ()

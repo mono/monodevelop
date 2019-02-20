@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.Commands
 				ci.Icon = pad.Icon;
 				ci.UseMarkup = true;
 				ci.Description = string.Format (descFormat, pad.Title);
+				// We only want these commands enabled if the main window is visible
+				ci.Enabled = IdeApp.Workbench.RootWindow.Visible;
 
 				ActionCommand cmd = IdeApp.CommandService.GetActionCommand ("Pad|" + pad.Id);
 				if (cmd != null) ci.AccelKey = cmd.AccelKey; 
@@ -130,7 +132,7 @@ namespace MonoDevelop.Ide.Commands
 			pad.Visible = true;
 			pad.BringToFront (true);
 
-			Counters.PadShown.Inc (new Dictionary<string,string> {{ "Pad", pad.Id }});
+			Counters.PadShown.Inc (1, null, new Dictionary<string,object> {{ "Pad", pad.Id }});
 		}
 	}
 

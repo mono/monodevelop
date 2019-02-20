@@ -30,11 +30,14 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	sealed class GitCommitDialogExtension: CommitDialogExtension
 	{
+		public static readonly Regex MailRegex = new Regex (@"[\w\d._%+-]+@[\w\d.-]+\.\w+", RegexOptions.Compiled);
+
 		GitCommitDialogExtensionWidget widget;
 
 		Gtk.TextView textView;
@@ -49,7 +52,8 @@ namespace MonoDevelop.VersionControl.Git
 				widget.Show ();
 				Show ();
 				widget.Changed += delegate {
-					AllowCommit = widget.CommitterIsAuthor || widget.AuthorName.Length > 0;
+					AllowCommit = widget.CommitterIsAuthor || 
+					(widget.AuthorName.Length > 0 && IsValidMail(widget.AuthorMail));
 				};
 				return true;
 			}
@@ -201,6 +205,16 @@ namespace MonoDevelop.VersionControl.Git
 			} else {
 				textView.HasTooltip = false;
 			}
+		}
+
+		bool IsValidMail (string mail)
+		{
+			if (string.IsNullOrEmpty (mail))
+				return false;
+
+			var match = MailRegex.Match (mail);
+
+			return match.Success;
 		}
 	}
 }
