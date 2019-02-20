@@ -29,6 +29,34 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core
 {
+	// For backwards compat.
+	public class FileCopyEventInfo
+	{
+		public FilePath SourceFile { get; }
+		public FilePath TargetFile { get; }
+		public bool IsDirectory { get; }
+
+		protected FileCopyEventInfo (string sourceFile, string targetFile, bool isDirectory)
+		{
+			SourceFile = sourceFile;
+			TargetFile = targetFile;
+			IsDirectory = isDirectory;
+		}
+	}
+
+	public class FileEventInfo : FileCopyEventInfo
+	{
+		public FilePath FileName => TargetFile;
+
+		public FileEventInfo (string fileName, bool isDirectory) : base (fileName, fileName, isDirectory)
+		{
+		}
+
+		public FileEventInfo (string sourceFile, string targetFile, bool isDirectory) : base (sourceFile, targetFile, isDirectory)
+		{
+		}
+	}
+
 	public class FileEventArgs : EventArgsChain<FileEventInfo>
 	{
 		public FileEventArgs ()
@@ -45,55 +73,30 @@ namespace MonoDevelop.Core
 			foreach (var f in files)
 				Add (new FileEventInfo (f, isDirectory));
 		}
-	}
-	
-	public class FileEventInfo
-	{
-		public FilePath FileName { get; }
 
-		public bool IsDirectory { get; }
-
-		public FileEventInfo (FilePath fileName, bool isDirectory)
+		public FileEventArgs (IEnumerable<FileEventInfo> args) : base (args)
 		{
-			this.FileName = fileName;
-			this.IsDirectory = isDirectory;
 		}
 	}
 	
-	public class FileCopyEventArgs : EventArgsChain<FileCopyEventInfo>
+	public class FileCopyEventArgs : FileEventArgs
 	{
-		public FileCopyEventArgs (IEnumerable<FileCopyEventInfo> args): base (args)
-		{
-		}
-		
-		public FileCopyEventArgs (FilePath sourceFile, FilePath targetFile, bool isDirectory)
-		{
-			Add (new FileCopyEventInfo (sourceFile, targetFile, isDirectory));
-		}
-		
 		public FileCopyEventArgs ()
 		{
+		}
+
+		public FileCopyEventArgs (IEnumerable<FileEventInfo> args): base (args)
+		{
+		}
+
+		public FileCopyEventArgs (FilePath sourceFile, FilePath targetFile, bool isDirectory)
+		{
+			Add (new FileEventInfo (sourceFile, targetFile, isDirectory));
 		}
 
 		/// <summary>
 		/// Indicates whether or not user made this change in the IDE as opposed to externally.
 		/// </summary>
 		public bool IsExternal { get; set; }
-	}
-	
-	public class FileCopyEventInfo : System.EventArgs
-	{
-		public FilePath SourceFile { get; }
-
-		public FilePath TargetFile { get; }
-
-		public bool IsDirectory { get; }
-
-		public FileCopyEventInfo (FilePath sourceFile, FilePath targetFile, bool isDirectory)
-		{
-			this.SourceFile = sourceFile;
-			this.TargetFile = targetFile;
-			this.IsDirectory = isDirectory;
-		}
 	}
 }

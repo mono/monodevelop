@@ -4414,7 +4414,7 @@ namespace MonoDevelop.Projects
 
 		void OnFileRenamed (object sender, FileCopyEventArgs e)
 		{
-			foreach (FileCopyEventInfo info in e) {
+			foreach (FileEventInfo info in e) {
 				OnFileRenamed (info.SourceFile, info.TargetFile);
 			}
 		}

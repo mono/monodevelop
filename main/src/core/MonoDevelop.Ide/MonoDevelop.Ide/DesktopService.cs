@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide
 			if (args.IsExternal)
 				return;
 
-			foreach (FileCopyEventInfo e in args) {
+			foreach (FileEventInfo e in args) {
 				if (!e.IsDirectory) {
 					PlatformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
 				}
