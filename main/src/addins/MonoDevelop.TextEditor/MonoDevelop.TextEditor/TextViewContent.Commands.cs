@@ -133,6 +133,9 @@ namespace MonoDevelop.TextEditor
 		ICommandUpdater ICustomCommandTarget.GetCommandUpdater (object commandId)
 		{
 			if (CommandMappings.Instance.HasMapping (commandId))
+			if (CommandMappings.Instance.HasMapping (commandId) ||
+				(EditorOperationCommands.TryGetValue (commandId, out var editorOperationCommand) &&
+				editorOperationCommand.Update != null))
 				return this;
 
 			return null;
