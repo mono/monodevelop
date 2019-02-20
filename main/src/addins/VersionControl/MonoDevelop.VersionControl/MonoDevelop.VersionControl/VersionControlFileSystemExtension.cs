@@ -128,5 +128,18 @@ namespace MonoDevelop.VersionControl
 			}
 			VersionControlService.NotifyFileStatusChanged (args);
 		}
+
+		public override void NotifyFilesDeleted (IEnumerable<FilePath> files)
+		{
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
+			foreach (var file in files) {
+				var rep = GetRepository (file);
+				if (rep != null) {
+					rep.ClearCachedVersionInfo (file);
+					args.Add (new FileUpdateEventInfo (rep, file, false));
+				}
+			}
+			VersionControlService.NotifyFilesDeleted (args);
+		}
 	}
 }

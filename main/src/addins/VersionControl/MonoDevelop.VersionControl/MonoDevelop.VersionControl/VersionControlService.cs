@@ -49,6 +49,8 @@ namespace MonoDevelop.VersionControl
 		static DataContext dataContext = new DataContext ();
 
 		public static event FileUpdateEventHandler FileStatusChanged;
+		public static event FileUpdateEventHandler FileDeleted;
+
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
 		public static event CommitEventHandler EndCommit;
@@ -82,7 +84,7 @@ namespace MonoDevelop.VersionControl
 
 				IdeApp.Workspace.FileAddedToProject += OnFileAdded;
 				//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
-				//IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
+				IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
 				//IdeApp.Workspace.FileRenamedInProject += OnFileRenamed;
 
 				IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
@@ -474,6 +476,24 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
+		public static void NotifyFilesDeleted (IEnumerable<VersionControlItem> items)
+		{
+			FileUpdateEventArgs vargs = new FileUpdateEventArgs ();
+			vargs.AddRange (items.Select (i => new FileUpdateEventInfo (i.Repository, i.Path, i.IsDirectory)));
+			NotifyFilesDeleted (vargs);
+		}
+
+		public static void NotifyFilesDeleted (FileUpdateEventArgs args)
+		{
+			if (!Runtime.IsMainThread)
+				Gtk.Application.Invoke ((o2, a2) => {
+					NotifyFilesDeleted (args);
+				});
+			else {
+				FileDeleted?.Invoke (null, args);
+			}
+		}
+
 		static bool ShouldAddFile (ProjectFileEventInfo info)
 		{
 			const ProjectItemFlags ignoreFlags = ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
@@ -515,29 +535,28 @@ namespace MonoDevelop.VersionControl
 				NotifyFileStatusChanged (vargs);
 		}
 
-		/*		
+
 		static void OnFileRemoved (object s, ProjectFileEventArgs args)
 		{
-			string path = args.ProjectFile.FilePath;
-			Repository repo = GetRepository (args.Project);
-			if (repo != null && repo.IsVersioned (path) && repo.CanRemove (path)) {
-				using (IProgressMonitor monitor = GetStatusMonitor ()) {
-					repo.DeleteFile (path, true, monitor);
+			foreach (var file in args) {
+				Repository repo = GetRepository (args.CommonProject);
+				if (repo != null) {
+					string path = file.ProjectFile.FilePath;
+					NotifyFileStatusChanged (new FileUpdateEventArgs (repo, path, file.ProjectFile.Subtype == Subtype.Directory));
 				}
-				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
 			}
 		}
-		
-		static void OnFileRenamed (object s, ProjectFileRenamedEventArgs args)
-		{
-			string path = args.ProjectFile.FilePath;
-			Repository repo = GetRepository (args.Project);
-			if (repo.IsVersioned (path) && repo.CanRemove (path)) {
-				repo.Remove (path);
-				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
-			}
-		}
-		*/
+		/*		
+static void OnFileRenamed (object s, ProjectFileRenamedEventArgs args)
+{
+	string path = args.ProjectFile.FilePath;
+	Repository repo = GetRepository (args.Project);
+	if (repo.IsVersioned (path) && repo.CanRemove (path)) {
+		repo.Remove (path);
+		NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
+	}
+}
+*/
 
 		static void SolutionItemAddFiles (string rootPath, SolutionFolderItem entry, HashSet<string> files)
 		{

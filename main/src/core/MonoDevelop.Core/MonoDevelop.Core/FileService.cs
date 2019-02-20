@@ -341,7 +341,7 @@ namespace MonoDevelop.Core
 		{
 			try {
 				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
-					fsFiles.Key.NotifyFilesChanged (fsFiles);
+					fsFiles.Key.NotifyFilesDeleted (fsFiles);
 				OnFileRemoved (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File remove notification failed", ex);
