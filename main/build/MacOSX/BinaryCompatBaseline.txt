@@ -1,5 +1,7 @@
 In VisualStudio.exe.config: couldn't find assembly 'Microsoft.Build.Framework' with version 15.1.0.0.
 In VisualStudio.exe.config: couldn't find assembly 'Microsoft.Build' with version 15.1.0.0.
+In VisualStudio.exe.config: couldn't find assembly 'System.Net.Http.Extensions' with version 2.2.29.0.
+In VisualStudio.exe.config: couldn't find assembly 'System.Net.Http.Primitives' with version 4.2.29.0.
 Could not load file or assembly 'Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
 Could not load file or assembly 'Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
 Could not load file or assembly 'Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
@@ -9,11 +11,13 @@ Could not load file or assembly 'Microsoft.TestPlatform.Utilities, Version=15.0.
 Could not load file or assembly 'Microsoft.VisualStudio.Web.Azure.Client, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
 Could not load file or assembly 'Microsoft.VisualStudio.Web.Azure.Contracts, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
 Could not load file or assembly 'MonoTouch.Hosting, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies
+Could not load file or assembly 'System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies
 Could not load file or assembly 'System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies
 Could not load file or assembly 'Xamarin.Ide.Identity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies
 Could not load file or assembly 'Xamarin.MacDev.Ide, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies
 Could not load file or assembly 'XamarinStudio.Azure.Provisioning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies
 Could not load file or assembly 'XamarinStudio.MSDeploy, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies
+In assembly 'Google.Apis.Core, Version=1.9.0.26010, Culture=neutral, PublicKeyToken=null': unable to resolve reference to 'System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.CodeAnalysis.TypeScript.EditorFeatures, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': unable to resolve reference to 'Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.VisualStudio.TestPlatform.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': unable to resolve reference to 'Microsoft.TestPlatform.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': Unable to resolve member reference 'System.Boolean System.Windows.FrameworkElement::get_UseLayoutRounding()' from assembly 'PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
