@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft. All rights reserved.
 // Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 //
@@ -27,6 +27,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -232,7 +234,8 @@ namespace MonoDevelop.CSharp
 				}
 
 				//FIXME: use the snapshot that the nodes came from
-				editor.Caret.MoveTo (new SnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset));
+				var point = new VirtualSnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset);
+				EditorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
 			}
 
 			public int IconCount {
@@ -243,6 +246,8 @@ namespace MonoDevelop.CSharp
 					return memberList.Count;
 				}
 			}
+
+			public IEditorOperations EditorOperations { get; internal set; }
 		}
 	}
 }

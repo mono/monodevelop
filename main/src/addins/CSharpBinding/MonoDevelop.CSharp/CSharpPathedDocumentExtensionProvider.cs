@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,6 +22,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.TextEditor;
 
@@ -33,6 +34,8 @@ namespace MonoDevelop.CSharp
 	[Order(Before="Default")]
 	sealed class CSharpPathedDocumentExtensionProvider : EditorContentInstanceProvider<CSharpPathedDocumentExtension>
 	{
-		protected override CSharpPathedDocumentExtension CreateInstance (ITextView view) => new CSharpPathedDocumentExtension (view);
+		[Import]
+		private IEditorOperationsFactoryService editorOperationsFactoryService;
+		protected override CSharpPathedDocumentExtension CreateInstance (ITextView view) => new CSharpPathedDocumentExtension (view, editorOperationsFactoryService.GetEditorOperations (view));
 	}
 }

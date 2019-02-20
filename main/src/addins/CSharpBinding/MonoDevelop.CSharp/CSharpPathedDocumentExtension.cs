@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft. All rights reserved.
 // Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 //
@@ -44,12 +44,14 @@ namespace MonoDevelop.CSharp
 	sealed partial class CSharpPathedDocumentExtension : IPathedDocument, IDisposable
 	{
 		readonly ITextView textView;
+		readonly Microsoft.VisualStudio.Text.Operations.IEditorOperations editorOperations;
 		readonly List<DotNetProject> ownerProjects = new List<DotNetProject> ();
 		bool disposed;
 
-		public CSharpPathedDocumentExtension (ITextView view)
+		public CSharpPathedDocumentExtension (ITextView view, Microsoft.VisualStudio.Text.Operations.IEditorOperations editorOperations)
 		{
 			textView = view;
+			this.editorOperations = editorOperations;
 
 			//FIXME track the active owner project(s)
 			var document = view.TryGetParentDocument ();
@@ -123,7 +125,9 @@ namespace MonoDevelop.CSharp
 			var tag = path [index].Tag;
 			//FIXME
 			//var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Editor, DocumentContext) : new DataProvider (this, tag));
-			var window = new DropDownBoxListWindow (new DataProvider (this, tag)) {
+			var window = new DropDownBoxListWindow (new DataProvider (this, tag) {
+				EditorOperations = editorOperations
+			}) {
 				FixedRowHeight = 22,
 				MaxVisibleRows = 14
 			};
