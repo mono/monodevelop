@@ -1198,8 +1198,7 @@ namespace MonoDevelop.Core
 
 				switch (targetState) {
 				case FileState.Changed:
-					if (oldState == FileState.Changed || oldState == FileState.Created) {
-						// Created + Changed => Created
+					if (oldState == FileState.Changed) {
 						// Changed + Changed => Changed
 						Discard (args, ref i);
 						return true;

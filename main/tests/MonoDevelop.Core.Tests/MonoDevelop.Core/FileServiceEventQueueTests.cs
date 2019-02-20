@@ -76,13 +76,20 @@ namespace MonoDevelop.Core
 				processor.Queue (CreateData (EventDataKind.Changed, a, b));
 			});
 
-			Assert.AreEqual (2, events.Length);
+			Assert.AreEqual (3, events.Length);
 
 			var ev = events [0];
+			Assert.AreEqual (EventDataKind.Changed, ev.Kind);
 			Assert.AreEqual (1, ev.Args.Count);
 			Assert.AreEqual (a, ev.Args [0].FileName);
 
 			ev = events [1];
+			Assert.AreEqual (EventDataKind.Created, ev.Kind);
+			Assert.AreEqual (1, ev.Args.Count);
+			Assert.AreEqual (b, ev.Args [0].FileName);
+
+			ev = events [2];
+			Assert.AreEqual (EventDataKind.Changed, ev.Kind);
 			Assert.AreEqual (1, ev.Args.Count);
 			Assert.AreEqual (b, ev.Args [0].FileName);
 		}
@@ -245,6 +252,18 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (EventDataKind.Changed, ev.Kind);
 			Assert.AreEqual (1, ev.Args.Count);
 			Assert.AreEqual (b, ev.Args [0].FileName);
+		}
+
+		[Test]
+		public void ReduceGoesRecursive()
+		{
+			var events = DoRun (processor => {
+				processor.Queue (CreateData (EventDataKind.Created, b));
+				processor.Queue (CreateData (EventDataKind.Changed, b));
+				processor.Queue (CreateData (EventDataKind.Removed, b));
+			});
+
+			Assert.AreEqual (0, events.Length);
 		}
 
 		[Test]
