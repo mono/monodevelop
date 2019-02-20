@@ -362,7 +362,7 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
-      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" insertbefore="Separator6" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />

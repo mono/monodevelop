@@ -39,6 +39,7 @@ namespace MonoDevelop.MacIntegration
 		HideOthers,
 		ShowOthers,
 		Services,
+		OrderFrontCharacterPalette,
 	}
 	
 	class MacMinimizeWindowHandler : CommandHandler
@@ -103,5 +104,11 @@ namespace MonoDevelop.MacIntegration
 			NSWindow w = GtkQuartz.GetWindow (IdeApp.Workbench.RootWindow);
 			w.PerformZoom (w);
 		}
+	}
+
+	class MacOrderFrontCharacterPaletteHandler : CommandHandler
+	{
+		protected override void Run ()
+			=> NSApplication.SharedApplication.OrderFrontCharacterPalette (NSApplication.SharedApplication);
 	}
 }

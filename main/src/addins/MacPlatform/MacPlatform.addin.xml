@@ -64,6 +64,17 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands/Edit">
+		<Command id = "MonoDevelop.MacIntegration.MacIntegrationCommands.OrderFrontCharacterPalette"
+				defaultHandler = "MonoDevelop.MacIntegration.MacOrderFrontCharacterPaletteHandler"
+				_label = "Emoji &amp; Symbols"
+				macShortcut = "Control+Meta+Space" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
+		<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.OrderFrontCharacterPalette" insertafter = "Separator6" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
 		<Condition id = "Platform" value = "mac">
 			<Class class="MonoDevelop.MacIntegration.MacSelectFileDialogHandler" />
