@@ -225,33 +225,40 @@ namespace MonoDevelop.Core
 		[Test]
 		public void DetectAutoSavePatternMove ()
 		{
-			var events = DoRun (processor => {
-				// Renamed Program.cs -> Program.cs~hash.tmp
-				// Renamed .#Program.cs -> Program.cs
-				// Removed Program.cs~hash.tmp
-				processor.Queue (CreateData (EventDataKind.Renamed, (b, btmp)));
-				processor.Queue (CreateData (EventDataKind.Changed, btmp)); // FileService does this.
-				processor.Queue (CreateData (EventDataKind.Renamed, (a, b)));
-				processor.Queue (CreateData (EventDataKind.Changed, b)); // FileService does this.
-				processor.Queue (CreateData (EventDataKind.Removed, btmp));
+			var kinds = new [] {
+				EventDataKind.Moved,
+				EventDataKind.Renamed,
+			};
 
-				// This should become
-				// Renamed .#Program.cs -> Program.cs
-				// Changed Program.cs
-			});
+			foreach (var kind in kinds) {
+				var events = DoRun (processor => {
+					// Renamed Program.cs -> Program.cs~hash.tmp
+					// Renamed .#Program.cs -> Program.cs
+					// Removed Program.cs~hash.tmp
+					processor.Queue (CreateData (kind, (b, btmp)));
+					processor.Queue (CreateData (EventDataKind.Changed, btmp)); // FileService does this.
+					processor.Queue (CreateData (kind, (a, b)));
+					processor.Queue (CreateData (EventDataKind.Changed, b)); // FileService does this.
+					processor.Queue (CreateData (EventDataKind.Removed, btmp));
 
-			Assert.AreEqual (2, events.Length);
+					// This should become
+					// Renamed .#Program.cs -> Program.cs
+					// Changed Program.cs
+				});
 
-			var ev = events [0];
-			Assert.AreEqual (EventDataKind.Renamed, ev.Kind);
-			Assert.AreEqual (1, ev.Args.Count);
-			Assert.AreEqual (a, ev.Args [0].SourceFile);
-			Assert.AreEqual (b, ev.Args [0].TargetFile);
+				Assert.AreEqual (2, events.Length);
 
-			ev = events [1];
-			Assert.AreEqual (EventDataKind.Changed, ev.Kind);
-			Assert.AreEqual (1, ev.Args.Count);
-			Assert.AreEqual (b, ev.Args [0].FileName);
+				var ev = events [0];
+				Assert.AreEqual (kind, ev.Kind);
+				Assert.AreEqual (1, ev.Args.Count);
+				Assert.AreEqual (a, ev.Args [0].SourceFile);
+				Assert.AreEqual (b, ev.Args [0].TargetFile);
+
+				ev = events [1];
+				Assert.AreEqual (EventDataKind.Changed, ev.Kind);
+				Assert.AreEqual (1, ev.Args.Count);
+				Assert.AreEqual (b, ev.Args [0].FileName);
+			}
 		}
 
 		[Test]

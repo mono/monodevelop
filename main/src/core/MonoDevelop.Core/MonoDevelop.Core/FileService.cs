@@ -1242,27 +1242,21 @@ namespace MonoDevelop.Core
 						// Changed + Remove -> Remove
 						fsm.RemoveLastEventData (path);
 
-						if (fsm.TryGet (path, out state)) {
-							oldState = state.FinalState;
-							// Explicit fallthrough here, we want to look for rename pattern.
-						} else
-							return true;
+						// Reduce more if we can here.
+						return HandleStateChange (path, isDirectory, targetState, args, eventIndex, ref i);
 					}
 
 					if (oldState == FileState.CreatedOrChanged) {
 						// The old file was someone renaming something to it.
 
-						// Rename a -> a.tmp
+						// Rename a -> a.tmp <DISCARD>
 						// Rename b -> a
-						// Remove a.tmp
-						// Transforms into b -> a appending a Changed(a)
+						// Remove a.tmp <DISCARD>
 
 						// Look for a -> a.tmp
-						int targetIndex = 0;
-						if (GetLastRenameEventIgnoringChanged (state, path, ref targetIndex, out var actualTarget) && fsm.TryGet (actualTarget, out var sourceState)) {
+						if (GetLastRenameEvent (state, path, out var actualTarget) && fsm.TryGet (actualTarget, out var sourceState)) {
 							// Look for b -> a
-							int sourceIndex = 0;
-							if (GetLastRenameEventIgnoringChanged (sourceState, actualTarget, ref sourceIndex, out var actualSource)) {
+							if (GetLastRenameEvent (sourceState, actualTarget, out var actualSource)) {
 								fsm.RemoveLastEventData (path);
 								Discard (args, ref i);
 								return true;
@@ -1276,21 +1270,16 @@ namespace MonoDevelop.Core
 				return false;
 			}
 
-			bool GetLastRenameEventIgnoringChanged (FileEventState state, FilePath path, ref int index, out FilePath result)
+			bool GetLastRenameEvent (FileEventState state, FilePath path, out FilePath result)
 			{
 				result = FilePath.Empty;
 
 				var indices = state.Indices;
-				if (indices.Count > index) {
-					var targetIndex = indices [indices.Count - 1 - index];
+				if (indices.Count > 0) {
+					var targetIndex = indices [indices.Count - 1];
 					var resultState = (FileEventData)fsm.Events [targetIndex.EventIndex];
 
-					if (resultState.Kind == FileService.EventDataKind.Changed) {
-						index++;
-						return GetLastRenameEventIgnoringChanged (state, path, ref index, out result);
-					}
-
-					if (resultState.Kind != FileService.EventDataKind.Renamed)
+					if (resultState.Kind != FileService.EventDataKind.Renamed && resultState.Kind != FileService.EventDataKind.Moved)
 						return false;
 
 					var args = resultState.Args;
