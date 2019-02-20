@@ -69,9 +69,6 @@
         <Reference Include="ISymWrapper, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.IO">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="System.Runtime">
           <Paket>True</Paket>
         </Reference>
