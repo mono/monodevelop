@@ -68,31 +68,34 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			readonly CheckBox formatOnCloseBraceCheckBox;
 			readonly CheckBox formatOnReturnCheckBox;
 			readonly CheckBox formatOnPasteCheckBox;
+			readonly Ide.RoslynServices.Options.RoslynPreferences.PerLanguagePreferences preferences;
 
 			public OnTheFlyFormattingPanelWidget ()
 			{
+				preferences = Ide.IdeApp.Preferences.Roslyn.CSharp;
+
 				OptionService = TypeSystemService.Workspace.Services.GetService<IOptionService> ();
 				formatOnTypeCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format when typing"));
-				formatOnTypeCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.AutoFormattingOnTyping, LanguageNames.CSharp);
+				formatOnTypeCheckBox.Active = preferences.AutoFormattingOnTyping;
 				formatOnTypeCheckBox.Toggled += FormatOnTypeCheckBox_Toggled;
 				PackStart (formatOnTypeCheckBox);
 
 				formatOnSemicolonCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format statement on ;"));
-				formatOnSemicolonCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.AutoFormattingOnSemicolon, LanguageNames.CSharp);
+				formatOnSemicolonCheckBox.Active = preferences.AutoFormattingOnSemicolon;
 				formatOnSemicolonCheckBox.MarginLeft = 18;
 				PackStart (formatOnSemicolonCheckBox);
 
 				formatOnCloseBraceCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format block on }"));
-				formatOnCloseBraceCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.AutoFormattingOnCloseBrace, LanguageNames.CSharp);
+				formatOnCloseBraceCheckBox.Active = preferences.AutoFormattingOnCloseBrace;
 				formatOnCloseBraceCheckBox.MarginLeft = 18;
 				PackStart (formatOnCloseBraceCheckBox);
 
 				formatOnReturnCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format on return"));
-				formatOnReturnCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.AutoFormattingOnReturn, LanguageNames.CSharp);
+				formatOnReturnCheckBox.Active = preferences.AutoFormattingOnReturn;
 				PackStart (formatOnReturnCheckBox);
 
 				formatOnPasteCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically format on paste"));
-				formatOnPasteCheckBox.Active = OptionService.GetOption (FeatureOnOffOptions.FormatOnPaste, LanguageNames.CSharp);
+				formatOnPasteCheckBox.Active = preferences.FormatOnPaste;
 				PackStart (formatOnPasteCheckBox);
 				FormatOnTypeCheckBox_Toggled (this, EventArgs.Empty);
 			}
@@ -105,14 +108,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			public void ApplyChanges ()
 			{
-				var optionSet = this.OptionService.GetOptions ();
-				var changedOptions = optionSet
-					.WithChangedOption (FeatureOnOffOptions.AutoFormattingOnTyping, LanguageNames.CSharp, formatOnTypeCheckBox.Active)
-					.WithChangedOption (FeatureOnOffOptions.AutoFormattingOnSemicolon, LanguageNames.CSharp, formatOnSemicolonCheckBox.Active)
-					.WithChangedOption (FeatureOnOffOptions.AutoFormattingOnCloseBrace, LanguageNames.CSharp, formatOnCloseBraceCheckBox.Active)
-					.WithChangedOption (FeatureOnOffOptions.AutoFormattingOnReturn, LanguageNames.CSharp, formatOnReturnCheckBox.Active)
-					.WithChangedOption (FeatureOnOffOptions.FormatOnPaste, LanguageNames.CSharp, formatOnPasteCheckBox.Active);
-				this.OptionService.SetOptions (changedOptions);
+				preferences.AutoFormattingOnTyping.Value = formatOnTypeCheckBox.Active;
+				preferences.AutoFormattingOnSemicolon.Value = formatOnSemicolonCheckBox.Active;
+				preferences.AutoFormattingOnCloseBrace.Value = formatOnCloseBraceCheckBox.Active;
+				preferences.AutoFormattingOnReturn.Value = formatOnReturnCheckBox.Active;
+				preferences.FormatOnPaste.Value = formatOnPasteCheckBox.Active;
 				PropertyService.SaveProperties ();
 
 			}

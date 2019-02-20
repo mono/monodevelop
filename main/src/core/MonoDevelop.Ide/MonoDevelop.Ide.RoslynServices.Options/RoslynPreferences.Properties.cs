@@ -168,8 +168,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 			protected sealed override T OnGetValue () => deserializer (underlying.Value);
 			protected sealed override bool OnSetValue (T value)
 			{
-				underlying.Value = serializer (value);
-				return true;
+				return underlying.Set (serializer (value));
 			}
 
 			internal void SetSerializedValue (string value)
