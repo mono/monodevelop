@@ -922,7 +922,8 @@ namespace MonoDevelop.Ide
 				IsInitialRunAfterUpgrade = IdeApp.IsInitialRunAfterUpgrade,
 				TimeSinceMachineStart = (long)platformDetails.TimeSinceMachineStart.TotalMilliseconds,
 				TimeSinceLogin = (long)platformDetails.TimeSinceLogin.TotalMilliseconds,
-				Timings = timings
+				Timings = timings,
+				StartupBehaviour = IdeApp.Preferences.StartupBehaviour.Value
 			};
 		}
 

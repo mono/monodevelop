@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowDialog ()
 		{
-			MessageService.ShowCustomDialog (this);
+			MessageService.ShowCustomDialog (this, DesktopService.GetFocusedTopLevelWindow ());
 		}
 
 		public void CloseDialog ()

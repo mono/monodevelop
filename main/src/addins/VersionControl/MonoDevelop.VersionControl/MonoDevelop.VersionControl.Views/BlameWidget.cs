@@ -44,7 +44,8 @@ namespace MonoDevelop.VersionControl.Views
 		CopyRevision,
 		ShowDiff,
 		ShowLog,
-		ShowBlameBefore
+		ShowBlameBefore,
+		ShowPreviousBlame
 	}
 	
 	class BlameWidget : Bin
@@ -54,6 +55,9 @@ namespace MonoDevelop.VersionControl.Views
 		public Revision Revision {
 			get {
 				return revision;
+			}
+			private set {
+				revision = value;
 			}
 		}
 
@@ -364,6 +368,7 @@ namespace MonoDevelop.VersionControl.Views
 			double dragPosition = -1;
 
 			TextDocument document;
+			Stack<Revision> history = new Stack<Revision> ();
 
 			public BlameRenderer (BlameWidget widget)
 			{
@@ -453,6 +458,7 @@ namespace MonoDevelop.VersionControl.Views
 					CommandEntrySet opset = new CommandEntrySet ();
 					opset.AddItem (BlameCommands.ShowDiff);
 					opset.AddItem (BlameCommands.ShowLog);
+					opset.AddItem (BlameCommands.ShowPreviousBlame);
 					opset.AddItem (BlameCommands.ShowBlameBefore);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (BlameCommands.CopyRevision);
@@ -526,10 +532,11 @@ namespace MonoDevelop.VersionControl.Views
 			protected void OnShowBlameBefore ()
 			{
 				var current = menuAnnotation?.Revision;
-				Revision rev = current?.GetPrevious () ?? widget.info.History.FirstOrDefault ();
+				var rev = current?.GetPrevious () ?? widget.info.History.FirstOrDefault ();
 				if (rev == null)
 					return;
-				
+
+				history.Push (current);
 				widget.revision = rev;
 				UpdateAnnotations ();
 			}
@@ -541,7 +548,20 @@ namespace MonoDevelop.VersionControl.Views
 				// If we have a working copy segment or we have a parent commit.
 				cinfo.Enabled = current == null || current.GetPrevious () != null;
 			}
-			
+
+			[CommandHandler (BlameCommands.ShowPreviousBlame)]
+			protected void OnShowPreviousBlame ()
+			{
+				widget.Revision = history.Pop ();
+				UpdateAnnotations ();
+			}
+
+			[CommandUpdateHandler (BlameCommands.ShowPreviousBlame)]
+			protected void OnUpdateShowPreviousBlame (CommandInfo cinfo)
+			{
+				cinfo.Enabled = history.Count > 0;
+			}
+
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
 				if (dragPosition >= 0) {

@@ -73,6 +73,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 			return false;
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			noteBook = null;
+			base.Dispose (disposing);
+		}
 	}
 }
 
