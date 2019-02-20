@@ -49,7 +49,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projectInMap = map.GetMonoProject (pid);
 				Assert.AreSame (project, projectInMap);
 
-				map.RemoveProject (project, pid);
+				var projectRemovedFromMap = map.RemoveProject (pid);
+				Assert.AreSame (projectInMap, projectRemovedFromMap);
+
+				Assert.IsNull (map.GetId (project));
+
+				pid = map.GetOrCreateId (project, null);
+				map.RemoveProject (project);
+
 				Assert.IsNull (map.GetId (project));
 			}
 		}

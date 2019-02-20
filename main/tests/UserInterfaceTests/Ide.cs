@@ -50,11 +50,12 @@ namespace UserInterfaceTests
 			Assert.AreEqual (file, GetActiveDocumentFilename ());
 		}
 
-		public static void CloseAll ()
+		public static void CloseAll (bool exit = true)
 		{
 			Session.ExecuteCommand (FileCommands.SaveAll);
 			Session.ExecuteCommand (FileCommands.CloseWorkspace);
-			Session.ExitApp ();
+			if (exit)
+				Session.ExitApp ();
 		}
 
 		public static FilePath GetActiveDocumentFilename ()

@@ -91,7 +91,9 @@ namespace MonoDevelop.MacIntegration
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 
-			panel.ParentWindow = NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+			var parent = Ide.DesktopService.GetFocusedTopLevelWindow ();
+			if (parent != null)
+				panel.ParentWindow = parent;
 
 			if (panel is NSOpenPanel openPanel) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;

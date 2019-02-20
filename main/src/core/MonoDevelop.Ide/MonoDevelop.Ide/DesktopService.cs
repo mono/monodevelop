@@ -349,6 +349,16 @@ namespace MonoDevelop.Ide
 			PlatformService.GrabDesktopFocus (window);
 		}
 
+		public static Window GetParentForModalWindow ()
+		{
+			return PlatformService.GetParentForModalWindow ();
+		}
+
+		public static Window GetFocusedTopLevelWindow ()
+		{
+			return PlatformService.GetFocusedTopLevelWindow ();
+		}
+
 		public static void FocusWindow (Window window)
 		{
 			if (window !=  null)

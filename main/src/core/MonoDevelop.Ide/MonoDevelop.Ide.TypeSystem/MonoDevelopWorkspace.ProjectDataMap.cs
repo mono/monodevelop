@@ -85,17 +85,36 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal void RemoveProject (MonoDevelop.Projects.Project project, ProjectId id)
+			internal void RemoveProject (MonoDevelop.Projects.Project project)
 			{
+				ProjectId projectId;
+
 				lock (gate) {
-					if (projectIdMap.TryGetValue (project, out ProjectId val))
+					if (projectIdMap.TryGetValue (project, out projectId)) {
 						projectIdMap.Remove (project);
-					projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (val);
+						projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (projectId);
+					}
 				}
 
-				lock (updatingProjectDataLock) {
-					projectDataMap.Remove (id);
+				if (projectId != null) {
+					RemoveData (projectId);
 				}
+			}
+
+			internal MonoDevelop.Projects.Project RemoveProject (ProjectId id)
+			{
+				MonoDevelop.Projects.Project actualProject;
+
+				lock (gate) {
+					if (projectIdToMdProjectMap.TryGetValue (id, out actualProject)) {
+						projectIdMap.Remove (actualProject);
+						projectIdToMdProjectMap = projectIdToMdProjectMap.Remove (id);
+					}
+				}
+
+				RemoveData (id);
+
+				return actualProject;
 			}
 
 			internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)

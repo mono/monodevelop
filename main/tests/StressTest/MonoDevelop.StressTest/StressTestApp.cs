@@ -56,6 +56,8 @@ namespace MonoDevelop.StressTest
 		public int Iterations { get; set; } = 1;
 		ProfilerProcessor profilerProcessor;
 
+		const int cleanupIteration = int.MinValue;
+
 		public void Start ()
 		{
 			ValidateMonoDevelopBinPath ();
@@ -90,6 +92,9 @@ namespace MonoDevelop.StressTest
 				scenario.Run ();
 				ReportMemoryUsage (i);
 			}
+
+			UserInterfaceTests.Ide.CloseAll (exit: false);
+			ReportMemoryUsage (cleanupIteration);
 		}
 
 		public void Stop ()
@@ -158,6 +163,9 @@ namespace MonoDevelop.StressTest
 
 		void ReportMemoryUsage (int iteration)
 		{
+			// This is to prevent leaking of AppQuery instances.
+			TestService.Session.DisconnectQueries ();
+
 			UserInterfaceTests.Ide.WaitForIdeIdle ();//Make sure IDE stops doing what it was doing
 			if (profilerProcessor != null) {
 				profilerProcessor.TakeHeapshotAndMakeReport ().Wait ();
@@ -165,7 +173,11 @@ namespace MonoDevelop.StressTest
 
 			var memoryStats = TestService.Session.MemoryStats;
 
-			Console.WriteLine ("Run {0}", iteration + 1);
+			if (iteration == cleanupIteration) {
+				Console.WriteLine ("Cleanup");
+			} else {
+				Console.WriteLine ("Run {0}", iteration + 1);
+			}
 
 			Console.WriteLine ("  NonPagedSystemMemory: " + memoryStats.NonPagedSystemMemory);
 			Console.WriteLine ("  PagedMemory: " + memoryStats.PagedMemory);

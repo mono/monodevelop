@@ -39,7 +39,7 @@ using AppKit;
 
 namespace MonoDevelop.Components.AutoTest
 {
-	public class AppQuery : MarshalByRefObject
+	public class AppQuery : MarshalByRefObject, IDisposable
 	{
 		AppResult rootNode;
 		List<Operation> operations = new List<Operation> ();
@@ -368,7 +368,13 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			var operationChain = string.Join (".", operations.Select (x => x.ToString ()));
 			return string.Format ("c => c.{0};", operationChain);
-		}		
+		}
+
+		public void Dispose ()
+		{
+			rootNode?.Dispose ();
+			rootNode = null;
+		}
 	}
 }
 

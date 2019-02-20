@@ -151,6 +151,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		void DisconnectCurrentStorage ()
 		{
 			lock (_gate) {
+				var workspace = TypeSystemService.GetWorkspace (primaryWorkspace);
+				var solution = workspace.MonoDevelopSolution;
+				if (solution != null)
+					solution.Modified -= OnSolutionModified;
+
 				// We want to make sure everybody synchronously detaches
 				OnWorkingFolderChanging_NoLock (
 					new PersistentStorageLocationChangingEventArgs (

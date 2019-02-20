@@ -4216,6 +4216,11 @@ namespace MonoDevelop.Projects
 					try {
 						IsReevaluating = true;
 
+						// Re-evaluating may change MSBuild items and cause the custom tool generator to run. If a
+						// custom MSBuild target is run it may run before the project builder is refreshed so the
+						// target may not available. To avoid this shutdown the project builder before re-evaluating.
+						ShutdownProjectBuilder ();
+
 						// Reevaluate the msbuild project
 						monitorItemsModifiedDuringReevaluation = true;
 						await sourceProject.EvaluateAsync ();

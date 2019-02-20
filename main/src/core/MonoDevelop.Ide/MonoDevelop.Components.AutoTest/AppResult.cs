@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest
 {
-	public abstract class AppResult : MarshalByRefObject
+	public abstract class AppResult : MarshalByRefObject, IDisposable
 	{
 		//public Gtk.Widget ResultWidget { get; private set; }
 
@@ -228,6 +228,19 @@ namespace MonoDevelop.Components.AutoTest
 			} else {
 				return haystack != null && (haystack.IndexOf (needle, StringComparison.Ordinal) > -1);
 			}
+		}
+
+		public void Dispose ()
+		{
+			Dispose (true);
+		}
+
+		protected virtual void Dispose (bool disposing)
+		{
+			FirstChild?.Dispose ();
+			NextSibling?.Dispose ();
+
+			FirstChild = NextSibling = ParentNode = PreviousSibling = null;
 		}
 	}
 }

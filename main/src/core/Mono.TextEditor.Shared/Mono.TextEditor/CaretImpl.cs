@@ -1,4 +1,4 @@
-﻿// Caret.cs
+// Caret.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -40,7 +40,9 @@ namespace Mono.TextEditor
 		bool autoScrollToCaret = true;
 		
 		CaretMode mode;
-		
+
+		ITextSnapshot currentBuffer;
+
 		int line = DocumentLocation.MinLine;
 		public override int Line {
 			get {
@@ -55,7 +57,7 @@ namespace Mono.TextEditor
 					CheckLine ();
 					SetColumn ();
 					UpdateCaretOffset ();
-					OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
+					OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.Movement));
 				}
 			}
 		}
@@ -74,7 +76,7 @@ namespace Mono.TextEditor
 					CheckColumn ();
 					SetDesiredColumn ();
 					UpdateCaretOffset ();
-					OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
+					OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.Movement));
 				}
 			}
 		}
@@ -94,7 +96,7 @@ namespace Mono.TextEditor
 					CheckColumn ();
 					SetDesiredColumn ();
 					UpdateCaretOffset ();
-					OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
+					OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.Movement));
 				}
 			}
 		}
@@ -120,7 +122,7 @@ namespace Mono.TextEditor
 				CheckLine ();
 				CheckColumn ();
 				SetDesiredColumn ();
-				OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
+				OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.Movement));
 			}
 		}
 
@@ -271,7 +273,7 @@ namespace Mono.TextEditor
 			}
 
 			UpdateCaretOffset ();
-			OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
+			OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.Movement));
 		}
 
 		void SetDesiredColumn ()
@@ -302,7 +304,7 @@ namespace Mono.TextEditor
 			var old = Location;
 			DesiredColumn = desiredColumn;
 			SetColumn ();
-			OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.Movement));
+			OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.Movement));
 		}
 		
 		public override string ToString ()
@@ -332,6 +334,7 @@ namespace Mono.TextEditor
 				TextEditorData.Document.EnsureOffsetIsUnfolded (Offset);
 				base.OnPositionChanged (args);
 				PositionChanged_ITextCaret (args);
+				currentBuffer = TextEditorData.Document.TextBuffer.CurrentSnapshot;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Error when updating caret position", ex);
 			}
@@ -368,8 +371,9 @@ namespace Mono.TextEditor
 			//}
 			var curVersion = TextEditorData.Version;
 			var newOffset = e.GetNewOffset (caretOffset);
-			if (newOffset == caretOffset || !AutoUpdatePosition)
+			if (!AutoUpdatePosition) 
 				return;
+
 			DocumentLocation old = Location;
 			var newLocation = TextEditorData.OffsetToLocation (newOffset);
 			int newColumn = newLocation.Column;
@@ -390,7 +394,7 @@ namespace Mono.TextEditor
 
 			SetDesiredColumn ();
 			UpdateCaretOffset ();
-			OnPositionChanged (new CaretLocationEventArgs (old, CaretChangeReason.BufferChange));
+			OnPositionChanged (new CaretLocationEventArgs (old, currentBuffer ?? TextEditorData.Document.TextBuffer.CurrentSnapshot, CaretChangeReason.BufferChange));
 		}
 
 		public void SetDocument (TextDocument doc)
