@@ -646,16 +646,21 @@ namespace MonoDevelop.Core
 
 		static void WindowsRename (string sourceFile, string destFile)
 		{
-			//Replace fails if the target file doesn't exist, so in that case try a simple move
-			if (!File.Exists (destFile)) {
-				try {
-					File.Move (sourceFile, destFile);
-					return;
-				} catch {
+			FreezeEvents ();
+			try {
+				//Replace fails if the target file doesn't exist, so in that case try a simple move
+				if (!File.Exists (destFile)) {
+					try {
+						File.Move (sourceFile, destFile);
+						return;
+					} catch {
+					}
 				}
-			}
 
-			File.Replace (sourceFile, destFile, null);
+				File.Replace (sourceFile, destFile, null);
+			} finally {
+				ThawEvents ();
+			}
 		}
 
 		static void UnixRename (string sourceFile, string destFile)
