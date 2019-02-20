@@ -34,7 +34,7 @@ namespace MonoDevelop.Core
 		void MergeWith (IEventArgsChain args);
 	}
 	
-	public class EventArgsChain<T>: EventArgs, ICollection<T>, IEnumerable<T>, IEventArgsChain
+	public class EventArgsChain<T>: EventArgs, IList<T>, IEventArgsChain
 	{
 		List<T> events = new List<T> ();
 		
@@ -118,6 +118,14 @@ namespace MonoDevelop.Core
 		{
 			return events.GetEnumerator ();
 		}
+
+		public T this [int index] { get => events[index]; set => events[index] = value; }
+
+		public int IndexOf (T item) => events.IndexOf (item);
+
+		public void Insert (int index, T item) => events.Insert (index, item);
+
+		public void RemoveAt (int index) => events.RemoveAt (index);
 		#endregion
 	}
 }
