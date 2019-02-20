@@ -147,6 +147,9 @@ namespace MonoDevelop.TextEditor
 		Components.Control control;
 		public override Components.Control Control => control;
 
+		public override string TabPageLabel
+			=> GettextCatalog.GetString ("Source");
+
 		public override void Dispose ()
 		{
 			UnsubscribeFromEvents ();
