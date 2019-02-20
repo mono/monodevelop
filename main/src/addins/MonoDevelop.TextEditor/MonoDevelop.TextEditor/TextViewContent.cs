@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
+using MonoDevelop.Projects.Policies;
 
 #if WINDOWS
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
@@ -103,6 +104,7 @@ namespace MonoDevelop.TextEditor
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 			EditorOperations = (EditorOperationsInterface)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
 			EditorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
+			UpdateEditorOptionsWithProjectPolicies ();
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
 			TextView.Properties [typeof(ViewContent)] = this;
@@ -111,6 +113,27 @@ namespace MonoDevelop.TextEditor
 			InstallAdditionalEditorOperationsCommands ();
 
 			SubscribeToEvents ();
+		}
+
+		PolicyBag policyContainer;
+		private void UpdateEditorOptionsWithProjectPolicies ()
+		{
+			if (ownerProject == null)
+				return;
+			if (policyContainer != null)
+				policyContainer.PolicyChanged -= PolicyChanged;
+			policyContainer = ownerProject.Policies;
+			policyContainer.PolicyChanged += PolicyChanged;
+			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeType);
+			EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
+			EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
+			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
+			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
+		}
+
+		private void PolicyChanged (object sender, PolicyChangedEventArgs e)
+		{
+			UpdateEditorOptionsWithProjectPolicies ();
 		}
 
 		protected abstract TView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles);
@@ -128,6 +151,8 @@ namespace MonoDevelop.TextEditor
 		{
 			UnsubscribeFromEvents ();
 			TextDocument.Dispose ();
+			if (policyContainer != null)
+				policyContainer.PolicyChanged -= PolicyChanged;
 			base.Dispose ();
 		}
 
