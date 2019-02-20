@@ -58,6 +58,7 @@ using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide
 {
@@ -391,6 +392,7 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.DocumentOpened += CompleteFileTimeToCode;
 
 			CreateStartupMetadata (startupInfo, sectionTimings);
+			AddinsUpdateHandler.ReportUserAddins ();
 
 			GLib.Idle.Add (OnIdle);
 			IdeApp.Run ();

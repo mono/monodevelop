@@ -123,7 +123,6 @@ namespace MonoDevelop.Core
 					AddinManager.Registry.Update (null);
 				setupService = new AddinSetupService (AddinManager.Registry);
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
-				ReportUserAddins ();
 				
 				PropertyService.Initialize ();
 
@@ -154,25 +153,6 @@ namespace MonoDevelop.Core
 			} finally {
 				Counters.RuntimeInitialization.EndTiming ();
 			}
-		}
-
-		static void ReportUserAddins ()
-		{
-			Counters.UserAddins.Inc (1, null, GetUserAddinsMetadata ());
-		}
-
-		static IDictionary<string, object> GetUserAddinsMetadata ()
-		{
-			var metadata = new Dictionary<string, object> ();
-
-			foreach (Addin addin in AddinManager.Registry.GetModules (AddinSearchFlags.IncludeAddins | AddinSearchFlags.LatestVersionsOnly)) {
-				if (addin.IsUserAddin && addin.Enabled) {
-					string id = Addin.GetFullId (addin.Namespace, addin.LocalId, null);
-					metadata [id] = addin.Version;
-				}
-			}
-
-			return metadata;
 		}
 
 		static void RegisterAddinRepositories ()
@@ -565,7 +545,6 @@ namespace MonoDevelop.Core
 		public static TimerCounter PropertyServiceInitialization = InstrumentationService.CreateTimerCounter ("Property Service initialization", "Runtime");
 		
 		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine", true, id:"Core.AddinsLoaded");
-		public static Counter UserAddins = InstrumentationService.CreateCounter ("User Add-ins", "Add-in Engine", id:"Core.UserAddins");
 
 		public static Counter ProcessesStarted = InstrumentationService.CreateCounter ("Processes started", "Process Service");
 		public static Counter ExternalObjects = InstrumentationService.CreateCounter ("External objects", "Process Service");

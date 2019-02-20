@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using Mono.Addins.Setup;
 using Gtk;
@@ -33,7 +35,6 @@ using MonoDevelop.Ide.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Core.Setup;
 using System.Threading.Tasks;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -98,7 +99,9 @@ namespace MonoDevelop.Ide.Updater
 		{
 			if (args.Button == Xwt.PointerButton.Left) {
 				HideAlert ();
-				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
+				using (var reporter = new UserAddinsChangedReporter ()) {
+					AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
+				}
 			}
 		}
 
@@ -113,7 +116,9 @@ namespace MonoDevelop.Ide.Updater
 			}
 			HideAlert ();
 
-			AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
+			using (var reporter = new UserAddinsChangedReporter ()) {
+				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
+			}
 		}
 
 		public static void HideAlert ()
@@ -121,6 +126,68 @@ namespace MonoDevelop.Ide.Updater
 			if (updateIcon != null) {
 				updateIcon.Dispose ();
 				updateIcon = null;
+			}
+		}
+
+		public static int RunToInstallFile (Gtk.Window parent, SetupService service, string file)
+		{
+			using (var reporter = new UserAddinsChangedReporter ()) {
+				return AddinManagerWindow.RunToInstallFile (parent, service, file);
+			}
+		}
+
+		internal static void ReportUserAddins ()
+		{
+			Counters.UserAddins.Inc (1, null, GetUserAddinsMetadata ());
+		}
+
+		static IDictionary<string, object> GetUserAddinsMetadata ()
+		{
+			var metadata = new Dictionary<string, object> ();
+
+			foreach (Addin addin in GetEnabledUserAddins ()) {
+				string id = Addin.GetFullId (addin.Namespace, addin.LocalId, null);
+				metadata [id] = addin.Version;
+			}
+
+			return metadata;
+		}
+
+		static IEnumerable<Addin> GetEnabledUserAddins ()
+		{
+			foreach (Addin addin in AddinManager.Registry.GetModules (AddinSearchFlags.IncludeAddins | AddinSearchFlags.LatestVersionsOnly)) {
+				if (addin.IsUserAddin && addin.Enabled)
+					yield return addin;
+			}
+		}
+
+		class UserAddinsChangedReporter : IDisposable
+		{
+			readonly List<string> oldUserAddins;
+
+			public UserAddinsChangedReporter ()
+			{
+				oldUserAddins = GetUserAddinsList ();
+			}
+
+			List<string> GetUserAddinsList ()
+			{
+				var addins = new List<string> ();
+				foreach (Addin addin in GetEnabledUserAddins ()) {
+					addins.Add (addin.Id);
+				}
+				addins.Sort ();
+
+				return addins;
+			}
+
+			public void Dispose ()
+			{
+				var newUserAddins = GetUserAddinsList ();
+
+				if (oldUserAddins.Count != newUserAddins.Count || !oldUserAddins.SequenceEqual (newUserAddins)) {
+					ReportUserAddins ();
+				}
 			}
 		}
 	}

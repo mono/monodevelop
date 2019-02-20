@@ -51,6 +51,7 @@ using MonoDevelop.Ide.Templates;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.RoslynServices.Options;
 using MonoDevelop.Ide.RoslynServices;
+using MonoDevelop.Ide.Updater;
 
 namespace MonoDevelop.Ide
 {
@@ -376,7 +377,7 @@ namespace MonoDevelop.Ide
 					}
 				} else if (file.FileName.HasExtension ("mpack")) {
 					var service = new SetupService (AddinManager.Registry);
-					AddinManagerWindow.RunToInstallFile (Workbench.RootWindow,
+					AddinsUpdateHandler.RunToInstallFile (Workbench.RootWindow,
 					                                     service,
 					                                     file.FileName.FullPath);
 				} else {
