@@ -216,6 +216,27 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
+		public void DetectAutoSavePatternMove ()
+		{
+			var events = DoRun (processor => {
+				// Renamed Program.cs -> Program.cs~hash.tmp
+				// Renamed .#Program.cs -> Program.cs
+				// Removed Program.cs~hash.tmp
+				processor.Queue (CreateData (EventDataKind.Renamed, (b, btmp)));
+				processor.Queue (CreateData (EventDataKind.Renamed, (a, b)));
+				processor.Queue (CreateData (EventDataKind.Removed, btmp));
+			});
+
+			Assert.AreEqual (1, events.Length);
+
+			var ev = events [0];
+			Assert.AreEqual (EventDataKind.Renamed, ev.Kind);
+			Assert.AreEqual (1, ev.Args.Count);
+			Assert.AreEqual (a, ev.Args [0].SourceFile);
+			Assert.AreEqual (b, ev.Args [0].TargetFile);
+		}
+
+		[Test]
 		public void NothingToReduce ()
 		{
 			var events = DoRun (processor => {

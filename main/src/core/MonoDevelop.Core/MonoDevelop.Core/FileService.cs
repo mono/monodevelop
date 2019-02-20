@@ -1185,9 +1185,9 @@ namespace MonoDevelop.Core
 
 				switch (targetState) {
 				case FileState.Changed:
-					// Created + Changed => Created
-					// Changed + Changed => Changed
 					if (oldState == FileState.Changed || oldState == FileState.Created) {
+						// Created + Changed => Created
+						// Changed + Changed => Changed
 						Discard (args, ref i);
 						return true;
 					}
@@ -1195,7 +1195,7 @@ namespace MonoDevelop.Core
 
 				case FileState.Created:
 					if (oldState == FileState.Removed) {
-						// Remove -> Created => Changed
+						// Remove -> Created => queue new Changed
 						Discard (args, ref i);
 						fsm.RemoveLastEventData (path);
 
@@ -1222,11 +1222,58 @@ namespace MonoDevelop.Core
 					}
 
 					if (oldState == FileState.Changed) {
+						// Changed + Remove -> Remove
 						fsm.RemoveLastEventData (path);
 						return true;
 					}
 
+					if (oldState == FileState.CreatedOrChanged) {
+						// The old file was someone renaming something to it.
+
+						// Rename a -> a.tmp
+						// Rename b -> a
+						// Remove a.tmp
+						// Transforms into b -> a.
+
+						// Look for a -> a.tmp
+
+						if (GetEventAt (state, 0, path, out var actualTarget) && fsm.TryGet (actualTarget, out var sourceState)) {
+							// Look for b -> a
+							if (GetEventAt (sourceState, 0, actualTarget, out var actualSource)) {
+								fsm.RemoveLastEventData (path);
+								Discard (args, ref i);
+								return true;
+							}
+						}
+					}
+
 					break;
+				}
+
+				return false;
+			}
+
+			bool GetEventAt (FileEventState state, int index, FilePath path, out FilePath result)
+			{
+				result = FilePath.Empty;
+
+				var indices = state.Indices;
+				if (indices.Count > index) {
+					var targetIndex = indices [indices.Count - 1 - index];
+					var renameState = (FileEventData)fsm.Events [targetIndex.EventIndex];
+
+					if (renameState.Kind != FileService.EventDataKind.Renamed)
+						return false;
+
+					var args = renameState.Args;
+					for (int i = 0; i < args.Count; ++i) {
+						var arg = args [i];
+						if (arg.TargetFile == path) {
+							// Found the file which this was renamed from.
+							result = arg.SourceFile;
+							return true;
+						}
+					}
 				}
 
 				return false;
