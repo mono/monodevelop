@@ -259,7 +259,6 @@ namespace MonoDevelop.VersionControl.Views
 
 			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
 			VersionControlService.FileStatusChanged += OnFileStatusChanged;
-			FileService.FileRemoved += OnFileRemoved;
 
 			filelist.HeadersClickable = true;
 			filestore.SetSortFunc (0, CompareNodes);
@@ -421,7 +420,7 @@ namespace MonoDevelop.VersionControl.Views
 				this.diffRenderer = null;
 			}
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
-			FileService.FileRemoved -= OnFileRemoved;
+
 			if (widget != null) {
 				widget.Destroy ();
 				widget = null;
@@ -959,21 +958,6 @@ namespace MonoDevelop.VersionControl.Views
 				if (!OnFileStatusChanged (f))
 					break;
 			}
-			UpdateControlStatus ();
-		}
-
-		void OnFileRemoved (object s, FileEventArgs args)
-		{
-			if (args.Any (f => f.FileName == filepath || (f.FileName.IsChildPathOf (filepath) && f.IsDirectory))) {
-				StartUpdate ();
-				return;
-			}
-
-			foreach (FileEventInfo f in args) {
-				if (!OnFileStatusChanged (new FileUpdateEventInfo (vc, new FilePath (f.FileName), f.IsDirectory)))
-					break;
-			}
-
 			UpdateControlStatus ();
 		}
 
