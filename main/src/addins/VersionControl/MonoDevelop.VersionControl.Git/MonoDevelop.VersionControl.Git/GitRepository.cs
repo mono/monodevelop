@@ -57,13 +57,17 @@ namespace MonoDevelop.VersionControl.Git
 			private set {
 				if (rootRepository == value)
 					return;
-				if (watcher != null) {
-					watcher.EnableRaisingEvents = false;
-					watcher.Dispose ();
-					watcher = null;
-				}
+
+				ShutdownFileWatcher ();
+				ShutdownScheduler ();
+
+				if (rootRepository != null)
+					rootRepository.Dispose ();
 
 				rootRepository = value;
+
+				InitScheduler ();
+				InitFileWatcher (false);
 			}
 		}
 
@@ -71,16 +75,13 @@ namespace MonoDevelop.VersionControl.Git
 
 
 		FileSystemWatcher watcher;
-		readonly ConcurrentExclusiveSchedulerPair scheduler;
-		readonly TaskFactory blockingOperationFactory;
-		readonly TaskFactory readingOperationFactory;
+		ConcurrentExclusiveSchedulerPair scheduler;
+		TaskFactory blockingOperationFactory;
+		TaskFactory readingOperationFactory;
 
 		public GitRepository ()
 		{
 			Url = "git://";
-			scheduler = new ConcurrentExclusiveSchedulerPair ();
-			blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
-			readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
 		}
 
 		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
@@ -89,28 +90,61 @@ namespace MonoDevelop.VersionControl.Git
 			RootPath = RootRepository.Info.WorkingDirectory;
 			Url = url;
 
-			scheduler = new ConcurrentExclusiveSchedulerPair ();
-			blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
-			readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
-
 			InitFileWatcher ();
 		}
 
-		void InitFileWatcher ()
+		void InitScheduler ()
 		{
-			if (RootPath.IsNullOrEmpty)
-				throw new InvalidOperationException ($"{nameof (RootPath)} not set, FileSystemWantcher can not be initialized");
+			if (scheduler == null) {
+				scheduler = new ConcurrentExclusiveSchedulerPair ();
+				blockingOperationFactory = new TaskFactory (scheduler.ExclusiveScheduler);
+				readingOperationFactory = new TaskFactory (scheduler.ConcurrentScheduler);
+			}
+		}
+
+		void ShutdownScheduler ()
+		{
+			if (scheduler != null) {
+				scheduler.Complete ();
+				scheduler.Completion.Wait ();
+				scheduler = null;
+				readingOperationFactory = null;
+				blockingOperationFactory = null;
+			}
+		}
+
+		void InitFileWatcher (bool throwIfIndexMissing = true)
+		{
 			if (RootRepository == null)
 				throw new InvalidOperationException ($"{nameof (RootRepository)} not initialized, FileSystemWantcher can not be initialized");
+			if (throwIfIndexMissing && RootPath.IsNullOrEmpty)
+				throw new InvalidOperationException ($"{nameof (RootPath)} not set, FileSystemWantcher can not be initialized");
 			FilePath dotGitPath = RootRepository.Info.Path;
-			if (!dotGitPath.IsDirectory || !Directory.Exists (dotGitPath))
+			if (!dotGitPath.IsDirectory || !Directory.Exists (dotGitPath)) {
+				if (!throwIfIndexMissing)
+					return;
 				throw new InvalidOperationException ($"{nameof (RootPath)} is not a valid Git repository, FileSystemWantcher can not be initialized");
+			}
+
+			if (watcher?.Path == dotGitPath.CanonicalPath.ParentDirectory)
+				return;
+
+			ShutdownFileWatcher ();
 
 			watcher = new FileSystemWatcher (dotGitPath.CanonicalPath.ParentDirectory, Path.Combine (dotGitPath.FileName, "*.lock"));
 			watcher.Created += HandleGitLockCreated;
 			watcher.Deleted += HandleGitLockDeleted;
 			watcher.Renamed += HandleGitLockRenamed;
 			watcher.EnableRaisingEvents = true;
+		}
+
+		void ShutdownFileWatcher ()
+		{
+			if (watcher != null) {
+				watcher.EnableRaisingEvents = false;
+				watcher.Dispose ();
+				watcher = null;
+			}
 		}
 
 		void HandleGitLockCreated (object sender, FileSystemEventArgs e)
@@ -143,20 +177,21 @@ namespace MonoDevelop.VersionControl.Git
 		internal bool Disposed { get; private set; }
 		public override void Dispose ()
 		{
-			if (!Disposed && watcher != null) {
-				watcher.EnableRaisingEvents = false;
-				watcher.Dispose ();
-				watcher = null;
-			}
-
 			Disposed = true;
+
+			ShutdownFileWatcher ();
+			ShutdownScheduler ();
 
 			base.Dispose ();
 
-			if (RootRepository != null)
-				RootRepository.Dispose ();
-			foreach (var rep in cachedSubmodules)
-				rep.Item2.Dispose ();
+			if (rootRepository != null) {
+				rootRepository.Dispose ();
+				rootRepository = null;
+			}
+			if (cachedSubmodules != null)
+				foreach (var rep in cachedSubmodules)
+					rep.Item2.Dispose ();
+			cachedSubmodules = null;
 		}
 
 		public override string[] SupportedProtocols {
@@ -198,11 +233,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			var r = (GitRepository)other;
 			RootPath = r.RootPath;
-			if (!RootPath.IsNullOrEmpty) {
+			if (!RootPath.IsNullOrEmpty)
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
-				if (RootPath.Combine (".git").IsDirectory)
-					InitFileWatcher ();
-			}
 		}
 
 		public override string LocationDescription {
@@ -395,18 +427,30 @@ namespace MonoDevelop.VersionControl.Git
 				throw new InvalidOperationException ("Deadlock prevention: this shall not run on the UI thread");
 		}
 
+		void EnsureInitialized ()
+		{
+			if (Disposed)
+				throw new ObjectDisposedException (typeof(GitRepository).Name);
+			InitScheduler ();
+			if (RootRepository != null)
+				InitFileWatcher ();
+		}
+
 		internal void RunSafeOperation (Action action)
 		{
+			EnsureInitialized ();
 			action ();
 		}
 
 		internal T RunSafeOperation<T> (Func<T> action)
 		{
+			EnsureInitialized ();
 			return action ();
 		}
 
 		internal void RunOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			readingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
@@ -414,6 +458,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal void RunOperation (Action action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			readingOperationFactory.StartNew (action).RunWaitAndCapture ();
@@ -421,6 +466,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal T RunOperation<T> (Func<T> action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			return readingOperationFactory.StartNew (action).RunWaitAndCapture ();
@@ -428,6 +474,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			return readingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
@@ -442,6 +489,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
@@ -449,6 +497,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			return blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
@@ -456,6 +505,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
+			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
 			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
@@ -767,7 +817,6 @@ namespace MonoDevelop.VersionControl.Git
 			// Initialize the repository
 			RootPath = localPath;
 			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
-			InitFileWatcher ();
 			RootRepository.Network.Remotes.Add ("origin", Url);
 
 			// Add the project files
