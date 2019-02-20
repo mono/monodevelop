@@ -738,7 +738,12 @@ namespace MonoDevelop.Ide.Gui
 					foreach (ViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 						    content.ContentName == e.SourceFile) {
-							content.ContentName = e.TargetFile;
+
+							// In case of a File.Replace, on Windows, the OS will rename this file to a temporary file.
+							// By the time the thaw is done, the temporary file is gone, so don't bother relocating.
+							if (File.Exists (e.TargetFile)) {
+								content.ContentName = e.TargetFile;
+							}
 							return;
 						}
 					}
