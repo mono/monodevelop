@@ -582,21 +582,16 @@ namespace MonoDevelop.VersionControl.Git
 						CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType)
 					});
 				} catch(VersionControlException vcex) {
+					RootRepository.Dispose ();
+					RootRepository = null;
+					if (RootPath.Combine (".git").IsDirectory)
+						Directory.Delete (RootPath.Combine (".git"), true);
 					LoggingService.LogError ("Failed to publish to the repository", vcex);
-					DeleteGitFolder ();
 					throw;
 				}
 			});
 
 			return this;
-		}
-
-		void DeleteGitFolder()
-		{
-			RootRepository.Dispose ();
-			RootRepository = null;
-			if (RootPath.Combine (".git").IsDirectory)
-				Directory.Delete (RootPath.Combine (".git"), true);
 		}
 
 		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
