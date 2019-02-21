@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl
 		Repository repository;
 		public Repository Repository {
 			get {
-				if (repository != null && repository.Disposed)
+				if (repository != null && repository.IsDisposed)
 					repository = VersionControlService.GetRepository (WorkspaceObject);
 				return repository;
 			}
