@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Composition
 				}
 			}
 
-			internal bool CanUse ()
+			internal bool CanUse (bool handleExceptions = true)
 			{
 				// If we don't have a control file, bail early
 				if (!File.Exists (MefCacheControlFile) || !File.Exists (MefCacheFile))
@@ -143,6 +143,9 @@ namespace MonoDevelop.Ide.Composition
 					if (!ValidateAssemblyCacheListIntegrity (loadedAssemblies, controlCache.AdditionalInputAssemblyInfos, cachingFaultInjector))
 						return false;
 				} catch (Exception e) {
+					if (!handleExceptions)
+						throw;
+
 					LoggingService.LogError ("MEF cache validation failed", e);
 					return false;
 				}

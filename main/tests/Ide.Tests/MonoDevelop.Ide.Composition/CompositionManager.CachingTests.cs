@@ -33,6 +33,9 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Composition;
 using NUnit.Framework;
 using UnitTests;
+using System.CodeDom.Compiler;
+using System.Diagnostics;
+using Microsoft.CSharp;
 
 namespace MonoDevelop.Ide.Composition
 {
@@ -264,6 +267,30 @@ namespace MonoDevelop.Ide.Composition
 			await caching.Write (composition, catalog, cacheManager);
 
 			Assert.IsFalse (caching.CanUse ());
+			Assert.IsFalse (caching.CanUse ());
+		}
+
+		[Test]
+		public void TestCacheWithDynamicAssembly ()
+		{
+			var asm = GenerateAssembly ();
+
+			var caching = GetCaching ();
+
+			// At some point, it will call asm.Location on each assembly, that would throw if we don't filter them.
+			Assert.IsFalse (caching.CanUse (handleExceptions: false));
+			Assert.IsFalse (caching.CanUse (handleExceptions: true));
+		}
+
+		static Assembly GenerateAssembly()
+		{
+			var codeProvider = new CSharpCodeProvider ();
+			var parameters = new CompilerParameters {
+				GenerateExecutable = false,
+				GenerateInMemory = true
+			};
+			var results = codeProvider.CompileAssemblyFromSource (parameters, "public class GeneratedClass {}");
+			return results.CompiledAssembly;
 		}
 	}
 }
