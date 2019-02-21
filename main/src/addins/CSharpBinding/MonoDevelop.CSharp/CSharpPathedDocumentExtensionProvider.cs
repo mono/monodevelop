@@ -23,6 +23,7 @@ using System.ComponentModel.Composition;
 using Microsoft.CodeAnalysis.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 using MonoDevelop.TextEditor;
 
@@ -36,6 +37,9 @@ namespace MonoDevelop.CSharp
 	{
 		[Import]
 		private IEditorOperationsFactoryService editorOperationsFactoryService;
-		protected override CSharpPathedDocumentExtension CreateInstance (ITextView view) => new CSharpPathedDocumentExtension (view, editorOperationsFactoryService.GetEditorOperations (view));
+		[Import]
+		internal JoinableTaskContext joinableTaskContext;
+
+		protected override CSharpPathedDocumentExtension CreateInstance (ITextView view) => new CSharpPathedDocumentExtension (view, joinableTaskContext, editorOperationsFactoryService.GetEditorOperations (view));
 	}
 }

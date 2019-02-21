@@ -264,10 +264,32 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
+			var projectId = workspace.GetProjectId (project);
+
 			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
-			foreach (var documentId in documentIds) {
-				workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+			var bestDoc = documentIds.FirstOrDefault ();
+			if (documentIds.Length > 1) {
+				foreach (var documentId in documentIds) {
+					// projectId == null, when opening document from Solution pad, for file in shared project
+					if (projectId == null) {
+						var p = workspace.GetMonoProject (documentId.ProjectId);
+						if (p == null)
+							continue;
+						var solConf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+						if (solConf == null || !solConf.BuildEnabledForItem (p))
+							continue;
+						if (p == p.ParentSolution.StartupItem) {
+							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+							return;
+						}
+						bestDoc = documentId;
+					} else if (documentId.ProjectId == projectId) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+						return;
+					}
+				}
 			}
+			workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document);
 		}
 
 		static void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)

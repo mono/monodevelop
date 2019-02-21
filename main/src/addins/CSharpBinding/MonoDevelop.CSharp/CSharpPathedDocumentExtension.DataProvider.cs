@@ -34,6 +34,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.TextEditor;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp
 {
@@ -217,8 +219,11 @@ namespace MonoDevelop.CSharp
 			public void ActivateItem (int n)
 			{
 				if (tag is DotNetProject) {
-					var document = ext.textView.TryGetParentDocument ();
-					document.AttachToProject (ext.ownerProjects[n]);
+					var proj = ext.ownerProjects [n];
+					foreach (var doc in ext.textContainer.GetRelatedDocuments ())
+						if (TypeSystemService.GetMonoProject (doc.Project) is DotNetProject dnp && dnp == proj)
+							ext.registration.Workspace.SetDocumentContext (doc.Id);
+					ext.WorkspaceChanged (null, null);
 					return;
 				}
 
