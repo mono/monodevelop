@@ -150,9 +150,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (showStatusIcon)
 					workspace.ShowStatusIcon ();
 
-				var solutionInfo = await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
+				var (solution, solutionInfo) = await workspace.TryLoadSolution (cancellationToken).ConfigureAwait (false);
 
-				if (workspaceRequests.TryGetValue (workspace.MonoDevelopSolution, out var request)) {
+				if (workspaceRequests.TryGetValue (solution, out var request)) {
 					if (solutionInfo == null) {
 						// Check for solutionInfo == null rather than cancellation was requested, as cancellation does not happen
 						// after all project infos are loaded.
