@@ -65,7 +65,14 @@ namespace MonoDevelop.Ide.Composition
 			{
 				getCacheFilePath = getCacheFilePath ?? (file => Path.Combine (AddinManager.CurrentAddin.PrivateDataPath, file));
 
-				loadedAssemblies = new HashSet<Assembly> (AppDomain.CurrentDomain.GetAssemblies ());
+				// TODO: .NET 4.7.2 has a capacity constructor - https://github.com/mono/monodevelop/issues/7198
+				loadedAssemblies = new HashSet<Assembly> ();
+				foreach (var asm in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (asm.IsDynamic)
+						continue;
+
+					loadedAssemblies.Add (asm);
+				}
 
 				MefAssemblies = mefAssemblies;
 				MefCacheFile = getCacheFilePath ("mef-cache");
@@ -146,12 +153,8 @@ namespace MonoDevelop.Ide.Composition
 			static bool ValidateAssemblyCacheListIntegrity (HashSet<Assembly> assemblies, List<MefControlCacheAssemblyInfo> cachedAssemblyInfos, ICachingFaultInjector cachingFaultInjector)
 			{
 				var currentAssemblies = new Dictionary<string, Guid> (assemblies.Count);
-				foreach (var asm in assemblies) {
-					if (asm.IsDynamic)
-						continue;
-
+				foreach (var asm in assemblies)
 					currentAssemblies.Add (asm.Location, asm.ManifestModule.ModuleVersionId);
-				}
 
 				foreach (var assemblyInfo in cachedAssemblyInfos) {
 					cachingFaultInjector?.FaultAssemblyInfo (assemblyInfo);
@@ -211,7 +214,7 @@ namespace MonoDevelop.Ide.Composition
 				}
 
 				var additionalInputAssemblies = new List<MefControlCacheAssemblyInfo> ();
-				var loadedMap = loadedAssemblies.ToDictionary (x => x.GetName ().ToString (), x => x);
+				var loadedMap = loadedAssemblies.ToDictionary (x => x.FullName, x => x);
 
 				foreach (var asm in catalog.GetInputAssemblies ()) {
 					var assemblyName = asm.ToString ();
