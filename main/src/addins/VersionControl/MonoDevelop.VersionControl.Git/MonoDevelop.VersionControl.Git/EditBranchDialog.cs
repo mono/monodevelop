@@ -37,6 +37,8 @@ namespace MonoDevelop.VersionControl.Git
 {
 	partial class EditBranchDialog : Gtk.Dialog
 	{
+		const int GitRefnameMax = 1024;
+
 		readonly ListStore comboStore;
 		readonly string currentTracking;
 		readonly string oldName;
@@ -80,6 +82,8 @@ namespace MonoDevelop.VersionControl.Git
 			checkTrack.Active = !string.IsNullOrEmpty (tracking);
 
 			UpdateStatus ();
+
+			WidthRequest = 400;
 		}
 
 		void AddValues (string name, Xwt.Drawing.Image icon, string prefix)
@@ -127,6 +131,10 @@ namespace MonoDevelop.VersionControl.Git
 				labelError.Markup = "<span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + GettextCatalog.GetString (@"A branch name can not:
 Start with '.' or end with '/' or '.lock'
 Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
+				labelError.Show ();
+				buttonOk.Sensitive = false;
+			} else if (entryName.Text.Length > GitRefnameMax) {
+				labelError.Markup = "<span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + GettextCatalog.GetString ("Branch name too long") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;
 			} else

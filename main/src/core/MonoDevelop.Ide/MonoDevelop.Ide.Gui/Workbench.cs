@@ -805,7 +805,7 @@ namespace MonoDevelop.Ide.Gui
 		public void ShowDefaultPoliciesDialog (Window parentWindow, string panelId)
 		{
 			if (parentWindow == null)
-				parentWindow = IdeApp.Workbench.RootWindow;
+				parentWindow = DesktopService.GetFocusedTopLevelWindow ();
 
 			var ops = new DefaultPolicyOptionsDialog (parentWindow);
 
