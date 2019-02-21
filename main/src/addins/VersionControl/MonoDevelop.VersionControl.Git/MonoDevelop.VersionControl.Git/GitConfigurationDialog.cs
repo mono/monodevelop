@@ -170,10 +170,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var dlg = new EditBranchDialog (repo);
 			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int)ResponseType.Ok) {
 					repo.CreateBranch (dlg.BranchName, dlg.TrackSource, dlg.TrackRef);
 					FillBranches ();
 				}
+			} catch (Exception ex) {
+				MessageService.ShowError (GettextCatalog.GetString ("The branch could not be created"), ex);
 			} finally {
 				dlg.Destroy ();
 				dlg.Dispose ();
