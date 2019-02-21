@@ -275,6 +275,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			disposed = true;
 
+			CancelLoad ();
+
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
 			if (cacheService != null)
 				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
@@ -289,7 +291,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
 			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
-			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
