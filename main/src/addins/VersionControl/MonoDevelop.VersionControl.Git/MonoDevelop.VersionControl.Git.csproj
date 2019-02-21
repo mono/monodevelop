@@ -64,6 +64,7 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.Git.StashManagerDialog.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Git.UserGitConfigDialog.cs" />
     <Compile Include="Gui\MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\XwtCredentialsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

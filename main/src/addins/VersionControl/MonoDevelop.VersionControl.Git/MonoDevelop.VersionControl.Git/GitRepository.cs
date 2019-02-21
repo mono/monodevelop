@@ -898,11 +898,15 @@ namespace MonoDevelop.VersionControl.Git
 						GitCredentials.InvalidateCredentials (credType);
 						monitor?.ReportError (e.Message, null);
 						retry = false;
-					} catch (UserCancelledException) {
+					} catch (UserCancelledException e) {
 						GitCredentials.StoreCredentials (credType);
 						retry = false;
+						throw new VersionControlException (e.Message, e);
 					} catch (LibGit2SharpException e) {
 						GitCredentials.InvalidateCredentials (credType);
+
+						if (e.Message == GettextCatalog.GetString (GitCredentials.UserCancelledExceptionMessage))
+							throw new VersionControlException (e.Message, e);
 
 						if (credType == GitCredentialsType.Tfs) {
 							retry = true;
