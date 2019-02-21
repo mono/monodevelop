@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (subViewToolbar != null)
 				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
-			SelectWindow ();
+			ActiveViewContent.GrabFocus ();
 		}
 		
 		public void SelectWindow ()
