@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.Tasks
 
 			public async Task DisposeAsync ()
 			{
-				await IdeApp.Workspace.Close ();
+				await IdeApp.Workspace.Close (false);
 			}
 		}
 	}
