@@ -1516,7 +1516,9 @@ namespace MonoDevelop.VersionControl.Git
 				if (branch.TrackedBranch == null) {
 					RootRepository.Branches.Update (branch, b => b.TrackedBranch = "refs/remotes/" + remote + "/" + remoteBranch);
 				}
+			}, true);
 
+			RunOperation (() => {
 				RetryUntilSuccess (monitor, credType =>
 					RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 						OnPushStatusError = pushStatusErrors => success = false,
@@ -1654,7 +1656,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void PushTag (string name)
 		{
-			RunBlockingOperation (() => {
+			RunOperation (() => {
 				RetryUntilSuccess (null, credType => RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
 					CredentialsProvider = (url, userFromUrl, types) => GitCredentials.TryGet (url, userFromUrl, types, credType),
 				}));
