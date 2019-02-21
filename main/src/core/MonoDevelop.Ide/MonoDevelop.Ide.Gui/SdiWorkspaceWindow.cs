@@ -262,9 +262,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (subViewToolbar != null)
 				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
-			ActiveViewContent.GrabFocus ();
+			ScheduleContentGrabFocus ();
 		}
-		
+
 		public void SelectWindow ()
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
@@ -291,8 +291,21 @@ namespace MonoDevelop.Ide.Gui
 			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
-				ActiveViewContent.GrabFocus ();
 			});
+			ScheduleContentGrabFocus ();
+		}
+
+		bool contentGrabFocusScheduled;
+		void ScheduleContentGrabFocus ()
+		{
+			if (contentGrabFocusScheduled)
+				return;
+			Application.Invoke ((o, args) => {
+				contentGrabFocusScheduled = false;
+				if (workbench.ActiveWorkbenchWindow == this)
+					ActiveViewContent.GrabFocus ();
+			});
+			contentGrabFocusScheduled = true;
 		}
 
 		public bool CanMoveToNextNotebook ()
