@@ -422,16 +422,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
-			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, context);
+			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, context, true);
 			if (document as Document != null) {
 				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
-					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, context);
+					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, context, false);
 				}
 			}
-			OnDocumentContextUpdated (documentId);
 		}
 
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context, bool isCurrentContext)
 		{
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
@@ -442,9 +441,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			OpenDocuments.Add (documentId, sourceTextContainer, context);
 			if (document is Document) {
-				OnDocumentOpened (documentId, sourceTextContainer);
+				OnDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			} else {
-				OnAdditionalDocumentOpened (documentId, sourceTextContainer);
+				OnAdditionalDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			}
 			return document;
 		}
@@ -1215,6 +1214,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogInternalError (ex);
 				}
 			}
+		}
+
+		internal override void SetDocumentContext (DocumentId documentId)
+		{
+			base.OnDocumentContextUpdated (documentId);
 		}
 
 		#endregion
