@@ -267,7 +267,6 @@ namespace MonoDevelop.Ide.Composition
 			await caching.Write (composition, catalog, cacheManager);
 
 			Assert.IsFalse (caching.CanUse ());
-			Assert.IsFalse (caching.CanUse ());
 		}
 
 		[Test]
