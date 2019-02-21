@@ -97,25 +97,37 @@ namespace MonoDevelop.Ide.Gui
 				workbench.WorkbenchTabsChanged += WorkbenchTabsChanged;
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
-				
-				IdeApp.FocusOut += delegate(object o, EventArgs args) {
-					if (!fileEventsFrozen) {
-						fileEventsFrozen = true;
-						FileService.FreezeEvents ();
-					}
-				};
-				IdeApp.FocusIn += delegate(object o, EventArgs args) {
-					if (fileEventsFrozen) {
-						fileEventsFrozen = false;
-						FileService.ThawEvents ();
-					}
-				};
+
+				IdeApp.FocusOut += OnFocusOut;
+				IdeApp.FocusIn += OnFocusIn;
 
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
 				monitor.EndTask ();
 			}
+		}
+
+		void OnFocusOut(object sender, EventArgs args)
+		{
+			if (!fileEventsFrozen) {
+				fileEventsFrozen = true;
+				FileService.FreezeEvents ();
+			}
+		}
+
+		void OnFocusIn(object sender, EventArgs args)
+		{
+			if (fileEventsFrozen) {
+				fileEventsFrozen = false;
+				FileService.ThawEvents ();
+			}
+		}
+
+		internal void UnregisterFileServiceFreezeThawForTests ()
+		{
+			IdeApp.FocusOut -= OnFocusOut;
+			IdeApp.FocusIn -= OnFocusIn;
 		}
 
 		internal void Realize (string workbenchMemento)

@@ -33,6 +33,8 @@ namespace MonoDevelop.Ide
 		{
 			base.InternalSetup(rootDir);
 
+			IdeApp.Initialized += (sender, e) => IdeApp.Workbench.UnregisterFileServiceFreezeThawForTests ();
+
 			Xwt.Application.Initialize(Xwt.ToolkitType.Gtk);
 			Gtk.Application.Init();
 			DesktopService.Initialize();
