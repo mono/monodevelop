@@ -250,6 +250,7 @@ namespace MonoDevelop.TextEditor
 			EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
 			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
 			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
+			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
 		}
 
 		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
@@ -265,6 +266,8 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, indentSize);
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetLineEnding (out var lineEnding))
 				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
+			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
+				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
 
 			return Task.FromResult (true);
 		}
