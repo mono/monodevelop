@@ -184,6 +184,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (result != emptyWorkspace) {
 						lock (workspaceLock)
 							workspaces = workspaces.Remove (result);
+
+						if (workspaceRequests.TryGetValue (solution, out var request)) {
+							request.TrySetCanceled ();
+						}
+
 						result.Dispose ();
 					}
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
