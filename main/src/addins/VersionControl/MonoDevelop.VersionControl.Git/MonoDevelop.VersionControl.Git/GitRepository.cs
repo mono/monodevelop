@@ -173,24 +173,32 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			FileService.ThawEvents ();
 		}
-
-		internal bool Disposed { get; private set; }
-		public override void Dispose ()
+		
+		protected override void Dispose (bool disposing)
 		{
-			Disposed = true;
+			// ensure that no new operations can be started while we wait for the scheduler to shutdown
+			base.IsDisposed = true;
 
-			ShutdownFileWatcher ();
-			ShutdownScheduler ();
-
-			base.Dispose ();
-
-			if (rootRepository != null) {
-				rootRepository.Dispose ();
-				rootRepository = null;
+			if (disposing) {
+				ShutdownFileWatcher ();
+				ShutdownScheduler ();
 			}
-			if (cachedSubmodules != null)
-				foreach (var rep in cachedSubmodules)
-					rep.Item2.Dispose ();
+
+			// now it's safe to dispose the base and release all information caches
+			base.Dispose (disposing);
+
+			if (disposing) {
+				rootRepository?.Dispose ();
+				if (cachedSubmodules != null)
+					foreach (var rep in cachedSubmodules)
+						rep.Item2.Dispose ();
+			}
+
+			scheduler = null;
+			readingOperationFactory = null;
+			blockingOperationFactory = null;
+			watcher = null;
+			rootRepository = null;
 			cachedSubmodules = null;
 		}
 
@@ -429,7 +437,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void EnsureInitialized ()
 		{
-			if (Disposed)
+			if (IsDisposed)
 				throw new ObjectDisposedException (typeof(GitRepository).Name);
 			InitScheduler ();
 			if (RootRepository != null)

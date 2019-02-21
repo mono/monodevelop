@@ -89,10 +89,11 @@ namespace MonoDevelop.VersionControl
 				Dispose ();
 		}
 
-		internal bool Disposed { get; private set; }
-		public virtual void Dispose ()
+		public bool IsDisposed { get; protected set; }
+
+		protected virtual void Dispose (bool disposing)
 		{
-			Disposed = true;
+			IsDisposed = true;
 
 			if (queryRunning) {
 				lock (queryLock) {
@@ -105,7 +106,18 @@ namespace MonoDevelop.VersionControl
 			infoCache?.Dispose ();
 			infoCache = null;
 		}
-		
+
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		~Repository ()
+		{
+			Dispose (false);
+		}
+
 		// Display name of the repository
 		[ItemProperty]
 		public string Name	{
@@ -414,7 +426,7 @@ namespace MonoDevelop.VersionControl
 					// new queries to the queue while long-running VCS operations are being performed
 					var groups = fileQueryQueueClone.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
-						if (Disposed)
+						if (IsDisposed)
 							break;
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key).ToList ();
 						foreach (var vi in status)
@@ -423,7 +435,7 @@ namespace MonoDevelop.VersionControl
 					}
 
 					foreach (var item in directoryQueryQueueClone) {
-						if (Disposed)
+						if (IsDisposed)
 							break;
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
 						foreach (var vi in status)
@@ -433,7 +445,7 @@ namespace MonoDevelop.VersionControl
 
 					foreach (var item in recursiveDirectoryQueryQueueClone) {
 						try {
-							if (Disposed)
+							if (IsDisposed)
 								continue;
 							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
 							foreach (var vi in item.Result)
