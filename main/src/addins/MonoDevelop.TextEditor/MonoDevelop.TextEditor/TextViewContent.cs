@@ -124,7 +124,8 @@ namespace MonoDevelop.TextEditor
 				policyContainer.PolicyChanged -= PolicyChanged;
 			policyContainer = ownerProject.Policies;
 			policyContainer.PolicyChanged += PolicyChanged;
-			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeType);
+			var mimeTypes = Ide.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 			EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
 			EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
 			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
