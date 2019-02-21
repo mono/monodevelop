@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				var reference = (MonoDevelopMetadataReference)sender;
 				// If we didn't contain the reference, bail
-				if (!workspaceRef.TryGetTarget (out var workspace) || workspace == null)
+				if (!workspaceRef.TryGetTarget (out var workspace))
 					return;
 
 				lock (metadataReferences) {
@@ -90,8 +90,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void Disconnect ()
 			{
-				workspaceRef.SetTarget (null);
-
 				lock (metadataReferences) {
 					foreach (var reference in metadataReferences)
 						reference.SnapshotUpdated -= OnMetadataReferenceUpdated;
