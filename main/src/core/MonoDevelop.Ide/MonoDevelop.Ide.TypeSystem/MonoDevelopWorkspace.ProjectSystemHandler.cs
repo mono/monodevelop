@@ -266,6 +266,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							return await CreateSolutionInfoInternal (solution, token).ConfigureAwait (false);
 						}
 
+						if (token.IsCancellationRequested)
+							return null;
+
 						var solutionId = GetSolutionId (solution);
 						var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projectInfos);
 
