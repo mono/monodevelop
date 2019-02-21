@@ -110,8 +110,8 @@ namespace MonoDevelop.Ide.Commands
 				}
 					
 				case "CURTEXT": {
-					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view && !view.Selection.IsEmpty ) {
-						return view.Selection.SelectedSpans[0].GetText ();
+					if (wb.ActiveDocument?.GetContent<ITextView> () is ITextView view) {
+						return view.Selection.IsEmpty? "" : view.Selection.SelectedSpans[0].GetText ();
 					}
 					return null;
 				}
