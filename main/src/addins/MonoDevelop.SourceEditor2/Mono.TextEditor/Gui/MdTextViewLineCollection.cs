@@ -40,6 +40,7 @@ namespace Mono.TextEditor
 	partial class MdTextViewLineCollection : List<ITextViewLine>, ITextViewLineCollection
 	{
 		readonly MonoTextEditor textEditor;
+
 		readonly ITextSourceVersion version;
 		ITextSnapshot textSnapshot;
 
@@ -48,6 +49,10 @@ namespace Mono.TextEditor
 			this.textEditor = textEditor;
 			this.version = this.textEditor.Document.Version;
 			textEditor.TextViewModel.VisualBuffer.ChangedLowPriority += OnVisualBufferChanged;
+			textEditor.Closed += (sender, args) => {
+				var editor = (MonoTextEditor)sender;
+				editor.TextViewModel.VisualBuffer.ChangedLowPriority -= OnVisualBufferChanged;
+			};
 		}
 
 		internal ITextViewLine Add (int logicalLineNumber, DocumentLine line, TextViewMargin.LayoutWrapper layoutWrapper)

@@ -483,5 +483,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (expectedCacheFilePath, cacheFilePath);
 		}
+
+		[Test]
+		public void CanCreate_MSBuildProjectIsNull_DoesNotThrowNullReferenceException ()
+		{
+			var dotNetCoreProject = CreateDotNetCoreProject ();
+			dotNetCoreProject.Dispose ();
+
+			bool result = false;
+			Assert.DoesNotThrow (() => {
+				result = DotNetCoreNuGetProject.CanCreate (dotNetCoreProject);
+			});
+
+			Assert.IsNull (dotNetCoreProject.MSBuildProject);
+			Assert.IsFalse (result);
+		}
 	}
 }
