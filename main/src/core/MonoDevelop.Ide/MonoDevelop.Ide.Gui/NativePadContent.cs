@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 			this.window.PadContentShown += OnPadContentShown;
 			this.window.PadContentHidden += OnPadContentHidden;
 
-			container = GetContentView (window);
+			container = GetNativeContentView (window);
 			if (container == null) {
 				throw new System.Exception ($"GetContentView cannot be null in a NativePadContent ({this.GetType ()})");
 			}
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void ShowAll () => widget.ShowAll ();
 
-		protected abstract NSView GetContentView (IPadWindow window);
+		protected abstract NSView GetNativeContentView (IPadWindow window);
 
 		public override void Dispose ()
 		{

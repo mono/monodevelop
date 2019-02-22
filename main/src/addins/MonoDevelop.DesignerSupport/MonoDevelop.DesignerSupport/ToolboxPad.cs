@@ -87,7 +87,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 
-		protected override AppKit.NSView GetContentView (IPadWindow window)
+		protected override AppKit.NSView GetNativeContentView (IPadWindow window)
 		{
 			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, window);
 			toolbox.ContentFocused += Toolbox_ContentFocused;
