@@ -146,7 +146,8 @@ namespace MonoDevelop.PackageManagement
 
 		void LogError (Task<PackageIdentity> task)
 		{
-			logError ("Check for updates error.", task.Exception.GetBaseException ());
+			if (!task.Exception.IsOperationCanceledException ())
+				logError ("Check for updates error.", task.Exception.GetBaseException ());
 		}
 
 		bool IsPackageVersionAllowed (IPackageSearchMetadata package, PackageReference packageReference)
