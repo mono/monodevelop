@@ -175,6 +175,7 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "text", EditorThemeColors.Foreground, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Identifier", EditorThemeColors.Foreground, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "TextView Background", EditorThemeColors.Background);
+			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/FindHighlight", EditorThemeColors.FindHighlight);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedReference", EditorThemeColors.UsagesRectangle);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedDefinition", EditorThemeColors.ChangingUsagesRectangle);
 			CreateResourceDictionary (editorFormat, defaultSettings, "MarkerFormatDefinition/HighlightedWrittenReference", EditorThemeColors.ChangingUsagesRectangle);
