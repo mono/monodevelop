@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.Editor
 		public readonly ConfigurationProperty<ShowWhitespaces> ShowWhitespaces;
 		public readonly ConfigurationProperty<IncludeWhitespaces> IncludeWhitespaces;
 #endif
+		public readonly ConfigurationProperty<bool> ShowBlockStructure;
 		// TODO: Maybe per language preferences?
 		#endregion
 
@@ -98,6 +99,7 @@ namespace MonoDevelop.Ide.Editor
 			ShowWhitespaces = new ShowWhitespacesProperty (this);
 			IncludeWhitespaces = new IncludeWhitespacesProperty (this);
 #endif
+			ShowBlockStructure = Wrap<bool> ("ShowBlockStructure", DefaultTextViewOptions.ShowBlockStructureName);
 
 			LogNonMappedOptions ();
 		}
