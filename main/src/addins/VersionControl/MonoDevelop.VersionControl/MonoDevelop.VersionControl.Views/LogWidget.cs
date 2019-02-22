@@ -287,7 +287,7 @@ namespace MonoDevelop.VersionControl.Views
 		[GLib.ConnectBeforeAttribute]
 		void LabelRevision_ButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
-			if (args.Event.Button != 3) {
+			if (args.Event.IsContextMenuButton ()) {
 				if (currentRevisionShortened) {
 					Revision d = SelectedRevision;
 					labelRevision.Text = GettextCatalog.GetString ("Revision: {0}", d.Name);
@@ -312,7 +312,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		void PopulateLabelMenuAndRaisePopup (Label label, ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 3) {
+			if (args.Event.IsContextMenuButton ()) {
 				var selectedText = GetSelectedTextFromLabel (label);
 				if (string.IsNullOrEmpty (selectedText)) {
 					args.RetVal = true;
@@ -325,7 +325,7 @@ namespace MonoDevelop.VersionControl.Views
 		[GLib.ConnectBeforeAttribute]
 		void TextviewDetails_ButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
-			if (args.Event.Button == 3) {
+			if (args.Event.IsContextMenuButton ()) {
 				var selectedText = GetSelectedTextFromTextView (textviewDetails);
 				if (string.IsNullOrEmpty (selectedText)) {
 					args.RetVal = true;
