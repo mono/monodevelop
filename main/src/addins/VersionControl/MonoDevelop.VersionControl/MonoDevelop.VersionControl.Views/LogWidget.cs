@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool currentRevisionShortened;
 
-		readonly Xwt.Menu popupMenu;
+		Xwt.Menu popupMenu;
 
 		class RevisionGraphCellRenderer : Gtk.CellRenderer
 		{
@@ -269,7 +269,16 @@ namespace MonoDevelop.VersionControl.Views
 			tb.Add (scrolledwindow1);
 			vbox2.PackStart (tb, true, true, 0);
 
-			popupMenu = new Xwt.Menu ();
+			(Platform.IsMac ? Xwt.Toolkit.NativeEngine : Xwt.Toolkit.CurrentEngine).Invoke (() => {
+				popupMenu = new Xwt.Menu ();
+				var copyItem = new Xwt.MenuItem (GettextCatalog.GetString ("Copy"));
+				popupMenu.Items.Add (copyItem);
+				copyItem.Clicked += (sender, e) => {
+					var selectedText = GetSelectedText ();
+					if (!string.IsNullOrEmpty (selectedText))
+						LogView.CopyToClipboard (selectedText);
+				};
+			});
 
 			UpdateStyle ();
 			Ide.Gui.Styles.Changed += HandleStylesChanged;
@@ -328,13 +337,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		void PopulateMenuAndRaisePopup (Gtk.Widget gtkWidget, string selectedText, ButtonPressEventArgs args)
 		{
-			popupMenu.Items.Clear ();
-
-			var copyItem = new Xwt.MenuItem (GettextCatalog.GetString ("Copy"));
-			popupMenu.Items.Add (copyItem);
-			copyItem.Clicked += (sender, e) => {
-				LogView.CopyToClipboard (selectedText);
-			};
 			popupMenu.Popup ();
 			args.RetVal = true;
 		}
@@ -594,6 +596,8 @@ namespace MonoDevelop.VersionControl.Views
 			messageRenderer.Dispose ();
 			textRenderer.Dispose ();
 			treeviewFiles.Dispose ();
+
+			popupMenu.Dispose ();
 
 			base.OnDestroyed ();
 		}
