@@ -486,7 +486,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDBuildTasks", "msbuild\MDB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisibleWhitespaceImpl", "external\vs-editor-core\src\Editor\Text\Impl\VisibleWhitespace\VisibleWhitespaceImpl.csproj", "{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}"
 EndProject
-
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrentLineHighlighterImpl", "external\vs-editor-core\src\Editor\Text\Impl\CurrentLineHighlighter\CurrentLineHighlighterImpl.csproj", "{F0C265B2-1D92-4F7A-8B3A-D6A83C6DBFE6}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\BaseViewImpl.projitems*{47d57f5a-0693-4768-a970-5491d4f5574c}*SharedItemsImports = 13
@@ -2803,6 +2804,10 @@ Global
 		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{F0C265B2-1D92-4F7A-8B3A-D6A83C6DBFE6}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0C265B2-1D92-4F7A-8B3A-D6A83C6DBFE6}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{F0C265B2-1D92-4F7A-8B3A-D6A83C6DBFE6}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{F0C265B2-1D92-4F7A-8B3A-D6A83C6DBFE6}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3026,6 +3031,7 @@ Global
 		{3E8ABAB5-CE9A-484E-B82B-73B89EA2E51A} = {32539734-6484-4451-9EF3-61610CA25BBF}
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{F8C8C557-8143-4EA2-95D1-AC3AAAC08902} = {32539734-6484-4451-9EF3-61610CA25BBF}
+		{F0C265B2-1D92-4F7A-8B3A-D6A83C6DBFE6} = {32539734-6484-4451-9EF3-61610CA25BBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}
