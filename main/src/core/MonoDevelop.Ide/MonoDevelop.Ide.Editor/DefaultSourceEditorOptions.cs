@@ -738,8 +738,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		// TODO: Is this ShowBlockStructure?
-		ConfigurationProperty<bool> drawIndentationMarkers = ConfigurationProperty.Create ("DrawIndentationMarkers", false);
+		ConfigurationProperty<bool> drawIndentationMarkers = IdeApp.Preferences.Editor.ShowBlockStructure;
 		public bool DrawIndentationMarkers {
 			get {
 				return drawIndentationMarkers;
