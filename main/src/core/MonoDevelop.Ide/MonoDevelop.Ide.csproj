@@ -4237,6 +4237,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\NewSolutionRunConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\NativePadContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
