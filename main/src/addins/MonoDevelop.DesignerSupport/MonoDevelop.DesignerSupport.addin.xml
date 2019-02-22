@@ -37,15 +37,28 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad"
-			class = "MonoDevelop.DesignerSupport.ToolboxPad"
-			_label="Toolbox"
-			icon = "md-toolbox-pad"
-			group = "Designer"
-			defaultLayout="*"
-			defaultPlacement="Right"
-			defaultStatus="AutoHide"
-			/>
+		<Condition id="Platform" value="!mac">
+			<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad"
+			        class = "MonoDevelop.DesignerSupport.ToolboxPad"
+			        _label="Toolbox"
+			        icon = "md-toolbox-pad"
+			        group = "Designer"
+			        defaultLayout="*"
+			        defaultPlacement="Right"
+			        defaultStatus="AutoHide"
+			        />
+		</Condition>
+		<Condition id="Platform" value="mac">
+			<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad"
+		            class = "MonoDevelop.DesignerSupport.MacToolboxPad"
+		            _label="Toolbox"
+		            icon = "md-toolbox-pad"
+		            group = "Designer"
+		            defaultLayout="*"
+		            defaultPlacement="Right"
+		            defaultStatus="AutoHide"
+		            />
+		</Condition>
 		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad"
 			class = "MonoDevelop.DesignerSupport.PropertyPad"
 			_label="Properties"

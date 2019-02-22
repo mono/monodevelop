@@ -149,6 +149,7 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetFlowLayoutDelegate.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Styles.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\MacToolboxPad.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />

@@ -28,109 +28,31 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
-using Xwt;
-#if MAC
-using MonoDevelop.Components.Mac;
-#endif
+using Gtk;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public class ToolboxPad : PadContent
+	class ToolboxPad : PadContent
 	{
-		Gtk.Widget widget;
-
-#if MAC
-		Toolbox.MacToolbox toolbox;
-#endif
-		protected override void Initialize (IPadWindow container)
+		Widget widget;
+		protected override void Initialize (IPadWindow window)
 		{
-			base.Initialize (container);
-#if MAC
-			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
-			widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
-			widget.CanFocus = true;
-			widget.Sensitive = true;
-			widget.KeyPressEvent += toolbox.OnKeyPressed;
-			widget.KeyReleaseEvent += toolbox.KeyReleased;
-
-			widget.DragBegin += (o, args) => {
-				if (!isDragging) {
-					DesignerSupport.Service.ToolboxService.DragSelectedItem (widget, args.Context);
-					isDragging = true;
-				}
-			};
-
-			widget.DragEnd += (o, args) => {
-				isDragging = false;
-			};
-
-			widget.Focused += (s, e) => {
-				toolbox.FocusSelectedView ();
-			};
-
-			toolbox.ContentFocused += (s, e) => {
-				if (!widget.HasFocus) {
-					widget.HasFocus = true;
-					toolbox.FocusSelectedView ();
-				}
-			};
-			toolbox.DragSourceSet += (s, e) => {
-				targets = new Gtk.TargetList ();
-				targets.AddTable (e);
-			};
-			toolbox.DragBegin += (object sender, EventArgs e) => {
-				var selectedNode = toolbox.SelectedNode;
-				if (!isDragging && selectedNode != null) {
-
-					DesignerSupport.Service.ToolboxService.SelectItem (selectedNode);
-
-					Gtk.Drag.SourceUnset (widget);
-
-					// Gtk.Application.CurrentEvent and other copied gdk_events seem to have a problem
-					// when used as they use gdk_event_copy which seems to crash on de-allocating the private slice.
-					IntPtr currentEvent = GtkWorkarounds.GetCurrentEventHandle ();
-					Gtk.Drag.Begin (widget, targets, Gdk.DragAction.Copy | Gdk.DragAction.Move, 1, new Gdk.Event (currentEvent, false));
-
-					// gtk_drag_begin does not store the event, so we're okay
-					GtkWorkarounds.FreeEvent (currentEvent);
-
-				}
-			};
-
-			widget.ShowAll ();
-#else
-			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
-#endif
+			base.Initialize (window);
+			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, window);
 		}
-#if MAC
-		Gtk.TargetList targets = new Gtk.TargetList ();
-		bool isDragging = false;
+
+	#region AbstractPadContent implementations
+
+		public override Control Control => widget;
+
+	#endregion
+
 		public override void Dispose ()
 		{
-			if (widget != null) {
-				widget.KeyPressEvent -= toolbox.OnKeyPressed;
-				widget.KeyReleaseEvent -= toolbox.KeyReleased;
-				widget.Destroy ();
-				widget.Dispose ();
-				widget = null;
-			}
-			if (toolbox != null) {
-				toolbox.Dispose ();
-				toolbox = null;
-			}
+			widget = null;
 			base.Dispose ();
 		}
-#endif
-
-#region AbstractPadContent implementations
-		
-		public override Control Control {
-			get { return widget; }
-		}
-		
-#endregion
 	}
 }
