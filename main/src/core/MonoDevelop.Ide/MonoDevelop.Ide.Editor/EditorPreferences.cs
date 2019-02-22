@@ -175,9 +175,6 @@ namespace MonoDevelop.Ide.Editor
 		/// <typeparam name="T">The option type.</typeparam>
 		internal ConfigurationProperty<T> Wrap<T> (string name, string editorOptionId, T defaultValue)
 		{
-			// Override the default value first.
-			globalOptions.SetOptionValue (editorOptionId, (object)defaultValue);
-
 			return Create (name, editorOptionId, defaultValue);
 		}
 
@@ -190,6 +187,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			IdeToEditorMapping.Add (name, editorOptionId);
 			EditorToIdeMapping.Add (editorOptionId, value => property.Value = (T)value);
+
+			// Set the editor options to override any editor option that we use.
+			globalOptions.SetOptionValue (editorOptionId, property.Value);
 
 			return property;
 		}
