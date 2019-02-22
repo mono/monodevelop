@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationFormat\ClassificationFormatMapImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationType\ClassificationTypeImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Commanding\CommandingImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CurrentLineHighlighter\CurrentLineHighlighterImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\DifferenceAlgorithm\DifferenceAlgorithmImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOperations\EditorOperationsImpl.csproj" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOptions\EditorOptionsImpl.csproj" />

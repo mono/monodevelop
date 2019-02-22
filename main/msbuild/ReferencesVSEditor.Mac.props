@@ -44,6 +44,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
   </ItemGroup>
 
   <Import Project="$(RootDirectory)external\vs-editor-core\build\Environment.props" />

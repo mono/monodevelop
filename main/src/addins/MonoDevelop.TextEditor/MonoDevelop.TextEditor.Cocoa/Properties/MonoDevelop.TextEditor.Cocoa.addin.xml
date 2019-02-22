@@ -39,7 +39,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
 		<Assembly file="MonoDevelop.TextEditor.Cocoa.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
-
+		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.TextEditor.CocoaTextViewDisplayBinding" />
