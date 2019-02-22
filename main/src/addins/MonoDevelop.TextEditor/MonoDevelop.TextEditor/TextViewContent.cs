@@ -219,30 +219,41 @@ namespace MonoDevelop.TextEditor
 		{
 			UpdateLineNumberMarginOption ();
 
-			if (Project != null) {
+			var newPolicyContainer = Project?.Policies;
+			if (newPolicyContainer != policyContainer) {
 				if (policyContainer != null)
 					policyContainer.PolicyChanged -= PolicyChanged;
-				policyContainer = Project.Policies;
+				policyContainer = newPolicyContainer;
+			}
+			if (policyContainer != null)
 				policyContainer.PolicyChanged += PolicyChanged;
 
-				UpdateOptionsFromPolicy ();
-			}
+			UpdateOptionsFromPolicy ();
 
-			var context = await Ide.Editor.EditorConfigService.GetEditorConfigContext (ContentName, default);
-			if (context != null) {
-				if (context != editorConfigContext) {
-					if (editorConfigContext != null)
-						editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
-					editorConfigContext = context;
-					editorConfigContext.CodingConventionsChangedAsync += UpdateOptionsFromEditorConfigAsync;
-				}
-
-				await UpdateOptionsFromEditorConfigAsync (null, null);
+			var newEditorConfigContext = await Ide.Editor.EditorConfigService.GetEditorConfigContext (ContentName, default);
+			if (newEditorConfigContext != editorConfigContext) {
+				if (editorConfigContext != null)
+					editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
+				editorConfigContext = newEditorConfigContext;
 			}
+			if (editorConfigContext != null)
+				editorConfigContext.CodingConventionsChangedAsync += UpdateOptionsFromEditorConfigAsync;
+
+			await UpdateOptionsFromEditorConfigAsync (null, null);
 		}
 
 		private void UpdateOptionsFromPolicy()
 		{
+			if (policyContainer == null) {
+				EditorOptions.ClearOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.TabSizeOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+
+				return;
+			}
+
 			var mimeTypes = Ide.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
 
