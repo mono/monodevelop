@@ -27,6 +27,8 @@
 using System;
 using System.ComponentModel.Composition;
 
+using AppKit;
+
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Utilities;
@@ -91,7 +93,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		public override void PostprocessMouseLeftButtonUp (MouseEvent e)
 		{
-			if (e.Event.ModifierFlags.HasFlag (AppKit.NSEventModifierMask.ControlKeyMask))
+			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask)
 				PreprocessMouseRightButtonUp (e);
 		}
 	}

@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger
 
 		public override void PreprocessMouseLeftButtonDown (MouseEvent e)
 		{
-			if (e.Event.ModifierFlags.HasFlag (NSEventModifierMask.ControlKeyMask)) {
+			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask) {
 				PreprocessMouseRightButtonDown (e);
 				return;
 			}
@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger
 
 		public override void PreprocessMouseLeftButtonUp (MouseEvent e)
 		{
-			if (e.Event.ModifierFlags.HasFlag (NSEventModifierMask.ControlKeyMask)) {
+			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask) {
 				PreprocessMouseRightButtonUp (e);
 				return;
 			}
@@ -136,7 +136,7 @@ namespace MonoDevelop.Debugger
 
 		public override void PostprocessMouseLeftButtonUp (MouseEvent e)
 		{
-			if (e.Event.ModifierFlags.HasFlag (NSEventModifierMask.ControlKeyMask))
+			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask)
 				PostprocessMouseRightButtonUp (e);
 		}
 
