@@ -39,17 +39,30 @@ namespace MonoDevelop.Ide.Editor
 		// Use a supported key so we don't bother creating a new MEF assembly to add that's not going to be surfaced in the preferences page.
 		const string editorOptionKey = DefaultTextViewOptions.ViewProhibitUserInputName;
 
-		static async Task<(EditorPreferences, IEditorOptions, ConfigurationProperty<bool>)> GetEditorPreferences ()
+		static async Task<(EditorPreferences, IEditorOptions, ConfigurationProperty<bool>)> GetEditorPreferences (bool unset = true)
 		{
 			await CompositionManager.InitializeAsync ();
 
-			PropertyService.Set (mdPropertyKey, null);
+			if (unset)
+				PropertyService.Set (mdPropertyKey, null);
 
 			var preferences = new EditorPreferences ();
 
 			var factoryService = CompositionManager.GetExportedValue<IEditorOptionsFactoryService2> ();
 			var preference = preferences.Wrap (mdPropertyKey, editorOptionKey, false);
 			return (preferences, factoryService.GlobalOptions, preference);
+		}
+
+		[Test]
+		public async Task OptionValuesAreInheritedWhenTheyExist()
+		{
+			PropertyService.Set (mdPropertyKey, true);
+
+			var (preferences, options, preferencesValue) = await GetEditorPreferences (false);
+
+			var optionsValue = options.GetOptionValue<bool> (editorOptionKey);
+
+			Assert.AreEqual (true, optionsValue, "Option did not inherit default value override");
 		}
 
 		[Test]
