@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		readonly List<TooltipInformation> overloads = new List<TooltipInformation> ();
 		int current_overload;
 		
+		[Obsolete]
 		public int CurrentOverload {
 			get {
 				return current_overload; 
@@ -54,6 +55,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		[Obsolete]
 		public int Overloads {
 			get {
 				return overloads.Count;
@@ -61,12 +63,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		readonly FixedWidthWrapLabel headLabel;
+
+		[Obsolete]
 		public bool Multiple{
 			get {
 				return overloads.Count > 1;
 			}
 		}
 
+		[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 		public void AddOverload (TooltipInformation tooltipInformation)
 		{
 			if (tooltipInformation == null || tooltipInformation.IsEmpty)
@@ -81,6 +86,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ShowOverload ();
 		}
 
+		[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 		public async Task AddOverload (CompletionData data, CancellationToken cancelToken)
 		{
 			try {
@@ -109,6 +115,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public int LabelMaxWidth { get { return labelMaxWidth; } set { labelMaxWidth = Math.Max (100, value); } }
 
+		[Obsolete]
 		void ShowOverload ()
 		{
 			Opacity = 0;
@@ -175,6 +182,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// return "<span foreground=\"#a7a79c\" size=\"larger\">" + headerName + "</span>";
 		}
 
+		[Obsolete]
 		public void OverloadLeft ()
 		{
 			if (current_overload == 0) {
@@ -186,6 +194,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ShowOverload ();
 		}
 
+		[Obsolete]
 		public void OverloadRight ()
 		{
 			if (current_overload == overloads.Count - 1) {
@@ -268,8 +277,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11).ToXwtFont ();
 			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor;
+			#pragma warning disable CS0612 // Type or member is obsolete
 			if (this.Visible)
 				ShowOverload ();
+			#pragma warning restore CS0612
 		}
 
 		public TooltipInformationWindow ()
@@ -310,15 +321,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 		}
 
+
 		protected override bool OnPagerLeftClicked ()
 		{
+#pragma warning disable CS0612 // Type or member is obsolete
 			OverloadLeft ();
+#pragma warning restore CS0612 // Type or member is obsolete
 			return base.OnPagerLeftClicked ();
 		}
 
 		protected override bool OnPagerRightClicked ()
 		{
+#pragma warning disable CS0612 // Type or member is obsolete
 			OverloadRight ();
+#pragma warning restore CS0612 // Type or member is obsolete
 			return base.OnPagerRightClicked ();
 		}
 

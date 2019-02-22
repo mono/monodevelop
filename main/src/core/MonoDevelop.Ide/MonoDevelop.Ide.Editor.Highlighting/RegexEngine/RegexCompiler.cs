@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
      * While we're at it, we just create one RegexCompiler per thread
      * as well, and have RegexCompiler inherit from RegexDynamicModule.
      */
+	[Obsolete ("Old editor")]
     internal abstract class RegexCompiler {
         // fields that never change (making them saves about 6% overall running time)
 
@@ -3028,6 +3029,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         }
     }
 
+	[Obsolete ("Old editor")]
     internal class RegexTypeCompiler : RegexCompiler {
         private static int _typeCount = 0;
         private static LocalDataStoreSlot _moduleSlot = Thread.AllocateDataSlot();
@@ -3373,6 +3375,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         
     }
 
+	[Obsolete ("Old editor")]
     internal class RegexLWCGCompiler : RegexCompiler {
         private static int _regexCount = 0;
         private static Type[] _paramTypes = new Type[] {typeof(RegexRunner)};

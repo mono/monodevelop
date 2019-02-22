@@ -40,7 +40,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
-
+	[Obsolete ("Old editor")]
 	class RefactoringSymbolInfo
 	{
 		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo (new SymbolInfo ());

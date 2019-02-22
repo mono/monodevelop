@@ -10,6 +10,11 @@
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
+    <!--
+    This entire assembly is obsolete, and uses many obsoleted APIs from Core/Ide
+    so disable deprecation warnings.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />

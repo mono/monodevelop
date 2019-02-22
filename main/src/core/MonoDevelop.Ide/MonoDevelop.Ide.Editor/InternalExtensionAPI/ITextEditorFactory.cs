@@ -24,10 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete]
 	interface ITextEditorFactory
 	{
 		ITextDocument CreateNewDocument ();

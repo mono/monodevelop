@@ -164,7 +164,8 @@ namespace MonoDevelop.Ide.Navigation
 				if (point != null)
 					return point;
 			}
-			
+
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			var editBuf = doc.Editor;
 			if (editBuf != null) {
 				if (forClosedHistory) {
@@ -175,7 +176,8 @@ namespace MonoDevelop.Ide.Navigation
 				if (point != null)
 					return point;
 			}
-			
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
+
 			return new DocumentNavigationPoint (doc);
 		}
 		
@@ -302,10 +304,12 @@ namespace MonoDevelop.Ide.Navigation
 			
 			currentDoc.Closed += HandleCurrentDocClosed;
 			
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (currentDoc.Editor != null) {
 				currentDoc.Editor.TextChanged += BufferTextChanged;
 				currentDoc.Editor.CaretPositionChanged += BufferCaretPositionChanged;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
 		static void HandleCurrentDocClosed (object sender, EventArgs e)
@@ -319,10 +323,12 @@ namespace MonoDevelop.Ide.Navigation
 				return;
 			
 			currentDoc.Closed -= HandleCurrentDocClosed;
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (currentDoc.Editor != null) {
 				currentDoc.Editor.TextChanged -= BufferTextChanged;
 				currentDoc.Editor.CaretPositionChanged -= BufferCaretPositionChanged;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 			currentDoc = null;
 		}
 		

@@ -1,4 +1,4 @@
-﻿//
+//
 // TextPasteHandler.cs
 //
 // Author:
@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// The text paste handler can do formattings to a text that is about to be pasted
 	/// into the text document.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class TextPasteHandler
 	{
 		/// <summary>

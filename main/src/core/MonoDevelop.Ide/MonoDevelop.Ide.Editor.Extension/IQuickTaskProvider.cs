@@ -30,6 +30,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public interface IQuickTaskProvider
 	{
 		ImmutableArray<QuickTask> QuickTasks {

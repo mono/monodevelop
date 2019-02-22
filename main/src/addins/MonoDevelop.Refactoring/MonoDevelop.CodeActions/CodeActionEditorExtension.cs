@@ -54,6 +54,7 @@ using Gdk;
 
 namespace MonoDevelop.CodeActions
 {
+	[Obsolete ("Old editor")]
 	class CodeActionEditorExtension : TextEditorExtension
 	{
 		const int menuTimeout = 150;

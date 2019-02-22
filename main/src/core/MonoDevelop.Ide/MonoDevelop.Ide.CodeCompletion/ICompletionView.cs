@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeCompletionSession.cs
 //
 // Author:
@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	interface ICompletionView
 	{
 		void Initialize (IListDataProvider provider, ICompletionViewEventSink eventSink);

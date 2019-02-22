@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectedFilterCompletionTextEditorExtension.cs
 //
 // Author:
@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
+	[Obsolete]
 	sealed class ProjectedFilterCompletionTextEditorExtension : CompletionTextEditorExtension, IProjectionExtension
 	{
 		CompletionTextEditorExtension completionTextEditorExtension;

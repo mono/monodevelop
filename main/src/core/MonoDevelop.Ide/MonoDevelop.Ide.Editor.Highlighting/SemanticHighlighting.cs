@@ -1,4 +1,4 @@
-﻿//
+//
 // SemanticHighlighting.cs
 //
 // Author:
@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// Semantic highlighting adds the ability to add highlighting for things that require
 	/// a background parser to be colored. For example type names.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public abstract class SemanticHighlighting : IDisposable
 	{
 		protected readonly internal TextEditor editor;

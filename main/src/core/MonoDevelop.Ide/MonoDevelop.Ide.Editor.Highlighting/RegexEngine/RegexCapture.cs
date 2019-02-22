@@ -22,7 +22,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
 	[ Serializable() ] 
 #endif
-    class Capture {
+	[Obsolete ("Old editor")]
+    class Capture
+	{
         internal string _text;
         internal int _index;
         internal int _length;

@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// An (Begin, End) pair representing a document span. It's a TextSegment working with lines &amp; columns instead of offsets.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public readonly struct DocumentRegion : IEquatable<DocumentRegion>
 	{
 		public static readonly DocumentRegion Empty = new DocumentRegion (0, 0, 0, 0);

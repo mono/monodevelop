@@ -35,6 +35,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class TextEditorExtension : ICommandRouter, IDisposable
 	{
 		public DocumentContext DocumentContext {
@@ -116,6 +117,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 	}
 
+	[Obsolete]
 	class TextEditorExtensionMarker : TextEditorExtension
 	{
 		public override bool IsValidInContext (DocumentContext context)

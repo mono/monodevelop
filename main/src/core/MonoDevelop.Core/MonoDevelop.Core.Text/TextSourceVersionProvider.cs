@@ -1,4 +1,4 @@
-﻿//
+//
 // TextSourceVersionProvider.cs
 //
 // Taken from NRefactory 5.
@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.Text
 	/// <summary>
 	/// Provides ITextSourceVersion instances.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")] 
 	public class TextSourceVersionProvider
 	{
 		Version currentVersion;

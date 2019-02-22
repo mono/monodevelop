@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -9,6 +9,9 @@ using System.Collections.Specialized;
 using System.Windows.Input;
 using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.SourceEditor;
+
+// this conflicts with the new editor, but it's internal and will be removed
+#pragma warning disable CS0436 // Type conflicts with imported type
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
@@ -103,6 +106,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 
             session.Dismissed += this.OnSessionDismissed;
             session.PresenterChanged += this.OnSessionPresenterChanged;
+
             IPopupIntellisensePresenter popupPresenter = session.Presenter as IPopupIntellisensePresenter;
             if (popupPresenter != null)
             {

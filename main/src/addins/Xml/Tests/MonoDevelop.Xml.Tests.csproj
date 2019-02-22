@@ -10,6 +10,10 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <!--
+    This needs to be ported to the new editor, and currently makes use of many, many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

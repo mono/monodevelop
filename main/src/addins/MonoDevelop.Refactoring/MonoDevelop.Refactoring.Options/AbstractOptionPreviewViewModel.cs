@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractOptionPreviewViewModel.cs
 //
 // Author:
@@ -189,8 +189,10 @@ namespace MonoDevelop.Refactoring.Options
 
 			public override MonoDevelop.Projects.Project Project => null;
 
+			[Obsolete]
 			public override Document AnalysisDocument => document;
 
+			[Obsolete]
 			public override ParsedDocument ParsedDocument => null;
 
 			public override void AttachToProject (MonoDevelop.Projects.Project project)
@@ -202,10 +204,12 @@ namespace MonoDevelop.Refactoring.Options
 				return null;
 			}
 
+			[Obsolete]
 			public override void ReparseDocument ()
 			{
 			}
 
+			[Obsolete]
 			public override Task<ParsedDocument> UpdateParseDocument ()
 			{
 				return new Task<ParsedDocument> (null);

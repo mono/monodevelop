@@ -15,12 +15,12 @@ namespace MonoDevelop.SourceEditor
     public interface IMDSpaceReservationManager
     {
         /// <summary>
-        /// Creates a default implementation of an <see cref="ISpaceReservationAgent"/> that displays <paramref name="content"/> in a popup window.
+        /// Creates a default implementation of an <see cref="IMDSpaceReservationAgent"/> that displays <paramref name="content"/> in a popup window.
         /// </summary>
         /// <param name="visualSpan">The span of text associated with the tip.</param>
         /// <param name="style">The style options for displaying the tip.</param>
         /// <param name="content">The UI element to be displayed in the tip.</param>
-        /// <returns>An <see cref="ISpaceReservationAgent"/> that will display the desired content in a popup window.</returns>
+        /// <returns>An <see cref="IMDSpaceReservationAgent"/> that will display the desired content in a popup window.</returns>
         IMDSpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles style, Xwt.Widget content);
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace MonoDevelop.SourceEditor
         /// <summary>
         /// Gets the list of agents managed by this manager.
         /// </summary>
-        /// <remarks>Any implementation of aa <see cref="ISpaceReservationAgent"/> can be used for this method.</remarks>
+        /// <remarks>Any implementation of aa <see cref="IMDSpaceReservationAgent"/> can be used for this method.</remarks>
         ReadOnlyCollection<IMDSpaceReservationAgent> Agents { get; }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿//
+//
 // FoldingTextEditorExtension.cs
 //
 // Author:
@@ -36,6 +36,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class FoldingTextEditorExtension : TextEditorExtension
 	{
 		CancellationTokenSource src = new CancellationTokenSource ();

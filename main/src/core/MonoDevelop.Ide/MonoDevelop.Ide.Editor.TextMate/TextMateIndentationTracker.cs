@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete]
 	class TextMateIndentationTracker : IndentationTracker
 	{
 		readonly TextEditor editor;

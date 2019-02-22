@@ -5,6 +5,10 @@
 // This file contain implementations details that are subject to change without notice.
 // Use at your own risk.
 //
+
+// this conflicts with the new editor, but it's internal and will be removed
+#pragma warning disable CS0436 // Type conflicts with imported type
+
 namespace Microsoft.VisualStudio.Text.Editor.Implementation
 {
     using System;

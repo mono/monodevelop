@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public ParsedDocument HiddenParsedDocument;
 
+		[Obsolete]
 		public override ParsedDocument ParsedDocument {
 			get {
 				return HiddenParsedDocument;

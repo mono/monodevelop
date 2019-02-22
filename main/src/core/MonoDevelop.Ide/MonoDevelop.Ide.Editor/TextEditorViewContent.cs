@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through BaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
+	[Obsolete]
 	class TextEditorViewContent : ViewContent, ICommandRouter
 	{
 		readonly TextEditor textEditor;

@@ -21,10 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete]
 	class CodeFormatterExtensionNode : TypeExtensionNode
 	{
 		[NodeAttribute ("mimeType", true, "The mimetype that this formatter can handle.")]

@@ -27,7 +27,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	///       names in a regular expression.
 	///    </para>
 	/// </devdoc>
-	[ Serializable() ] 
+	[ Serializable() ]
+	[Obsolete ("Old editor")]
     class MatchCollection : ICollection {
         internal Regex _regex;
         internal List<Match> _matches;
@@ -197,7 +198,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
     [ Serializable() ] 
 #endif
-    internal class MatchEnumerator : IEnumerator {
+	[Obsolete ("Old editor")]
+	internal class MatchEnumerator : IEnumerator {
         internal MatchCollection _matchcoll;
         internal Match _match = null;
         internal int _curindex;

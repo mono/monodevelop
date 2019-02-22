@@ -49,6 +49,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;

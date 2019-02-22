@@ -12,6 +12,10 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\build\tests</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--
+    This contains tests for many deprecated editor APIs, disable deprecation warnings for now.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

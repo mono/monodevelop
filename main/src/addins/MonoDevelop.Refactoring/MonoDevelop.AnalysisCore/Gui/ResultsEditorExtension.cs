@@ -52,6 +52,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+	[Obsolete ("Old editor")]
 	class AnalysisDocument
 	{
 		public Ide.Editor.TextEditor Editor { get; private set; }
@@ -66,6 +67,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;

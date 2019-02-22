@@ -41,7 +41,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	/// The controller takes code completion data and keystrokes as input, and shows the
 	/// results in the code completion view.
 	/// </summary>
-	class CompletionController: IDisposable, IListDataProvider, ICompletionViewEventSink
+	[Obsolete]
+	class CompletionController : IDisposable, IListDataProvider, ICompletionViewEventSink
 	{
 		ICompletionView view;
 		ICompletionDataList dataList;

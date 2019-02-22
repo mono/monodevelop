@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMateLanguage.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete("Old editor")]
 	public class TextMateLanguage
 	{
 		readonly ScopeStack scope;

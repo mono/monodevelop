@@ -1222,9 +1222,11 @@ namespace MonoDevelop.Ide.Gui
 
 			var dp = new DocumentUserPrefs ();
 			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, path);
-			if (document.Editor != null) {
-				dp.Line = document.Editor.CaretLine;
-				dp.Column = document.Editor.CaretColumn;
+			if (document.GetContent<ITextView> () is ITextView view) {
+				var pos = view.Caret.Position.BufferPosition;
+				var line = pos.Snapshot.GetLineFromPosition (pos.Position);
+				dp.Line = line.LineNumber + 1;
+				dp.Column = pos.Position - line.Start + 1;
 			}
 			return dp;
 		}

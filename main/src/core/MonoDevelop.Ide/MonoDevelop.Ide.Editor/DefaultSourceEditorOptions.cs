@@ -187,6 +187,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 
+			[Obsolete ("Old editor")]
 			bool ITextEditorOptions.WrapLines {
 				get {
 					return DefaultSourceEditorOptions.Instance.WrapLines;

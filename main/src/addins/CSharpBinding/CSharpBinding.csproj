@@ -10,6 +10,10 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--
+    This contains the C# language service for the old editor, which makes use of many deprecated APIs.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

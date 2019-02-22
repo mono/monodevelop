@@ -37,6 +37,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete ("Use the Visual Studio Editor APIs")]
 	public sealed class ParseOptions
 	{
 		string buildAction;
@@ -62,7 +63,9 @@ namespace MonoDevelop.Ide.TypeSystem
 	}
 
 	[Flags]
-	public enum DisabledProjectionFeatures {
+	[Obsolete ("Use the Visual Studio Editor APIs")]
+	public enum DisabledProjectionFeatures
+	{
 		None                     = 0,
 		Completion               = 1 << 0,
 		SemanticHighlighting     = 1 << 1,
@@ -71,7 +74,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		All = Completion | SemanticHighlighting | Tooltips
 	}
 
-	public class ParsedDocumentProjection 
+	[Obsolete ("Use the Visual Studio Editor APIs")]
+	public class ParsedDocumentProjection
 	{
 		public ParsedDocument ParsedDocument { get; private set; }
 
@@ -92,6 +96,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// a given file. This is required for adding information to the type system service to make the file contents available
 	/// for type lookup (code completion, resolving etc.).
 	/// </summary>
+	[Obsolete ("Use the Visual Studio Editor APIs")]
 	public abstract class TypeSystemParser 
 	{
 		/// <summary>
