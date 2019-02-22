@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LoggingService.cs
 // 
 // Author:
@@ -144,7 +144,6 @@ namespace MonoDevelop.Core
 		public static TextWriter CreateLogFile (string identifier, out string filename)
 		{
 			FilePath logDir = UserProfile.Current.LogDir;
-			Directory.CreateDirectory (logDir);
 
 			int oldIdx = logFileSuffix;
 
@@ -318,7 +317,6 @@ namespace MonoDevelop.Core
 				FilePermissions.S_IRGRP | FilePermissions.S_IWGRP;
 
 			FilePath logDir = UserProfile.Current.LogDir;
-			Directory.CreateDirectory (logDir);
 
 			int fd;
 			int oldIdx = logFileSuffix;
