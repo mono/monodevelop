@@ -275,6 +275,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			disposed = true;
 
+			CancelLoad ();
+
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
 			if (cacheService != null)
 				cacheService.CacheFlushRequested -= OnCacheFlushRequested;
@@ -289,7 +291,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			IdeApp.Preferences.Roslyn.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
 			DesktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
-			CancelLoad ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
@@ -343,7 +344,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			try {
-				var si = await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, token).ConfigureAwait (false);
+				var (solution, si) = await ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, token).ConfigureAwait (false);
 				if (si != null)
 					OnSolutionReloaded (si);
 			} catch (OperationCanceledException) {
@@ -361,7 +362,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.ReloadModifiedProject (project);
 		}
 
-		internal Task<SolutionInfo> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
+		internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> TryLoadSolution (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ProjectHandler.CreateSolutionInfo (MonoDevelopSolution, CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token).Token);
 		}
