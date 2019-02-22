@@ -22,18 +22,23 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
+using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using Microsoft.VisualStudio.Text.Utilities;
+
+using Microsoft.VisualStudio.CodingConventions;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
+
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using MonoDevelop.Projects.Policies;
 
 #if WINDOWS
@@ -52,12 +57,13 @@ namespace MonoDevelop.TextEditor
 		where TView : ITextView
 		where TImports : TextViewImports
 	{
-		readonly FilePath fileName;
 		readonly string mimeType;
-		readonly Project ownerProject;
 		readonly IEditorCommandHandlerService commandService;
 		readonly List<IEditorContentProvider> contentProviders;
 		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
+
+		PolicyBag policyContainer;
+		ICodingConventionContext editorConfigContext;
 
 		public TImports Imports { get; }
 		public TView TextView { get; }
@@ -74,13 +80,14 @@ namespace MonoDevelop.TextEditor
 			Project ownerProject)
 		{
 			this.Imports = imports;
-			this.fileName = fileName;
 			this.mimeType = mimeType;
-			this.ownerProject = ownerProject;
 			this.sourceEditorOptions = Ide.Editor.DefaultSourceEditorOptions.Instance;
 
+			Project = ownerProject;
+			ContentName = fileName;
+
 			// FIXME: move this to the end of the .ctor after fixing margin options responsiveness
-			HandleSourceEditorOptionsChanged (this, EventArgs.Empty);
+			UpdateLineNumberMarginOption ();
 
 			//TODO: this can change when the file is renamed
 			var contentType = GetContentTypeFromMimeType (fileName, mimeType);
@@ -108,37 +115,51 @@ namespace MonoDevelop.TextEditor
 			commandService = Imports.EditorCommandHandlerServiceFactory.GetService (TextView);
 			EditorOperations = (EditorOperationsInterface)Imports.EditorOperationsProvider.GetEditorOperations (TextView);
 			EditorOptions = Imports.EditorOptionsFactoryService.GetOptions (TextView);
-			UpdateEditorOptionsWithProjectPolicies ();
+			UpdateTextEditorOptions (this, EventArgs.Empty);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
 			TextView.Properties [typeof(ViewContent)] = this;
-			ContentName = fileName;
 
 			InstallAdditionalEditorOperationsCommands ();
 
 			SubscribeToEvents ();
 		}
 
-		PolicyBag policyContainer;
-		private void UpdateEditorOptionsWithProjectPolicies ()
+		protected override void OnContentNameChanged ()
 		{
-			if (ownerProject == null)
+			base.OnContentNameChanged ();
+
+			if (TextDocument == null)
 				return;
-			if (policyContainer != null)
-				policyContainer.PolicyChanged -= PolicyChanged;
-			policyContainer = ownerProject.Policies;
-			policyContainer.PolicyChanged += PolicyChanged;
-			var mimeTypes = Ide.DesktopService.GetMimeTypeInheritanceChain (mimeType);
-			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
-			EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
-			EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
-			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
-			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
+
+			if (editorConfigContext != null) {
+				editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
+				// TODO: What happens to ITextDocument on a rename???
+				Ide.Editor.EditorConfigService.RemoveEditConfigContext (TextDocument.FilePath).Ignore ();
+				editorConfigContext = null;
+			}
+
+			// TODO: Actually implement file rename support. Below is from old editor.
+			//       Need to remove or update mimeType field, too.
+
+			//if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
+			//	AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
+			//if (ContentName != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
+			//	textEditor.FileName = ContentName;
+			//if (this.WorkbenchWindow?.Document != null)
+			//	textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
+
+			UpdateTextEditorOptions (null, null);
 		}
 
-		private void PolicyChanged (object sender, PolicyChangedEventArgs e)
+		protected override void OnSetProject (Project project)
 		{
-			UpdateEditorOptionsWithProjectPolicies ();
+			base.OnSetProject (project);
+
+			if (TextDocument == null)
+				return;
+
+			UpdateTextEditorOptions (null, null);
 		}
 
 		protected abstract TView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles);
@@ -159,14 +180,20 @@ namespace MonoDevelop.TextEditor
 		{
 			UnsubscribeFromEvents ();
 			TextDocument.Dispose ();
+
 			if (policyContainer != null)
 				policyContainer.PolicyChanged -= PolicyChanged;
+			if (editorConfigContext != null) {
+				editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
+				Ide.Editor.EditorConfigService.RemoveEditConfigContext (ContentName).Ignore ();
+			}
+
 			base.Dispose ();
 		}
 
 		protected virtual void SubscribeToEvents ()
 		{
-			sourceEditorOptions.Changed += HandleSourceEditorOptionsChanged;
+			sourceEditorOptions.Changed += UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
 			TextView.Caret.PositionChanged += CaretPositionChanged;
 			TextView.TextBuffer.Changed += TextBufferChanged;
@@ -174,18 +201,94 @@ namespace MonoDevelop.TextEditor
 
 		protected virtual void UnsubscribeFromEvents ()
 		{
-			sourceEditorOptions.Changed -= HandleSourceEditorOptionsChanged;
+			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
 			TextView.Caret.PositionChanged -= CaretPositionChanged;
 			TextView.TextBuffer.Changed -= TextBufferChanged;
 		}
 
-		void HandleSourceEditorOptionsChanged (object sender, EventArgs e)
+		void UpdateLineNumberMarginOption ()
 		{
 			Imports.EditorOptionsFactoryService.GlobalOptions.SetOptionValue (
 				DefaultTextViewHostOptions.LineNumberMarginId,
 				sourceEditorOptions.ShowLineNumberMargin);
 		}
+
+		void UpdateTextEditorOptions (object sender, EventArgs e)
+		{
+			UpdateTextEditorOptionsAsync ().Forget ();
+		}
+
+		async Task UpdateTextEditorOptionsAsync ()
+		{
+			UpdateLineNumberMarginOption ();
+
+			var newPolicyContainer = Project?.Policies;
+			if (newPolicyContainer != policyContainer) {
+				if (policyContainer != null)
+					policyContainer.PolicyChanged -= PolicyChanged;
+				policyContainer = newPolicyContainer;
+			}
+			if (policyContainer != null)
+				policyContainer.PolicyChanged += PolicyChanged;
+
+			UpdateOptionsFromPolicy ();
+
+			var newEditorConfigContext = await Ide.Editor.EditorConfigService.GetEditorConfigContext (ContentName, default);
+			if (newEditorConfigContext != editorConfigContext) {
+				if (editorConfigContext != null)
+					editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
+				editorConfigContext = newEditorConfigContext;
+			}
+			if (editorConfigContext != null)
+				editorConfigContext.CodingConventionsChangedAsync += UpdateOptionsFromEditorConfigAsync;
+
+			await UpdateOptionsFromEditorConfigAsync (null, null);
+		}
+
+		private void UpdateOptionsFromPolicy()
+		{
+			if (policyContainer == null) {
+				EditorOptions.ClearOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.TabSizeOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.IndentSizeOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.NewLineCharacterOptionName);
+				EditorOptions.ClearOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName);
+
+				return;
+			}
+
+			var mimeTypes = Ide.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
+
+			EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, currentPolicy.TabsToSpaces);
+			EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, currentPolicy.TabWidth);
+			EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, currentPolicy.IndentWidth);
+			EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, currentPolicy.GetEolMarker ());
+			EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, currentPolicy.RemoveTrailingWhitespace);
+		}
+
+		private Task UpdateOptionsFromEditorConfigAsync (object sender, CodingConventionsChangedEventArgs args)
+		{
+			if (editorConfigContext == null)
+				return Task.FromResult (false);
+
+			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetIndentStyle (out var indentStyle))
+				EditorOptions.SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, indentStyle == IndentStyle.Spaces);
+			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetTabWidth (out var tabWidth))
+				EditorOptions.SetOptionValue (DefaultOptions.TabSizeOptionName, tabWidth);
+			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetIndentSize (out var indentSize))
+				EditorOptions.SetOptionValue (DefaultOptions.IndentSizeOptionName, indentSize);
+			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetLineEnding (out var lineEnding))
+				EditorOptions.SetOptionValue (DefaultOptions.NewLineCharacterOptionName, lineEnding);
+			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetAllowTrailingWhitespace (out var allowTrailingWhitespace))
+				EditorOptions.SetOptionValue (DefaultOptions.TrimTrailingWhiteSpaceOptionName, !allowTrailingWhitespace);
+
+			return Task.FromResult (true);
+		}
+
+		private void PolicyChanged (object sender, PolicyChangedEventArgs e)
+			=> UpdateTextEditorOptions (sender, e);
 
 		protected override object OnGetContent (Type type)
 		{
@@ -261,7 +364,7 @@ namespace MonoDevelop.TextEditor
 
 		IContentType GetContentTypeFromMimeType (string filePath, string mimeType)
 			=> Ide.MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (fileName != null ? Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
+				?? (ContentName != null ? Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (ContentName) : null)
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
