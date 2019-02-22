@@ -901,7 +901,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (treeviewLog.HasFocus) {
 				if (treeviewLog.Selection.GetSelected (out var iter)) {
 					if (logstore.GetValue (iter, 0) is Revision revision) {
-						return string.Format ("{0}, {1}, {2}", revision.ShortMessage, revision.Time, revision.Author);
+						return string.Format ("{0}, {1}, {2}, {3}", revision.ShortMessage, revision.Time, revision.Author, revision.Name);
 					}
 				}
 			}
