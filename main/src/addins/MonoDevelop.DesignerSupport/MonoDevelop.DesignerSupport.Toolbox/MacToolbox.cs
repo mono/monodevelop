@@ -335,7 +335,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		#endregion
 
-		internal void KeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
+		internal void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs ev)
 		{
 			ev.RetVal = true;
 		}
