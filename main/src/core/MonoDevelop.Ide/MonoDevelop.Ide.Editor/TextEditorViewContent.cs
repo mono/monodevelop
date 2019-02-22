@@ -373,8 +373,9 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		protected override void OnGrabFocus ()
+		protected void OnGrabFocus ()
 		{
+			// TOTEST
 			textEditor.GrabFocus ();
 		}
 	}
