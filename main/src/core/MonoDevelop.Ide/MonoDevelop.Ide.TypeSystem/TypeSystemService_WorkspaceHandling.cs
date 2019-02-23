@@ -302,7 +302,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document);
+
+			if (bestDoc != null) {
+				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document);
+			}
 		}
 
 		static void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)
