@@ -21,12 +21,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
 using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
+using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.Text.Utilities;
 
 using Microsoft.VisualStudio.CodingConventions;
@@ -35,11 +38,17 @@ using Microsoft.VisualStudio.Utilities;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 using MonoDevelop.DesignerSupport;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
+
+using AutoSave = MonoDevelop.Ide.Editor.AutoSave;
+using EditorConfigService = MonoDevelop.Ide.Editor.EditorConfigService;
+using DefaultSourceEditorOptions = MonoDevelop.Ide.Editor.DefaultSourceEditorOptions;
 
 #if WINDOWS
 using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditorOperations3;
@@ -49,7 +58,14 @@ using EditorOperationsInterface = Microsoft.VisualStudio.Text.Operations.IEditor
 
 namespace MonoDevelop.TextEditor
 {
-	abstract partial class TextViewContent<TView, TImports> : ViewContent, INavigable, ICustomCommandTarget, ICommandHandler, ICommandUpdater, IPropertyPadProvider
+	abstract partial class TextViewContent<TView, TImports> :
+		ViewContent,
+		INavigable,
+		ICustomCommandTarget,
+		ICommandHandler,
+		ICommandUpdater,
+		IPropertyPadProvider,
+		IDocumentReloadPresenter
 #if !WINDOWS
 		// implementing this correctly requires IEditorOperations4
 		, IZoomable
@@ -60,10 +76,12 @@ namespace MonoDevelop.TextEditor
 		readonly string mimeType;
 		readonly IEditorCommandHandlerService commandService;
 		readonly List<IEditorContentProvider> contentProviders;
-		readonly Ide.Editor.DefaultSourceEditorOptions sourceEditorOptions;
+		readonly DefaultSourceEditorOptions sourceEditorOptions;
+		readonly IInfoBarPresenter infoBarPresenter;
 
 		PolicyBag policyContainer;
 		ICodingConventionContext editorConfigContext;
+		bool warnOverwrite;
 
 		public TImports Imports { get; }
 		public TView TextView { get; }
@@ -81,7 +99,7 @@ namespace MonoDevelop.TextEditor
 		{
 			this.Imports = imports;
 			this.mimeType = mimeType;
-			this.sourceEditorOptions = Ide.Editor.DefaultSourceEditorOptions.Instance;
+			this.sourceEditorOptions = DefaultSourceEditorOptions.Instance;
 
 			Project = ownerProject;
 			ContentName = fileName;
@@ -118,16 +136,20 @@ namespace MonoDevelop.TextEditor
 			UpdateTextEditorOptions (this, EventArgs.Empty);
 			contentProviders = new List<IEditorContentProvider> (Imports.EditorContentProviderService.GetContentProvidersForView (TextView));
 
-			TextView.Properties [typeof(ViewContent)] = this;
+			TextView.Properties [typeof (ViewContent)] = this;
+
+			infoBarPresenter = Imports.InfoBarPresenterFactory.TryGetInfoBarPresenter (TextView);
 
 			InstallAdditionalEditorOperationsCommands ();
 
 			SubscribeToEvents ();
 		}
 
+		public override bool IsReadOnly => TextView.Options.DoesViewProhibitUserInput ();
+
 		public override void GrabFocus ()
 		{
-			Ide.Editor.DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
+			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
 			base.GrabFocus ();
 		}
 
@@ -140,18 +162,19 @@ namespace MonoDevelop.TextEditor
 
 			if (editorConfigContext != null) {
 				editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
-				// TODO: What happens to ITextDocument on a rename???
-				Ide.Editor.EditorConfigService.RemoveEditConfigContext (TextDocument.FilePath).Ignore ();
+				EditorConfigService.RemoveEditConfigContext (TextDocument.FilePath).Ignore ();
 				editorConfigContext = null;
 			}
+
+			if (ContentName != TextDocument.FilePath && !string.IsNullOrEmpty (TextDocument.FilePath))
+				AutoSave.RemoveAutoSaveFile (TextDocument.FilePath);
+
+			if (ContentName != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
+				TextDocument.Rename (ContentName);
 
 			// TODO: Actually implement file rename support. Below is from old editor.
 			//       Need to remove or update mimeType field, too.
 
-			//if (ContentName != textEditorImpl.ContentName && !string.IsNullOrEmpty (textEditorImpl.ContentName))
-			//	AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			//if (ContentName != null) // Happens when a file is converted to an untitled file, but even in that case the text editor should be associated with the old location, otherwise typing can be messed up due to change of .editconfig settings etc.
-			//	textEditor.FileName = ContentName;
 			//if (this.WorkbenchWindow?.Document != null)
 			//	textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
 
@@ -182,8 +205,14 @@ namespace MonoDevelop.TextEditor
 		public override string TabPageLabel
 			=> GettextCatalog.GetString ("Source");
 
+		bool isDisposed;
 		public override void Dispose ()
 		{
+			if (isDisposed)
+				return;
+
+			isDisposed = true;
+
 			UnsubscribeFromEvents ();
 			TextDocument.Dispose ();
 
@@ -191,7 +220,7 @@ namespace MonoDevelop.TextEditor
 				policyContainer.PolicyChanged -= PolicyChanged;
 			if (editorConfigContext != null) {
 				editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
-				Ide.Editor.EditorConfigService.RemoveEditConfigContext (ContentName).Ignore ();
+				EditorConfigService.RemoveEditConfigContext (ContentName).Ignore ();
 			}
 
 			base.Dispose ();
@@ -201,6 +230,7 @@ namespace MonoDevelop.TextEditor
 		{
 			sourceEditorOptions.Changed += UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged += HandleTextDocumentDirtyStateChanged;
+			TextBuffer.Changed += HandleTextBufferChanged;
 			TextView.Caret.PositionChanged += CaretPositionChanged;
 			TextView.TextBuffer.Changed += TextBufferChanged;
 		}
@@ -209,6 +239,7 @@ namespace MonoDevelop.TextEditor
 		{
 			sourceEditorOptions.Changed -= UpdateTextEditorOptions;
 			TextDocument.DirtyStateChanged -= HandleTextDocumentDirtyStateChanged;
+			TextBuffer.Changed -= HandleTextBufferChanged;
 			TextView.Caret.PositionChanged -= CaretPositionChanged;
 			TextView.TextBuffer.Changed -= TextBufferChanged;
 		}
@@ -240,7 +271,7 @@ namespace MonoDevelop.TextEditor
 
 			UpdateOptionsFromPolicy ();
 
-			var newEditorConfigContext = await Ide.Editor.EditorConfigService.GetEditorConfigContext (ContentName, default);
+			var newEditorConfigContext = await EditorConfigService.GetEditorConfigContext (ContentName, default);
 			if (newEditorConfigContext != editorConfigContext) {
 				if (editorConfigContext != null)
 					editorConfigContext.CodingConventionsChangedAsync -= UpdateOptionsFromEditorConfigAsync;
@@ -336,17 +367,160 @@ namespace MonoDevelop.TextEditor
 			return null;
 		}
 
-		public override Task Save ()
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
-			FormatOnSave ();
-			TextDocument.Save ();
+			// We actually load initial content at construction time, so this
+			// overload only needs to cover reload and autosave scenarios
+
+			if (warnOverwrite) {
+				warnOverwrite = false;
+				DismissInfoBar ();
+				WorkbenchWindow.ShowNotification = false;
+			}
+
+			if (fileOpenInformation.IsReloadOperation) {
+				TextDocument.Reload ();
+			} else if (AutoSave.AutoSaveExists (fileOpenInformation.FileName)) {
+				var autosaveContent = AutoSave.LoadAutoSave (fileOpenInformation.FileName);
+
+				MarkDirty ();
+				warnOverwrite = true;
+
+				// Set editor read-only until user picks one of the above options.
+				var setWritable = !TextView.Options.DoesViewProhibitUserInput ();
+				if (setWritable)
+					TextView.Options.SetOptionValue (DefaultTextViewOptions.ViewProhibitUserInputId, true);
+
+				ShowInfoBar (
+					GettextCatalog.GetString ("An autosave file has been found for this file"),
+					GettextCatalog.GetString (BrandingService.BrandApplicationName (
+						"This could mean that another instance of MonoDevelop is editing this " +
+						"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
+						"Do you want to use the original file, or load from the autosave file?")),
+					(GettextCatalog.GetString ("Use original file"), UseOriginalFile),
+					(GettextCatalog.GetString ("Load from autosave"), LoadFromAutosave));
+
+				void OnActionSelected ()
+				{
+					DismissInfoBar ();
+					if (setWritable)
+						TextView.Options.SetOptionValue (DefaultTextViewOptions.ViewProhibitUserInputId, false);
+				}
+
+				void LoadFromAutosave ()
+				{
+					try {
+						AutoSave.RemoveAutoSaveFile (fileOpenInformation.FileName);
+						ReplaceContent (autosaveContent.Text, autosaveContent.Encoding);
+					} catch (Exception e) {
+						LoggingService.LogError ("Could not load the autosave file", e);
+					} finally {
+						OnActionSelected ();
+					}
+				}
+
+				void UseOriginalFile ()
+				{
+					try {
+						AutoSave.RemoveAutoSaveFile (fileOpenInformation.FileName);
+					} catch (Exception e) {
+						LoggingService.LogError ("Could not remove the autosave file", e);
+					} finally {
+						OnActionSelected ();
+					}
+				}
+			}
+
 			return Task.CompletedTask;
 		}
 
+		/// <summary>
+		/// Replace document content with new content. This marks the document as dirty.
+		/// </summary>
+		void ReplaceContent (string newContent, Encoding newEncoding)
+		{
+			var currentSnapshot = TextBuffer.CurrentSnapshot;
+			TextDocument.Encoding = newEncoding;
+			TextBuffer.Replace (
+				new SnapshotSpan (currentSnapshot, 0, currentSnapshot.Length),
+				newContent);
+		}
+
+		void ShowInfoBar (string title, string description, params (string, Action) [] actions)
+			=> infoBarPresenter?.Show (new InfoBarViewModel (title,	description, actions));
+
+		void DismissInfoBar ()
+			=> infoBarPresenter?.Dismiss ();
+
+		public override void DiscardChanges ()
+		{
+			// Parity behavior with the old editor
+			if (autoSaveTask != null)
+				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+			RemoveAutoSaveTimer ();
+			if (!string.IsNullOrEmpty (ContentName))
+				AutoSave.RemoveAutoSaveFile (ContentName);
+		}
+
+		// TODO: Switch to native timeout, this is copied from TextEditorViewContent
+		uint autoSaveTimer;
+		Task autoSaveTask;
+		void InformAutoSave ()
+		{
+			if (isDisposed)
+				return;
+			RemoveAutoSaveTimer ();
+			autoSaveTimer = GLib.Timeout.Add (500, delegate {
+				autoSaveTimer = 0;
+				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
+					return false;
+
+				autoSaveTask = AutoSave.InformAutoSaveThread (
+					new AutoSaveTextSourceFacade(TextBuffer, TextDocument), ContentName, IsDirty);
+				return false;
+			});
+		}
+
+		void RemoveAutoSaveTimer ()
+		{
+			if (autoSaveTimer == 0)
+				return;
+			GLib.Source.Remove (autoSaveTimer);
+			autoSaveTimer = 0;
+		}
+
+		public override Task Save ()
+			=> Save (default (FileSaveInformation));
+
 		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
+			var fileName = fileSaveInformation?.FileName ?? ContentName;
+
+			if (warnOverwrite) {
+				if (string.Equals (fileName, ContentName, FilePath.PathComparison)) {
+					string question = GettextCatalog.GetString (
+						"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
+						fileName, BrandingService.ApplicationName
+					);
+					if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
+						return Task.CompletedTask;
+				}
+
+				warnOverwrite = false;
+				DismissInfoBar ();
+				WorkbenchWindow.ShowNotification = false;
+			}
+
+			if (!string.IsNullOrEmpty (fileName))
+				AutoSave.RemoveAutoSaveFile (fileName);
+
 			FormatOnSave ();
-			TextDocument.SaveAs (fileSaveInformation.FileName, overwrite: true);
+
+			if (fileSaveInformation != null)
+				TextDocument.SaveAs (fileSaveInformation.FileName, overwrite: true);
+			else
+				TextDocument.Save ();
+
 			return Task.CompletedTask;
 		}
 
@@ -363,8 +537,26 @@ namespace MonoDevelop.TextEditor
 
 		public override bool IsDirty => TextDocument.IsDirty;
 
+		bool manuallyMarkingDirty;
+		void MarkDirty ()
+		{
+			manuallyMarkingDirty = true;
+			try {
+				TextDocument.UpdateDirtyState (true, DateTime.Now);
+			} finally {
+				manuallyMarkingDirty = false;
+			}
+		}
+
 		void HandleTextDocumentDirtyStateChanged (object sender, EventArgs e)
-			=> OnDirtyChanged ();
+		{
+			OnDirtyChanged ();
+			if (!manuallyMarkingDirty)
+				InformAutoSave ();
+		}
+
+		private void HandleTextBufferChanged (object sender, TextContentChangedEventArgs e)
+			=> InformAutoSave ();
 
 		static readonly string[] textContentType = { "text" };
 
@@ -403,6 +595,117 @@ namespace MonoDevelop.TextEditor
 			if (WorkbenchWindow?.Document is Document doc && doc.HasProject) {
 				Ide.IdeApp.ProjectOperations.SaveAsync (doc.Project);
 			}
+		}
+
+		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
+		{
+			var actions = new List<(string, Action)> {
+				(GettextCatalog.GetString("Reload from disk"), ReloadFromDisk),
+				(GettextCatalog.GetString("Keep changes"), KeepChanges),
+			};
+
+			if (multiple) {
+				actions.Add ((GettextCatalog.GetString ("Reload all"), ReloadAll));
+				actions.Add ((GettextCatalog.GetString ("Ignore all"), IgnoreAll));
+			}
+
+			WorkbenchWindow.ShowNotification = true;
+			warnOverwrite = true;
+			MarkDirty ();
+
+			ShowInfoBar (
+				GettextCatalog.GetString (
+					"The file \"{0}\" has been changed outside of {1}.",
+					ContentName,
+					BrandingService.ApplicationName),
+				GettextCatalog.GetString ("Do you want to keep your changes, or reload the file from disk?"),
+				actions.ToArray ());
+
+			void ReloadFromDisk ()
+			{
+				try {
+					if (isDisposed || !File.Exists (ContentName))
+						return;
+
+					Load (new FileOpenInformation (ContentName) { IsReloadOperation = true });
+					WorkbenchWindow.ShowNotification = false;
+				} catch (Exception ex) {
+					MessageService.ShowError ("Could not reload the file.", ex);
+				} finally {
+					DismissInfoBar ();
+				}
+			}
+
+			void KeepChanges ()
+			{
+				if (isDisposed)
+					return;
+				WorkbenchWindow.ShowNotification = false;
+				DismissInfoBar ();
+			}
+
+			void ReloadAll () => DocumentRegistry.ReloadAllChangedFiles ();
+
+			void IgnoreAll () => DocumentRegistry.IgnoreAllChangedFiles ();
+		}
+
+		void IDocumentReloadPresenter.RemoveMessageBar ()
+			=> DismissInfoBar ();
+
+		/// <summary>
+		/// An ITextSource that only implements enough pieces for AutoSave to work.
+		///
+		/// This can go away when we update AutoSave to use the VS APIs.
+		/// </summary>
+		class AutoSaveTextSourceFacade : ITextSource
+		{
+			readonly ITextBuffer textBuffer;
+			readonly ITextDocument textDocument;
+
+			public AutoSaveTextSourceFacade (ITextBuffer textBuffer, ITextDocument textDocument)
+			{
+				this.textBuffer = textBuffer
+					?? throw new ArgumentNullException (nameof (textBuffer));
+				this.textDocument = textDocument
+					?? throw new ArgumentNullException (nameof (textDocument));
+			}
+
+			public char this [int offset] => throw new NotImplementedException ();
+
+			public ITextSourceVersion Version => throw new NotImplementedException ();
+
+			public Encoding Encoding => textDocument.Encoding;
+
+			public int Length => throw new NotImplementedException ();
+
+			public string Text => throw new NotImplementedException ();
+
+			public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+				=> throw new NotImplementedException ();
+
+			public TextReader CreateReader ()
+				=> throw new NotImplementedException ();
+
+			public TextReader CreateReader (int offset, int length)
+				=> throw new NotImplementedException ();
+
+			public ITextSource CreateSnapshot ()
+				=> throw new NotImplementedException ();
+
+			public ITextSource CreateSnapshot (int offset, int length)
+				=> throw new NotImplementedException ();
+
+			public char GetCharAt (int offset)
+				=> throw new NotImplementedException ();
+
+			public string GetTextAt (int offset, int length)
+				=> throw new NotImplementedException ();
+
+			public void WriteTextTo (TextWriter writer)
+				=> textBuffer.CurrentSnapshot.Write (writer);
+
+			public void WriteTextTo (TextWriter writer, int offset, int length)
+				=> throw new NotImplementedException ();
 		}
 	}
 }
