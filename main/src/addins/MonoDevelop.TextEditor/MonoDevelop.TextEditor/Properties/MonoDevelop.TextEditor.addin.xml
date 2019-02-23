@@ -89,6 +89,9 @@
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeSignatureHelpCommandArgs" />
 
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickFixCommandArgs" />
+
+		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextHighlightedReferenceCommandArgs" />
+		<Map id="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousHighlightedReferenceCommandArgs" />
 	</Extension>
 
 	<!--
