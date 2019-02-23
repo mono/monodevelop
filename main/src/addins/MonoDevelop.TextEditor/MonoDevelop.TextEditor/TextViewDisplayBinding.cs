@@ -59,13 +59,13 @@ namespace MonoDevelop.TextEditor
 
 		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
 			".cs",
-			".html",
-			".cshtml",
-			".css",
-			".json",
-			".js",
-			".ts",
-			".xaml"
+			//".cshtml",
+			//".css",
+			//".html",
+			//".js",
+			//".json",
+			//".ts",
+			//".xaml"
 		};
 
 		bool IsSupportedFileExtension (FilePath fileName)
@@ -75,6 +75,9 @@ namespace MonoDevelop.TextEditor
 
 		bool IsSupportedAndroidFileName (FilePath fileName, Project ownerProject)
 		{
+			// disable Android XML for now
+			return false;
+
 			// We only care about .xml and .axml files that are marked as AndroidResource
 			if (!(fileName.HasExtension (".xml") || fileName.HasExtension (".axml")))
 				return false;
