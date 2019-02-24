@@ -316,8 +316,6 @@ namespace MonoDevelop.Ide.Projects
 				Child.ShowAll ();
 			}
 
-			Show ();
-
 			templatesTreeView.HasFocus = true;
 			Resizable = false;
 		}
