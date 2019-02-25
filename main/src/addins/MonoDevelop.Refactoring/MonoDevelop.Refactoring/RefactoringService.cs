@@ -108,7 +108,7 @@ namespace MonoDevelop.Refactoring
 			}
 			public void FileRename (object sender, FileCopyEventArgs e)
 			{
-				foreach (FileCopyEventInfo args in e) {
+				foreach (FileEventInfo args in e) {
 					foreach (Change change in changes) {
 						var replaceChange = change as TextReplaceChange;
 						if (replaceChange == null)

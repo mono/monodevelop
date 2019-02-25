@@ -47,6 +47,16 @@ namespace MonoDevelop.Core
 {
 	public static class FileService
 	{
+		internal enum EventDataKind
+		{
+			Created,
+			Changed,
+			Copied,
+			Moved,
+			Removed,
+			Renamed,
+		}
+
 		delegate bool PathCharsAreEqualDelegate (char a, char b);
 
 		static PathCharsAreEqualDelegate PathCharsAreEqual = Platform.IsWindows || Platform.IsMac ?
@@ -636,16 +646,21 @@ namespace MonoDevelop.Core
 
 		static void WindowsRename (string sourceFile, string destFile)
 		{
-			//Replace fails if the target file doesn't exist, so in that case try a simple move
-			if (!File.Exists (destFile)) {
-				try {
-					File.Move (sourceFile, destFile);
-					return;
-				} catch {
+			FreezeEvents ();
+			try {
+				//Replace fails if the target file doesn't exist, so in that case try a simple move
+				if (!File.Exists (destFile)) {
+					try {
+						File.Move (sourceFile, destFile);
+						return;
+					} catch {
+					}
 				}
-			}
 
-			File.Replace (sourceFile, destFile, null);
+				File.Replace (sourceFile, destFile, null);
+			} finally {
+				ThawEvents ();
+			}
 		}
 
 		static void UnixRename (string sourceFile, string destFile)
@@ -753,19 +768,19 @@ namespace MonoDevelop.Core
 					Counters.FilesCreated++;
 			}
 
-			eventQueue.RaiseEvent (FileCreated, args);
+			eventQueue.RaiseEvent (EventDataKind.Created, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileCopied;
 		static void OnFileCopied (FileCopyEventArgs args)
 		{
-			eventQueue.RaiseEvent (FileCopied, args);
+			eventQueue.RaiseEvent (EventDataKind.Copied, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileMoved;
 		static void OnFileMoved (FileCopyEventArgs args)
 		{
-			eventQueue.RaiseEvent (FileMoved, args);
+			eventQueue.RaiseEvent (EventDataKind.Moved, args);
 		}
 
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
@@ -773,14 +788,14 @@ namespace MonoDevelop.Core
 		{
 			AsyncEvents.OnFileRenamed (args);
 
-			foreach (FileCopyEventInfo fi in args) {
+			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
 					Counters.DirectoriesRenamed++;
 				else
 					Counters.FilesRenamed++;
 			}
 
-			eventQueue.RaiseEvent (FileRenamed, args);
+			eventQueue.RaiseEvent (EventDataKind.Renamed, args);
 		}
 
 		public static event EventHandler<FileEventArgs> FileRemoved;
@@ -795,14 +810,14 @@ namespace MonoDevelop.Core
 					Counters.FilesRemoved++;
 			}
 
-			eventQueue.RaiseEvent (FileRemoved, args);
+			eventQueue.RaiseEvent (EventDataKind.Removed, args);
 		}
 
 		public static event EventHandler<FileEventArgs> FileChanged;
 		static void OnFileChanged (FileEventArgs args)
 		{
 			Counters.FileChangeNotifications++;
-			eventQueue.RaiseEvent (FileChanged, args);
+			eventQueue.RaiseEvent (EventDataKind.Changed, args);
 		}
 
 		public static async Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
@@ -867,6 +882,27 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		internal static object GetHandler (EventDataKind kind)
+		{
+			switch (kind)
+			{
+			case EventDataKind.Changed:
+				return FileChanged;
+			case EventDataKind.Copied:
+				return FileCopied;
+			case EventDataKind.Created:
+				return FileCreated;
+			case EventDataKind.Moved:
+				return FileMoved;
+			case EventDataKind.Removed:
+				return FileRemoved;
+			case EventDataKind.Renamed:
+				return FileRenamed;
+			default:
+				throw new InvalidOperationException ();
+			}
+		}
+
 		/// <summary>
 		/// File watcher events - these are not fired on the UI thread.
 		/// </summary>
@@ -875,33 +911,64 @@ namespace MonoDevelop.Core
 
 	class EventQueue
 	{
-		class EventData<TArgs> : EventData where TArgs:EventArgs
+		static void RaiseSync (FileService.EventDataKind kind, FileEventArgs args)
 		{
-			public EventHandler<TArgs> Delegate;
-			public TArgs Args;
+			var handler = FileService.GetHandler (kind);
+			if (handler == null)
+				return;
 
-			public override void Invoke ()
-			{
-				Delegate?.Invoke (null, Args);
+			// Ugly, but it saves us the problem of having to deal with generic event handlers without covariance.
+			if (args is FileCopyEventArgs copyArgs) {
+				if (handler is EventHandler<FileCopyEventArgs> copyHandler) {
+					copyHandler.Invoke (null, copyArgs);
+					return;
+				}
+				throw new InvalidOperationException ();
 			}
 
-			public override bool ShouldMerge (EventData other)
+			if (handler is EventHandler<FileEventArgs> fileHandler)
+				fileHandler.Invoke (null, args);
+			else
+				throw new InvalidOperationException ();
+		}
+
+		[DebuggerDisplay("{DebuggerDisplay,nq}")]
+		internal class FileEventData : EventData
+		{
+			public FileService.EventDataKind Kind;
+			public FileEventArgs Args;
+
+			public override void Invoke () => RaiseSync (Kind, Args);
+
+			public override bool MergeArgs (EventData other)
 			{
-				if (!(other is EventData<TArgs> next))
-					return false;
-				return (next.Args.GetType () == Args.GetType ()) && next.Delegate == Delegate;
+				bool shouldMerge = false;
+
+				if (other is FileEventData next && Kind == next.Kind) {
+					shouldMerge = true;
+
+					if (next.Args is FileCopyEventArgs nextArgs && Args is FileCopyEventArgs thisArgs)
+						shouldMerge &= nextArgs.IsExternal == thisArgs.IsExternal;
+
+					if (shouldMerge) {
+						next.Args.MergeWith (Args);
+					}
+				}
+
+				return shouldMerge;
 			}
 
-			public override bool IsChainArgs ()
-			{
-				return Args is IEventArgsChain;
-			}
-
-			public override void MergeArgs (EventData other)
-			{
-				var next = (EventData<TArgs>)other;
-				((IEventArgsChain)next.Args).MergeWith ((IEventArgsChain)Args);
-			}
+			private string DebuggerDisplay => string.Format (
+				"{0}: {1}",
+				Kind.ToString (),
+				string.Join (
+					", ",
+					Args.Select (x => x.SourceFile == x.TargetFile
+						? x.FileName.ToString ()
+						: string.Format ("{0} -> {1}", x.SourceFile.ToString (), x.TargetFile.ToString ())
+					)
+				)
+			);
 		}
 
 		sealed class EmptyEventData : EventData
@@ -909,22 +976,17 @@ namespace MonoDevelop.Core
 			public static EmptyEventData Instance = new EmptyEventData ();
 
 			public override void Invoke () { }
-			public override bool ShouldMerge (EventData other) => false;
-			public override void MergeArgs (EventData other) { }
-			public override bool IsChainArgs () => false;
+			public override bool MergeArgs (EventData other) => false;
 		}
 
-		abstract class EventData
+		internal abstract class EventData
 		{
 			public abstract void Invoke ();
-			public abstract bool ShouldMerge (EventData other);
-			public abstract void MergeArgs (EventData other);
-			public abstract bool IsChainArgs ();
+			public abstract bool MergeArgs (EventData other);
 		}
 
-		List<EventData> events = new List<EventData> ();
 		readonly object lockObject = new object ();
-		readonly Processor processor = new Processor ();
+		Processor processor = new Processor ();
 
 		int frozen;
 
@@ -937,65 +999,326 @@ namespace MonoDevelop.Core
 
 		public void Thaw ()
 		{
-			List<EventData> pendingEvents;
+			Processor pendingProcess;
 			lock (lockObject) {
-				if (--frozen != 0 || events.Count == 0)
+				if (--frozen != 0 || processor.Events.Count == 0)
 					return;
 
-				pendingEvents = events;
-				events = new List<EventData> ();
+				pendingProcess = processor;
+				processor = new Processor ();
 			}
 
-			processor.Process (pendingEvents);
+			pendingProcess.Merge ();
 
 			// Trigger notifications
 			Runtime.RunInMainThread (() => {
-				foreach (var ev in pendingEvents)
+				foreach (var ev in pendingProcess.Events)
 					ev.Invoke ();
 			}).Ignore ();
 		}
 
-		public void RaiseEvent<TArgs> (EventHandler<TArgs> del, TArgs args) where TArgs : EventArgs
+		public void RaiseEvent (FileService.EventDataKind kind, FileEventArgs args)
 		{
-			if (del == null)
-				return;
-
 			lock (lockObject) {
 				if (frozen > 0) {
-					var ed = new EventData<TArgs> ();
-					ed.Delegate = del;
-					ed.Args = args;
-					events.Add (ed);
+					var ed = new FileEventData {
+						Kind = kind,
+						Args = args,
+					};
+					processor.Queue (ed);
 					return;
 				}
 			}
 
 			if (Runtime.IsMainThread) {
-				del.Invoke (null, args);
+				RaiseSync (kind, args);
 			} else {
 				Runtime.MainSynchronizationContext.Post (state => {
-					var (del1, args1) = (ValueTuple<EventHandler<TArgs>, TArgs>)state;
-					del1.Invoke (null, args1);
-				}, (del, args));
+					var (k, a) = (ValueTuple<FileService.EventDataKind, FileEventArgs>)state;
+					RaiseSync (k, a);
+				}, (kind, args));
 			}
 		}
 
-		class Processor
+		internal class Processor
 		{
-			public void Process (List<EventData> pendingEvents)
+			internal enum FileState
 			{
-				var previous = pendingEvents.Count > 0 ? pendingEvents [0] : null;
-				EventData current = null;
+				None,
+				Created,
+				Changed,
+				CreatedOrChanged,
+				Removed,
+				RemovedViaRename,
+			}
 
-				// Merge similar events to trigger fewer notifications.
-				for (int n = 1; n < pendingEvents.Count; n++, previous = current) {
-					current = pendingEvents [n];
+			FileEventStateMachine fsm = new FileEventStateMachine ();
+			public List<FileEventData> ToQueue = new List<FileEventData> ();
+			public List<EventData> Events => fsm.Events;
 
-					if (!previous.IsChainArgs () || !previous.ShouldMerge (current))
+			internal class FileEventStateMachine
+			{
+				public readonly List<EventData> Events = new List<EventData> ();
+				readonly Dictionary<FilePath, FileEventState> values = new Dictionary<FilePath, FileEventState> ();
+
+				public int Queue (EventData ev)
+				{
+					int index = Events.Count;
+					Events.Add (ev);
+					return index;
+				}
+
+				public void Set (FilePath path, int eventIndex, int fileIndex, bool isSource, FileState newState)
+				{
+					if (!TryGet(path, out var state)) {
+						values [path] = state = new FileEventState ();
+					}
+
+					if (eventIndex >= Events.Count)
+						throw new ArgumentOutOfRangeException (nameof (eventIndex));
+
+					if (fileIndex >= ((FileEventData)Events[eventIndex]).Args.Count)
+						throw new ArgumentOutOfRangeException (nameof (fileIndex));
+
+					state.Indices.Add ((eventIndex, fileIndex, isSource));
+					state.FinalState = newState;
+				}
+
+				public bool TryGet (FilePath path, out FileEventState state) => values.TryGetValue (path, out state);
+
+				public void RemoveLastEventData (FilePath path)
+				{
+					if (!TryGet (path, out var state))
+						return;
+
+					var index = state.Indices.Count - 1;
+					if (index < 0)
+						return;
+
+					var (eventIndex, fileIndex, isSource) = state.Indices [index];
+
+					var ev = (FileEventData)Events [eventIndex];
+					ev.Args.RemoveAt (fileIndex);
+
+					state.Indices.RemoveAt (index);
+
+					if (--index < 0) {
+						values.Remove (path);
+					} else {
+						(eventIndex, fileIndex, isSource) = state.Indices [index];
+						ev = (FileEventData)Events [eventIndex];
+
+						var (sourceState, targetState) = GetStateFromKind (ev.Kind);
+						state.FinalState = isSource ? sourceState : targetState;
+					}
+				}
+			}
+
+			internal class FileEventState
+			{
+				public FileState FinalState { get; set; }
+				public List<(int EventIndex, int FileIndex, bool IsSource)> Indices { get; } = new List<(int, int, bool)> ();
+			}
+
+			static (FileState SourceState, FileState TargetState) GetStateFromKind (FileService.EventDataKind kind)
+			{
+				var sourceState = FileState.None;
+				var targetState = FileState.None;
+
+				switch (kind) {
+				case FileService.EventDataKind.Changed:
+					// source == target
+					targetState = FileState.Changed;
+					break;
+				case FileService.EventDataKind.Copied:
+					// source is not touched
+					targetState = FileState.CreatedOrChanged;
+					break;
+				case FileService.EventDataKind.Created:
+					// source == target
+					targetState = FileState.Created;
+					break;
+				case FileService.EventDataKind.Moved:
+				case FileService.EventDataKind.Renamed:
+					sourceState = FileState.RemovedViaRename;
+					targetState = FileState.CreatedOrChanged;
+					break;
+				case FileService.EventDataKind.Removed:
+					// source == target
+					targetState = FileState.Removed;
+					break;
+				}
+
+				return (sourceState, targetState);
+			}
+
+			public void Queue (FileEventData data)
+			{
+				var args = data.Args;
+
+				int eventIndex = fsm.Queue (data);
+
+				var (sourceState, targetState) = GetStateFromKind (data.Kind);
+
+				// We only need to handle target file here.
+				for (int i = 0; i < args.Count; ++i) {
+					var arg = args [i];
+
+					// Don't want to handle directories for now.
+					if (arg.IsDirectory)
 						continue;
 
-					previous.MergeArgs (current);
-					pendingEvents [n - 1] = EmptyEventData.Instance;
+					if (args is FileCopyEventArgs) {
+						// Remove the target removal, it's going to be replaced.
+						if (targetState == FileState.CreatedOrChanged && fsm.TryGet (arg.TargetFile, out var state) && state.FinalState == FileState.Removed) {
+							// Only set one when removed/renamed
+							fsm.RemoveLastEventData (arg.TargetFile);
+						}
+
+						if (sourceState != FileState.None && HandleStateChange (arg.SourceFile, arg.IsDirectory, sourceState, args, eventIndex, ref i))
+							fsm.Set (arg.SourceFile, eventIndex, i, false, sourceState);
+					}
+
+					if (!HandleStateChange (arg.TargetFile, arg.IsDirectory, targetState, args, eventIndex, ref i))
+						fsm.Set (arg.TargetFile, eventIndex, i, false, targetState);
+				}
+
+				if (ToQueue.Count != 0) {
+					var temp = new List<FileEventData> ();
+
+					(temp, ToQueue) = (ToQueue, temp);
+
+					foreach (var item in temp) {
+						Queue (item);
+					}
+				}
+			}
+
+			bool HandleStateChange (FilePath path, bool isDirectory, FileState targetState, FileEventArgs args, int eventIndex, ref int i)
+			{
+				if (!fsm.TryGet (path, out var state))
+					return false;
+
+				var oldState = state.FinalState;
+
+				switch (targetState) {
+				case FileState.Changed:
+					if (oldState == FileState.Changed) {
+						// Changed + Changed => Changed
+						Discard (args, ref i);
+						return true;
+					}
+					break;
+
+				case FileState.Created:
+					if (oldState == FileState.Removed) {
+						// Remove -> Created => queue new Changed
+						Discard (args, ref i);
+						fsm.RemoveLastEventData (path);
+
+						ToQueue.Add (new FileEventData {
+							Args = new FileEventArgs (path, isDirectory),
+							Kind = FileService.EventDataKind.Changed
+						});
+						return true;
+					}
+
+					if (oldState == FileState.Created) {
+						// Remove -> Created => Changed
+						Discard (args, ref i);
+						return true;
+					}
+					break;
+
+				case FileState.Removed:
+					if (oldState == FileState.Created) {
+						// Created -> Remove => NOP
+						Discard (args, ref i);
+						fsm.RemoveLastEventData (path);
+						return true;
+					}
+
+					if (oldState == FileState.Changed) {
+						// Changed + Remove -> Remove
+						fsm.RemoveLastEventData (path);
+
+						// Reduce more if we can here.
+						return HandleStateChange (path, isDirectory, targetState, args, eventIndex, ref i);
+					}
+
+					if (oldState == FileState.CreatedOrChanged) {
+						// The old file was someone renaming something to it.
+
+						// Rename a -> a.tmp <DISCARD>
+						// Rename b -> a
+						// Remove a.tmp <DISCARD>
+
+						// Look for a -> a.tmp
+						if (GetLastRenameEventIgnoringChanged (state, path, 0, out var actualTarget) && fsm.TryGet (actualTarget, out var sourceState)) {
+							// Look for b -> a
+							if (GetLastRenameEventIgnoringChanged (sourceState, actualTarget, 0, out var actualSource)) {
+								fsm.RemoveLastEventData (path);
+								Discard (args, ref i);
+								return true;
+							}
+						}
+					}
+
+					break;
+				}
+
+				return false;
+			}
+
+			bool GetLastRenameEventIgnoringChanged (FileEventState state, FilePath path, int index, out FilePath result)
+			{
+				result = FilePath.Empty;
+
+				var indices = state.Indices;
+				if (indices.Count > index) {
+					var targetIndex = indices [indices.Count - 1 - index];
+					var resultState = (FileEventData)fsm.Events [targetIndex.EventIndex];
+
+					if (resultState.Kind == FileService.EventDataKind.Changed)
+						return GetLastRenameEventIgnoringChanged (state, path, index + 1, out result);
+
+					if (resultState.Kind != FileService.EventDataKind.Renamed && resultState.Kind != FileService.EventDataKind.Moved)
+						return false;
+
+					var args = resultState.Args;
+					for (int i = 0; i < args.Count; ++i) {
+						var arg = args [i];
+						if (arg.TargetFile == path) {
+							// Found the file which this was renamed from.
+							result = arg.SourceFile;
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+
+			static void Discard (FileEventArgs args, ref int i)
+			{
+				args.RemoveAt (i);
+				i--;
+			}
+
+			public void Merge ()
+			{
+				// Remove all the events which had no items.
+				Events.RemoveAll (x => ((FileEventData)x).Args.Count == 0);
+
+				// Merge similar events to trigger fewer notifications.
+				var previous = Events.Count > 0 ? Events [0] : null;
+				EventData current = null;
+
+				for (int n = 1; n < Events.Count; n++, previous = current) {
+					current = Events [n];
+
+					if (previous.MergeArgs (current))
+						Events [n - 1] = EmptyEventData.Instance;
 				}
 			}
 		}

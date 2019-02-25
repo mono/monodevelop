@@ -89,20 +89,35 @@ namespace MonoDevelop.VersionControl
 				Dispose ();
 		}
 
-		internal bool Disposed { get; private set; }
-		public virtual void Dispose ()
-		{
-			Disposed = true;
-			if (!queryRunning)
-				return;
+		public bool IsDisposed { get; protected set; }
 
-			lock (queryLock) {
-				fileQueryQueue.Clear ();
-				directoryQueryQueue.Clear ();
-				recursiveDirectoryQueryQueue.Clear ();
+		protected virtual void Dispose (bool disposing)
+		{
+			IsDisposed = true;
+
+			if (queryRunning) {
+				lock (queryLock) {
+					fileQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
+					recursiveDirectoryQueryQueue.Clear ();
+				}
 			}
+
+			infoCache?.Dispose ();
+			infoCache = null;
 		}
-		
+
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		~Repository ()
+		{
+			Dispose (false);
+		}
+
 		// Display name of the repository
 		[ItemProperty]
 		public string Name	{
@@ -225,6 +240,8 @@ namespace MonoDevelop.VersionControl
 			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
 				// We shouldn't use IEnumerable because elements don't save property modifications.
 				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ToList ();
+				foreach (var vi in res)
+					if (!vi.IsInitialized) vi.Init (this);
 				infoCache.SetStatus (res);
 				return res;
 			}
@@ -409,24 +426,30 @@ namespace MonoDevelop.VersionControl
 					// new queries to the queue while long-running VCS operations are being performed
 					var groups = fileQueryQueueClone.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
-						if (Disposed)
+						if (IsDisposed)
 							break;
-						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
+						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key).ToList ();
+						foreach (var vi in status)
+							if (!vi.IsInitialized) vi.Init (this);
 						infoCache.SetStatus (status);
 					}
 
 					foreach (var item in directoryQueryQueueClone) {
-						if (Disposed)
+						if (IsDisposed)
 							break;
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
+						foreach (var vi in status)
+							if (!vi.IsInitialized) vi.Init (this);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
 
 					foreach (var item in recursiveDirectoryQueryQueueClone) {
 						try {
-							if (Disposed)
+							if (IsDisposed)
 								continue;
 							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
+							foreach (var vi in item.Result)
+								if (!vi.IsInitialized) vi.Init (this);
 						} finally {
 							item.ResetEvent.Set ();
 						}
@@ -519,7 +542,7 @@ namespace MonoDevelop.VersionControl
 		// repository directory (must use absolute local paths).
 		public Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
-			var metadata = new PublishMetadata (VersionControlSystem) { PathsCount = files.Length, SubFolder = localPath.IsChildPathOf (RootPath) };
+			var metadata = new PublishMetadata (VersionControlSystem) { PathsCount = files.Length, SubFolder = !RootPath.IsNullOrEmpty && localPath.IsChildPathOf(RootPath) };
 			using (var tracker = Instrumentation.PublishCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					var res = OnPublish (serverPath, localPath, files, message, monitor);

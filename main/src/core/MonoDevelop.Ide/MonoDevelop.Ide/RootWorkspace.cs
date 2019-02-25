@@ -1,4 +1,4 @@
-﻿// RootWorkspace.cs
+// RootWorkspace.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -1392,7 +1392,7 @@ namespace MonoDevelop.Ide
 				return;
 
 			foreach (Solution sol in GetAllSolutions ()) {
-				foreach (FileCopyEventInfo e in args)
+				foreach (FileEventInfo e in args)
 					sol.RootFolder.RenameFileInProjects (e.SourceFile, e.TargetFile);
 			}
 		}

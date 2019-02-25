@@ -248,13 +248,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal Task<SolutionInfo> CreateSolutionInfo (MonoDevelop.Projects.Solution sol, CancellationToken ct)
+			internal Task<(MonoDevelop.Projects.Solution, SolutionInfo)> CreateSolutionInfo (MonoDevelop.Projects.Solution sol, CancellationToken ct)
 			{
 				return Task.Run (delegate {
 					return CreateSolutionInfoInternal (sol, ct);
 				});
 
-				async Task<SolutionInfo> CreateSolutionInfoInternal (MonoDevelop.Projects.Solution solution, CancellationToken token)
+				async Task<(MonoDevelop.Projects.Solution, SolutionInfo)> CreateSolutionInfoInternal (MonoDevelop.Projects.Solution solution, CancellationToken token)
 				{
 					using (var timer = Counters.AnalysisTimer.BeginTiming ()) {
 						projections.ClearOldProjectionList ();
@@ -265,6 +265,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (IsModifiedWhileLoading (solution)) {
 							return await CreateSolutionInfoInternal (solution, token).ConfigureAwait (false);
 						}
+
+						if (token.IsCancellationRequested)
+							return (solution, null);
 
 						var solutionId = GetSolutionId (solution);
 						var solutionInfo = SolutionInfo.Create (solutionId, VersionStamp.Create (), solution.FileName, projectInfos);
@@ -288,7 +291,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						// ensures the type system does not have missing references that may have been added by
 						// the restore.
 						ReloadModifiedProjects ();
-						return solutionInfo;
+						return (solution, solutionInfo);
 					}
 				}
 			}

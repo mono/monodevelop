@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			/// </summary>
 			internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
 			{
-				foreach (var projectionEntry in ProjectionList) {
+				foreach (var projectionEntry in projectionList) {
 					var projection = projectionEntry.Projections.FirstOrDefault (p => FilePath.PathComparer.Equals (p.Document.FileName, fileName));
 					if (projection == null)
 						continue;

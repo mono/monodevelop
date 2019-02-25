@@ -764,7 +764,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void CheckRenamedFile (object sender, FileCopyEventArgs args)
 		{
-			foreach (FileCopyEventInfo e in args) {
+			foreach (FileEventInfo e in args) {
 				if (e.IsDirectory) {
 					foreach (var doc in documents) {
 						if (doc.IsFile && !doc.IsNewDocument && doc.FilePath.IsChildPathOf (e.SourceFile)) {
@@ -774,7 +774,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					}
 				} else {
 					foreach (var doc in documents) {
-						if (doc.IsFile && !doc.IsNewDocument && doc.FilePath == e.SourceFile) {
+						if (doc.IsFile && !doc.IsNewDocument && doc.FilePath == e.SourceFile && File.Exists (e.TargetFile)) {
 							doc.RenameFile (e.TargetFile);
 							return;
 						}

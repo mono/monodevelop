@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ActionArea.Hide ();
 			DefaultHeight = 5;
 			
-			TransientFor = parent;
+			TransientFor = parent.nativeWidget as Gtk.Window;
 			
 			btnCancel.Visible = allowCancel;
 

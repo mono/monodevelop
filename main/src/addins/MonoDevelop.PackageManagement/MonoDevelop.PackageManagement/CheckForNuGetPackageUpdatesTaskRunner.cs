@@ -175,7 +175,8 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void LogError (string message, Exception ex)
 		{
-			LoggingService.LogError (message, ex);
+			if (!ex.IsOperationCanceledException ())
+				LoggingService.LogError (message, ex);
 		}
 
 		protected virtual void GuiBackgroundDispatch (Action action)

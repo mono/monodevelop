@@ -43,7 +43,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static void Push (GitRepository repo)
 		{
-			bool hasCommits = repo.RootRepository.Commits.Any ();
+			bool hasCommits = false;
+			using (var RootRepository = new LibGit2Sharp.Repository (repo.RootPath))
+				hasCommits = RootRepository.Commits.Any ();
 			if (!hasCommits) {
 				MessageService.ShowMessage (
 					GettextCatalog.GetString ("There are no changes to push."),
@@ -87,20 +89,27 @@ namespace MonoDevelop.VersionControl.Git
 			var dlg = new MergeDialog (repo, rebasing);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+					var selectedBranch = dlg.SelectedBranch;
+					var isRemote = dlg.IsRemote;
+					var remoteName = dlg.RemoteName;
+					var stageChanges = dlg.StageChanges;
 					dlg.Hide ();
-					if (rebasing) {
-						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
-							if (dlg.IsRemote)
-								repo.Fetch (monitor, dlg.RemoteName);
-							repo.Rebase (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+
+					Task.Run (() => {
+						if (rebasing) {
+							using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", selectedBranch))) {
+								if (isRemote)
+									repo.Fetch (monitor, remoteName);
+								repo.Rebase (selectedBranch, stageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+							}
+						} else {
+							using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", selectedBranch))) {
+								if (isRemote)
+									repo.Fetch (monitor, remoteName);
+								repo.Merge (selectedBranch, stageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor, FastForwardStrategy.NoFastForward);
+							}
 						}
-					} else {
-						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
-							if (dlg.IsRemote)
-								repo.Fetch (monitor, dlg.RemoteName);
-							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor, FastForwardStrategy.NoFastForward);
-						}
-					}
+					});
 				}
 			} finally {
 				dlg.Destroy ();

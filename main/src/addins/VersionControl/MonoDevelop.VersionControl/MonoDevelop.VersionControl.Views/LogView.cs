@@ -92,6 +92,11 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			}
 
+			CopyToClipboard (data);
+		}
+
+		internal static void CopyToClipboard (string data)
+		{
 			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 			clipboard.Text = data;
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));

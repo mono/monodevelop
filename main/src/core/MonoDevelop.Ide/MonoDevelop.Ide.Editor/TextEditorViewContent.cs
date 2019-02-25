@@ -148,9 +148,12 @@ namespace MonoDevelop.Ide.Editor
 			InformAutoSave ();
 		}
 
+		CancellationTokenSource editorOptionsUpdateCancellationSource;
 		void UpdateTextEditorOptions (object sender, EventArgs e)
 		{
-			UpdateStyleParent (Owner, textEditor.MimeType).Ignore ();
+			editorOptionsUpdateCancellationSource?.Cancel ();
+			editorOptionsUpdateCancellationSource = new CancellationTokenSource ();
+			UpdateStyleParent (Owner, textEditor.MimeType, editorOptionsUpdateCancellationSource.Token).Ignore ();
 		}
 
 		uint autoSaveTimer = 0;
@@ -185,7 +188,7 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		async Task UpdateStyleParent (WorkspaceObject owner, string mimeType)
+		async Task UpdateStyleParent (WorkspaceObject owner, string mimeType, CancellationToken token)
 		{
 			var styleParent = owner as IPolicyProvider;
 			RemovePolicyChangeHandler ();
@@ -203,7 +206,7 @@ namespace MonoDevelop.Ide.Editor
 			policyContainer.PolicyChanged += HandlePolicyChanged;
 			((DefaultSourceEditorOptions)textEditor.Options).UpdateStylePolicy (currentPolicy);
 
-			var context = await EditorConfigService.GetEditorConfigContext (textEditor.FileName, default (CancellationToken));
+			var context = await EditorConfigService.GetEditorConfigContext (textEditor.FileName, token);
 			if (context == null)
 				return;
 			((DefaultSourceEditorOptions)textEditor.Options).SetContext (context);
@@ -358,6 +361,8 @@ namespace MonoDevelop.Ide.Editor
 				RemoveAutoSaveTimer ();
 				textEditor.Dispose ();
 			}
+
+			editorOptionsUpdateCancellationSource?.Cancel ();
 
 			base.OnDispose ();
 		}

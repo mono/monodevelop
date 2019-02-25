@@ -23,14 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.MacIntegration
 {
 	static class MacPlatformSettings
 	{
-		public static readonly ConfigurationProperty<bool> UseNSUrlSessionHandler
-			= ConfigurationProperty.Create ("MonoDevelop.MacIntegration.UseNSUrlSessionHandler", true);
+		public static bool UseNSUrlSessionHandler { get; } =
+			string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MD_HTTP_CLIENT_HANDLER_ENABLED"));
 	}
 }
