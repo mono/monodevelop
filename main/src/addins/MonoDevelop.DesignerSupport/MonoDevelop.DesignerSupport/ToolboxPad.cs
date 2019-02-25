@@ -35,26 +35,18 @@ using Gtk;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public class ToolboxPad :
-#if MAC
-		NativePadContent
-#else
-		PadContent
-#endif
-	{
 
+#if MAC
+
+	public class ToolboxPad : NativePadContent
+	{
 		Gtk.Widget widget;
 
 		protected override void Initialize (IPadWindow window)
 		{
 			base.Initialize (window);
-#if !MAC
-			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, window);
-#endif
 		}
 
-#if MAC
-	
 		Toolbox.MacToolbox toolbox;
 
 		protected override void OnContentInitialized (Gtk.Widget widget)
@@ -155,21 +147,33 @@ namespace MonoDevelop.DesignerSupport
 			}
 			base.Dispose ();
 		}
+
+	}
+
+
 #else
+	
+	class ToolboxPad : PadContent
+	{
+		Gtk.Widget widget;
+		protected override void Initialize (IPadWindow window)
+		{
+			base.Initialize (window);
+			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, window);
+		}
+
+	#region AbstractPadContent implementations
+
+		public override Control Control => widget;
+
+	#endregion
+
 		public override void Dispose ()
 		{
 			widget = null;
 			base.Dispose ();
 		}
-#endif
-
-#region AbstractPadContent implementations
-
-		public override Control Control {
-			get { return widget; }
-		}
-		
-#endregion
-
 	}
+
+#endif
 }
