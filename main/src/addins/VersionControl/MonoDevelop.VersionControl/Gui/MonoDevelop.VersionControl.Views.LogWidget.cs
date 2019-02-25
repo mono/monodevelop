@@ -189,7 +189,7 @@ namespace MonoDevelop.VersionControl.Views
 			w1.SetUiManager (UIManager);
 			this.scrolledLoading.Hide ();
 			this.Show ();
-			this.labelRevision.ButtonPressEvent += new global::Gtk.ButtonPressEventHandler (this.OnLabelRevisionButtonPressEvent);
+
 		}
 	}
 }
