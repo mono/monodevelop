@@ -30,6 +30,11 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding.Commands;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
+using MonoDevelop.Components.Extensions;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.TextEditor.Cocoa
 {
@@ -70,8 +75,11 @@ namespace MonoDevelop.TextEditor.Cocoa
         ICommandHandler<UpKeyCommandArgs>,
         ICommandHandler<WordDeleteToEndCommandArgs>,
         ICommandHandler<WordDeleteToStartCommandArgs>,
-        ICommandHandler<FindReferencesCommandArgs>
-    {
+        ICommandHandler<FindReferencesCommandArgs>,
+		ICommandHandler<ProvideEditorFeedbackCommandArgs>,
+		ICommandHandler<DisableEditorPreviewCommandArgs>,
+		ICommandHandler<LearnAboutTheEditorCommandArgs>
+	{
         [Import]
         private IEditorOperationsFactoryService OperationsService { get; set; }
 
@@ -464,5 +472,36 @@ namespace MonoDevelop.TextEditor.Cocoa
             GetOperations(args.TextView).DeleteToBeginningOfLine();
             return true;
         }
-    }
+
+		#region Preview Editor Commands
+
+		CommandState ICommandHandler<ProvideEditorFeedbackCommandArgs>.GetCommandState (ProvideEditorFeedbackCommandArgs args)
+			=> CommandState.Available;
+
+		bool ICommandHandler<ProvideEditorFeedbackCommandArgs>.ExecuteCommand (ProvideEditorFeedbackCommandArgs args, CommandExecutionContext executionContext)
+		{
+			DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/report-problem");
+			return true;
+		}
+
+		CommandState ICommandHandler<LearnAboutTheEditorCommandArgs>.GetCommandState (LearnAboutTheEditorCommandArgs args)
+			=> CommandState.Available;
+
+		bool ICommandHandler<LearnAboutTheEditorCommandArgs>.ExecuteCommand (LearnAboutTheEditorCommandArgs args, CommandExecutionContext executionContext)
+		{
+			DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/learn-more");
+			return true;
+		}
+
+		CommandState ICommandHandler<DisableEditorPreviewCommandArgs>.GetCommandState (DisableEditorPreviewCommandArgs args)
+			=> CommandState.Available;
+
+		bool ICommandHandler<DisableEditorPreviewCommandArgs>.ExecuteCommand (DisableEditorPreviewCommandArgs args, CommandExecutionContext executionContext)
+		{
+			DefaultSourceEditorOptions.Instance.EnableNewEditor = false;
+			return true;
+		}
+
+		#endregion
+	}
 }

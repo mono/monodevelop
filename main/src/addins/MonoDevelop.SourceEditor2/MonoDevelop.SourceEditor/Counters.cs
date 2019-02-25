@@ -36,7 +36,5 @@ namespace MonoDevelop.SourceEditor
 		public static Counter SourceViewsInMemory = InstrumentationService.CreateCounter ("Source Views in Memory", "Text Editor");
 		public static Counter LoadedEditors = InstrumentationService.CreateCounter ("Loaded Editors", "Text Editor");
 		public static Counter<TypingTimingMetadata> Typing = InstrumentationService.CreateCounter<TypingTimingMetadata> ("Typing", "Text Editor", id: "TextEditor.Typing");
-		public static Counter NewEditorEnabled = InstrumentationService.CreateCounter ("New Editor Enabled", "Text Editor", id: "NewTextEditor.Enabled");
-		public static Counter NewEditorDisabled = InstrumentationService.CreateCounter ("New Editor Disabled", "Text Editor", id: "NewTextEditor.Disabled");
 	}
 }

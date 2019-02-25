@@ -34,7 +34,7 @@ namespace MonoDevelop.TextEditor
 	{
 		ThemeToClassification themeToClassification;
 
-		public string Name => GettextCatalog.GetString ("New Editor");
+		public string Name => GettextCatalog.GetString ("New Editor Preview");
 
 		public bool CanUseAsDefault => true;
 

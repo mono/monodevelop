@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.CodingConventions;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.Text.Editor;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -403,8 +404,41 @@ namespace MonoDevelop.Ide.Editor
 				return enableNewEditor;
 			}
 			set {
-				if (enableNewEditor.Set (value))
-					OnChanged (EventArgs.Empty);
+				if (!enableNewEditor.Set (value))
+					return;
+
+				string messageText;
+
+				if (value) {
+					messageText = GettextCatalog.GetString (
+						"The New Editor Preview has been enabled, but already opened files " +
+						"will need to be closed and re-opened for the change to take effect.");
+					Counters.NewEditorEnabled.Inc ();
+				} else {
+					messageText = GettextCatalog.GetString (
+						"The New Editor Preview has been disabled, but already opened files " +
+						"will need to be closed and re-opened for the change to take effect.");
+					Counters.NewEditorDisabled.Inc ();
+				}
+
+				if (IdeApp.Workbench?.Documents?.Count > 0) {
+					Gtk.Application.Invoke ((o, e) => {
+						var closeAllFilesButton = new AlertButton (GettextCatalog.GetString ("Close All Files"));
+
+						var message = new MessageDescription {
+							Text = messageText
+						};
+
+						message.Buttons.Add (closeAllFilesButton);
+						message.Buttons.Add (AlertButton.Ok);
+						message.DefaultButton = 1;
+
+						if (new AlertDialog (message).Run () == closeAllFilesButton)
+							IdeApp.Workbench.CloseAllDocumentsAsync (false);
+					});
+				}
+
+				OnChanged (EventArgs.Empty);
 			}
 		}
 
