@@ -156,13 +156,24 @@
   </ItemGroup>
   <ItemGroup>
     <DownloadNupkg Include="Microsoft.TestPlatform" Version="$(NuGetVersionMicrosoftTestPlatform)" />
-    <ExtensionContent
-      Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*"
-      Exclude="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
-      Link="VsTestConsole\Extensions\%(RecursiveDir)%(Filename)%(Extension)" />
-    <ExtensionContent
-      Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*"
-      Link="VsTestConsole\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+  <ItemGroup>
+    <VsTestConsole Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*">
+      <Visible>false</Visible>
+    </VsTestConsole>
+    <VsTestConsole Remove="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*" />
+  </ItemGroup>
+    <ItemGroup>
+    <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
+      <Visible>false</Visible>
+    </VsTestConsoleExtensions>
+    <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
+      <Visible>false</Visible>
+    </VsTestConsoleExtensions>
+  </ItemGroup>
+  <Target Name="CopyTestAdapters" BeforeTargets="Build">
+    <Copy SourceFiles="@(VsTestConsole)" DestinationFolder="$(OutputPath)\VsTestConsole\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(VsTestConsoleExtensions)" DestinationFolder="$(OutputPath)\VsTestConsole\Extensions\" SkipUnchangedFiles="true" />
+  </Target>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
