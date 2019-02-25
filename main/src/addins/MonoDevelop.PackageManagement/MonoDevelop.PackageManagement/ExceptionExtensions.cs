@@ -1,10 +1,10 @@
 //
-// HttpClientOptionsPanel.cs
+// ExceptionExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2018 Microsoft
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui.Dialogs;
+using System;
+using NuGet.Protocol.Core.Types;
 
-namespace MonoDevelop.MacIntegration
+namespace MonoDevelop.PackageManagement
 {
-	class HttpClientOptionsPanel : OptionsPanel
+	static class ExceptionExtensions
 	{
-		Control control;
-		HttpClientOptionsWidget widget;
-
-		public override void ApplyChanges ()
+		public static bool IsOperationCanceledException (this Exception ex)
 		{
-			widget.ApplyChanges ();
-		}
+			var baseEx = ex.GetBaseException ();
+			if (baseEx is OperationCanceledException)
+				return true;
 
-		public override Control CreatePanelWidget ()
-		{
-			if (control == null) {
-				widget = new HttpClientOptionsWidget ();
-				control = new XwtControl (widget);
+			if (baseEx is NuGetProtocolException) {
+				// NuGet has the TaskCanceledException as an InnerException.
+				return baseEx.InnerException is OperationCanceledException;
 			}
 
-			return control;
-		}
-
-		public override void Dispose ()
-		{
-			if (control != null) {
-				// No need to dispose Control. This is done automatically.
-				// XwtControl does not dispose its widget though.
-				widget.Dispose ();
-			}
-			base.Dispose ();
+			return false;
 		}
 	}
 }

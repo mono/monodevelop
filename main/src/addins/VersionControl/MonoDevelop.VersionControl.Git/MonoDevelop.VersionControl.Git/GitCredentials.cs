@@ -57,8 +57,11 @@ namespace MonoDevelop.VersionControl.Git
 
 	static class GitCredentials
 	{
+		internal static readonly string UserCancelledExceptionMessage = GettextCatalog.GetString("Operation cancelled");
+
 		// Gather keys on initialize.
 		static readonly List<string> Keys = new List<string> ();
+		static readonly List<string> PublicKeys = new List<string> ();
 
 		static Dictionary<GitCredentialsType, GitCredentialsState> credState = new Dictionary<GitCredentialsType, GitCredentialsState> ();
 
@@ -71,10 +74,35 @@ namespace MonoDevelop.VersionControl.Git
 					return;
 			}
 
-			foreach (var privateKey in Directory.EnumerateFiles (keyStorage)) {
+			var defaultKey = FilePath.Null;
+
+			foreach (FilePath privateKey in Directory.EnumerateFiles (keyStorage)) {
+				if (privateKey.Extension == ".pub")
+					continue;
 				string publicKey = privateKey + ".pub";
-				if (File.Exists (publicKey) && !KeyHasPassphrase (privateKey))
-					Keys.Add (privateKey);
+				if (File.Exists (publicKey)) {
+					if (privateKey.FileName == "id_rsa")
+						defaultKey = privateKey;
+					else if (!KeyHasPassphrase (privateKey)) {
+						Keys.Add (privateKey);
+						PublicKeys.Add (publicKey);
+					}
+				}
+			}
+
+			if (defaultKey.IsNotNull) {
+				var publicKey = defaultKey + ".pub";
+				// if the default key has no passphrase, make it the first key to try when authenticating,
+				// or the last one otherwise, to make sure that we try the unprotected keys first, before prompting
+				// for the passphrase.
+				if (KeyHasPassphrase (defaultKey)) {
+					Keys.Add (defaultKey);
+					PublicKeys.Add (publicKey);
+				} else {
+					Keys.Insert (0, defaultKey);
+					PublicKeys.Insert (0, publicKey);
+				}
+
 			}
 		}
 
@@ -122,57 +150,59 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				}
 
-				int key;
-				if (!state.KeyForUrl.TryGetValue (url, out key)) {
+				int keyIndex;
+				if (state.KeyForUrl.TryGetValue (url, out keyIndex))
+					state.KeyUsed = keyIndex;
+				else {
 					if (state.KeyUsed + 1 < Keys.Count)
 						state.KeyUsed++;
 					else {
-						SelectFileDialog dlg = null;
-						bool success = Runtime.RunInMainThread (() => {
-							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
-							dlg.ShowHidden = true;
-							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-							return dlg.Run ();
-						}).Result;
-						if (!success || !File.Exists (dlg.SelectedFile + ".pub"))
-							throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
-
-						cred = new SshUserKeyCredentials {
+						var sshCred = new SshUserKeyCredentials {
 							Username = userFromUrl,
-							Passphrase = "",
-							PrivateKey = dlg.SelectedFile,
-							PublicKey = dlg.SelectedFile + ".pub",
+							Passphrase = string.Empty
 						};
+						cred = sshCred;
 
-						if (KeyHasPassphrase (dlg.SelectedFile)) {
-							result = Runtime.RunInMainThread (delegate {
-								using (var credDlg = new CredentialsDialog (url, types, cred))
-									return MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
-							}).Result;
-						}
-
-						if (result)
+						if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+							keyIndex = Keys.IndexOf (sshCred.PrivateKey);
+							if (keyIndex < 0) {
+								Keys.Add (sshCred.PrivateKey);
+								PublicKeys.Add (sshCred.PublicKey);
+								state.KeyUsed++;
+							} else
+								state.KeyUsed = keyIndex;
 							return cred;
-						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+						}
+						throw new UserCancelledException (UserCancelledExceptionMessage);
 					}
-				} else
-					state.KeyUsed = key;
+				}
 
+				var key = Keys [state.KeyUsed];
 				cred = new SshUserKeyCredentials {
 					Username = userFromUrl,
-					Passphrase = "",
-					PrivateKey = Keys [state.KeyUsed],
-					PublicKey = Keys [state.KeyUsed] + ".pub",
+					Passphrase = string.Empty,
+					PrivateKey = key,
+					PublicKey = PublicKeys [state.KeyUsed]
 				};
+
+				if (KeyHasPassphrase (key)) {
+					if (XwtCredentialsDialog.Run (url, types, cred).Result) {
+						var sshCred = (SshUserKeyCredentials)cred;
+						keyIndex = Keys.IndexOf (sshCred.PrivateKey);
+						if (keyIndex < 0) {
+							Keys.Add (sshCred.PrivateKey);
+							PublicKeys.Add (sshCred.PublicKey);
+							state.KeyUsed++;
+						} else
+							state.KeyUsed = keyIndex;
+					} else
+						throw new UserCancelledException (UserCancelledExceptionMessage);
+				}
+
 				return cred;
 			}
 
-			result = Runtime.RunInMainThread (delegate {
-				using (var credDlg = new CredentialsDialog (url, types, cred))
-					return MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
-			}).Result;
-
-			if (result) {
+			if (XwtCredentialsDialog.Run (url, types, cred).Result) {
 				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
 					var upcred = (UsernamePasswordCredentials)cred;
 					if (!string.IsNullOrEmpty (upcred.Password) && uri != null) {
@@ -182,10 +212,10 @@ namespace MonoDevelop.VersionControl.Git
 				return cred;
 			}
 
-			throw new VersionControlException (GettextCatalog.GetString ("Operation cancelled by the user"));
+			throw new UserCancelledException (UserCancelledExceptionMessage);
 		}
 
-		static bool KeyHasPassphrase (string key)
+		internal static bool KeyHasPassphrase (string key)
 		{
 			return File.ReadAllText (key).Contains ("Proc-Type: 4,ENCRYPTED");
 		}

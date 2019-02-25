@@ -182,9 +182,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.mainDataObject = dataObject;
 			this.extensionPath = extensionPath;
 			
-			if (parentWindow != null)
-				TransientFor = parentWindow;
-			
 			ImageService.EnsureStockIconIsLoaded (emptyCategoryIcon);
 
 			store = new TreeStore (typeof(OptionsDialogSection));

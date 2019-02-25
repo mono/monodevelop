@@ -1,4 +1,4 @@
-﻿//
+//
 // CommentTasksProvider.cs
 //
 // Author:
@@ -160,10 +160,10 @@ namespace MonoDevelop.Ide.Tasks
 			UpdateWorkspaceOptions (ws);
 		}
 
-		static async void OnWorkspaceItemClosed (object sender, WorkspaceItemEventArgs args)
+		static void OnWorkspaceItemClosed (object sender, WorkspaceItemEventArgs args)
 		{
 			if (args.Item is MonoDevelop.Projects.Solution sol) {
-				var ws = await IdeApp.TypeSystemService.GetWorkspaceAsync (sol);
+				var ws = IdeApp.TypeSystemService.GetWorkspace (sol);
 
 				lock (lockObject) {
 					if (cachedUntilViewCreated == null)

@@ -141,7 +141,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex, bool showPackageConsole = true)
 		{
-			LoggingService.LogError (progressMessage.Error, ex);
+			if (!ex.IsOperationCanceledException ())
+				LoggingService.LogError (progressMessage.Error, ex);
+
 			progressMonitor.Log.WriteLine (GetErrorMessageForPackageConsole (ex));
 			progressMonitor.ReportError (progressMessage.Error, null);
 			if (showPackageConsole)
