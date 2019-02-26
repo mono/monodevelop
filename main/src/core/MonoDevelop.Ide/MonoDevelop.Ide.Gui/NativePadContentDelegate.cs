@@ -1,4 +1,4 @@
-﻿// NarivePadContent.cs
+﻿// NativePadContentDelegate.cs
 //
 // Author:
 //   Jose Medrano (josmed@microsoft.com)
@@ -26,29 +26,26 @@
 //
 
 #if MAC
+
+using System;
 using AppKit;
-using MonoDevelop.Components;
 using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class NativePadContent : PadContent
+	public abstract class NativePadContentDelegate : IPadContentDelegate
 	{
 		NSView container;
+
 		Gtk.Widget widget;
+		public Gtk.Widget Control => widget;
 
-		public override Control Control => widget;
-
-		protected NativePadContent ()
-		{
-		}
-
-		protected NativePadContent (string title, string icon = null) : base (title, icon)
+		protected NativePadContentDelegate ()
 		{
 		}
 
 		IPadWindow window;
-		protected override void Initialize (IPadWindow window)
+		public virtual void OnInitialize (IPadWindow window)
 		{
 			this.window = window;
 			this.window.PadContentShown += OnPadContentShown;
@@ -56,7 +53,7 @@ namespace MonoDevelop.Ide.Gui
 
 			container = GetNativeContentView (window);
 			if (container == null) {
-				throw new System.Exception ($"GetContentView cannot be null in a NativePadContent ({this.GetType ()})");
+				throw new Exception ($"GetContentView cannot be null in a NativePadContent ({this.GetType ()})");
 			}
 			widget = GtkMacInterop.NSViewToGtkWidget (container);
 			widget.CanFocus = true;
@@ -72,12 +69,12 @@ namespace MonoDevelop.Ide.Gui
 			//to implement
 		}
 
-		void OnPadContentHidden (object sender, System.EventArgs e)
+		void OnPadContentHidden (object sender, EventArgs e)
 		{
 			container.Hidden = true;
 		}
 
-		void OnPadContentShown (object sender, System.EventArgs e)
+		void OnPadContentShown (object sender, EventArgs e)
 		{
 			container.Hidden = false;
 		}
@@ -86,7 +83,7 @@ namespace MonoDevelop.Ide.Gui
 
 		protected abstract NSView GetNativeContentView (IPadWindow window);
 
-		public override void Dispose ()
+		public virtual void Dispose ()
 		{
 			if (widget != null) {
 			
@@ -99,7 +96,6 @@ namespace MonoDevelop.Ide.Gui
 				window.PadContentShown -= OnPadContentShown;
 				window.PadContentHidden -= OnPadContentHidden;
 			}
-			base.Dispose ();
 		}
 	}
 }

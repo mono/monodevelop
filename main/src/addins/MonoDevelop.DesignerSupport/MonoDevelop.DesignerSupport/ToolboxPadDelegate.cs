@@ -1,5 +1,5 @@
-//
-// ToolboxPad.cs: The pad that hold the MD toolbox.
+﻿//
+// ToolboxPadDelegate.cs
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -32,19 +32,19 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport
 {
-	public class ToolboxPad : PadContentWrapper
+	class ToolboxPadDelegate : IPadContentDelegate
 	{
-		static IPadContentDelegate GetContentDelegate ()
+		Gtk.Widget control;
+		public Gtk.Widget Control => control;
+
+		public void OnInitialize (IPadWindow window)
 		{
-			#if MAC           
-			return new MacToolboxPadDelegate ();
-			#else
-			return new ToolboxPadDelegate ();
-			#endif
+			control = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, window);
 		}
 
-		public ToolboxPad () : base (GetContentDelegate ())
+		public void Dispose ()
 		{
+			control = null;
 		}
 	}
 }
