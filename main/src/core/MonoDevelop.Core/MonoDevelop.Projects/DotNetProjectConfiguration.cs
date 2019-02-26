@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects
 			assembly = pset.GetValue ("AssemblyName");
 			signAssembly = pset.GetValue<bool> ("SignAssembly");
 			delaySign = pset.GetValue<bool> ("DelaySign");
-			PublicSign = pset.GetValue<bool> ("PublicSign");
+			PublicSign = pset.GetValue<bool> (nameof(PublicSign));
 			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile", FilePath.Empty);
 			if (string.IsNullOrEmpty (assemblyKeyFile))
 				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile", FilePath.Empty);
