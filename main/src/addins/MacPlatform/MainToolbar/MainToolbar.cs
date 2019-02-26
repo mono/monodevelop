@@ -132,7 +132,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			// Remove the focus from the Gtk system when Cocoa has focus
 			// Fixes BXC #29601
-			awesomeBar.SearchBar.GainedFocus += (o, e) => IdeApp.Workbench.RootWindow.Focus = null;
+			//awesomeBar.SearchBar.GainedFocus += (o, e) => IdeApp.Workbench.RootWindow.Focus = null;
 
 			AttachToolbarEvents (awesomeBar.SearchBar);
 
@@ -359,6 +359,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					// Reset the Gtk Widget each time since we can't set the GdkWindow to null.
 					entryWidget.Dispose ();
 					entryWidget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
+					entryWidget.CanFocus = true;
 
 					var nsWindows = NSApplication.SharedApplication.Windows;
 					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>

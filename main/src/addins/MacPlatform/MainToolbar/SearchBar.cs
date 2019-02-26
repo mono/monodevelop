@@ -313,6 +313,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			// Needs to be grabbed after it's parented.
 			gtkWidget = Components.Mac.GtkMacInterop.NSViewToGtkWidget (this);
+			gtkWidget.CanFocus = true;
 		}
 
 		public override bool BecomeFirstResponder ()
