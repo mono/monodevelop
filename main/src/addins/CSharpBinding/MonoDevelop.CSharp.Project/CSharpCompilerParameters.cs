@@ -144,6 +144,7 @@ namespace MonoDevelop.CSharp.Project
 				cryptoKeyFile: ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
 				cryptoPublicKey: ImmutableArray<byte>.Empty,
 				platform: GetPlatform (),
+				delaySign: ParentConfiguration.DelaySign,
 				generalDiagnosticOption: TreatWarningsAsErrors ? ReportDiagnostic.Error : ReportDiagnostic.Default,
 				warningLevel: WarningLevel,
 				specificDiagnosticOptions: GetSpecificDiagnosticOptions (),
