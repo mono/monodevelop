@@ -806,6 +806,20 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+
+#if !WINDOWS
+		readonly ConfigurationProperty<bool> shouldMoveCaretOnSelectAll = IdeApp.Preferences.Editor.ShouldMoveCaretOnSelectAll;
+#else
+		readonly ConfigurationProperty<bool> shouldMoveCaretOnSelectAll = ConfigurationProperty.Create (nameof (ShouldMoveCaretOnSelectAll), false);
+#endif
+		public bool ShouldMoveCaretOnSelectAll {
+			get => shouldMoveCaretOnSelectAll;
+			set {
+				if (shouldMoveCaretOnSelectAll.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
 		public string FontName {
 			get {
 				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));

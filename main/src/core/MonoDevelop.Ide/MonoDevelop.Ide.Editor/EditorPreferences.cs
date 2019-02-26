@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Editor
 #if !WINDOWS
 		public readonly ConfigurationProperty<ShowWhitespaces> ShowWhitespaces;
 		public readonly ConfigurationProperty<IncludeWhitespaces> IncludeWhitespaces;
+		public readonly ConfigurationProperty<bool> ShouldMoveCaretOnSelectAll;
 #endif
 		public readonly ConfigurationProperty<bool> ShowBlockStructure;
 		// TODO: Maybe per language preferences?
@@ -98,6 +99,7 @@ namespace MonoDevelop.Ide.Editor
 #if !WINDOWS
 			ShowWhitespaces = new ShowWhitespacesProperty (this);
 			IncludeWhitespaces = new IncludeWhitespacesProperty (this);
+			ShouldMoveCaretOnSelectAll = Wrap<bool> ("ShouldMoveCaretOnSelectAll", DefaultTextViewOptions.ShouldMoveCaretOnSelectAllName, false);
 #endif
 			ShowBlockStructure = Wrap<bool> ("ShowBlockStructure", DefaultTextViewOptions.ShowBlockStructureName);
 
