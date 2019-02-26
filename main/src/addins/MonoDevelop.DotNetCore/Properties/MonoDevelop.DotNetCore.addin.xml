@@ -171,18 +171,20 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore30=true"
 			category="netcore/app/general"/>
-		<Template
-			id="Microsoft.Common.Console.VisualBasic"
-			templateId="Microsoft.Common.Console.VisualBasic.3.0"
-			_overrideName="Console Application"
-			_overrideDescription="Creates a new .NET Core console project."
-			overrideLanguage="VBNet"
-			path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
-			icon="md-netcore-console-project"
-			imageId="md-netcore-console-project"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore30=true"
-			category="netcore/app/general"/>
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				id="Microsoft.Common.Console.VisualBasic"
+				templateId="Microsoft.Common.Console.VisualBasic.3.0"
+				_overrideName="Console Application"
+				_overrideDescription="Creates a new .NET Core console project."
+				overrideLanguage="VBNet"
+				path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
+				icon="md-netcore-console-project"
+				imageId="md-netcore-console-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/app/general"/>
+		</Condition>
 		</Condition>
 		
 		<!--
@@ -348,19 +350,21 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard21=true"
 			category="multiplat/library/general" />
-		<Template
-			_overrideName=".NET Standard Library"
-			_overrideDescription="Creates a new .NET Standard class library project."
-			overrideLanguage="VBNet"
-			id="Microsoft.Common.Library.VisualBasic"
-			templateId="Microsoft.Common.Library.VisualBasic.3.0"
-			path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
-			icon="md-crossplatform-library-project"
-			imageId="md-crossplatform-library-project"
-			supportedParameters="NetStandard"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard21=true"
-			category="multiplat/library/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				_overrideName=".NET Standard Library"
+				_overrideDescription="Creates a new .NET Standard class library project."
+				overrideLanguage="VBNet"
+				id="Microsoft.Common.Library.VisualBasic"
+				templateId="Microsoft.Common.Library.VisualBasic.3.0"
+				path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
+				icon="md-crossplatform-library-project"
+				imageId="md-crossplatform-library-project"
+				supportedParameters="NetStandard"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetStandard21=true"
+				category="multiplat/library/general" />
+		</Condition>
 		</Condition>
 		
 		<!--
@@ -525,19 +529,21 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetStandard21=true"
 			category="netcore/library/general" />
-		<Template
-			_overrideName=".NET Standard Library"
-			_overrideDescription="Creates a new .NET Standard class library project."
-			overrideLanguage="VBNet"
-			id="Microsoft.Common.Library.VisualBasic"
-			templateId="Microsoft.Common.Library.VisualBasic.3.0"
-			path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
-			icon="md-netcore-empty-project"
-			imageId="md-netcore-empty-project"
-			supportedParameters="NetStandard"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetStandard21=true"
-			category="netcore/library/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				_overrideName=".NET Standard Library"
+				_overrideDescription="Creates a new .NET Standard class library project."
+				overrideLanguage="VBNet"
+				id="Microsoft.Common.Library.VisualBasic"
+				templateId="Microsoft.Common.Library.VisualBasic.3.0"
+				path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				supportedParameters="NetStandard"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetStandard21=true"
+				category="netcore/library/general" />
+		</Condition>
 		</Condition>		
 		<!--
 			.NET Core class library project in .NET Core - Library category.
@@ -706,20 +712,22 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore30=true"
 			category="netcore/library/general" />
-		<Template
-			_overrideName="Class Library"
-			_overrideDescription="Creates a new .NET Core class library project."
-			overrideLanguage="VBNet"
-			id="Microsoft.Common.Library.VisualBasic-netcoreapp"
-			templateId="Microsoft.Common.Library.VisualBasic.3.0"
-			groupId="Microsoft.Common.Library-netcoreapp"
-			path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
-			icon="md-netcore-empty-project"
-			imageId="md-netcore-empty-project"
-			supportedParameters="NetCoreLibrary"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore30=true"
-			category="netcore/library/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				_overrideName="Class Library"
+				_overrideDescription="Creates a new .NET Core class library project."
+				overrideLanguage="VBNet"
+				id="Microsoft.Common.Library.VisualBasic-netcoreapp"
+				templateId="Microsoft.Common.Library.VisualBasic.3.0"
+				groupId="Microsoft.Common.Library-netcoreapp"
+				path="${DotNetCoreSdk.3.0.Templates.Common.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				supportedParameters="NetCoreLibrary"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/library/general" />
+		</Condition>
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="1.*">
 		<Template
@@ -1016,18 +1024,20 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore30=true"
 			category="netcore/test/general" />
-		<Template
-			id="Microsoft.Test.xUnit.VisualBasic"
-			templateId="Microsoft.Test.xUnit.VisualBasic.3.0"
-			_overrideName="xUnit Test Project"
-			_overrideDescription="Creates a new xUnit test project."
-			overrideLanguage="VBNet"
-			path="${DotNetCoreSdk.3.0.Templates.Test.ProjectTemplates.nupkg}"
-			icon="md-netcore-test-project"
-			imageId="md-netcore-test-project"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore30=true"
-			category="netcore/test/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				id="Microsoft.Test.xUnit.VisualBasic"
+				templateId="Microsoft.Test.xUnit.VisualBasic.3.0"
+				_overrideName="xUnit Test Project"
+				_overrideDescription="Creates a new xUnit test project."
+				overrideLanguage="VBNet"
+				path="${DotNetCoreSdk.3.0.Templates.Test.ProjectTemplates.nupkg}"
+				icon="md-netcore-test-project"
+				imageId="md-netcore-test-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/test/general" />
+		</Condition>
 		<Template
 			id="Microsoft.Test.MSTest.CSharp"
 			templateId="Microsoft.Test.MSTest.CSharp.3.0"
@@ -1050,18 +1060,20 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore30=true"
 			category="netcore/test/general" />
-		<Template
-			id="Microsoft.Test.MSTest.VisualBasic"
-			templateId="Microsoft.Test.MSTest.VisualBasic.3.0"
-			_overrideName="MSTest Project"
-			_overrideDescription="Creates a new MSTest project."
-			overrideLanguage="VBNet"
-			path="${DotNetCoreSdk.3.0.Templates.Test.ProjectTemplates.nupkg}"
-			icon="md-netcore-test-project"
-			imageId="md-netcore-test-project"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore30=true"
-			category="netcore/test/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				id="Microsoft.Test.MSTest.VisualBasic"
+				templateId="Microsoft.Test.MSTest.VisualBasic.3.0"
+				_overrideName="MSTest Project"
+				_overrideDescription="Creates a new MSTest project."
+				overrideLanguage="VBNet"
+				path="${DotNetCoreSdk.3.0.Templates.Test.ProjectTemplates.nupkg}"
+				icon="md-netcore-test-project"
+				imageId="md-netcore-test-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/test/general" />
+		</Condition>
 		<Template
 			id="NUnit3.DotNetNew.Template.CSharp"
 			templateId="NUnit3.DotNetNew.Template.CSharp"
@@ -1084,18 +1096,20 @@
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
 			condition="UseNetCore30=true"
 			category="netcore/test/general" />
-		<Template
-			id="NUnit3.DotNetNew.Template.VisualBasic"
-			templateId="NUnit3.DotNetNew.Template.VisualBasic"
-			_overrideName="NUnit Test Project"
-			_overrideDescription="Creates a new NUnit test project."
-			overrideLanguage="VBNet"
-			path="${DotNetCoreSdk.3.0.Templates.NUnit3.DotNetNew.Template.nupkg}"
-			icon="md-netcore-test-project"
-			imageId="md-netcore-test-project"
-			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore30=true"
-			category="netcore/test/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				id="NUnit3.DotNetNew.Template.VisualBasic"
+				templateId="NUnit3.DotNetNew.Template.VisualBasic"
+				_overrideName="NUnit Test Project"
+				_overrideDescription="Creates a new NUnit test project."
+				overrideLanguage="VBNet"
+				path="${DotNetCoreSdk.3.0.Templates.NUnit3.DotNetNew.Template.nupkg}"
+				icon="md-netcore-test-project"
+				imageId="md-netcore-test-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore30=true"
+				category="netcore/test/general" />
+		</Condition>
 		</Condition>
 	</Extension>
 
