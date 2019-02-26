@@ -112,11 +112,6 @@
     <Compile Include="MacTelemetryDetails.cs" />
     <Compile Include="Interop.cs" />
     <Compile Include="KernelInterop.cs" />
-    <Compile Include="Dialogs\HttpClientOptionsPanel.cs" />
-    <Compile Include="Dialogs\HttpClientOptionsWidget.cs" />
-    <Compile Include="Dialogs\HttpClientOptionsWidget.UI.cs">
-      <DependentUpon>HttpClientOptionsWidget.cs</DependentUpon>
-    </Compile>
     <Compile Include="MacPlatformSettings.cs" />
     <Compile Include="MacHttpMessageHandlerProvider.cs" />
     <Compile Include="NSUrlSessionCredentialsHandler.cs" />

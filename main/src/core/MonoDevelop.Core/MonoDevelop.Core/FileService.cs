@@ -334,8 +334,6 @@ namespace MonoDevelop.Core
 		public static void NotifyFilesChanged (IEnumerable<FilePath> files, bool autoReload)
 		{
 			try {
-				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
-					fsFiles.Key.NotifyFilesChanged (fsFiles);
 				OnFileChanged (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File change notification failed", ex);
@@ -1015,6 +1013,16 @@ namespace MonoDevelop.Core
 				foreach (var ev in pendingProcess.Events)
 					ev.Invoke ();
 			}).Ignore ();
+
+			Task.Run (() => {
+				foreach (var ev in pendingProcess.Events) {
+					if (!(ev is FileEventData fev) || fev.Kind != FileService.EventDataKind.Changed)
+						continue;
+
+					foreach (var fsFiles in fev.Args.GroupBy (f => FileService.GetFileSystemForPath (f.FileName, false)))
+						fsFiles.Key.NotifyFilesChanged (fsFiles.Select (x => x.FileName));
+				}
+			}).Ignore ();
 		}
 
 		public void RaiseEvent (FileService.EventDataKind kind, FileEventArgs args)
@@ -1028,6 +1036,11 @@ namespace MonoDevelop.Core
 					processor.Queue (ed);
 					return;
 				}
+			}
+
+			if (kind == FileService.EventDataKind.Changed) {
+				foreach (var fsFiles in args.GroupBy (f => FileService.GetFileSystemForPath (f.FileName, false)))
+					fsFiles.Key.NotifyFilesChanged (fsFiles.Select (x => x.FileName));
 			}
 
 			if (Runtime.IsMainThread) {
