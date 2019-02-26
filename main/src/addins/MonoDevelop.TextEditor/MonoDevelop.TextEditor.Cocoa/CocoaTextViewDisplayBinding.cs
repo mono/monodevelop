@@ -31,6 +31,9 @@ namespace MonoDevelop.TextEditor
 {
 	class CocoaTextViewDisplayBinding : TextViewDisplayBinding<CocoaTextViewImports>
 	{
+		static CocoaTextViewDisplayBinding ()
+			=> Microsoft.VisualStudio.UI.GettextCatalog.Initialize (GettextCatalog.GetString, GettextCatalog.GetString);
+
 		protected override ViewContent CreateContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new CocoaTextViewContent (imports, fileName, mimeType, ownerProject);
