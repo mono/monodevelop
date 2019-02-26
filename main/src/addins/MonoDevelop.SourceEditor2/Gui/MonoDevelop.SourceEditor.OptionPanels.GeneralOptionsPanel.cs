@@ -258,7 +258,7 @@ vbox1
 			this.GtkLabel16 = new global::Gtk.Label ();
 			this.GtkLabel16.Name = "GtkLabel16";
 			this.GtkLabel16.Xalign = 0F;
-			this.GtkLabel16.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Experimental</b>");
+			this.GtkLabel16.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>New Editor Preview</b>");
 			this.GtkLabel16.UseMarkup = true;
 			this.vbox1.Add (this.GtkLabel16);
 			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel16]));

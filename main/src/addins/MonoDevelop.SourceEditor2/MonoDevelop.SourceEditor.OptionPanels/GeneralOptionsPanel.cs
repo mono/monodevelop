@@ -32,6 +32,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -51,6 +53,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.comboboxLineEndings.Active = (int)DefaultSourceEditorOptions.Instance.LineEndingConversion;
 
 			var newEditorOptionsBox = new Xwt.VBox ();
+
+			var newEditorLearnMoreLink = new Xwt.LinkLabel {
+				MarginBottom = 6,
+				MarginTop = 6,
+				Text = GettextCatalog.GetString ("Learn more about the New Editor Preview"),
+				Uri = new Uri ("https://aka.ms/vs/mac/editor/learn-more")
+			};
+			newEditorOptionsBox.PackStart (newEditorLearnMoreLink);
 
 			newEditorCheckBox = new Xwt.CheckBox (GettextCatalog.GetString ("Open C# files in the New Editor"));
 			newEditorCheckBox.Active = DefaultSourceEditorOptions.Instance.EnableNewEditor;
@@ -120,7 +130,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				HighlightingPanel.UpdateActiveDocument ();
 			}
 
-			UpdateNewEditorOption (this.newEditorCheckBox.Active);
+			DefaultSourceEditorOptions.Instance.EnableNewEditor = this.newEditorCheckBox.Active;
 		}
 
 		void HandleNewEditorOptionToggled (object sender, EventArgs e)
@@ -141,18 +151,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				wrap &= ~WordWrapStyles.VisibleGlyphs;
 
 			DefaultSourceEditorOptions.Instance.WordWrapStyle = wrap;
-		}
-
-		void UpdateNewEditorOption (bool enabled)
-		{
-			if (DefaultSourceEditorOptions.Instance.EnableNewEditor == enabled)
-				return;
-
-			DefaultSourceEditorOptions.Instance.EnableNewEditor = enabled;
-			if (enabled)
-				Counters.NewEditorEnabled.Inc ();
-			else
-				Counters.NewEditorDisabled.Inc ();
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
