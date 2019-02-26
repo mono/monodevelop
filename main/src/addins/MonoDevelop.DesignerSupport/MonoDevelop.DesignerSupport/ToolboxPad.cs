@@ -44,12 +44,14 @@ namespace MonoDevelop.DesignerSupport
 
 #if MAC
 		Toolbox.MacToolbox toolbox;
+		IPadWindow window;
 #endif
-		protected override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow window)
 		{
-			base.Initialize (container);
+			base.Initialize (window);
 #if MAC
-			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, container);
+			this.window = window;
+			toolbox = new Toolbox.MacToolbox (DesignerSupport.Service.ToolboxService, window);
 			widget = GtkMacInterop.NSViewToGtkWidget (toolbox);
 			widget.CanFocus = true;
 			widget.Sensitive = true;
@@ -70,6 +72,9 @@ namespace MonoDevelop.DesignerSupport
 			widget.Focused += (s, e) => {
 				toolbox.FocusSelectedView ();
 			};
+
+			this.window.PadContentShown += Container_PadContentShown;
+			this.window.PadContentHidden += Container_PadContentHidden;
 
 			toolbox.ContentFocused += (s, e) => {
 				if (!widget.HasFocus) {
@@ -102,14 +107,25 @@ namespace MonoDevelop.DesignerSupport
 
 			widget.ShowAll ();
 #else
-			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
+			widget = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, window);
 #endif
 		}
 #if MAC
+
+		public void Container_PadContentShown (object sender, EventArgs args) => toolbox.Hidden = false;
+		public void Container_PadContentHidden (object sender, EventArgs args) => toolbox.Hidden = true;
+
 		Gtk.TargetList targets = new Gtk.TargetList ();
-		bool isDragging = false;
+		bool isDragging;
+
 		public override void Dispose ()
 		{
+			if (window != null) {
+				window.PadContentShown -= Container_PadContentShown;
+				window.PadContentHidden -= Container_PadContentHidden;
+				window = null;
+			}
+
 			if (widget != null) {
 				widget.KeyPressEvent -= toolbox.OnKeyPressed;
 				widget.KeyReleaseEvent -= toolbox.KeyReleased;
