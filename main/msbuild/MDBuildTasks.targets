@@ -203,6 +203,7 @@
 	-->
 	<Target Name="_NuGetPrivateAssetsWorkaround_RemoveSqliteInjectedContent" Condition="'$(MSBuildProjectName)' != 'MonoDevelop.Core'" AfterTargets="ResolveAssemblyReferences">
 		<ItemGroup>
+			<Content Remove="@(Content->WithMetadataValue('Filename', 'libe_sqlite3'))" />
 			<Content Remove="@(Content->WithMetadataValue('Filename', 'e_sqlite3'))" />
 			<!-- for some reason it also shows up in ReferenceCopyLocalPaths in some projects, suppress the FilterLocalCopyReferences warning -->
 			<SuppressCopyLocal Include="e_sqlite3.dll" />
