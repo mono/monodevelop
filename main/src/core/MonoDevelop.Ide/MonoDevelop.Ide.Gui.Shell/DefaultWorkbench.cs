@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			}
 		}
 
-		Task IService.Initialize (ServiceProvider serviceProvider)
+		async Task IService.Initialize (ServiceProvider serviceProvider)
 		{
 			Title = BrandingService.ApplicationLongName;
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
@@ -220,13 +220,14 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 			SetAppIcons ();
 
-			IdeApp.CommandService.SetRootWindow (this);
+			var commandService = await Runtime.GetService<CommandManager> ();
+			commandService.SetRootWindow (this);
+
 			DockNotebook.NotebookChanged += NotebookPagesChanged;
 
 			Drag.DestSet (this, DestDefaults.All, targetEntryTypes, Gdk.DragAction.Copy);
 
 			Accessible.SetIsMainWindow (true);
-			return Task.CompletedTask;
 		}
 
 		Task IService.Dispose ()
