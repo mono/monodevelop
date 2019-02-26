@@ -75,7 +75,6 @@ namespace MonoDevelop.Ide.Projects
 			this.basePath = basePath;
 
 			BorderWidth = 6;
-			TransientFor = IdeApp.Workbench.RootWindow;
 			HasSeparator = false;
 
 			InitializeComponents ();
