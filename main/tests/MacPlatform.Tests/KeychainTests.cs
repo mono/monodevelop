@@ -27,30 +27,13 @@
 using System;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
-using System.IO;
-using System.Text;
 
 namespace MacPlatform.Tests
 {
 	[TestFixture]
 	public class KeychainTests
 	{
-		const string TestKeyChain = "ThisIsMonoDevelopsPrivateKeyChainForTests";
 		const string password = "pa55word";
-
-		[SetUp]
-		public void Setup ()
-		{
-			Keychain.TryDeleteKeychain (TestKeyChain);
-			Keychain.CurrentKeychain = Keychain.CreateKeychain (TestKeyChain, "mypassword");
-		}
-
-		[TearDown]
-		public void Teardown ()
-		{
-			Keychain.DeleteKeychain (Keychain.CurrentKeychain);
-			Keychain.CurrentKeychain = IntPtr.Zero;
-		}
 
 		const string site = "http://google.com";
 		const string siteWithUser = "http://user@google.com";
@@ -157,25 +140,5 @@ namespace MacPlatform.Tests
 				Assert.AreEqual (expectedPassword, foundPassword);
 			}
 		}
-
-		[Test]
-		public void ToNullTerminatedUtf8IsNullTerminated ()
-		{
-			var str = "This is a test string";
-
-			var bytes = Encoding.UTF8.GetBytes (str);
-			var bytesWithNullTerm = str.ToNullTerminatedUtf8 ();
-
-			Assert.AreEqual (bytes.Length + 1, bytesWithNullTerm.Length);
-			Assert.AreEqual (0, bytesWithNullTerm [bytesWithNullTerm.Length - 1]);
-
-			// UTF8Encoding does not handle null terminated strings, so do the check like this.
-			Assert.AreEqual (str + char.MinValue, Encoding.UTF8.GetString (bytesWithNullTerm));
-
-			const int offset = 2;
-			var bytesWithNullTermOffset = str.ToNullTerminatedUtf8 (offset);
-			Assert.AreEqual (str.Substring (offset) + char.MinValue, Encoding.UTF8.GetString (bytesWithNullTermOffset));
-		}
 	}
 }
-

@@ -1,4 +1,4 @@
-﻿//
+//
 // CredentialsProviderTests.cs
 //
 // Author:
@@ -23,8 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.MacInterop;
+
 using NUnit.Framework;
 
 namespace MacPlatform.Tests
@@ -32,22 +31,6 @@ namespace MacPlatform.Tests
 	[TestFixture]
 	public class CredentialsProviderTests : MonoDevelop.Core.BaseCredentialsProviderTests
 	{
-		static string TestKeyChain = "ThisIsMonoDevelopsPrivateKeyChainForTests";
-
-		[TestFixtureSetUp]
-		public void FixtureSetup ()
-		{
-			Keychain.TryDeleteKeychain (TestKeyChain);
-			Keychain.CurrentKeychain = Keychain.CreateKeychain (TestKeyChain, "mypassword");
-		}
-
-		[TestFixtureTearDown]
-		public void FixtureTeardown ()
-		{
-			Keychain.DeleteKeychain (Keychain.CurrentKeychain);
-			Keychain.CurrentKeychain = IntPtr.Zero;
-		}
-
 		protected override MonoDevelop.Core.IPasswordProvider GetPasswordProvider ()
 		{
 			return new MonoDevelop.MacIntegration.MacKeychainPasswordProvider ();
