@@ -784,7 +784,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Obsolete ("Deprecated - use WordWrapStyle")]
-		public bool WrapLines => WordWrapStyle.HasFlag (WordWrapStyles.WordWrap);
+		public bool WrapLines => false;
 
 		ConfigurationProperty<WordWrapStyles> wordWrapStyle = IdeApp.Preferences.Editor.WordWrapStyle;
 		public WordWrapStyles WordWrapStyle {
