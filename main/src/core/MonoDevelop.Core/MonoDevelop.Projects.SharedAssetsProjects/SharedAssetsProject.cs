@@ -183,7 +183,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props");
 				import = msproject.AddNewImport (MSBuildProjectService.ToMSBuildPath (FileName.ParentDirectory, projItemsPath));
 				import.Label = "Shared";
-				if (LanguageName.Equals("C#", StringComparison.OrdinalIgnoreCase)) {
+				if (LanguageName == null || LanguageName.Equals("C#", StringComparison.OrdinalIgnoreCase)) {
 					msproject.AddNewImport (CSharptargets);
 				}
 				else if (LanguageName.Equals("F#", StringComparison.OrdinalIgnoreCase)) {
