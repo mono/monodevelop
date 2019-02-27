@@ -34,6 +34,8 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		string version = null;
 
+		const string GitExtension = ".git";
+
 		public override string Name {
 			get { return "Git"; }
 		}
@@ -72,10 +74,18 @@ namespace MonoDevelop.VersionControl.Git
 			string repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
 			if (!string.IsNullOrEmpty (repo)) {
 				repo = repo.TrimEnd ('\\', '/');
-				if (repo.EndsWith (".git", System.StringComparison.OrdinalIgnoreCase))
+				if (repo.EndsWith (GitExtension, System.StringComparison.OrdinalIgnoreCase))
 					repo = Path.GetDirectoryName (repo);
 			}
 			return repo;
+		}
+
+		public override string GetOutputDirectoryPath (string defaultPath, string relativePath)
+		{
+			if (relativePath.EndsWith (GitExtension, System.StringComparison.CurrentCultureIgnoreCase)) {
+				relativePath = relativePath.Substring (0, relativePath.Length - GitExtension.Length);
+			} 
+			return defaultPath + relativePath.Replace ('/', Path.DirectorySeparatorChar);
 		}
 	}
 }
