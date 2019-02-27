@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Ide;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
 
 namespace MacPlatform.Tests
 {
 	[TestFixture]
-	public class KeychainTests
+	public class KeychainTests : IdeTestBase
 	{
 		const string password = "pa55word";
 
