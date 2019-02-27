@@ -253,7 +253,7 @@ namespace MonoDevelop.CSharp
 
 		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
 		{
-			Editor.RunWhenRealized (() => {
+			Editor?.RunWhenRealized (() => {
 				if (DocumentContext == null) {
 					return;//This can happen if this object is disposed
 				}
