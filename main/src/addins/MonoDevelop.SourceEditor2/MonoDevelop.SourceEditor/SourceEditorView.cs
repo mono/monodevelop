@@ -641,7 +641,7 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
-			TaskListEntry [] tasks = taskService.Errors.GetFileTasks (ContentName);
+			TaskListEntry [] tasks = taskService?.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
 			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
