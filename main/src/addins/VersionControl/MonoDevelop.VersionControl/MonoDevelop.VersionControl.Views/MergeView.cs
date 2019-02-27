@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -34,7 +35,8 @@ namespace MonoDevelop.VersionControl.Views
 	
 	class MergeView : BaseView, IMergeView
 	{
-		VersionControlDocumentInfo info;
+		readonly VersionControlDocumentInfo info;
+		readonly FileEventInfo fileEventInfo;
 		MergeWidget widget;
 		readonly MergeWidgetContainer widgetContainer;
 		readonly Gtk.Label NoMergeConflictsLabel;
@@ -44,6 +46,7 @@ namespace MonoDevelop.VersionControl.Views
 		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"), GettextCatalog.GetString ("Shows the merge view for the current file"))
 		{
 			this.info = info;
+			fileEventInfo = new FileEventInfo (info.Item.Path.FullPath, info.Item.IsDirectory);
 			widgetContainer = new MergeWidgetContainer ();
 			NoMergeConflictsLabel = new Gtk.Label () { Text = GettextCatalog.GetString ("No merge conflicts detected.") };
 			FileService.FileChanged += FileService_FileChanged;
@@ -73,7 +76,13 @@ namespace MonoDevelop.VersionControl.Views
 			if (widgetContainer.Content == null) {
 				return;
 			}
-			//if is shown we refresh we show the content and refresh the editor if was the case
+
+			//continue only if file server detected some change in this file
+			if (e.All (s => s.FileName.CompareTo (fileEventInfo.FileName) < 0)) {
+				return;
+			}
+
+			//if it is shown we refresh we show the content and refresh the editor (probably this nee
 			info.Start ();
 			RefreshContent ();
 			RefreshMergeEditor ();
