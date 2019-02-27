@@ -133,6 +133,8 @@ namespace MonoDevelop.CSharp
 			// Delay the execution of UpdateOwnerProjects since it may end calling DocumentContext.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
 			Gtk.Application.Invoke ((o, args) => {
+				if (Editor == null)
+					return;
 				UpdateOwnerProjects ();
 				Editor_CaretPositionChanged (null, null);
 			});
