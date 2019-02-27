@@ -423,16 +423,16 @@ namespace MonoDevelop.Ide
 				if (nsParent == null || !nsParent.IsVisible) {
 					nsChild.Center ();
 				} else {
-					int x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2));
-					int y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2));
-					nsChild.SetFrame (new CoreGraphics.CGRect (x, y, nsChild.Frame.Width, nsChild.Frame.Height), true);
+					int x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
+					int y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
+					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
 				}
 
 				return;
 			}
 #endif
 			if (gtkChild != null) {
-				gtkChild.Child.Show ();
+				gtkChild.Show ();
 				int x, y;
 				gtkChild.GetSize (out var w, out var h);
 				if (gtkParent != null) {
@@ -444,9 +444,10 @@ namespace MonoDevelop.Ide
 					gtkChild.Move (x, y);
 #if MAC
 				} else if (nsParent != null) {
-					x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2));
-					y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2));
-					gtkChild.Move (x, y);
+					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
+					x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
+					y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
+					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
 #endif
 				} else {
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
