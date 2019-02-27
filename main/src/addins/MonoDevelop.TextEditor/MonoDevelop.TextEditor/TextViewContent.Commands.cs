@@ -76,7 +76,6 @@ namespace MonoDevelop.TextEditor
 			[TextEditorCommands.InsertNewLine] = op => op.InsertNewLine (),
 			[TextEditorCommands.InsertNewLineAtEnd] = op => op.InsertFinalNewLine (),
 			[TextEditorCommands.InsertNewLinePreserveCaretPosition] = op => op.OpenLineAbove (),
-			[EditCommands.InsertGuid] = op => op.InsertText (Guid.NewGuid ().ToString ()),
 
 			[TextEditorCommands.TransposeCharacters] = op => op.TransposeCharacter (),
 			[TextEditorCommands.DuplicateLine] = op => op.DuplicateSelection (),
@@ -107,6 +106,14 @@ namespace MonoDevelop.TextEditor
 			[TextEditorCommands.SelectionPageDownAction] = op => op.PageDown (extendSelection: true),
 
 			[TextEditorCommands.RecenterEditor] = op => op.ScrollLineCenter (),
+
+			[EditCommands.InsertGuid] = op => op.InsertText (Guid.NewGuid ().ToString ()),
+			[EditCommands.IndentSelection] = op => op.IncreaseLineIndent (),
+			[EditCommands.UnIndentSelection] = op => op.DecreaseLineIndent (),
+			[EditCommands.UppercaseSelection] = op => op.MakeUppercase (),
+			[EditCommands.LowercaseSelection] = op => op.MakeLowercase (),
+			[EditCommands.RemoveTrailingWhiteSpaces] = op => op.TrimTrailingWhiteSpace (),
+
 			[ViewCommands.CenterAndFocusCurrentDocument] = op => op.ScrollLineCenter ()
 		};
 
@@ -202,12 +209,6 @@ namespace MonoDevelop.TextEditor
 }
 
 // Missing EditCommands:
-//   ToggleCodeComment,
-//   IndentSelection,
-//   UnIndentSelection,
-//   UppercaseSelection,
-//   LowercaseSelection,
-//   RemoveTrailingWhiteSpaces,
 //   JoinWithNextLine,
 //   MonodevelopPreferences,
 //   DefaultPolicies,

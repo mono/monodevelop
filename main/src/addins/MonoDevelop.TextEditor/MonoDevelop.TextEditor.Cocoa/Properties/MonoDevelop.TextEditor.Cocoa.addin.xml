@@ -1,6 +1,7 @@
 <ExtensionModel>
 	<Runtime>
 		<Import assembly="../../../bin/Microsoft.VisualStudio.UI.Controls.macOS.dll" />
+		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Find.Implementation.dll" />
 	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
@@ -53,5 +54,10 @@
 	</Extension>
 	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.DeleteKey" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
+
+		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Find" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindNext" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindNextCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindPreviousCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.SearchCommands.Replace" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ReplaceCommandArgs" />
 	</Extension>
 </ExtensionModel>
