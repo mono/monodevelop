@@ -107,8 +107,16 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnReadProject (monitor, msproject);
 
 			var import = msproject.Imports.FirstOrDefault (im => im.Label == "Shared");
-			if (import == null)
+			if (import == null) {
+				// Sanity check.
+				if (!StringComparer.OrdinalIgnoreCase.Equals (msproject.FileName.Extension, FileName.Extension)) {
+					// ProjectTypeGuid mismatch in solution file.
+					throw new InvalidOperationException (GettextCatalog.GetString (
+						"Project {0} is being loaded as a Shared Assets project but has a different file extension. Please check the project type GUID in the solution file is correct.",
+						Name));
+				}
 				return;
+			}
 
 			// TODO: load the type from msbuild
 			foreach (var item in msproject.Imports) {
