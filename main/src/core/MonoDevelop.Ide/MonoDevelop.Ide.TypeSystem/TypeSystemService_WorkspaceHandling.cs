@@ -37,6 +37,7 @@ using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -262,13 +263,24 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void OnDocumentOpened (object sender, Gui.DocumentEventArgs e)
 		{
 			var filePath = e.Document.FileName;
-			var textBuffer = e.Document.TextBuffer;
-			if (textBuffer == null) {
+			var textBuffer = e.Document.GetContent<ITextBuffer> ();
+			if (textBuffer == null || filePath == null) {
 				return;
 			}
 
+			// First offer the document to the primary workspace and see if it's owned by it.
+			// This is the common case, so avoid adding the document to the miscellaneous workspace
+			// unnecessarily, as it will be immediately removed anyway.
+			TryOpenDocumentInWorkspace (e, filePath, textBuffer);
+
+			// If the primary workspace didn't claim the document notify the miscellaneous workspace
+			miscellaneousFilesWorkspace.OnDocumentOpened (filePath, textBuffer);
+		}
+
+		private static void TryOpenDocumentInWorkspace (Gui.DocumentEventArgs e, FilePath filePath, ITextBuffer textBuffer)
+		{
 			var project = e.Document.Project;
-			if (project == null || filePath == null || !project.IsCompileable (filePath)) {
+			if (project == null || !project.IsCompileable (filePath)) {
 				return;
 			}
 
@@ -316,6 +328,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
+			var textBuffer = e.Document.GetContent<ITextBuffer> ();
+			if (textBuffer == null) {
+				return;
+			}
+
+			// In the common case the primary workspace will own the document, so shut down
+			// miscellaneous workspace first to avoid adding and then immediately removing
+			// the document to the miscellaneous workspace
+			miscellaneousFilesWorkspace.OnDocumentClosed (filePath, textBuffer);
+
+			TryCloseDocumentInWorkspace (filePath, project);
+		}
+
+		private static void TryCloseDocumentInWorkspace (FilePath filePath, MonoDevelop.Projects.Project project)
+		{
 			var workspace = GetWorkspace (project.ParentSolution);
 			if (workspace == emptyWorkspace) {
 				return;
