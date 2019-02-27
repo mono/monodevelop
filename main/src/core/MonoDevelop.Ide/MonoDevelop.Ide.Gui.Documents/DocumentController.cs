@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			set {
 				if (value != owner) {
 					owner = value;
-					OnOwnerChanged ();
+					itemExtension.OnOwnerChanged ();
 				}
 			}
 		}
@@ -911,6 +911,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			internal protected override Task<DocumentView> OnInitializeView ()
 			{
 				return Controller.InternalInitializeView ();
+			}
+
+			internal protected override void OnOwnerChanged ()
+			{
+				Controller.OnOwnerChanged ();
 			}
 		}
 	}

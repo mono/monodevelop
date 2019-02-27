@@ -182,8 +182,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			ContentChanged?.Invoke (this, EventArgs.Empty);
 		}
 
-		protected virtual void OnOwnerChanged ()
+		internal protected virtual void OnOwnerChanged ()
 		{
+			next.OnOwnerChanged ();
 		}
 	}
 }

@@ -83,8 +83,9 @@ namespace MonoDevelop.Ide.Gui
 			return documentContext.Initialize ((FileDocumentController)Controller);
 		}
 
-		protected override void OnOwnerChanged ()
+		internal protected override void OnOwnerChanged ()
 		{
+			base.OnOwnerChanged ();
 			documentContext.SetProject (Controller.Owner as Project);
 		}
 
@@ -263,6 +264,7 @@ namespace MonoDevelop.Ide.Gui
 
 			SubscribeControllerEvents ();
 			Editor.InitializeExtensionChain (this);
+			ListenToProjectLoad();
 		}
 
 		void SubscribeControllerEvents ()
