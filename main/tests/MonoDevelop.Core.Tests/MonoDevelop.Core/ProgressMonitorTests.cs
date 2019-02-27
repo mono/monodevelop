@@ -308,6 +308,94 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (1, monitor.Progress);
 			Assert.AreEqual (mainTask.Progress, monitor.Progress);
 		}
+
+		[Test, Explicit ("This test makes only sense, if ending a child task would automatically step the parent")]
+		public void TestNestedTasksProgress ([Values (1, 10, 100)] int childrenCount)
+		{
+			int childSteps = 10;
+			double childStepProgress = 1d / childSteps;
+			var monitor = new ProgressMonitor ();
+
+			var mainTask = monitor.BeginTask ("ParentTask", childrenCount) as ProgressTask;
+
+			Assert.AreEqual (childrenCount, mainTask.TotalWork);
+
+			for (int i = 0; i < childrenCount; i++) {
+				var initialProgress = (1d / childrenCount) * i;
+				var childTask = monitor.BeginTask ("ChildTask" + i, childSteps) as ProgressTask;
+
+				// test initial progress state
+				Assert.That (mainTask.Progress, Is.EqualTo (initialProgress).Within (taskProgressTestPrecision));
+				Assert.That (monitor.Progress, Is.EqualTo (mainTask.Progress).Within (taskProgressTestPrecision));
+
+				monitor.EndTask ();
+				// EndTask should run the task to completion with Progress = 1
+				Assert.That (childTask.Progress, Is.EqualTo (1).Within (taskProgressTestPrecision));
+
+				var expectedMainProgress = (1d / childrenCount) * (i + 1);
+				Assert.That (monitor.Progress, Is.EqualTo (expectedMainProgress).Within (taskProgressTestPrecision));
+			}
+
+			// all child tasks ended and main task is the current task in finished state
+			Assert.AreSame (mainTask, monitor.CurrentTask);
+			Assert.AreEqual (1, monitor.Progress);
+			Assert.AreEqual (mainTask.Progress, monitor.Progress);
+		}
+
+		[TestCase (1, TestName = "Single Child Task")]
+		[TestCase (3, TestName = "Multiple Child Tasks")]
+		public void TestParentTaskTracksChildProgress (int childrenCount)
+		{
+			int childSteps = 4;
+			double childStepProgress = 1d / childSteps;
+			var monitor = new ProgressMonitor ();
+
+			var mainTask = monitor.BeginTask ("ParentTask", childrenCount) as ProgressTask;
+
+			Assert.AreEqual (childrenCount, mainTask.TotalWork);
+
+			for (int i = 0; i < childrenCount; i++) {
+				var expectedMainProgress = (1d / childrenCount) * i;
+				var childTask = monitor.BeginTask ("ChildTask" + i, childSteps) as ProgressTask;
+
+				// test initial progress state
+				Assert.AreEqual (expectedMainProgress, mainTask.Progress);
+				Assert.AreEqual (mainTask.Progress, monitor.Progress);
+				Assert.AreEqual (0, childTask.Progress);
+
+				int stepped = 0;
+
+				// 1 step
+				monitor.Step ();
+				stepped += 1;
+				Assert.That (childTask.Progress, Is.EqualTo (childStepProgress * stepped).Within (taskProgressTestPrecision));
+
+				expectedMainProgress += childStepProgress * stepped;
+				Assert.That (mainTask.Progress, Is.EqualTo (expectedMainProgress).Within (taskProgressTestPrecision));
+				Assert.That (monitor.Progress, Is.EqualTo (expectedMainProgress).Within (taskProgressTestPrecision));
+
+				// 2 steps
+				monitor.Step (2);
+				stepped += 2;
+				Assert.That (childTask.Progress, Is.EqualTo (childStepProgress * stepped).Within (taskProgressTestPrecision));
+
+				expectedMainProgress += childStepProgress * stepped;
+				Assert.That (mainTask.Progress, Is.EqualTo (expectedMainProgress).Within (taskProgressTestPrecision));
+				Assert.That (monitor.Progress, Is.EqualTo (expectedMainProgress).Within (taskProgressTestPrecision));
+
+				monitor.EndTask ();
+				// EndTask should run the task to completion with Progress = 1
+				Assert.That (childTask.Progress, Is.EqualTo (1).Within (taskProgressTestPrecision));
+
+				expectedMainProgress = (1d / childrenCount) * (i + 1);
+				Assert.That (monitor.Progress, Is.EqualTo (expectedMainProgress).Within (taskProgressTestPrecision));
+			}
+
+			// all child tasks ended and main task is the current task in finished state
+			Assert.AreSame (mainTask, monitor.CurrentTask);
+			Assert.AreEqual (1, monitor.Progress);
+			Assert.AreEqual (mainTask.Progress, monitor.Progress);
+		}
 	}
 
 	class ChainedProgressMonitor : ProgressMonitor
