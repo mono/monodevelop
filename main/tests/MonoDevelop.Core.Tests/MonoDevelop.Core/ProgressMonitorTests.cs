@@ -32,6 +32,7 @@ using System.Threading;
 using System.Text;
 using System.Collections.Concurrent;
 using UnitTests;
+using System.Linq;
 
 namespace MonoDevelop.Core
 {
@@ -153,6 +154,159 @@ namespace MonoDevelop.Core
 				// Once for completed, once for Dispose.
 				Assert.AreEqual (2, ctx.CallCount - offset);
 			}
+		}
+
+		[Test]
+		public void TestParentChildTask ()
+		{
+			var monitor = new ProgressMonitor ();
+
+			var mainTask = monitor.BeginTask ("Task", 1) as ProgressTask;
+
+			Assert.AreSame (mainTask, monitor.CurrentTask);
+			Assert.AreEqual (mainTask.Name, monitor.CurrentTaskName);
+			Assert.IsTrue (monitor.GetRootTasks ().Contains (mainTask));
+
+			var childTask = monitor.BeginTask ("ChildTask", 1) as ProgressTask;
+
+			// test task hierarchy
+			Assert.NotNull (mainTask);
+			Assert.NotNull (childTask);
+			Assert.AreSame (mainTask, childTask.ParentTask);
+			Assert.AreSame (childTask, monitor.CurrentTask);
+			Assert.AreEqual (childTask.Name, monitor.CurrentTaskName);
+			Assert.IsTrue (monitor.GetRootTasks ().Contains (mainTask));
+			Assert.IsTrue (mainTask.GetChildrenTasks ().Contains (childTask));
+
+			// ensure that the child is not a root task
+			Assert.IsFalse (monitor.GetRootTasks ().Contains (childTask));
+
+			monitor.EndTask ();
+
+			Assert.AreSame (mainTask, monitor.CurrentTask);
+			Assert.AreEqual (mainTask.Name, monitor.CurrentTaskName);
+			Assert.IsTrue (monitor.GetRootTasks ().Contains (mainTask));
+			Assert.IsFalse (mainTask.GetChildrenTasks ().Contains (childTask));
+
+			monitor.EndTask ();
+
+			Assert.IsNull (monitor.CurrentTask);
+			Assert.IsFalse (monitor.GetRootTasks ().Any ());
+		}
+
+		[Test, Combinatorial]
+		public void TestUsingMultipleParentChildTasks ([Range (1, 2)] int rootTasks, [Range (1, 2)] int childTasks)
+		{
+			var monitor = new ProgressMonitor ();
+
+			for (int i = 1; i <= rootTasks; i++) {
+				using (var mainTask = monitor.BeginTask ("Task" + i, 1) as ProgressTask) {
+					for (int j = 1; j <= rootTasks; j++) {
+						using (var childTask = monitor.BeginTask ("ChildTask" + j, 1) as ProgressTask) {
+							// test task hierarchy
+							Assert.AreSame (mainTask, childTask.ParentTask);
+							Assert.AreSame (childTask, monitor.CurrentTask);
+							Assert.IsTrue (monitor.GetRootTasks ().Contains (mainTask));
+							Assert.IsTrue (mainTask.GetChildrenTasks ().Contains (childTask));
+
+							// ensure that the child is not a root task
+							Assert.IsFalse (monitor.GetRootTasks ().Contains (childTask));
+						}
+						Assert.AreSame (mainTask, monitor.CurrentTask);
+						Assert.IsTrue (monitor.GetRootTasks ().Contains (mainTask));
+						Assert.IsFalse (mainTask.GetChildrenTasks ().Any ());
+					}
+				}
+
+				Assert.IsNull (monitor.CurrentTask);
+				Assert.IsFalse (monitor.GetRootTasks ().Any ());
+			}
+		}
+
+		static readonly double taskProgressTestPrecision = 0.0001;
+
+		[TestCase (true, TestName = "With Completion")]
+		[TestCase (true, TestName = "Without Completion")]
+		public void TestSingleTaskProgress (bool stepsToFinish)
+		{
+			int steps = 10;
+			// we test 6 steps + 1 for finish test,
+			// just make sure that we start the task with enough steps
+			Assert.Greater (steps, 7);
+
+			double stepProgress = 1d / steps;
+			var monitor = new ProgressMonitor ();
+			Assert.AreSame (monitor.BeginTask ("Task", steps), monitor.CurrentTask);
+
+			var task = monitor.CurrentTask;
+			Assert.NotNull (task);
+			Assert.AreEqual ("Task", monitor.CurrentTaskName);
+			Assert.AreEqual (0, monitor.Progress);
+			Assert.AreEqual (task.Progress, monitor.Progress);
+			Assert.AreEqual (steps, task.TotalWork);
+			Assert.IsTrue (string.IsNullOrEmpty (task.StatusMessage));
+
+			int stepped = 0;
+
+			// 1 step
+			monitor.Step ();
+			stepped += 1;
+			Assert.That (monitor.Progress, Is.EqualTo (stepProgress * stepped).Within (taskProgressTestPrecision));
+			Assert.AreEqual (monitor.Progress, task.Progress);
+
+			// 2 steps
+			monitor.Step (2);
+			stepped += 2;
+			Assert.That (monitor.Progress, Is.EqualTo (stepProgress * stepped).Within (taskProgressTestPrecision));
+			Assert.AreEqual (monitor.Progress, task.Progress);
+
+			// Begin/End 1 step
+			monitor.BeginStep ();
+			Assert.That (monitor.Progress, Is.EqualTo (stepProgress * stepped).Within (taskProgressTestPrecision), "Task progress changed before the task ended");
+			Assert.AreEqual (monitor.Progress, task.Progress);
+			monitor.EndStep ();
+			stepped += 1;
+			Assert.That (monitor.Progress, Is.EqualTo (stepProgress * stepped).Within (taskProgressTestPrecision));
+			Assert.AreEqual (monitor.Progress, task.Progress);
+
+			// Begin/End 2 steps
+			monitor.BeginStep (2);
+			Assert.That (monitor.Progress, Is.EqualTo (stepProgress * stepped).Within (taskProgressTestPrecision), "Task progress changed before the task ended");
+			Assert.AreEqual (monitor.Progress, task.Progress);
+			monitor.EndStep ();
+			stepped += 2;
+			Assert.That (monitor.Progress, Is.EqualTo (stepProgress * stepped).Within (taskProgressTestPrecision));
+			Assert.AreEqual (monitor.Progress, task.Progress);
+
+			// Run to end
+			if (stepsToFinish)
+				// Step to End
+				monitor.Step (steps - stepped);
+			else
+				// End Task
+				monitor.EndTask ();
+
+			Assert.That (monitor.Progress, Is.EqualTo (1).Within (taskProgressTestPrecision));
+			Assert.AreEqual (monitor.Progress, task.Progress);
+		}
+
+		[Test]
+		public void TestSingleTaskProgressWithSteps ([Values (1, 10, 100, 1000)] int stepsCount)
+		{
+			var monitor = new ProgressMonitor ();
+			var mainTask = monitor.BeginTask ("Task", stepsCount) as ProgressTask;
+
+			Assert.AreEqual (stepsCount, mainTask.TotalWork);
+
+			for (int i = 1; i <= stepsCount; i++) {
+				monitor.Step ();
+				var expectedProgress = (1d / stepsCount) * i;
+				Assert.That (mainTask.Progress, Is.EqualTo (expectedProgress).Within (taskProgressTestPrecision));
+				Assert.That (monitor.Progress, Is.EqualTo (expectedProgress).Within (taskProgressTestPrecision));
+			}
+
+			Assert.AreEqual (1, monitor.Progress);
+			Assert.AreEqual (mainTask.Progress, monitor.Progress);
 		}
 	}
 
