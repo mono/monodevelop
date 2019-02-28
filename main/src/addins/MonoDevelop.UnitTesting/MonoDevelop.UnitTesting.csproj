@@ -157,21 +157,22 @@
   <ItemGroup>
     <DownloadNupkg Include="Microsoft.TestPlatform" Version="$(NuGetVersionMicrosoftTestPlatform)" />
   </ItemGroup>
-  <ItemGroup>
-    <VsTestConsole Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*">
-      <Visible>false</Visible>
-    </VsTestConsole>
-    <VsTestConsole Remove="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*" />
-  </ItemGroup>
+ 
+  <Target Name="CopyTestAdapters" AfterTargets="DownloadNupkg">
     <ItemGroup>
-    <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
-      <Visible>false</Visible>
-    </VsTestConsoleExtensions>
-    <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
-      <Visible>false</Visible>
-    </VsTestConsoleExtensions>
-  </ItemGroup>
-  <Target Name="CopyTestAdapters" BeforeTargets="Build">
+      <VsTestConsole Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*">
+        <Visible>false</Visible>
+      </VsTestConsole>
+      <VsTestConsole Remove="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*" />
+    </ItemGroup>
+    <ItemGroup>
+      <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
+        <Visible>false</Visible>
+      </VsTestConsoleExtensions>
+      <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
+        <Visible>false</Visible>
+      </VsTestConsoleExtensions>
+    </ItemGroup>
     <Copy SourceFiles="@(VsTestConsole)" DestinationFolder="$(OutputPath)\VsTestConsole\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(VsTestConsoleExtensions)" DestinationFolder="$(OutputPath)\VsTestConsole\Extensions\" SkipUnchangedFiles="true" />
   </Target>
