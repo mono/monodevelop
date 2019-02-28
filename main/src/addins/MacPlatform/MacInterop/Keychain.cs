@@ -144,7 +144,8 @@ namespace MonoDevelop.MacInterop
 		{
 			// Look for an internet password for the given protocol and auth mechanism
 			searchRecord = uri.ToSecRecord ();
-			searchRecord.Protocol = protocol;
+			if (protocol != SecProtocol.Invalid)
+				searchRecord.Protocol = protocol;
 
 			var data = SecKeyChain.QueryAsRecord (searchRecord, out SecStatusCode code);
 
@@ -172,12 +173,17 @@ namespace MonoDevelop.MacInterop
 		{
 			var record = new SecRecord (SecKind.InternetPassword) {
 				Service = Service,
-				AuthenticationType = GetSecAuthenticationType (uri.Query),
 				Server = uri.Host,
 				Path = string.Join (string.Empty, uri.Segments),
 				Port = uri.Port,
-				Protocol = GetSecProtocolType (uri.Scheme),
 			};
+			var protocol = GetSecProtocolType (uri.Scheme);
+			if (protocol != SecProtocol.Invalid)
+				record.Protocol = protocol;
+			var authType = GetSecAuthenticationType (uri.Query);
+			if (authType != SecAuthenticationType.Default)
+				record.AuthenticationType = authType;
+
 			record.Description = record.AuthenticationType == SecAuthenticationType.HtmlForm ? WebFormPassword : string.Empty;
 
 			username = username ?? Uri.UnescapeDataString (uri.UserInfo);
@@ -224,7 +230,7 @@ namespace MonoDevelop.MacInterop
 			case "nntps": return SecProtocol.Nntps;
 			case "telnets": return SecProtocol.Telnets;
 			case "ircs": return SecProtocol.Ircs;
-			default: return SecProtocol.Http;
+			default: return SecProtocol.Invalid;
 			}
 		}
 
@@ -250,7 +256,6 @@ namespace MonoDevelop.MacInterop
 			case "httpbasic": case "basic": return SecAuthenticationType.HttpBasic;
 			case "httpdigest": case "digest": return SecAuthenticationType.HttpDigest;
 			case "htmlform": case "form": return SecAuthenticationType.HtmlForm;
-			case "default": return SecAuthenticationType.Default;
 			default: return SecAuthenticationType.Default;
 			}
 		}
