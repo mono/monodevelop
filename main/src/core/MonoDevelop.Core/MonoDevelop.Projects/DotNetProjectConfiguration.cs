@@ -172,6 +172,8 @@ namespace MonoDevelop.Projects
 		
 		public FilePath CompiledOutputName {
 			get {
+				if (OutputAssembly == null)
+					return FilePath.Empty;
 				FilePath fullPath = OutputDirectory.Combine (OutputAssembly);
 				if (OutputAssembly.EndsWith (".dll") || OutputAssembly.EndsWith (".exe"))
 					return fullPath;
