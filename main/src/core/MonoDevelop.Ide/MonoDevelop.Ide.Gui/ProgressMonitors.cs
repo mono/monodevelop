@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!string.IsNullOrEmpty (titleSuffix)) {
 				title += " - " + titleSuffix;
 			}
-			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
+			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, IdeApp.Workbench.RootWindow.Visible);
 			pad.Visible = visible;
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
