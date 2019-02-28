@@ -400,7 +400,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 
 			var vcs = systems [repCombo.Active];
-			entryFolder.Text = vcs.GetOutputDirectoryPath (defaultPath, edit.RelativePath); // 
+			entryFolder.Text = defaultPath + vcs.GetRelativeCheckoutPathForRemote (edit.RelativePath);
 		}
 	}
 }

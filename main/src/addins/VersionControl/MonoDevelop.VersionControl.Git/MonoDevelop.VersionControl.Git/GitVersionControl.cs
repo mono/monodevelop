@@ -80,12 +80,13 @@ namespace MonoDevelop.VersionControl.Git
 			return repo;
 		}
 
-		public override string GetOutputDirectoryPath (string defaultPath, string relativePath)
+		public override string GetRelativeCheckoutPathForRemote (string remoteRelativePath)
 		{
-			if (relativePath.EndsWith (GitExtension, System.StringComparison.CurrentCultureIgnoreCase)) {
-				relativePath = relativePath.Substring (0, relativePath.Length - GitExtension.Length);
+			remoteRelativePath = base.GetRelativeCheckoutPathForRemote (remoteRelativePath);
+			if (remoteRelativePath.EndsWith (GitExtension, System.StringComparison.CurrentCultureIgnoreCase)) {
+				remoteRelativePath = remoteRelativePath.Substring (0, remoteRelativePath.Length - GitExtension.Length);
 			} 
-			return defaultPath + relativePath.Replace ('/', Path.DirectorySeparatorChar);
+			return remoteRelativePath;
 		}
 	}
 }
