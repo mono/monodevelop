@@ -111,11 +111,10 @@ namespace MonoDevelop.MacInterop
 			// See if there is already a password there for this uri
 			var record = SecKeychainFindInternetPassword (url, out _);
 
-			if (record == null) {
-				return string.Empty;
-			}
+			if (record != null)
+				return NSString.FromData (record.ValueData, NSStringEncoding.UTF8);
 
-			return NSString.FromData (record.ValueData, NSStringEncoding.UTF8);
+			return null;
 		}
 
 		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri)
@@ -129,14 +128,14 @@ namespace MonoDevelop.MacInterop
 		{
 			var record = SecKeychainFindInternetPassword (url, protocol, out _);
 
-			if (record == null) {
-				return null;
+			if (record != null) {
+
+				string username = record.Account != null ? NSString.FromData (record.Account, NSStringEncoding.UTF8) : null;
+				string password = record.ValueData != null ? NSString.FromData (record.ValueData, NSStringEncoding.UTF8) : null;
+
+				return Tuple.Create (username, password);
 			}
-
-			string username = NSString.FromData (record.Account, NSStringEncoding.UTF8);
-			string password = NSString.FromData (record.ValueData, NSStringEncoding.UTF8);
-
-			return Tuple.Create (username, password);
+			return null;
 		}
 
 		public static void RemoveInternetPassword (Uri url)
