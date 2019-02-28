@@ -65,6 +65,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		static MiscellaneousFilesWorkspace miscellaneousFilesWorkspace;
+
 		static TypeSystemService ()
 		{
 			RoslynServices.RoslynService.Initialize ();
@@ -131,6 +133,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			IntitializeTrackedProjectHandling ();
 
 			IdeApp.Initialized += (sender, args) => {
+				miscellaneousFilesWorkspace = Composition.CompositionManager.GetExportedValue<MiscellaneousFilesWorkspace> ();
 				IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
 				IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
 			};
