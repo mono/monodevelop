@@ -167,8 +167,10 @@ namespace MonoDevelop.DotNetCore
 			else
 				outputFileName = GetOutputFileName (configuration);
 
+			var workingDirectory =  Project.GetOutputFileName (configSel).ParentDirectory;
+
 			return new DotNetCoreExecutionCommand (
-				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? Project.BaseDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
+				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? workingDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
 				dotnetCoreRunConfiguration?.StartArguments
 			) {
