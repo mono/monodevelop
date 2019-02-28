@@ -59,6 +59,7 @@ namespace MonoDevelop.TextEditor
 
 		static HashSet<string> supportedFileExtensions = new HashSet<string> (StringComparer.OrdinalIgnoreCase) {
 			".cs",
+			".csx"
 			//".cshtml",
 			//".css",
 			//".html",
