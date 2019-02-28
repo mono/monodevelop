@@ -819,7 +819,12 @@ namespace MonoDevelop.Ide.Gui
 			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
 				return;
 			UnloadAdhocProject ();
-			#pragma warning disable CS0612 // Type or member is obsolete
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
+			if (Editor == null) {
+				Window.ViewContent.Project = project;
+				AttachPathedDocument ();
+				return;
+			}
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
 							  // Unsubscribe project events
@@ -831,7 +836,7 @@ namespace MonoDevelop.Ide.Gui
 			InitializeExtensionChain ();
 			AttachPathedDocument ();
 			ListenToProjectLoad (project);
-			#pragma warning restore CS0612 // Type or member is obsolete
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
 		[Obsolete]
