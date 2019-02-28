@@ -36,8 +36,9 @@ namespace MacPlatform.Tests
 	{
 		const string password = "pa55word";
 
-		const string site = "http://google.com";
-		const string siteWithUser = "http://user@google.com";
+		const string testDomain = "test-monodevelop-mac-keychain.com";
+		const string site = "http://" + testDomain;
+		const string siteWithUser = "http://user@" + testDomain;
 		const string siteWithPath = site + "/path";
 		const string siteWithUserAndPath = siteWithUser + "/path";
 
@@ -86,10 +87,10 @@ namespace MacPlatform.Tests
 		{
 			string passwordNoUser = password + "nouser";
 
-			var uriBase = new Uri ("http://google.com");
-			var uri1 = new Uri ("http://user1@google.com");
-			var uri2 = new Uri ("http://user2@google.com");
-			var uri3 = new Uri ("http://google.com/path");
+			var uriBase = new Uri ("http://" + testDomain);
+			var uri1 = new Uri ("http://user1@" + testDomain);
+			var uri2 = new Uri ("http://user2@" + testDomain);
+			var uri3 = new Uri ("http://" + testDomain + "/path");
 
 			try {
 				Keychain.AddInternetPassword (uriBase, passwordNoUser);
