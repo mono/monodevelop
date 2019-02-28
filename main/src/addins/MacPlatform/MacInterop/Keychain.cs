@@ -186,9 +186,12 @@ namespace MonoDevelop.MacInterop
 
 			record.Description = record.AuthenticationType == SecAuthenticationType.HtmlForm ? WebFormPassword : string.Empty;
 
-			username = username ?? Uri.UnescapeDataString (uri.UserInfo);
-			if (!string.IsNullOrEmpty (username))
-				record.Account = username;
+			var account = Uri.UnescapeDataString (uri.UserInfo);
+			if (string.IsNullOrEmpty (account)) // account from Uri has always priority
+				account = username;
+
+			if (!string.IsNullOrEmpty (account))
+				record.Account = account;
 
 			if (password != null)
 				record.ValueData = NSData.FromString (password);
