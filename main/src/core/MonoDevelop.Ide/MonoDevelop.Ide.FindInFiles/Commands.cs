@@ -29,7 +29,15 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	class FindInFilesHandler : CommandHandler
+	class InFilesHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.RootWindow.Visible;
+		}
+	}
+
+	class FindInFilesHandler : InFilesHandler
 	{
 		protected override void Run ()
 		{
@@ -37,7 +45,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 	}
 	
-	class ReplaceInFilesHandler : CommandHandler
+	class ReplaceInFilesHandler : InFilesHandler
 	{
 		protected override void Run ()
 		{
