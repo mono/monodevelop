@@ -163,6 +163,8 @@
     <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManagerService.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphFactoryProvider.cs" />
@@ -346,6 +348,7 @@
     <Folder Include="MonoDevelop.Debugger.VSTextView\Glyphs\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\Tags\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\QuickInfo\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
