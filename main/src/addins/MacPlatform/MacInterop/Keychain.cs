@@ -39,26 +39,11 @@ namespace MonoDevelop.MacInterop
 
 		public static void AddInternetPassword (Uri uri, string password)
 		{
-			var serverInfo = new ServerInfo (uri);
-			var passwd = NSData.FromString (password);
-
 			// See if there is already a password there for this uri
 			var record = SecKeychainFindInternetPassword (uri, out SecRecord searchRecord);
 
 			if (record == null) {
-				record = new SecRecord (SecKind.InternetPassword) {
-					AuthenticationType = serverInfo.AuthenticationType,
-					Description = serverInfo.Description,
-					Service = Service,
-					Server = serverInfo.Host,
-					Path = serverInfo.Path,
-					Port = serverInfo.Port,
-					Protocol = serverInfo.Protocol,
-					ValueData = passwd
-				};
-				// set account from Uri
-				if (!string.IsNullOrEmpty (serverInfo.Account))
-					record.Account = serverInfo.Account;
+				record = uri.ToSecRecord (password: password);
 
 				SecStatusCode result = SecKeyChain.Add (record);
 
@@ -76,24 +61,11 @@ namespace MonoDevelop.MacInterop
 
 		public static void AddInternetPassword (Uri uri, string username, string password)
 		{
-			var serverInfo = new ServerInfo (uri);
-			string account = username;
-			var passwd = NSData.FromString (password);
-
 			// See if there is already a password there for this uri
 			var record = SecKeychainFindInternetPassword (uri, out SecRecord searchRecord);
 
 			if (record == null) {
-				record = new SecRecord (SecKind.InternetPassword) {
-					Account = account,
-					AuthenticationType = serverInfo.AuthenticationType,
-					Service = Service,
-					Server = serverInfo.Host,
-					Path = serverInfo.Path,
-					Port = serverInfo.Port,
-					Protocol = serverInfo.Protocol,
-					ValueData = passwd
-				};
+				record = uri.ToSecRecord (username, password);
 
 				SecStatusCode result = SecKeyChain.Add (record);
 
@@ -122,9 +94,7 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri)
 		{
-			var serverInfo = new ServerInfo (uri);
-			var protocol = serverInfo.Protocol;
-			return FindInternetUserNameAndPassword (uri, protocol);
+			return FindInternetUserNameAndPassword (uri, GetSecProtocolType (uri.Scheme));
 		}
 
 		public static Tuple<string, string> FindInternetUserNameAndPassword (Uri url, SecProtocol protocol)
@@ -167,34 +137,24 @@ namespace MonoDevelop.MacInterop
 
 		static SecRecord SecKeychainFindInternetPassword (Uri uri, out SecRecord searchRecord)
 		{
-			var serverInfo = new ServerInfo (uri);
-			return SecKeychainFindInternetPassword (uri, serverInfo.Protocol, out searchRecord);
+			return SecKeychainFindInternetPassword (uri, GetSecProtocolType (uri.Scheme), out searchRecord);
 		}
 
 		static SecRecord SecKeychainFindInternetPassword (Uri uri, SecProtocol protocol, out SecRecord searchRecord)
 		{
-			var serverInfo = new ServerInfo (uri);
-
 			// Look for an internet password for the given protocol and auth mechanism
-			searchRecord = new SecRecord (SecKind.InternetPassword) {
-				Account = serverInfo.Account,
-				AuthenticationType = serverInfo.AuthenticationType,
-				Description = serverInfo.Description,
-				Service = Service,
-				Server = serverInfo.Host,
-				Path = serverInfo.Path,
-				Port = serverInfo.Port,
-				Protocol = protocol
-			};
+			searchRecord = uri.ToSecRecord ();
+			searchRecord.Protocol = protocol;
 
 			var data = SecKeyChain.QueryAsRecord (searchRecord, out SecStatusCode code);
 
 			if (code == SecStatusCode.ItemNotFound) {
 				// Fall back to looking for a password without use SecProtocol && SecAuthenticationType
 				searchRecord = new SecRecord (SecKind.InternetPassword) {
-					Service = Service,
-					Server = serverInfo.Host,
-					Path = serverInfo.Path
+					Service = searchRecord.Service,
+					Server = searchRecord.Server,
+					Path = searchRecord.Path,
+					Port = searchRecord.Port,
 				};
 
 				data = SecKeyChain.QueryAsRecord (searchRecord, out code);
@@ -205,33 +165,30 @@ namespace MonoDevelop.MacInterop
 
 			return data;
 		}
-	}
 
-	public class ServerInfo
-	{
 		static readonly string WebFormPassword = "Web form password";
 
-		public ServerInfo (Uri uri)
+		static SecRecord ToSecRecord (this Uri uri, string username = null, string password = null)
 		{
-			Account = Uri.UnescapeDataString (uri.UserInfo);
-			AuthenticationType = GetSecAuthenticationType (uri.Query);
-			Host = uri.Host;
-			Path = string.Join (string.Empty, uri.Segments);
-			Port = uri.Port;
-			Protocol = GetSecProtocolType (uri.Scheme);
+			var record = new SecRecord (SecKind.InternetPassword) {
+				Service = Service,
+				AuthenticationType = GetSecAuthenticationType (uri.Query),
+				Server = uri.Host,
+				Path = string.Join (string.Empty, uri.Segments),
+				Port = uri.Port,
+				Protocol = GetSecProtocolType (uri.Scheme),
+			};
+			record.Description = record.AuthenticationType == SecAuthenticationType.HtmlForm ? WebFormPassword : string.Empty;
 
-			Description = string.Empty;
-			if (AuthenticationType == SecAuthenticationType.HtmlForm)
-				Description = WebFormPassword;
+			username = username ?? Uri.UnescapeDataString (uri.UserInfo);
+			if (!string.IsNullOrEmpty (username))
+				record.Account = username;
+
+			if (password != null)
+				record.ValueData = NSData.FromString (password);
+
+			return record;
 		}
-
-		public string Account { get; set; }
-		public SecAuthenticationType AuthenticationType { get; set; }
-		public string Host { get; set; }
-		public string Path { get; set; }
-		public int Port { get; set; }
-		public SecProtocol Protocol { get; set; }
-		public string Description { get; set; }
 
 		static SecProtocol GetSecProtocolType (string protocol)
 		{
