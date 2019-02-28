@@ -56,6 +56,9 @@ namespace MonoDevelop.MacInterop
 					Protocol = serverInfo.Protocol,
 					ValueData = passwd
 				};
+				// set account from Uri
+				if (!string.IsNullOrEmpty (serverInfo.Account))
+					record.Account = serverInfo.Account;
 
 				SecStatusCode result = SecKeyChain.Add (record);
 
