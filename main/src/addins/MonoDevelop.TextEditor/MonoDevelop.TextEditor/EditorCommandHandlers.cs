@@ -75,10 +75,13 @@ namespace MonoDevelop.TextEditor.Cocoa
         ICommandHandler<UpKeyCommandArgs>,
         ICommandHandler<WordDeleteToEndCommandArgs>,
         ICommandHandler<WordDeleteToStartCommandArgs>,
-        ICommandHandler<FindReferencesCommandArgs>,
+        ICommandHandler<FindReferencesCommandArgs>
+#if !WINDOWS
+        ,
 		ICommandHandler<ProvideEditorFeedbackCommandArgs>,
 		ICommandHandler<DisableEditorPreviewCommandArgs>,
 		ICommandHandler<LearnAboutTheEditorCommandArgs>
+#endif
 	{
         [Import]
         private IEditorOperationsFactoryService OperationsService { get; set; }
@@ -475,6 +478,8 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		#region Preview Editor Commands
 
+#if !WINDOWS
+
 		CommandState ICommandHandler<ProvideEditorFeedbackCommandArgs>.GetCommandState (ProvideEditorFeedbackCommandArgs args)
 			=> CommandState.Available;
 
@@ -502,6 +507,8 @@ namespace MonoDevelop.TextEditor.Cocoa
 			return true;
 		}
 
-		#endregion
+#endif
+
+#endregion
 	}
 }
