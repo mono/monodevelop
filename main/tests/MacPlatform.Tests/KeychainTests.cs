@@ -84,47 +84,72 @@ namespace MacPlatform.Tests
 		[Test]
 		public void InternetPassword_Remove ()
 		{
+			string passwordNoUser = password + "nouser";
+
 			var uriBase = new Uri ("http://google.com");
 			var uri1 = new Uri ("http://user1@google.com");
 			var uri2 = new Uri ("http://user2@google.com");
-			var uri3 = new Uri ("http://user2@google.com");
+			var uri3 = new Uri ("http://google.com/path");
 
-			Keychain.AddInternetPassword (uriBase, password);
-			Keychain.AddInternetPassword (uri1, "user1", password);
-			Keychain.AddInternetPassword (uri2, "user2", password);
-			Keychain.AddInternetPassword (uri3, "user3", password);
+			try {
+				Keychain.AddInternetPassword (uriBase, passwordNoUser);
+				Keychain.AddInternetPassword (uri1, password);
+				Keychain.AddInternetPassword (uri2, password);
+				Keychain.AddInternetPassword (uri3, "user2", password);
 
-			AssertKeychain (uriBase, null, password, password);
-			AssertKeychain (uri1, null, password, password);
-			AssertKeychain (uri2, null, password, password);
-			AssertKeychain (uri3, null, password, password);
+				AssertKeychain (uriBase, null, passwordNoUser, passwordNoUser);
+				AssertKeychain (uri1, "user1", password, password);
+				AssertKeychain (uri2, "user2", password, password);
+				AssertKeychain (uri3, "user2", password, password);
 
-			// We removed the password for null user
-			Keychain.RemoveInternetPassword (uriBase);
-			AssertKeychain (uriBase, "user1", password, password);
-			AssertKeychain (uri1, "user1", password, password);
-			AssertKeychain (uri2, "user1", password, password);
-			AssertKeychain (uri3, "user1", password, password);
+				Keychain.RemoveInternetPassword (uriBase);
+				// We removed the password for the entry without user
+				// The next best match for uriBase should be "user1" from uri1
+				AssertKeychain (uriBase, "user1", password, password);
+				AssertKeychain (uri1, "user1", password, password);
+				AssertKeychain (uri2, "user2", password, password);
+				AssertKeychain (uri3, "user2", password, password);
 
-			// We removed user and pass for user1.
-			Keychain.RemoveInternetUserNameAndPassword (uri1);
-			AssertKeychain (uriBase, "user2", password, password);
-			AssertKeychain (uri1, "user2", password, null);
-			AssertKeychain (uri2, "user2", password, password);
-			AssertKeychain (uri3, "user2", password, password);
+				Keychain.RemoveInternetUserNameAndPassword (uri1);
+				// We removed user and pass for user1.
+				// The next best match for uriBase "user2" from uri2 now
+				AssertKeychain (uriBase, "user2", password, password);
+				// uri1 has no other match, because the user name is specified in the url
+				AssertKeychain (uri1, null, null, null);
+				AssertKeychain (uri2, "user2", password, password);
+				AssertKeychain (uri3, "user2", password, password);
 
-			// We removed user and pass for non-user
-			Keychain.RemoveInternetPassword (uri2);
-			AssertKeychain (uriBase, "user3", password, password);
-			AssertKeychain (uri1, "user3", password, null);
-			AssertKeychain (uri2, "user3", password, null);
-			AssertKeychain (uri2, "user3", password, null);
+				Keychain.RemoveInternetUserNameAndPassword (uri2);
+				AssertKeychain (uriBase, null, null, null);
+				AssertKeychain (uri1, null, null, null);
+				AssertKeychain (uri2, null, null, null);
+				AssertKeychain (uri3, "user2", password, password);
 
-			Keychain.RemoveInternetUserNameAndPassword (uri3);
-			AssertKeychain (uriBase, null, null, null);
-			AssertKeychain (uri1, null, null, null);
-			AssertKeychain (uri2, null, null, null);
-			AssertKeychain (uri2, null, null, null);
+				Keychain.RemoveInternetUserNameAndPassword (uri3);
+				// We removed all entries
+				AssertKeychain (uriBase, null, null, null);
+				AssertKeychain (uri1, null, null, null);
+				AssertKeychain (uri2, null, null, null);
+				AssertKeychain (uri3, null, null, null);
+			} finally {
+				Keychain.RemoveInternetPassword (uriBase);
+				Keychain.RemoveInternetPassword (uri1);
+				Keychain.RemoveInternetPassword (uri2);
+				Keychain.RemoveInternetPassword (uri3);
+				Keychain.RemoveInternetUserNameAndPassword (uriBase);
+				Keychain.RemoveInternetUserNameAndPassword (uri1);
+				Keychain.RemoveInternetUserNameAndPassword (uri2);
+				Keychain.RemoveInternetUserNameAndPassword (uri3);
+
+				Assert.IsNull (Keychain.FindInternetPassword (uriBase));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uriBase));
+				Assert.IsNull (Keychain.FindInternetPassword (uri1));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uri1));
+				Assert.IsNull (Keychain.FindInternetPassword (uri2));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uri2));
+				Assert.IsNull (Keychain.FindInternetPassword (uri3));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uri3));
+			}
 
 			void AssertKeychain (Uri uri, string expectedUser, string expectedUserPassword, string expectedPassword)
 			{
