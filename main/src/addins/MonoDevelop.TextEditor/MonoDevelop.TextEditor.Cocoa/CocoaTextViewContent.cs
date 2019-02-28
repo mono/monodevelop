@@ -35,6 +35,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
+using Microsoft.VisualStudio.Text.Editor.Implementation;
 
 namespace MonoDevelop.TextEditor
 {
@@ -72,16 +73,79 @@ namespace MonoDevelop.TextEditor
 	{
 		ICocoaTextViewHost textViewHost;
 		NSView textViewHostControl;
+		EmbeddedNSViewControl embeddedControl;
 
 		sealed class EmbeddedNSViewControl : Control
 		{
+			readonly ICocoaTextViewHost textViewHost;
 			readonly NSView nsView;
 
-			public EmbeddedNSViewControl (NSView nsView)
-				=> this.nsView = nsView;
+			bool nativeViewNeedsFocus;
+
+			public Gtk.Widget GtkView { get; }
+
+			public bool IsGrabbingFocus { get; private set; }
+
+			public EmbeddedNSViewControl (ICocoaTextViewHost textViewHost)
+			{
+				this.textViewHost = textViewHost ?? throw new ArgumentNullException (nameof (textViewHost));
+				this.nsView = textViewHost.HostControl;
+
+				GtkView = this.GetNativeWidget<Gtk.Widget> ();
+				GtkView.CanFocus = true;
+
+				textViewHost.HostControlMovedToWindow += OnNativeViewMovedToWindow;
+			}
+
+			protected override void Dispose (bool disposing)
+			{
+				if (disposing)
+					textViewHost.HostControlMovedToWindow -= OnNativeViewMovedToWindow;
+
+				base.Dispose (disposing);
+			}
 
 			protected override object CreateNativeWidget<T> ()
 				=> nsView;
+
+			// NOTE: Doesn't seem to be used in any vital way?
+			public override bool HasFocus => base.HasFocus;
+
+			public override void GrabFocus ()
+			{
+				if (IsGrabbingFocus)
+					return;
+
+				IsGrabbingFocus = true;
+				GtkView.GrabFocus ();
+
+				if (nsView.Window != null)
+					FocusEditor ();
+				else
+					nativeViewNeedsFocus = true;
+			}
+
+			private void OnNativeViewMovedToWindow (object sender, EventArgs e)
+			{
+				if (!nativeViewNeedsFocus || nsView.Window == null)
+					return;
+
+				FocusEditor ();
+			}
+
+			private void FocusEditor ()
+			{
+				// We really want the nsView (our grid view) to be first responder,
+				// so focus returns to find widget or whatever. But it's not working
+				// for some reason I can't figure out.
+				//if (!nsView.Window.MakeFirstResponder (nsView))
+				textViewHost.TextView.Focus ();
+
+				// This is necessary to get focus back when using the navigation/breadcrumb bar
+				nsView.Window.MakeKeyAndOrderFront (nsView.Window);
+
+				IsGrabbingFocus = false;
+			}
 		}
 
 		public CocoaTextViewContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
@@ -100,15 +164,19 @@ namespace MonoDevelop.TextEditor
 			textViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			textViewHostControl = textViewHost.HostControl;
 
-			var control = new EmbeddedNSViewControl (textViewHostControl);
-			control.GetNativeWidget<Gtk.Widget> ().CanFocus = true;
+			embeddedControl = new EmbeddedNSViewControl (textViewHost);
 			TextView.GotAggregateFocus += (sender, e) => {
-				control.GetNativeWidget<Gtk.Widget> ().GrabFocus ();
+				if (!embeddedControl.IsGrabbingFocus)
+					embeddedControl.GtkView.GrabFocus ();
 			};
-			TextView.Properties.AddProperty (typeof (Gtk.Widget), control.GetNativeWidget<Gtk.Widget> ());
+			TextView.Properties.AddProperty (typeof (Gtk.Widget), embeddedControl.GtkView);
 
-			return control;
+			return embeddedControl;
 		}
+
+		public override void GrabFocus ()
+			=> embeddedControl.GrabFocus ();
+
 
 		public override void Dispose ()
 		{
