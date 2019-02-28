@@ -451,7 +451,7 @@ namespace MonoDevelop.CSharp.Completion.Provider
 				eol = editor?.EolMarker ?? "\n";
 			}
 
-			if (editor.TextView is Microsoft.VisualStudio.Text.Editor.IMdTextView)
+			if (editor?.TextView is Microsoft.VisualStudio.Text.Editor.IMdTextView)
 				await Runtime.RunInMainThread (GetText);
 			else
 				GetText ();
