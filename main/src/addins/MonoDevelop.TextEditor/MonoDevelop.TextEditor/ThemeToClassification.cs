@@ -168,7 +168,7 @@ namespace MonoDevelop.TextEditor
 				settingsMap[setting.Name] = setting;
 			}
 			CreatePlainText (editorFormat, defaultSettings);
-			CreateLineNumber (editorFormat, defaultSettings);
+			CreateLineNumberAndSuggestion (editorFormat, defaultSettings);
 			CreateOutlining (editorFormat, defaultSettings);
 			CreateCaret (editorFormat, defaultSettings);
 			CreateSelection (editorFormat, defaultSettings);
@@ -322,22 +322,26 @@ namespace MonoDevelop.TextEditor
 			editorFormat.SetProperties (vsName, resourceDictionary);
 		}
 
-		static void CreateLineNumber (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
+		static readonly string [] editorFormatDefinitionNamesForLineNumberMarginTheme = { "Line Number", "Suggestion Margin" };
+
+		static void CreateLineNumberAndSuggestion (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
 		{
-			var resourceDictionary = editorFormat.GetProperties ("Line Number");
-			if (defaultSettings.TryGetColor ("gutterForeground", out var foregroundColor)) {
-				var (r, g, b, a) = foregroundColor.ToRgba ();
-				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
-				resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
+			foreach (var definitionName in editorFormatDefinitionNamesForLineNumberMarginTheme) {
+				var resourceDictionary = editorFormat.GetProperties (definitionName);
+				if (defaultSettings.TryGetColor ("gutterForeground", out var foregroundColor)) {
+					var (r, g, b, a) = foregroundColor.ToRgba ();
+					var c = Color.FromArgb (a, r, g, b);
+					resourceDictionary [EditorFormatDefinition.ForegroundColorId] = c;
+					resourceDictionary [EditorFormatDefinition.ForegroundBrushId] = new SolidColorBrush (c);
+				}
+				if (defaultSettings.TryGetColor ("gutter", out var backgroundColor)) {
+					var (r, g, b, a) = backgroundColor.ToRgba ();
+					var c = Color.FromArgb (a, r, g, b);
+					resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
+					resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
+				}
+				editorFormat.SetProperties (definitionName, resourceDictionary);
 			}
-			if (defaultSettings.TryGetColor ("gutter", out var backgroundColor)) {
-				var (r, g, b, a) = backgroundColor.ToRgba ();
-				var c = Color.FromArgb (a, r, g, b);
-				resourceDictionary [EditorFormatDefinition.BackgroundColorId] = c;
-				resourceDictionary [EditorFormatDefinition.BackgroundBrushId] = new SolidColorBrush (c);
-			}
-			editorFormat.SetProperties ("Line Number", resourceDictionary);
 		}
 
 		void CreatePlainText (IEditorFormatMap editorFormat, ThemeSetting defaultSettings)
