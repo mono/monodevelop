@@ -27,6 +27,8 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <IncludeCopyLocal Include="System.Collections.Immutable.dll" />
+    <IncludeCopyLocal Include="System.Reflection.Metadata.dll" />
     <IncludeCopyLocal Include="FSharp.Compiler.Interactive.Settings.dll" />
   </ItemGroup>
   <ItemGroup>
