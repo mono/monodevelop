@@ -348,9 +348,14 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null)
-					dialog.Shown += HandleShown;
-				else
+				if (NSApplication.SharedApplication.ModalWindow != null) {
+					EventHandler shownHandler = null;
+					shownHandler = (s,e) => {
+						ShowCustomModalDialog (dialog, parent);
+						dialog.Shown -= shownHandler;
+					};
+					dialog.Shown += shownHandler;
+				} else
 					PlaceDialog (dialog, parent);
 			}).Wait ();
 			#endif
@@ -373,11 +378,11 @@ namespace MonoDevelop.Ide
 		}
 
 		#if MAC
-		static void HandleShown (object sender, EventArgs e)
+		static void ShowCustomModalDialog (Gtk.Window dialog, Window parent)
 		{
-			var dialog = (Gtk.Window)sender;
-			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
+			CenterWindow (dialog, parent);
 
+			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
 			// Make the GTK window modal WRT the current modal NSWindow
 			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
 
@@ -387,7 +392,6 @@ namespace MonoDevelop.Ide
 				dialog.Unrealized -= unrealizer;
 			};
 			dialog.Unrealized += unrealizer;
-			dialog.Shown -= HandleShown;
 		}
 		#endif
 		
@@ -596,7 +600,6 @@ namespace MonoDevelop.Ide
 					Caption = caption,
 					Value = initialValue,
 					IsPassword = isPassword,
-					TransientFor = parent ?? DesktopService.GetParentForModalWindow ()
 				};
 				if (dialog.Run ())
 					return dialog.Value;
