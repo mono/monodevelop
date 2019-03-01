@@ -130,7 +130,7 @@ namespace MonoDevelop.MacInterop
 			if (record != null) {
 				SecStatusCode result = SecKeyChain.Remove (record);
 
-				if (result == SecStatusCode.Success)
+				if (result != SecStatusCode.Success)
 					throw new Exception ("Could not delete internet password from keychain: " + result.GetStatusDescription ());
 			}
 		}
