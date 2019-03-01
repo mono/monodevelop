@@ -376,7 +376,7 @@ namespace MonoDevelop.Ide
 					}
 				} else if (file.FileName.HasExtension ("mpack")) {
 					var service = new SetupService (AddinManager.Registry);
-					AddinManagerWindow.RunToInstallFile (Workbench.RootWindow,
+					AddinManagerWindow.RunToInstallFile (Workbench.RootWindow.Visible ? Workbench.RootWindow : null,
 					                                     service,
 					                                     file.FileName.FullPath);
 				} else {
