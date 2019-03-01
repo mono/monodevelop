@@ -131,6 +131,8 @@ namespace Mono.TextEditor
             editorOptions = this.factoryService.EditorOptionsFactoryService.GetOptions (this);
 			editorOptions.Parent = parentOptions;
 
+			editorOptions.SetOptionValue ("UseAsyncCompletion", -1);
+
 			if (initialize)
 				this.Initialize ();
 		}
