@@ -174,8 +174,11 @@ namespace MonoDevelop.TextEditor
 			return embeddedControl;
 		}
 
-		public override void GrabFocus ()
-			=> embeddedControl.GrabFocus ();
+		public override void GrabFocus()
+		{ 
+			embeddedControl.GrabFocus();
+			base.GrabFocus();
+		}
 
 
 		public override void Dispose ()
