@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp
 			registration.WorkspaceChanged += WorkspaceChanged;
 
 			CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
-
+			isPathSet = false;
 			view.Caret.PositionChanged += CaretPositionChanged;
 			view.TextBuffer.PostChanged += TextBufferChanged;
 		}
@@ -527,7 +527,7 @@ namespace MonoDevelop.CSharp
 
 				if (curType == null) {
 					var prevPath = CurrentPath;
-					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = root });
+					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = root.SyntaxTree });
 					if (cancellationToken.IsCancellationRequested)
 						return;
 
