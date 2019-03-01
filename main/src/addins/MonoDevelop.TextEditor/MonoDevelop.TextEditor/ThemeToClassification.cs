@@ -193,7 +193,7 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "returnstatement", EditorThemeColors.DebuggerStackLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Indicator Margin", EditorThemeColors.IndicatorMargin);
 			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.ForegroundColorId);
-			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.Ruler);
+			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.IndentationGuide);
 			CreateRename (editorFormat, defaultSettings);
 			foreach (var mapping in mappings) {
 				if (settingsMap.TryGetValue (mapping.MDThemeSettingName, out var setting))
