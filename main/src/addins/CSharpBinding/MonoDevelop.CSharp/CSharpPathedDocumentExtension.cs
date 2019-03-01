@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp
 			CurrentPath = new PathEntry [] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 
 			view.Caret.PositionChanged += CaretPositionChanged;
-			view.TextBuffer.Changed += TextBufferChanged;
+			view.TextBuffer.PostChanged += TextBufferChanged;
 		}
 
 		private void WorkspaceChanged (object sender, EventArgs e)
@@ -93,10 +93,10 @@ namespace MonoDevelop.CSharp
 			disposed = true;
 			registration.WorkspaceChanged -= WorkspaceChanged;
 			textView.Caret.PositionChanged -= CaretPositionChanged;
-			textView.TextBuffer.Changed -= TextBufferChanged;
+			textView.TextBuffer.PostChanged -= TextBufferChanged;
 		}
 
-		void TextBufferChanged (object sender, TextContentChangedEventArgs e)
+		void TextBufferChanged (object sender, EventArgs e)
 		{
 			Update (textView.Caret.Position);
 		}
