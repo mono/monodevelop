@@ -23,19 +23,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
+
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects;
-using MonoDevelop.TextEditor;
-using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp
 {
@@ -241,6 +244,7 @@ namespace MonoDevelop.CSharp
 				//FIXME: use the snapshot that the nodes came from
 				var point = new VirtualSnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset);
 				EditorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+				editor.Properties.GetProperty<ViewContent> (typeof (ViewContent)).GrabFocus ();
 			}
 
 			public int IconCount {

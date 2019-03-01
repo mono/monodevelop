@@ -188,7 +188,7 @@ namespace MonoDevelop.Components
 			return null;
 		}
 
-		public void GrabFocus ()
+		public virtual void GrabFocus ()
 		{
 			if (nativeWidget is Gtk.Widget)
 				((Gtk.Widget)nativeWidget).GrabFocus ();
@@ -196,7 +196,7 @@ namespace MonoDevelop.Components
 		}
 
 
-		public bool HasFocus {
+		public virtual bool HasFocus {
 			get
 			{
 				// TODO
