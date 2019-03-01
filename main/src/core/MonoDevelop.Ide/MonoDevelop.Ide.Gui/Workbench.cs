@@ -59,6 +59,8 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui.Components;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Operations;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -67,6 +69,8 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public sealed class Workbench
 	{
+		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.GetExportedValue<IEditorOperationsFactoryService> ();
+
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		DefaultWorkbench workbench;
@@ -547,7 +551,7 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
+		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info, IEditorOperationsFactoryService operationsFactory)
 		{
 			if (info.Line < 1 && info.Offset < 0)
 				return;
@@ -573,8 +577,14 @@ namespace MonoDevelop.Ide.Gui
 							else
 								offset = line.Start;
 						}
-						textView.Caret.MoveTo (new SnapshotPoint (textView.TextSnapshot, offset));
-						textView.Caret.EnsureVisible ();
+
+						if (operationsFactory != null) {
+							var editorOperations = operationsFactory.GetEditorOperations (textView);
+							var point = new VirtualSnapshotPoint (textView.TextSnapshot, offset);
+							editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+						} else {
+							LoggingService.LogError ("Missing editor operations");
+						}
 					}
 				});
 			}
@@ -622,7 +632,7 @@ namespace MonoDevelop.Ide.Gui
 								doc.SetProject (info.Project);
 							}
 
-							ScrollToRequestedCaretLocation (doc, info);
+							ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService);
 
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
@@ -654,7 +664,7 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
 					
-					ScrollToRequestedCaretLocation (doc, info);
+					ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService);
 					
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						doc.RunWhenLoaded (() => {
