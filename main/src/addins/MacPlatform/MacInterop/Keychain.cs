@@ -35,8 +35,6 @@ namespace MonoDevelop.MacInterop
 {
 	public static class Keychain
 	{
-		static readonly string Service = "MonoDevelop";
-
 		public static void AddInternetPassword (Uri uri, string password)
 		{
 			// See if there is already a password there for this uri
@@ -168,7 +166,6 @@ namespace MonoDevelop.MacInterop
 		static SecRecord ToSecRecord (this Uri uri, string username = null, string password = null)
 		{
 			var record = new SecRecord (SecKind.InternetPassword) {
-				Service = Service,
 				Server = uri.Host,
 				Path = string.Join (string.Empty, uri.Segments),
 				Port = uri.Port,
