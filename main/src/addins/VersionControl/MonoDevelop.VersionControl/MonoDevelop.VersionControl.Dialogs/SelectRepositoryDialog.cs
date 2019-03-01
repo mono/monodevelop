@@ -38,6 +38,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			Build ();
 			
 			GtkWorkarounds.DisableMinimizeMaximizeButtons (this);
+			Modal = true;
 			foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
 				if (vcs.IsInstalled) {
 					repCombo.AppendText (vcs.Name);
