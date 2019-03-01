@@ -367,6 +367,9 @@ namespace MonoDevelop.TextEditor
 				?? (ContentName != null ? Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (ContentName) : null)
 				?? Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
+		public override ProjectReloadCapability ProjectReloadCapability
+			=> ProjectReloadCapability.Full;
+
 		void CaretPositionChanged (object sender, CaretPositionChangedEventArgs e)
 		{
 			TryLogNavPoint (true);
