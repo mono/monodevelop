@@ -151,12 +151,8 @@ namespace MonoDevelop.MacInterop
 
 			if (code == SecStatusCode.ItemNotFound) {
 				// Fall back to looking for a password without use SecProtocol && SecAuthenticationType
-				searchRecord = new SecRecord (SecKind.InternetPassword) {
-					Service = searchRecord.Service,
-					Server = searchRecord.Server,
-					Path = searchRecord.Path,
-					Port = searchRecord.Port,
-				};
+				searchRecord.Protocol = SecProtocol.Http; // Http is the default used by SecKeyChain internally
+				searchRecord.AuthenticationType = SecAuthenticationType.Default;
 
 				data = SecKeyChain.QueryAsRecord (searchRecord, out code);
 			}
