@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Mono.Addins;
-
 using Gtk;
-
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -1017,10 +1015,12 @@ namespace MonoDevelop.VersionControl.Views
 
 			if (found) {
 				if (!FileVisible (newInfo)) {
-					// Just remove the file from the change set
-					changeSet.RemoveFile (args.FilePath);
-					statuses.RemoveAt (oldStatusIndex);
-					filestore.Remove (ref oldStatusIter);
+					if (changeSet.GetFileItem (args.FilePath) != null) {
+						// Just remove the file from the change set
+						changeSet.RemoveFile (args.FilePath);
+						statuses.RemoveAt (oldStatusIndex);
+						filestore.Remove (ref oldStatusIter);
+					}
 					return true;
 				}
 
@@ -1034,7 +1034,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			else {
 				if (FileVisible (newInfo)) {
-					if (!statuses.Any(s => s.LocalPath == newInfo.LocalPath)) {
+					if (!statuses.Any (s => s.LocalPath.Equals (newInfo.LocalPath))) {
 						statuses.Add (newInfo);
 						changeSet.AddFile (newInfo);
 						AppendFileInfo (newInfo, wasExpanded);
