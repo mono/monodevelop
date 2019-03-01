@@ -387,6 +387,12 @@ tests/MonoDevelop.Core.Tests.Addin/Makefile
 tests/MonoDevelop.CSharpBinding.Tests/Makefile
 tests/MonoDevelop.Refactoring.Tests/Makefile
 tests/WindowsPlatform.Tests/Makefile
+tests/performance/Makefile
+tests/performance/PerfTool/Makefile
+tests/performance/MonoDevelop.Ide.PerfTests/Makefile
+tests/performance/MonoDevelop.PerformanceTesting/Makefile
+tests/ui/Makefile
+tests/ui/MonoDevelop.UserInterfaceTesting/Makefile
 Makefile
 monodevelop
 mdtool
