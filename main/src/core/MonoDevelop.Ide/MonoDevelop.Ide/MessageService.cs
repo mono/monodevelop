@@ -348,15 +348,16 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null) {
+				if (NSApplication.SharedApplication.ModalWindow != null || (parent.nativeWidget is NSWindow && dialog.Modal)) {
 					EventHandler shownHandler = null;
 					shownHandler = (s,e) => {
 						ShowCustomModalDialog (dialog, parent);
 						dialog.Shown -= shownHandler;
 					};
 					dialog.Shown += shownHandler;
-				} else
+				} else {
 					PlaceDialog (dialog, parent);
+				}
 			}).Wait ();
 			#endif
 
