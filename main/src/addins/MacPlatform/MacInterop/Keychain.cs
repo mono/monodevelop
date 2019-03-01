@@ -184,7 +184,8 @@ namespace MonoDevelop.MacInterop
 			if (authType != SecAuthenticationType.Default)
 				record.AuthenticationType = authType;
 
-			record.Description = record.AuthenticationType == SecAuthenticationType.HtmlForm ? WebFormPassword : string.Empty;
+			if (record.AuthenticationType == SecAuthenticationType.HtmlForm)
+				record.Description = WebFormPassword;
 
 			var account = Uri.UnescapeDataString (uri.UserInfo);
 			if (string.IsNullOrEmpty (account)) // account from Uri has always priority
