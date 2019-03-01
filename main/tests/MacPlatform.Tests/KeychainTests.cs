@@ -82,6 +82,58 @@ namespace MacPlatform.Tests
 			}
 		}
 
+		[TestCase (site, "", "path2")]
+		[TestCase (site, "path1", "path2")]
+		[TestCase (siteWithUser, "path1", "path2")]
+		public void InternetPassword_SameHostDifferentPath (string url, string path1, string path2)
+		{
+			var uri1 = new Uri (url + "/" + path1);
+			var uri2 = new Uri (url + "/" + path2);
+			var user1 = !string.IsNullOrEmpty (uri1.UserInfo) ? uri1.UserInfo : "user1";
+			var user2 = !string.IsNullOrEmpty (uri2.UserInfo) ? uri2.UserInfo : "user2";
+			var password1 = password + "1";
+			var password2 = password + "2";
+
+			if (!string.IsNullOrEmpty (uri1.UserInfo))
+				Keychain.AddInternetPassword (uri1, password1);
+			else
+				Keychain.AddInternetPassword (uri1, user1, password1);
+
+			if (!string.IsNullOrEmpty (uri2.UserInfo))
+				Keychain.AddInternetPassword (uri2, password2);
+			else
+				Keychain.AddInternetPassword (uri2, user2, password2);
+
+			try {
+				var foundPassword1 = Keychain.FindInternetPassword (uri1);
+				var foundPasswordAndUser1 = Keychain.FindInternetUserNameAndPassword (uri1);
+				var foundPassword2 = Keychain.FindInternetPassword (uri2);
+				var foundPasswordAndUser2 = Keychain.FindInternetUserNameAndPassword (uri2);
+
+				Assert.AreEqual (password1, foundPassword1);
+				Assert.AreEqual (user1, foundPasswordAndUser1.Item1);
+				Assert.AreEqual (password1, foundPasswordAndUser1.Item2);
+				Assert.AreEqual (password2, foundPassword2);
+				Assert.AreEqual (user2, foundPasswordAndUser2.Item1);
+				Assert.AreEqual (password2, foundPasswordAndUser2.Item2);
+			} finally {
+				Keychain.RemoveInternetPassword (uri1);
+				Keychain.RemoveInternetPassword (uri2);
+				if (!string.IsNullOrEmpty (uri1.UserInfo)) {
+					Keychain.RemoveInternetUserNameAndPassword (uri1);
+				}
+				if (!string.IsNullOrEmpty (uri2.UserInfo)) {
+					Keychain.RemoveInternetUserNameAndPassword (uri2);
+				}
+
+				Assert.IsNull (Keychain.FindInternetPassword (uri1));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uri1));
+
+				Assert.IsNull (Keychain.FindInternetPassword (uri2));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uri2));
+			}
+		}
+
 		[Test]
 		public void InternetPassword_Remove ()
 		{
