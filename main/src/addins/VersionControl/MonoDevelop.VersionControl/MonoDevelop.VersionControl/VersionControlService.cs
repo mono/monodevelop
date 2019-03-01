@@ -662,7 +662,7 @@ namespace MonoDevelop.VersionControl
 		
 		static public IEnumerable<VersionControlSystem> GetVersionControlSystems ()
 		{
-			foreach (VersionControlSystem vs in handlers)
+			foreach (VersionControlSystem vs in handlers.OrderBy(h => h.Name))
 				if (vs.IsInstalled)
 					yield return vs;
 		}
