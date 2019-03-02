@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
@@ -68,6 +69,16 @@ namespace MonoDevelop.Ide.RoslynServices
 			}));
 
 			Assert.AreEqual (2, x);
+		}
+
+		/// <summary>
+		/// This verifies that the Reflection logic in <see cref="DefaultSourceEditorOptions.SetUseAsyncCompletion(bool)"/>
+		/// is still compatible with the Roslyn build we're using
+		/// </summary>
+		[TestCase]
+		public void TestAsyncCompletionServiceReflection ()
+		{
+			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
 		}
 	}
 }

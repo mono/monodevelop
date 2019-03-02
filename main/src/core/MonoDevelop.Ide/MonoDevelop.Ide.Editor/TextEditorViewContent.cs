@@ -393,6 +393,7 @@ namespace MonoDevelop.Ide.Editor
 		public override void GrabFocus ()
 		{
 			textEditor.GrabFocus ();
+			DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
 		}
 	}
 }

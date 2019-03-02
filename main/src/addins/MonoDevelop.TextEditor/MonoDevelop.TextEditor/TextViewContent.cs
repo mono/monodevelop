@@ -125,6 +125,12 @@ namespace MonoDevelop.TextEditor
 			SubscribeToEvents ();
 		}
 
+		public override void GrabFocus ()
+		{
+			Ide.Editor.DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
+			base.GrabFocus ();
+		}
+
 		protected override void OnContentNameChanged ()
 		{
 			base.OnContentNameChanged ();
