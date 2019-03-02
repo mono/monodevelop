@@ -273,8 +273,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			// unnecessarily, as it will be immediately removed anyway.
 			TryOpenDocumentInWorkspace (e, filePath, textBuffer);
 
-			// If the primary workspace didn't claim the document notify the miscellaneous workspace
-			miscellaneousFilesWorkspace.OnDocumentOpened (filePath, textBuffer);
+			// Only use misc workspace with the new editor; old editor has its own
+			if (e.Document.Editor == null) {
+				// If the primary workspace didn't claim the document notify the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentOpened (filePath, textBuffer);
+			}
 		}
 
 		private static void TryOpenDocumentInWorkspace (Gui.DocumentEventArgs e, FilePath filePath, ITextBuffer textBuffer)
@@ -333,10 +336,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			}
 
-			// In the common case the primary workspace will own the document, so shut down
-			// miscellaneous workspace first to avoid adding and then immediately removing
-			// the document to the miscellaneous workspace
-			miscellaneousFilesWorkspace.OnDocumentClosed (filePath, textBuffer);
+			// Only use misc workspace with the new editor; old editor has its own
+			if (e.Document.Editor == null) {
+				// In the common case the primary workspace will own the document, so shut down
+				// miscellaneous workspace first to avoid adding and then immediately removing
+				// the document to the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentClosed (filePath, textBuffer);
+			}
 
 			TryCloseDocumentInWorkspace (filePath, project);
 		}
