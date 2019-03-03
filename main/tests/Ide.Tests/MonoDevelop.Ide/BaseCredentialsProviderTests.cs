@@ -26,11 +26,13 @@
 using System;
 using NUnit.Framework;
 using System.IO;
+using UnitTests;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Core
+namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	public abstract class BaseCredentialsProviderTests
+	public abstract class BaseCredentialsProviderTests : IdeTestBase
 	{
 		static readonly string mockUser = "md_test_" + Guid.NewGuid ();
 		static readonly Uri mockUrl = new Uri ("ftp://" + Path.GetRandomFileName () + ".randomdomain");
