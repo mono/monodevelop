@@ -82,6 +82,59 @@ namespace MacPlatform.Tests
 			}
 		}
 
+		[TestCase (site, null, null, null, Description = "No User, Password Only")]
+		[TestCase (site, "user", "user", "user", Description = "User unchanged, Password Only")]
+		[TestCase (site, null, "user2", "user2", Description = "Add User")]
+		[TestCase (site, "user", "user2", "user2", Description = "Update User and Password")]
+		[TestCase (siteWithPath, null, null, null, Description = "With Path, No User, Password Only")]
+		[TestCase (siteWithPath, "user", "user", "user", Description = "With Path, User unchanged, Password Only")]
+		[TestCase (siteWithPath, null, "user2", "user2", Description = "Add User")]
+		[TestCase (siteWithPath, "user", "user2", "user2", Description = "With Path, Update User and Password")]
+		[TestCase (siteWithUser, null, null, "user", Description = "Fixed User, Password Only")]
+		[TestCase (siteWithUser, "user", "user2", "user", Description = "Fixed User, User and Password")]
+		public void InternetPassword_AddUpdateRemove (string url, string user, string updateUser, string expectedUsername)
+		{
+			var uri = new Uri (url);
+			var updatePassword = password + "Update";
+
+			if (user != null) {
+				Keychain.AddInternetPassword (uri, user, password);
+			} else {
+				Keychain.AddInternetPassword (uri, password);
+			}
+
+			try {
+				var foundPassword = Keychain.FindInternetPassword (uri);
+				var passAndUser = Keychain.FindInternetUserNameAndPassword (uri);
+
+				Assert.AreEqual (password, foundPassword);
+				if (user != null)
+					Assert.AreEqual (user, passAndUser.Item1);
+				Assert.AreEqual (password, passAndUser.Item2);
+
+				if (updateUser != null) {
+					Keychain.AddInternetPassword (uri, updateUser, updatePassword);
+				} else {
+					Keychain.AddInternetPassword (uri, updatePassword);
+				}
+
+				foundPassword = Keychain.FindInternetPassword (uri);
+				passAndUser = Keychain.FindInternetUserNameAndPassword (uri);
+
+				Assert.AreEqual (updatePassword, foundPassword);
+				Assert.AreEqual (expectedUsername, passAndUser.Item1);
+				Assert.AreEqual (updatePassword, passAndUser.Item2);
+			} finally {
+				Keychain.RemoveInternetPassword (uri);
+				if (!string.IsNullOrEmpty (uri.UserInfo)) {
+					Keychain.RemoveInternetUserNameAndPassword (uri);
+				}
+
+				Assert.IsNull (Keychain.FindInternetPassword (uri));
+				Assert.IsNull (Keychain.FindInternetUserNameAndPassword (uri));
+			}
+		}
+
 		[TestCase (site, "", "path2")]
 		[TestCase (site, "path1", "path2")]
 		[TestCase (siteWithUser, "path1", "path2")]
