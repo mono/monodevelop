@@ -73,10 +73,9 @@ namespace MonoDevelop.MacInterop
 				return;
 			}
 
-			record.ValueData = NSData.FromString (password);
-
 			// If there is, replace it with the new one
-			SecKeyChain.Update (searchRecord, record);
+			var update = uri.ToSecRecord (username, password);
+			SecKeyChain.Update (record, update);
 		}
 
 		public static string FindInternetPassword (Uri url)
