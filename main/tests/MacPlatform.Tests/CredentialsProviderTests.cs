@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using AppKit;
 using NUnit.Framework;
 
 namespace MacPlatform.Tests
 {
 	[TestFixture]
-	public class CredentialsProviderTests : MonoDevelop.Core.BaseCredentialsProviderTests
+	public class CredentialsProviderTests : MonoDevelop.Ide.BaseCredentialsProviderTests
 	{
 		protected override MonoDevelop.Core.IPasswordProvider GetPasswordProvider ()
 		{
