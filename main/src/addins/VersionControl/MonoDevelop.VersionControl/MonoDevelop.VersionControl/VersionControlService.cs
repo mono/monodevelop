@@ -113,7 +113,7 @@ namespace MonoDevelop.VersionControl
 
 			if (args.Change == ExtensionChange.Add) {
 				IComparer<VersionControlSystem> compare = new CompareVersionControlSystem ();
-				handlers.Sort (compare.Compare);
+		
 				int search = handlers.BinarySearch (vcs, compare);
 
 				if (search < 0)

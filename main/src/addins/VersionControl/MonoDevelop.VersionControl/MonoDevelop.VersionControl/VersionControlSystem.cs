@@ -134,30 +134,15 @@ namespace MonoDevelop.VersionControl
 			if (ReferenceEquals (vcs1, vcs2)) {
 				result = 0;
 			} else {
-				if (vcs1 == null) {
+				if (vcs1 is null) {
 					result = 1;
-				} else if (vcs2 == null) {
+				} else if (vcs2 is null) {
 					result = -1;
 				} else {
-					result = StringCompare (vcs1.Name, vcs2.Name);
+					result = string.Compare(vcs1.Name, vcs2.Name, StringComparison.InvariantCultureIgnoreCase);
 				}
 			}
 
-			return result;
-		}
-
-		int StringCompare (string strFirstString, string secondString)
-		{
-			int result;
-			if (strFirstString == null) {
-				if (secondString == null) {
-					result = 0;
-				} else {
-					result = 1;
-				}
-			} else {
-				result = string.Compare(strFirstString, secondString, StringComparison.InvariantCultureIgnoreCase);
-			}
 			return result;
 		}
 	}
