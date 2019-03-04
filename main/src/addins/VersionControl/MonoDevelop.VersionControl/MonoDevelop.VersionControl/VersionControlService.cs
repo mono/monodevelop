@@ -126,6 +126,8 @@ namespace MonoDevelop.VersionControl
 			else {
 				handlers.Remove (vcs);
 			}
+
+			handlers = handlers.OrderBy (h => h.Name).ToList();
 		}
 		
 		public static Xwt.Drawing.Image LoadOverlayIconForStatus(VersionStatus status)
@@ -662,7 +664,7 @@ namespace MonoDevelop.VersionControl
 		
 		static public IEnumerable<VersionControlSystem> GetVersionControlSystems ()
 		{
-			foreach (VersionControlSystem vs in handlers.OrderBy(h => h.Name))
+			foreach (VersionControlSystem vs in handlers)
 				if (vs.IsInstalled)
 					yield return vs;
 		}
