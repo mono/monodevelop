@@ -244,13 +244,18 @@ namespace Mono.TextEditor
 
 				var oldCaretLine = data.Caret.Location.Line;
 
-				string indentString = data.GetIndentationString (data.Caret.Location);
 				data.InsertAtCaret (data.EolMarker);
-
-				// Don't insert the indent string if the EOL insertion modified the caret location in an unexpected fashion
-				//  (This likely means someone has custom logic regarding insertion of the EOL)
-				if (data.Caret.Location.Line == oldCaretLine + 1 && data.Caret.Location.Column == 1)
-					data.InsertAtCaret (indentString);
+				if (data.HasIndentationTracker) {
+					// Don't insert the indent string if the EOL insertion modified the caret location in an unexpected fashion
+					//  (This likely means someone has custom logic regarding insertion of the EOL)
+					if (data.Caret.Location.Line == oldCaretLine + 1 && data.Caret.Location.Column == 1) {
+						var indentString = data.IndentationTracker.GetIndentationString (data.Caret.Line);
+						var line = data.GetLine (data.Caret.Line);
+						var currentIndent = line.GetIndentation (data.Document);
+						if (indentString !=  currentIndent)
+							data.Replace (line.Offset, currentIndent.Length, indentString);
+					}
+				}
 			}
 		}
 		
