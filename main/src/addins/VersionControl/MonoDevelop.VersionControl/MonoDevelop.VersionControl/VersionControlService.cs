@@ -261,7 +261,7 @@ namespace MonoDevelop.VersionControl
 			} catch (Exception e) {
 				// ArgumentNullException for "result" is expected when GetRepositoryReference returns null, no need to log
 				if (!(e is ArgumentNullException ne) || ne.ParamName != "result")
-					LoggingService.LogError ($"Could not query {detectedVCS.Name} repository reference", e);
+					LoggingService.LogInternalError ($"Could not query {detectedVCS.Name} repository reference", e);
 				return null;
 			}
 		}
