@@ -238,6 +238,8 @@
     <EmbeddedResource Include="icons\lightning-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\lightning-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\lightning-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\exception-caught-template-16.png" />
+    <EmbeddedResource Include="icons\exception-caught-template-16%402x.png" />
     <EmbeddedResource Include="icons\exception-48~dark.png" />
     <EmbeddedResource Include="icons\exception-48~dark%402x.png" />
     <EmbeddedResource Include="icons\gutter-breakpoint-15.png" />
