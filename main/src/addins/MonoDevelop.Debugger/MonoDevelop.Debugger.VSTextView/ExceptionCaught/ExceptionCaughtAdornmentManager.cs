@@ -4,12 +4,15 @@ using CoreGraphics;
 using Foundation;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.UI;
+using Microsoft.VisualStudio.UI.Controls;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Mac;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TextEditing;
+using GettextCatalog = MonoDevelop.Core.GettextCatalog;
 
 namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 {
@@ -70,7 +73,9 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			if (!textView.TextViewLines.FormattedSpan.IntersectsWith (span))
 				return;
 			var charBound = textView.TextViewLines.GetCharacterBounds (span.End);
-			view.SetFrameOrigin (new CGPoint (charBound.Left, charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2));
+			view.SetFrameOrigin (new CGPoint (
+				Math.Round (charBound.Left),
+				Math.Round (charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2)));
 			_exceptionCaughtLayer.RemoveAllAdornments ();
 			_exceptionCaughtLayer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, null, view, null);
 		}
@@ -80,75 +85,173 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			RenderAdornment (extension);
 		}
 
-		private NSView CreateMiniButton (ExceptionCaughtMiniButton miniButton)
+		static NSImage GetIcon(string iconName, bool tint)
 		{
-			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
-			var nsButton = new NSButton ();
-			nsButton.Image = icon.ToNSImage ();
-			nsButton.SetFrameSize (nsButton.FittingSize);
-			nsButton.Bordered = false;
+			var image = ImageService.GetIcon (iconName)?.ToNSImage ();
+			if (image != null) {
+				image.Template = true;
+				if (tint)
+					image = image.WithTint (NSColor.SystemOrangeColor);
+			}
+			return image;
+		}
+
+		class VSHandButton : NSButton
+		{
+			public VSHandButton()
+			{
+				Bordered = false;
+
+				AddTrackingArea (new NSTrackingArea (
+					default,
+					NSTrackingAreaOptions.ActiveInKeyWindow |
+					NSTrackingAreaOptions.InVisibleRect |
+					NSTrackingAreaOptions.MouseEnteredAndExited |
+					NSTrackingAreaOptions.CursorUpdate,
+					this,
+					null));
+			}
+
+			public override void CursorUpdate (NSEvent theEvent)
+				=> NSCursor.PointingHandCursor.Set ();
+		}
+
+		class VSLinkLabelButton : VSHandButton
+		{
+			public VSLinkLabelButton(string title)
+			{
+				// terminate the string with a zero-width-non-breaking-space to
+				// work around a bug in AppKit where the last character does not
+				// have the underline style applied to it when rendered.
+				var attributedTitle = new NSMutableAttributedString (title + "\uFEFF");
+				var range = new NSRange (0, attributedTitle.Length);
+				attributedTitle.AddAttribute (NSStringAttributeKey.Link, new NSUrl ("#"), range);
+				AttributedTitle = attributedTitle;
+			}
+		}
+
+		class ExceptionCaughtPopoverView : VSPopoverView
+		{
+			public ExceptionCaughtPopoverView()
+			{
+				AcceptsTouchEvents = true;
+
+				AddTrackingArea (new NSTrackingArea (
+					default,
+					NSTrackingAreaOptions.ActiveInKeyWindow |
+					NSTrackingAreaOptions.InVisibleRect |
+					NSTrackingAreaOptions.MouseEnteredAndExited |
+					NSTrackingAreaOptions.MouseMoved |
+					NSTrackingAreaOptions.CursorUpdate,
+					this,
+					null));
+			}
+
+			public override void CursorUpdate (NSEvent theEvent)
+				=> NSCursor.ArrowCursor.Set ();
+
+			public override bool AcceptsFirstMouse (NSEvent theEvent)
+				=> true;
+
+			public override void MouseEntered (NSEvent theEvent) { }
+			public override void MouseExited (NSEvent theEvent) { }
+			public override void MouseMoved (NSEvent theEvent) { }
+		}
+
+		static NSView CreateMiniButton (ExceptionCaughtMiniButton miniButton)
+		{
+			var image = GetIcon ("md-exception-caught-template", tint: true);
+
+			var nsButton = new VSHandButton {
+				Image = image,
+				TranslatesAutoresizingMaskIntoConstraints = false
+			};
+
+			nsButton.SetContentCompressionResistancePriority (1, NSLayoutConstraintOrientation.Horizontal);
+			nsButton.SetContentCompressionResistancePriority (1, NSLayoutConstraintOrientation.Vertical);
+			nsButton.WidthAnchor.ConstraintEqualToConstant (image.Size.Width + 8).Active = true;
+			nsButton.HeightAnchor.ConstraintEqualToConstant (image.Size.Height + 8).Active = true;
+
 			nsButton.Activated += delegate {
 				miniButton.dlg.ShowButton ();
 			};
-			nsButton.Cell.BackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor.ToNSColor();
-			return nsButton;
+
+			return new ExceptionCaughtPopoverView {
+				ContentView = nsButton,
+				CornerRadius = 3,
+				Material = NSVisualEffectMaterial.WindowBackground
+			};
 		}
 
-		private NSView CreateButton (ExceptionCaughtButton button)
+		static NSView CreateButton (ExceptionCaughtButton button)
 		{
-			var box = new NSGridView ();
-			var ligthingImage = new NSImageView { Image = Xwt.Drawing.Image.FromResource ("lightning-16.png").ToNSImage () };
-			ligthingImage.TranslatesAutoresizingMaskIntoConstraints = false;
-			box.AddColumn (new [] { ligthingImage });
+			var box = new NSGridView {
+				ColumnSpacing = 8,
+				RowSpacing = 8
+			};
+
+			var lightningImage = new NSImageView {
+				Image = GetIcon ("md-exception-caught-template", tint: true)
+			};
+			box.AddColumn (new [] { lightningImage });
 
 			var typeLabel = CreateTextField ();
 			var messageLabel = CreateTextField ();
+			var detailsButton = new VSLinkLabelButton (
+				GettextCatalog.GetString ("Show Details"));
+			detailsButton.Activated += (o, e) => button.dlg.ShowDialog ();
+			box.AddColumn (new NSView[] { typeLabel, messageLabel, detailsButton });
 
-			var detailsBtn = new NSButton {
+			var closeButton = new NSButton {
+				Image = GetIcon ("md-popup-close", tint: false),
+				BezelStyle = NSBezelStyle.SmallSquare,
 				Bordered = false
 			};
-			detailsBtn.AttributedTitle = new NSAttributedString (GettextCatalog.GetString ("Show Details"), new NSStringAttributes {
-				UnderlineStyle = (int)NSUnderlineStyle.Single,
-				UnderlineColor = NSColor.Blue,
-				ForegroundColor = NSColor.Blue
-			});
-			detailsBtn.Activated += (o, e) => button.dlg.ShowDialog ();
-			box.AddColumn (new NSView[] { typeLabel, messageLabel, detailsBtn });
-
-			var closeButton = new NSButton { Image = ImageService.GetIcon ("md-popup-close").ToNSImage () };
-			closeButton.Bordered = false;
+			closeButton.SetButtonType (NSButtonType.MomentaryLightButton);
 			closeButton.Activated += delegate {
 				button.dlg.ShowMiniButton ();
 			};
 			box.AddColumn (new NSView [] { closeButton });
 
 			button.exception.Changed += delegate {
-				Runtime.RunInMainThread(()=>
-				 LoadData(button.exception, messageLabel, typeLabel)).Ignore();
+				Runtime
+					.RunInMainThread(()=> LoadData(button.exception, messageLabel, typeLabel))
+					.Ignore();
 			};
+
 			LoadData (button.exception, messageLabel, typeLabel);
-			box.SetFrameSize (box.FittingSize);
-			box.WantsLayer = true;
-			box.Layer.BackgroundColor = MonoDevelop.Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor.ToCGColor ();
-			return box;
+
+			box.GetCell (lightningImage).CustomPlacementConstraints = new [] {
+				NSLayoutConstraint.Create (
+					lightningImage, NSLayoutAttribute.CenterY,
+					NSLayoutRelation.Equal,
+					typeLabel, NSLayoutAttribute.CenterY,
+					1, 0)
+			};
+
+			return new ExceptionCaughtPopoverView {
+				CornerRadius = 6,
+				Padding = new Padding (12),
+				ContentView = box
+			};
 		}
 
-		static NSTextField CreateTextField ( )
-		{
-			var textField = new NSTextField ();
-			textField.Alignment = NSTextAlignment.Left;
-			textField.Selectable = true;
-			textField.Editable = false;
-			textField.DrawsBackground = false;
-			textField.Bezeled = false;
-			textField.PreferredMaxLayoutWidth = 400;
-			textField.Cell.Wraps = true;
-			textField.Cell.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-			textField.Cell.UsesSingleLineMode = false;
-			return textField;
-		}
+		static NSTextField CreateTextField ()
+			=> new NSTextField {
+				Alignment = NSTextAlignment.Natural,
+				Selectable = true,
+				Editable = false,
+				DrawsBackground = false,
+				Bezeled = false,
+				PreferredMaxLayoutWidth = 400,
+				Cell = {
+					Wraps = true,
+					LineBreakMode = NSLineBreakMode.ByWordWrapping,
+					UsesSingleLineMode = false
+				}
+			};
 
-		private void LoadData (ExceptionInfo exception, NSTextField messageLabel, NSTextField typeLabel)
+		static void LoadData (ExceptionInfo exception, NSTextField messageLabel, NSTextField typeLabel)
 		{
 			if (!string.IsNullOrEmpty (exception.Message)) {
 				messageLabel.Hidden = false;
@@ -157,16 +260,15 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 				messageLabel.Hidden = true;
 			}
 			if (!string.IsNullOrEmpty (exception.Type)) {
-				var str = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type);
-				var indexOfStartBold = str.IndexOf ("<b>", StringComparison.Ordinal);
-				var indexOfEndBold = str.IndexOf ("</b>", StringComparison.Ordinal);
-				str = str.Remove (indexOfStartBold, indexOfEndBold + 4 - indexOfStartBold);//Remove <b>TypeName</b>
-				var mutableString = new NSMutableAttributedString (str);
-				mutableString.Insert (new NSAttributedString (exception.Type, new NSStringAttributes {
-					Font = NSFont.BoldSystemFontOfSize (NSFont.SystemFontSize)
-				}), indexOfStartBold);
-				typeLabel.AttributedStringValue = mutableString;
 				typeLabel.Hidden = false;
+				typeLabel.AllowsEditingTextAttributes = true;
+				typeLabel.AttributedStringValue = Xwt
+					.FormattedText
+					.FromMarkup (GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type))
+					.ToAttributedString ((str, range) => {
+						str.AddAttribute (NSStringAttributeKey.Font, NSFont.LabelFontOfSize (NSFont.LabelFontSize * 1.5f), range);
+						str.AddAttribute (NSStringAttributeKey.ForegroundColor, NSColor.LabelColor, range);
+					});
 			} else {
 				typeLabel.Hidden = true;
 			}
