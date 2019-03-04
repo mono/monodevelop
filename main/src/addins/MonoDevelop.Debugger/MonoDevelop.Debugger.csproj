@@ -60,6 +60,10 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="../../../external/vs-editor-core/src/CocoaControls/CocoaControls.csproj" Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
+      <Name>CocoaControls</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -163,6 +167,8 @@
     <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManagerService.cs" />
     <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphFactoryProvider.cs" />
@@ -236,6 +242,8 @@
     <EmbeddedResource Include="icons\lightning-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\lightning-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\lightning-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\exception-caught-template-16.png" />
+    <EmbeddedResource Include="icons\exception-caught-template-16%402x.png" />
     <EmbeddedResource Include="icons\exception-48~dark.png" />
     <EmbeddedResource Include="icons\exception-48~dark%402x.png" />
     <EmbeddedResource Include="icons\gutter-breakpoint-15.png" />
@@ -346,6 +354,7 @@
     <Folder Include="MonoDevelop.Debugger.VSTextView\Glyphs\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\Tags\" />
     <Folder Include="MonoDevelop.Debugger.VSTextView\QuickInfo\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />

@@ -971,8 +971,8 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 	{
 		readonly Xwt.Drawing.Image closeSelOverImage;
 		readonly Xwt.Drawing.Image closeSelImage;
-		readonly ExceptionCaughtMessage dlg;
-		readonly ExceptionInfo exception;
+		internal readonly ExceptionCaughtMessage dlg;
+		internal readonly ExceptionInfo exception;
 		Label messageLabel;
 		Label typeLabel;
 
@@ -1080,7 +1080,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 	class ExceptionCaughtMiniButton : TopLevelWidgetExtension
 	{
-		readonly ExceptionCaughtMessage dlg;
+		internal readonly ExceptionCaughtMessage dlg;
 
 		public ExceptionCaughtMiniButton (ExceptionCaughtMessage dlg, FilePath file, int line)
 		{
