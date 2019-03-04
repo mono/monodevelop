@@ -54,6 +54,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		string msbuildProjectPath;
 		string projectName;
+		bool reevaluationRequired;
 
 		public PackageReferenceNuGetProject (DotNetProject project, ConfigurationSelector configuration)
 			: this (project, configuration, PackageManagementServices.PackageManagementEvents)
@@ -241,13 +242,16 @@ namespace MonoDevelop.PackageManagement
 			throw new InvalidOperationException (GettextCatalog.GetString ("Unable to create package spec for project. '{0}'", project.FileName));
 		}
 
-		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		public override async Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
 		{
-			Runtime.RunInMainThread (() => {
+			await Runtime.RunInMainThread (async () => {
+				if (reevaluationRequired) {
+					await DotNetProject.ReevaluateProject (new ProgressMonitor ());
+				}
 				DotNetProject.NotifyModified ("References");
 			});
 
-			return base.PostProcessAsync (nuGetProjectContext, token);
+			await base.PostProcessAsync (nuGetProjectContext, token);
 		}
 
 		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
@@ -256,6 +260,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
 		{
+			reevaluationRequired = actions.Any (action => action.NuGetProjectActionType == NuGetProjectActionType.Install);
 		}
 
 		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)
