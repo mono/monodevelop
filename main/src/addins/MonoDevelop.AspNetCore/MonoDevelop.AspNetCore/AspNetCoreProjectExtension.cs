@@ -24,10 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore
@@ -35,6 +37,8 @@ namespace MonoDevelop.AspNetCore
 	[ExportProjectModelExtension]
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
+		public const string TypeScriptCompile = "TypeScriptCompile";
+
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return new AspNetCoreRunConfiguration (name);
@@ -95,6 +99,14 @@ namespace MonoDevelop.AspNetCore
 				await AspNetCoreCertificateManager.TrustDevelopmentCertificate (monitor);
 			}
 			await base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		protected override string OnGetDefaultBuildAction (string fileName)
+		{
+			if (DesktopService.GetMimeTypeInheritanceChainForFile (fileName).Contains ("text/x-typescript"))
+				return TypeScriptCompile;
+
+			return base.OnGetDefaultBuildAction (fileName);
 		}
 	}
 }

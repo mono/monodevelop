@@ -60,6 +60,7 @@ namespace MonoDevelop.AspNet.Projects
 
 		WebFormsRegistrationCache registrationCache;
 		WebFormsCodeBehindTypeNameCache codebehindTypeNameCache;
+		public const string TypeScriptCompile = "TypeScriptCompile";
 
 		#region properties
 
@@ -548,12 +549,12 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected override string OnGetDefaultBuildAction (string fileName)
 		{
-			WebSubtype type = DetermineWebSubtype (fileName);
+			var type = DetermineWebSubtype (fileName);
 			switch (type) {
 			case WebSubtype.Code:
 				return BuildAction.Compile;
 			case WebSubtype.TypeScript:
-				return BuildAction.TypeScriptCompile;
+				return TypeScriptCompile;
 			case WebSubtype.None:
 				return base.OnGetDefaultBuildAction (fileName);
 			default:
