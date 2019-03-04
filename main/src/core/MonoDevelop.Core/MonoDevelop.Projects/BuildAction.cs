@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects
 		public const string Resource = "Resource";
 		public const string SplashScreen = "SplashScreen";
 		public const string EntityDeploy = "EntityDeploy";
+		public const string TypeScriptCompile = "TypeScriptCompile";
 		
 		public static string[] StandardActions {
 			get {

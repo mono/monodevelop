@@ -790,6 +790,9 @@ namespace MonoDevelop.DotNetCore
 			if (globItems.Count == 1)
 				return globItems [0].Name;
 
+			if (Path.GetExtension (fileName).IndexOf (".ts", StringComparison.OrdinalIgnoreCase) == 0)
+				return BuildAction.TypeScriptCompile;
+
 			return base.OnGetDefaultBuildAction (fileName);
 		}
 	}
