@@ -56,13 +56,11 @@ namespace MonoDevelop.DotNetCore.Templating
 					$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.Web.ProjectTemplates.nupkg",
 					GettextCatalog.GetString (string.Format (".NET Core SDK {0} Web Project Templates NuGet package path", SupportedSDK[i]))
 				);
-					
-				if (i > 0 ) { //2.2 and before 
-					yield return new StringTagDescription (
-						$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.NUnit3.DotNetNew.Template.nupkg",
-						GettextCatalog.GetString (string.Format (".NET Core SDK {0} NUnit Project Templates NuGet package path", SupportedSDK [i]))
-					);
-				}
+
+				yield return new StringTagDescription (
+					$"DotNetCoreSdk.{SupportedSDK [i]}.Templates.NUnit3.DotNetNew.Template.nupkg",
+					GettextCatalog.GetString (string.Format (".NET Core SDK {0} NUnit Project Templates NuGet package path", SupportedSDK [i]))
+				);
 			}
 		}
 
