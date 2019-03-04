@@ -455,6 +455,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			base.OnDocumentClosing (documentId);
 			OpenDocuments.Remove (documentId);
+
+			backgroundParser.CancelParse (documentId);
 		}
 
 //		internal override bool CanChangeActiveContextDocument {
