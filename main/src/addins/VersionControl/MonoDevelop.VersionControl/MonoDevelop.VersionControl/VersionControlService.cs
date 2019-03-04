@@ -118,7 +118,10 @@ namespace MonoDevelop.VersionControl
 
 				if (search < 0)
 					handlers.Insert (~search, vcs);
-
+				else {
+					LoggingService.LogError ("Error trying to add an existing version control system.");
+					return;
+				}
 				try {
 					// Include the repository type in the serialization context, so repositories
 					// of this type can be deserialized from the configuration file.
