@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
@@ -29,9 +30,9 @@ namespace MonoDevelop.VersionControl
 		/// The default implementation returns the full name of the class.
 		/// </remarks>
 		public virtual string Id {
-			get { return GetType().ToString(); }
+			get { return GetType ().ToString (); }
 		}
-		
+
 		/// <summary>
 		/// Display name of the version control system
 		/// </summary>
@@ -55,12 +56,12 @@ namespace MonoDevelop.VersionControl
 		public virtual bool IsInstalled {
 			get { return false; }
 		}
-		
+
 		/// <summary>
 		/// Creates an instance of a repository for this version control system
 		/// </summary>
 		protected abstract Repository OnCreateRepositoryInstance ();
-		
+
 		/// <summary>
 		/// Creates an editor object for a repository.
 		/// </summary>
@@ -121,6 +122,43 @@ namespace MonoDevelop.VersionControl
 		public virtual string GetRelativeCheckoutPathForRemote (string remoteRelativePath)
 		{
 			return remoteRelativePath.Replace ('/', System.IO.Path.DirectorySeparatorChar);
+		}
+	}
+
+	public class CompareVersionControlSystem : IComparer<VersionControlSystem>
+	{
+		public int Compare (VersionControlSystem vcs1, VersionControlSystem vcs2)
+		{
+			int result;
+
+			if (ReferenceEquals (vcs1, vcs2)) {
+				result = 0;
+			} else {
+				if (vcs1 == null) {
+					result = 1;
+				} else if (vcs2 == null) {
+					result = -1;
+				} else {
+					result = StringCompare (vcs1.Name, vcs2.Name);
+				}
+			}
+
+			return result;
+		}
+
+		int StringCompare (string strFirstString, string secondString)
+		{
+			int result;
+			if (strFirstString == null) {
+				if (secondString == null) {
+					result = 0;
+				} else {
+					result = 1;
+				}
+			} else {
+				result = string.Compare(strFirstString, secondString, StringComparison.InvariantCultureIgnoreCase);
+			}
+			return result;
 		}
 	}
 }
