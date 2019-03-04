@@ -816,8 +816,9 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void SetProject (Project project)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || (IsAdHocProject && project == adhocProject))
 				return;
+			bool usingAdHocProject = IsAdHocProject;
 			UnloadAdhocProject ();
 			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (Editor == null) {
@@ -835,7 +836,11 @@ namespace MonoDevelop.Ide.Gui
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
 			AttachPathedDocument ();
-			ListenToProjectLoad (project);
+			// Do not start the parser when the project is set to null and an adHocProject is not being used. This
+			// would result in a new adHocProject being created and then RootWorkspace would not update the Document's
+			// project since it is non-null.
+			if (project != null || (project == null && usingAdHocProject))
+				ListenToProjectLoad (project);
 			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
