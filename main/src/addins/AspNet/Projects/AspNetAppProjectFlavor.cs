@@ -303,6 +303,8 @@ namespace MonoDevelop.AspNet.Projects
 				return WebSubtype.Stylus;
 			case "CSHTML":
 				return WebSubtype.Razor;
+			case "TS":
+				return WebSubtype.TypeScript;
 			default:
 				return WebSubtype.None;
 			}
@@ -546,11 +548,12 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected override string OnGetDefaultBuildAction (string fileName)
 		{
-
 			WebSubtype type = DetermineWebSubtype (fileName);
 			switch (type) {
 			case WebSubtype.Code:
 				return BuildAction.Compile;
+			case WebSubtype.TypeScript:
+				return BuildAction.TypeScriptCompile;
 			case WebSubtype.None:
 				return base.OnGetDefaultBuildAction (fileName);
 			default:
