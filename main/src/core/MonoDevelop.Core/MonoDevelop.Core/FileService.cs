@@ -757,7 +757,7 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileCreated;
 		static void OnFileCreated (FileEventArgs args)
 		{
-			AsyncEvents.OnFileCreated (Clone (args));
+			AsyncEvents.OnFileCreated (args);
 
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
@@ -784,7 +784,7 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
 		static void OnFileRenamed (FileCopyEventArgs args)
 		{
-			AsyncEvents.OnFileRenamed (Clone (args));
+			AsyncEvents.OnFileRenamed (args);
 
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
@@ -799,7 +799,7 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileRemoved;
 		static void OnFileRemoved (FileEventArgs args)
 		{
-			AsyncEvents.OnFileRemoved (Clone (args));
+			AsyncEvents.OnFileRemoved (args);
 
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
@@ -905,13 +905,6 @@ namespace MonoDevelop.Core
 		/// File watcher events - these are not fired on the UI thread.
 		/// </summary>
 		public static AsyncEvents AsyncEvents { get; } = new AsyncEvents ();
-
-		static T Clone<T> (T args) where T : FileEventArgs, new()
-		{
-			var result = new T ();
-			result.AddRange (args);
-			return result;
-		}
 	}
 
 	class EventQueue
@@ -1352,17 +1345,24 @@ namespace MonoDevelop.Core
 
 		internal void OnFileCreated (FileEventArgs args)
 		{
-			FileCreated?.Invoke (this, args);
+			FileCreated?.Invoke (this, Clone (args));
 		}
 
 		internal void OnFileRemoved (FileEventArgs args)
 		{
-			FileRemoved?.Invoke (this, args);
+			FileRemoved?.Invoke (this, Clone (args));
 		}
 
 		internal void OnFileRenamed (FileCopyEventArgs args)
 		{
-			FileRenamed?.Invoke (this, args);
+			FileRenamed?.Invoke (this, Clone (args));
+		}
+
+		static T Clone<T> (T args) where T : FileEventArgs, new()
+		{
+			var result = new T ();
+			result.AddRange (args);
+			return result;
 		}
 	}
 
