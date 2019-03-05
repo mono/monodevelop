@@ -288,14 +288,15 @@ namespace MonoDevelop.Ide.Editor
 			this.OnChanged (EventArgs.Empty);
 		}
 
+		TextStylePolicy currentPolicy;
 		internal void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
-			DefaultEolMarker      = TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
-			TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
-			TabSize               = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
-			rulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
+			if (currentPolicy == this.currentPolicy)
+				return;
+			this.currentPolicy = currentPolicy;
+			rulerColumn = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
 			allowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
-			RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
+			OnChanged (EventArgs.Empty);
 		}
 
 		internal DefaultSourceEditorOptions Create ()
@@ -554,13 +555,21 @@ namespace MonoDevelop.Ide.Editor
 		#region ITextEditorOptions
 		ConfigurationProperty<string> defaultEolMarker = IdeApp.Preferences.Editor.NewLineCharacter;
 		string defaultEolMarkerFromContext = null;
+		string overrridenDefaultEolMarker = null;
 
 		// TODO: This isn't surfaced in properties, only policies. We have no UI for it.
 		public string DefaultEolMarker {
 			get {
-				return defaultEolMarkerFromContext ?? defaultEolMarker;
+				if (overrridenDefaultEolMarker != null)
+					return overrridenDefaultEolMarker;
+				if (defaultEolMarkerFromContext != null)
+					return defaultEolMarkerFromContext;
+				if (currentPolicy != null)
+					return TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
+				return defaultEolMarker;
 			}
 			set {
+				overrridenDefaultEolMarker = value;
 				if (defaultEolMarker.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
@@ -609,11 +618,19 @@ namespace MonoDevelop.Ide.Editor
 		
 		ConfigurationProperty<bool> tabsToSpaces = IdeApp.Preferences.Editor.ConvertTabsToSpaces;
 		bool? tabsToSpacesFromContext;
+		bool? overriddenTabsToSpaces;
 		public bool TabsToSpaces {
 			get {
-				return tabsToSpacesFromContext ?? tabsToSpaces;
+				if (overriddenTabsToSpaces.HasValue)
+					return overriddenTabsToSpaces.Value;
+				if (tabsToSpacesFromContext.HasValue)
+					return tabsToSpacesFromContext.Value;
+				if (currentPolicy != null)
+					return currentPolicy.TabsToSpaces; 
+				return tabsToSpaces;
 			}
 			set {
+				overriddenTabsToSpaces = value;
 				if (tabsToSpaces.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
@@ -621,11 +638,19 @@ namespace MonoDevelop.Ide.Editor
 
 		ConfigurationProperty<int> indentationSize = IdeApp.Preferences.Editor.IndentSize;
 		int? indentationSizeFromContext;
+		int? overriddenIndentationSize;
 		public int IndentationSize {
 			get {
+				if (overriddenIndentationSize.HasValue)
+					return overriddenIndentationSize.Value;
+				if (indentationSizeFromContext.HasValue)
+					return indentationSizeFromContext.Value;
+				if (currentPolicy != null)
+					return currentPolicy.IndentWidth; //PropertyService.Get ("IndentWidth", 4);
 				return indentationSizeFromContext ?? indentationSize;
 			}
 			set {
+				overriddenIndentationSize = value;
 				if (indentationSize.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
@@ -639,11 +664,19 @@ namespace MonoDevelop.Ide.Editor
 
 		ConfigurationProperty<int> tabSize = IdeApp.Preferences.Editor.TabSize;
 		int? tabSizeFromContext;
+		int? overriddenTabSize;
 		public int TabSize {
 			get {
-				return tabSizeFromContext ?? IndentationSize;
+				if (overriddenTabSize.HasValue)
+					return overriddenTabSize.Value;
+				if (tabSizeFromContext.HasValue)
+					return tabSizeFromContext.Value;
+				if (currentPolicy != null)
+					return currentPolicy.TabWidth; //PropertyService.Get ("IndentWidth", 4);
+				return tabSize;
 			}
 			set {
+				overriddenTabSize = value;
 				if (tabSize.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
@@ -651,12 +684,20 @@ namespace MonoDevelop.Ide.Editor
 
 		ConfigurationProperty<bool> trimTrailingWhitespace = IdeApp.Preferences.Editor.TrimTrailingWhitespace;
 		bool? removeTrailingWhitespacesFromContext;
+		bool? overriddenRemoveTrailingWhitespacesFromContext;
 
 		public bool RemoveTrailingWhitespaces {
 			get {
-				return removeTrailingWhitespacesFromContext ?? trimTrailingWhitespace;
+				if (overriddenRemoveTrailingWhitespacesFromContext.HasValue)
+					return overriddenRemoveTrailingWhitespacesFromContext.Value;
+				if (removeTrailingWhitespacesFromContext.HasValue)
+					return removeTrailingWhitespacesFromContext.Value;
+				if (currentPolicy != null)
+					return currentPolicy.RemoveTrailingWhitespace;
+				return trimTrailingWhitespace;
 			}
 			set {
+				overriddenRemoveTrailingWhitespacesFromContext = value;
 				if (trimTrailingWhitespace.Set(value))
 					OnChanged (EventArgs.Empty);
 			}
