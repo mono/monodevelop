@@ -348,13 +348,18 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null || (parent.nativeWidget is NSWindow && dialog.Modal)) {
-					EventHandler shownHandler = null;
-					shownHandler = (s,e) => {
+				if (NSApplication.SharedApplication.ModalWindow != null || parent.nativeWidget is NSWindow) {
+					if (dialog.Modal) {
+						EventHandler shownHandler = null;
+						shownHandler = (s, e) => {
+							ShowCustomModalDialog (dialog, parent);
+							dialog.Shown -= shownHandler;
+						};
+						dialog.Shown += shownHandler;
+					} else {
+						// If parent is a native NSWindow, run the dialog modally anyway
 						ShowCustomModalDialog (dialog, parent);
-						dialog.Shown -= shownHandler;
-					};
-					dialog.Shown += shownHandler;
+					}
 				} else {
 					PlaceDialog (dialog, parent);
 				}
@@ -449,10 +454,9 @@ namespace MonoDevelop.Ide
 					gtkChild.Move (x, y);
 #if MAC
 				} else if (nsParent != null) {
-					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
 					x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
 					y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
-					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
+					gtkChild.Move (x, y);
 #endif
 				} else {
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
