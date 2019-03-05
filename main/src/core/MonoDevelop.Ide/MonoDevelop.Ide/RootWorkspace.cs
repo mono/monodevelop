@@ -46,6 +46,7 @@ using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Core.FeatureConfiguration;
 
 namespace MonoDevelop.Ide
 {
@@ -867,19 +868,25 @@ namespace MonoDevelop.Ide
 			// Restore local configuration data
 			
 			try {
-				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
-				if (data != null) {
-					ActiveExecutionTarget = null;
+				var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
 
-					if (string.IsNullOrEmpty (data.ActiveRuntime))
-						UseDefaultRuntime = true;
-					else {
-						TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (data.ActiveRuntime);
-						if (tr != null)
-							ActiveRuntime = tr;
-						else
+				if (enabled.GetValueOrDefault ()) {
+					WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
+					if (data != null) {
+						ActiveExecutionTarget = null;
+
+						if (string.IsNullOrEmpty (data.ActiveRuntime))
 							UseDefaultRuntime = true;
+						else {
+							TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (data.ActiveRuntime);
+							if (tr != null)
+								ActiveRuntime = tr;
+							else
+								UseDefaultRuntime = true;
+						}
 					}
+				} else {
+					UseDefaultRuntime = true;
 				}
 			}
 			catch (Exception ex) {
