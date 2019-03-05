@@ -62,14 +62,18 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			var logger = new LoggerAdapter (context);
-			var signedPackageVerifier = new PackageSignatureVerifier (SignatureVerificationProviderFactory.GetSignatureVerificationProviders ());
+
+			//FIXME
+			//var signedPackageVerifier = new PackageSignatureVerifier (SignatureVerificationProviderFactory.GetSignatureVerificationProviders ());
+			//TODO: Settings?
+			var clientPolicyContext = ClientPolicyContext.GetClientPolicy (null, logger);
+			//https://github.com/NuGet/NuGet.Client/blob/release-5.0.0-rtm/src/NuGet.Clients/NuGet.CommandLine/Commands/InitCommand.cs
 
 			var packageExtractionContext = new PackageExtractionContext (
 				PackageSaveMode.Defaultv3,
 				PackageExtractionBehavior.XmlDocFileSaveMode,
-				logger,
-				signedPackageVerifier,
-				SignedPackageVerifierSettings.GetDefault ());
+				clientPolicyContext,
+				logger);
 
 			downloadResult.PackageStream.Position = 0;
 			await PackageExtractor.InstallFromSourceAsync (
