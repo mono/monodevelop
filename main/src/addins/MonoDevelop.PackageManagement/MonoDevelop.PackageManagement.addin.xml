@@ -11,7 +11,6 @@
 		<Import assembly="NuGet.Common.dll" />
 		<Import assembly="NuGet.Protocol.dll" />
 		<Import assembly="NuGet.Configuration.dll" />
-		<Import assembly="NuGet.Packaging.Core.dll" />
 		<Import assembly="NuGet.ProjectModel.dll" />
 	</Runtime>
 
