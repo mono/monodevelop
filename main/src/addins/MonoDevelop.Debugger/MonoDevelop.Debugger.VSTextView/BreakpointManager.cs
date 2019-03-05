@@ -22,6 +22,7 @@ namespace MonoDevelop.Debugger
 			}
 			textBuffer.Changed += TextBuffer_Changed;
 			DebuggingService.Breakpoints.Changed += OnBreakpointsChanged;
+			DebuggingService.Breakpoints.BreakpointStatusChanged += OnBreakpointsChanged;
 			OnBreakpointsChanged (null, null);
 		}
 
@@ -57,6 +58,8 @@ namespace MonoDevelop.Debugger
 			foreach (var breakpoint in DebuggingService.Breakpoints.GetBreakpointsAtFile (file)) {
 				if (breakpoint.Line > snapshot.LineCount)
 					continue;
+				if (eventArgs is BreakpointEventArgs breakpointEventArgs && breakpointEventArgs.Breakpoint == breakpoint)
+					needsUpdate = true;
 				var newSpan = snapshot.GetLineFromLineNumber (breakpoint.Line - 1).Extent;
 				if (breakpoints.TryGetValue (breakpoint, out var existingBreakpoint)) {
 					newBreakpoints.Add (breakpoint, existingBreakpoint);
@@ -89,6 +92,7 @@ namespace MonoDevelop.Debugger
 			BreakpointsChanged = null;
 			textBuffer.Changed -= TextBuffer_Changed;
 			DebuggingService.Breakpoints.Changed -= OnBreakpointsChanged;
+			DebuggingService.Breakpoints.BreakpointStatusChanged -= OnBreakpointsChanged;
 		}
 
 		public IEnumerable<BreakpointSpan> GetBreakpoints (ITextSnapshot snapshot)
