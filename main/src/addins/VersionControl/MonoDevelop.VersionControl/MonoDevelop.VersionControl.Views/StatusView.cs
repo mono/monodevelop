@@ -997,6 +997,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			VersionInfo newInfo;
+
 			try {
 				// Reuse remote status from old version info
 				newInfo = vc.GetVersionInfo (args.FilePath, VersionInfoQueryFlags.IgnoreCache);
@@ -1034,11 +1035,16 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			else {
 				if (FileVisible (newInfo)) {
-					if (!statuses.Any (s => s.LocalPath.Equals (newInfo.LocalPath))) {
+					if (!statuses.Any (s => s.LocalPath == newInfo.LocalPath)) {
 						statuses.Add (newInfo);
-						changeSet.AddFile (newInfo);
 						AppendFileInfo (newInfo, wasExpanded);
 					}
+
+					if (changeSet.GetFileItem (args.FilePath) != null) {
+						changeSet.RemoveFile (args.FilePath);
+					}
+
+					changeSet.AddFile (newInfo);
 				}
 			}
 			return true;
