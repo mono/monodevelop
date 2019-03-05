@@ -51,6 +51,29 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			Runtime.RunInMainThread (DestroyWindow).Ignore ();
 		}
 
+		static async Task<bool> WaitOneAsync (WaitHandle handle, CancellationToken cancellationToken)
+		{
+			RegisteredWaitHandle registeredHandle = null;
+			var tokenRegistration = default (CancellationTokenRegistration);
+			try {
+				var tcs = new TaskCompletionSource<bool> ();
+				registeredHandle = ThreadPool.RegisterWaitForSingleObject (
+					handle,
+					(state, timedOut) => ((TaskCompletionSource<bool>)state).TrySetResult (!timedOut),
+					tcs,
+					int.MaxValue,
+					true);
+				tokenRegistration = cancellationToken.Register (
+					state => ((TaskCompletionSource<bool>)state).TrySetCanceled (),
+					tcs);
+				return await tcs.Task;
+			} finally {
+				if (registeredHandle != null)
+					registeredHandle.Unregister (null);
+				tokenRegistration.Dispose ();
+			}
+		}
+
 		public async Task<QuickInfoItem> GetQuickInfoItemAsync (IAsyncQuickInfoSession session, CancellationToken cancellationToken)
 		{
 			if (DebuggingService.CurrentFrame == null)
@@ -74,7 +97,11 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 
 				var val = DebuggingService.CurrentFrame.GetExpressionValue (debugInfo.Text, options);
 
-				if (val == null || val.IsUnknown || val.IsNotSupported)
+				if (val.IsEvaluating)
+					await WaitOneAsync (val.WaitHandle, cancellationToken);
+				if (cancellationToken.IsCancellationRequested)
+					return null;
+				if (val == null || val.IsUnknown || val.IsNotSupported || val.IsError)
 					return null;
 
 				if (!view.Properties.TryGetProperty (typeof (Gtk.Widget), out Gtk.Widget gtkParent))
