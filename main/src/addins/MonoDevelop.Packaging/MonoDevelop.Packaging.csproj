@@ -14,28 +14,28 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="NuGet.Protocol">
-      <HintPath>..\..\..\packages\NuGet.Protocol.4.8.0\lib\net46\NuGet.Protocol.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Protocol.5.0.0-rtm.5856\lib\net472\NuGet.Protocol.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging">
-      <HintPath>..\..\..\packages\NuGet.Packaging.4.8.0\lib\net46\NuGet.Packaging.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Packaging.5.0.0-rtm.5856\lib\net472\NuGet.Packaging.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Packaging.Core">
-      <HintPath>..\..\..\packages\NuGet.Packaging.Core.4.8.0\lib\net46\NuGet.Packaging.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Packaging.Core.5.0.0-rtm.5856\lib\net472\NuGet.Packaging.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Frameworks">
-      <HintPath>..\..\..\packages\NuGet.Frameworks.4.8.0\lib\net46\NuGet.Frameworks.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Frameworks.5.0.0-rtm.5856\lib\net472\NuGet.Frameworks.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.Versioning.5.0.0-rtm.5856\lib\net472\NuGet.Versioning.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="NuGet.PackageManagement">
-      <HintPath>..\..\..\packages\NuGet.PackageManagement.4.8.0\lib\net46\NuGet.PackageManagement.dll</HintPath>
+      <HintPath>..\..\..\packages\NuGet.PackageManagement.5.0.0-rtm.5856\lib\net472\NuGet.PackageManagement.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
