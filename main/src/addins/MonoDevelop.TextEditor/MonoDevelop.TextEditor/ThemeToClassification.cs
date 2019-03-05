@@ -184,7 +184,9 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "compiler error", EditorThemeColors.UnderlineError, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "other error", EditorThemeColors.UnderlineError, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "compiler warning", EditorThemeColors.UnderlineWarning, EditorFormatDefinition.ForegroundColorId);
-			CreateResourceDictionary (editorFormat, defaultSettings, "suggestion", EditorThemeColors.UnderlineSuggestion, EditorFormatDefinition.ForegroundColorId);
+			// This is commented out because VS Windows also doesn't have color set for suggestion underline
+			// which causes squiglly underlinings to be drawn where users don't expect it.
+			//CreateResourceDictionary (editorFormat, defaultSettings, "suggestion", EditorThemeColors.UnderlineSuggestion, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "hinted suggestion", EditorThemeColors.UnderlineSuggestion, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "breakpoint", EditorThemeColors.BreakpointMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "breakpoint-disabled", EditorThemeColors.BreakpointMarkerDisabled);
