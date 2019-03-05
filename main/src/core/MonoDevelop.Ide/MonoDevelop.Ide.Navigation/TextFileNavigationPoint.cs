@@ -70,10 +70,11 @@ namespace MonoDevelop.Ide.Navigation
 					line = location.Line;
 					column = location.Column;
 				}
-				version = null;
 			} catch (Exception e) {
 				LoggingService.LogInternalError (e);
 			}
+			version = null;
+			buffer = null;
 		}
 
 		public TextFileNavigationPoint (FilePath file, int line, int column)
