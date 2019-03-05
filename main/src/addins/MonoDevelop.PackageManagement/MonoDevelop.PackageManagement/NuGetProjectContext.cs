@@ -42,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 		IDEExecutionContext executionContext;
 		ISettings settings;
 		PackageExtractionContext packageExtractionContext;
+		PackageManagementLogger logger;
 
 		public NuGetProjectContext (ISettings settings)
 		{
@@ -49,6 +50,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 			var commonOperations = new MonoDevelopCommonOperations ();
 			executionContext = new IDEExecutionContext (commonOperations);
+			logger = new PackageManagementLogger (packageManagementEvents);
 		}
 
 		public ExecutionContext ExecutionContext {
@@ -85,23 +87,23 @@ namespace MonoDevelop.PackageManagement
 
 		public void Log (ILogMessage message)
 		{
-			throw new NotImplementedException ();
+			logger.Log (message);
 		}
 
 		public void ReportError (ILogMessage message)
 		{
-			throw new NotImplementedException ();
+			logger.Log (message);
 		}
 
 		public PackageExtractionContext PackageExtractionContext {
 			get {
 				if (packageExtractionContext == null) {
-					var logger = new LoggerAdapter (this);
+					var loggerAdapter = new LoggerAdapter (this);
 					packageExtractionContext = new PackageExtractionContext (
 						PackageSaveMode.Defaultv2,
 						PackageExtractionBehavior.XmlDocFileSaveMode,
-						ClientPolicyContext.GetClientPolicy (settings, logger),
-						logger);
+						ClientPolicyContext.GetClientPolicy (settings, loggerAdapter),
+						loggerAdapter);
 				}
 				return packageExtractionContext;
 			}
