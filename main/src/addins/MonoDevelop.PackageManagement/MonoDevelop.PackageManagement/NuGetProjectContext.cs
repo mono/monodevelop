@@ -29,8 +29,7 @@ using System.Xml.Linq;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
-using NuGet.Packaging.PackageExtraction;
-using NuGet.Packaging.Signing;
+using NuGet.Common;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -79,6 +78,16 @@ namespace MonoDevelop.PackageManagement
 				return FileConflictResolution.Value;
 
 			return packageManagementEvents.OnResolveFileConflict (message);
+		}
+
+		public void Log (ILogMessage message)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void ReportError (ILogMessage message)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public PackageExtractionContext PackageExtractionContext { get; set; }

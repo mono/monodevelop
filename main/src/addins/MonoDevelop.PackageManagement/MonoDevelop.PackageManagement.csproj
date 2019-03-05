@@ -26,8 +26,8 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
-    <PackageReference Include="NuGet.PackageManagement" Version="4.8.2-rtm.5835" PrivateAssets="runtime" />
-    <PackageReference Include="NuGet.Indexing" Version="4.8.2-rtm.5835" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.PackageManagement" Version="5.0.0-rtm.5856" PrivateAssets="runtime" />
+    <PackageReference Include="NuGet.Indexing" Version="5.0.0-rtm.5856" PrivateAssets="runtime" />
     <IncludeCopyLocal Include="Lucene.Net.dll" />
     <IncludeCopyLocal Include="Microsoft.Web.XmlTransform.dll" />
     <IncludeCopyLocal Include="NuGet.Commands.dll" />
