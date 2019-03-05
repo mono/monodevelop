@@ -14,6 +14,6 @@
 	</TemplateConfiguration>
 
 	<TemplateFiles>
-		<File DefaultExtension=".ts" src="TypeScriptFileTemplate.ts" />
+		<File DefaultExtension=".ts" src="TypeScriptFileTemplate.ts" BuildAction="TypeScriptCompile" />
 	</TemplateFiles>
 </Template>

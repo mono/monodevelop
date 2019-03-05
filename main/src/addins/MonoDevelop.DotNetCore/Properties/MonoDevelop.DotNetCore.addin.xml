@@ -109,6 +109,42 @@
 				condition="UseNetCore21=true"
 				category="netcore/app/general"/>
 		</Condition>
+		<Template
+			id="NUnit3.DotNetNew.Template.CSharp"
+			templateId="NUnit3.DotNetNew.Template.CSharp"
+			_overrideName="NUnit Test Project"
+			_overrideDescription="Creates a new NUnit test project."
+			path="${DotNetCoreSdk.2.1.Templates.NUnit3.DotNetNew.Template.nupkg}"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Template
+			id="NUnit3.DotNetNew.Template.FSharp"
+			templateId="NUnit3.DotNetNew.Template.FSharp"
+			_overrideName="NUnit Test Project"
+			_overrideDescription="Creates a new NUnit test project."
+			path="${DotNetCoreSdk.2.1.Templates.NUnit3.DotNetNew.Template.nupkg}"
+			icon="md-netcore-test-project"
+			imageId="md-netcore-test-project"
+			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+			condition="UseNetCore21=true"
+			category="netcore/test/general" />
+		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
+			<Template
+				id="NUnit3.DotNetNew.Template.VisualBasic"
+				templateId="NUnit3.DotNetNew.Template.VisualBasic"
+				_overrideName="NUnit Test Project"
+				_overrideDescription="Creates a new NUnit test project."
+				overrideLanguage="VBNet"
+				path="${DotNetCoreSdk.2.1.Templates.NUnit3.DotNetNew.Template.nupkg}"
+				icon="md-netcore-test-project"
+				imageId="md-netcore-test-project"
+				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				condition="UseNetCore21=true"
+				category="netcore/test/general" />
+		</Condition>
 		</Condition>
 		<Condition id="DotNetCoreSdkInstalled" sdkVersion="2.2">
 		<Template
@@ -973,7 +1009,7 @@
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore21=true"
+			condition="UseNetCore22=true"
 			category="netcore/test/general" />
 		<Template
 			id="NUnit3.DotNetNew.Template.FSharp"
@@ -984,7 +1020,7 @@
 			icon="md-netcore-test-project"
 			imageId="md-netcore-test-project"
 			wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-			condition="UseNetCore21=true"
+			condition="UseNetCore22=true"
 			category="netcore/test/general" />
 		<Condition id="FeatureSwitch" name="VBNetDotnetCoreTemplates">
 			<Template
@@ -997,7 +1033,7 @@
 				icon="md-netcore-test-project"
 				imageId="md-netcore-test-project"
 				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
-				condition="UseNetCore21=true"
+				condition="UseNetCore22=true"
 				category="netcore/test/general" />
 		</Condition>
 		</Condition>

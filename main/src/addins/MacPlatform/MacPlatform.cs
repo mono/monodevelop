@@ -970,7 +970,7 @@ namespace MonoDevelop.MacIntegration
 
 		public override Window GetParentForModalWindow ()
 		{
-			return NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
+			return NSApplication.SharedApplication.ModalWindow ?? NSApplication.SharedApplication.KeyWindow ?? NSApplication.SharedApplication.MainWindow;
 		}
 
 		public override Window GetFocusedTopLevelWindow ()

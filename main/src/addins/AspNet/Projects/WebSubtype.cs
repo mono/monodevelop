@@ -53,7 +53,8 @@ namespace MonoDevelop.AspNet.Projects
 		Svg,
 		Sass,
 		Stylus,
-		Razor
+		Razor,
+		TypeScript
 	}
 	
 }
