@@ -271,6 +271,10 @@ namespace MonoDevelop.VersionControl.Git
 		static bool TryGetUsernamePassword (Uri uri, out string username, out string password)
 		{
 			var cred = PasswordService.GetWebUserNameAndPassword (uri);
+			// if the Uri has a path, fallback to base Uri if available
+			if (cred == null && !string.IsNullOrEmpty (uri.PathAndQuery) && Uri.TryCreate (uri.GetLeftPart (UriPartial.Authority), UriKind.Absolute, out var baseUri)) {
+				cred = PasswordService.GetWebUserNameAndPassword (baseUri);
+			}
 			if (cred != null) {
 				username = cred.Item1;
 				password = cred.Item2;
