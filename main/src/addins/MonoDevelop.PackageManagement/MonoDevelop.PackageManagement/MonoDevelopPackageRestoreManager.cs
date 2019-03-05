@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NuGet.Common;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
@@ -120,6 +121,16 @@ namespace MonoDevelop.PackageManagement
 			Dictionary<PackageReference, List<string>> packageReferencesDict)
 		{
 			return restoreManager.GetPackagesRestoreData (solutionDirectory, packageReferencesDict);
+		}
+
+		public Task<PackageRestoreResult> RestoreMissingPackagesInSolutionAsync (string solutionDirectory, INuGetProjectContext nuGetProjectContext, ILogger logger, CancellationToken token)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public Task<PackageRestoreResult> RestoreMissingPackagesAsync (string solutionDirectory, IEnumerable<PackageRestoreData> packages, INuGetProjectContext nuGetProjectContext, PackageDownloadContext downloadContext, ILogger logger, CancellationToken token)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 

@@ -148,6 +148,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public SettingSection GetSection (string sectionName)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void AddOrUpdate (string sectionName, SettingItem item)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void Remove (string sectionName, SettingItem item)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 
