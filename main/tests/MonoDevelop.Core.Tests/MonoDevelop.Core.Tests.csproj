@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
     <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
     <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />

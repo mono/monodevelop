@@ -34,6 +34,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.MacInterop;
+using Security;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -65,11 +66,11 @@ namespace MonoDevelop.MacIntegration
 
 		static ICredentials GetSystemProxyCredentials (Uri uri)
 		{
-			var kind = SecProtocolType.Any;
+			var kind = SecProtocol.Http;
 			if (uri.Scheme == "http")
-				kind = SecProtocolType.HTTPProxy;
+				kind = SecProtocol.HttpProxy;
 			else if (uri.Scheme == "https")
-				kind = SecProtocolType.HTTPSProxy;
+				kind = SecProtocol.HttpsProxy;
 
 			//TODO: get username from SystemConfiguration APIs so we don't trigger a double auth prompt
 			var existing = Keychain.FindInternetUserNameAndPassword (uri, kind);
