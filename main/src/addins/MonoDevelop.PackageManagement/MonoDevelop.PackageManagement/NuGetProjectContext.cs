@@ -27,10 +27,12 @@
 using System;
 using System.Xml.Linq;
 using NuGet.Configuration;
+using NuGet.Common;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
-using NuGet.Common;
 using NuGet.ProjectManagement;
+using NuGet.Packaging.PackageExtraction;
+using NuGet.Packaging.Signing;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -39,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		IDEExecutionContext executionContext;
 		ISettings settings;
+		PackageExtractionContext packageExtractionContext;
 
 		public NuGetProjectContext (ISettings settings)
 		{
@@ -90,7 +93,20 @@ namespace MonoDevelop.PackageManagement
 			throw new NotImplementedException ();
 		}
 
-		public PackageExtractionContext PackageExtractionContext { get; set; }
+		public PackageExtractionContext PackageExtractionContext {
+			get {
+				if (packageExtractionContext == null) {
+					var logger = new LoggerAdapter (this);
+					packageExtractionContext = new PackageExtractionContext (
+						PackageSaveMode.Defaultv2,
+						PackageExtractionBehavior.XmlDocFileSaveMode,
+						ClientPolicyContext.GetClientPolicy (settings, logger),
+						logger);
+				}
+				return packageExtractionContext;
+			}
+			set { packageExtractionContext = value; }
+		}
 	}
 }
 

@@ -62,12 +62,8 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			var logger = new LoggerAdapter (context);
-
-			//FIXME
-			//var signedPackageVerifier = new PackageSignatureVerifier (SignatureVerificationProviderFactory.GetSignatureVerificationProviders ());
-			//TODO: Settings?
-			var clientPolicyContext = ClientPolicyContext.GetClientPolicy (null, logger);
-			//https://github.com/NuGet/NuGet.Client/blob/release-5.0.0-rtm/src/NuGet.Clients/NuGet.CommandLine/Commands/InitCommand.cs
+			var solutionManager = new MonoDevelopSolutionManager (solution);
+			var clientPolicyContext = ClientPolicyContext.GetClientPolicy (solutionManager.Settings, logger);
 
 			var packageExtractionContext = new PackageExtractionContext (
 				PackageSaveMode.Defaultv3,

@@ -110,11 +110,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			};
 
 			var logger = new LoggerAdapter (context);
-			//context.PackageExtractionContext = new PackageExtractionContext (
-				//PackageSaveMode.Defaultv2,
-				//PackageExtractionBehavior.XmlDocFileSaveMode,
-				//ClientPolicyContext.GetClientPolicy (settings, logger),
-				//logger);
+			context.PackageExtractionContext = new PackageExtractionContext (
+				PackageSaveMode.Defaultv2,
+				PackageExtractionBehavior.XmlDocFileSaveMode,
+				ClientPolicyContext.GetClientPolicy (settings, logger),
+				logger);
 
 			return context;
 		}
