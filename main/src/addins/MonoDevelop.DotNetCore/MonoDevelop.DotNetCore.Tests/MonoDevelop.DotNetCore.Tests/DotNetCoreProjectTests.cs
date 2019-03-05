@@ -291,6 +291,10 @@ namespace MonoDevelop.DotNetCore.Tests
 				File.WriteAllText (fileName, string.Empty);
 				Assert.AreEqual ("EmbeddedResource", project.GetDefaultBuildAction (fileName));
 
+				fileName = project.BaseDirectory.Combine ("sample.ts");
+				File.WriteAllText (fileName, string.Empty);
+				Assert.AreEqual ("TypeScriptCompile", project.GetDefaultBuildAction (fileName));
+
 				fileName = project.BaseDirectory.Combine ("wwwroot", "MyPage.html");
 				Directory.CreateDirectory (fileName.ParentDirectory);
 				File.WriteAllText (fileName, string.Empty);
