@@ -90,13 +90,15 @@ namespace MonoDevelop.PackageManagement
 
 			var restoreSummaries = await DependencyGraphRestoreUtility.RestoreAsync (
 				solutionManager,
+				spec,
 				context,
 				new RestoreCommandProvidersCache (),
 				cacheContextModifier,
 				sourceRepositories,
 				Guid.NewGuid (),
 				forceRestore,
-				spec,
+				//TODO:
+				isRestoreOriginalAction: false,
 				context.Logger,
 				cancellationToken);
 
