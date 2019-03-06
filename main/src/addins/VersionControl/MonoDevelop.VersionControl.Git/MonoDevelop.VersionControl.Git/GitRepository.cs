@@ -875,7 +875,7 @@ namespace MonoDevelop.VersionControl.Git
 			var oldHead = RootRepository.Head.Tip;
 
 			if (!CommonPreMergeRebase (GitUpdateOptions.None, monitor, out stashIndex))
-				throw new UserCancelledException();
+				throw new UserCancelledException ();
 
 			if (RootRepository.Head.IsTracking) {
 				try {
@@ -888,7 +888,7 @@ namespace MonoDevelop.VersionControl.Git
 						Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
 
 					monitor.Step (1);
-				} catch(UserCancelledException) {
+				} catch (UserCancelledException) {
 					CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor, oldHead);
 				}
 			}
