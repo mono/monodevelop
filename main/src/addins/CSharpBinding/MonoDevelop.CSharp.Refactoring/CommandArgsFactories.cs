@@ -31,7 +31,7 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	static class CommandArgsFactories
 	{
-        public static SortAndRemoveUnnecessaryImportsCommandArgs CreateSortAndRemoveUnnecessaryImportsCommandArgs(ITextView v, ITextBuffer b) =>
-           new SortAndRemoveUnnecessaryImportsCommandArgs(v, b);
-    }
+		public static SortAndRemoveUnnecessaryImportsCommandArgs CreateSortAndRemoveUnnecessaryImportsCommandArgs (ITextView v, ITextBuffer b)
+			=> new SortAndRemoveUnnecessaryImportsCommandArgs (v, b);
+	}
 }

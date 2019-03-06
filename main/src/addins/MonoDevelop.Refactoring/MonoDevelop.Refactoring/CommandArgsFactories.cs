@@ -28,9 +28,9 @@ using Microsoft.CodeAnalysis.Editor.Commanding.Commands;
 
 namespace MonoDevelop.Refactoring
 {
-    static class CommandArgsFactories
-    {
-		public static GoToImplementationCommandArgs CreateGoToImplementationCommandArgs (ITextView v, ITextBuffer b) =>
-			new GoToImplementationCommandArgs (v, b);
+	static class CommandArgsFactories
+	{
+		public static GoToImplementationCommandArgs CreateGoToImplementationCommandArgs (ITextView v, ITextBuffer b)
+			=> new GoToImplementationCommandArgs (v, b);
 	}
 }
