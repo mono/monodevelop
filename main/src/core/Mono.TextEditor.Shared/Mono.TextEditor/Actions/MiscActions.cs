@@ -243,17 +243,20 @@ namespace Mono.TextEditor
 				data.EnsureCaretIsNotVirtual ();
 
 				var oldCaretLine = data.Caret.Location.Line;
-
+				var indentString = data.IndentationTracker.GetIndentationString (data.Caret.Line);
 				data.InsertAtCaret (data.EolMarker);
+
 				if (data.HasIndentationTracker) {
 					// Don't insert the indent string if the EOL insertion modified the caret location in an unexpected fashion
 					//  (This likely means someone has custom logic regarding insertion of the EOL)
 					if (data.Caret.Location.Line == oldCaretLine + 1 && data.Caret.Location.Column == 1) {
-						var indentString = data.IndentationTracker.GetIndentationString (data.Caret.Line);
 						var line = data.GetLine (data.Caret.Line);
 						var currentIndent = line.GetIndentation (data.Document);
-						if (indentString !=  currentIndent)
-							data.Replace (line.Offset, currentIndent.Length, indentString);
+						var currentCalculatedIndent = data.IndentationTracker.GetIndentationString (data.Caret.Line);
+						if (!string.IsNullOrEmpty (currentCalculatedIndent))
+							indentString = currentCalculatedIndent;
+						if (indentString != currentIndent)
+							data.InsertAtCaret (indentString);
 					}
 				}
 			}
