@@ -33,7 +33,14 @@ namespace MonoDevelop.VersionControl.Git
 	public interface IGitCredentialsProvider
 	{
 		bool SupportsUrl (string url);
-		Task<(bool exists, GitCredential credentials)> TryGetCredentialsAsync (string url);
+		Task<(GitCredentialsProviderResult result, GitCredential credentials)> TryGetCredentialsAsync (string url);
+	}
+
+	public enum GitCredentialsProviderResult
+	{
+		Found,
+		NotFound,
+		Cancelled,
 	}
 
 	public class GitCredential

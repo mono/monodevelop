@@ -207,8 +207,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (gitCredentialsProviders != null) {
 				foreach (var gitCredentialsProvider in gitCredentialsProviders) {
 					if (gitCredentialsProvider.SupportsUrl (url)) {
-						result = GetCredentialsFromProvider (gitCredentialsProvider, url, types, cred);
-						if (result)
+						var providerResult = GetCredentialsFromProvider (gitCredentialsProvider, url, types, cred);
+						if (providerResult == GitCredentialsProviderResult.Cancelled)
+							throw new UserCancelledException (UserCancelledExceptionMessage);
+						if (result = providerResult == GitCredentialsProviderResult.Found)
 							break;
 					}
 				}
@@ -231,19 +233,19 @@ namespace MonoDevelop.VersionControl.Git
 			throw new UserCancelledException (UserCancelledExceptionMessage);
 		}
 
-		static bool GetCredentialsFromProvider (IGitCredentialsProvider gitCredentialsProvider, string uri, SupportedCredentialTypes type, Credentials cred)
+		static GitCredentialsProviderResult GetCredentialsFromProvider (IGitCredentialsProvider gitCredentialsProvider, string uri, SupportedCredentialTypes type, Credentials cred)
 		{
 			if (type != SupportedCredentialTypes.UsernamePassword)
-				return false;
+				return GitCredentialsProviderResult.NotFound;
 
-			var (exists, credentials) = gitCredentialsProvider.TryGetCredentialsAsync (uri).Result;
+			var (result, credentials) = gitCredentialsProvider.TryGetCredentialsAsync (uri).Result;
 		
-			if (exists) {
+			if (result == GitCredentialsProviderResult.Found) {
 				((UsernamePasswordCredentials)cred).Username = credentials.Username;
 				((UsernamePasswordCredentials)cred).Password = credentials.Password;
 			}
 
-			return exists;
+			return result;
 		}
 
 		static bool GetCredentials (string uri, SupportedCredentialTypes type, Credentials cred)
