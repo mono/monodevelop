@@ -24,15 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis.Editor.Commanding.Commands;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
-    static class CommandArgsFactories
-    {
-		public static GoToImplementationCommandArgs CreateGoToImplementationCommandArgs (ITextView v, ITextBuffer b) =>
-			new GoToImplementationCommandArgs (v, b);
-	}
+	static class CommandArgsFactories
+	{
+        public static SortAndRemoveUnnecessaryImportsCommandArgs CreateSortAndRemoveUnnecessaryImportsCommandArgs(ITextView v, ITextBuffer b) =>
+           new SortAndRemoveUnnecessaryImportsCommandArgs(v, b);
+    }
 }
