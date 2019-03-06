@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide
 		static TaskService taskService;
 		static ProjectOperations projectOperations;
 		static HelpOperations helpOperations;
+		static DocumentControllerService documentControllerService;
+		static DocumentModelRegistry documentModelRegistry;
 
 		static IdeServices ()
 		{
@@ -70,6 +72,8 @@ namespace MonoDevelop.Ide
 			Runtime.ServiceProvider.WhenServiceInitialized<TaskService> (s => taskService = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<ProjectOperations> (s => projectOperations = s);
 			Runtime.ServiceProvider.WhenServiceInitialized<HelpOperations> (s => helpOperations = s);
+			Runtime.ServiceProvider.WhenServiceInitialized<DocumentControllerService> (s => documentControllerService = s);
+			Runtime.ServiceProvider.WhenServiceInitialized<DocumentModelRegistry> (s => documentModelRegistry = s);
 		}
 
 		public static TextEditorService TextEditorService => Initialized (textEditorService);
@@ -101,6 +105,10 @@ namespace MonoDevelop.Ide
 		public static ProjectOperations ProjectOperations => Initialized (projectOperations);
 
 		public static HelpOperations HelpOperations => Initialized (helpOperations);
+
+		public static DocumentControllerService DocumentControllerService => Initialized (documentControllerService);
+
+		public static DocumentModelRegistry DocumentModelRegistry => Initialized (documentModelRegistry);
 
 		public static HelpService HelpService => Core.CoreServices.HelpService;
 

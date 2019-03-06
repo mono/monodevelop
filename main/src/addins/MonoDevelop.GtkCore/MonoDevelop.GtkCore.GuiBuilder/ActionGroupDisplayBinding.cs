@@ -70,7 +70,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return list;
 
 			excludeThis = true;
-			var db = (await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
+			var db = (await IdeServices.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			excludeThis = false;
 			if (db != null) {
 				list = list.Add (
@@ -86,7 +86,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override async Task<DocumentController> CreateController (FileDescriptor file, DocumentControllerDescription controllerDescription)
 		{
 			excludeThis = true;
-			var db = (await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
+			var db = (await IdeServices.DocumentControllerService.GetSupportedControllers (file)).FirstOrDefault (d => d.Role == DocumentControllerRole.Source);
 			var info = GtkDesignInfo.FromProject ((DotNetProject)file.Owner);
 			
 			var content = await db.CreateController (file);

@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.Templates
 					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
 					string mimeType = GuessMimeType (fileName);
 					var fileDescriptor = new FileDescriptor (fileName, mimeType, project);
-					return IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (fileDescriptor).Result.Any (c => c.CanUseAsDefault);
+					return IdeServices.DocumentControllerService.GetSupportedControllers (fileDescriptor).Result.Any (c => c.CanUseAsDefault);
 				}
 			}
 		}

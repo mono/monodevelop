@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui
 			var viewerIds = new HashSet<string> ();
 			var fileDescriptor = new FileDescriptor (filePath, mimeType, ownerProject);
 
-			foreach (var b in await IdeApp.Workbench.DocumentControllerService.GetSupportedControllers (fileDescriptor)) {
+			foreach (var b in await IdeServices.DocumentControllerService.GetSupportedControllers (fileDescriptor)) {
 				result.Add (new FileViewer (b));
 			}
 
