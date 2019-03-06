@@ -1345,17 +1345,24 @@ namespace MonoDevelop.Core
 
 		internal void OnFileCreated (FileEventArgs args)
 		{
-			FileCreated?.Invoke (this, args);
+			FileCreated?.Invoke (this, Clone (args));
 		}
 
 		internal void OnFileRemoved (FileEventArgs args)
 		{
-			FileRemoved?.Invoke (this, args);
+			FileRemoved?.Invoke (this, Clone (args));
 		}
 
 		internal void OnFileRenamed (FileCopyEventArgs args)
 		{
-			FileRenamed?.Invoke (this, args);
+			FileRenamed?.Invoke (this, Clone (args));
+		}
+
+		static T Clone<T> (T args) where T : FileEventArgs, new()
+		{
+			var result = new T ();
+			result.AddRange (args);
+			return result;
 		}
 	}
 
