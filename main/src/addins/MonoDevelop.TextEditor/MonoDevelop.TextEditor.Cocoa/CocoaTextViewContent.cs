@@ -31,11 +31,10 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 using MonoDevelop.Components;
-using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
-using Microsoft.VisualStudio.Text.Editor.Implementation;
 
 namespace MonoDevelop.TextEditor
 {
@@ -73,20 +72,47 @@ namespace MonoDevelop.TextEditor
 	{
 		ICocoaTextViewHost textViewHost;
 		NSView textViewHostControl;
-		EmbeddedNSViewControl embeddedControl;
+		GtkNSViewHostControl embeddedControl;
 
-		sealed class EmbeddedNSViewControl : Control
+		static readonly Lazy<bool> useManagedGtkNSViewHost = new Lazy<bool> (
+			() => FeatureSwitchService.IsFeatureEnabled ("ManagedGtkNSViewHost").GetValueOrDefault ());
+
+		abstract class GtkNSViewHostControl : Control
+		{
+			public Gtk.Widget GtkView { get; protected set; }
+		}
+
+		sealed class ManagedGtkNSViewHostControl : GtkNSViewHostControl
+		{
+			public ManagedGtkNSViewHostControl (ICocoaTextViewHost textViewHost)
+			{
+				if (textViewHost == null)
+					throw new ArgumentNullException (nameof (textViewHost));
+
+				GtkView = new Gtk.GtkNSViewHost (textViewHost.HostControl);
+				GtkView.Show ();
+			}
+
+			protected override object CreateNativeWidget<T> ()
+				=> GtkView;
+
+			public override bool HasFocus
+				=> GtkView.HasFocus;
+
+			public override void GrabFocus ()
+				=> GtkView.GrabFocus ();
+		}
+
+		sealed class LegacyGtkNSViewHostControl : GtkNSViewHostControl
 		{
 			readonly ICocoaTextViewHost textViewHost;
 			readonly NSView nsView;
 
 			bool nativeViewNeedsFocus;
 
-			public Gtk.Widget GtkView { get; }
-
 			public bool IsGrabbingFocus { get; private set; }
 
-			public EmbeddedNSViewControl (ICocoaTextViewHost textViewHost)
+			public LegacyGtkNSViewHostControl (ICocoaTextViewHost textViewHost)
 			{
 				this.textViewHost = textViewHost ?? throw new ArgumentNullException (nameof (textViewHost));
 				this.nsView = textViewHost.HostControl;
@@ -164,11 +190,18 @@ namespace MonoDevelop.TextEditor
 			textViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			textViewHostControl = textViewHost.HostControl;
 
-			embeddedControl = new EmbeddedNSViewControl (textViewHost);
-			TextView.GotAggregateFocus += (sender, e) => {
-				if (!embeddedControl.IsGrabbingFocus)
-					embeddedControl.GtkView.GrabFocus ();
-			};
+			if (useManagedGtkNSViewHost.Value) {
+				embeddedControl = new ManagedGtkNSViewHostControl (textViewHost);
+			} else {
+				var legacyEmbeddedControl = new LegacyGtkNSViewHostControl (textViewHost);
+				embeddedControl = legacyEmbeddedControl;
+
+				TextView.GotAggregateFocus += (sender, e) => {
+					if (!legacyEmbeddedControl.IsGrabbingFocus)
+						embeddedControl.GtkView.GrabFocus ();
+				};
+			}
+
 			TextView.Properties.AddProperty (typeof (Gtk.Widget), embeddedControl.GtkView);
 
 			return embeddedControl;
