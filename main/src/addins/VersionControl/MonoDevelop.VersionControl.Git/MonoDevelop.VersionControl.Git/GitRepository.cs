@@ -1048,12 +1048,9 @@ namespace MonoDevelop.VersionControl.Git
 					modified = true;
 
 				if (modified) {
-					if (MessageService.GenericAlert (
-						    MonoDevelop.Ide.Gui.Stock.Question,
-						    GettextCatalog.GetString ("You have uncommitted changes"),
-						    GettextCatalog.GetString ("What do you want to do?"),
-						    AlertButton.Cancel,
-						    new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel)
+					bool canceled = StashOrCancel ();
+
+					if (canceled)
 						return false;
 
 					options |= GitUpdateOptions.SaveLocalChanges;
@@ -1070,6 +1067,19 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.Step (1);
 			}
 			return true;
+		}
+
+		bool StashOrCancel ()
+		{
+			if (MessageService.GenericAlert (
+					Ide.Gui.Stock.Question,
+					GettextCatalog.GetString ("You have uncommitted changes"),
+					GettextCatalog.GetString ("What do you want to do?"),
+					AlertButton.Cancel,
+					new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel)
+				return true;
+
+			return false;
 		}
 
 		bool ConflictResolver(LibGit2Sharp.Repository repository, ProgressMonitor monitor, Commit resetToIfFail, string message)
@@ -1764,6 +1774,18 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				if (GitService.StashUnstashWhenSwitchingBranches) {
+					const VersionStatus unclean = VersionStatus.Modified | VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete;
+					bool modified = false;
+					if (GetDirectoryVersionInfo (RootPath, false, true).Any (v => (v.Status & unclean) != VersionStatus.Unversioned))
+						modified = true;
+
+					if (modified) {
+						bool canceled = StashOrCancel ();
+
+						if (canceled)
+							return false;
+					}
+
 					// Remove the stash for this branch, if exists
 					string currentBranch = RootRepository.Head.FriendlyName;
 					stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, currentBranch));
