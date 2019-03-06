@@ -1,10 +1,8 @@
-﻿//
-// Commands.cs
 //
-// Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+// CommandArgsFactories.cs
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+//
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +21,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
-namespace MonoDevelop.Refactoring
+
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.CodeAnalysis.Editor.Commanding.Commands;
+
+namespace MonoDevelop.CSharp.Refactoring
 {
-
-	public enum RefactoryCommands
+	static class CommandArgsFactories
 	{
-		CurrentRefactoryOperations,
-		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
-		GotoImplementation,
-		SortAndRemoveUnnecessaryImports,
-		FindReferences,
-		FindAllReferences,
-		FindDerivedClasses,
-		DeclareLocal,
-		ImportSymbol,
-		QuickFix,
-		QuickFixMenu
+		public static SortAndRemoveUnnecessaryImportsCommandArgs CreateSortAndRemoveUnnecessaryImportsCommandArgs (ITextView v, ITextBuffer b)
+			=> new SortAndRemoveUnnecessaryImportsCommandArgs (v, b);
 	}
-
 }
-

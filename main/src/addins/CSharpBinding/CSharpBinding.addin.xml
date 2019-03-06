@@ -336,5 +336,8 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Analysis/C#">
 		<Panel id="CodeStylePanel" _label="Code Style" fill="true" class="MonoDevelop.CSharp.OptionProvider.CodeStylePage" grouping="Tab" icon="md-prefs-code-rules" insertbefore="CodeActions" />
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.CSharp.Refactoring.Commands.SortAndRemoveImports" argsType="@MonoDevelop.CSharp.Refactoring.CommandArgsFactories.CreateSortAndRemoveUnnecessaryImportsCommandArgs" />
+	</Extension>
 </ExtensionModel>
