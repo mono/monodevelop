@@ -120,7 +120,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.Owner = Owner;
 		}
 
-		protected override ProjectReloadCapability OnGetProjectReloadCapability ()
+		internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
 			return content.ProjectReloadCapability;
 		}

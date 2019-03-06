@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public override void Dispose ()
 		{
-			documentContext.Dispose ();
+			documentContext?.Dispose ();
 			base.Dispose ();
 		}
 

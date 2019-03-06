@@ -34,17 +34,18 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Ide.Gui.Documents
 {
 	[DefaultServiceImplementation]
-	public class DocumentControllerService: Service
+	public class DocumentControllerService : Service
 	{
 		internal const string DocumentControllerFactoriesPath = "/MonoDevelop/Ide/DocumentControllerFactories";
 
 		List<DocumentControllerFactory> registeredFactories = new List<DocumentControllerFactory> ();
+		List<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> customExtensionNodes = new List<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> ();
 
 		/// <summary>
 		/// Checks if this factory can create a controller for the provided file, and returns the kind of
 		/// controller it can create.
 		/// </summary>
-		public async Task<DocumentControllerDescription[]> GetSupportedControllers (ModelDescriptor modelDescriptor)
+		public async Task<DocumentControllerDescription []> GetSupportedControllers (ModelDescriptor modelDescriptor)
 		{
 			var result = new List<DocumentControllerDescription> ();
 			foreach (var factory in GetFactories (modelDescriptor)) {
@@ -80,9 +81,38 @@ namespace MonoDevelop.Ide.Gui.Documents
 			registeredFactories.Remove (factory);
 		}
 
-		internal static IEnumerable<TypeExtensionNode<ExportDocumentControllerFactoryAttribute>> GetModelExtensions (ExtensionContext ctx)
+		internal IEnumerable<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> GetModelExtensions (ExtensionContext ctx)
 		{
-			return ctx.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerFactoryAttribute>> (DocumentControllerFactoriesPath);
+			return ctx.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> (DocumentController.DocumentControllerExtensionsPath).Concat (customExtensionNodes);
+		}
+
+		internal void RegisterControllerExtension (ExportDocumentControllerExtensionAttribute attribute, Type extensionType)
+		{
+			var node = new CustomControllerExtensionNode (attribute, extensionType);
+			customExtensionNodes.Add (node);
+		}
+
+		internal void UnregisterControllerExtension (ExportDocumentControllerExtensionAttribute attribute)
+		{
+			customExtensionNodes.RemoveAll (n => n.Data == attribute);
+		}
+	}
+
+	class CustomControllerExtensionNode: TypeExtensionNode<ExportDocumentControllerExtensionAttribute>
+	{
+		Type type;
+		static int id;
+
+		public CustomControllerExtensionNode (ExportDocumentControllerExtensionAttribute attribute, Type type)
+		{
+			this.type = type;
+			attribute.NodeId = "_id_" + (id++);
+			GetType ().GetProperty ("Data").SetValue (this, attribute);
+		}
+
+		public override object CreateInstance ()
+		{
+			return Activator.CreateInstance (type);
 		}
 	}
 }

@@ -35,6 +35,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// </summary>
 	public class ExportDocumentControllerExtensionAttribute : ExportDocumentControllerBaseAttribute
 	{
+		string nodeId;
+
 		[NodeAttribute ("controllerType")]
 		public Type ControllerType { get; set; }
 
@@ -48,6 +50,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return ControllerType.IsInstanceOfType (controller);
 			}
 			return true;
+		}
+
+		internal virtual string NodeId {
+			get => nodeId ?? ExtensionNode.Id;
+			set => nodeId = value;
 		}
 	}
 }

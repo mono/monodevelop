@@ -305,7 +305,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		protected override ProjectReloadCapability OnGetProjectReloadCapability ()
+		internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
 			return textEditorImpl.ProjectReloadCapability;
 		}

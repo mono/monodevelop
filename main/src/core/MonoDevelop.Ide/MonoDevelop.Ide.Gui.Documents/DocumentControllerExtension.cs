@@ -49,6 +49,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal TypeExtensionNode<ExportDocumentControllerExtensionAttribute> SourceExtensionNode { get; set; }
 
+		internal string Id => GetType ().FullName + "_" + SourceExtensionNode?.Data.NodeId;
+
 		/// <summary>
 		/// Raised when the content of the document changes, which means that GetContent() may return new content objects
 		/// </summary>
@@ -57,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Gets the capability of this view for being reassigned a project
 		/// </summary>
-		public virtual ProjectReloadCapability ProjectReloadCapability { get; }
+		public virtual ProjectReloadCapability ProjectReloadCapability => Controller.OnGetProjectReloadCapability ();
 
 		/// <summary>
 		/// Controller to which this extension is bound
@@ -108,9 +110,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		/// <summary>
-		/// Returns the current editing status of the controller.
+		/// Sets the current editing status of the extension
 		/// </summary>
-		public virtual PropertyBag GetDocumentStatus ()
+		public virtual void SetDocumentStatus (Properties properties)
+		{
+		}
+
+		/// <summary>
+		/// Returns the current editing status of the controller extension.
+		/// </summary>
+		public virtual Properties GetDocumentStatus ()
 		{
 			return null;
 		}
@@ -139,21 +148,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnUnfocused ()
 		{
-		}
-
-		public object GetContent (Type type)
-		{
-			return GetContents (type).FirstOrDefault ();
-		}
-
-		public T GetContent<T> () where T : class
-		{
-			return GetContents<T> ().FirstOrDefault ();
-		}
-
-		public IEnumerable<T> GetContents<T> () where T : class
-		{
-			return OnGetContents (typeof (T)).Cast<T> ();
 		}
 
 		public IEnumerable<object> GetContents (Type type)

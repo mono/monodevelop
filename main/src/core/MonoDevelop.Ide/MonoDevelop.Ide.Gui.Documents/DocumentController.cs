@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool loaded;
 		Xwt.Drawing.Image documentIcon;
 		bool usingIconId;
+		Properties lastKnownStatus;
 
 		internal IWorkbenchWindow WorkbenchWindow { get; set; }
 
@@ -201,7 +202,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			set {
 				if (value != owner) {
 					owner = value;
-					itemExtension.OnOwnerChanged ();
+					if (itemExtension != null)
+						itemExtension.OnOwnerChanged ();
+					else
+						OnOwnerChanged ();
+					RefreshExtensions ().Ignore ();
 				}
 			}
 		}
@@ -360,7 +365,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (initialized)
 				throw new InvalidOperationException ("Already initialized");
 			initialized = true;
-			await OnInitialize (modelDescriptor, status);
+
+			lastKnownStatus = status ?? new Properties ();
+			var controllerStatus = lastKnownStatus.Get<Properties> ("Controller");
+
+			await OnInitialize (modelDescriptor, controllerStatus);
+
 			extensionContext = CreateExtensionContext ();
 			await InitializeExtensionChain ();
 		}
@@ -368,6 +378,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public void Dispose ()
 		{
 			OnDispose ();
+			extensionChain?.Dispose ();
 		}
 
 		/// <summary>
@@ -408,13 +419,28 @@ namespace MonoDevelop.Ide.Gui.Documents
 			SetDocumentStatus (status);
 		}
 
+		const string ExtensionPropertyPrefix = "Extension_";
+
 		/// <summary>
 		/// Returns the current editing status of the controller.
 		/// </summary>
 		public Properties GetDocumentStatus ()
 		{
 			CheckInitialized ();
-			return OnGetDocumentStatus ();
+
+			// The lastKnownStatus instance is being reused here. It may contain status from
+			// extensions that have been disposed, but that's ok, the status will be restored
+			// if the extensions are loaded again
+
+			var status = OnGetDocumentStatus ();
+			lastKnownStatus.Set ("Controller", status);
+			if (extensionChain != null) {
+				foreach (var ex in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension>()) {
+					var s = ex.GetDocumentStatus ();
+					lastKnownStatus.Set (ExtensionPropertyPrefix + ex.Id, s);
+				}
+			}
+			return lastKnownStatus;
 		}
 
 		/// <summary>
@@ -423,31 +449,55 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public void SetDocumentStatus (Properties properties)
 		{
 			CheckInitialized ();
-			OnSetDocumentStatus (properties);
+			lastKnownStatus = properties;
+			var controllerProps = properties.Get<Properties> ("Controller");
+			if (controllerProps != null)
+				OnSetDocumentStatus (controllerProps);
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					var s = GetExtensionStatus (ext);
+					if (s != null)
+						ext.SetDocumentStatus (s);
+				}
+			}
+		}
+
+		Properties GetExtensionStatus (DocumentControllerExtension ext)
+		{
+			return lastKnownStatus?.Get<Properties> (ExtensionPropertyPrefix + ext.Id);
+		}
+
+		void StoreExtensionStatus (DocumentControllerExtension ext)
+		{
+			var s = ext.GetDocumentStatus ();
+			lastKnownStatus.Set (ExtensionPropertyPrefix + ext.Id, s);
 		}
 
 		public object GetContent (Type type)
 		{
-			CheckInitialized ();
 			return GetContents (type).FirstOrDefault ();
 		}
 
 		public T GetContent<T> () where T : class
 		{
-			CheckInitialized ();
 			return GetContents<T> ().FirstOrDefault ();
 		}
 
 		public IEnumerable<T> GetContents<T> () where T : class
 		{
-			CheckInitialized ();
-			return OnGetContents (typeof (T)).Cast<T> ();
+			return GetContents (typeof (T)).Cast<T> ();
 		}
 
 		public IEnumerable<object> GetContents (Type type)
 		{
 			CheckInitialized ();
-			return OnGetContents (type);
+			var contents = OnGetContents (type);
+
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ())
+					contents = contents.Concat (ext.GetContents (type));
+			}
+			return contents;
 		}
 
 		public virtual object GetDocumentObject ()
@@ -502,21 +552,21 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			var allExtensions = extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ();
 			var loadedNodes = allExtensions.Where (ex => ex.SourceExtensionNode != null)
-				.Select (ex => ex.SourceExtensionNode.Id).ToList ();
+				.Select (ex => ex.SourceExtensionNode.Data.NodeId).ToList ();
 
 			var newExtensions = new List<DocumentControllerExtension> ();
 
-			ExtensionNode lastAddedNode = null;
+			TypeExtensionNode<ExportDocumentControllerExtensionAttribute> lastAddedNode = null;
 
 			// Ensure conditions are re-evaluated.
 			extensionContext = CreateExtensionContext ();
 
 			using (extensionChain.BatchModify ()) {
-				foreach (var node in GetModelExtensions (extensionContext)) {
+				foreach (var node in IdeServices.DocumentControllerService.GetModelExtensions (extensionContext)) {
 					// If the node already generated an extension, skip it
-					if (loadedNodes.Contains (node.Id)) {
+					if (loadedNodes.Contains (node.Data.NodeId)) {
 						lastAddedNode = node;
-						loadedNodes.Remove (node.Id);
+						loadedNodes.Remove (node.Data.NodeId);
 						continue;
 					}
 
@@ -528,13 +578,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 							newExtensions.Add (ext);
 							if (lastAddedNode != null) {
 								// There is an extension before this one. Find it and add the new extension after it.
-								var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode?.Id == lastAddedNode.Id);
+								var prevExtension = allExtensions.FirstOrDefault (ex => ex.SourceExtensionNode?.Data.NodeId == lastAddedNode.Data.NodeId && !string.IsNullOrEmpty (lastAddedNode.Data.NodeId));
 								extensionChain.AddExtension (ext, prevExtension);
 							} else
 								extensionChain.AddExtension (ext);
-							await ext.Init (this, null);
+							await ext.Init (this, GetExtensionStatus (ext));
 							extensionsChanged = true;
-						}
+						} else
+							ext.Dispose ();
 					}
 				}
 
@@ -542,6 +593,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 				foreach (var ext in allExtensions) {
 					if (!await ext.SupportsController (this)) {
+						// Store the status, it will be restored if the extension is reactivated
+						StoreExtensionStatus (ext);
 						ext.Dispose ();
 						extensionsChanged = true;
 					}
@@ -549,9 +602,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 				if (loadedNodes.Any ()) {
 					foreach (var ext in allExtensions.Where (ex => ex.SourceExtensionNode != null)) {
-						if (loadedNodes.Contains (ext.SourceExtensionNode.Id)) {
+						if (loadedNodes.Contains (ext.SourceExtensionNode.Data.NodeId)) {
 							ext.Dispose ();
-							loadedNodes.Remove (ext.SourceExtensionNode.Id);
+							loadedNodes.Remove (ext.SourceExtensionNode.Data.NodeId);
 							extensionsChanged = true;
 						}
 					}
@@ -603,7 +656,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			// Collect extensions that support this object
 
 			var extensions = new List<DocumentControllerExtension> ();
-			foreach (var node in GetModelExtensions (extensionContext)) {
+			foreach (var node in IdeServices.DocumentControllerService.GetModelExtensions (extensionContext)) {
 				if (node.Data.CanHandle (this)) {
 					var ext = node.CreateInstance ();
 					if (!(ext is DocumentControllerExtension controllerExtension))
@@ -611,7 +664,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 					if (await controllerExtension.SupportsController (this)) {
 						controllerExtension.SourceExtensionNode = node;
 						extensions.Add (controllerExtension);
-					}
+					} else
+						controllerExtension.Dispose ();
 				}
 			}
 
@@ -627,7 +681,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			extensionChain.SetDefaultInsertionPosition (defaultExts.FirstOrDefault ());
 
 			foreach (var e in extensions)
-				await e.Init (this, null);
+				await e.Init (this, GetExtensionStatus (e));
 
 			itemExtension = extensionChain.GetExtension<DocumentControllerExtension> ();
 
@@ -647,11 +701,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		ExtensionContext CreateExtensionContext ()
 		{
 			return AddinManager.CreateExtensionContext ();
-		}
-
-		internal static IEnumerable<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> GetModelExtensions (ExtensionContext ctx)
-		{
-			return ctx.GetExtensionNodes<TypeExtensionNode<ExportDocumentControllerExtensionAttribute>> (DocumentControllerExtensionsPath);
 		}
 
 		internal Task EnsureLoaded ()
@@ -698,7 +747,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Initializes the controller
 		/// </summary>
 		/// <returns>The initialize.</returns>
-		/// <param name="status">Status of the controller/view, returned by a GetDocumentStatus() call from a previous session</param>
+		/// <param name="status">Status of the controller/view, returned by a GetDocumentStatus() call from a previous session. It can be null if status was not available.</param>
 		protected virtual Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
 		{
 			return Task.CompletedTask;
@@ -808,7 +857,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Gets the capability of this view for being reassigned a project
 		/// </summary>
-		protected virtual ProjectReloadCapability OnGetProjectReloadCapability ()
+		internal protected virtual ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
 			return ProjectReloadCapability.None;
 		}
@@ -828,7 +877,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		protected virtual Properties OnGetDocumentStatus ()
 		{
-			return new Properties ();
+			return null;
 		}
 
 		/// <summary>
@@ -842,15 +891,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (type.IsInstanceOfType (this))
 				return this;
-
-			if (extensionChain != null) {
-				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
-					var c = ext.GetContent (type);
-					if (c != null)
-						return c;
-				}
-			}
-
 			return null;
 		}
 

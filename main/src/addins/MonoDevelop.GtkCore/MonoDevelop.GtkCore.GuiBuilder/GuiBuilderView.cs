@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			LoadDesigner ();
 		}
 
-		protected override ProjectReloadCapability OnGetProjectReloadCapability ()
+		internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
 			return ProjectReloadCapability.Full;
 		}

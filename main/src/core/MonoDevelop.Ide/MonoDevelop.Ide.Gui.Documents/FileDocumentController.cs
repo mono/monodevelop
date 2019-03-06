@@ -55,6 +55,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 					filePath = value.CanonicalPath;
 					defaultMimeType = null;
 					OnFileNameChanged ();
+
+					// Extensions that apply to specific file types may need to be loaded or unloaded
+					RefreshExtensions ().Ignore ();
 				}
 			}
 		}
