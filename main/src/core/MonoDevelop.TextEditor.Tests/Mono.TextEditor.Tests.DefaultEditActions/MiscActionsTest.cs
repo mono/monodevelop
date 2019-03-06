@@ -292,6 +292,20 @@ ffffffffff");
 1234567890");
 			MiscActions.MoveBlockUp (data);
 		}
+
+		/// <summary>
+		/// Fixes VSTS Bug 801783: Auto indenting is shifting by one space back #279
+		/// </summary>
+		[Test]
+		public void TestVSTS801783 ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ("   ");
+			data.Document.Text = "HelloWorld!";
+			data.Caret.Location = new DocumentLocation (1, "Hello".Length);
+			MiscActions.InsertNewLine (data);
+			Assert.AreEqual (4, data.Caret.Column);
+		}
 	}
 }
 
