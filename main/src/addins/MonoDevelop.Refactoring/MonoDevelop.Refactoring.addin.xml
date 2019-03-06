@@ -56,6 +56,10 @@
 						_label = "_Go to Declaration"
 						shortcut = "F12"
 						macShortcut = "Meta|D F12"/>
+			
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation"
+						_label = "Go to Implementation"/>
+			
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
 					_label = "_Find References" 
 					shortcut = "Shift|F12"
@@ -179,5 +183,6 @@
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToDefinitionCommandArgs" />
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation" argsType="@MonoDevelop.Refactoring.CommandArgsFactories.CreateGoToImplementationCommandArgs" />
 	</Extension>
 </ExtensionModel>

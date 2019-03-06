@@ -1,10 +1,10 @@
-﻿//
-// Commands.cs
+//
+// CommandArgsFactories.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       anvod <anvod@microsoft.com>
 //
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2019 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.CodeAnalysis.Editor.Commanding.Commands;
 
 namespace MonoDevelop.Refactoring
 {
-
-	public enum RefactoryCommands
-	{
-		CurrentRefactoryOperations,
-		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
-		GotoImplementation,
-		FindReferences,
-		FindAllReferences,
-		FindDerivedClasses,
-		DeclareLocal,
-		ImportSymbol,
-		QuickFix,
-		QuickFixMenu
-	}
-
+    static class CommandArgsFactories
+    {
+        public static GoToImplementationCommandArgs CreateGoToImplementationCommandArgs(ITextView v, ITextBuffer b) =>
+            new GoToImplementationCommandArgs(v, b);
+    }
 }
-

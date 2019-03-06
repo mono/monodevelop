@@ -177,6 +177,7 @@
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
