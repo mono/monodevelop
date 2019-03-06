@@ -124,7 +124,7 @@ namespace MonoDevelop.TextEditor
 			("Excluded Code", "Excluded Code"),
 			("Keyword", "Keyword"),
 			("Preprocessor Keyword", "Preprocessor"),
-			("Operator", "Keyword (Operator)"),
+			("Operator", "Keyword(Operator)"),
 			("Literal", "Number"),
 			("Markup Attribute", ""),
 			("Markup Attribute Value", ""),
