@@ -92,6 +92,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			if (document.ActiveView.GetContent<ITextView> () is ITextView view) {
 				view.TextBuffer.Insert (view.Caret.Position.BufferPosition.Position, text);
+			} else if (document.ActiveView.GetContent<Ide.Editor.TextEditor> () is Ide.Editor.TextEditor textEditor) {
+				textEditor.InsertAtCaret (text);
 			}
 		}
 	}
