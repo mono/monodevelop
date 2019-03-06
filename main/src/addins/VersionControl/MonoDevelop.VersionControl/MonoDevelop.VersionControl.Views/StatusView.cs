@@ -11,7 +11,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -303,7 +302,7 @@ namespace MonoDevelop.VersionControl.Views
 				Image = new Xwt.ImageView (ImageService.GetIcon ("vc-status-refresh", IconSize.Menu)).ToGtkWidget ()
 			};
 			btnRefresh.Image.Show ();
-
+			
 			btnRefresh.Clicked += new EventHandler (OnRefresh);
 			toolbar.Add (btnRefresh);
 
@@ -987,7 +986,7 @@ namespace MonoDevelop.VersionControl.Views
 				found = false;
 				if (filestore.GetIterFirst (out oldStatusIter)) {
 					do {
-						if (args.FilePath == (string) filestore.GetValue (oldStatusIter, ColFullPath)) {
+						if (args.FilePath == (string)filestore.GetValue (oldStatusIter, ColFullPath)) {
 							wasExpanded = filelist.GetRowExpanded (filestore.GetPath (oldStatusIter));
 							found = true;
 							break;
@@ -1000,7 +999,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			try {
 				// Reuse remote status from old version info
-				newInfo = vc.GetVersionInfo (args.FilePath, VersionInfoQueryFlags.IgnoreCache);
+				newInfo = vc.GetVersionInfo (args.FilePath);
 				if (found && newInfo != null) {
 					VersionInfo oldInfo = statuses [oldStatusIndex];
 					if (oldInfo != null) {
@@ -1008,20 +1007,18 @@ namespace MonoDevelop.VersionControl.Views
 						newInfo.RemoteRevision = oldInfo.RemoteRevision;
 					}
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				return true;
 			}
 
 			if (found) {
 				if (!FileVisible (newInfo)) {
-					if (changeSet.GetFileItem (args.FilePath) != null) {
-						// Just remove the file from the change set
-						changeSet.RemoveFile (args.FilePath);
-						statuses.RemoveAt (oldStatusIndex);
-						filestore.Remove (ref oldStatusIter);
-					}
+					// Just remove the file from the change set
+					changeSet.RemoveFile (args.FilePath);
+					statuses.RemoveAt (oldStatusIndex);
+					filestore.Remove (ref oldStatusIter);
+
 					return true;
 				}
 
@@ -1032,22 +1029,26 @@ namespace MonoDevelop.VersionControl.Views
 				// Update the tree
 				AppendFileInfo (newInfo, wasExpanded);
 				filestore.Remove (ref oldStatusIter);
-			}
-			else {
+			} else {
 				if (FileVisible (newInfo)) {
-					if (!statuses.Any (s => s.LocalPath == newInfo.LocalPath)) {
-						statuses.Add (newInfo);
-						AppendFileInfo (newInfo, wasExpanded);
-					}
-
-					if (changeSet.GetFileItem (args.FilePath) != null) {
-						changeSet.RemoveFile (args.FilePath);
-					}
-
 					changeSet.AddFile (newInfo);
+					statuses.Add (newInfo);
+					AppendFileInfo (newInfo, wasExpanded);
+				} else {
+					InalidateChangeSet (newInfo.LocalPath);
 				}
 			}
 			return true;
+		}
+
+		void InalidateChangeSet(FilePath path)
+		{
+			if (!changeSet.ContainsFile (path)) {
+				var newInfo = vc.GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
+				if (FileVisible (newInfo)) {
+					changeSet.AddFile (newInfo);
+				}
+			}
 		}
 
 		void InvalidateDiffData (FilePath path, bool remote, VersionInfo info)
