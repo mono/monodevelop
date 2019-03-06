@@ -67,8 +67,10 @@ namespace IdeUnitTests
 			get {
 				return activeWindow;
 			} set {
-				activeWindow = value;
-				OnActiveWindowChanged ();
+				if (activeWindow != value) {
+					activeWindow = value;
+					OnActiveWindowChanged ();
+				}
 			}
 		}
 

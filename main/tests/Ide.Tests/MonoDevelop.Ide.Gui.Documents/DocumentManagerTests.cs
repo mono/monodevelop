@@ -116,6 +116,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			Assert.AreEqual (1, documentManager.Documents.Count);
 			Assert.AreSame (doc1, documentManager.Documents [0]);
+			Assert.AreSame (doc1, documentManager.ActiveDocument);
 
 			Assert.AreEqual (1, eventTracker.ActiveDocumentChangedEvents.Count);
 			Assert.AreSame (doc1, eventTracker.ActiveDocumentChangedEvents [0].Document);

@@ -525,6 +525,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (documentOpenInfo.Options.HasFlag (OpenDocumentOptions.BringToFront) || documents.Count == 1)
 				doc.Select ();
 
+			// Ensure the active document is up to date
+			OnDocumentChanged (null, null);
+
 			commandHandler.Initialize (doc);
 
 			CountFileOpened (documentOpenInfo.DocumentController);
