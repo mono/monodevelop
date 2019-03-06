@@ -871,40 +871,29 @@ namespace MonoDevelop.VersionControl.Git
 			// TODO: Make it work differently for submodules.
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 
-			TryCreateStashOrCancel (monitor);
+			int stashIndex = -1;
+			var oldHead = RootRepository.Head.Tip;
+
+			if (!CommonPreMergeRebase (GitUpdateOptions.None, monitor, out stashIndex))
+				throw new UserCancelledException();
 
 			if (RootRepository.Head.IsTracking) {
-				Fetch (monitor, RootRepository.Head.RemoteName);
+				try {
+					Fetch (monitor, RootRepository.Head.RemoteName);
 
-				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
-				if (GitService.UseRebaseOptionWhenPulling)
-					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
-				else
-					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
+					if (GitService.UseRebaseOptionWhenPulling)
+						Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					else
+						Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
 
-				monitor.Step (1);
+					monitor.Step (1);
+				} catch(UserCancelledException) {
+					CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor, oldHead);
+				}
 			}
 
 			monitor.EndTask ();
-		}
-
-		bool TryCreateStashOrCancel (ProgressMonitor monitor)
-		{
-			bool hasChanges = false;
-			if (GetDirectoryVersionInfo (RootPath, false, true).Any (v => v.HasLocalChanges))
-				hasChanges = true;
-
-			if (hasChanges) {
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("There are pending changes. Are you sure you want to update?"),
-												GettextCatalog.GetString ("All changes will be permanently lost."),
-												AlertButton.Cancel, new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel) {
-					throw new UserCancelledException ();
-				}
-
-				return TryCreateStash (monitor, GetStashName ("_tmp_"), out Stash stash);
-			}
-
-			return false;
 		}
 
 		static bool HandleAuthenticationException (AuthenticationException e)
