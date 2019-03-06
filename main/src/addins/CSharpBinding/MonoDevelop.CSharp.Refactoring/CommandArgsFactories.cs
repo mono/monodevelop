@@ -1,8 +1,6 @@
 //
 // CommandArgsFactories.cs
 //
-// Author:
-//       anvod <anvod@microsoft.com>
 //
 // Copyright (c) 2019 Microsoft
 //
