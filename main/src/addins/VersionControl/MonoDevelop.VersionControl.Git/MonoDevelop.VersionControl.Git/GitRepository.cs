@@ -871,6 +871,8 @@ namespace MonoDevelop.VersionControl.Git
 			// TODO: Make it work differently for submodules.
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 
+			TryCreateStashOrCancel (monitor);
+
 			if (RootRepository.Head.IsTracking) {
 				Fetch (monitor, RootRepository.Head.RemoteName);
 
@@ -884,6 +886,25 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			monitor.EndTask ();
+		}
+
+		bool TryCreateStashOrCancel (ProgressMonitor monitor)
+		{
+			bool hasChanges = false;
+			if (GetDirectoryVersionInfo (RootPath, false, true).Any (v => v.HasLocalChanges))
+				hasChanges = true;
+
+			if (hasChanges) {
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("There are pending changes. Are you sure you want to update?"),
+												GettextCatalog.GetString ("All changes will be permanently lost."),
+												AlertButton.Cancel, new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel) {
+					throw new UserCancelledException ();
+				}
+
+				return TryCreateStash (monitor, GetStashName ("_tmp_"), out Stash stash);
+			}
+
+			return false;
 		}
 
 		static bool HandleAuthenticationException (AuthenticationException e)
