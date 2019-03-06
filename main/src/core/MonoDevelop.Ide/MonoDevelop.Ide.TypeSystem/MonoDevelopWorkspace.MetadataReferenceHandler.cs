@@ -92,9 +92,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				if (!await AddMetadataAssemblyReferences (data))
 					return ImmutableArray<MonoDevelopMetadataReference>.Empty;
-
-				if (!AddMetadataProjectReferences (data))
-					return ImmutableArray<MonoDevelopMetadataReference>.Empty;
 				return data.Result.ToImmutableArray ();
 			}
 
@@ -112,6 +109,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, false).ConfigureAwait (false);
 					foreach (var file in referencedAssemblies) {
+						if (file.IsProjectReference)
+							continue;
+
 						if (data.Token.IsCancellationRequested)
 							return false;
 
@@ -130,34 +130,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					// TODO: Check whether this should return false, I retained compat for now.
 					return true;
 				}
-			}
-
-			bool AddMetadataProjectReferences (AddMetadataReferencesData data)
-			{
-				try {
-					var referencedProjects = data.Project.GetReferencedItems (data.ConfigurationSelector);
-					foreach (var pr in referencedProjects) {
-						if (data.Token.IsCancellationRequested)
-							return false;
-
-						if (!(pr is MonoDevelop.Projects.DotNetProject referencedProject) || !TypeSystemService.IsOutputTrackedProject (referencedProject))
-							continue;
-
-						var fileName = referencedProject.GetOutputFileName (data.ConfigurationSelector);
-						if (!data.Visited.Add (fileName))
-							continue;
-
-						var metadataReference = manager.GetOrCreateMetadataReference (fileName, MetadataReferenceProperties.Assembly);
-						if (metadataReference != null)
-							data.Result.Add (metadataReference);
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while getting referenced assemblies", e);
-					// TODO: Check whether this should return false, I retained compat for now.
-					return true;
-				}
-
-				return true;
 			}
 
 			async Task<ImmutableArray<ProjectReference>> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
