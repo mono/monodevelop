@@ -368,23 +368,29 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		void UpdateBreakpoints ()
 		{
-			//Disposed
-			if (protocolClient == null)
-				return;
-
 			var bks = breakpoints.Select (b => b.Key).OfType<Mono.Debugging.Client.Breakpoint> ().Where (b => b.Enabled && !string.IsNullOrEmpty (b.FileName)).GroupBy (b => b.FileName).ToArray ();
 			var filesForRemoval = pathsWithBreakpoints.Where (path => !bks.Any (b => b.Key == path)).ToArray ();
 			pathsWithBreakpoints = bks.Select (b => b.Key).ToList ();
 
-			foreach (var path in filesForRemoval)
+			foreach (var path in filesForRemoval) {
+				//Disposed
+				if (protocolClient == null)
+					return;
+
 				protocolClient.SendRequest (
-					new SetBreakpointsRequest (
-						new Source { Name = Path.GetFileName (path), Path = path }) {
-						Breakpoints = new List<SourceBreakpoint> () },
-					null);
+						new SetBreakpointsRequest (
+							new Source { Name = Path.GetFileName (path), Path = path }) {
+							Breakpoints = new List<SourceBreakpoint> ()
+						},
+						null);
+			}
 
 			foreach (var sourceFile in bks) {
 				var source = new Source { Name = Path.GetFileName (sourceFile.Key), Path = sourceFile.Key };
+				//Disposed
+				if (protocolClient == null)
+					return;
+
 				protocolClient.SendRequest (
 					new SetBreakpointsRequest (source) {
 						Breakpoints = sourceFile.Select (b => new SourceBreakpoint {
@@ -403,6 +409,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						});
 					});
 			}
+
+			//Disposed
+			if (protocolClient == null)
+				return;
 
 			//Notice that .NET Core adapter doesn't support Functions breakpoints yet: https://github.com/OmniSharp/omnisharp-vscode/issues/295
 			protocolClient.SendRequest (
