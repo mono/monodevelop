@@ -51,20 +51,20 @@ namespace MonoDevelop.PackageManagement
 	{
 		DotNetProject project;
 		ConfigurationSelector configuration;
-		IPackageManagementEvents packageManagementEvents;
+		PackageManagementEvents packageManagementEvents;
 		string msbuildProjectPath;
 		string projectName;
 		bool reevaluationRequired;
 
 		public PackageReferenceNuGetProject (DotNetProject project, ConfigurationSelector configuration)
-			: this (project, configuration, PackageManagementServices.PackageManagementEvents)
+			: this (project, configuration, (PackageManagementEvents)PackageManagementServices.PackageManagementEvents)
 		{
 		}
 
 		public PackageReferenceNuGetProject (
 			DotNetProject project,
 			ConfigurationSelector configuration,
-			IPackageManagementEvents packageManagementEvents)
+			PackageManagementEvents packageManagementEvents)
 		{
 			this.project = project;
 			this.configuration = configuration;
@@ -261,6 +261,15 @@ namespace MonoDevelop.PackageManagement
 		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
 		{
 			reevaluationRequired = actions.Any (action => action.NuGetProjectActionType == NuGetProjectActionType.Install);
+
+			foreach (var action in actions) {
+				var eventArgs = new PackageEventArgs (this, action.PackageIdentity, null);
+				if (action.NuGetProjectActionType == NuGetProjectActionType.Install) {
+					packageManagementEvents.OnPackageInstalled (Project, eventArgs);
+				} else if (action.NuGetProjectActionType == NuGetProjectActionType.Uninstall) {
+					packageManagementEvents.OnPackageUninstalled (Project, eventArgs);
+				}
+			}
 		}
 
 		public void NotifyProjectReferencesChanged (bool includeTransitiveProjectReferences)

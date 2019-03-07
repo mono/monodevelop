@@ -1980,7 +1980,7 @@ namespace MonoDevelop.Ide
 			ProgressMonitor monitor = null;
 			
 			if (files.Length > 10) {
-				monitor = new MessageDialogProgressMonitor (true);
+				monitor = new MessageDialogProgressMonitor (true, true, true, true, MessageService.RootWindow);
 				monitor.BeginTask (GettextCatalog.GetString("Adding files..."), files.Length);
 			}
 			
