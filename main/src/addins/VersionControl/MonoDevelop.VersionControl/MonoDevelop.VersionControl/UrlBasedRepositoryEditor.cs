@@ -170,7 +170,11 @@ namespace MonoDevelop.VersionControl
 			ub.UserName = repositoryUserEntry.Text;
 			ub.Port = (int)repositoryPortSpin.Value;
 			ub.Path = repositoryPathEntry.Text;
-			repo.Url = ub.ToString ();
+			if (string.IsNullOrEmpty (ub.Host)) {
+				repo.Url = string.Format ("{0}://", Protocol);
+			} else {
+				repo.Url = ub.ToString ();
+			}
 		}
 
 		protected virtual void OnRepositoryServerEntryChanged(object sender, System.EventArgs e)
