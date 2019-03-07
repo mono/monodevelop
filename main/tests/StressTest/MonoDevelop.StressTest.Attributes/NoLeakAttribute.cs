@@ -1,7 +1,7 @@
 using System;
 namespace MonoDevelop.StressTest.Attributes
 {
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple=true, Inherited=true)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple=true, Inherited=true)]
 	public class NoLeakAttribute : Attribute
 	{
 		public string TypeName { get; }

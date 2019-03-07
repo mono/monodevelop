@@ -33,7 +33,6 @@ using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
 {
-	[NoLeak("MonoDevelop.SourceEditor.ExtensibleTextEditor")]
 	[NoLeak("MonoDevelop.Projects.ProjectFile")]
 	public class TestScenario : ITestScenario
 	{
@@ -64,6 +63,7 @@ namespace MonoDevelop.StressTest
 
 		bool firstRun = true;
 
+		[NoLeak ("MonoDevelop.SourceEditor.ExtensibleTextEditor")]
 		public void Run ()
 		{
 			if (firstRun) {

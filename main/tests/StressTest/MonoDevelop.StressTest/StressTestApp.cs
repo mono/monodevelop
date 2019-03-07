@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.StressTest.Attributes;
 using UserInterfaceTests;
@@ -195,33 +196,39 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			if (iteration == cleanupIteration) {
-				DetectLeakedObjects (lastHeapshot);
-			}
+			DetectLeakedObjects (iteration, lastHeapshot);
 		}
 
-		void DetectLeakedObjects(Heapshot heapshot)
+		void DetectLeakedObjects(int iteration, Heapshot heapshot)
 		{
 			if (heapshot == null || ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
 				return;
 
-			var names = GetTrackedObjectsForLeaks (scenario);
+			var scenarioType = scenario.GetType ();
+			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
+			var member = iteration == cleanupIteration ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
+			var names = GetTrackedObjectsForLeaks (member);
 			if (names.Count == 0)
 				return;
 
 			Console.WriteLine ("Leaked objects count per type:");
 			var leakedObjects = new List<(string Name, int Count)> (names.Count);
 			foreach (var (name, count) in heapshot.GetObjects()) {
-				if (names.Contains (name)) {
+				// We need to check if the root is finalizer or ephemeron, and not report the value.
+				if (names.Remove (name)) {
 					Console.WriteLine ("{0}: {1}", name, count);
 				}
 			}
+
+			foreach (var name in names) {
+				Console.WriteLine ("{0}: 0", name);
+			}
 		}
 
-		static HashSet<string> GetTrackedObjectsForLeaks (ITestScenario scenario)
+		static HashSet<string> GetTrackedObjectsForLeaks (MemberInfo member)
 		{
 			return new HashSet<string> (
-				scenario.GetType ().GetCustomAttributes (typeof (NoLeakAttribute), true).Select (x => ((NoLeakAttribute)x).TypeName)
+				member.GetCustomAttributes (typeof (NoLeakAttribute), true).Select (x => ((NoLeakAttribute)x).TypeName)
 			);
 		}
 	}
