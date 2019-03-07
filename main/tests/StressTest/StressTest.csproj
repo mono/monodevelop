@@ -5,7 +5,7 @@
     <ProjectGuid>{A1F9B020-6573-4BB2-A887-7F26561A9D18}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.StressTest</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
