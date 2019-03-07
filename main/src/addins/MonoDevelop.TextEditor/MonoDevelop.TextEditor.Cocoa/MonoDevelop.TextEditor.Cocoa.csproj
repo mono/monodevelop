@@ -52,6 +52,7 @@
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Def\InfoBar\InfoBar.csproj" />
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
   </ItemGroup>
   <ItemGroup>
