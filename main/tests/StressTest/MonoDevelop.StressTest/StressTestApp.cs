@@ -182,6 +182,8 @@ namespace MonoDevelop.StressTest
 
 			if (iteration == cleanupIteration) {
 				Console.WriteLine ("Cleanup");
+			} else if (iteration == 0) {
+				Console.WriteLine ("Setup");
 			} else {
 				Console.WriteLine ("Run {0}", iteration + 1);
 			}
