@@ -29,7 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.StressTest.Attributes;
 using UserInterfaceTests;
+using static MonoDevelop.StressTest.ProfilerProcessor;
 
 namespace MonoDevelop.StressTest
 {
@@ -170,8 +172,9 @@ namespace MonoDevelop.StressTest
 			TestService.Session.DisconnectQueries ();
 
 			UserInterfaceTests.Ide.WaitForIdeIdle ();//Make sure IDE stops doing what it was doing
+			Heapshot lastHeapshot = null;
 			if (profilerProcessor != null) {
-				profilerProcessor.TakeHeapshotAndMakeReport ().Wait ();
+				lastHeapshot = profilerProcessor.TakeHeapshotAndMakeReport ().Result;
 			}
 
 			var memoryStats = TestService.Session.MemoryStats;
@@ -191,6 +194,35 @@ namespace MonoDevelop.StressTest
 			Console.WriteLine ("  WorkingSet: " + memoryStats.WorkingSet);
 
 			Console.WriteLine ();
+
+			if (iteration == cleanupIteration) {
+				DetectLeakedObjects (lastHeapshot);
+			}
+		}
+
+		void DetectLeakedObjects(Heapshot heapshot)
+		{
+			if (heapshot == null || ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
+				return;
+
+			var names = GetTrackedObjectsForLeaks (scenario);
+			if (names.Count == 0)
+				return;
+
+			Console.WriteLine ("Leaked objects count per type:");
+			var leakedObjects = new List<(string Name, int Count)> (names.Count);
+			foreach (var (name, count) in heapshot.GetObjects()) {
+				if (names.Contains (name)) {
+					Console.WriteLine ("{0}: {1}", name, count);
+				}
+			}
+		}
+
+		static HashSet<string> GetTrackedObjectsForLeaks (ITestScenario scenario)
+		{
+			return new HashSet<string> (
+				scenario.GetType ().GetCustomAttributes (typeof (NoLeakAttribute), true).Select (x => ((NoLeakAttribute)x).TypeName)
+			);
 		}
 	}
 }

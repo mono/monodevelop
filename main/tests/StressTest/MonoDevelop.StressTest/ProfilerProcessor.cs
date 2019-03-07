@@ -176,7 +176,7 @@ namespace MonoDevelop.StressTest
 			}
 		}
 		List<Heapshot> heapshots = new List<Heapshot> ();
-		public async Task TakeHeapshotAndMakeReport ()
+		public async Task<Heapshot> TakeHeapshotAndMakeReport ()
 		{
 			var newHeapshot = await TakeHeapshot ();
 
@@ -193,7 +193,7 @@ namespace MonoDevelop.StressTest
 				heapshots.Add (newHeapshot);
 				if (heapshots.Count == 1) {
 					Console.WriteLine ("No objects diff report on 1st Heapshot.");
-					return;
+					return newHeapshot;
 				}
 				var oldHeapshot = heapshots[heapshots.Count - 2];
 				var diffCounter = new List<Tuple<long, int>> ();
@@ -214,6 +214,8 @@ namespace MonoDevelop.StressTest
 					}
 				}
 			}
+
+			return newHeapshot;
 
 			bool ShouldReportItem (string name) => Options.PrintReportObjectNames.Count == 0 || Options.PrintReportObjectNames.Contains (name);
 		}
