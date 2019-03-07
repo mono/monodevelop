@@ -146,7 +146,7 @@ namespace MonoDevelop.VersionControl
 		{
 			if (repo.Uri != null || repo.SupportedProtocols.Any (p => repositoryUrlEntry.Text.StartsWith (p + "://", StringComparison.Ordinal))) {
 				repositoryPathEntry.Sensitive = true;
-				bool isUrl = Protocol != "file";
+				bool isUrl = IsUrl;
 				repositoryServerEntry.Sensitive = isUrl;
 				repositoryUserEntry.Sensitive = isUrl;
 				repositoryPortSpin.Sensitive = isUrl;
@@ -157,23 +157,32 @@ namespace MonoDevelop.VersionControl
 				repositoryPortSpin.Sensitive = false;
 			}
 		}
-		
+
+		const string FileProtocol = "file";
+		bool IsUrl => Protocol != FileProtocol;
+
 		void SetRepoUrl ()
 		{
 			if (!repo.SupportedProtocols.Contains (Protocol)) {
 				repo.Url = string.Empty;
 				return;
 			}
-			UriBuilder ub = new UriBuilder ();
-			ub.Host = repositoryServerEntry.Text;
-			ub.Scheme = Protocol;
-			ub.UserName = repositoryUserEntry.Text;
-			ub.Port = (int)repositoryPortSpin.Value;
-			ub.Path = repositoryPathEntry.Text;
-			if (string.IsNullOrEmpty (ub.Host)) {
-				repo.Url = string.Format ("{0}://", Protocol);
+
+			if (IsUrl) {
+				var ub = new UriBuilder ();
+				ub.Scheme = Protocol;
+				ub.Host = repositoryServerEntry.Text;
+				ub.UserName = repositoryUserEntry.Text;
+				ub.Port = (int)repositoryPortSpin.Value;
+				ub.Path = repositoryPathEntry.Text;
+
+				if (string.IsNullOrEmpty (ub.Host)) {
+					repo.Url = string.Format ("{0}://", Protocol);
+				} else {
+					repo.Url = ub.ToString ();
+				}
 			} else {
-				repo.Url = ub.ToString ();
+				repo.Url = string.Format ("{0}://{1}", Protocol, repositoryPathEntry.Text);
 			}
 		}
 
@@ -221,14 +230,15 @@ namespace MonoDevelop.VersionControl
 
 		protected void OnRepositoryUrlEntryClipboardPasted (object sender, EventArgs e)
 		{
-			Gtk.Clipboard clip = GetClipboard (Gdk.Atom.Intern ("CLIPBOARD", false));
+			var clip = GetClipboard (Gdk.Atom.Intern ("CLIPBOARD", false));
 			clip.RequestText (delegate (Gtk.Clipboard clp, string text) {
-				if (String.IsNullOrEmpty (text))
+				if (string.IsNullOrEmpty (text))
 					return;
 
-				Uri url;
-				if (Uri.TryCreate (text, UriKind.Absolute, out url))
+				if (repo.IsUrlValid (text)) {
 					repositoryUrlEntry.Text = text;
+					OnRepositoryUrlEntryChanged (null, null);
+				}
 			});
 		}
 	}
