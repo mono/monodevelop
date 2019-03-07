@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectModel;
@@ -387,6 +389,46 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			int projectItemsCount = dotNetProject.Files.Count;
 			Assert.AreEqual (1, projectItemsCount);
+		}
+
+		[Test]
+		public void OnAfterExecuteActions_PackageInstallAction_PackageInstalledEventFired ()
+		{
+			CreateNuGetProject ();
+			var packageIdentity = new PackageIdentity ("Test", NuGetVersion.Parse ("1.2"));
+			var actions = new List<NuGetProjectAction> ();
+			var action = NuGetProjectAction.CreateInstallProjectAction (packageIdentity, null, project);
+			actions.Add (action);
+			PackageManagementEventArgs eventArgs = null;
+			project.PackageManagementEvents.PackageInstalled += (sender, e) => {
+				eventArgs = e;
+			};
+
+			project.OnAfterExecuteActions (actions);
+
+			Assert.AreEqual ("Test", eventArgs.Id);
+			Assert.AreEqual ("1.2", eventArgs.Version.ToString ());
+			Assert.AreEqual (packageIdentity, eventArgs.Package);
+		}
+
+		[Test]
+		public void OnAfterExecuteActions_PackageUninstallAction_PackageUninstalledEventFired ()
+		{
+			CreateNuGetProject ();
+			var packageIdentity = new PackageIdentity ("Test", NuGetVersion.Parse ("1.2"));
+			var actions = new List<NuGetProjectAction> ();
+			var action = NuGetProjectAction.CreateUninstallProjectAction (packageIdentity, project);
+			actions.Add (action);
+			PackageManagementEventArgs eventArgs = null;
+			project.PackageManagementEvents.PackageUninstalled += (sender, e) => {
+				eventArgs = e;
+			};
+
+			project.OnAfterExecuteActions (actions);
+
+			Assert.AreEqual ("Test", eventArgs.Id);
+			Assert.AreEqual ("1.2", eventArgs.Version.ToString ());
+			Assert.AreEqual (packageIdentity, eventArgs.Package);
 		}
 	}
 }
