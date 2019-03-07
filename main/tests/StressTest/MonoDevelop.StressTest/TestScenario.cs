@@ -72,7 +72,6 @@ namespace MonoDevelop.StressTest
 			}
 
 			// Open files.
-			WorkbenchExtensions.CloseAllOpenFiles ();
 			WorkbenchExtensions.OpenFiles (FilesToOpen);
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
 
@@ -106,6 +105,9 @@ namespace MonoDevelop.StressTest
 			// AutoTestClientSession.EnterText works without needing to
 			// focus the workbench.
 			WorkbenchExtensions.GrabDesktopFocus ();
+
+			// Close all documents.
+			WorkbenchExtensions.CloseAllOpenFiles ();
 		}
 	}
 }
