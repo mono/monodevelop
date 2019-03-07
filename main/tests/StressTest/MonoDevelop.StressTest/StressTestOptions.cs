@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest
@@ -68,12 +69,14 @@ namespace MonoDevelop.StressTest
 			{
 				ObjectsDiff = 1 << 0,
 				ObjectsTotal = 1 << 1,
+				// OnlyOnLast
 			}
 			public ProfilerType Type { get; set; } = ProfilerType.Disabled;
 			public PrintReport PrintReportTypes { get; set; }
 			public int MaxFrames { get; set; }
 			public string MlpdOutputPath { get; set; }
 			public string CustomProfilerArguments { get; set; }
+			public HashSet<string> PrintReportObjectNames { get; } = new HashSet<string> (StringComparer.Ordinal);
 		}
 
 		public bool Help { get; set; }
@@ -144,6 +147,11 @@ namespace MonoDevelop.StressTest
 							default:
 								PrintProfilerHelpAndExit ($"Unknown --profiler=printreport:{nameValuePair[1]}");
 								break;
+						}
+						break;
+					case "objectnames":
+						foreach (var name in nameValuePair[1].Split(';')) {
+							Profiler.PrintReportObjectNames.Add (name);
 						}
 						break;
 					case "output":

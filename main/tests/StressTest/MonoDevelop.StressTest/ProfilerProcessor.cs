@@ -183,7 +183,9 @@ namespace MonoDevelop.StressTest
 			if (Options.PrintReportTypes.HasFlag (StressTestOptions.ProfilerOptions.PrintReport.ObjectsTotal)) {
 				Console.WriteLine ($"Total objects per type({newHeapshot.ObjectsPerClassCounter.Count}):");
 				foreach (var typeWithCount in newHeapshot.ObjectsPerClassCounter.Where (p => p.Value > 0).OrderByDescending (p => p.Value)) {
-					Console.WriteLine ($"{newHeapshot.ClassInfos[typeWithCount.Key].Name}:{typeWithCount.Value}");
+					var name = newHeapshot.ClassInfos[typeWithCount.Key].Name;
+					if (ShouldReportItem(name))
+						Console.WriteLine ($"{name}:{typeWithCount.Value}");
 				}
 			}
 
@@ -206,9 +208,14 @@ namespace MonoDevelop.StressTest
 				}
 				Console.WriteLine ($"Heapshot diff has {diffCounter.Count} entries:");
 				foreach (var diff in diffCounter.OrderByDescending (d => d.Item2)) {
-					Console.WriteLine ($"{newHeapshot.ClassInfos[diff.Item1].Name}:{diff.Item2}");
+					var name = newHeapshot.ClassInfos[diff.Item1].Name;
+					if (ShouldReportItem (name)) {
+						Console.WriteLine ($"{name}:{diff.Item2}");
+					}
 				}
 			}
+
+			bool ShouldReportItem (string name) => Options.PrintReportObjectNames.Count == 0 || Options.PrintReportObjectNames.Contains (name);
 		}
 	}
 }
