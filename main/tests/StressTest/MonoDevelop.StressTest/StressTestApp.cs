@@ -41,6 +41,7 @@ namespace MonoDevelop.StressTest
 		List<string> FoldersToClean = new List<string> ();
 		ITestScenario scenario;
 		StressTestOptions.ProfilerOptions ProfilerOptions;
+		ResultDataModel result = new ResultDataModel ();
 
 		public StressTestApp (StressTestOptions options)
 		{
@@ -153,6 +154,9 @@ namespace MonoDevelop.StressTest
 
 		void OnCleanUp ()
 		{
+			// TODO: Report leak results.
+
+
 			profilerProcessor?.Stop ();
 			foreach (string folder in FoldersToClean) {
 				try {
@@ -198,26 +202,34 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			DetectLeakedObjects (iteration, lastHeapshot);
+
+			var leakResult = new ResultIterationData (iteration.ToString ()) {
+				//MemoryStats = memoryStats,
+			};
+
+			foreach (var (leakName, leakCount) in DetectLeakedObjects (iteration, lastHeapshot)) {
+				leakResult.Leaks.Add (new LeakItem (leakName, leakCount));
+			}
 		}
 
-		void DetectLeakedObjects(int iteration, Heapshot heapshot)
+		List<(string Name, int Count)> DetectLeakedObjects(int iteration, Heapshot heapshot)
 		{
 			if (heapshot == null || ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
-				return;
+				return new List<(string, int)> ();
 
 			var scenarioType = scenario.GetType ();
 			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
 			var member = iteration == cleanupIteration ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
 			var names = GetTrackedObjectsForLeaks (member);
 			if (names.Count == 0)
-				return;
+				return new List<(string, int)> ();
 
 			Console.WriteLine ("Leaked objects count per type:");
 			var leakedObjects = new List<(string Name, int Count)> (names.Count);
 			foreach (var (name, count) in heapshot.GetObjects()) {
 				// We need to check if the root is finalizer or ephemeron, and not report the value.
 				if (names.Remove (name)) {
+					leakedObjects.Add ((name, count));
 					Console.WriteLine ("{0}: {1}", name, count);
 				}
 			}
@@ -225,6 +237,7 @@ namespace MonoDevelop.StressTest
 			foreach (var name in names) {
 				Console.WriteLine ("{0}: 0", name);
 			}
+			return leakedObjects;
 		}
 
 		static HashSet<string> GetTrackedObjectsForLeaks (MemberInfo member)

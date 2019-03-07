@@ -23,30 +23,23 @@ namespace MonoDevelop.StressTest
 	public class ResultIterationData
 	{
 		/// <summary>
-		/// Leak information
-		/// </summary>
-		public LeakIterationData LeakData { get; set; }
-
-		// TODO: Make this serializable in MD.
-		//public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; set; }
-
-		// TODO: add more.
-	}
-
-	[Serializable]
-	public class LeakIterationData
-	{
-		/// <summary>
 		/// Leak iteration id
 		/// </summary>
 		public string Id { get; }
-
+		/// <summary>
+		/// Leak information
+		/// </summary>
 		/// <summary>
 		/// Each individual leak item
 		/// </summary>
 		public List<LeakItem> Leaks { get; }
 
-		public LeakIterationData(string id)
+		// TODO: Make this serializable in MD.
+		//public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; set; }
+
+		// TODO: add more.
+
+		public ResultIterationData (string id)
 		{
 			Id = id;
 		}
