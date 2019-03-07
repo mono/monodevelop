@@ -28,10 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.StressTest.Attributes;
 using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
 {
+	[NoLeak("MonoDevelop.SourceEditor.ExtensibleTextEditor")]
+	[NoLeak("MonoDevelop.Projects.ProjectFile")]
 	public class TestScenario : ITestScenario
 	{
 		List<FilePath> filesToOpen;
