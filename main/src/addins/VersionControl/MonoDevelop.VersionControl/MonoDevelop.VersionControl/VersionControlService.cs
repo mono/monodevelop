@@ -118,7 +118,7 @@ namespace MonoDevelop.VersionControl
 				if (search < 0)
 					handlers.Insert (~search, vcs);
 				else {
-					LoggingService.LogError ("Error trying to add an existing version control system.");
+					LoggingService.LogError ("Adding new version control system {0} failed, the name {1} is already reserved.", vcs.GetType ().Name, vcs.Name);
 					return;
 				}
 				try {
