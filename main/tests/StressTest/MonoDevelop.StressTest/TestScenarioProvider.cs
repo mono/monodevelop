@@ -30,9 +30,9 @@ using System.Diagnostics;
 
 namespace MonoDevelop.StressTest
 {
-	public static class TestScenarioProvider
+	public class TestScenarioProvider : ITestScenarioProvider
 	{
-		public static ITestScenario GetTestScenario ()
+		public ITestScenario GetTestScenario ()
 		{
             string testProjectPath = Path.Combine(Path.GetDirectoryName(typeof(TestScenarioProvider).Assembly.Location), "TestProject");
             var monoAddinsPath = Path.Combine(testProjectPath, "mono-addins", "Mono.Addins");

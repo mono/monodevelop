@@ -50,10 +50,13 @@ namespace MonoDevelop.StressTest
 			if (options.UseInstalledApplication) {
 				MonoDevelopBinPath = GetInstalledVisualStudioBinPath ();
 			}
+
+			provider = options.Provider;
 		}
 
 		public string MonoDevelopBinPath { get; set; }
 		public int Iterations { get; set; } = 1;
+		readonly ITestScenarioProvider provider;
 		ProfilerProcessor profilerProcessor;
 
 		const int cleanupIteration = int.MinValue;
@@ -85,7 +88,7 @@ namespace MonoDevelop.StressTest
 
 			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench);
 
-			scenario = TestScenarioProvider.GetTestScenario ();
+			scenario = provider.GetTestScenario ();
 
 			ReportMemoryUsage (-1);
 			for (int i = 0; i < Iterations; ++i) {

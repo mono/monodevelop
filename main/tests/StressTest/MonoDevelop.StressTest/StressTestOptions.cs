@@ -36,7 +36,7 @@ namespace MonoDevelop.StressTest
 		const string MonoDevelopBinPathArgument = "--mdbinpath:";
 		const string UseInstalledAppArgument = "--useinstalledapp";
 		const string ProfilerArgument = "--profiler:";
-
+		const string ProviderArgument = "--provider:";
 		public void Parse (string[] args)
 		{
 			foreach (string arg in args) {
@@ -48,6 +48,8 @@ namespace MonoDevelop.StressTest
 					ParseProfilerOptions (arg);
 				} else if (arg == UseInstalledAppArgument) {
 					UseInstalledApplication = true;
+				} else if (arg.StartsWith(ProviderArgument)) {
+					ParseProvider (arg);
 				} else {
 					Help = true;
 					break;
@@ -84,6 +86,7 @@ namespace MonoDevelop.StressTest
 		public string MonoDevelopBinPath { get; set; }
 		public bool UseInstalledApplication { get; set; }
 		public ProfilerOptions Profiler { get; } = new ProfilerOptions ();
+		public ITestScenarioProvider Provider { get; private set; } = new TestScenarioProvider ();
 
 		public void ShowHelp ()
 		{
@@ -94,6 +97,7 @@ namespace MonoDevelop.StressTest
 			Console.WriteLine ("  --mdbinpath:path        Path to MonoDevelop.exe or VisualStudio.exe");
 			Console.WriteLine ("  --useinstalledapp       Use installed Visual Studio.app");
 			Console.WriteLine ("  --profiler:             Use profiler to make more detailed leak reporting");
+			Console.WriteLine ("  --provider:             Use the provider specified instead of the default");
 		}
 
 		void ParseIterations (string arg)
@@ -110,6 +114,12 @@ namespace MonoDevelop.StressTest
 		void ParseMonoDevelopBinPath (string arg)
 		{
 			MonoDevelopBinPath = arg.Substring (MonoDevelopBinPathArgument.Length);
+		}
+
+		void ParseProvider(string arg)
+		{
+			var providerType = GetType ().Assembly.GetType (arg);
+			Provider = (ITestScenarioProvider)Activator.CreateInstance (providerType);
 		}
 
 		void ParseProfilerOptions (string arg)

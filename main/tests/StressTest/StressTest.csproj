@@ -83,6 +83,7 @@
     <Compile Include="Mono.Profiling.Log\LogEventVisitor.cs" />
     <Compile Include="Mono.Profiling.Log\LogEvent.cs" />
     <Compile Include="Mono.Profiling.Log\LogBufferHeader.cs" />
+    <Compile Include="MonoDevelop.StressTest\ITestScenarioProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
