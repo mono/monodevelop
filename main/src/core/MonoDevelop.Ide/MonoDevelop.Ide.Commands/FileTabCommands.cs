@@ -27,14 +27,14 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using Gtk;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
-using MonoDevelop.Core;
-using System.Linq;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Commands
@@ -46,14 +46,17 @@ namespace MonoDevelop.Ide.Commands
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
+		CloseAllToTheRight
 	}
-	
+
 	class CloseAllHandler : CommandHandler
 	{
 		protected virtual ViewContent GetDocumentException ()
 		{
 			return null;
 		}
+
+		protected virtual bool StartAfterException => false;
 
 		protected override void Run ()
 		{
@@ -64,18 +67,31 @@ namespace MonoDevelop.Ide.Commands
 			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
 			var except = GetDocumentException ();
 
-			var docs = IdeApp.Workbench.Documents
-				.Where (doc => ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook && (except == null || doc.Window.ViewContent != except))
-				.ToArray ();
+			var docs = new List<Document> ();
+			var dirtyDialogShown = false;
+			var startRemoving = except == null || !StartAfterException;
 
-			var dirtyDialogShown = docs.Count (doc => doc.IsDirty) > 1;
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
+					if (except != null && doc.Window.ViewContent == except) {
+						startRemoving = true;
+						continue;
+					}
+
+					if (startRemoving) {
+						docs.Add (doc);
+						dirtyDialogShown |= doc.IsDirty;
+					}
+				}
+			}
+
 			if (dirtyDialogShown)
 				using (var dlg = new DirtyFilesDialog (docs, closeWorkspace: false, groupByProject: false)) {
 					dlg.Modal = true;
 					if (MessageService.ShowCustomDialog (dlg) != (int)Gtk.ResponseType.Ok)
 						return;
 				}
-			
+
 			foreach (Document doc in docs)
 				if (dirtyDialogShown)
 					doc.Window.CloseWindow (true);
@@ -83,7 +99,7 @@ namespace MonoDevelop.Ide.Commands
 					doc.Close ().Ignore();
 		}
 	}
-	
+
 	class CloseAllButThisHandler : CloseAllHandler
 	{
 		protected override ViewContent GetDocumentException ()
@@ -92,7 +108,12 @@ namespace MonoDevelop.Ide.Commands
 			return active == null ? null : active.Window.ViewContent;
 		}
 	}
-	
+
+	class CloseAllToTheRightHandler : CloseAllButThisHandler
+	{
+		protected override bool StartAfterException => true;
+	}
+
 	class ToggleMaximizeHandler : CommandHandler
 	{
 		protected override void Run ()
@@ -100,7 +121,7 @@ namespace MonoDevelop.Ide.Commands
 			IdeApp.Workbench.ToggleMaximize ();
 		}
 	}
-	
+
 	class CopyPathNameHandler : CommandHandler
 	{
 		protected override void Run ()
