@@ -7,8 +7,9 @@ namespace ResultParser
 {
 	class MainClass
 	{
-		public static void Main (string[] args)
+		public static int Main (string[] args)
 		{
+			bool hasLeaks = false;
 			foreach (var file in Directory.EnumerateFiles(".", "*.json")) {
 				var serializer = new JsonSerializer {
 					NullValueHandling = NullValueHandling.Ignore,
@@ -24,6 +25,7 @@ namespace ResultParser
 						if (iteration.Leaks.Count == 0)
 							continue;
 
+						hasLeaks = true;
 						Console.WriteLine ("Leak detected {0}:", iteration.Id);
 
 						foreach (var leak in iteration.Leaks) {
@@ -32,6 +34,8 @@ namespace ResultParser
 					}
 				}
 			}
+
+			return hasLeaks ? 1 : 0;
 		}
 	}
 }
