@@ -151,6 +151,7 @@
     <Compile Include="MonoDevelop.Core\SdkResolverTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceEventQueueTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceEventStateMachineTests.cs" />
+    <Compile Include="MonoDevelop.Projects\AsyncCriticalSectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
