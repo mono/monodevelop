@@ -26,13 +26,14 @@ namespace MonoDevelop.StressTest
 		/// Leak iteration id
 		/// </summary>
 		public string Id { get; }
+
 		/// <summary>
 		/// Leak information
 		/// </summary>
 		/// <summary>
 		/// Each individual leak item
 		/// </summary>
-		public List<LeakItem> Leaks { get; }
+		public List<LeakItem> Leaks { get; } = new List<LeakItem> ();
 
 		// TODO: Make this serializable in MD.
 		//public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; set; }
