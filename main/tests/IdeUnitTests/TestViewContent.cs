@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Gui
 		public void AddContent (object content)
 		{
 			contents.Add (content);
-			OnContentChanged ();
+			NotifyContentChanged ();
 		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)

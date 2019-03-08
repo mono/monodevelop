@@ -52,11 +52,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal string Id => GetType ().FullName + "_" + SourceExtensionNode?.Data.NodeId;
 
 		/// <summary>
-		/// Raised when the content of the document changes, which means that GetContent() may return new content objects
-		/// </summary>
-		public event EventHandler ContentChanged;
-
-		/// <summary>
 		/// Gets the capability of this view for being reassigned a project
 		/// </summary>
 		public virtual ProjectReloadCapability ProjectReloadCapability => Controller.OnGetProjectReloadCapability ();
@@ -106,7 +101,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public virtual Task OnSave ()
 		{
-			return Task.CompletedTask;
+			return next.OnSave ();
 		}
 
 		/// <summary>
@@ -155,6 +150,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return OnGetContents (type);
 		}
 
+		public void NotifyContentChanged ()
+		{
+			Controller?.NotifyContentChanged ();
+		}
+
 		protected virtual object OnGetContent (Type type)
 		{
 			if (type.IsInstanceOfType (this))
@@ -170,15 +170,30 @@ namespace MonoDevelop.Ide.Gui.Documents
 				yield return c;
 		}
 
-		protected virtual void OnContentChanged ()
+		internal void RunContentChanged ()
 		{
-			Controller?.NotifyContentChanged ();
-			ContentChanged?.Invoke (this, EventArgs.Empty);
+			try {
+				OnContentChanged ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
 		}
 
-		internal protected virtual void OnOwnerChanged ()
+		protected virtual void OnContentChanged ()
 		{
-			next.OnOwnerChanged ();
+		}
+
+		internal void RunOwnerChanged ()
+		{
+			try {
+				OnOwnerChanged ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+		}
+
+		protected virtual void OnOwnerChanged ()
+		{
 		}
 	}
 }

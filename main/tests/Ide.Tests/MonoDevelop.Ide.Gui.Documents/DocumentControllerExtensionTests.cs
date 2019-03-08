@@ -382,6 +382,37 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		[Test]
+		public async Task ContentChangedNotification ()
+		{
+			var attr1 = new ExportDocumentControllerExtensionAttribute {
+				FileExtension = ".test"
+			};
+			var attr2 = new ExportDocumentControllerExtensionAttribute {
+				FileExtension = ".test"
+			};
+			try {
+				IdeServices.DocumentControllerService.RegisterControllerExtension (attr1, typeof (TestExtension<Test1>));
+				IdeServices.DocumentControllerService.RegisterControllerExtension (attr2, typeof (TestExtension<Test2>));
+
+				using (var controller = new TestControllerWithExtension ()) {
+					await controller.Initialize (new FileDescriptor ("foo.test", null, null));
+
+					TestExtension<Test1>.ResetCounters ();
+					TestExtension<Test2>.ResetCounters ();
+
+					controller.NotifyContentChanged ();
+
+					Assert.AreEqual (1, TestExtension<Test1>.ContentChangedCount);
+					Assert.AreEqual (1, TestExtension<Test2>.ContentChangedCount);
+				}
+
+			} finally {
+				IdeServices.DocumentControllerService.UnregisterControllerExtension (attr1);
+				IdeServices.DocumentControllerService.UnregisterControllerExtension (attr2);
+			}
+		}
+
+		[Test]
 		public async Task ProjectReloadCapabilityOverride ()
 		{
 			var attr1 = new ExportDocumentControllerExtensionAttribute { FileExtensions = new string [] { ".full", ".full-unsaved-default", ".full-unsaved-default-none" } };
@@ -590,6 +621,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		public static int InstancesCreated;
 		public static int InstancesDisposed;
+		public static int ContentChangedCount;
 
 		public string Status { get; set; }
 
@@ -611,6 +643,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			LiveExtensions.Clear ();
 			InstancesCreated = 0;
 			InstancesDisposed = 0;
+			ContentChangedCount = 0;
 		}
 
 		public override Task Initialize (Properties status)
@@ -630,6 +663,12 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public override void SetDocumentStatus (Properties properties)
 		{
 			Status = properties.Get<string> ("MyStatus");
+		}
+
+		protected override void OnContentChanged ()
+		{
+			ContentChangedCount++;
+			base.OnContentChanged ();
 		}
 	}
 
@@ -687,7 +726,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return res;
 		}
 
-		protected internal override void OnOwnerChanged ()
+		protected override void OnOwnerChanged ()
 		{
 			base.OnOwnerChanged ();
 			KnownOwner = Controller.Owner;

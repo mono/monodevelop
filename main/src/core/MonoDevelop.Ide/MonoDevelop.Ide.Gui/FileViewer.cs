@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui
 			if (fv == null)
 				return false;
 			if (binding != null)
-				return binding == fv.binding;
+				return binding.Equals (fv.binding);
 			else
 				return app.Equals (fv.app);
 		}

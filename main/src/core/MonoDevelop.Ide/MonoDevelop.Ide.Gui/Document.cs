@@ -555,8 +555,7 @@ namespace MonoDevelop.Ide.Gui
 			UnsubscribeControllerEvents ();
 			window.SetRootView (null);
 			view.IsRoot = false;
-			view.Dispose ();
-			controller.Dispose ();
+			view.Dispose (); // This will also dispose the controller
 
 			window = null;
 		}

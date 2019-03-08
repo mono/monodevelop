@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Gui.Shell;
 using Xwt.Drawing;
@@ -34,28 +36,39 @@ namespace IdeUnitTests
 	{
 		public override string Tag => "Container";
 
-		IShellDocumentViewItem IShellDocumentViewContainer.ActiveView { get => throw new NotImplementedException (); set => throw new NotImplementedException (); }
+		public List<MockShellDocumentView> Views = new List<MockShellDocumentView> ();
+
+		IShellDocumentViewItem IShellDocumentViewContainer.ActiveView { get; set; }
 
 		public event EventHandler ActiveViewChanged;
 
 		void IShellDocumentViewContainer.InsertView (int position, IShellDocumentViewItem view)
 		{
+			Views.Insert (position, (MockShellDocumentView) view);
 		}
 
 		void IShellDocumentViewContainer.RemoveAllViews ()
 		{
+			Views.Clear ();
 		}
 
 		void IShellDocumentViewContainer.RemoveView (int tabPos)
 		{
+			Views.RemoveAt (tabPos);
 		}
 
 		void IShellDocumentViewContainer.ReorderView (int currentIndex, int newIndex)
 		{
+			var v = Views [currentIndex];
+			Views.RemoveAt (currentIndex);
+			if (currentIndex < newIndex)
+				currentIndex--;
+			Views.Insert (newIndex, v);
 		}
 
 		void IShellDocumentViewContainer.ReplaceView (int position, IShellDocumentViewItem view)
 		{
+			Views [position] = (MockShellDocumentView)view;
 		}
 
 		void IShellDocumentViewContainer.SetCurrentMode (DocumentViewContainerMode currentMode)
@@ -64,6 +77,12 @@ namespace IdeUnitTests
 
 		void IShellDocumentViewContainer.SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
+		}
+
+		public override async Task Show ()
+		{
+			foreach (var v in Views)
+				await v.Show ();
 		}
 	}
 }

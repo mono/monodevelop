@@ -74,11 +74,11 @@ namespace MonoDevelop.Ide.Editor
 				var editor = TextEditorFactory.CreateNewEditor ((TextBufferFileModel)Model);
 				var impl = editor.Implementation;
 
-				// Editor extensions can provide additional content
-				OnContentChanged ();
-
 				await Init (editor, impl);
 				HasUnsavedChanges = impl.IsDirty;
+
+				// Editor extensions can provide additional content
+				NotifyContentChanged ();
 			}
 			return textEditor;
 		}

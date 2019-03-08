@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		Paned CreatePaned ()
 		{
-			if (mode == DocumentViewContainerMode.HorizontalSplit)
+			if (mode == DocumentViewContainerMode.VerticalSplit)
 				return new HPaned ();
 			else
 				return new VPaned ();
@@ -122,6 +122,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 					p.Remove (p.Child1);
 				if (p.Child2 != null && next == null)
 					p.Remove (p.Child2);
+				p = next;
 			}
 		}
 

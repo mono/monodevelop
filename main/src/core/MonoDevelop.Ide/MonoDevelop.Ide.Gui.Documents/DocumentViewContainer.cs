@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal override bool RemoveChild (DocumentView view)
 		{
-			return base.RemoveChild (view) || RemoveChild (view);
+			return base.RemoveChild (view) || Views.Remove (view);
 		}
 
 		internal override IEnumerable<DocumentController> GetActiveControllerHierarchy ()

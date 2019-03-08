@@ -46,6 +46,7 @@ namespace IdeUnitTests
 		public MockShell Shell { get; }
 		public DocumentController Controller { get; }
 		public MockShellNotebook Notebook { get; }
+		public MockShellDocumentView RootView { get; set; }
 
 		public event EventHandler CloseRequested;
 
@@ -84,6 +85,7 @@ namespace IdeUnitTests
 
 		void IWorkbenchWindow.SetRootView (IShellDocumentViewItem view)
 		{
+			RootView = (MockShellDocumentView)view;
 		}
 	}
 }

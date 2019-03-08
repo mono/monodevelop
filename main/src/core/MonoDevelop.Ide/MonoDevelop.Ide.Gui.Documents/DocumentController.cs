@@ -202,10 +202,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 			set {
 				if (value != owner) {
 					owner = value;
-					if (itemExtension != null)
-						itemExtension.OnOwnerChanged ();
-					else
-						OnOwnerChanged ();
+
+					NotifyOwnerChanged ();
 					RefreshExtensions ().Ignore ();
 				}
 			}
@@ -406,7 +404,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public async Task Save ()
 		{
 			CheckInitialized ();
-			await OnSave ();
+			await itemExtension.OnSave ();
 			IsNewDocument = false;
 		}
 
@@ -526,7 +524,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					LoggingService.LogError ("View container initialization failed", ex);
 					finalViewItem = new DocumentViewContent (() => (Control)null);
 				}
-				OnContentChanged ();
+				NotifyContentChanged ();
 			}
 			return finalViewItem;
 		}
@@ -615,7 +613,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				e.OnExtensionChainCreated ();
 
 			if (extensionsChanged)
-				OnContentChanged ();
+				NotifyContentChanged ();
 		}
 
 
@@ -691,7 +689,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			OnExtensionChainCreated ();
 
 			if (extensions.Count - defaultExts.Count > 0)
-				OnContentChanged ();
+				NotifyContentChanged ();
 		}
 
 		protected virtual void OnExtensionChainCreated ()
@@ -719,9 +717,24 @@ namespace MonoDevelop.Ide.Gui.Documents
 				content.ShowPathBar (pathDoc);
 		}
 
-		internal void NotifyContentChanged ()
+		public void NotifyContentChanged ()
 		{
-			OnContentChanged ();
+			if (!initialized)
+				return;
+			try {
+				OnContentChanged ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ())
+					ext.RunContentChanged ();
+			}
+			UpdateContentExtensions ();
+			ContentChanged?.Invoke (this, EventArgs.Empty);
+			RefreshExtensions ().Ignore ();
+
 		}
 
 		internal void NotifySelected ()
@@ -833,9 +846,24 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return false;
 		}
 
+		void NotifyOwnerChanged ()
+		{
+			try {
+				OnOwnerChanged ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ().ToList ())
+					ext.RunOwnerChanged ();
+			}
+
+			OwnerChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		protected virtual void OnOwnerChanged ()
 		{
-			OwnerChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected virtual Task OnLoad (bool reloading)
@@ -843,6 +871,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return Model.Reload () ?? Task.CompletedTask;
 		}
 
+		internal Task DoSave ()
+		{
+			return OnSave ();
+		}
+	
 		/// <summary>
 		/// Saves the document. If the controller has a model, the default implementation will save the model.
 		/// </summary>
@@ -903,11 +936,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnContentChanged ()
 		{
-			if (initialized) {
-				UpdateContentExtensions ();
-				ContentChanged?.Invoke (this, EventArgs.Empty);
-				RefreshExtensions ().Ignore ();
-			}
 		}
 
 		protected virtual void OnDispose ()
@@ -953,9 +981,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return Controller.InternalInitializeView ();
 			}
 
-			internal protected override void OnOwnerChanged ()
+			public override Task OnSave ()
 			{
-				Controller.OnOwnerChanged ();
+				return Controller.DoSave ();
 			}
 		}
 	}

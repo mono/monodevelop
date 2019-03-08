@@ -74,5 +74,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal DocumentControllerFactory Factory { get; set; }
 		internal ServiceProvider ServiceProvider { get; set; }
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as DocumentControllerDescription;
+			if (other == null)
+				return false;
+			return CanUseAsDefault == other.CanUseAsDefault && Role == other.Role && Name == other.Name && Factory == other.Factory;
+		}
 	}
 }

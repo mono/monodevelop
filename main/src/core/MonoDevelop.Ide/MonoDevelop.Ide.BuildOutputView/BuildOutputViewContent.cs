@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 				}
 				disposed = true;
 			}
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
 		internal Task GoToError (string description, string project)

@@ -83,10 +83,16 @@ namespace MonoDevelop.Ide.Gui
 			return documentContext.Initialize ((FileDocumentController)Controller);
 		}
 
-		internal protected override void OnOwnerChanged ()
+		protected override void OnOwnerChanged ()
 		{
 			base.OnOwnerChanged ();
 			documentContext.SetProject (Controller.Owner as Project);
+		}
+
+		protected override void OnContentChanged ()
+		{
+			base.OnContentChanged ();
+			documentContext.TryEditorInitialization ();
 		}
 
 		public override void Dispose ()
@@ -109,6 +115,7 @@ namespace MonoDevelop.Ide.Gui
 		Project project;
 		FileDocumentController controller;
 		bool wasEdited;
+		bool editorInitialized;
 
 		TypeSystemService typeSystemService;
 		RootWorkspace rootWorkspace;
@@ -123,7 +130,13 @@ namespace MonoDevelop.Ide.Gui
 
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
 
-			if (Editor != null) {
+			TryEditorInitialization ();
+		}
+
+		public void TryEditorInitialization ()
+		{
+			if (!editorInitialized && Editor != null) {
+				editorInitialized = true;
 				InitializeEditor ();
 				RunWhenRealized (delegate { ListenToProjectLoad (); });
 			}

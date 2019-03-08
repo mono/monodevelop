@@ -286,6 +286,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
 			if (shellView != null)
 				shellView.Dispose ();
+
+			// If this view was created by a controller, dispose the controller here too.
+			SourceController?.Dispose ();
 		}
 
 		internal virtual IEnumerable<DocumentController> GetActiveControllerHierarchy ()

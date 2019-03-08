@@ -63,14 +63,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 		}
 
-		protected override Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
-		{
-			return content.Initialize (modelDescriptor, status);
-		}
-
 		protected override async Task<DocumentView> OnInitializeView ()
 		{
 			container = new DocumentViewContainer ();
+			container.SupportedModes = DocumentViewContainerMode.VerticalSplit;
 			container.ActiveViewChanged += Container_ActiveViewChanged;
 			var sourceView = await content.GetDocumentView ();
 			sourceView.Title = GettextCatalog.GetString ("Source");

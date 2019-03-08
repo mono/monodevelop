@@ -65,21 +65,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		GuiBuilderProject gproject;
 		string rootName;
 		object designerStatus;
-		
+
 		public GuiBuilderView (DocumentController content, GuiBuilderWindow window): base (content)
 		{
 			rootName = window.Name;
-			
-			designerPage = new DesignerPage (window.Project);
-			designerPage.Show ();
-			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
-			
-			actionsPage = new ActionGroupPage ();
-			actionsPage.Show ();
-			
-			AttachWindow (window);
+			this.window = window;
 		}
-		
+
+		protected override async Task<DocumentView> OnInitializeView ()
+		{
+			designerPage = new DesignerPage (window.Project);
+			actionsPage = new ActionGroupPage ();
+			designerPage.Show ();
+			actionsPage.Show ();
+
+			var view = await base.OnInitializeView ();
+
+			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
+
+			AttachWindow (window);
+
+			return view;
+		}
+
 		void AttachWindow (GuiBuilderWindow window)
 		{
 			gproject = window.Project;
@@ -97,6 +105,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected override void OnOwnerChanged ()
 		{
 			base.OnOwnerChanged ();
+
+			// View not yet initialized
+			if (designerPage == null)
+				return;
 
 			var project = Owner as Projects.Project;
 
@@ -229,7 +241,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void CloseProject ()
 		{
-			gproject.Reloaded -= OnReloadProject;
+			if (gproject != null)
+				gproject.Reloaded -= OnReloadProject;
 		}
 		
 		protected override void OnDispose ()

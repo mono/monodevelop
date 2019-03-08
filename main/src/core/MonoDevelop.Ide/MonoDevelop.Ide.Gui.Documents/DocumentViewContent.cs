@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		internal override IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window)
 		{
 			shellContentView = window.CreateViewContent ();
-			shellContentView.SetContentLoader (AsyncContentLoader);
+			shellContentView.SetContentLoader (LoadControl);
 			if (pathDoc != null)
 				shellContentView.ShowPathBar (pathDoc);
 			return shellContentView;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					if (shellContentView != null) {
 						var oldControl = control;
 						control = null;
-						shellContentView.SetContentLoader (asyncContentLoader);
+						shellContentView.SetContentLoader (LoadControl);
 						if (oldControl != null) {
 							if (control == null)
 								shellContentView.ReloadContent (); // Make sure the shell view uses the new control
@@ -104,6 +104,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 					};
 				}
 			}
+		}
+
+		async Task<Control> LoadControl (CancellationToken cancellationToken)
+		{
+			return control = await asyncContentLoader (cancellationToken);
 		}
 
 		public DocumentToolbar GetToolbar ()
@@ -134,8 +139,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		protected override void OnDispose ()
 		{
 			base.OnDispose ();
-			if (control != null)
+			if (control != null) {
 				control.Dispose ();
+				control = null;
+			}
 		}
 
 		internal override void OnActivated ()
