@@ -10,5 +10,10 @@ namespace MonoDevelop.StressTest.Attributes
 		{
 			TypeName = typeName;
 		}
+
+		public NoLeakAttribute (Type type)
+		{
+			TypeName = type.FullName;
+		}
 	}
 }
