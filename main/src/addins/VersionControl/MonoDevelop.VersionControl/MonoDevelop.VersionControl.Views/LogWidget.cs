@@ -37,6 +37,8 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Fonts;
 using Humanizer;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -204,7 +206,7 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewFiles.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
 			scrolledwindowFiles.Child = treeviewFiles;
 			scrolledwindowFiles.ShowAll ();
-			
+
 			changedpathstore = new TreeStore (typeof(Xwt.Drawing.Image), typeof (string), // icon/file name
 			                                  typeof(Xwt.Drawing.Image), typeof (string), // icon/operation
 				typeof (string), // path
@@ -218,7 +220,7 @@ namespace MonoDevelop.VersionControl.Views
 			colChangedFile.Title = GettextCatalog.GetString ("File");
 			colChangedFile.PackStart (crp, false);
 			colChangedFile.PackStart (crt, true);
-			colChangedFile.AddAttribute (crp, "image", 2);
+			colChangedFile.SetCellDataFunc (crp, HandleNodeCellDataFunc);
 			colChangedFile.AddAttribute (crt, "text", 3);
 			treeviewFiles.AppendColumn (colChangedFile);
 			
@@ -282,6 +284,15 @@ namespace MonoDevelop.VersionControl.Views
 
 			UpdateStyle ();
 			Ide.Gui.Styles.Changed += HandleStylesChanged;
+		}
+
+		static void HandleNodeCellDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
+		{
+			var cri = (CellRendererImage)cell;
+			var image = tree_model.GetValue (iter, 2) as Xwt.Drawing.Image;
+			cri.Visible = image != null;
+			if (image != null)
+				cri.Image = image;
 		}
 
 		[GLib.ConnectBeforeAttribute]
@@ -747,71 +758,79 @@ namespace MonoDevelop.VersionControl.Views
 				} while (treeviewLog.Model.IterNext (ref iter));
 			}
 		}
-		
+
+		CancellationTokenSource selectionCancellationTokenSource = new CancellationTokenSource ();
+
 		void TreeSelectionChanged (object o, EventArgs args)
 		{
 			Revision d = SelectedRevision;
 			changedpathstore.Clear ();
 			textviewDetails.Buffer.Clear ();
-			
 			if (d == null)
 				return;
 
-			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
-			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
-			bool select = false;
-			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {
-				Xwt.Drawing.Image actionIcon;
-				string action = null;
-				if (rp.Action == RevisionAction.Add) {
-					action = GettextCatalog.GetString ("Add");
-					actionIcon = ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
-				} else if (rp.Action == RevisionAction.Delete) {
-					action = GettextCatalog.GetString ("Delete");
-					actionIcon = ImageService.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
-				} else if (rp.Action == RevisionAction.Modify) {
-					action = GettextCatalog.GetString ("Modify");
-					actionIcon = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
-				} else if (rp.Action == RevisionAction.Replace) {
-					action = GettextCatalog.GetString ("Replace");
-					actionIcon = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
-				} else {
-					action = rp.ActionDescription;
-					actionIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
+			changedpathstore.AppendValues (null, null, null, GettextCatalog.GetString ("Retrieving history…"), null, null, null);
+
+			selectionCancellationTokenSource.Cancel ();
+			selectionCancellationTokenSource = new CancellationTokenSource ();
+			var token = selectionCancellationTokenSource.Token;
+			Task.Run (() => info.Repository.GetRevisionChangesAsync (d, selectionCancellationTokenSource.Token)).ContinueWith (result => {
+				changedpathstore.Clear ();
+				revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
+				Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
+				bool select = false;
+				foreach (RevisionPath rp in result.Result) {
+					Xwt.Drawing.Image actionIcon;
+					string action = null;
+					if (rp.Action == RevisionAction.Add) {
+						action = GettextCatalog.GetString ("Add");
+						actionIcon = ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					} else if (rp.Action == RevisionAction.Delete) {
+						action = GettextCatalog.GetString ("Delete");
+						actionIcon = ImageService.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+					} else if (rp.Action == RevisionAction.Modify) {
+						action = GettextCatalog.GetString ("Modify");
+						actionIcon = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
+					} else if (rp.Action == RevisionAction.Replace) {
+						action = GettextCatalog.GetString ("Replace");
+						actionIcon = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
+					} else {
+						action = rp.ActionDescription;
+						actionIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
+					}
+					Xwt.Drawing.Image fileIcon = DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
+					var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
+					changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
+					if (rp.Path == preselectFile) {
+						selectIter = iter;
+						select = true;
+					}
 				}
-				Xwt.Drawing.Image fileIcon = DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
-				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
-				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
-				if (rp.Path == preselectFile) {
-					selectIter = iter;
-					select = true;
+				if (!string.IsNullOrEmpty (d.Email)) {
+					imageUser.Show ();
+					imageUser.LoadUserIcon (d.Email, 32);
+				} else
+					imageUser.Hide ();
+
+				labelAuthor.Text = d.Author;
+				labelDate.Text = d.Time.ToString ();
+				string rev = d.Name;
+				if (rev.Length > 15) {
+					currentRevisionShortened = true;
+					rev = d.ShortName;
+				} else
+					currentRevisionShortened = false;
+
+				labelRevision.Text = GettextCatalog.GetString ("Revision: {0}", rev);
+				textviewDetails.Buffer.Text = d.Message;
+
+				if (select) {
+					treeviewFiles.Selection.SelectIter (selectIter);
+					treeviewFiles.ExpandRow (treeviewFiles.Model.GetPath (selectIter), true);
 				}
-			}
-			if (!string.IsNullOrEmpty (d.Email)) {
-				imageUser.Show ();
-				imageUser.LoadUserIcon (d.Email, 32);
-			}
-			else
-				imageUser.Hide ();
-			
-			labelAuthor.Text = d.Author;
-			labelDate.Text = d.Time.ToString ();
-			string rev = d.Name;
-			if (rev.Length > 15) {
-				currentRevisionShortened = true;
-				rev = d.ShortName;
-			} else
-				currentRevisionShortened = false;
-			
-			labelRevision.Text = GettextCatalog.GetString ("Revision: {0}", rev);
-			textviewDetails.Buffer.Text = d.Message;
-			
-			if (select) {
-				treeviewFiles.Selection.SelectIter (selectIter);
-				treeviewFiles.ExpandRow (treeviewFiles.Model.GetPath (selectIter), true);
-			}
+			}, token, TaskContinuationOptions.OnlyOnRanToCompletion, Runtime.MainTaskScheduler);
 		}
-		
+
 		void UpdateHistory ()
 		{
 			scrolledLoading.Hide ();

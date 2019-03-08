@@ -37,6 +37,7 @@ using ProgressMonitor = MonoDevelop.Core.ProgressMonitor;
 using LibGit2Sharp;
 using System.Threading.Tasks;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -480,6 +481,14 @@ namespace MonoDevelop.VersionControl.Git
 			return readingOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
+		internal Task<T> RunOperationAsync<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
+		{
+			EnsureInitialized ();
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
+			return readingOperationFactory.StartNew (action, cancellationToken);
+		}
+
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
 			EnsureInitialized ();
@@ -594,7 +603,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
 		{
-			var rev = (GitRevision) revision;
+			var rev = (GitRevision)revision;
 			return RunOperation (() => {
 				var commit = rev.GetCommit (RootRepository);
 				if (commit == null)
@@ -619,6 +628,47 @@ namespace MonoDevelop.VersionControl.Git
 				return paths.ToArray ();
 			});
 		}
+
+		protected override Task<RevisionPath []> OnGetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken = default)
+		{
+			var rev = (GitRevision)revision;
+			return RunOperationAsync (() => {
+				var commit = rev.GetCommit (RootRepository);
+				if (commit == null)
+					return new RevisionPath [0];
+
+				var paths = new List<RevisionPath> ();
+				var parent = commit.Parents.FirstOrDefault ();
+				var changes = RootRepository.Diff.Compare<TreeChanges> (parent?.Tree, commit.Tree);
+
+				foreach (var entry in changes.Added) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Add, null));
+				}
+				foreach (var entry in changes.Copied) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Add, null));
+				}
+				foreach (var entry in changes.Deleted) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
+				}
+				foreach (var entry in changes.Renamed) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RootRepository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
+				}
+				foreach (var entry in changes.Modified) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
+				}
+				foreach (var entry in changes.TypeChanged) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
+				}
+				return paths.ToArray ();
+			}, cancellationToken: cancellationToken);
+		}
+
 
 		protected override IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
 		{

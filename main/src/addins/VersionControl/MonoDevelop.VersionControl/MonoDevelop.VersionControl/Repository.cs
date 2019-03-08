@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl
 {
@@ -489,7 +490,7 @@ namespace MonoDevelop.VersionControl
 		/// <param name='revision'>
 		/// A revision
 		/// </param>
-		public RevisionPath[] GetRevisionChanges (Revision revision)
+		public RevisionPath [] GetRevisionChanges (Revision revision)
 		{
 			using (var tracker = Instrumentation.GetRevisionChangesCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
 				try {
@@ -500,8 +501,20 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 		}
-		
-		
+
+		public Task<RevisionPath []> GetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken = default)
+		{
+			using (var tracker = Instrumentation.GetRevisionChangesCounter.BeginTiming (new RepositoryMetadata (VersionControlSystem))) {
+				try {
+					return OnGetRevisionChangesAsync (revision, cancellationToken);
+				} catch {
+					tracker.Metadata.SetFailure ();
+					throw;
+				}
+			}
+		}
+
+
 		// Returns the content of the file in the base revision of the working copy.
 		public abstract string GetBaseText (FilePath localFile);
 		
@@ -1012,7 +1025,12 @@ namespace MonoDevelop.VersionControl
 		/// <param name='revision'>
 		/// A revision
 		/// </param>
-		protected abstract RevisionPath[] OnGetRevisionChanges (Revision revision);
+		protected abstract RevisionPath [] OnGetRevisionChanges (Revision revision);
+
+		protected virtual Task<RevisionPath []> OnGetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken)
+		{
+			return Task.FromResult (OnGetRevisionChanges (revision));
+		}
 
 		// Ignores a file for version control operations.
 		public void Ignore (FilePath[] localPath)
