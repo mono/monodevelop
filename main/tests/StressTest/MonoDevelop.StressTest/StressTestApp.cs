@@ -31,6 +31,7 @@ using System.Linq;
 using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.StressTest.Attributes;
+using Newtonsoft.Json;
 using UserInterfaceTests;
 using static MonoDevelop.StressTest.ProfilerProcessor;
 
@@ -109,6 +110,7 @@ namespace MonoDevelop.StressTest
 			UserInterfaceTests.Ide.CloseAll ();
 			TestService.EndSession ();
 			OnCleanUp ();
+			ReportResult ();
 		}
 
 		void ValidateMonoDevelopBinPath ()
@@ -154,9 +156,6 @@ namespace MonoDevelop.StressTest
 
 		void OnCleanUp ()
 		{
-			// TODO: Report leak results.
-
-
 			profilerProcessor?.Stop ();
 			foreach (string folder in FoldersToClean) {
 				try {
@@ -168,6 +167,19 @@ namespace MonoDevelop.StressTest
 				} catch (UnauthorizedAccessException ex) {
 					TestService.Session.DebugObject.Debug (string.Format ("Unable to clean directory: {0}\n", folder) + ex);
 				}
+			}
+		}
+
+		void ReportResult ()
+		{
+			var serializer = new JsonSerializer {
+				NullValueHandling = NullValueHandling.Ignore,
+			};
+
+			var scenarioName = scenario.GetType ().FullName;
+			using (var fs = new FileStream (scenarioName + "_Result.json", FileMode.Create, FileAccess.Write))
+			using (var sw = new StreamWriter (fs)) {
+				serializer.Serialize (sw, result);
 			}
 		}
 
@@ -210,6 +222,8 @@ namespace MonoDevelop.StressTest
 			foreach (var (leakName, leakCount) in DetectLeakedObjects (iteration, lastHeapshot)) {
 				leakResult.Leaks.Add (new LeakItem (leakName, leakCount));
 			}
+
+			result.Iterations.Add (leakResult);
 		}
 
 		List<(string Name, int Count)> DetectLeakedObjects(int iteration, Heapshot heapshot)
