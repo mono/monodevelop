@@ -105,14 +105,23 @@ namespace MonoDevelop.VersionControl
 			VersionControlSystem vcs;
 
 			try {
-				vcs = (VersionControlSystem) args.ExtensionObject;
+				vcs = (VersionControlSystem)args.ExtensionObject;
 			} catch (Exception e) {
 				LoggingService.LogError ("Failed to initialize VersionControlSystem type.", e);
 				return;
 			}
 
 			if (args.Change == ExtensionChange.Add) {
-				handlers.Add (vcs);
+				IComparer<VersionControlSystem> compare = new CompareVersionControlSystem ();
+		
+				int search = handlers.BinarySearch (vcs, compare);
+
+				if (search < 0)
+					handlers.Insert (~search, vcs);
+				else {
+					LoggingService.LogError ("Adding new version control system {0} failed, the name {1} is already reserved.", vcs.GetType ().Name, vcs.Name);
+					return;
+				}
 				try {
 					// Include the repository type in the serialization context, so repositories
 					// of this type can be deserialized from the configuration file.
@@ -123,8 +132,7 @@ namespace MonoDevelop.VersionControl
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while adding version control system.", e);
 				}
-			}
-			else {
+			} else {
 				handlers.Remove (vcs);
 			}
 		}
