@@ -95,7 +95,11 @@ namespace MonoDevelop.CSharp.Project
 
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
 			foreach (var (text, version) in CSharpLanguageVersionHelper.GetKnownLanguageVersions ()) {
-				langVerStore.AppendValues (text, version);
+				if (version == LanguageVersion.CSharp8 && compilerParameters.LangVersion != version) {
+					// Mono's MSBuild does not currently support C# 8.
+				} else {
+					langVerStore.AppendValues (text, version);
+				}
 			}
 			langVerCombo.Model = langVerStore;
 
