@@ -67,7 +67,13 @@ namespace MonoDevelop.Projects
 					locked = true;
 					return Task.FromResult (criticalSectionDisposer);
 				}
-				var s = new TaskCompletionSource<IDisposable> ();
+
+				// When the TaskCompletionSource's SetResult method is called then all the async continuations waiting
+				// on this lock may be invoked synchronously. This can cause a stack overflow if many tasks are queued.
+				// To avoid this the continuations are run asynchronously by creating the TaskCompletionSource with
+				// TaskCreationOptions.RunContinuationsAsynchronously.
+				// https://stackoverflow.com/questions/28321457/taskcontinuationoptions-runcontinuationsasynchronously-and-stack-dives
+				var s = new TaskCompletionSource<IDisposable> (TaskCreationOptions.RunContinuationsAsynchronously);
 				queue.Enqueue (s);
 				return s.Task;
 			}
