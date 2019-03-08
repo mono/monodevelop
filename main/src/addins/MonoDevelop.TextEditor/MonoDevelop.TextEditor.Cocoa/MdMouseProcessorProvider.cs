@@ -91,13 +91,13 @@ namespace MonoDevelop.TextEditor.Cocoa
 				view);
 		}
 
-		public override void PostprocessMouseLeftButtonDown (MouseEvent e)
+		public override void PreprocessMouseLeftButtonDown (MouseEvent e)
 		{
 			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask)
 				PreprocessMouseRightButtonDown (e);
 		}
 
-		public override void PostprocessMouseLeftButtonUp (MouseEvent e)
+		public override void PreprocessMouseLeftButtonUp (MouseEvent e)
 		{
 			if ((e.Event.ModifierFlags & NSEventModifierMask.DeviceIndependentModifierFlagsMask) == NSEventModifierMask.ControlKeyMask)
 				PreprocessMouseRightButtonUp (e);
