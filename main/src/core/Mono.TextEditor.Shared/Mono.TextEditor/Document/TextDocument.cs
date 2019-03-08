@@ -135,9 +135,9 @@ namespace Mono.TextEditor
 		void SyntaxMode_HighlightingStateChanged (object sender, MonoDevelop.Ide.Editor.LineEventArgs e)
 		{
 			if (e == MonoDevelop.Ide.Editor.LineEventArgs.AllLines) {
-				CommitUpdateAll (true);
+				CommitUpdateAll (false);
 			} else {
-				CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber, true);
+				CommitMultipleLineUpdate (e.Line.LineNumber, e.Line.LineNumber, false);
 			}
 		}
 
