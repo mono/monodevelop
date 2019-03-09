@@ -41,19 +41,14 @@ namespace MonoDevelop.DesignerSupport
 	class PropertyPadEditorProvider
 	: IEditorProvider
 	{
-		Tuple<object, object[]> currentObject;
-		IObjectEditor currentEditor;
-
 		public IReadOnlyDictionary<Type, ITypeInfo> KnownTypes {
 			get;
 		} = new Dictionary<Type, ITypeInfo> ();
 
 		public Task<IObjectEditor> GetObjectEditorAsync (object item)
 		{
-			if (item is Tuple<object, object []> tuple) {
-				this.currentObject = tuple;
-				this.currentEditor = new PropertyPadObjectEditor (tuple); ;
-				return Task.FromResult (currentEditor);
+			if (item is PropertyPadItem propertyPadItem) {
+				return Task.FromResult<IObjectEditor> (new PropertyPadObjectEditor (propertyPadItem));
 			}
 			return Task.FromResult<IObjectEditor> (null);
 		}

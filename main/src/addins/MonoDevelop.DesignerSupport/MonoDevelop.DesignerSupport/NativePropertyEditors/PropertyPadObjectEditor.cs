@@ -39,9 +39,9 @@ using MonoDevelop.Core;
 namespace MonoDevelop.DesignerSupport
 {
 	class PropertyPadObjectEditor
-		: IObjectEditor, INameableObject, IObjectEventEditor
+		: IObjectEditor, INameableObject
 	{
-		private readonly object target;
+		private readonly PropertyPadItem propertyItem;
 		public string Name {
 			get;
 			private set;
@@ -51,7 +51,7 @@ namespace MonoDevelop.DesignerSupport
 		private static readonly IObjectEditor [] EmptyDirectChildren = new IObjectEditor [0];
 		private readonly List<PropertyDescriptorEventInfo> events = new List<PropertyDescriptorEventInfo> ();
 
-		public object Target => this.target;
+		public object Target => this.propertyItem;
 
 		public ITypeInfo TargetType => ToTypeInfo (Target.GetType ());
 
@@ -65,7 +65,7 @@ namespace MonoDevelop.DesignerSupport
 
 		public IReadOnlyDictionary<IPropertyInfo, KnownProperty> KnownProperties => null;
 
-		public IObjectEditor Parent => throw new NotImplementedException ();
+		public IObjectEditor Parent => null;
 
 		public IReadOnlyList<IObjectEditor> DirectChildren => EmptyDirectChildren;
 
@@ -73,10 +73,10 @@ namespace MonoDevelop.DesignerSupport
 
 		public event EventHandler<EditorPropertyChangedEventArgs> PropertyChanged;
 
-		public PropertyPadObjectEditor (Tuple<object, object []> target)
+		public PropertyPadObjectEditor (PropertyPadItem propertyItem)
 		{
-			this.target = target.Item1;
-			foreach (object propertyProvider in target.Item2) {
+			this.propertyItem = propertyItem;
+			foreach (object propertyProvider in propertyItem.Providers) {
 				var props = GetProperties (propertyProvider, null);
 
 				for (int i = 0; i < props.Count; i++) {
@@ -119,7 +119,7 @@ namespace MonoDevelop.DesignerSupport
 
 			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
 				var isDirectoryPropertyDescriptor = GetPropertyDescriptor (propertyDescriptor.GetChildProperties (), nameof (Core.FilePath.IsDirectory));
-				if (isDirectoryPropertyDescriptor != null && (bool)isDirectoryPropertyDescriptor.GetValue (target)) {
+				if (isDirectoryPropertyDescriptor != null && (bool)isDirectoryPropertyDescriptor.GetValue (propertyItem)) {
 					return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 				}
 				return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
@@ -139,20 +139,6 @@ namespace MonoDevelop.DesignerSupport
 			return TypeDescriptor.GetProperties (component);
 		}
 
-		#region NOT SUPORTED
-
-		public Task AttachHandlerAsync (IEventInfo ev, string handlerName)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public Task DetachHandlerAsync (IEventInfo ev, string handlerName)
-		{
-			throw new NotImplementedException ();
-		}
-
-		#endregion
-
 		public async Task<AssignableTypesResult> GetAssignableTypesAsync (IPropertyInfo property, bool childTypes)
 		{
 			return new AssignableTypesResult (Array.Empty<ITypeInfo> ());
@@ -166,7 +152,7 @@ namespace MonoDevelop.DesignerSupport
 			if (!(ev is Xamarin.PropertyEditing.Reflection.ReflectionEventInfo info))
 				throw new ArgumentException ();
 
-			return Task.FromResult (info.GetHandlers (this.target));
+			return Task.FromResult (info.GetHandlers (this.propertyItem));
 		}
 
 		public Task<string> GetNameAsync ()
@@ -184,17 +170,10 @@ namespace MonoDevelop.DesignerSupport
 			if (property == null)
 				throw new ArgumentNullException (nameof (property));
 
-			if (!(property is DescriptorPropertyInfo info))
-				throw new ArgumentException ();
+			if (!(property is DescriptorPropertyInfo propertyInfo))
+				throw new ArgumentException ("Property should be a DescriptorPropertyInfo", nameof (property));
 
-			T value = await info.GetValueAsync<T> (this.target);
-
-			return new ValueInfo<T> {
-				Value = value,
-				Source = ValueSource.Local,
-				//ValueDescriptor = valueInfoString.ValueDescriptor,
-				//CustomExpression = valueString
-			};
+			return await propertyItem.GetPropertyValueInfoAsProppyType<T> (propertyInfo);
 		}
 
 		public Task RemovePropertyVariantAsync (IPropertyInfo property, PropertyVariation variant)
@@ -208,21 +187,19 @@ namespace MonoDevelop.DesignerSupport
 			return Task.FromResult (true);
 		}
 
-		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> valueInfo, PropertyVariation variations = null)
+		public Task SetValueAsync<T> (IPropertyInfo propertyInfo, ValueInfo<T> value, PropertyVariation variations = null)
 		{
 			if (propertyInfo == null)
 				throw new ArgumentNullException (nameof (propertyInfo));
 
 			if (propertyInfo is DescriptorPropertyInfo info && info.CanWrite) {
-				try {
-					info.SetValue (this.target, valueInfo.Value);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error setting the value", ex);
-				}
+
+				propertyItem.SetPropertyValueInfoAsProppyType (info, value, variations);
 
 				OnPropertyChanged (info);
+				return Task.CompletedTask;
 			}
-			return Task.CompletedTask;
+			throw new ArgumentException ($"Property should be a writeable {nameof (DescriptorPropertyInfo)}.", nameof (propertyInfo));
 		}
 
 		protected virtual void OnPropertyChanged (IPropertyInfo property)
