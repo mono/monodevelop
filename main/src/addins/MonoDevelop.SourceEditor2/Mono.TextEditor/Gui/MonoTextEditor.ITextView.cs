@@ -612,6 +612,10 @@ namespace Mono.TextEditor
 		}
 
 		public ITextViewLineSource FormattedLineSource { get; } = null;
+
+		public bool IsKeyboardFocused => HasFocus;
+
+		public event EventHandler IsKeyboardFocusedChanged;
 #endif
 	}
 }
