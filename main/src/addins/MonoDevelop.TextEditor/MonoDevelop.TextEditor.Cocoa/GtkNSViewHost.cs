@@ -286,6 +286,17 @@ namespace Gtk
 			}
 		}
 
+		protected override bool OnWidgetEvent (Gdk.Event evnt)
+		{
+			LogEnter ();
+			try {
+				UpdateViewFrame ();
+				return base.OnWidgetEvent (evnt);
+			} finally {
+				LogExit ();
+			}
+		}
+
 		bool ForwardEvent<TEvent> (
 			TEvent evnt,
 			Action<NSView, NSEvent> forwardCall,
