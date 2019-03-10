@@ -192,6 +192,9 @@ namespace MonoDevelop.TextEditor
 
 			if (useManagedGtkNSViewHost.Value) {
 				embeddedControl = new ManagedGtkNSViewHostControl (textViewHost);
+
+				TextView.GotAggregateFocus += (sender, e)
+					=> embeddedControl.GtkView.GrabFocus ();
 			} else {
 				var legacyEmbeddedControl = new LegacyGtkNSViewHostControl (textViewHost);
 				embeddedControl = legacyEmbeddedControl;
