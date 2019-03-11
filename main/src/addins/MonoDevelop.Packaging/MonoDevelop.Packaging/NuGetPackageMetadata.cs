@@ -70,6 +70,7 @@ namespace MonoDevelop.Packaging
 			Id = GetProperty (propertyGroup, PackageIdPropertyName);
 			Version = GetProperty (propertyGroup, "PackageVersion");
 			Authors = GetProperty (propertyGroup, "Authors");
+			Copyright = GetProperty (propertyGroup, "Copyright");
 			DevelopmentDependency = GetProperty (propertyGroup, "DevelopmentDependency", false);
 			IconUrl = GetProperty (propertyGroup, "PackageIconUrl");
 			Language = GetProperty (propertyGroup, "NeutralLanguage");
@@ -107,6 +108,7 @@ namespace MonoDevelop.Packaging
 			SetProperty (propertyGroup, PackageIdPropertyName, Id);
 			SetProperty (propertyGroup, "PackageVersion", Version);
 			SetProperty (propertyGroup, "Authors", Authors);
+			SetProperty (propertyGroup, "Copyright", Copyright);
 			SetProperty (propertyGroup, "DevelopmentDependency", DevelopmentDependency);
 			SetProperty (propertyGroup, "PackageIconUrl", IconUrl);
 			SetProperty (propertyGroup, "NeutralLanguage", Language);
