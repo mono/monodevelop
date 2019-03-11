@@ -774,7 +774,7 @@ namespace MonoDevelop.VersionControl.Views
 			selectionCancellationTokenSource.Cancel ();
 			selectionCancellationTokenSource = new CancellationTokenSource ();
 			var token = selectionCancellationTokenSource.Token;
-			Task.Run (() => info.Repository.GetRevisionChangesAsync (d, selectionCancellationTokenSource.Token)).ContinueWith (result => {
+			Task.Run (() => info.Repository.GetRevisionChangesAsync (d, token)).ContinueWith (result => {
 				changedpathstore.Clear ();
 				revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
 				Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
