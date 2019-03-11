@@ -592,6 +592,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void OnDestroyed ()
 		{
+			selectionCancellationTokenSource.Cancel ();
+
 			textviewDetails.ButtonPressEvent -= TextviewDetails_ButtonPressEvent;
 			labelDate.ButtonPressEvent -= LabelDate_ButtonPressEvent;
 
