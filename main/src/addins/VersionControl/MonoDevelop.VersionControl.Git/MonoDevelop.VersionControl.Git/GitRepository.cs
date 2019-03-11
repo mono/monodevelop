@@ -768,7 +768,7 @@ namespace MonoDevelop.VersionControl.Git
 					fstatus |= VersionStatus.ScheduledAdd;
 				else if ((status & (FileStatus.DeletedFromIndex | FileStatus.DeletedFromWorkdir)) != 0)
 					fstatus |= VersionStatus.ScheduledDelete;
-				else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.ModifiedInWorkdir)) != 0)
+				else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.TypeChangeInIndex | FileStatus.ModifiedInWorkdir | FileStatus.ModifiedInIndex)) != 0)
 					fstatus |= VersionStatus.Modified;
 				else if ((status & (FileStatus.RenamedInIndex | FileStatus.RenamedInWorkdir)) != 0)
 					fstatus |= VersionStatus.ScheduledReplace;
@@ -1456,7 +1456,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			try {
 				return RunOperation (versionInfo.LocalPath, repository => {
-					var patch = repository.Diff.Compare<Patch> (new [] { repository.ToGitPath (versionInfo.LocalPath) });
+					var patch = repository.Diff.Compare<Patch> (repository.Head.Tip.Tree, DiffTargets.WorkingDirectory | DiffTargets.Index, new [] { repository.ToGitPath (versionInfo.LocalPath) });
 					// Trim the header by taking out the first 2 lines.
 					int diffStart = patch.Content.IndexOf ('\n', patch.Content.IndexOf ('\n') + 1);
 					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, patch.Content.Substring (diffStart + 1));
