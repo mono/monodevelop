@@ -647,6 +647,24 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
+			var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ();
+			if (textView != null) {
+				var viewPrimitives = MonoDevelop.Ide.Composition.CompositionManager.GetExport<IEditorPrimitivesFactoryService> ().Value.GetViewPrimitives (textView);
+				var selectedText = viewPrimitives.Selection.GetText ();
+				if (!string.IsNullOrWhiteSpace (selectedText)) {
+					DebuggingService.ShowExpressionEvaluator (selectedText);
+					return;
+				}
+
+				// GetCurrentWord() works correctly only in new editor
+				if (IdeApp.Workbench.ActiveDocument.Editor == null) {
+					var currentWordText = viewPrimitives.Caret.GetCurrentWord ().GetText ();
+					if (!string.IsNullOrWhiteSpace (currentWordText)) {
+						DebuggingService.ShowExpressionEvaluator (currentWordText);
+						return;
+					}
+				}
+			}
 			DebuggingService.ShowExpressionEvaluator (null);
 		}
 
