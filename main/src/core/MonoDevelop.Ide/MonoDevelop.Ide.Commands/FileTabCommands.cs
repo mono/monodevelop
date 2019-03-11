@@ -107,11 +107,56 @@ namespace MonoDevelop.Ide.Commands
 			var active = IdeApp.Workbench.ActiveDocument;
 			return active == null ? null : active.Window.ViewContent;
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			var documents = IdeApp.Workbench.Documents;
+			var activeDoc = IdeApp.Workbench.ActiveDocument;
+
+			if (activeDoc == null) {
+				info.Enabled = false;
+				return;
+			}
+
+			var activeNotebook = ((SdiWorkspaceWindow)activeDoc.Window).TabControl;
+
+			// Disable if only document in tab strip
+			foreach (var doc in documents) { 
+				if (doc != activeDoc && ((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
+					info.Enabled = true;
+					return;
+				}
+			}
+
+			info.Enabled = false;
+		}
 	}
 
 	class CloseAllToTheRightHandler : CloseAllButThisHandler
 	{
 		protected override bool StartAfterException => true;
+
+		protected override void Update (CommandInfo info)
+		{
+			var documents = IdeApp.Workbench.Documents;
+			var activeDoc = IdeApp.Workbench.ActiveDocument;
+
+			if (activeDoc == null) {
+				info.Enabled = false;
+				return;
+			}
+
+			var activeNotebook = ((SdiWorkspaceWindow)activeDoc.Window).TabControl;
+
+			// Disable if right-most document in tab strip
+			for (int i = documents.Count - 1; i >= 0; i--) {
+				var doc = documents [i];
+				if (((SdiWorkspaceWindow)doc.Window).TabControl == activeNotebook) {
+					info.Enabled = doc != activeDoc;
+					return;
+				}
+			}
+		}
 	}
 
 	class ToggleMaximizeHandler : CommandHandler
