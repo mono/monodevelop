@@ -102,6 +102,9 @@ namespace Gtk
 
 		static NSView RecursivelyFindSubviewForPredicate (NSView view, Predicate<NSView> predicate)
 		{
+			if (view == null)
+				return null;
+
 			if (predicate (view))
 				return view;
 
@@ -125,78 +128,83 @@ namespace Gtk
 		protected override void OnDestroyed ()
 		{
 			LogEnter ();
+			try {
+				view?.RemoveFromSuperview ();
+				view = null;
+				superview = null;
 
-			view?.RemoveFromSuperview ();
-			view = null;
-			superview = null;
-
-			base.OnDestroyed ();
-
-			LogExit ();
+				base.OnDestroyed ();
+			} finally {
+				LogExit ();
+			}
 		}
 
 		protected override void OnRealized ()
 		{
 			LogEnter ();
+			try {
+				GdkWindow = Parent?.GdkWindow;
 
-			GdkWindow = Parent.GdkWindow;
+				if (GdkWindow != null && GdkWindow.Handle != IntPtr.Zero) {
+					var superviewHandle = gdk_quartz_window_get_nsview (GdkWindow.Handle);
+					if (superviewHandle != IntPtr.Zero)
+						superview = Runtime.GetNSObject<NSView> (superviewHandle);
+				}
 
-			if (GdkWindow != null && GdkWindow.Handle != IntPtr.Zero) {
-				var superviewHandle = gdk_quartz_window_get_nsview (GdkWindow.Handle);
-				if (superviewHandle != IntPtr.Zero)
-					superview = Runtime.GetNSObject<NSView> (superviewHandle);
-			}
+				if (superview != null && view != null)
+					superview.AddSubview (view);
 
-			if (superview != null && view != null) {
-				view.Hidden = true;
-				superview.AddSubview (view);
+				base.OnRealized ();
+
 				UpdateViewFrame ();
-
 				CanFocus = GetAcceptsFirstResponderView () != null;
+			} finally {
+				LogExit ();
 			}
-
-			base.OnRealized ();
-
-			LogExit ();
 		}
 
 		protected override void OnUnrealized ()
 		{
 			LogEnter ();
-
-			if (IsMapped)
+			try {
 				Unmap ();
 
-			view?.RemoveFromSuperview ();
-			superview = null;
+				view?.RemoveFromSuperview ();
+				superview = null;
 
-			base.OnUnrealized ();
-			LogExit ();
+				base.OnUnrealized ();
+			} finally {
+				LogExit ();
+			}
 		}
 
 		protected override void OnMapped ()
 		{
 			LogEnter ();
+			try {
+				if (view != null)
+					view.Hidden = false;
 
-			view.Hidden = false;
+				base.OnMapped ();
 
-			base.OnMapped ();
-
-			if (IsMapped)
 				UpdateViewFrame ();
-
-			LogExit ();
+			} finally {
+				LogExit ();
+			}
 		}
 
 		protected override void OnUnmapped ()
 		{
 			LogEnter ();
+			try {
+				if (view != null)
+					view.Hidden = true;
 
-			view.Hidden = true;
+				base.OnUnmapped ();
 
-			base.OnUnmapped ();
-
-			LogExit ();
+			} finally {
+				LogExit ();
+			}
 		}
 
 		protected override bool OnConfigureEvent (Gdk.EventConfigure evnt)
@@ -231,12 +239,13 @@ namespace Gtk
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			LogEnter ();
+			try {
+				base.OnSizeAllocated (allocation);
 
-			base.OnSizeAllocated (allocation);
-
-			UpdateViewFrame ();
-
-			LogExit ();
+				UpdateViewFrame ();
+			} finally {
+				LogExit ();
+			}
 		}
 
 		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)
@@ -244,10 +253,19 @@ namespace Gtk
 			LogEnter ();
 			try {
 				var acceptsFirstResponderView = GetAcceptsFirstResponderView ();
-				if (acceptsFirstResponderView?.Window == null)
+				if (acceptsFirstResponderView == null) {
+					Log ("neither view nor descendants accept first responder");
 					return false;
+				}
+
+				if (acceptsFirstResponderView.Window == null) {
+					Log ("first responder found, but it does not have a window");
+					return false;
+				}
 
 				acceptsFirstResponderView.Window.MakeFirstResponder (acceptsFirstResponderView);
+
+				UpdateViewFrame ();
 
 				return base.OnFocusInEvent (evnt);
 			} finally {
@@ -263,6 +281,17 @@ namespace Gtk
 				if (firstResponder != null && view?.AncestorSharedWithView (firstResponder) == view)
 					firstResponder.Window.MakeFirstResponder (null);
 				return base.OnFocusOutEvent (evnt);
+			} finally {
+				LogExit ();
+			}
+		}
+
+		protected override bool OnWidgetEvent (Gdk.Event evnt)
+		{
+			LogEnter ();
+			try {
+				UpdateViewFrame ();
+				return base.OnWidgetEvent (evnt);
 			} finally {
 				LogExit ();
 			}
@@ -314,11 +343,12 @@ namespace Gtk
 
 		#region Tracing
 
-		int traceDepth = 0;
+		int traceDepth;
+		int traceGeneration;
 
 		[Conditional ("DEBUG")]
 		void LogIndent ()
-			=> Debug.Write (new string (' ', traceDepth * 2));
+			=> Debug.Write ($"{traceGeneration:0000}|{new string (' ', traceDepth * 2)}");
 
 		[Conditional ("DEBUG")]
 		void Log (string message, [CallerMemberName] string memberName = null)
@@ -330,6 +360,8 @@ namespace Gtk
 		[Conditional ("DEBUG")]
 		void LogEnter ([CallerMemberName] string memberName = null)
 		{
+			if (traceDepth == 0)
+				traceGeneration++;
 			LogIndent ();
 			Debug.WriteLine ($"Enter: {memberName}");
 			traceDepth++;
