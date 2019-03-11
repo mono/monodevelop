@@ -225,7 +225,7 @@ namespace MonoDevelop.VersionControl
 				return infos [0];
 			}*/
 		}
-		
+
 		/// <summary>
 		/// Returns the versioning status of a set of files or directories
 		/// </summary>
@@ -258,11 +258,11 @@ namespace MonoDevelop.VersionControl
 				else {
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (p, "", Directory.Exists (p), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
-					infoCache.SetStatus (vi, false);
+					infoCache.SetStatus (vi, true);
 					result.Add (vi);
 					pathsToQuery.Add (p);
 				}
-//				Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
+				// Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
 			}
 			if (pathsToQuery.Count > 0)
 				AddQuery (new VersionInfoQuery () { Paths = pathsToQuery, QueryFlags = queryFlags });
@@ -429,8 +429,9 @@ namespace MonoDevelop.VersionControl
 						if (IsDisposed)
 							break;
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key).ToList ();
-						foreach (var vi in status)
+						foreach (var vi in status) 
 							if (!vi.IsInitialized) vi.Init (this);
+					
 						infoCache.SetStatus (status);
 					}
 
@@ -652,8 +653,8 @@ namespace MonoDevelop.VersionControl
 			var metadata = new RevertMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse, OperationType = RevertMetadata.RevertType.LocalChanges };
 			using (var tracker = Instrumentation.RevertCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					ClearCachedVersionInfo (localPaths);
 					OnRevert (localPaths, recurse, monitor);
+					ClearCachedVersionInfo (localPaths);
 				} catch {
 					metadata.SetFailure ();
 					throw;

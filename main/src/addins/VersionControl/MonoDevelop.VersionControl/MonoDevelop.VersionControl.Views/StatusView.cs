@@ -1034,21 +1034,9 @@ namespace MonoDevelop.VersionControl.Views
 					changeSet.AddFile (newInfo);
 					statuses.Add (newInfo);
 					AppendFileInfo (newInfo, wasExpanded);
-				} else {
-					InalidateChangeSet (newInfo.LocalPath);
 				}
 			}
 			return true;
-		}
-
-		void InalidateChangeSet(FilePath path)
-		{
-			if (!changeSet.ContainsFile (path)) {
-				var newInfo = vc.GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
-				if (FileVisible (newInfo)) {
-					changeSet.AddFile (newInfo);
-				}
-			}
 		}
 
 		void InvalidateDiffData (FilePath path, bool remote, VersionInfo info)
