@@ -261,6 +261,7 @@ namespace MonoDevelop.VersionControl
 					var result = detectedVCS?.GetRepositoryReference (p, id);
 					if (result != null) {
 						Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
+						result.RepositoryPath = p.CanonicalPath;
 						return result;
 					}
 					// never add null values
@@ -839,7 +840,7 @@ namespace MonoDevelop.VersionControl
 		public void Dispose ()
 		{
 			VersionControlService.referenceCache.TryRemove (repo, out _);
-			VersionControlService.repositoryCache.TryRemove (repo.RootPath.CanonicalPath, out _);
+			VersionControlService.repositoryCache.TryRemove (repo.RepositoryPath.CanonicalPath, out _);
 			repo.Unref ();
 		}
 	}

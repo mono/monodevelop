@@ -30,7 +30,9 @@ namespace MonoDevelop.VersionControl
 			get;
 			protected set;
 		}
-		
+
+		internal FilePath RepositoryPath { get; set; }
+
 		public event EventHandler NameChanged;
 		
 		protected Repository ()
