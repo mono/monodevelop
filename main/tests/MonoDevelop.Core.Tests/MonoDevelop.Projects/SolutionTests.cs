@@ -1010,6 +1010,51 @@ namespace MonoDevelop.Projects
 				Runtime.Preferences.SkipBuildingUnmodifiedProjects.Set (oldPrefSkipUnmodified);
 			}
 		}
+
+		[Test]
+		public async Task SolutionDisposed_ActiveProjectTasks_MSBuildEngineManagerNotDisposedUntilProjectTasksCompleted ()
+		{
+			var en = new CustomSolutionItemNode<TestProjectExtension> ();
+			WorkspaceObject.RegisterCustomExtension (en);
+			try {
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+				var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+				var p = (DotNetProject)sol.Items [0];
+				var msbuildProject = p.MSBuildProject;
+
+				var ext = p.GetFlavor<TestProjectExtension> ();
+				var task = ext.RunTestTask ();
+				sol.Dispose ();
+
+				// Should not throw. Evaluating requires the MSBuildEngineManager to not be disposed.
+				msbuildProject.Evaluate ();
+
+				try {
+					// Ensure that BindTask cannot be used after Solution has been disposed but
+					// project has not yet been disposed.
+					await p.BindTask (ct => Task.CompletedTask);
+					Assert.Fail ("Should not reach here.");
+				} catch (TaskCanceledException) {
+					// Expected
+				}
+
+				try {
+					// Ensure that BindTask<T> cannot be used after Solution has been disposed but
+					// project has not yet been disposed.
+					await p.BindTask (ct => Task.FromResult (true));
+					Assert.Fail ("Should not reach here.");
+				} catch (TaskCanceledException) {
+					// Expected
+				}
+
+				ext.TaskCompletionSource.TrySetResult (true);
+
+				await task;
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (en);
+			}
+		}
 	}
 
 	class SomeItem: SolutionItem
@@ -1103,6 +1148,18 @@ namespace MonoDevelop.Projects
 		{
 			BuildCalled?.Invoke ();
 			return base.OnBuild (monitor, configuration, operationContext);
+		}
+	}
+
+	class TestProjectExtension : DotNetProjectExtension
+	{
+		public TaskCompletionSource<bool> TaskCompletionSource = new TaskCompletionSource<bool> ();
+
+		public Task RunTestTask ()
+		{
+			return Project.BindTask (async (ct) => {
+				await TaskCompletionSource.Task;
+			});
 		}
 	}
 }
