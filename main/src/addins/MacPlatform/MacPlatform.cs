@@ -413,7 +413,6 @@ namespace MonoDevelop.MacIntegration
 				var rootMenu = NSApplication.SharedApplication.MainMenu;
 				if (rootMenu == null) {
 					rootMenu = new NSMenu ();
-					NSApplication.SharedApplication.MainMenu = rootMenu;
 				} else {
 					rootMenu.RemoveAllItems ();
 				}
@@ -425,6 +424,9 @@ namespace MonoDevelop.MacIntegration
 				foreach (CommandEntry ce in ces) {
 					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet)ce));
 				}
+				// Assign the main menu after loading the items. Otherwise a weird application menu appears.
+				if (NSApplication.SharedApplication.MainMenu == null)
+					NSApplication.SharedApplication.MainMenu = rootMenu;
 			} catch (Exception ex) {
 				try {
 					var m = NSApplication.SharedApplication.MainMenu;
