@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			fileStatus.AddOrUpdate (versionInfo.LocalPath, versionInfo, (f, v) => versionInfo);
+			fileStatus [versionInfo.LocalPath] = versionInfo;
 
 			if (notify)
 				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (repo, versionInfo.LocalPath, versionInfo.IsDirectory));
@@ -111,7 +111,7 @@ namespace MonoDevelop.VersionControl
 					continue;
 				}
 
-				fileStatus.AddOrUpdate (versionInfo.LocalPath, versionInfo, (f, v) => versionInfo);
+				fileStatus [versionInfo.LocalPath] = versionInfo;
 
 				var a = new FileUpdateEventArgs (repo, versionInfo.LocalPath, versionInfo.IsDirectory);
 				if (args == null)
