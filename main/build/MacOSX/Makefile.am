@@ -1,5 +1,6 @@
 MAC_APP_DIR=MonoDevelop.app
 APP_NAME=MonoDevelop
+APP_DISPLAY_NAME=MonoDevelop
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 LIB_DIR=$(MAC_APP_DIR)/Contents/Resources/lib
 MAC_APP_LIB_DIR=$(LIB_DIR)/monodevelop
@@ -88,7 +89,7 @@ app: monostub monostub-test
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
 
-	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
+	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s/@APP_DISPLAY_NAME@/$(APP_DISPLAY_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 
 # Native launch scripts
