@@ -608,12 +608,17 @@ namespace MonoDevelop.VersionControl
 
 			var files = new HashSet<string> { path };
 			SolutionItemAddFiles (path, entry, files);
-			
+
+			if (entry is SolutionFolder && files.Count == 1)
+				return;
+
 			using (ProgressMonitor monitor = GetStatusMonitor ()) {
-				var status = repo.GetDirectoryVersionInfo (path, false, true);
-				foreach (var v in status) {
-					if (!v.IsVersioned && files.Contains (v.LocalPath))
-						repo.Add (v.LocalPath, false, monitor);
+				foreach (var file in files) {
+					var status = repo.GetDirectoryVersionInfo (file, false, false);
+					foreach (var v in status) {
+						if (!v.IsVersioned && files.Contains (v.LocalPath))
+							repo.Add (v.LocalPath, false, monitor);
+					}
 				}
 			}
 
