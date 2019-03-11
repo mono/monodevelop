@@ -17,15 +17,23 @@ namespace MonoDevelop.Debugger
 		private readonly T tag;
 		private readonly string filePath;
 		private readonly bool isGreen;
+		private ITextSnapshot snapshotAtStartOfDebugging;
 
 		public AbstractCurrentStatementTagger (T tag, ITextBuffer textBuffer, bool isGreen)
 		{
 			this.textBuffer = textBuffer;
+			this.snapshotAtStartOfDebugging = textBuffer.CurrentSnapshot;
 			this.filePath = textBuffer.GetFilePathOrNull ();
 			this.tag = tag;
 			this.isGreen = isGreen;
 			DebuggingService.CurrentFrameChanged += OnDebuggerCurrentStatementChanged;
 			DebuggingService.ExecutionLocationChanged += OnDebuggerCurrentStatementChanged;
+			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
+		}
+
+		private void OnDebugSessionStarted (object sender, EventArgs e)
+		{
+			snapshotAtStartOfDebugging = textBuffer.CurrentSnapshot;
 		}
 
 		private void OnDebuggerCurrentStatementChanged (object sender, EventArgs eventArgs)
@@ -73,14 +81,16 @@ namespace MonoDevelop.Debugger
 					?? CheckLocationIsInFile (DebuggingService.GetCurrentVisibleFrame ()?.SourceLocation);
 			if (sourceLocation == null)
 				return null;
-			var span = textBuffer.CurrentSnapshot.SpanFromMDColumnAndLine (sourceLocation.Line, sourceLocation.Column, sourceLocation.EndLine, sourceLocation.EndColumn);
-			return new TagSpan<T> (span, tag);
+			var span = snapshotAtStartOfDebugging.SpanFromMDColumnAndLine (sourceLocation.Line, sourceLocation.Column, sourceLocation.EndLine, sourceLocation.EndColumn);
+			var translatedSpan = span.TranslateTo (textBuffer.CurrentSnapshot, SpanTrackingMode.EdgeExclusive);
+			return new TagSpan<T> (translatedSpan, tag);
 		}
 
 		public void Dispose ()
 		{
 			DebuggingService.CurrentFrameChanged -= OnDebuggerCurrentStatementChanged;
 			DebuggingService.ExecutionLocationChanged -= OnDebuggerCurrentStatementChanged;
+			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
 		}
 
 		public event System.EventHandler<SnapshotSpanEventArgs> TagsChanged;
