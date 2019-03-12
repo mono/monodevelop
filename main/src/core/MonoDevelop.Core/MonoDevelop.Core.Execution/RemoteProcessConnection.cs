@@ -175,8 +175,9 @@ namespace MonoDevelop.Core.Execution
 			} catch {
 			}
 
-			mainCancelSource.Cancel ();
-			mainCancelSource = new CancellationTokenSource ();
+			using (var source = Interlocked.Exchange (ref mainCancelSource, new CancellationTokenSource ())) {
+				source.Cancel ();
+			}
 
 			// The process did not gracefully stop. Kill the process.
 
