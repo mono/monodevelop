@@ -1069,15 +1069,21 @@ namespace MonoDevelop.VersionControl.Git
 
 		bool PromptToStash ()
 		{
-			if (MessageService.GenericAlert (
-					Ide.Gui.Stock.Question,
-					GettextCatalog.GetString ("Your local changes would be overwritten"),
-					GettextCatalog.GetString ("Would you like to stash your local changes and reapply them automatically? Select Cancel to review and commit your chnages manually."),
-					AlertButton.Cancel,
-					new AlertButton (GettextCatalog.GetString ("Stash"))) != AlertButton.Cancel)
-				return true;
+			var stashAlways = GitService.StashUnstashWhenSwitchingBranches.Value;
+			var message = new GenericMessage {
+				Text = GettextCatalog.GetString ("Your local changes would be overwritten"),
+				SecondaryText = GettextCatalog.GetString ("Would you like to stash your local changes? Select Cancel to review and commit your chnages manually."),
+				Icon = Ide.Gui.Stock.Question
+			};
+			message.AddOption (nameof (stashAlways), GettextCatalog.GetString ("Automatically stash/unstash changes when switching branches"), stashAlways);
+			message.Buttons.Add (AlertButton.Cancel);
+			message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Stash")));
+			message.DefaultButton = 1;
 
-			return false;
+			var result = MessageService.GenericAlert (message) != AlertButton.Cancel;
+			if (result)
+				GitService.StashUnstashWhenSwitchingBranches.Value = message.GetOptionValue (nameof (stashAlways));
+			return result;
 		}
 
 		bool ConflictResolver(LibGit2Sharp.Repository repository, ProgressMonitor monitor, Commit resetToIfFail, string message)
