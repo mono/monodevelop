@@ -38,6 +38,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void SetCurrentMode (DocumentViewContainerMode currentMode);
 		void SetSupportedModes (DocumentViewContainerMode supportedModes);
 		void RemoveAllViews ();
+		double [] GetRelativeSplitSizes ();
+		void SetRelativeSplitSizes (double [] sizes);
 		IShellDocumentViewItem ActiveView { get; set; }
 		event EventHandler ActiveViewChanged;
 	}

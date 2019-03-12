@@ -29,19 +29,26 @@ using Gtk;
 using MonoDevelop.Ide.Gui.Documents;
 using Xwt.Drawing;
 using System.Linq;
+using MonoDevelop.Core;
+using Gdk;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
-	class GtkShellDocumentViewContainerSplit: IGtkShellDocumentViewContainer
+	class GtkShellDocumentViewContainerSplit : IGtkShellDocumentViewContainer
 	{
 		DocumentViewContainerMode mode;
 		Paned paned;
+		List<double> relativeSplitSizes = new List<double> ();
+		bool settingSize, sizesLoaded;
+		Gdk.Rectangle lastRecalcSize;
 
 		public GtkShellDocumentViewContainerSplit (DocumentViewContainerMode mode)
 		{
 			this.mode = mode;
 			paned = CreatePaned ();
 			paned.Show ();
+			paned.SizeAllocated += Paned_SizeAllocated;
 		}
 
 		public Gtk.Widget Widget => paned;
@@ -49,10 +56,19 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		Paned CreatePaned ()
 		{
+			Paned p;
 			if (mode == DocumentViewContainerMode.VerticalSplit)
-				return new HPaned ();
+				p = new HPaned ();
 			else
-				return new VPaned ();
+				p = new VPaned ();
+			p.AddNotification ("position",HandleNotifyHandler);
+			return p;
+		}
+
+		void HandleNotifyHandler (object o, GLib.NotifyArgs args)
+		{
+			if (!settingSize && sizesLoaded)
+				relativeSplitSizes = GetRelativeSplitSizes ().ToList ();
 		}
 
 		public List<Widget> Children { get; } = new List<Widget> ();
@@ -65,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public GtkShellDocumentViewItem ActiveView {
 			get {
-				return (GtkShellDocumentViewItem) Children.FirstOrDefault ();
+				return (GtkShellDocumentViewItem)Children.FirstOrDefault ();
 			}
 			set {
 			}
@@ -73,15 +89,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public event EventHandler ActiveViewChanged;
 
-		public void AddRange (IEnumerable<Widget> widgets)
-		{
-			Children.Clear ();
-			Children.AddRange (widgets);
-			Rebuild ();
-		}
-
 		void Rebuild ()
 		{
+			settingSize = true;
 			ClearPaneds ();
 			var currentPaned = paned;
 			int currentChild = 1;
@@ -111,6 +121,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 				currentPaned.Remove (nextPaned);
 				nextPaned.Destroy ();
 			}
+			RestoreSizes ();
+			settingSize = false;
 		}
 
 		void ClearPaneds ()
@@ -128,16 +140,35 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void Dispose ()
 		{
+			paned.SizeAllocated -= Paned_SizeAllocated;
+		}
+
+		public void AddRange (IEnumerable<Widget> widgets)
+		{
+			Children.Clear ();
+			Children.AddRange (widgets);
+			relativeSplitSizes.Clear ();
+			for (int n = 0; n < Children.Count; n++)
+				relativeSplitSizes [n] = 1 / (double)Children.Count;
+			Rebuild ();
 		}
 
 		public void InsertView (int position, GtkShellDocumentViewItem view)
 		{
+			if (Children.Count > 0) {
+				var part = 1 / ((double)Children.Count + 1);
+				for (int i = 0; i < relativeSplitSizes.Count; i++)
+					relativeSplitSizes [i] *= 1 - part;
+				relativeSplitSizes.Insert (position, part);
+			} else
+				relativeSplitSizes.Add (1);
 			Children.Insert (position, view);
 			Rebuild ();
 		}
 
 		public void RemoveAllViews ()
 		{
+			relativeSplitSizes.Clear ();
 			Children.Clear ();
 			Rebuild ();
 		}
@@ -145,6 +176,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public void RemoveView (int tabPos)
 		{
 			Children.RemoveAt (tabPos);
+			var part = relativeSplitSizes [tabPos];
+			relativeSplitSizes.RemoveAt (tabPos);
+			for (int i = 0; i < relativeSplitSizes.Count; i++)
+				relativeSplitSizes [i] /= 1 - part;
 			Rebuild ();
 		}
 
@@ -153,6 +188,11 @@ namespace MonoDevelop.Ide.Gui.Shell
 			var c = Children [currentIndex];
 			Children.RemoveAt (currentIndex);
 			Children.Insert (newIndex, c);
+
+			var s = relativeSplitSizes [currentIndex];
+			relativeSplitSizes.RemoveAt (currentIndex);
+			relativeSplitSizes.Insert (newIndex, s);
+
 			Rebuild ();
 		}
 
@@ -177,6 +217,53 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
 		{
+		}
+
+		void Paned_SizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (!lastRecalcSize.Equals (args.Allocation)) {
+				lastRecalcSize = args.Allocation;
+				RestoreSizes ();
+				sizesLoaded = true;
+			}
+			settingSize = false;
+		}
+
+		void RestoreSizes ()
+		{
+			if (Children.Count > 1) {
+				settingSize = true;
+				var size = mode == DocumentViewContainerMode.VerticalSplit ? paned.Allocation.Width : paned.Allocation.Height;
+				var totalWidth = size - (Children.Count - 1) * HandleSize;
+				var p = paned;
+				int index = 0;
+				while (p != null) {
+					paned.Position = (int)(totalWidth * relativeSplitSizes [index++]);
+					p = paned.Child2 as Paned;
+				}
+				settingSize = false;
+			}
+		}
+
+		int HandleSize => 4;
+
+		public void SetRelativeSplitSizes (double [] sizes)
+		{
+			relativeSplitSizes = sizes.ToList ();
+		}
+
+		public double [] GetRelativeSplitSizes ()
+		{
+			var size = mode == DocumentViewContainerMode.VerticalSplit ? paned.Allocation.Width : paned.Allocation.Height;
+			var totalWidth = size - (Children.Count - 1) * HandleSize;
+
+			var sizes = new double[Children.Count];
+			for (int n = 0; n < Children.Count; n++) {
+				var child = Children [n];
+				var childSize = mode == DocumentViewContainerMode.VerticalSplit ? (double)child.Allocation.Width : (double)child.Allocation.Height;
+				sizes [n] = childSize / (double)totalWidth;
+			}
+			return sizes;
 		}
 	}
 }

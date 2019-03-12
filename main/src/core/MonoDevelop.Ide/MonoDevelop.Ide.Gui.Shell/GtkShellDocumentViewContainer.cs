@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
@@ -40,8 +41,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 	{
 		DocumentViewContainerMode supportedModes;
 		DocumentViewContainerMode mode;
-
 		IGtkShellDocumentViewContainer container;
+		double [] splitSizes;
 
 		public event EventHandler ActiveViewChanged;
 
@@ -59,6 +60,10 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (this.mode == mode)
 				return;
 
+			// Save current split sizes
+			if (container is GtkShellDocumentViewContainerSplit split)
+				splitSizes = split.GetRelativeSplitSizes ();
+
 			this.mode = mode;
 
 			GtkShellDocumentViewItem activeView = null;
@@ -74,13 +79,18 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 			if (mode == DocumentViewContainerMode.Tabs)
 				container = new GtkShellDocumentViewContainerTabs ();
-			else
+			else {
 				container = new GtkShellDocumentViewContainerSplit (mode);
+			}
 
 			if (allViews != null) {
 				for (int n = 0; n < allViews.Count; n++)
 					container.InsertView (n, allViews [n]);
 			}
+
+			// Restore current split sizes
+			if (splitSizes != null && container is GtkShellDocumentViewContainerSplit splitContainer)
+				splitContainer.SetRelativeSplitSizes (splitSizes);
 
 			container.ActiveView = activeView;
 			container.ActiveViewChanged += Container_ActiveViewChanged;
@@ -151,6 +161,23 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public IShellDocumentViewItem ActiveView {
 			get => container.ActiveView;
 			set => container.ActiveView = (GtkShellDocumentViewItem) value;
+		}
+
+		public double [] GetRelativeSplitSizes ()
+		{
+			if (splitSizes != null)
+				return splitSizes;
+			if (container is GtkShellDocumentViewContainerSplit split)
+				return split.GetRelativeSplitSizes ();
+			return null;
+		}
+
+		public void SetRelativeSplitSizes (double [] sizes)
+		{
+			if (container is GtkShellDocumentViewContainerSplit split)
+				split.SetRelativeSplitSizes (sizes);
+			else
+				splitSizes = sizes;
 		}
 	}
 
