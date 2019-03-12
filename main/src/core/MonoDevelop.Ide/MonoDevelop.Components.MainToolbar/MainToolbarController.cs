@@ -246,6 +246,7 @@ namespace MonoDevelop.Components.MainToolbar
 				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
 				if (cmds.Count > 0) {
 					bool needsSeparator = runtimes > 0;
+					var an = DockNotebook.DockNotebook.ActiveNotebook;
 					foreach (CommandEntry ce in cmds) {
 						if (ce.CommandId == Command.Separator) {
 							needsSeparator = true;
@@ -264,6 +265,7 @@ namespace MonoDevelop.Components.MainToolbar
 							}
 						}
 					}
+					DockNotebook.DockNotebook.ActiveNotebook = an;
 				}
 
 				ToolbarView.PlatformSensitivity = runtimes > 1;
