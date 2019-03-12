@@ -179,10 +179,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (500);
+			const int maxLineLength = 1 << 16;
 
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int startOffset, int length)
 			{
-				if (ContextStack.IsEmpty)
+				if (ContextStack.IsEmpty || length > maxLineLength)
 					return Task.FromResult (new HighlightedLine (new TextSegment (startOffset, length), new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
 				SyntaxContext currentContext = null;
 				Match match = null;
