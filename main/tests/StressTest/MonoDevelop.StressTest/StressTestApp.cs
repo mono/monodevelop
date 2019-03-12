@@ -141,17 +141,14 @@ namespace MonoDevelop.StressTest
 			return "/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/bin/VisualStudio.exe";
 		}
 
-		void SetupIdeLogFolder ()
+		string SetupIdeLogFolder ()
 		{
 			string rootDirectory = Path.GetDirectoryName (GetType ().Assembly.Location);
 			string ideLogDirectory = Path.Combine (rootDirectory, "Log");
 			Directory.CreateDirectory (ideLogDirectory);
 
-			FoldersToClean.Add (ideLogDirectory);
-
 			string ideLogFileName = Path.Combine (ideLogDirectory, "StressTest.log");
-			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", ideLogFileName);
-			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
+			return ideLogFileName;
 		}
 
 		void OnCleanUp ()
