@@ -38,9 +38,11 @@ namespace UserInterfaceTests
 		{
 			Session = new AutoTestClientSession ();
 
+			profilePath = profilePath ?? Util.CreateTmpDir ("profile");
 			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
-				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") },
-				{ "MONODEVEOP_LOG_FILE", logFile },
+				{ "MONODEVELOP_PROFILE", profilePath },
+				{ "VISUALSTUDIO_PROFILE", profilePath },
+				{ "MONODEVELOP_LOG_FILE", logFile },
 				{ "MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo" },
 			});
 

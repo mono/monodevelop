@@ -69,7 +69,7 @@ namespace MonoDevelop.StressTest
 		public void Start ()
 		{
 			ValidateMonoDevelopBinPath ();
-			SetupIdeLogFolder ();
+			var logFile = SetupIdeLogFolder ();
 
 			string profilePath = Util.CreateTmpDir ();
 
@@ -84,10 +84,10 @@ namespace MonoDevelop.StressTest
 											 .Split (Path.PathSeparator)
 											 .Select (p => Path.Combine (p, "mono"))
 											 .FirstOrDefault (s => File.Exists (s));
-				TestService.StartSession (monoPath, profilePath, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"");
+				TestService.StartSession (monoPath, profilePath, logFile, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"");
 				Console.WriteLine ($"Profler is logging into {ProfilerOptions.MlpdOutputPath}");
 			} else {
-				TestService.StartSession (MonoDevelopBinPath, profilePath);
+				TestService.StartSession (MonoDevelopBinPath, profilePath, logFile);
 			}
 			TestService.Session.DebugObject = new UITestDebug ();
 
