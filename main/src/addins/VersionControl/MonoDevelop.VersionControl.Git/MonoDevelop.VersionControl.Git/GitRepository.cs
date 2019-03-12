@@ -1072,7 +1072,7 @@ namespace MonoDevelop.VersionControl.Git
 			var stashAlways = GitService.StashUnstashWhenSwitchingBranches.Value;
 			var message = new GenericMessage {
 				Text = GettextCatalog.GetString ("Your local changes would be overwritten"),
-				SecondaryText = GettextCatalog.GetString ("Would you like to stash your local changes? Select Cancel to review and commit your chnages manually."),
+				SecondaryText = GettextCatalog.GetString ("Would you like to stash your local changes? Select Cancel to review and commit/stash manually."),
 				Icon = Ide.Gui.Stock.Question
 			};
 			message.AddOption (nameof (stashAlways), GettextCatalog.GetString ("Automatically stash/unstash changes when switching branches"), stashAlways);
