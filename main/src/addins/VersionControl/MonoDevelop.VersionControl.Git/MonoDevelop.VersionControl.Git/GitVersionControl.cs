@@ -54,6 +54,16 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		static GitVersionControl ()
+		{
+			// soft settings migration for 8.0 without slowing down Ide initialization
+			// should work fine for most users using git on regular basis
+			if (Ide.IdeApp.IsInitialRunAfterUpgrade && Ide.IdeApp.UpgradedFromVersion < new System.Version (8, 0, 1, 2800)) {
+				GitService.StashUnstashWhenSwitchingBranches.Set (false);
+				PropertyService.SaveProperties ();
+			}
+		}
+
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
 			return new GitRepository (this, path, null);
