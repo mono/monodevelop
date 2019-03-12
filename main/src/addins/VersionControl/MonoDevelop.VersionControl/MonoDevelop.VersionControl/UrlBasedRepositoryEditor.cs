@@ -234,11 +234,8 @@ namespace MonoDevelop.VersionControl
 			clip.RequestText (delegate (Gtk.Clipboard clp, string text) {
 				if (string.IsNullOrEmpty (text))
 					return;
-
-				if (repo.IsUrlValid (text)) {
+				if (repo.IsUrlValid (text))
 					repositoryUrlEntry.Text = text;
-					OnRepositoryUrlEntryChanged (null, null);
-				}
 			});
 		}
 	}
