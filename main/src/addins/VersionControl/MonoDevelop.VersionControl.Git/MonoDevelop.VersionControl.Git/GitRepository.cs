@@ -1048,9 +1048,7 @@ namespace MonoDevelop.VersionControl.Git
 					modified = true;
 
 				if (modified) {
-					bool canceled = StashOrCancel ();
-
-					if (canceled)
+					if (!PromptToStash ())
 						return false;
 
 					options |= GitUpdateOptions.SaveLocalChanges;
@@ -1069,14 +1067,14 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		bool StashOrCancel ()
+		bool PromptToStash ()
 		{
 			if (MessageService.GenericAlert (
 					Ide.Gui.Stock.Question,
-					GettextCatalog.GetString ("You have uncommitted changes"),
-					GettextCatalog.GetString ("What do you want to do?"),
+					GettextCatalog.GetString ("Your local changes would be overwritten"),
+					GettextCatalog.GetString ("Would you like to stash your local changes and reapply them automatically? Select Cancel to review and commit your chnages manually."),
 					AlertButton.Cancel,
-					new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel)
+					new AlertButton (GettextCatalog.GetString ("Stash"))) != AlertButton.Cancel)
 				return true;
 
 			return false;
@@ -1181,7 +1179,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				CommonPreMergeRebase (options, monitor, out stashIndex);
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
+					return;
 				// Do a merge.
 				MergeResult mergeResult = RunBlockingOperation (() =>
 					RootRepository.Merge (branch, sig, new MergeOptions {
@@ -1761,6 +1760,33 @@ namespace MonoDevelop.VersionControl.Git
 			return RunOperation (() => RootRepository.Head.FriendlyName);
 		}
 
+		void SwitchBranchInternal (ProgressMonitor monitor, string branch)
+		{
+			int progress = 0;
+			RunBlockingOperation (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
+				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+				OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
+				CheckoutNotifyFlags = refreshFlags,
+			}), true);
+			monitor.Step (1);
+
+			if (GitService.StashUnstashWhenSwitchingBranches) {
+				try {
+					// Restore the branch stash
+					var stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, branch));
+					if (stashIndex != -1)
+						PopStash (monitor, stashIndex);
+				} catch (Exception e) {
+					monitor.ReportError (GettextCatalog.GetString ("Restoring stash for branch {0} failed", branch), e);
+				}
+			}
+			monitor.Step (1);
+
+			Runtime.RunInMainThread (() => {
+				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
+			}).Ignore ();
+		}
+
 		public bool SwitchToBranch (ProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
@@ -1769,60 +1795,51 @@ namespace MonoDevelop.VersionControl.Git
 			if (sig == null)
 				return false;
 
-			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 			FileService.FreezeEvents ();
-
 			try {
-				if (GitService.StashUnstashWhenSwitchingBranches) {
-					const VersionStatus unclean = VersionStatus.Modified | VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete;
-					bool modified = false;
-					if (GetDirectoryVersionInfo (RootPath, false, true).Any (v => (v.Status & unclean) != VersionStatus.Unversioned))
-						modified = true;
-
-					if (modified) {
-						bool canceled = StashOrCancel ();
-
-						if (canceled)
-							return false;
-					}
-
-					// Remove the stash for this branch, if exists
-					string currentBranch = RootRepository.Head.FriendlyName;
-					stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, currentBranch));
-					if (stashIndex != -1)
-						RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex));
-
-					if (!TryCreateStash (monitor, GetStashName (currentBranch), out stash))
+				// try to switch without stashing
+				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 2);
+				SwitchBranchInternal (monitor, branch);
+			} catch (CheckoutConflictException ex) {
+				// retry with stashing
+				monitor.EndTask ();
+				if (!GitService.StashUnstashWhenSwitchingBranches) {
+					if (!PromptToStash ()) {
+						// if canceled, report the error and return
+						monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
 						return false;
-
-					monitor.Step (1);
+					}
 				}
+
+				// stash automatically is selected or user requested a stash
+
+				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 4);
+				// Remove the stash for this branch, if exists
+				// TODO: why do with do this?
+				string currentBranch = RootRepository.Head.FriendlyName;
+				stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, currentBranch));
+				if (stashIndex != -1)
+					RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex));
+
+				if (!TryCreateStash (monitor, GetStashName (currentBranch), out stash))
+					return false;
+
+				monitor.Step (1);
 
 				try {
-					int progress = 0;
-					RunBlockingOperation (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
-						OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-						OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
-						CheckoutNotifyFlags = refreshFlags,
-					}), true);
+					SwitchBranchInternal (monitor, branch);
+					return true;
+				} catch (Exception e) {
+					monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), e);
 				} finally {
-					// Restore the branch stash
-					if (GitService.StashUnstashWhenSwitchingBranches) {
-						stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, branch));
-						if (stashIndex != -1)
-							PopStash (monitor, stashIndex);
-						monitor.Step (1);
-					}
 				}
-
-				Runtime.RunInMainThread (() => {
-					BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
-				}).Ignore ();
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
 			} finally {
 				monitor.EndTask ();
 				FileService.ThawEvents ();
 			}
-			return true;
+			return false;
 		}
 
 		static string GetStashName (string branchName)
