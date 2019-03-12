@@ -33,7 +33,7 @@ using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
 {
-	[NoLeak(typeof (Projects.ProjectFile))]
+	[NoLeak(typeof (Projects.Solution))]
 	public class TestScenario : ITestScenario
 	{
 		List<FilePath> filesToOpen;
