@@ -946,9 +946,9 @@ namespace MonoDevelop.VersionControl.Git
 
 				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 				if (GitService.UseRebaseOptionWhenPulling)
-					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor, true);
 				else
-					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor, true);
 
 				monitor.Step (1);
 			}
@@ -1035,7 +1035,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle)
+		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
 		{
 			FileService.FreezeEvents ();
 			stashIndex = -1;
@@ -1050,7 +1050,9 @@ namespace MonoDevelop.VersionControl.Git
 				if (modified) {
 					if (!PromptToStash (
 						GettextCatalog.GetString ("There are local changes that conflict with changes committed in the <b>{0}</b> branch. Would you like to stash the changes and continue?", branch),
-						actionButtonTitle))
+						actionButtonTitle,
+						isUpdate ? GettextCatalog.GetString ("Automatically stash/unstash changes when merging/rebasing") : null,
+						isUpdate ? GitService.StashUnstashWhenUpdating : null))
 						return false;
 
 					options |= GitUpdateOptions.SaveLocalChanges;
@@ -1139,12 +1141,17 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Rebase (string branch, GitUpdateOptions options, ProgressMonitor monitor)
 		{
+			Rebase (branch, options, monitor, false);
+		}
+
+		void Rebase (string branch, GitUpdateOptions options, ProgressMonitor monitor, bool isUpdate)
+		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase")))
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase"), isUpdate))
 					return;
 
 				RunBlockingOperation (() => {
@@ -1179,6 +1186,11 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy strategy = FastForwardStrategy.Default)
 		{
+			Merge (branch, options, monitor, false, strategy);
+		}
+
+		void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, bool isUpdate, FastForwardStrategy strategy = FastForwardStrategy.Default)
+		{
 			int stashIndex = -1;
 
 			Signature sig = GetSignature ();
@@ -1189,7 +1201,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge")))
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge"), isUpdate))
 					return;
 				// Do a merge.
 				MergeResult mergeResult = RunBlockingOperation (() =>
