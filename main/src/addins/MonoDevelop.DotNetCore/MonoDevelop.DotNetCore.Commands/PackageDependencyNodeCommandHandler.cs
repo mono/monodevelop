@@ -116,5 +116,13 @@ namespace MonoDevelop.DotNetCore.Commands
 				node.Name,
 				!node.IsReleaseVersion ());
 		}
+
+		[CommandUpdateHandler (PackageReferenceNodeCommands.ShowPackageVersion)]
+		public void UpdateShowPackageVersionItem (CommandInfo info)
+		{
+			var node = (PackageDependencyNode)CurrentNode.DataItem;
+			info.Enabled = false;
+			info.Text = node.GetShowVersionLabel ();
+		}
 	}
 }

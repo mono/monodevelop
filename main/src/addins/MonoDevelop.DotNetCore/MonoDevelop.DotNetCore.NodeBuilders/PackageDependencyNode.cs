@@ -181,6 +181,11 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return dependency?.HasChildDiagnostic == true; }
 		}
 
+		public string GetShowVersionLabel ()
+		{
+			return GettextCatalog.GetString ("Version {0}", Version);
+		}
+
 		public bool IsReleaseVersion ()
 		{
 			NuGetVersion nugetVersion = null;
