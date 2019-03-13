@@ -18,10 +18,18 @@
         <Private>False</Private>
       </Reference>
       <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj">
-      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
+        <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
         <Name>Xwt.XamMac</Name>
         <Private>False</Private>
-    </ProjectReference>
+        </ProjectReference>
+      <ProjectReference Include="..\..\..\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing.Mac\Xamarin.PropertyEditing.Mac.csproj">
+        <Project>{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}</Project>
+        <Name>Xamarin.PropertyEditing.Mac</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\..\..\external\Xamarin.PropertyEditing\Xamarin.PropertyEditing\Xamarin.PropertyEditing.csproj">
+        <Project>{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}</Project>
+        <Name>Xamarin.PropertyEditing</Name>
+      </ProjectReference>
   </ItemGroup>
    <ItemGroup>
     <Reference Include="System" />
@@ -149,6 +157,18 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\MacToolboxWidgetFlowLayoutDelegate.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Styles.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\MacPropertyGrid.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadObjectEditor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyPadEditorProvider.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyProviderTypeInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyDescriptorEventInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\EnumDescriptorPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\StringStandardValuesPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FilePathPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\DirectoryPathPropertyInfo.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\IPropertyPad.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\FlagDescriptorPropertyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
@@ -188,6 +208,8 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.DesignerSupport.Toolbox\Helpers\" />
     <Folder Include="MonoDevelop.DesignerSupport.Toolbox\NativeViews\" />
+    <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\" />
+    <Folder Include="MonoDevelop.DesignerSupport\NativePropertyEditors\PropertyInfo\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
