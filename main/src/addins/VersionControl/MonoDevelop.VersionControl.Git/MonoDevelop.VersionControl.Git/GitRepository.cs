@@ -1035,7 +1035,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex)
+		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle)
 		{
 			FileService.FreezeEvents ();
 			stashIndex = -1;
@@ -1048,7 +1048,9 @@ namespace MonoDevelop.VersionControl.Git
 					modified = true;
 
 				if (modified) {
-					if (!PromptToStash ())
+					if (!PromptToStash (
+						GettextCatalog.GetString ("There are local changes that conflict with changes committed in the <b>{0}</b> branch. Would you like to stash the changes and continue?", branch),
+						actionButtonTitle))
 						return false;
 
 					options |= GitUpdateOptions.SaveLocalChanges;
@@ -1067,22 +1069,24 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		bool PromptToStash ()
+		bool PromptToStash (string messageText, string actionButtonTitle, string dontAskLabel = null, ConfigurationProperty<bool> dontAskProperty = null)
 		{
-			var stashAlways = GitService.StashUnstashWhenSwitchingBranches.Value;
+			bool showDontAsk = !string.IsNullOrEmpty (dontAskLabel) && dontAskProperty != null;
 			var message = new GenericMessage {
-				Text = GettextCatalog.GetString ("Your local changes would be overwritten"),
-				SecondaryText = GettextCatalog.GetString ("Would you like to stash your local changes? Select Cancel to review and commit/stash manually."),
+				Text = GettextCatalog.GetString ("Conflicting local changes found"),
+				SecondaryText = messageText,
 				Icon = Ide.Gui.Stock.Question
 			};
-			message.AddOption (nameof (stashAlways), GettextCatalog.GetString ("Automatically stash/unstash changes when switching branches"), stashAlways);
+			if (showDontAsk) {
+				message.AddOption (nameof (dontAskLabel), dontAskLabel, dontAskProperty.Value);
+			}
 			message.Buttons.Add (AlertButton.Cancel);
-			message.Buttons.Add (new AlertButton (GettextCatalog.GetString ("Stash")));
+			message.Buttons.Add (new AlertButton (actionButtonTitle));
 			message.DefaultButton = 1;
 
 			var result = MessageService.GenericAlert (message) != AlertButton.Cancel;
-			if (result)
-				GitService.StashUnstashWhenSwitchingBranches.Value = message.GetOptionValue (nameof (stashAlways));
+			if (result && showDontAsk)
+				dontAskProperty.Value = message.GetOptionValue (nameof (dontAskLabel));
 			return result;
 		}
 
@@ -1140,7 +1144,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase")))
 					return;
 
 				RunBlockingOperation (() => {
@@ -1185,7 +1189,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge")))
 					return;
 				// Do a merge.
 				MergeResult mergeResult = RunBlockingOperation (() =>
@@ -1810,7 +1814,11 @@ namespace MonoDevelop.VersionControl.Git
 				// retry with stashing
 				monitor.EndTask ();
 				if (!GitService.StashUnstashWhenSwitchingBranches) {
-					if (!PromptToStash ()) {
+					if (!PromptToStash (
+						GettextCatalog.GetString ("There are local changes that conflict with changes committed in the <b>{0}</b> branch. Would you like to stash the changes and continue with the checkout?", branch),
+						GettextCatalog.GetString ("Stash and Switch"),
+						GettextCatalog.GetString ("Automatically stash/unstash changes when switching branches"),
+						GitService.StashUnstashWhenSwitchingBranches)) {
 						// if canceled, report the error and return
 						monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
 						return false;
