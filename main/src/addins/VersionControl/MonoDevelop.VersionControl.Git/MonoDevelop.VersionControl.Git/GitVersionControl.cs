@@ -60,6 +60,7 @@ namespace MonoDevelop.VersionControl.Git
 			// should work fine for most users using git on regular basis
 			if (Ide.IdeApp.IsInitialRunAfterUpgrade && Ide.IdeApp.UpgradedFromVersion < new System.Version (8, 0, 1, 2800)) {
 				GitService.StashUnstashWhenSwitchingBranches.Set (false);
+				GitService.StashUnstashWhenUpdating.Set (false);
 				PropertyService.SaveProperties ();
 			}
 		}
