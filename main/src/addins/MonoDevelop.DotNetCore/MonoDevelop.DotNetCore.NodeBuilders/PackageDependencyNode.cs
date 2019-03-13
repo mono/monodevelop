@@ -42,6 +42,7 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 		PackageDependencyInfo dependency;
 		string name;
 		string version;
+		NuGetVersion updatedVersion;
 
 		PackageDependencyNode (
 			DependenciesNode dependenciesNode,
@@ -60,8 +61,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 				if (IsTopLevel) {
 					IsReadOnly = !PackageReferenceExistsInProject ();
+					if (!IsReadOnly) {
+						updatedVersion = GetUpdatedPackageVersion ();
+					}
 				}
 			}
+		}
+
+		NuGetVersion GetUpdatedPackageVersion ()
+		{
+			var updatedPackages = dependenciesNode.GetUpdatedPackages ();
+			var package = updatedPackages.GetUpdatedPackage (name);
+			return package?.Version;
 		}
 
 		PackageDependencyNode (DependenciesNode dependenciesNode, ProjectPackageReference packageReference)
@@ -131,10 +142,18 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 
 		public string GetSecondaryLabel ()
 		{
+			if (updatedVersion != null)
+				return GetUpdatedVersionLabelText ();
+
 			if (string.IsNullOrEmpty (version))
 				return string.Empty;
 
 			return string.Format ("({0})", version);
+		}
+
+		string GetUpdatedVersionLabelText ()
+		{
+			return GettextCatalog.GetString ("({0} available)", updatedVersion);
 		}
 
 		public IconId GetIconId ()
