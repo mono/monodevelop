@@ -86,6 +86,7 @@ namespace MonoDevelop.StressTest
 
 		public class Heapshot
 		{
+			public Dictionary<long, HeapRootRegisterEvent> Roots = new Dictionary<long, HeapRootRegisterEvent> ();
 			public Dictionary<long, int> ObjectsPerClassCounter = new Dictionary<long, int> ();
 			public Dictionary<long, ClassLoadEvent> ClassInfos;
 		}
@@ -117,6 +118,59 @@ namespace MonoDevelop.StressTest
 				currentHeapshot = new Heapshot ();
 			}
 
+			readonly Dictionary<long, HeapRootRegisterEvent> rootsEvents = new Dictionary<long, HeapRootRegisterEvent> ();
+			readonly List<long> rootsEventsBinary = new List<long> ();
+
+			public override void Visit (HeapRootsEvent ev)
+			{
+				for (int i = 0; i < ev.Roots.Count; ++i) {
+					var root = ev.Roots[i];
+					ProcessNewRoot (root.ObjectPointer, root.SlotPointer);
+				}
+			}
+
+			public override void Visit (HeapRootRegisterEvent ev)
+			{
+				var index = rootsEventsBinary.BinarySearch (ev.RootPointer);
+				if (index < 0) {//negative index means it's not there
+					index = ~index;
+					if (index - 1 >= 0) {
+						var oneBefore = rootsEvents[rootsEventsBinary[index - 1]];
+						if (oneBefore.RootPointer + oneBefore.RootSize > ev.RootPointer) {
+							Console.WriteLine ("2 HeapRootRegisterEvents overlap:");
+							Console.WriteLine (ev);
+							Console.WriteLine (oneBefore);
+						}
+					}
+					if (index < rootsEventsBinary.Count) {
+						var oneAfter = rootsEvents[rootsEventsBinary[index]];
+						if (oneAfter.RootPointer < ev.RootPointer + ev.RootSize) {
+							Console.WriteLine ("2 HeapRootRegisterEvents overlap:");
+							Console.WriteLine (ev);
+							Console.WriteLine (oneAfter);
+						}
+					}
+					rootsEventsBinary.Insert (index, ev.RootPointer);
+					rootsEvents.Add (ev.RootPointer, ev);
+				} else {
+					Console.WriteLine ("2 HeapRootRegisterEvent at same address:");
+					Console.WriteLine (ev);
+					Console.WriteLine (rootsEvents[ev.RootPointer]);
+					rootsEvents[ev.RootPointer] = ev;
+				}
+			}
+
+			public override void Visit (HeapRootUnregisterEvent ev)
+			{
+				if (rootsEvents.Remove (ev.RootPointer)) {
+					var index = rootsEventsBinary.BinarySearch (ev.RootPointer);
+					rootsEventsBinary.RemoveAt (index);
+				} else {
+					Console.WriteLine ("HeapRootUnregisterEvent attempted at address that was not Registred:");
+					Console.WriteLine (ev);
+				}
+			}
+
 			public override void Visit (HeapObjectEvent ev)
 			{
 				if (ev.ObjectSize == 0)//This means it's just reporting references
@@ -133,6 +187,29 @@ namespace MonoDevelop.StressTest
 				currentHeapshot.ClassInfos = classInfos;
 				profilerProcessor.completionSource.SetResult (currentHeapshot);
 			}
+
+			void ProcessNewRoot (long objAddr, long rootAddr)
+			{
+				var index = rootsEventsBinary.BinarySearch (rootAddr);
+				if (index < 0) {
+					index = ~index;
+					if (index == 0) {
+						Console.WriteLine ($"This should not happen. Root is before any HeapRootsEvent {rootAddr}.");
+						return;
+					}
+					var rootReg = rootsEvents[rootsEventsBinary[index - 1]];
+					if (rootReg.RootPointer < rootAddr && rootReg.RootPointer + rootReg.RootSize >= rootAddr) {
+						currentHeapshot.Roots[objAddr] = rootReg;
+					} else {
+						Console.WriteLine ($"This should not happen. Closest root is too small({rootAddr}):");
+						Console.WriteLine (rootReg);
+					}
+				} else {
+					//We got exact match
+					currentHeapshot.Roots[objAddr] = rootsEvents[rootAddr];
+				}
+			}
+
 		}
 
 		int TcpPort {
