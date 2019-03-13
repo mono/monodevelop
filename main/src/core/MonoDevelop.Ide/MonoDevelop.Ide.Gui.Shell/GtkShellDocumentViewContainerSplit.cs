@@ -143,13 +143,13 @@ namespace MonoDevelop.Ide.Gui.Shell
 			paned.SizeAllocated -= Paned_SizeAllocated;
 		}
 
-		public void AddRange (IEnumerable<Widget> widgets)
+		public void AddViews (IEnumerable<GtkShellDocumentViewItem> views)
 		{
 			Children.Clear ();
-			Children.AddRange (widgets);
+			Children.AddRange (views);
 			relativeSplitSizes.Clear ();
 			for (int n = 0; n < Children.Count; n++)
-				relativeSplitSizes [n] = 1 / (double)Children.Count;
+				relativeSplitSizes.Add (1 / (double)Children.Count);
 			Rebuild ();
 		}
 

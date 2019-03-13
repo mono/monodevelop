@@ -40,62 +40,102 @@ namespace MonoDevelop.Ide.Gui.Shell
 	class GtkShellDocumentViewContainer : GtkShellDocumentViewItem, IShellDocumentViewContainer
 	{
 		DocumentViewContainerMode supportedModes;
-		DocumentViewContainerMode mode;
-		IGtkShellDocumentViewContainer container;
 		double [] splitSizes;
+
+		Tabstrip tabstrip;
+		VBox rootTabsBox;
+		HBox bottomBarBox;
+		DocumentViewContainerMode currentMode;
+
+		IGtkShellDocumentViewContainer currentContainer;
+		GtkShellDocumentViewContainerTabs tabsContainer;
+		GtkShellDocumentViewContainerSplit splitContainer;
 
 		public event EventHandler ActiveViewChanged;
 
-		public DocumentViewContainerMode CurrentMode => mode;
+		public DocumentViewContainerMode CurrentMode => currentMode;
 
-		public IGtkShellDocumentViewContainer InternalContainer => container;
+		public GtkShellDocumentViewContainer ()
+		{
+			rootTabsBox = new VBox ();
+			rootTabsBox.Accessible.SetShouldIgnore (true);
+
+			bottomBarBox = new HBox (false, 0);
+			bottomBarBox.Show ();
+			rootTabsBox.PackEnd (bottomBarBox, false, false, 0);
+
+			tabstrip = new Tabstrip ();
+			tabstrip.Show ();
+			bottomBarBox.PackStart (tabstrip, true, true, 0);
+
+			rootTabsBox.Show ();
+			Add (rootTabsBox);
+		}
 
 		public void SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
+			var hadSplit = (this.supportedModes & DocumentViewContainerMode.VerticalSplit) != 0 || (this.supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0;
+
 			this.supportedModes = supportedModes;
+			tabstrip.Visible = (supportedModes & DocumentViewContainerMode.Tabs) != 0;
+
+			var hasSplit = (this.supportedModes & DocumentViewContainerMode.VerticalSplit) != 0 || (this.supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0;
+			if (hasSplit && !hadSplit) {
+				var currentActive = tabstrip.ActiveTab;
+				var tab = new Tab (tabstrip, GettextCatalog.GetString ("Split"));
+				tabstrip.AddTab (tab);
+				tabstrip.ActiveTab = currentActive;
+				tab.Activated += TabActivated;
+			} else if (!hasSplit && hadSplit)
+				tabstrip.RemoveTab (tabstrip.TabCount - 1);
 		}
 
 		public void SetCurrentMode (DocumentViewContainerMode mode)
 		{
-			if (this.mode == mode)
+			if (this.currentMode == mode)
 				return;
 
 			// Save current split sizes
-			if (container is GtkShellDocumentViewContainerSplit split)
+			if (currentContainer is GtkShellDocumentViewContainerSplit split)
 				splitSizes = split.GetRelativeSplitSizes ();
 
-			this.mode = mode;
+			this.currentMode = mode;
 
 			GtkShellDocumentViewItem activeView = null;
-
 			List<GtkShellDocumentViewItem> allViews = null;
-			if (container != null) {
-				activeView = container.ActiveView;
-				container.ActiveViewChanged -= Container_ActiveViewChanged;
-				allViews = container.GetAllViews ().ToList ();
-				container.RemoveAllViews ();
-				container.Widget.Destroy ();
+
+			if (currentContainer != null) {
+				activeView = currentContainer.ActiveView;
+				currentContainer.ActiveViewChanged -= Container_ActiveViewChanged;
+				allViews = currentContainer.GetAllViews ().ToList ();
+				currentContainer.Widget.Hide ();
+				currentContainer.RemoveAllViews ();
 			}
 
-			if (mode == DocumentViewContainerMode.Tabs)
-				container = new GtkShellDocumentViewContainerTabs ();
-			else {
-				container = new GtkShellDocumentViewContainerSplit (mode);
+			if (mode == DocumentViewContainerMode.Tabs) {
+				if (tabsContainer == null) {
+					tabsContainer = new GtkShellDocumentViewContainerTabs ();
+					rootTabsBox.PackStart (tabsContainer.Widget, true, true, 1);
+				}
+				currentContainer = tabsContainer;
+			} else {
+				if (splitContainer == null) {
+					splitContainer = new GtkShellDocumentViewContainerSplit (mode);
+					rootTabsBox.PackStart (splitContainer.Widget, true, true, 1);
+				}
+				currentContainer = splitContainer;
 			}
 
-			if (allViews != null) {
-				for (int n = 0; n < allViews.Count; n++)
-					container.InsertView (n, allViews [n]);
-			}
+			if (allViews != null)
+				currentContainer.AddViews (allViews);
 
 			// Restore current split sizes
-			if (splitSizes != null && container is GtkShellDocumentViewContainerSplit splitContainer)
-				splitContainer.SetRelativeSplitSizes (splitSizes);
+			if (splitSizes != null && currentContainer is GtkShellDocumentViewContainerSplit newSplit)
+				newSplit.SetRelativeSplitSizes (splitSizes);
 
-			container.ActiveView = activeView;
-			container.ActiveViewChanged += Container_ActiveViewChanged;
-			Add (container.Widget);
-			container.Widget.Show ();
+			currentContainer.ActiveView = activeView;
+			currentContainer.ActiveViewChanged += Container_ActiveViewChanged;
+			currentContainer.Widget.Show ();
 		}
 
 		void Container_ActiveViewChanged (object sender, EventArgs e)
@@ -105,13 +145,13 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		protected override async Task OnLoad (CancellationToken cancellationToken)
 		{
-			if (mode == DocumentViewContainerMode.Tabs) {
-				var item = (GtkShellDocumentViewItem)container.ActiveView;
+			if (currentMode == DocumentViewContainerMode.Tabs) {
+				var item = (GtkShellDocumentViewItem)currentContainer.ActiveView;
 				if (item != null && !item.Loaded)
 					await item.Load (cancellationToken);
 			} else {
 				var allTasks = new List<Task> ();
-				foreach (var c in container.GetAllViews ())
+				foreach (var c in currentContainer.GetAllViews ())
 					allTasks.Add (c.Load (cancellationToken));
 				await Task.WhenAll (allTasks);
 			}
@@ -128,62 +168,104 @@ namespace MonoDevelop.Ide.Gui.Shell
 		{
 			var widget = (GtkShellDocumentViewItem)shellView;
 			widget.Show ();
-			container.InsertView (position, widget);
+			currentContainer.InsertView (position, widget);
+			tabstrip.InsertTab (position, CreateTab ((GtkShellDocumentViewItem)shellView));
+		}
+
+		Tab CreateTab (GtkShellDocumentViewItem view)
+		{
+			var tab = GtkShellDocumentViewContainerTabs.CreateTab (tabstrip, view);
+			tab.Activated += TabActivated;
+			return tab;
+		}
+
+		void TabActivated (object s, EventArgs args)
+		{
+			if (tabstrip.ActiveTab == tabstrip.TabCount - 1) {
+				SetCurrentMode (DocumentViewContainerMode.VerticalSplit);
+			} else {
+				var tab = (Tab)s;
+				SetCurrentMode (DocumentViewContainerMode.Tabs);
+				currentContainer.ActiveView = (GtkShellDocumentViewItem)tab.Tag;
+			}
 		}
 
 		public void ReplaceView (int position, IShellDocumentViewItem shellView)
 		{
 			var newView = (GtkShellDocumentViewItem)shellView;
 			newView.Show ();
-			container.ReplaceView (position, newView);
+			currentContainer.ReplaceView (position, newView);
+			tabstrip.RemoveTab (position);
+			tabstrip.InsertTab (position, CreateTab (newView));
 		}
 
 		public void RemoveView (int tabPos)
 		{
-			container.RemoveView (tabPos);
+			currentContainer.RemoveView (tabPos);
+			tabstrip.RemoveTab (tabPos);
 		}
 
 		public void ReorderView (int currentIndex, int newIndex)
 		{
-			container.ReorderView (currentIndex, newIndex);
+			currentContainer.ReorderView (currentIndex, newIndex);
+			tabstrip.ReorderTabs (currentIndex, newIndex);
 		}
 
 		public void RemoveAllViews ()
 		{
-			container.RemoveAllViews ();
+			currentContainer.RemoveAllViews ();
+			while (tabstrip.TabCount > 1)
+				tabstrip.RemoveTab (0);
 		}
 
 		IEnumerable<GtkShellDocumentViewItem> GetAllViews ()
 		{
-			return container.GetAllViews ();
+			return currentContainer.GetAllViews ();
 		}
 
 		public IShellDocumentViewItem ActiveView {
-			get => container.ActiveView;
-			set => container.ActiveView = (GtkShellDocumentViewItem) value;
+			get => currentContainer.ActiveView;
+			set {
+				currentContainer.ActiveView = (GtkShellDocumentViewItem)value;
+				var activeTab = tabstrip.Tabs.FindIndex (t => t.Tag == value);
+				tabstrip.ActiveTab = activeTab;
+			}
 		}
 
 		public double [] GetRelativeSplitSizes ()
 		{
 			if (splitSizes != null)
 				return splitSizes;
-			if (container is GtkShellDocumentViewContainerSplit split)
+			if (currentContainer is GtkShellDocumentViewContainerSplit split)
 				return split.GetRelativeSplitSizes ();
 			return null;
 		}
 
 		public void SetRelativeSplitSizes (double [] sizes)
 		{
-			if (container is GtkShellDocumentViewContainerSplit split)
+			if (currentContainer is GtkShellDocumentViewContainerSplit split)
 				split.SetRelativeSplitSizes (sizes);
 			else
 				splitSizes = sizes;
+		}
+
+		public void SetViewTitle (GtkShellDocumentViewItem view, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
+		{
+			currentContainer.SetViewTitle (view, label, icon, accessibilityDescription);
+			for (int n = 0; n < tabstrip.TabCount; n++) {
+				var tab = tabstrip.Tabs [n];
+				if (tab.Tag == view) {
+					GtkShellDocumentViewContainerTabs.UpdateTab (tab, label, icon, accessibilityDescription);
+					break;
+				}
+			}
 		}
 	}
 
 	interface IGtkShellDocumentViewContainer
 	{
 		Gtk.Widget Widget { get; }
+		void AddViews (IEnumerable<GtkShellDocumentViewItem> views);
 		void InsertView (int position, GtkShellDocumentViewItem view);
 		void ReplaceView (int position, GtkShellDocumentViewItem view);
 		void RemoveView (int tabPos);

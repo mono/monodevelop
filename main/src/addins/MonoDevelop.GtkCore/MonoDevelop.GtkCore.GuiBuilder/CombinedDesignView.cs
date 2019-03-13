@@ -66,7 +66,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected override async Task<DocumentView> OnInitializeView ()
 		{
 			container = new DocumentViewContainer ();
-			container.SupportedModes = DocumentViewContainerMode.VerticalSplit;
+			container.SupportedModes = DocumentViewContainerMode.Tabs | DocumentViewContainerMode.VerticalSplit;
 			container.ActiveViewChanged += Container_ActiveViewChanged;
 			var sourceView = await content.GetDocumentView ();
 			sourceView.Title = GettextCatalog.GetString ("Source");

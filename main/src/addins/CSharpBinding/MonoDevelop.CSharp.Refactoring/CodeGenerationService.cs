@@ -126,7 +126,10 @@ namespace MonoDevelop.Refactoring
 			document = await Simplifier.ReduceAsync (document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
 			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
 			var newSolution = ws.CurrentSolution.WithDocumentText (docId, text);
-			ws.TryApplyChanges (newSolution);
+
+			await Runtime.RunInMainThread (() => {
+				ws.TryApplyChanges (newSolution);
+			});
 		}
 
 		readonly static SyntaxAnnotation insertedMemberAnnotation = new SyntaxAnnotation ("INSERTION_ANNOTATAION");

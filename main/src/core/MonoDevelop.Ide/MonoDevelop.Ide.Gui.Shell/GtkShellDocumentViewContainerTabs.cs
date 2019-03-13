@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			rootTabsBox.PackStart (notebook, true, true, 1);
 
 			tabstrip = new Tabstrip ();
-			tabstrip.Show ();
+			//tabstrip.Show ();
 			bottomBarBox.PackStart (tabstrip, true, true, 0);
 
 			rootTabsBox.Show ();
@@ -89,11 +89,26 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		Tab CreateTab (GtkShellDocumentViewItem view)
 		{
+			var tab = CreateTab (tabstrip, view);
+			tab.Activated += TabActivated;
+			return tab;
+		}
+
+		internal static Tab CreateTab (Tabstrip tabstrip, GtkShellDocumentViewItem view)
+		{
 			var tab = new Tab (tabstrip, view.Title) { Tag = view };
 			if (tab.Accessible != null)
 				tab.Accessible.Help = view.AccessibilityDescription;
-			tab.Activated += TabActivated;
 			return tab;
+		}
+
+		internal static void UpdateTab (Tab tab, string label, Xwt.Drawing.Image icon, string accessibilityDescription)
+		{
+			tab.Label = label;
+			if (tab.Accessible != null) {
+				tab.Accessible.Help = accessibilityDescription;
+				tab.Accessible.Label = label ?? "";
+			}
 		}
 
 		void TabActivated (object s, EventArgs args)
@@ -140,11 +155,15 @@ namespace MonoDevelop.Ide.Gui.Shell
 			var i = notebook.Children.IndexOf (view);
 			if (i != -1) {
 				var tab = tabstrip.Tabs [i];
-				tab.Label = label;
-				if (tab.Accessible != null) {
-					tab.Accessible.Help = accessibilityDescription;
-					tab.Accessible.Label = label ?? "";
-				}
+				UpdateTab (tab, label, icon, accessibilityDescription);
+			}
+		}
+
+		public void AddViews (IEnumerable<GtkShellDocumentViewItem> views)
+		{
+			foreach (var view in views) {
+				notebook.AppendPage (view, new Gtk.Label ());
+				tabstrip.AddTab (CreateTab (view));
 			}
 		}
 	}

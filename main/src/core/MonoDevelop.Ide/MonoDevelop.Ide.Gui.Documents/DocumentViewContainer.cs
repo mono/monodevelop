@@ -141,13 +141,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 			shellViewContainer = window.CreateViewContainer ();
 			shellViewContainer.SetSupportedModes (supportedModes);
 			shellViewContainer.SetCurrentMode (currentMode);
+
+			for (int n = 0; n < Views.Count; n++)
+				shellViewContainer.InsertView (n, Views [n].CreateShellView (window));
+
 			shellViewContainer.ActiveViewChanged += ShellViewContainer_ActiveViewChanged;
+
 			if (activeView != null)
 				shellViewContainer.ActiveView = activeView.ShellView;
+			else
+				shellViewContainer.ActiveView = Views.FirstOrDefault ()?.ShellView;
 
-			for (int n = 0; n < Views.Count; n++) {
-				shellViewContainer.InsertView (n, Views [n].CreateShellView (window));
-			}
 			return shellViewContainer;
 		}
 
