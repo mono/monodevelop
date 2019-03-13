@@ -1,3 +1,5 @@
+#if !WINDOWS
+
 using System;
 using AppKit;
 using CoreGraphics;
@@ -281,3 +283,5 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 		}
 	}
 }
+
+#endif

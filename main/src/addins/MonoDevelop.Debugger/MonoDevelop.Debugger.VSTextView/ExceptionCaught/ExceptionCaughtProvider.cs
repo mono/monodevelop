@@ -1,3 +1,5 @@
+#if !WINDOWS
+
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
@@ -22,3 +24,5 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 		internal AdornmentLayerDefinition visibleWhitespaceLayer;
 	}
 }
+
+#endif
