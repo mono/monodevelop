@@ -120,6 +120,10 @@ namespace MonoDevelop.DotNetCore.NodeBuilders
 			get { return name; }
 		}
 
+		internal string Version {
+			get { return version; }
+		}
+
 		public string GetLabel ()
 		{
 			return GLib.Markup.EscapeText (Name);

@@ -16,5 +16,6 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("CSharpBinding", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Debugger", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Debugger.VsCodeDebugProtocol", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("PackageManagement", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("UnitTesting", MonoDevelop.BuildInfo.Version)]
