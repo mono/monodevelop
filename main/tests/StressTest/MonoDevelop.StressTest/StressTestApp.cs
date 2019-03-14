@@ -257,7 +257,11 @@ namespace MonoDevelop.StressTest
 			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
 			var member = iteration == cleanupIteration ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
 
-			return member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
+			var result = member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
+
+			// TODO: Ensure that we don't GtkWidgetResult results.
+
+			return result;
 		}
 	}
 }
