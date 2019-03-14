@@ -65,6 +65,12 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory
 	public class OpenLogDirectoryHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.IsGuiLocked = false;
+			info.Enabled = true;
+		}
+
 		protected override void Run ()
 		{
 			try {

@@ -143,7 +143,13 @@ namespace MonoDevelop.Components.Commands
 				
 			}
 		}
-		
+
+		/// <summary>
+		/// Disables the button in case of GUI locked
+		/// </summary>
+		/// <value><c>true</c> if the button disables on GUI lock; otherwise, <c>false</c>. default value: <c>true</c></value>
+		public bool IsGuiLocked { get; set; } = true;
+
 		public object DataItem {
 			get; internal set;
 		}
