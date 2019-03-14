@@ -10,6 +10,7 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Text.UI.Wpf.dll"/>
 		<Assembly file="MonoDevelop.TextEditor.Wpf.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Find.Implementation.dll"/>
+		<Assembly file="Microsoft.VisualStudio.Text.InfoBar.dll"/>
 		<Assembly file="DiagnosticMargin.dll"/>
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
