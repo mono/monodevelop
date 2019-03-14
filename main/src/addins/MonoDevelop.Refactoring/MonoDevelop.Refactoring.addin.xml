@@ -60,7 +60,7 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation"
 						_label = "Go to Implementation"
 				 		shortcut="Ctrl|F12"
-				 		macShortcut="Meta+Shift+I"/>
+				 		macShortcut=""/>
 			
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
 					_label = "_Find References" 
