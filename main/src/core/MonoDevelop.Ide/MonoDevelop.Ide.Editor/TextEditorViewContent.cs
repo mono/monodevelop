@@ -104,6 +104,13 @@ namespace MonoDevelop.Ide.Editor
 				return Load (false);
 		}
 
+		protected override void OnModelChanged (DocumentModel oldModel, DocumentModel newModel)
+		{
+			// Don't call base since we are not interested in binding the HasUnsavedChanges change event from the model
+			if (Model != null)
+				IsNewDocument = Model.IsNew;
+		}
+
 		protected override void OnContentChanged ()
 		{
 			if (documentContext == null) {

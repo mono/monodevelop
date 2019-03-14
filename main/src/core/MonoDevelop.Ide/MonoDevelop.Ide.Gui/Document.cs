@@ -180,6 +180,7 @@ namespace MonoDevelop.Ide.Gui
 			controller.OwnerChanged += HandleOwnerChanged;
 			controller.DocumentTitleChanged += OnContentNameChanged;
 			controller.ContentChanged += ControllerContentChanged;
+			controller.ShowNotificationChanged += ControllerShowNotificationChanged;
 		}
 
 		void UnsubscribeControllerEvents ()
@@ -188,6 +189,7 @@ namespace MonoDevelop.Ide.Gui
 			controller.DocumentTitleChanged -= OnContentNameChanged;
 			controller.OwnerChanged -= HandleOwnerChanged;
 			controller.ContentChanged -= ControllerContentChanged;
+			controller.ShowNotificationChanged -= ControllerShowNotificationChanged;
 		}
 
 		internal bool TryReuseDocument (ModelDescriptor modelDescriptor)
@@ -210,6 +212,11 @@ namespace MonoDevelop.Ide.Gui
 
 		void HandleOwnerChanged (object sender, EventArgs e)
 		{
+		}
+
+		void ControllerShowNotificationChanged (object sender, EventArgs e)
+		{
+			window.ShowNotification = controller.ShowNotification;
 		}
 
 		void OnContentNameChanged (object sender, EventArgs e)

@@ -165,10 +165,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected override async Task OnLoad ()
 			{
+				bool hadContent = text != null;
 				var file = await TextFileUtility.ReadAllTextAsync (FilePath);
 				text = file.Text;
 				Encoding = file.Encoding;
 				UseByteOrderMark = file.HasByteOrderMark;
+				if (hadContent)
+					NotifyChanged ();
 			}
 
 			protected override void OnCreateNew ()

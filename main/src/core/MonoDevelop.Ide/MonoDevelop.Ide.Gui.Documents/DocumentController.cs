@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// A controller is a class that implements the logic for loading,
 	/// displaying and interacting with the contents of a document.
 	/// </summary>
-	public abstract class DocumentController: IDisposable
+	public abstract class DocumentController : IDisposable
 	{
 		internal const string DocumentControllerExtensionsPath = "/MonoDevelop/Ide/DocumentControllerExtensions";
 
@@ -70,6 +70,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		ExtensionChain extensionChain;
 		DocumentControllerExtension itemExtension;
+		private bool showNotification;
 
 		/// <summary>
 		/// Raised when the IsReadyOnly property changes
@@ -122,6 +123,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public event EventHandler AccessibilityDescriptionChanged;
 
 		/// <summary>
+		/// Raised when the ShowNotification property changes
+		/// </summary>
+		public event EventHandler ShowNotificationChanged;
+
+		/// <summary>
 		/// Gets or sets the service provider used to create this controller
 		/// </summary>
 		/// <value>The service provider.</value>
@@ -143,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public DocumentModel Model {
 			get {
 				CheckInitialized ();
-				return model; 
+				return model;
 			}
 			set {
 				if (value == null)
@@ -180,7 +186,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public bool IsReadOnly {
 			get {
 				CheckInitialized ();
-				return isReadOnly || IsViewOnly; 
+				return isReadOnly || IsViewOnly;
 			}
 			protected set {
 				if (value != isReadOnly) {
@@ -224,6 +230,23 @@ namespace MonoDevelop.Ide.Gui.Documents
 				}
 			}
 		}
+
+		/// <summary>
+		/// When set to true, the document tab will show a notification marker 
+		/// </summary>
+		public bool ShowNotification {
+			get {
+				CheckInitialized ();
+				return showNotification;
+			}
+			set {
+				if (showNotification != value) {
+					showNotification = value;
+					ShowNotificationChanged?.Invoke (this, EventArgs.Empty);
+				}
+			}
+		}
+
 
 		/// <summary>
 		/// Icon of the document tab
@@ -309,7 +332,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		public bool IsNewDocument {
 			get {
 				CheckInitialized ();
-				return isNewDocument; 
+				return isNewDocument;
 			}
 			protected set {
 				if (value != isNewDocument) {
@@ -331,8 +354,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 					return OnGetProjectReloadCapability ();
 			}
 		}
-
-		public bool ShowNotification { get; internal set; }
 
 		public Document Document { get; internal set; }
 
@@ -433,7 +454,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 			var status = OnGetDocumentStatus ();
 			lastKnownStatus.Set ("Controller", status);
 			if (extensionChain != null) {
-				foreach (var ex in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension>()) {
+				foreach (var ex in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
 					var s = ex.GetDocumentStatus ();
 					lastKnownStatus.Set (ExtensionPropertyPrefix + ex.Id, s);
 				}
@@ -824,13 +845,13 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (Model != null) {
 				IsNewDocument = Model.IsNew;
 				HasUnsavedChanges = Model.HasUnsavedChanges;
-				Model.Changed += FileModel_Changed;
+				Model.HasUnsavedChangesChanged += Model_HasUnsavedChangesChanged;
 			}
 			if (oldModel != null)
-				oldModel.Changed -= FileModel_Changed;
+				oldModel.HasUnsavedChangesChanged -= Model_HasUnsavedChangesChanged;
 		}
 
-		void FileModel_Changed (object sender, EventArgs e)
+		void Model_HasUnsavedChangesChanged (object sender, EventArgs e)
 		{
 			if (Model != null)
 				HasUnsavedChanges = Model.HasUnsavedChanges;
@@ -875,16 +896,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			return OnSave ();
 		}
-	
+
 		/// <summary>
 		/// Saves the document. If the controller has a model, the default implementation will save the model.
 		/// </summary>
 		protected virtual async Task OnSave ()
 		{
-			if (Model != null) {
+			if (Model != null)
 				await Model.Save ();
-				HasUnsavedChanges = Model.HasUnsavedChanges;
-			}
 		}
 
 		/// <summary>

@@ -84,5 +84,14 @@ namespace IdeUnitTests
 			foreach (var v in Views)
 				await v.Show ();
 		}
+
+		public double [] GetRelativeSplitSizes ()
+		{
+			return null;
+		}
+
+		public void SetRelativeSplitSizes (double [] sizes)
+		{
+		}
 	}
 }

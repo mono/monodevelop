@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	{
 		int changeEventFreeze;
 		bool changeEventRaised;
+		bool hasUnsavedChangesRaised;
 		bool hasUnsavedChanges;
 
 		internal int CurrentVersion { get; set; }
@@ -48,7 +49,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// <summary>
 		/// Returs true if the data has been modified and the changes are not yet saved
 		/// </summary>
-		public bool HasUnsavedChanges { get; set; }
+		public bool HasUnsavedChanges {
+			get { return hasUnsavedChanges; }
+			set {
+				if (hasUnsavedChanges != value) {
+					hasUnsavedChanges = value;
+					NotifyHasUnsavedChanges ();
+				}
+			}
+		}
 
 		public void SetLoaded ()
 		{
@@ -119,6 +128,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 				changeEventRaised = true;
 		}
 
+		void NotifyHasUnsavedChanges ()
+		{
+			if (changeEventFreeze == 0)
+				DocumentModelData?.NotifyHasUnsavedChanges (this);
+			else
+				hasUnsavedChangesRaised = true;
+		}
+
 		protected abstract void OnCreateNew ();
 
 		protected abstract Task OnLoad ();
@@ -136,6 +153,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 				IsLoaded = true;
 
 				await OnCopyFrom (other);
+
+				HasUnsavedChanges = other.HasUnsavedChanges;
 			} finally {
 				ThawChangeEvent (false);
 			}
@@ -155,8 +174,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected void ThawChangeEvent (bool notifyPendingEvents = true)
 		{
-			if (--changeEventFreeze == 0 && notifyPendingEvents && changeEventRaised)
-				NotifyChanged ();
+			if (--changeEventFreeze == 0) {
+				var changeEventRaisedTemp = changeEventRaised;
+				var hasUnsavedChangesRaisedTemp = hasUnsavedChangesRaised;
+				changeEventRaised = false;
+				hasUnsavedChangesRaised = false;
+				if (notifyPendingEvents) {
+					if (changeEventRaisedTemp)
+						NotifyChanged ();
+					if (hasUnsavedChangesRaisedTemp)
+						NotifyHasUnsavedChanges ();
+				}
+			}
 		}
 	}
 }

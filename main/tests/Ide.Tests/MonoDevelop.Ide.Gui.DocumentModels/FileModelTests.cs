@@ -221,5 +221,43 @@ namespace MonoDevelop.Ide.Gui.DocumentModels
 				File.Delete (fileName);
 			}
 		}
+
+		[Test]
+		public async Task Reload ()
+		{
+			string fileName;
+			fileName = Path.GetTempFileName ();
+			try {
+				File.WriteAllText (fileName, "Foo");
+
+				var file = CreateFileModel ();
+				await file.LinkToFile (fileName);
+				Assert.AreEqual (fileName, file.FilePath.ToString ());
+				Assert.IsFalse (file.IsNew);
+				Assert.IsFalse (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
+				await file.Load ();
+				Assert.IsTrue (file.IsLoaded);
+				Assert.IsFalse (file.HasUnsavedChanges);
+				Assert.AreEqual ("Foo", TestHelper.FromStream (file.GetContent ()));
+
+				await file.SetContent (TestHelper.ToStream ("Bar"));
+				Assert.IsTrue (file.HasUnsavedChanges);
+
+				File.WriteAllText (fileName, "Modified");
+
+				bool changed = false;
+				file.Changed += (sender, e) => changed = true;
+
+				await file.Reload ();
+
+				Assert.IsFalse (file.HasUnsavedChanges);
+				Assert.AreEqual ("Modified", TestHelper.FromStream (file.GetContent ()));
+				Assert.IsTrue (changed);
+
+			} finally {
+				File.Delete (fileName);
+			}
+		}
 	}
 }

@@ -34,6 +34,7 @@ using MonoDevelop.Core.Text;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -60,19 +61,34 @@ namespace MonoDevelop.Ide.Gui.Documents
 		class TextBufferFileModelRepresentation : TextFileModelRepresentation
 		{
 			ITextDocument textDocument;
+			int cleanReiteratedVersion;
 
 			protected override async Task OnLoad ()
 			{
+				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
 				MimeType = (await Runtime.GetService<DesktopService> ()).GetMimeTypeForUri (FilePath);
 				var contentType = (MimeType == null) ? PlatformCatalog.Instance.TextBufferFactoryService.InertContentType : GetContentTypeFromMimeType (FilePath, MimeType);
 
-				var text = await TextFileUtility.GetTextAsync (FilePath, CancellationToken.None);
-				var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
-				var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
-				doc.Encoding = text.Encoding;
-				Encoding = doc.Encoding;
+				if (textDocument != null && textDocument.TextBuffer.ContentType == contentType) {
+					// Reloading
+					try {
+						FreezeChangeEvent ();
+						OnSetText (text.Text);
+						textDocument.Encoding = text.Encoding;
+						textDocument.UpdateDirtyState (false, System.IO.File.GetLastWriteTime (FilePath));
+					} finally {
+						ThawChangeEvent ();
+					}
+				} else {
+					var buffer = PlatformCatalog.Instance.TextBufferFactoryService.CreateTextBuffer (text.Text, contentType);
+					var doc = PlatformCatalog.Instance.TextDocumentFactoryService.CreateTextDocument (buffer, FilePath);
+					doc.Encoding = text.Encoding;
+					SetTextDocument (doc);
+				}
+				Encoding = textDocument.Encoding;
 				UseByteOrderMark = text.HasByteOrderMark;
-				SetTextDocument (doc);
+				cleanReiteratedVersion = textDocument.TextBuffer.CurrentSnapshot.Version.ReiteratedVersionNumber;
+				HasUnsavedChanges = false;
 			}
 
 			protected override void OnCreateNew ()
@@ -100,6 +116,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 			{
 				// OnLoad is always called before anything else, so the document should be ready
 				textDocument.SaveAs (FilePath, true);
+				cleanReiteratedVersion = textDocument.TextBuffer.CurrentSnapshot.Version.ReiteratedVersionNumber;
+				HasUnsavedChanges = false;
 				return Task.CompletedTask;
 			}
 
@@ -140,26 +158,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 			void SetTextDocument (ITextDocument doc)
 			{
 				if (doc != textDocument) {
-					if (textDocument != null) {
+					if (textDocument != null)
 						textDocument.TextBuffer.Changed -= TextBuffer_Changed;
-						textDocument.DirtyStateChanged -= TextDocument_DirtyStateChanged;
-					}
 					textDocument = doc;
-					if (textDocument != null) {
+					if (textDocument != null)
 						textDocument.TextBuffer.Changed += TextBuffer_Changed;
-						textDocument.DirtyStateChanged += TextDocument_DirtyStateChanged;
-					}
 				}
 			}
 
 			void TextBuffer_Changed (object sender, TextContentChangedEventArgs e)
 			{
+				HasUnsavedChanges = cleanReiteratedVersion != e.AfterVersion.ReiteratedVersionNumber;
 				NotifyChanged ();
-			}
-
-			void TextDocument_DirtyStateChanged (object sender, EventArgs e)
-			{
-				HasUnsavedChanges = textDocument.IsDirty;
 			}
 
 			protected internal override Task OnDispose ()

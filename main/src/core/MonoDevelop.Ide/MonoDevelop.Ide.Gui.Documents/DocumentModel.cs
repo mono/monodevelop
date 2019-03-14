@@ -91,6 +91,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// </summary>
 		public event EventHandler Changed;
 
+		/// <summary>
+		/// Raised when the HasUnsavedChanges property changes
+		/// </summary>
+		public event EventHandler HasUnsavedChangesChanged;
+
 		public void CreateNew ()
 		{
 			if (IsLoaded)
@@ -127,7 +132,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return ModelRepresentation.HasUnsavedChanges;
 			}
 		}
-
 
 		void CheckInitialized ()
 		{
@@ -237,7 +241,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				try {
 					OnRepresentationChanged ();
 				} catch (Exception ex) {
-					LoggingService.LogError ("OnRepresentationChanged failed", ex);
+					LoggingService.LogInternalError ("OnRepresentationChanged failed", ex);
 				}
 				RaiseChangeEvent ();
 			}
@@ -250,8 +254,17 @@ namespace MonoDevelop.Ide.Gui.Documents
 					notifiedChangeVersion = modelRepresentation.CurrentVersion;
 					Changed?.Invoke (this, EventArgs.Empty);
 				} catch (Exception ex) {
-					LoggingService.LogError ("RaiseChanged failed", ex);
+					LoggingService.LogInternalError ("RaiseChanged failed", ex);
 				}
+			}
+		}
+
+		internal void RaiseHasUnsavedChangesEvent ()
+		{
+			try {
+				HasUnsavedChangesChanged?.Invoke (this, EventArgs.Empty);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("RaiseHasUnsavedChangesEvent failed", ex);
 			}
 		}
 
@@ -446,6 +459,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 					representation.CurrentVersion = ++changeVersion;
 				}
 				RaiseChangedEvent (representation.GetType ());
+			}
+
+			public void NotifyHasUnsavedChanges (ModelRepresentation representation)
+			{
+				var repType = representation.GetType ();
+				foreach (var m in linkedModels)
+					if (m.RepresentationType == repType)
+						m.RaiseHasUnsavedChangesEvent ();
 			}
 
 			public Task Synchronize (ModelRepresentation targetRep)

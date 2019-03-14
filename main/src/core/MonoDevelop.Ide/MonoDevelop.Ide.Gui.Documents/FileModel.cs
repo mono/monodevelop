@@ -149,7 +149,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			protected override Task OnLoad ()
 			{
+				bool hadContent = content != null;
 				content = File.ReadAllBytes (FilePath);
+				if (hadContent)
+					NotifyChanged ();
 				return Task.CompletedTask;
 			}
 
