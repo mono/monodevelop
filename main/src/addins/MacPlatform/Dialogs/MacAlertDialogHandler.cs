@@ -143,8 +143,15 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				var accessoryView = ArrangeAccessoryViews (accessoryViews);
-				if (accessoryView != null)
+				if (accessoryView != null) {
+					if (accessoryViews?[0] == messageView) {
+						accessoryView.SetCustomSpacing (accessoryView.Spacing * 2, messageView);
+						var size = accessoryView.Frame.Size;
+						size.Height += accessoryView.Spacing;
+						accessoryView.SetFrameSize (size);
+					}
 					alert.AccessoryView = accessoryView;
+				}
 
 				NSButton applyToAllCheck = null;
 				if (data.Message.AllowApplyToAll) {
@@ -254,7 +261,7 @@ namespace MonoDevelop.MacIntegration
 
 			var stackView = NSStackView.FromViews (views);
 			stackView.Orientation = NSUserInterfaceLayoutOrientation.Vertical;
-			stackView.Distribution = NSStackViewDistribution.EqualSpacing;
+			stackView.Distribution = NSStackViewDistribution.Fill;
 			stackView.Alignment = NSLayoutAttribute.Left;
 			stackView.Spacing = spacing;
 
@@ -266,7 +273,7 @@ namespace MonoDevelop.MacIntegration
 			return stackView;
 		}
 
-		static bool TryGetMessageView (string text, out NSView messageView, int viewWidth = 450, int topPadding = 10)
+		static bool TryGetMessageView (string text, out NSView messageView, int viewWidth = 450, int topPadding = 0)
 		{
 			messageView = null;
 
