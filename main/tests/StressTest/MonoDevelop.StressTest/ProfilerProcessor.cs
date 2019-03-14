@@ -175,17 +175,23 @@ namespace MonoDevelop.StressTest
 			{
 				if (ev.ObjectSize == 0)//This means it's just reporting references
 					return;
+
 				var classInfoId = vtableToClassInfo[ev.VTablePointer];
 				if (currentHeapshot.ObjectsPerClassCounter.ContainsKey (classInfoId))
 					currentHeapshot.ObjectsPerClassCounter[classInfoId]++;
 				else
 					currentHeapshot.ObjectsPerClassCounter[classInfoId] = 0;
+
+				// store the heap object info here, we need it to construct referencesfrom
 			}
 
 			public override void Visit (HeapEndEvent ev)
 			{
 				currentHeapshot.ClassInfos = classInfos;
 				profilerProcessor.completionSource.SetResult (currentHeapshot);
+
+				// process heap objects, from roots, discarding a result if it doesn't touch our type name
+				// we need to build an inverse-reference map
 			}
 
 			void ProcessNewRoot (long objAddr, long rootAddr)

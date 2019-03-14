@@ -6,14 +6,13 @@ namespace MonoDevelop.StressTest.Attributes
 	{
 		public string TypeName { get; }
 
+		public NoLeakAttribute (Type type) : this(type.FullName)
+		{
+		}
+
 		public NoLeakAttribute(string typeName)
 		{
 			TypeName = typeName;
-		}
-
-		public NoLeakAttribute (Type type)
-		{
-			TypeName = type.FullName;
 		}
 	}
 }

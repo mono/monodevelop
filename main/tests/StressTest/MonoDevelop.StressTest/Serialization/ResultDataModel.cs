@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.StressTest
 {
@@ -14,6 +16,18 @@ namespace MonoDevelop.StressTest
 		/// </summary>
 		/// <value>The iterations.</value>
 		public List<ResultIterationData> Iterations { get; } = new List<ResultIterationData> ();
+
+		public void ReportResult(string scenarioName)
+		{
+			var serializer = new JsonSerializer {
+				NullValueHandling = NullValueHandling.Ignore,
+			};
+
+			using (var fs = new FileStream (scenarioName + "_Result.json", FileMode.Create, FileAccess.Write))
+			using (var sw = new StreamWriter (fs)) {
+				serializer.Serialize (sw, this);
+			}
+		}
 	}
 
 	/// <summary>
@@ -33,16 +47,17 @@ namespace MonoDevelop.StressTest
 		/// <summary>
 		/// Each individual leak item
 		/// </summary>
-		public List<LeakItem> Leaks { get; } = new List<LeakItem> ();
+		public Dictionary<string, LeakItem> Leaks { get; }
 
 		// TODO: Make this serializable in MD.
 		//public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; set; }
 
 		// TODO: add more.
 
-		public ResultIterationData (string id)
+		public ResultIterationData (string id, Dictionary<string, LeakItem> leaks)
 		{
 			Id = id;
+			Leaks = leaks;
 		}
 	}
 

@@ -28,7 +28,8 @@ namespace ResultParser
 						hasLeaks = true;
 						Console.WriteLine ("Leak detected {0}:", iteration.Id);
 
-						foreach (var leak in iteration.Leaks) {
+						foreach (var kvp in iteration.Leaks) {
+							var leak = kvp.Value;
 							Console.WriteLine ("{0}: {1}", leak.ClassName, leak.Count);
 						}
 					}

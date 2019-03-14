@@ -110,7 +110,7 @@ namespace MonoDevelop.StressTest
 			UserInterfaceTests.Ide.CloseAll ();
 			TestService.EndSession ();
 			OnCleanUp ();
-			ReportResult ();
+			result.ReportResult (scenario.GetType().FullName);
 		}
 
 		void ValidateMonoDevelopBinPath ()
@@ -167,19 +167,6 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		void ReportResult ()
-		{
-			var serializer = new JsonSerializer {
-				NullValueHandling = NullValueHandling.Ignore,
-			};
-
-			var scenarioName = scenario.GetType ().FullName;
-			using (var fs = new FileStream (scenarioName + "_Result.json", FileMode.Create, FileAccess.Write))
-			using (var sw = new StreamWriter (fs)) {
-				serializer.Serialize (sw, result);
-			}
-		}
-
 		void ReportMemoryUsage (int iteration)
 		{
 			// This is to prevent leaking of AppQuery instances.
@@ -211,51 +198,53 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-
-			var leakResult = new ResultIterationData (iteration.ToString ()) {
+			var previousData = result.Iterations.LastOrDefault ();
+			var leakedObjects = DetectLeakedObjects (iteration, lastHeapshot, previousData);
+			var leakResult = new ResultIterationData (iteration.ToString (), leakedObjects) {
 				//MemoryStats = memoryStats,
 			};
-
-			foreach (var (leakName, leakCount) in DetectLeakedObjects (iteration, lastHeapshot)) {
-				leakResult.Leaks.Add (new LeakItem (leakName, leakCount));
-			}
 
 			result.Iterations.Add (leakResult);
 		}
 
-		List<(string Name, int Count)> DetectLeakedObjects(int iteration, Heapshot heapshot)
+		Dictionary<string, LeakItem> DetectLeakedObjects(int iteration, Heapshot heapshot, ResultIterationData previousData)
 		{
 			if (heapshot == null || ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
-				return new List<(string, int)> ();
+				return new Dictionary<string, LeakItem> ();
 
-			var scenarioType = scenario.GetType ();
-			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
-			var member = iteration == cleanupIteration ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
-			var names = GetTrackedObjectsForLeaks (member);
+			var names = GetAttributesForScenario (iteration, scenario);
 			if (names.Count == 0)
-				return new List<(string, int)> ();
+				return new Dictionary<string, LeakItem> ();
 
-			Console.WriteLine ("Leaked objects count per type:");
-			var leakedObjects = new List<(string Name, int Count)> (names.Count);
+			Console.WriteLine ("Live objects count per type:");
+			var leakedObjects = new Dictionary<string, LeakItem> (names.Count);
 			foreach (var (name, count) in heapshot.GetObjects()) {
 				// We need to check if the root is finalizer or ephemeron, and not report the value.
-				if (names.Remove (name)) {
-					leakedObjects.Add ((name, count));
-					Console.WriteLine ("{0}: {1}", name, count);
+				if (names.TryGetValue (name, out var attribute)) {
+					leakedObjects.Add (name, new LeakItem (name, count));
 				}
 			}
 
-			foreach (var name in names) {
-				Console.WriteLine ("{0}: 0", name);
+			foreach (var kvp in leakedObjects) {
+				var leak = kvp.Value;
+				int delta = 0;
+				if (previousData.Leaks.TryGetValue(kvp.Key, out var previousLeak)) {
+					int previousCount = previousLeak.Count;
+					delta = previousCount - leak.Count;
+				}
+
+				Console.WriteLine ("{0}: {1} {2:+0;-#}", leak.ClassName, leak.Count, delta);
 			}
 			return leakedObjects;
 		}
 
-		static HashSet<string> GetTrackedObjectsForLeaks (MemberInfo member)
+		static Dictionary<string, NoLeakAttribute> GetAttributesForScenario (int iteration, ITestScenario scenario)
 		{
-			return new HashSet<string> (
-				member.GetCustomAttributes (typeof (NoLeakAttribute), true).Select (x => ((NoLeakAttribute)x).TypeName)
-			);
+			var scenarioType = scenario.GetType ();
+			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
+			var member = iteration == cleanupIteration ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
+
+			return member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
 		}
 	}
 }
