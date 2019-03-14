@@ -87,11 +87,11 @@
     <Compile Include="MonoDevelop.StressTest\ITestScenarioProvider.cs" />
     <Compile Include="MonoDevelop.StressTest.Attributes\NoLeakAttribute.cs" />
     <Compile Include="MonoDevelop.StressTest\Serialization\ResultDataModel.cs" />
-    <Compile Include="MonoDevelop.StressTest\Heapshot.cs" />
     <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenarioProvider.cs" />
     <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerProcessor.cs" />
     <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerOptions.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\Heapshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.StressTest.Attributes\" />
