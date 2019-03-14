@@ -21,6 +21,7 @@
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj" Private="False" />
     <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Find\Find.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Def\InfoBar\InfoBar.csproj" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />

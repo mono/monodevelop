@@ -71,5 +71,8 @@ namespace MonoDevelop.TextEditor
 
 		[Import]
 		internal IFindPresenterFactory FindPresenterFactory { get; set; }
+
+		[Import]
+		internal IInfoBarPresenterFactory InfoBarPresenterFactory { get; set; }
 	}
 }
