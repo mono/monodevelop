@@ -66,6 +66,7 @@ namespace MonoDevelop.StressTest
 				All,
 				Custom
 			}
+
 			[Flags]
 			public enum PrintReport
 			{
@@ -73,6 +74,7 @@ namespace MonoDevelop.StressTest
 				ObjectsTotal = 1 << 1,
 				// OnlyOnLast
 			}
+
 			public ProfilerType Type { get; set; } = ProfilerType.Disabled;
 			public PrintReport PrintReportTypes { get; set; }
 			public int MaxFrames { get; set; }
@@ -86,7 +88,7 @@ namespace MonoDevelop.StressTest
 		public string MonoDevelopBinPath { get; set; }
 		public bool UseInstalledApplication { get; set; }
 		public ProfilerOptions Profiler { get; } = new ProfilerOptions ();
-		public ITestScenarioProvider Provider { get; private set; } = new TestScenarioProvider ();
+		public ITestScenarioProvider Provider { get; private set; } = new DefaultScenarioProvider ();
 
 		public void ShowHelp ()
 		{

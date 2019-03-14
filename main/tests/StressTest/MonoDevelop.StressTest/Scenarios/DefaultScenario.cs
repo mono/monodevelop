@@ -34,17 +34,17 @@ using UserInterfaceTests;
 namespace MonoDevelop.StressTest
 {
 	[NoLeak(typeof (Projects.Solution))]
-	public class TestScenario : ITestScenario
+	public class DefaultScenario : ITestScenario
 	{
 		List<FilePath> filesToOpen;
 
-		public TestScenario (FilePath solutionFileName)
+		public DefaultScenario (FilePath solutionFileName)
 			: this (solutionFileName, Enumerable.Empty<string> ())
 		{
 			SolutionFileName = solutionFileName;
 		}
 
-		public TestScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen)
+		public DefaultScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen)
 		{
 			SolutionFileName = solutionFileName;
 

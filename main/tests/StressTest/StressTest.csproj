@@ -69,10 +69,8 @@
     <Compile Include="UserInterfaceTests\UITestBase.cs" />
     <Compile Include="UserInterfaceTests\CreateBuildTemplatesTestBase.cs" />
     <Compile Include="UserInterfaceTests\WorkbenchExtensions.cs" />
-    <Compile Include="MonoDevelop.StressTest\TestScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\TextEditor.cs" />
     <Compile Include="MonoDevelop.StressTest\ITestScenario.cs" />
-    <Compile Include="MonoDevelop.StressTest\TestScenarioProvider.cs" />
     <Compile Include="MonoDevelop.StressTest\StressTestOptions.cs" />
     <Compile Include="MonoDevelop.StressTest\ProfilerProcessor.cs" />
     <Compile Include="Mono.Profiling.Log\LogEnums.cs" />
@@ -90,10 +88,13 @@
     <Compile Include="MonoDevelop.StressTest.Attributes\NoLeakAttribute.cs" />
     <Compile Include="MonoDevelop.StressTest\Serialization\ResultDataModel.cs" />
     <Compile Include="MonoDevelop.StressTest\Heapshot.cs" />
+    <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenario.cs" />
+    <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenarioProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.StressTest.Attributes\" />
     <Folder Include="MonoDevelop.StressTest\Serialization\" />
+    <Folder Include="MonoDevelop.StressTest\Scenarios\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
