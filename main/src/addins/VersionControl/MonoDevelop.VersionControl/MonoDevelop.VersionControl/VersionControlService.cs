@@ -49,7 +49,6 @@ namespace MonoDevelop.VersionControl
 		static DataContext dataContext = new DataContext ();
 
 		public static event FileUpdateEventHandler FileStatusChanged;
-		public static event FileUpdateEventHandler FileDeleted;
 
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
@@ -473,24 +472,6 @@ namespace MonoDevelop.VersionControl
 				});
 			else {
 				FileStatusChanged?.Invoke (null, args);
-			}
-		}
-
-		public static void NotifyFilesDeleted (IEnumerable<VersionControlItem> items)
-		{
-			FileUpdateEventArgs vargs = new FileUpdateEventArgs ();
-			vargs.AddRange (items.Select (i => new FileUpdateEventInfo (i.Repository, i.Path, i.IsDirectory)));
-			NotifyFilesDeleted (vargs);
-		}
-
-		public static void NotifyFilesDeleted (FileUpdateEventArgs args)
-		{
-			if (!Runtime.IsMainThread)
-				Gtk.Application.Invoke ((o2, a2) => {
-					NotifyFilesDeleted (args);
-				});
-			else {
-				FileDeleted?.Invoke (null, args);
 			}
 		}
 
