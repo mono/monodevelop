@@ -103,7 +103,7 @@ namespace MonoDevelop.StressTest
 				ProfilerOptions.MlpdOutputPath = Path.Combine (profilePath, "profiler.mlpd");
 			if (File.Exists (ProfilerOptions.MlpdOutputPath))
 				File.Delete (ProfilerOptions.MlpdOutputPath);
-			profilerProcessor = new ProfilerProcessor (ProfilerOptions);
+			profilerProcessor = new ProfilerProcessor (scenario, ProfilerOptions);
 			string monoPath = Environment.GetEnvironmentVariable ("PATH")
 										 .Split (Path.PathSeparator)
 										 .Select (p => Path.Combine (p, "mono"))

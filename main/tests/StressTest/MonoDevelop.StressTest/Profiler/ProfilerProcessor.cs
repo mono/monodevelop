@@ -20,11 +20,11 @@ namespace MonoDevelop.StressTest
 		private LogProcessor processor;
 		private CancellationTokenSource cts = new CancellationTokenSource ();
 
-		public ProfilerProcessor (ProfilerOptions options)
+		public ProfilerProcessor (ITestScenario scenario, ProfilerOptions options)
 		{
 			Options = options;
 
-			visitor = new Visitor (this);
+			visitor = new Visitor (this, scenario.GetTrackedTypes ());
 			processingThread = new Thread (new ThreadStart (ProcessFile));
 			processingThread.Start ();
 		}
@@ -79,7 +79,7 @@ namespace MonoDevelop.StressTest
 				}
 				using (var fs = new FileStream (Options.MlpdOutputPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
 				using (var logStream = new NeverEndingLogStream (fs, cts.Token)) {
-					processor = new LogProcessor (logStream, null, new Visitor (this));
+					processor = new LogProcessor (logStream, null, visitor);
 					processor.Process (cts.Token);
 				}
 			} catch (OperationCanceledException) { } catch (Exception ex) {
@@ -93,15 +93,21 @@ namespace MonoDevelop.StressTest
 			NativeHeapshot currentHeapshot;
 			Dictionary<long, ClassLoadEvent> classInfos = new Dictionary<long, ClassLoadEvent> ();
 			Dictionary<long, long> vtableToClassInfo = new Dictionary<long, long> ();
+			readonly HashSet<string> trackedObjectNames;
+			readonly HashSet<long> trackedObjectClassIds = new HashSet<long> ();
 
-			public Visitor (ProfilerProcessor profilerProcessor)
+			public Visitor (ProfilerProcessor profilerProcessor, HashSet<string> trackedObjectNames)
 			{
 				this.profilerProcessor = profilerProcessor;
+				this.trackedObjectNames = trackedObjectNames;
 			}
 
 			public override void Visit (ClassLoadEvent ev)
 			{
 				classInfos[ev.ClassPointer] = ev;
+
+				if (trackedObjectNames.Contains (ev.Name))
+					trackedObjectClassIds.Add (ev.ClassPointer);
 			}
 
 			public override void Visit (VTableLoadEvent ev)
@@ -177,6 +183,16 @@ namespace MonoDevelop.StressTest
 					currentHeapshot.ObjectsPerClassCounter[classInfoId]++;
 				else
 					currentHeapshot.ObjectsPerClassCounter[classInfoId] = 0;
+
+				currentHeapshot.ObjectToType.Add (ev.ObjectPointer, classInfoId);
+
+				// Filter out type to object list
+				//if (trackedObjectClassIds.Contains(classInfoId)) {
+					if (!currentHeapshot.TypeToObjectList.TryGetValue (classInfoId, out var list)) {
+						currentHeapshot.TypeToObjectList[classInfoId] = list = new List<long> ();
+					}
+					list.Add (ev.ObjectPointer);
+				//}
 
 				currentHeapshot.Graph.AddVertex (ev.ObjectPointer);
 				foreach (var reference in ev.References) {
@@ -280,10 +296,18 @@ namespace MonoDevelop.StressTest
 				{
 					string name = kvp.Value.Name;
 
-					if (!oldHeapshot.ObjectCounts.TryGetValue (name, out int oldCount))
+					int oldCount, newCount;
+
+					if (!oldHeapshot.ObjectCounts.TryGetValue (name, out var oldTuple))
 						oldCount = 0;
-					if (!newHeapshot.ObjectCounts.TryGetValue (name, out int newCount))
+					else
+						oldCount = oldTuple.Item1;
+
+					if (!newHeapshot.ObjectCounts.TryGetValue (name, out var newTuple))
 						newCount = 0;
+					else
+						newCount = newTuple.Item1;
+
 					if (newCount - oldCount != 0)
 						diffCounter.Add (Tuple.Create (name, newCount - oldCount));
 				}
