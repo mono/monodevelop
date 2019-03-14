@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Profiler.Log;
+using QuickGraph;
 
 namespace MonoDevelop.StressTest
 {
@@ -10,17 +11,25 @@ namespace MonoDevelop.StressTest
 		public readonly Dictionary<long, HeapRootRegisterEvent> Roots = new Dictionary<long, HeapRootRegisterEvent> ();
 		public readonly Dictionary<long, int> ObjectsPerClassCounter = new Dictionary<long, int> ();
 		public Dictionary<long, ClassLoadEvent> ClassInfos;
+
+		public AdjacencyGraph<long, Edge<long>> Graph = new AdjacencyGraph<long, Edge<long>> ();
 	}
 
 	public class Heapshot
 	{
+		public readonly Dictionary<long, HeapRootRegisterEvent> Roots;
 		public readonly Dictionary<long, ClassLoadEvent> ClassInfos;
 		public readonly Dictionary<string, int> ObjectCounts;
 
 		public Heapshot (NativeHeapshot nativeHeapshot)
 		{
-			ObjectCounts = CreateObjectCountMap (nativeHeapshot);
+			Roots = nativeHeapshot.Roots;
 			ClassInfos = nativeHeapshot.ClassInfos;
+
+			ObjectCounts = CreateObjectCountMap (nativeHeapshot);
+
+			// Construct the in-edge graph, so we can trace an object's retention path.
+			var inReferences = new BidirectionAdapterGraph<long, Edge<long>> (nativeHeapshot.Graph);
 		}
 
 		static Dictionary<string, int> CreateObjectCountMap (NativeHeapshot nativeHeapshot)

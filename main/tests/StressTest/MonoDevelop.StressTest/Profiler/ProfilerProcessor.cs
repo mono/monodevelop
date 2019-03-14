@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Mono.Profiler.Log;
+using QuickGraph;
+using MonoDevelop.StressTest.MonoDevelop.StressTest.Profiler;
 
 namespace MonoDevelop.StressTest
 {
@@ -20,7 +22,8 @@ namespace MonoDevelop.StressTest
 
 		public ProfilerProcessor (ProfilerOptions options)
 		{
-			this.Options = options;
+			Options = options;
+
 			visitor = new Visitor (this);
 			processingThread = new Thread (new ThreadStart (ProcessFile));
 			processingThread.Start ();
@@ -175,16 +178,16 @@ namespace MonoDevelop.StressTest
 				else
 					currentHeapshot.ObjectsPerClassCounter[classInfoId] = 0;
 
-				// store the heap object info here, we need it to construct referencesfrom
+				currentHeapshot.Graph.AddVertex (ev.ObjectPointer);
+				foreach (var reference in ev.References) {
+					currentHeapshot.Graph.AddEdge (new Edge<long> (ev.ObjectPointer, reference.ObjectPointer));
+				}
 			}
 
 			public override void Visit (HeapEndEvent ev)
 			{
 				currentHeapshot.ClassInfos = classInfos;
 				profilerProcessor.completionSource.SetResult (new Heapshot (currentHeapshot));
-
-				// process heap objects, from roots, discarding a result if it doesn't touch our type name
-				// we need to build an inverse-reference map
 			}
 
 			void ProcessNewRoot (long objAddr, long rootAddr)

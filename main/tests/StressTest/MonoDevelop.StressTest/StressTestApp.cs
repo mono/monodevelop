@@ -28,10 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using MonoDevelop.Core;
-using MonoDevelop.StressTest.Attributes;
-using Newtonsoft.Json;
 using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
@@ -76,6 +73,8 @@ namespace MonoDevelop.StressTest
 
 			FoldersToClean.Add (profilePath);
 
+			scenario = provider.GetTestScenario ();
+
 			if (!StartWithProfiler (profilePath, logFile))
 				TestService.StartSession (MonoDevelopBinPath, profilePath, logFile);
 
@@ -83,7 +82,6 @@ namespace MonoDevelop.StressTest
 
 			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench);
 
-			scenario = provider.GetTestScenario ();
 			leakProcessor = new LeakProcessor (scenario, ProfilerOptions);
 
 			ReportMemoryUsage (setupIteration);

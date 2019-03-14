@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using MonoDevelop.StressTest.Attributes;
 using Newtonsoft.Json;
+using MonoDevelop.StressTest.MonoDevelop.StressTest.Profiler;
 
 namespace MonoDevelop.StressTest
 {
@@ -53,7 +52,7 @@ namespace MonoDevelop.StressTest
 			if (ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
 				return new Dictionary<string, LeakItem> ();
 
-			var trackedLeaks = GetAttributesForScenario (isCleanup);
+			var trackedLeaks = scenario.GetLeakAttributes (isCleanup);
 			if (trackedLeaks.Count == 0)
 				return new Dictionary<string, LeakItem> ();
 
@@ -80,21 +79,6 @@ namespace MonoDevelop.StressTest
 				Console.WriteLine ("{0}: {1} {2:+0;-#}", leak.ClassName, leak.Count, delta);
 			}
 			return leakedObjects;
-		}
-
-		Dictionary<string, NoLeakAttribute> GetAttributesForScenario (bool isCleanup)
-		{
-			var scenarioType = scenario.GetType ();
-
-			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
-			var member = isCleanup ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
-
-			var attributes = member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
-
-			// TODO: Ensure that we don't leak, so add GtkWidgetResult results, as they can cause retention of UI widgets.
-			// attributes.Add("MonoDevelop.Components.AutoTest.Results.GtkWidgetResult
-
-			return attributes;
 		}
 	}
 }
