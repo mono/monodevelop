@@ -41,7 +41,7 @@ namespace MonoDevelop.StressTest
 	{
 		List<string> FoldersToClean = new List<string> ();
 		ITestScenario scenario;
-		StressTestOptions.ProfilerOptions ProfilerOptions;
+		ProfilerOptions ProfilerOptions;
 		ResultDataModel result = new ResultDataModel ();
 
 		public StressTestApp (StressTestOptions options)
@@ -97,7 +97,7 @@ namespace MonoDevelop.StressTest
 
 		bool StartWithProfiler (string profilePath, string logFile)
 		{
-			if (ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
+			if (ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
 				return false;
 
 			if (ProfilerOptions.MlpdOutputPath == null)
@@ -219,7 +219,7 @@ namespace MonoDevelop.StressTest
 
 		Dictionary<string, LeakItem> DetectLeakedObjects(int iteration, Heapshot heapshot, ResultIterationData previousData)
 		{
-			if (heapshot == null || ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
+			if (heapshot == null || ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
 				return new Dictionary<string, LeakItem> ();
 
 			var trackedLeaks = GetAttributesForScenario (iteration, scenario);

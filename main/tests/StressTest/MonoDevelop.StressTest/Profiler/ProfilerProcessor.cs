@@ -12,13 +12,13 @@ namespace MonoDevelop.StressTest
 {
 	public class ProfilerProcessor
 	{
-		public StressTestOptions.ProfilerOptions Options { get; }
+		public ProfilerOptions Options { get; }
 		private Thread processingThread;
 		private Visitor visitor;
 		private LogProcessor processor;
 		private CancellationTokenSource cts = new CancellationTokenSource ();
 
-		public ProfilerProcessor (StressTestOptions.ProfilerOptions options)
+		public ProfilerProcessor (ProfilerOptions options)
 		{
 			this.Options = options;
 			visitor = new Visitor (this);
@@ -241,11 +241,11 @@ namespace MonoDevelop.StressTest
 		public string GetMonoArguments ()
 		{
 			switch (Options.Type) {
-				case StressTestOptions.ProfilerOptions.ProfilerType.HeapOnly:
+				case ProfilerOptions.ProfilerType.HeapOnly:
 					return $"--profile=log:nodefaults,heapshot=ondemand,output=\"{Options.MlpdOutputPath}\"";
-				case StressTestOptions.ProfilerOptions.ProfilerType.All:
+				case ProfilerOptions.ProfilerType.All:
 					return $"--profile=log:nodefaults,heapshot-on-shutdown,heapshot=ondemand,gcalloc,gcmove,gcroot,counter,maxframes={Options.MaxFrames},output=\"{Options.MlpdOutputPath}\"";
-				case StressTestOptions.ProfilerOptions.ProfilerType.Custom:
+				case ProfilerOptions.ProfilerType.Custom:
 					return Options.CustomProfilerArguments;
 				default:
 					throw new NotImplementedException (Options.Type.ToString ());
@@ -256,7 +256,7 @@ namespace MonoDevelop.StressTest
 		{
 			var newHeapshot = await TakeHeapshot ();
 
-			if (Options.PrintReportTypes.HasFlag (StressTestOptions.ProfilerOptions.PrintReport.ObjectsTotal)) {
+			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsTotal)) {
 				Console.WriteLine ($"Total objects per type({newHeapshot.ObjectCounts.Count}):");
 				foreach (var nameWithCount in newHeapshot.ObjectCounts.OrderByDescending (p => p.Value)) {
 					var name = nameWithCount.Key;
@@ -265,7 +265,7 @@ namespace MonoDevelop.StressTest
 				}
 			}
 
-			if (Options.PrintReportTypes.HasFlag (StressTestOptions.ProfilerOptions.PrintReport.ObjectsDiff)) {
+			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsDiff)) {
 				heapshots.Add (newHeapshot);
 				if (heapshots.Count == 1) {
 					Console.WriteLine ("No objects diff report on 1st Heapshot.");

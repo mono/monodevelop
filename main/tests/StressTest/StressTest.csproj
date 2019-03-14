@@ -72,7 +72,6 @@
     <Compile Include="MonoDevelop.StressTest\TextEditor.cs" />
     <Compile Include="MonoDevelop.StressTest\ITestScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\StressTestOptions.cs" />
-    <Compile Include="MonoDevelop.StressTest\ProfilerProcessor.cs" />
     <Compile Include="Mono.Profiling.Log\LogEnums.cs" />
     <Compile Include="Mono.Profiling.Log\LogStreamHeader.cs" />
     <Compile Include="Mono.Profiling.Log\LogStream.cs" />
@@ -90,11 +89,14 @@
     <Compile Include="MonoDevelop.StressTest\Heapshot.cs" />
     <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenarioProvider.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerProcessor.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.StressTest.Attributes\" />
     <Folder Include="MonoDevelop.StressTest\Serialization\" />
     <Folder Include="MonoDevelop.StressTest\Scenarios\" />
+    <Folder Include="MonoDevelop.StressTest\Profiler\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

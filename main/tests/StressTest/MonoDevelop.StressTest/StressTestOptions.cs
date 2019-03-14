@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.StressTest
@@ -55,32 +54,6 @@ namespace MonoDevelop.StressTest
 					break;
 				}
 			}
-		}
-
-		public class ProfilerOptions
-		{
-			public enum ProfilerType
-			{
-				Disabled,
-				HeapOnly,
-				All,
-				Custom
-			}
-
-			[Flags]
-			public enum PrintReport
-			{
-				ObjectsDiff = 1 << 0,
-				ObjectsTotal = 1 << 1,
-				// OnlyOnLast
-			}
-
-			public ProfilerType Type { get; set; } = ProfilerType.Disabled;
-			public PrintReport PrintReportTypes { get; set; }
-			public int MaxFrames { get; set; }
-			public string MlpdOutputPath { get; set; }
-			public string CustomProfilerArguments { get; set; }
-			public HashSet<string> PrintReportObjectNames { get; } = new HashSet<string> (StringComparer.Ordinal);
 		}
 
 		public bool Help { get; set; }
