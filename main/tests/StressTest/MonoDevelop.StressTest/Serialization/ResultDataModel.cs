@@ -16,18 +16,6 @@ namespace MonoDevelop.StressTest
 		/// </summary>
 		/// <value>The iterations.</value>
 		public List<ResultIterationData> Iterations { get; } = new List<ResultIterationData> ();
-
-		public void ReportResult(string scenarioName)
-		{
-			var serializer = new JsonSerializer {
-				NullValueHandling = NullValueHandling.Ignore,
-			};
-
-			using (var fs = new FileStream (scenarioName + "_Result.json", FileMode.Create, FileAccess.Write))
-			using (var sw = new StreamWriter (fs)) {
-				serializer.Serialize (sw, this);
-			}
-		}
 	}
 
 	/// <summary>

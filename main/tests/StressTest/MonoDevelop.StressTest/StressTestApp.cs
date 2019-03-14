@@ -33,7 +33,6 @@ using MonoDevelop.Core;
 using MonoDevelop.StressTest.Attributes;
 using Newtonsoft.Json;
 using UserInterfaceTests;
-using static MonoDevelop.StressTest.ProfilerProcessor;
 
 namespace MonoDevelop.StressTest
 {
@@ -42,7 +41,8 @@ namespace MonoDevelop.StressTest
 		List<string> FoldersToClean = new List<string> ();
 		ITestScenario scenario;
 		ProfilerOptions ProfilerOptions;
-		ResultDataModel result = new ResultDataModel ();
+
+		LeakProcessor leakProcessor;
 
 		public StressTestApp (StressTestOptions options)
 		{
@@ -84,6 +84,7 @@ namespace MonoDevelop.StressTest
 			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench);
 
 			scenario = provider.GetTestScenario ();
+			leakProcessor = new LeakProcessor (scenario, ProfilerOptions);
 
 			ReportMemoryUsage (setupIteration);
 			for (int i = 0; i < Iterations; ++i) {
@@ -120,7 +121,8 @@ namespace MonoDevelop.StressTest
 			UserInterfaceTests.Ide.CloseAll ();
 			TestService.EndSession ();
 			OnCleanUp ();
-			result.ReportResult (scenario.GetType().FullName);
+
+			leakProcessor.ReportResult ();
 		}
 
 		void ValidateMonoDevelopBinPath ()
@@ -183,9 +185,9 @@ namespace MonoDevelop.StressTest
 			TestService.Session.DisconnectQueries ();
 
 			UserInterfaceTests.Ide.WaitForIdeIdle ();//Make sure IDE stops doing what it was doing
-			Heapshot lastHeapshot = null;
+			Heapshot heapshot = null;
 			if (profilerProcessor != null) {
-				lastHeapshot = profilerProcessor.TakeHeapshotAndMakeReport ().Result;
+				heapshot = profilerProcessor.TakeHeapshotAndMakeReport ().Result;
 			}
 
 			var memoryStats = TestService.Session.MemoryStats;
@@ -208,60 +210,7 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			var previousData = result.Iterations.LastOrDefault ();
-			var leakedObjects = DetectLeakedObjects (iteration, lastHeapshot, previousData);
-			var leakResult = new ResultIterationData (iteration.ToString (), leakedObjects) {
-				//MemoryStats = memoryStats,
-			};
-
-			result.Iterations.Add (leakResult);
-		}
-
-		Dictionary<string, LeakItem> DetectLeakedObjects(int iteration, Heapshot heapshot, ResultIterationData previousData)
-		{
-			if (heapshot == null || ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
-				return new Dictionary<string, LeakItem> ();
-
-			var trackedLeaks = GetAttributesForScenario (iteration, scenario);
-			if (trackedLeaks.Count == 0)
-				return new Dictionary<string, LeakItem> ();
-
-			Console.WriteLine ("Live objects count per type:");
-			var leakedObjects = new Dictionary<string, LeakItem> (trackedLeaks.Count);
-
-			foreach (var kvp in trackedLeaks) {
-				var name = kvp.Key;
-
-				if (heapshot.ObjectCounts.TryGetValue(name, out var count)) {
-					// We need to check if the root is finalizer or ephemeron, and not report the value.
-					leakedObjects.Add (name, new LeakItem (name, count));
-				}
-			}
-
-			foreach (var kvp in leakedObjects) {
-				var leak = kvp.Value;
-				int delta = 0;
-				if (previousData.Leaks.TryGetValue(kvp.Key, out var previousLeak)) {
-					int previousCount = previousLeak.Count;
-					delta = previousCount - leak.Count;
-				}
-
-				Console.WriteLine ("{0}: {1} {2:+0;-#}", leak.ClassName, leak.Count, delta);
-			}
-			return leakedObjects;
-		}
-
-		static Dictionary<string, NoLeakAttribute> GetAttributesForScenario (int iteration, ITestScenario scenario)
-		{
-			var scenarioType = scenario.GetType ();
-			// If it's targeting the class, check on cleanup iteration, otherwise, check the run method.
-			var member = iteration == cleanupIteration ? scenarioType : (MemberInfo)scenarioType.GetMethod ("Run");
-
-			var result = member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
-
-			// TODO: Ensure that we don't GtkWidgetResult results.
-
-			return result;
+			leakProcessor.Process (heapshot, iteration == cleanupIteration, iteration.ToString ());
 		}
 	}
 }

@@ -92,6 +92,7 @@
     <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerProcessor.cs" />
     <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerOptions.cs" />
     <Compile Include="MonoDevelop.StressTest\Profiler\Heapshot.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\LeakProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.StressTest.Attributes\" />
