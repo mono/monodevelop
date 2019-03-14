@@ -84,17 +84,10 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		public class Heapshot
-		{
-			public Dictionary<long, HeapRootRegisterEvent> Roots = new Dictionary<long, HeapRootRegisterEvent> ();
-			public Dictionary<long, int> ObjectsPerClassCounter = new Dictionary<long, int> ();
-			public Dictionary<long, ClassLoadEvent> ClassInfos;
-		}
-
 		class Visitor : Mono.Profiler.Log.LogEventVisitor
 		{
 			ProfilerProcessor profilerProcessor;
-			Heapshot currentHeapshot;
+			NativeHeapshot currentHeapshot;
 			Dictionary<long, ClassLoadEvent> classInfos = new Dictionary<long, ClassLoadEvent> ();
 			Dictionary<long, long> vtableToClassInfo = new Dictionary<long, long> ();
 
@@ -115,7 +108,7 @@ namespace MonoDevelop.StressTest
 
 			public override void Visit (HeapBeginEvent ev)
 			{
-				currentHeapshot = new Heapshot ();
+				currentHeapshot = new NativeHeapshot ();
 			}
 
 			readonly Dictionary<long, HeapRootRegisterEvent> rootsEvents = new Dictionary<long, HeapRootRegisterEvent> ();
@@ -188,7 +181,7 @@ namespace MonoDevelop.StressTest
 			public override void Visit (HeapEndEvent ev)
 			{
 				currentHeapshot.ClassInfos = classInfos;
-				profilerProcessor.completionSource.SetResult (currentHeapshot);
+				profilerProcessor.completionSource.SetResult (new Heapshot (currentHeapshot));
 
 				// process heap objects, from roots, discarding a result if it doesn't touch our type name
 				// we need to build an inverse-reference map
@@ -264,11 +257,11 @@ namespace MonoDevelop.StressTest
 			var newHeapshot = await TakeHeapshot ();
 
 			if (Options.PrintReportTypes.HasFlag (StressTestOptions.ProfilerOptions.PrintReport.ObjectsTotal)) {
-				Console.WriteLine ($"Total objects per type({newHeapshot.ObjectsPerClassCounter.Count}):");
-				foreach (var typeWithCount in newHeapshot.ObjectsPerClassCounter.Where (p => p.Value > 0).OrderByDescending (p => p.Value)) {
-					var name = newHeapshot.ClassInfos[typeWithCount.Key].Name;
+				Console.WriteLine ($"Total objects per type({newHeapshot.ObjectCounts.Count}):");
+				foreach (var nameWithCount in newHeapshot.ObjectCounts.OrderByDescending (p => p.Value)) {
+					var name = nameWithCount.Key;
 					if (ShouldReportItem(name))
-						Console.WriteLine ($"{name}:{typeWithCount.Value}");
+						Console.WriteLine ($"{name}:{nameWithCount.Value}");
 				}
 			}
 
@@ -279,19 +272,21 @@ namespace MonoDevelop.StressTest
 					return newHeapshot;
 				}
 				var oldHeapshot = heapshots[heapshots.Count - 2];
-				var diffCounter = new List<Tuple<long, int>> ();
-				foreach (var classInfoId in newHeapshot.ClassInfos.Keys)//ClassInfos is not Heapshot specific, all heapshot has same
+				var diffCounter = new List<Tuple<string, int>> ();
+				foreach (var kvp in newHeapshot.ClassInfos)//ClassInfos is not Heapshot specific, all heapshot has same
 				{
-					if (!oldHeapshot.ObjectsPerClassCounter.TryGetValue (classInfoId, out int oldCount))
+					string name = kvp.Value.Name;
+
+					if (!oldHeapshot.ObjectCounts.TryGetValue (name, out int oldCount))
 						oldCount = 0;
-					if (!newHeapshot.ObjectsPerClassCounter.TryGetValue (classInfoId, out int newCount))
+					if (!newHeapshot.ObjectCounts.TryGetValue (name, out int newCount))
 						newCount = 0;
 					if (newCount - oldCount != 0)
-						diffCounter.Add (Tuple.Create (classInfoId, newCount - oldCount));
+						diffCounter.Add (Tuple.Create (name, newCount - oldCount));
 				}
 				Console.WriteLine ($"Heapshot diff has {diffCounter.Count} entries:");
 				foreach (var diff in diffCounter.OrderByDescending (d => d.Item2)) {
-					var name = newHeapshot.ClassInfos[diff.Item1].Name;
+					var name = diff.Item1;
 					if (ShouldReportItem (name)) {
 						Console.WriteLine ($"{name}:{diff.Item2}");
 					}

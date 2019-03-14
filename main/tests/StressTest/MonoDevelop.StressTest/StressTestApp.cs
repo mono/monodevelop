@@ -74,21 +74,10 @@ namespace MonoDevelop.StressTest
 			string profilePath = Util.CreateTmpDir ();
 
 			FoldersToClean.Add (profilePath);
-			if (ProfilerOptions.Type != StressTestOptions.ProfilerOptions.ProfilerType.Disabled) {
-				if (ProfilerOptions.MlpdOutputPath == null)
-					ProfilerOptions.MlpdOutputPath = Path.Combine (profilePath, "profiler.mlpd");
-				if (File.Exists (ProfilerOptions.MlpdOutputPath))
-					File.Delete (ProfilerOptions.MlpdOutputPath);
-				profilerProcessor = new ProfilerProcessor (ProfilerOptions);
-				string monoPath = Environment.GetEnvironmentVariable ("PATH")
-											 .Split (Path.PathSeparator)
-											 .Select (p => Path.Combine (p, "mono"))
-											 .FirstOrDefault (s => File.Exists (s));
-				TestService.StartSession (monoPath, profilePath, logFile, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"");
-				Console.WriteLine ($"Profler is logging into {ProfilerOptions.MlpdOutputPath}");
-			} else {
+
+			if (!StartWithProfiler (profilePath, logFile))
 				TestService.StartSession (MonoDevelopBinPath, profilePath, logFile);
-			}
+
 			TestService.Session.DebugObject = new UITestDebug ();
 
 			TestService.Session.WaitForElement (IdeQuery.DefaultWorkbench);
@@ -103,6 +92,26 @@ namespace MonoDevelop.StressTest
 
 			UserInterfaceTests.Ide.CloseAll (exit: false);
 			ReportMemoryUsage (cleanupIteration);
+		}
+
+		bool StartWithProfiler (string profilePath, string logFile)
+		{
+			if (ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
+				return false;
+
+			if (ProfilerOptions.MlpdOutputPath == null)
+				ProfilerOptions.MlpdOutputPath = Path.Combine (profilePath, "profiler.mlpd");
+			if (File.Exists (ProfilerOptions.MlpdOutputPath))
+				File.Delete (ProfilerOptions.MlpdOutputPath);
+			profilerProcessor = new ProfilerProcessor (ProfilerOptions);
+			string monoPath = Environment.GetEnvironmentVariable ("PATH")
+										 .Split (Path.PathSeparator)
+										 .Select (p => Path.Combine (p, "mono"))
+										 .FirstOrDefault (s => File.Exists (s));
+
+			TestService.StartSession (monoPath, profilePath, logFile, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"");
+			Console.WriteLine ($"Profler is logging into {ProfilerOptions.MlpdOutputPath}");
+			return true;
 		}
 
 		public void Stop ()
@@ -212,15 +221,18 @@ namespace MonoDevelop.StressTest
 			if (heapshot == null || ProfilerOptions.Type == StressTestOptions.ProfilerOptions.ProfilerType.Disabled)
 				return new Dictionary<string, LeakItem> ();
 
-			var names = GetAttributesForScenario (iteration, scenario);
-			if (names.Count == 0)
+			var trackedLeaks = GetAttributesForScenario (iteration, scenario);
+			if (trackedLeaks.Count == 0)
 				return new Dictionary<string, LeakItem> ();
 
 			Console.WriteLine ("Live objects count per type:");
-			var leakedObjects = new Dictionary<string, LeakItem> (names.Count);
-			foreach (var (name, count) in heapshot.GetObjects()) {
-				// We need to check if the root is finalizer or ephemeron, and not report the value.
-				if (names.TryGetValue (name, out var attribute)) {
+			var leakedObjects = new Dictionary<string, LeakItem> (trackedLeaks.Count);
+
+			foreach (var kvp in trackedLeaks) {
+				var name = kvp.Key;
+
+				if (heapshot.ObjectCounts.TryGetValue(name, out var count)) {
+					// We need to check if the root is finalizer or ephemeron, and not report the value.
 					leakedObjects.Add (name, new LeakItem (name, count));
 				}
 			}

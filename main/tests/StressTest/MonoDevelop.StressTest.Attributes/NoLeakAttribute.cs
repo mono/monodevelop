@@ -14,5 +14,8 @@ namespace MonoDevelop.StressTest.Attributes
 		{
 			TypeName = typeName;
 		}
+
+		// Add configurable parameters:
+		// Ignore objects found in the initial heapshot
 	}
 }
