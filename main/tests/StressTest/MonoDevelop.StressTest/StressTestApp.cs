@@ -64,6 +64,7 @@ namespace MonoDevelop.StressTest
 		readonly ITestScenarioProvider provider;
 		ProfilerProcessor profilerProcessor;
 
+		const int setupIteration = -1;
 		const int cleanupIteration = int.MinValue;
 
 		public void Start ()
@@ -84,7 +85,7 @@ namespace MonoDevelop.StressTest
 
 			scenario = provider.GetTestScenario ();
 
-			ReportMemoryUsage (-1);
+			ReportMemoryUsage (setupIteration);
 			for (int i = 0; i < Iterations; ++i) {
 				scenario.Run ();
 				ReportMemoryUsage (i);
