@@ -163,11 +163,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				var doc = tsFiles.GetValue (iter, 2) as Document;
 				if (doc == null)
 					return false;
-				if ((bool)tsFiles.GetValue (iter, 1)) {
+				if ((bool)tsFiles.GetValue (iter, 1))
 					saveTasks.Add (doc.Save ());
-				} else {
-					doc.DiscardChanges ();
-				}
 				return false;
 			});
 
@@ -183,14 +180,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void Quit (object o, EventArgs e)
 		{
-			tsFiles.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
-				var doc = tsFiles.GetValue (iter, 2) as Document;
-				if (doc == null)
-					return false;
-				doc.DiscardChanges ();
-				return false;
-			});
-			
 			Respond (Gtk.ResponseType.Ok);
 			Hide ();
 		}

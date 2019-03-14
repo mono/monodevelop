@@ -293,16 +293,6 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.Save (new FileSaveInformation (FilePath, Encoding));
 		}
 
-		protected override void OnDiscardChanges ()
-		{
-			if (autoSaveTask != null)
-				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
-			RemoveAutoSaveTimer ();
-			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
-				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
-			textEditorImpl.DiscardChanges ();
-		}
-
 		protected override void OnOwnerChanged ()
 		{
 			base.OnOwnerChanged ();
@@ -356,6 +346,13 @@ namespace MonoDevelop.Ide.Editor
 			isDisposed = true;
 
 			if (textEditorImpl != null) {
+
+				if (autoSaveTask != null)
+					autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+				RemoveAutoSaveTimer ();
+				if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
+					AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
+
 				EditorConfigService.RemoveEditConfigContext (textEditor.FileName).Ignore ();
 				CancelDocumentParsedUpdate ();
 				textEditorImpl.DirtyChanged -= HandleDirtyChanged;
@@ -365,7 +362,6 @@ namespace MonoDevelop.Ide.Editor
 
 				DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 				RemovePolicyChangeHandler ();
-				RemoveAutoSaveTimer ();
 				textEditor.Dispose ();
 			}
 

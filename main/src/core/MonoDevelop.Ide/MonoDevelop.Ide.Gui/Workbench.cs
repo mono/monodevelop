@@ -432,7 +432,6 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 
 				if (result == AlertButton.CloseWithoutSave) {
-					doc.DiscardChanges ();
 					await doc.Close (true);
 					continue;
 				}

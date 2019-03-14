@@ -240,11 +240,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		internal void DiscardChanges ()
-		{
-			controller.DiscardChanges ();
-		}
-
 		public FilePath FileName {
 			get {
 				if (controller is FileDocumentController file)
@@ -537,10 +532,8 @@ namespace MonoDevelop.Ide.Gui
 						return false;
 					}
 				} else {
-					if (result == AlertButton.CloseWithoutSave) {
-						controller.DiscardChanges ();
+					if (result == AlertButton.CloseWithoutSave)
 						return true;
-					}
 				}
 			}
 			return true;

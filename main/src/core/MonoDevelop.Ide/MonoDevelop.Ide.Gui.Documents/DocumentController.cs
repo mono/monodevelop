@@ -525,12 +525,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return null;
 		}
 
-		public void DiscardChanges ()
-		{
-			CheckInitialized ();
-			OnDiscardChanges ();
-		}
-
 		/// <summary>
 		/// Gets the view that will show the content of the document.
 		/// </summary>
@@ -961,10 +955,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (Model != null)
 				Model.Dispose ();
-		}
-
-		protected virtual void OnDiscardChanges ()
-		{
 		}
 
 		public IEnumerable<FilePath> GetDocumentFiles ()
