@@ -48,13 +48,11 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
-		static readonly string unsupportedMessage = GettextCatalog.GetString ("The version of the .NET Core SDK currently installed ({0}) is not supported and continuing to use it may result in a broken tooling experience. " + 
-														"To ensure a reliable experience, the minimum supported version is {1} and the maximum supported version is {2}...");
 
 		public static string GetDotNetCoreMessage (string currentPath, string version = "")
 		{
 			if (string.IsNullOrEmpty (version))
-				return string.Format (unsupportedMessage, currentPath, DotNetCoreVersion.MinimumSupportedVersion, DotNetCoreVersion.MaximumSupportedVersion);
+				return GettextCatalog.GetString ("The version of the .NET Core SDK currently installed ({0}) is not supported and continuing to use it may result in a broken tooling experience.", currentPath);
 
 			return GettextCatalog.GetString (".NET Core {0} SDK is not installed. This is required to build and run .NET Core {0} projects.", version);
 		}

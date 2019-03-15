@@ -177,7 +177,7 @@ namespace MonoDevelop.DotNetCore
 						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'. Require at least 1.0.0. '{1}'", sdkVersion, sdkDirectory);
 						return false;
 					}
-					if (version > DotNetCoreVersion.MaximumSupportedVersion) {
+					if (version >= DotNetCoreVersion.UnSupportedVersion) {
 						LoggingService.LogInfo ("Unsupported .NET Core SDK version installed '{0}'.", sdkVersion);
 						return false;
 					}

@@ -33,7 +33,10 @@ namespace MonoDevelop.DotNetCore
 	class DotNetCoreVersion : IEquatable<DotNetCoreVersion>, IComparable, IComparable<DotNetCoreVersion>
 	{
 		public static readonly DotNetCoreVersion MinimumSupportedVersion = new DotNetCoreVersion (1, 0, 0);
-		public static readonly DotNetCoreVersion MaximumSupportedVersion = new DotNetCoreVersion (2, 2, 3);
+		public static readonly DotNetCoreVersion UnSupportedVersion = new DotNetCoreVersion (3, 0, 100) { 
+																											ReleaseLabel = "preview3-010431" ,
+																											IsPrerelease = true
+																										};
 
 		DotNetCoreVersion (int major, int minor, int patch)
 			: this (new Version (major, minor, patch))

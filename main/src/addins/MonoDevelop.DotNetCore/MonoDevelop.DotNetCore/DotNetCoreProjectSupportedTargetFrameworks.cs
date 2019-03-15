@@ -95,7 +95,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
 				string version = runtimeVersion.ToString (2);
-				if (DotNetCoreVersion.Parse (version) > DotNetCoreVersion.MaximumSupportedVersion) {
+				if (DotNetCoreVersion.Parse (version) >= DotNetCoreVersion.UnSupportedVersion) {
 					continue;
 				}
 
