@@ -78,6 +78,8 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 		{
 			if (DebuggingService.CurrentFrame == null)
 				return null;
+			if (window != null)
+				await Runtime.RunInMainThread (DestroyWindow);
 			var view = session.TextView;
 
 			var textViewLines = view.TextViewLines;
@@ -113,7 +115,6 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				// and do our own thing, notice VS does same thing
 				await session.DismissAsync ();
 				await provider.joinableTaskContext.Factory.SwitchToMainThreadAsync ();
-				DestroyWindow ();
 				this.lastView = view;
 				val.Name = debugInfo.Text;
 				window = new DebugValueWindow ((Gtk.Window)gtkParent.Toplevel, textDocument?.FilePath, textBuffer.CurrentSnapshot.GetLineNumberFromPosition (debugInfo.Span.GetStartPoint (textBuffer.CurrentSnapshot)), DebuggingService.CurrentFrame, val, null);
