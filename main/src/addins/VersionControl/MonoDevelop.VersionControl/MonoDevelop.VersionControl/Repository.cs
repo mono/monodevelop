@@ -106,6 +106,8 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 
+			VersionControlService.repositoryCache.TryRemove (RepositoryPath.CanonicalPath, out _);
+
 			infoCache?.Dispose ();
 			infoCache = null;
 		}
