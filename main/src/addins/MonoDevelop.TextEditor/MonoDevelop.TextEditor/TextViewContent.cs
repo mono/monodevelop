@@ -138,7 +138,7 @@ namespace MonoDevelop.TextEditor
 
 			TextView.Properties [typeof (ViewContent)] = this;
 
-			infoBarPresenter = Imports.InfoBarPresenterFactory.TryGetInfoBarPresenter (TextView);
+			infoBarPresenter = Imports.InfoBarPresenterFactory?.TryGetInfoBarPresenter (TextView);
 
 			InstallAdditionalEditorOperationsCommands ();
 

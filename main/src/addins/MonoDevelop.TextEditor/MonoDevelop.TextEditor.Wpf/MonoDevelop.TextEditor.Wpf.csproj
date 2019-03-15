@@ -31,6 +31,7 @@
   <ItemGroup>
     <IncludeCopyLocal Include="DiagnosticMargin.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.InfoBar.dll" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="**\*.xaml">
