@@ -43,7 +43,6 @@ namespace MonoDevelop.StressTest
 					e.VertexFormatter.Shape = QuickGraph.Graphviz.Dot.GraphvizVertexShape.Box;
 				} else {
 					e.VertexFormatter.Label = typeName;
-					e.VertexFormatter.Shape = QuickGraph.Graphviz.Dot.GraphvizVertexShape.Circle;
 				}
 			};
 
