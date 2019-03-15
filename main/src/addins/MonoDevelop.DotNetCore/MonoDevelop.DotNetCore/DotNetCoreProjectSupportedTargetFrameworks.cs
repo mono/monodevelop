@@ -94,18 +94,14 @@ namespace MonoDevelop.DotNetCore
 		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
 			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
-				string version = runtimeVersion.ToString (2);
-				if (DotNetCoreVersion.Parse (version) >= DotNetCoreVersion.UnSupportedVersion) {
-					continue;
-				}
-
-				yield return CreateTargetFramework (".NETCoreApp", version);
+				yield return CreateTargetFramework (".NETCoreApp", runtimeVersion.ToString (2));
 			}
 		}
 
 		static IEnumerable<Version> GetMajorRuntimeVersions ()
 		{
 			return DotNetCoreRuntime.Versions
+				.Where (version => version < DotNetCoreVersion.UnSupportedRuntimeVersion)
 				.Select (version => new Version (version.Major, version.Minor))
 				.Distinct ();
 		}
