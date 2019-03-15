@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
-			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Wait ();
+			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Ignore ();
 		}
 
 		protected async override Task CorrectIndentingImplementationAsync (Ide.Editor.TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
@@ -90,16 +90,18 @@ namespace MonoDevelop.CSharp.Formatting
 				formattingRules.AddRange (Formatter.GetDefaultFormattingRules (document));
 
 				var workspace = document.Project.Solution.Workspace;
-				var root = await document.GetSyntaxRootAsync (cancellationToken);
-				var options = await document.GetOptionsAsync (cancellationToken);
+				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+				var options = await document.GetOptionsAsync (cancellationToken).ConfigureAwait (false);
 				var changes = Formatter.GetFormattedTextChanges (
 					root, new TextSpan [] { new TextSpan (startSegment.Offset, endSegment.EndOffset - startSegment.Offset) },
 					workspace, options, formattingRules, cancellationToken);
 
 				if (changes == null)
 					return;
-				editor.ApplyTextChanges (changes);
-				editor.FixVirtualIndentation ();
+				await Runtime.RunInMainThread (delegate {
+					editor.ApplyTextChanges (changes);
+					editor.FixVirtualIndentation ();
+				});
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);
 			}
