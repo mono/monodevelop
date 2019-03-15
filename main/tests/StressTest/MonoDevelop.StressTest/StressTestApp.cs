@@ -190,13 +190,16 @@ namespace MonoDevelop.StressTest
 
 			var memoryStats = TestService.Session.MemoryStats;
 
+			string iterationName;
 			if (iteration == cleanupIteration) {
-				Console.WriteLine ("Cleanup");
-			} else if (iteration == 0) {
-				Console.WriteLine ("Setup");
+				iterationName = "Cleanup";
+			} else if (iteration == setupIteration) {
+				iterationName = "Setup";
 			} else {
-				Console.WriteLine ("Run {0}", iteration + 1);
+				iterationName = string.Format ("Run_{0}", iteration + 1);
 			}
+
+			Console.WriteLine (iterationName);
 
 			Console.WriteLine ("  NonPagedSystemMemory: " + memoryStats.NonPagedSystemMemory);
 			Console.WriteLine ("  PagedMemory: " + memoryStats.PagedMemory);
@@ -208,7 +211,7 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			leakProcessor.Process (heapshot, iteration == cleanupIteration, iteration.ToString ());
+			leakProcessor.Process (heapshot, iteration == cleanupIteration, iterationName);
 		}
 	}
 }

@@ -114,13 +114,13 @@ namespace MonoDevelop.StressTest
 
 				// Append root information.
 				if (heapshot.Roots.TryGetValue(currentObj, out var rootRegisterEvent)) {
-					e.VertexFormatter.Label += "\n" + rootRegisterEvent.Source.ToString ();
+					e.VertexFormatter.Label += "\\n" + rootRegisterEvent.Source.ToString ();
 					e.VertexFormatter.Shape = QuickGraph.Graphviz.Dot.GraphvizVertexShape.Box;
 				}
 			};
 
 			var outputPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
-			File.WriteAllText ("graph.dot", outputPath);
+			File.WriteAllText (outputPath, graphviz.Generate ());
 
 			return outputPath;
 		}
