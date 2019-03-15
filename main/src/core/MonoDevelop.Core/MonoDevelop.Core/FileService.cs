@@ -340,8 +340,6 @@ namespace MonoDevelop.Core
 		public static void NotifyFilesRemoved (IEnumerable<FilePath> files)
 		{
 			try {
-				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
-					fsFiles.Key.NotifyFilesDeleted (fsFiles);
 				OnFileRemoved (new FileEventArgs (files, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File remove notification failed", ex);

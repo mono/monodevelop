@@ -142,13 +142,6 @@ namespace MonoDevelop.Core.FileSystem
 			foreach (var fsFiles in files.GroupBy (f => GetNextForPath (f, false)))
 				fsFiles.Key.NotifyFilesChanged (files);
 		}
-
-		public virtual void NotifyFilesDeleted (IEnumerable<FilePath> files)
-		{
-			foreach (var fsFiles in files.GroupBy (f => GetNextForPath (f, false)))
-				fsFiles.Key.NotifyFilesDeleted (files);
-		}
-
 	}
 
 	class DummyFileSystemExtension: FileSystemExtension
