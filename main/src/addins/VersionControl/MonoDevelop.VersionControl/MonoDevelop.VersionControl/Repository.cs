@@ -258,7 +258,7 @@ namespace MonoDevelop.VersionControl
 				else {
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (p, "", Directory.Exists (p), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
-					infoCache.SetStatus (vi, false);
+					infoCache.SetStatus (vi, true);
 					result.Add (vi);
 					pathsToQuery.Add (p);
 				}
@@ -652,8 +652,8 @@ namespace MonoDevelop.VersionControl
 			var metadata = new RevertMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Recursive = recurse, OperationType = RevertMetadata.RevertType.LocalChanges };
 			using (var tracker = Instrumentation.RevertCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
-					ClearCachedVersionInfo (localPaths);
 					OnRevert (localPaths, recurse, monitor);
+					ClearCachedVersionInfo (localPaths);
 				} catch {
 					metadata.SetFailure ();
 					throw;
