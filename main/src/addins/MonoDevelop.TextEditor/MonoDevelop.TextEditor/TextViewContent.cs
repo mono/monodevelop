@@ -391,14 +391,14 @@ namespace MonoDevelop.TextEditor
 				if (setWritable)
 					TextView.Options.SetOptionValue (DefaultTextViewOptions.ViewProhibitUserInputId, true);
 
-				ShowInfoBar (
+				PresentInfobar (
 					GettextCatalog.GetString ("An autosave file has been found for this file"),
 					GettextCatalog.GetString (BrandingService.BrandApplicationName (
 						"This could mean that another instance of MonoDevelop is editing this " +
 						"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
 						"Do you want to use the original file, or load from the autosave file?")),
-					(GettextCatalog.GetString ("Use original file"), UseOriginalFile),
-					(GettextCatalog.GetString ("Load from autosave"), LoadFromAutosave));
+					new InfoBarAction (GettextCatalog.GetString ("Use original file"), UseOriginalFile),
+					new InfoBarAction (GettextCatalog.GetString ("Load from autosave"), LoadFromAutosave, isDefault: true));
 
 				void OnActionSelected ()
 				{
@@ -446,11 +446,16 @@ namespace MonoDevelop.TextEditor
 				newContent);
 		}
 
-		void ShowInfoBar (string title, string description, params (string, Action) [] actions)
-			=> infoBarPresenter?.Show (new InfoBarViewModel (title,	description, actions));
+		void PresentInfobar (string title, string description, params InfoBarAction [] actions)
+		{
+			if (infoBarPresenter != null) {
+				DismissInfoBar ();
+				infoBarPresenter.Present (new InfoBarViewModel (title, description, actions));
+			}
+		}
 
 		void DismissInfoBar ()
-			=> infoBarPresenter?.Dismiss ();
+			=> infoBarPresenter?.DismissAll ();
 
 		public override void DiscardChanges ()
 		{
@@ -599,21 +604,21 @@ namespace MonoDevelop.TextEditor
 
 		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
 		{
-			var actions = new List<(string, Action)> {
-				(GettextCatalog.GetString("Reload from disk"), ReloadFromDisk),
-				(GettextCatalog.GetString("Keep changes"), KeepChanges),
+			var actions = new List<InfoBarAction> {
+				new InfoBarAction (GettextCatalog.GetString ("Reload from disk"), ReloadFromDisk),
+				new InfoBarAction (GettextCatalog.GetString ("Keep changes"), KeepChanges, isDefault: !multiple),
 			};
 
 			if (multiple) {
-				actions.Add ((GettextCatalog.GetString ("Reload all"), ReloadAll));
-				actions.Add ((GettextCatalog.GetString ("Ignore all"), IgnoreAll));
+				actions.Add (new InfoBarAction (GettextCatalog.GetString ("Reload all"), ReloadAll));
+				actions.Add (new InfoBarAction (GettextCatalog.GetString ("Ignore all"), IgnoreAll));
 			}
 
 			WorkbenchWindow.ShowNotification = true;
 			warnOverwrite = true;
 			MarkDirty ();
 
-			ShowInfoBar (
+			PresentInfobar (
 				GettextCatalog.GetString (
 					"The file \"{0}\" has been changed outside of {1}.",
 					ContentName,
