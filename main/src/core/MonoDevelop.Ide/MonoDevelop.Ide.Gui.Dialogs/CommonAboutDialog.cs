@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (Platform.IsMac) {
 				if (instance == null) {
 					instance = new CommonAboutDialog ();
-					MessageService.PlaceDialog (instance, WelcomePage.WelcomePageService.WelcomeWindow ?? IdeApp.Workbench.RootWindow);
+					MessageService.PlaceDialog (instance, DesktopService.GetFocusedTopLevelWindow ());
 					instance.Response += delegate {
 						instance.Destroy ();
 						instance.Dispose ();
