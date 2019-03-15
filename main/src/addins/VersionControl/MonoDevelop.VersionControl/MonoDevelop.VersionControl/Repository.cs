@@ -786,10 +786,13 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
 			var metadata = new DeleteMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Force = force, KeepLocal = keepLocal };
 			using (var tracker = Instrumentation.DeleteCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					OnDeleteFiles (localPaths, force, monitor, keepLocal);
+					foreach (var path in localPaths)
+						args.Add (new FileUpdateEventInfo (this, path, false));
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to delete file", e);
 					metadata.SetFailure ();
@@ -799,6 +802,8 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			ClearCachedVersionInfo (localPaths);
+			if (args.Any ())
+				VersionControlService.NotifyFileStatusChanged (args);
 		}
 
 		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal);
@@ -810,10 +815,13 @@ namespace MonoDevelop.VersionControl
 
 		public void DeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
 			var metadata = new DeleteMetadata (VersionControlSystem) { PathsCount = localPaths.Length, Force = force, KeepLocal = keepLocal };
 			using (var tracker = Instrumentation.DeleteCounter.BeginTiming (metadata, monitor.CancellationToken)) {
 				try {
 					OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+					foreach (var path in localPaths)
+						args.Add (new FileUpdateEventInfo (this, path, true));
 				} catch (Exception e) {
 					LoggingService.LogError ("Failed to delete directory", e);
 					metadata.SetFailure ();
@@ -823,6 +831,8 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 			ClearCachedVersionInfo (localPaths);
+			if (args.Any ())
+				VersionControlService.NotifyFileStatusChanged (args);
 		}
 
 		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal);
