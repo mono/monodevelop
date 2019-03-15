@@ -64,10 +64,17 @@ namespace MonoDevelop.StressTest
 		/// <value>The count.</value>
 		public int Count { get; }
 
-		public LeakItem (string className, int count)
+		/// <summary>
+		/// Gets the name of the dot file generated for the graph.
+		/// </summary>
+		/// <value>The name of the graph file.</value>
+		public string GraphFileName { get; }
+
+		public LeakItem (string className, int count, string graphFileName)
 		{
 			ClassName = className;
 			Count = count;
+			GraphFileName = graphFileName;
 		}
 	}
 }

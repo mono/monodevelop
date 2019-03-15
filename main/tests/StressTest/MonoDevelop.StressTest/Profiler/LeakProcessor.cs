@@ -7,11 +7,14 @@ using MonoDevelop.StressTest.MonoDevelop.StressTest.Profiler;
 using QuickGraph.Algorithms.Search;
 using QuickGraph.Algorithms.Observers;
 using QuickGraph;
+using QuickGraph.Graphviz;
 
 namespace MonoDevelop.StressTest
 {
 	public class LeakProcessor
 	{
+		const string graphsDirectory = "graphs";
+
 		readonly ITestScenario scenario;
 		readonly ResultDataModel result = new ResultDataModel ();
 
@@ -42,7 +45,7 @@ namespace MonoDevelop.StressTest
 				return;
 
 			var previousData = result.Iterations.LastOrDefault ();
-			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData);
+			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
 			var leakResult = new ResultIterationData (iterationName, leakedObjects) {
 				//MemoryStats = memoryStats,
 			};
@@ -50,7 +53,7 @@ namespace MonoDevelop.StressTest
 			result.Iterations.Add (leakResult);
 		}
 
-		Dictionary<string, LeakItem> DetectLeakedObjects (Heapshot heapshot, bool isCleanup, ResultIterationData previousData)
+		Dictionary<string, LeakItem> DetectLeakedObjects (Heapshot heapshot, bool isCleanup, ResultIterationData previousData, string iterationName)
 		{
 			if (ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
 				return new Dictionary<string, LeakItem> ();
@@ -59,23 +62,21 @@ namespace MonoDevelop.StressTest
 			if (trackedLeaks.Count == 0)
 				return new Dictionary<string, LeakItem> ();
 
+			Directory.CreateDirectory (graphsDirectory);
+
 			Console.WriteLine ("Live objects count per type:");
 			var leakedObjects = new Dictionary<string, LeakItem> (trackedLeaks.Count);
-
-			bool doneOnce = false;
 
 			foreach (var kvp in trackedLeaks) {
 				var name = kvp.Key;
 
 				if (heapshot.ObjectCounts.TryGetValue (name, out var tuple)) {
 					var (count, typeId) = tuple;
-					// We need to check if the root is finalizer or ephemeron, and not report the value.
-					leakedObjects.Add (name, new LeakItem (name, count));
 
-					if (!doneOnce) {
-						PrintPathsToRoots (heapshot, typeId);
-						doneOnce = true;
-					}
+					var resultFile = ReportPathsToRoots (heapshot, typeId, iterationName);
+
+					// We need to check if the root is finalizer or ephemeron, and not report the value.
+					leakedObjects.Add (name, new LeakItem (name, count, resultFile));
 				}
 			}
 
@@ -92,44 +93,36 @@ namespace MonoDevelop.StressTest
 			return leakedObjects;
 		}
 
-		void PrintPathsToRoots(Heapshot heapshot, long typeId)
+		string ReportPathsToRoots(Heapshot heapshot, long typeId, string iterationName)
 		{
+			var rootTypeName = heapshot.ClassInfos[typeId].Name;
 			var objects = heapshot.TypeToObjectList[typeId];
 
+			// TODO: Iterate a finite number of objects and group by similar retention
 			var obj = objects.First ();
 
-			var bfsa = new BreadthFirstSearchAlgorithm<long, Edge<long>> (heapshot.Graph);
-			var vis = new VertexPredecessorRecorderObserver<long, Edge<long>> ();
-			vis.Attach (bfsa);
-			var visitedRoots = new HashSet<long> ();
-			bfsa.ExamineVertex += (vertex) => {
-				if (heapshot.Roots.ContainsKey (vertex)) {
-					visitedRoots.Add (vertex);
-					if (visitedRoots.Count == 5) {
-						bfsa.Services.CancelManager.Cancel ();
-					}
+			var objectGraph = heapshot.Graph.GetObjectGraph (obj);
+
+			var graphviz = new GraphvizAlgorithm<long, SReversedEdge<long, Edge<long>>> (objectGraph);
+			graphviz.FormatVertex += (sender, e) => {
+				var currentObj = e.Vertex;
+
+				// Look up the object and set its type name.
+				var currentType = heapshot.ObjectToType[currentObj];
+				var typeName = heapshot.ClassInfos[currentType].Name;
+				e.VertexFormatter.Label = typeName;
+
+				// Append root information.
+				if (heapshot.Roots.TryGetValue(currentObj, out var rootRegisterEvent)) {
+					e.VertexFormatter.Label += "\n" + rootRegisterEvent.Source.ToString ();
+					e.VertexFormatter.Shape = QuickGraph.Graphviz.Dot.GraphvizVertexShape.Box;
 				}
 			};
-			bfsa.Compute (obj);
-			foreach (var root in visitedRoots) {
-				Console.WriteLine ("root:");
-				if (vis.TryGetPath (root, out var path)) {
-					foreach (var edge in path) {
-						var source = GetName (heapshot, edge.Source);
-						var target = GetName (heapshot, edge.Target);
 
-						Console.WriteLine ("{0} -> {1}", source, target);
-					}
-				}
-			}
-		}
+			var outputPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
+			File.WriteAllText ("graph.dot", outputPath);
 
-		string GetName(Heapshot heapshot, long objectAddr)
-		{
-			var typeId = heapshot.ObjectToType[objectAddr];
-			var name = heapshot.ClassInfos[typeId].Name;
-
-			return name;
+			return outputPath;
 		}
 	}
 }

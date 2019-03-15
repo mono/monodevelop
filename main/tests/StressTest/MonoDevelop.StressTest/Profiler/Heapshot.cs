@@ -25,7 +25,7 @@ namespace MonoDevelop.StressTest
 		public readonly Dictionary<long, List<long>> TypeToObjectList;
 		public readonly Dictionary<string, (int, long)> ObjectCounts;
 
-		public readonly BidirectionAdapterGraph<long, Edge<long>> Graph;
+		public readonly ReversedBidirectionalGraph<long, Edge<long>> Graph;
 
 		public Heapshot (NativeHeapshot nativeHeapshot)
 		{
@@ -36,9 +36,9 @@ namespace MonoDevelop.StressTest
 
 			ObjectCounts = CreateObjectCountMap (nativeHeapshot);
 
+			var graphWithInReferences = new BidirectionAdapterGraph<long, Edge<long>> (nativeHeapshot.Graph);
 			// Construct the in-edge graph, so we can trace an object's retention path.
-			Graph = new BidirectionAdapterGraph<long, Edge<long>> (nativeHeapshot.Graph);
-			// TODO: Create inversed gra
+			Graph = new ReversedBidirectionalGraph<long, Edge<long>> (graphWithInReferences);
 		}
 
 		static Dictionary<string, (int, long)> CreateObjectCountMap (NativeHeapshot nativeHeapshot)
@@ -93,6 +93,5 @@ namespace MonoDevelop.StressTest
 		//		yield return lir;
 		//	}
 		//}
-
 	}
 }
