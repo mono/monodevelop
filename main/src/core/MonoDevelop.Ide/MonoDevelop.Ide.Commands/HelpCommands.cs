@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.IsGuiLocked = false;
+			info.DisableOnShellLock = false;
 			info.Enabled = true;
 		}
 

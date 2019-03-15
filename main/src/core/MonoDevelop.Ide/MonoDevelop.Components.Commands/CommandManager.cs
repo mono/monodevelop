@@ -1708,7 +1708,7 @@ namespace MonoDevelop.Components.Commands
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
 							if (!info.ArrayInfo.Bypass) {
-								if (info.IsGuiLocked && guiLock > 0)
+								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1717,7 +1717,7 @@ namespace MonoDevelop.Components.Commands
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
 							if (!info.Bypass) {
-								if (info.IsGuiLocked && guiLock > 0)
+								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1745,7 +1745,7 @@ namespace MonoDevelop.Components.Commands
 						continue;
 					}
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
-						info.Enabled = !info.IsGuiLocked || guiLock == 0;
+						info.Enabled = !info.DisableOnShellLock || guiLock == 0;
 						info.Visible = true;
 						
 						return info;
@@ -1769,7 +1769,7 @@ namespace MonoDevelop.Components.Commands
 				CurrentCommand = null;
 			}
 
-			if (info.IsGuiLocked && guiLock > 0)
+			if (info.DisableOnShellLock && guiLock > 0)
 				info.Enabled = false;
 			return info;
 		}
