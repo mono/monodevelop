@@ -93,13 +93,12 @@ namespace MonoDevelop.DotNetCore
 
 		public static IEnumerable<TargetFramework> GetNetCoreAppTargetFrameworks ()
 		{
-			foreach (Version runtimeVersion in GetMajorRuntimeVersions ()) {
-				if (runtimeVersion.Major > 3 || (runtimeVersion.Major == 3 && runtimeVersion.Minor > 0)) {
-					// Skip versions > 3.0 since this is not currently supported.
+			foreach (var runtimeVersion in GetMajorRuntimeVersions ()) {
+				string version = runtimeVersion.ToString (2);
+				if (DotNetCoreVersion.Parse (version) > DotNetCoreVersion.MaximumSupportedVersion) {
 					continue;
 				}
 
-				string version = runtimeVersion.ToString (2);
 				yield return CreateTargetFramework (".NETCoreApp", version);
 			}
 		}

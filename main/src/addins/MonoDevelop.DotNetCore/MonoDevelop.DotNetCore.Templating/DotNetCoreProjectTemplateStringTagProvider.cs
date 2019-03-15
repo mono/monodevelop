@@ -37,7 +37,8 @@ namespace MonoDevelop.DotNetCore.Templating
 	[Extension]
 	class DotNetCoreProjectTemplateStringTagProvider : IStringTagProvider
 	{
-		string [] SupportedSDK = { "2.1", "2.2", "3.0" };
+		//NOTE: .NET Core SDK 3.0 disabled
+		string [] SupportedSDK = { "2.1", "2.2", /* "3.0" */ };
 
 		public IEnumerable<StringTagDescription> GetTags (Type type)
 		{
