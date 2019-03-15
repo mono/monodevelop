@@ -1203,6 +1203,7 @@ namespace MonoDevelop.Ide.TypeSystem
 									// correct openDocument ids - they may change due to project reload.
 									OpenDocuments.CorrectDocumentIds (project, t.Result);
 									OnProjectReloaded (t.Result);
+									ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
 								}
 							} catch (Exception e) {
 								LoggingService.LogError ("Error while reloading project " + project.Name, e);
