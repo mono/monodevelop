@@ -19,8 +19,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Windows;
-
+using Gdk;
 using Microsoft.VisualStudio.Text.Classification;
 
 using MonoDevelop.Core;
@@ -32,7 +33,20 @@ namespace MonoDevelop.TextEditor
 	class CocoaTextViewDisplayBinding : TextViewDisplayBinding<CocoaTextViewImports>
 	{
 		static CocoaTextViewDisplayBinding ()
-			=> Microsoft.VisualStudio.UI.GettextCatalog.Initialize (GettextCatalog.GetString, GettextCatalog.GetString);
+		{
+			Microsoft.VisualStudio.UI.GettextCatalog.Initialize (GettextCatalog.GetString, GettextCatalog.GetString);
+			Microsoft.VisualStudio.Text.Editor.Implementation.CocoaLocalEventMonitor.FilterGdkEvents += (enable) => {
+				if (enable)
+					Gdk.Window.AddFilterForAll (Filter);
+				else
+					Gdk.Window.RemoveFilterForAll (Filter);
+			};
+		}
+
+		static FilterReturn Filter (IntPtr xevent, Event evnt)
+		{
+			return FilterReturn.Remove;
+		}
 
 		protected override ViewContent CreateContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
 		{
