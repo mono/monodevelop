@@ -39,7 +39,7 @@ namespace MonoDevelop.StressTest
 				e.VertexFormatter.Label = typeName;
 				// Append root information.
 				if (heapshot.Roots.TryGetValue (currentObj, out var rootRegisterEvent)) {
-					e.VertexFormatter.Label = typeName + "\n" + rootRegisterEvent.Source.ToString ();
+					e.VertexFormatter.Label = $"{typeName}\\nRoot Kind: {rootRegisterEvent.Source.ToString ()}";
 					e.VertexFormatter.Shape = QuickGraph.Graphviz.Dot.GraphvizVertexShape.Box;
 				} else {
 					e.VertexFormatter.Label = typeName;

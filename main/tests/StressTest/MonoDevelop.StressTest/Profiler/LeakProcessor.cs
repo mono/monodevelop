@@ -103,21 +103,7 @@ namespace MonoDevelop.StressTest
 
 			var objectGraph = heapshot.Graph.GetObjectGraph (obj);
 
-			var graphviz = new GraphvizAlgorithm<long, SReversedEdge<long, Edge<long>>> (objectGraph);
-			graphviz.FormatVertex += (sender, e) => {
-				var currentObj = e.Vertex;
-
-				// Look up the object and set its type name.
-				var currentType = heapshot.ObjectToType[currentObj];
-				var typeName = heapshot.ClassInfos[currentType].Name;
-				e.VertexFormatter.Label = typeName;
-
-				// Append root information.
-				if (heapshot.Roots.TryGetValue(currentObj, out var rootRegisterEvent)) {
-					e.VertexFormatter.Label += "\\n" + rootRegisterEvent.Source.ToString ();
-					e.VertexFormatter.Shape = QuickGraph.Graphviz.Dot.GraphvizVertexShape.Box;
-				}
-			};
+			var graphviz = objectGraph.ToLeakGraphviz (heapshot);
 
 			var outputPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
 			File.WriteAllText (outputPath, graphviz.Generate ());
