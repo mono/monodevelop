@@ -391,14 +391,23 @@ namespace MonoDevelop.TextEditor
 				if (setWritable)
 					TextView.Options.SetOptionValue (DefaultTextViewOptions.ViewProhibitUserInputId, true);
 
-				ShowInfoBar (
-					GettextCatalog.GetString ("An autosave file has been found for this file"),
-					GettextCatalog.GetString (BrandingService.BrandApplicationName (
+				var (primaryMessageText, secondaryMessageText) = SplitMessageString (
+					BrandingService.BrandApplicationName (GettextCatalog.GetString (
+						"<b>An autosave file has been found for this file.</b>\n" +
 						"This could mean that another instance of MonoDevelop is editing this " +
 						"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
-						"Do you want to use the original file, or load from the autosave file?")),
-					(GettextCatalog.GetString ("Use original file"), UseOriginalFile),
-					(GettextCatalog.GetString ("Load from autosave"), LoadFromAutosave));
+						"Do you want to use the original file, or load from the autosave file?")));
+
+				PresentInfobar (
+					primaryMessageText,
+					secondaryMessageText,
+					new InfoBarAction (
+						GetButtonString (GettextCatalog.GetString ("_Use original file")),
+						UseOriginalFile),
+					new InfoBarAction (
+						GetButtonString (GettextCatalog.GetString ("_Load from autosave")),
+						LoadFromAutosave,
+						isDefault: true));
 
 				void OnActionSelected ()
 				{
@@ -446,11 +455,16 @@ namespace MonoDevelop.TextEditor
 				newContent);
 		}
 
-		void ShowInfoBar (string title, string description, params (string, Action) [] actions)
-			=> infoBarPresenter?.Show (new InfoBarViewModel (title,	description, actions));
+		void PresentInfobar (string title, string description, params InfoBarAction [] actions)
+		{
+			if (infoBarPresenter != null) {
+				DismissInfoBar ();
+				infoBarPresenter.Present (new InfoBarViewModel (title, description, actions));
+			}
+		}
 
 		void DismissInfoBar ()
-			=> infoBarPresenter?.Dismiss ();
+			=> infoBarPresenter?.DismissAll ();
 
 		public override void DiscardChanges ()
 		{
@@ -599,26 +613,28 @@ namespace MonoDevelop.TextEditor
 
 		void IDocumentReloadPresenter.ShowFileChangedWarning (bool multiple)
 		{
-			var actions = new List<(string, Action)> {
-				(GettextCatalog.GetString("Reload from disk"), ReloadFromDisk),
-				(GettextCatalog.GetString("Keep changes"), KeepChanges),
+			var actions = new List<InfoBarAction> {
+				new InfoBarAction (GetButtonString (GettextCatalog.GetString ("_Reload from disk")), ReloadFromDisk),
+				new InfoBarAction (GetButtonString (GettextCatalog.GetString ("_Keep changes")), KeepChanges, isDefault: !multiple),
 			};
 
 			if (multiple) {
-				actions.Add ((GettextCatalog.GetString ("Reload all"), ReloadAll));
-				actions.Add ((GettextCatalog.GetString ("Ignore all"), IgnoreAll));
+				actions.Add (new InfoBarAction (GetButtonString (GettextCatalog.GetString ("_Reload all")), ReloadAll));
+				actions.Add (new InfoBarAction (GetButtonString (GettextCatalog.GetString ("_Ignore all")), IgnoreAll));
 			}
 
 			WorkbenchWindow.ShowNotification = true;
 			warnOverwrite = true;
 			MarkDirty ();
 
-			ShowInfoBar (
-				GettextCatalog.GetString (
-					"The file \"{0}\" has been changed outside of {1}.",
-					ContentName,
-					BrandingService.ApplicationName),
-				GettextCatalog.GetString ("Do you want to keep your changes, or reload the file from disk?"),
+			var (primaryMessageText, secondaryMessageText) = SplitMessageString (GettextCatalog.GetString (
+				"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
+				"Do you want to keep your changes, or reload the file from disk?",
+				ContentName, BrandingService.ApplicationName));
+
+			PresentInfobar (
+				primaryMessageText,
+				secondaryMessageText,
 				actions.ToArray ());
 
 			void ReloadFromDisk ()
@@ -651,6 +667,38 @@ namespace MonoDevelop.TextEditor
 
 		void IDocumentReloadPresenter.RemoveMessageBar ()
 			=> DismissInfoBar ();
+
+		/// <summary>
+		/// Converts strings to title case per the current locale and strips <c>_</c> mnemonic characters,
+		/// allowing us to retain original already localized strings from the old editor UI but present
+		/// them better in the new editor UI.
+		/// </summary>
+		static string GetButtonString (string originalButtonString)
+			=> System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase (
+				originalButtonString.Replace ("_", string.Empty));
+
+		/// <summary>
+		/// Strips markup and returns the string before the first line break as a primary string and
+		/// everything after as a secondary string, allowing us to retain original already localized
+		/// strings from the old editor UI but presen them better in the new editor UI.
+		/// </summary>
+		static (string primaryString, string secondaryString) SplitMessageString (string originalString)
+		{
+			if (originalString == null)
+				return (null, null);
+
+			if (originalString == string.Empty)
+				return (string.Empty, null);
+
+			var strippedText = Xwt.FormattedText.FromMarkup (originalString).Text;
+			var secondLineOffset = strippedText.IndexOf ('\n');
+			if (secondLineOffset < 0)
+				return (strippedText, null);
+
+			return (
+				strippedText.Substring (0, secondLineOffset),
+				strippedText.Substring (secondLineOffset + 1).TrimStart ());
+		}
 
 		/// <summary>
 		/// An ITextSource that only implements enough pieces for AutoSave to work.
