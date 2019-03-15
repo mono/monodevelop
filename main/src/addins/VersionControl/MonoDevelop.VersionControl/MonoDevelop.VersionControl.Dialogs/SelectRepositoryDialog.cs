@@ -345,7 +345,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (dlg.Run ()) {
 				defaultPath = dlg.SelectedFile;
 				VersionControlDefaultPath.Value = defaultPath;
-				AppendRelativePath ();
+				entryFolder.Text = defaultPath;
 			}
 		}
 
