@@ -40,6 +40,7 @@ namespace MonoDevelop.VersionControl
 						list [0].Repository.Update (list.Paths, true, Monitor);
 					} catch (Exception ex) {
 						Monitor.ReportError (ex.Message, null);
+						LoggingService.LogError ("Update operation failed", ex);
 						return;
 					}
 				}

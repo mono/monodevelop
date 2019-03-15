@@ -76,7 +76,13 @@ namespace MonoDevelop.VersionControl
 }
 				try {
 					foreach (VersionControlItemList list in items.SplitByRepository ()) {
-						list [0].Repository.Unlock (Monitor, list.Paths);
+						try {
+							list [0].Repository.Unlock (Monitor, list.Paths);
+						} catch (Exception ex) {
+							Monitor.ReportError (ex.Message, null);
+							LoggingService.LogError ("Unlock operation failed", ex);
+							return;
+						}
 					}
 					Gtk.Application.Invoke ((o, args) => {
 						VersionControlService.NotifyFileStatusChanged (items);

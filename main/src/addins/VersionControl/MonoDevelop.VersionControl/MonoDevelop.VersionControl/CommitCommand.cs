@@ -124,6 +124,7 @@ namespace MonoDevelop.VersionControl
 				} catch (Exception ex) {
 					LoggingService.LogError ("Commit operation failed", ex);
 					Monitor.ReportError (ex.Message, null);
+					LoggingService.LogError ("Commit operation failed", ex);
 					success = false;
 					throw;
 				}

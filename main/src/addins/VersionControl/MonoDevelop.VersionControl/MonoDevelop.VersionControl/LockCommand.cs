@@ -60,10 +60,15 @@ namespace MonoDevelop.VersionControl
 
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Lock (Monitor, list.Paths);
-				
-				
+				foreach (VersionControlItemList list in items.SplitByRepository ()) {
+					try {
+						list [0].Repository.Lock (Monitor, list.Paths);
+					} catch (Exception ex) {
+						Monitor.ReportError (ex.Message, null);
+						LoggingService.LogError ("Lock operation failed", ex);
+						return;
+					}
+				}
 				Gtk.Application.Invoke ((o, args) => {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
