@@ -91,8 +91,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			};
 			backButton.HasDefault = backButton.CanDefault = true;
-
-			ShowAll ();
 		}
 
 		static void CopyBufferToClipboard ()
@@ -124,8 +122,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (Platform.IsMac) {
 				if (instance == null) {
+					var parent = DesktopService.GetFocusedTopLevelWindow ();
 					instance = new CommonAboutDialog ();
-					MessageService.PlaceDialog (instance, DesktopService.GetFocusedTopLevelWindow ());
+					instance.ShowAll ();
+					MessageService.PlaceDialog (instance, parent);
 					instance.Response += delegate {
 						instance.Destroy ();
 						instance.Dispose ();
