@@ -56,6 +56,18 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		public DropDownBox OriginalCombo {
+			get {
+				return originalComboBox;
+			}
+		}
+
+		public DropDownBox DiffCombo {
+			get {
+				return diffComboBox;
+			}
+		}
+
 		internal override MonoTextEditor MainEditor {
 			get {
 				return editors[1];
