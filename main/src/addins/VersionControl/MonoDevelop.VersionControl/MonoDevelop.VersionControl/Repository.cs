@@ -29,7 +29,9 @@ namespace MonoDevelop.VersionControl
 			get;
 			protected set;
 		}
-		
+
+		internal FilePath RepositoryPath { get; set; }
+
 		public event EventHandler NameChanged;
 		
 		protected Repository ()
@@ -102,6 +104,8 @@ namespace MonoDevelop.VersionControl
 					recursiveDirectoryQueryQueue.Clear ();
 				}
 			}
+
+			VersionControlService.repositoryCache.TryRemove (RepositoryPath.CanonicalPath, out _);
 
 			infoCache?.Dispose ();
 			infoCache = null;

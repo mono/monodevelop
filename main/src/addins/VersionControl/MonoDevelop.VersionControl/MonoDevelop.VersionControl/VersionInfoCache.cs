@@ -34,8 +34,8 @@ namespace MonoDevelop.VersionControl
 {
 	class VersionInfoCache : IDisposable
 	{
-		static readonly ConcurrentDictionary<FilePath, VersionInfo> fileStatus = new ConcurrentDictionary<FilePath, VersionInfo> ();
-		static readonly ConcurrentDictionary<FilePath, DirectoryStatus> directoryStatus = new ConcurrentDictionary<FilePath, DirectoryStatus> ();
+		readonly ConcurrentDictionary<FilePath, VersionInfo> fileStatus = new ConcurrentDictionary<FilePath, VersionInfo> ();
+		readonly ConcurrentDictionary<FilePath, DirectoryStatus> directoryStatus = new ConcurrentDictionary<FilePath, DirectoryStatus> ();
 		Repository repo;
 
 		public VersionInfoCache (Repository repo)
