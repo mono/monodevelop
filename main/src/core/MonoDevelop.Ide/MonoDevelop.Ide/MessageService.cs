@@ -330,11 +330,11 @@ namespace MonoDevelop.Ide
 				if (dialog.TransientFor != null)
 					parent = dialog.TransientFor;
 				else
-					parent = RootWindow;
+					parent = DesktopService.GetFocusedTopLevelWindow ();
 			}
 
 			//TODO: use native parenting API for native windows
-			if (parent.nativeWidget is Gtk.Window) {
+			if (parent?.nativeWidget is Gtk.Window) {
 				dialog.TransientFor = parent;
 				dialog.DestroyWithParent = true;
 			}
@@ -348,7 +348,7 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null || parent.nativeWidget is NSWindow) {
+				if (NSApplication.SharedApplication.ModalWindow != null || parent?.nativeWidget is NSWindow) {
 					if (dialog.Modal) {
 						EventHandler shownHandler = null;
 						shownHandler = (s, e) => {
@@ -459,7 +459,15 @@ namespace MonoDevelop.Ide
 					gtkChild.Move (x, y);
 #endif
 				} else {
+#if MAC
+					// There is no parent, so just center the dialog
+					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
+					if (nsChild != null) {
+						nsChild.Center ();
+					}
+#else
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
+#endif
 				}
 			}
 		}
