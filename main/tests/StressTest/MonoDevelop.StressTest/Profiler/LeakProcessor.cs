@@ -8,6 +8,7 @@ using QuickGraph.Algorithms.Search;
 using QuickGraph.Algorithms.Observers;
 using QuickGraph;
 using QuickGraph.Graphviz;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.StressTest
 {
@@ -43,6 +44,8 @@ namespace MonoDevelop.StressTest
 		{
 			if (heapshot == null)
 				return;
+
+			// TODO: Make this async.
 
 			var previousData = result.Iterations.LastOrDefault ();
 			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
