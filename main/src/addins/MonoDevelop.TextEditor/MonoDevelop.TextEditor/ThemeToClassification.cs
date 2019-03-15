@@ -195,6 +195,10 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "returnstatement", EditorThemeColors.DebuggerStackLineMarker);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Indicator Margin", EditorThemeColors.IndicatorMargin);
 			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.ForegroundColorId);
+			// We need theme support for foreground (border) vs background color for the current line highlighter.
+			// Until we have that, set the background brush explicitly since that's what the old editor did, and
+			// all the themes expect that. Fixes https://devdiv.visualstudio.com/DevDiv/_workitems/edit/804158
+			CreateResourceDictionary (editorFormat, defaultSettings, "CurrentLineActiveFormat", EditorThemeColors.LineHighlight, EditorFormatDefinition.BackgroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Block Structure Adornments", EditorThemeColors.IndentationGuide);
 			CreateRename (editorFormat, defaultSettings);
 			foreach (var mapping in mappings) {
