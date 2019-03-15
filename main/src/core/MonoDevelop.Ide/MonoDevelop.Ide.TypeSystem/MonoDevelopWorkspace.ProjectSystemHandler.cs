@@ -302,12 +302,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				OpenGeneratedFiles (workspace);
 			}
 
-			static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace)
+			internal static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace, bool newEditorOnly = false)
 			{
 				if (!IdeApp.IsInitialized)
 					return;
 
 				foreach (var openDocument in IdeApp.Workbench.Documents) {
+					if (newEditorOnly && openDocument.Editor != null) {
+						continue;
+					}
 					var filePath = openDocument.FileName;
 					var solution = workspace.CurrentSolution;
 					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
