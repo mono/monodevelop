@@ -96,10 +96,6 @@ namespace MonoDevelop.Ide.Navigation
 				throw new ArgumentNullException (nameof (point));
 			}
 
-			if (Current != null && point.Equals (Current.NavigationPoint)) {
-				return;
-			}
-
 			var item = new NavigationHistoryItem (point);
 			
 			//if the current node's transient but has been around for a while, consider making it permanent
