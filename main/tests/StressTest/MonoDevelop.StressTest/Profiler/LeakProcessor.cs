@@ -36,7 +36,7 @@ namespace MonoDevelop.StressTest
 
 			using (var fs = new FileStream (scenarioName + "_Result.json", FileMode.Create, FileAccess.Write))
 			using (var sw = new StreamWriter (fs)) {
-				serializer.Serialize (sw, this);
+				serializer.Serialize (sw, result);
 			}
 		}
 
