@@ -129,16 +129,30 @@ namespace MonoDevelop.TextEditor
 
 		#region Command Mapping Handlers
 
-		bool EditorIsFirstResponder {
-			get {
-				var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (TextView);
-				return findPresenter == null || !findPresenter.IsFocused;
-			}
+		// FIXME: this is a hack to explicitly support a few commands when the find/replace view
+		// has focus. Longer term we need to improve the MD<->VS commanding to handle this without
+		// explicit context checks. Fixes https://devdiv.visualstudio.com/DevDiv/_workitems/edit/821862
+		static readonly HashSet<object> commandsSupportedWhenFindPresenterIsFocused = new HashSet<object> {
+			CommandManager.ToCommandId (SearchCommands.Find),
+			CommandManager.ToCommandId (SearchCommands.Replace),
+			CommandManager.ToCommandId (SearchCommands.FindNext),
+			CommandManager.ToCommandId (SearchCommands.FindPrevious),
+			CommandManager.ToCommandId (SearchCommands.FindNextSelection),
+			CommandManager.ToCommandId (SearchCommands.FindPrevious)
+		};
+
+		bool CanHandleCommand (object commandId)
+		{
+			var findPresenter = Imports.FindPresenterFactory?.TryGetFindPresenter (TextView);
+			if (findPresenter != null && findPresenter.IsFocused)
+				return commandsSupportedWhenFindPresenterIsFocused.Contains (commandId);
+
+			return true;
 		}
 
 		ICommandHandler ICustomCommandTarget.GetCommandHandler (object commandId)
 		{
-			if (!EditorIsFirstResponder)
+			if (!CanHandleCommand (commandId))
 				return null;
 
 			if (CommandMappings.Instance.HasMapping (commandId) || EditorOperationCommands.ContainsKey (commandId))
@@ -149,7 +163,7 @@ namespace MonoDevelop.TextEditor
 
 		ICommandUpdater ICustomCommandTarget.GetCommandUpdater (object commandId)
 		{
-			if (!EditorIsFirstResponder)
+			if (!CanHandleCommand (commandId))
 				return null;
 
 			if (CommandMappings.Instance.HasMapping (commandId) ||
