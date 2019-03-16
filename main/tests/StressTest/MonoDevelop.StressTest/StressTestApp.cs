@@ -179,10 +179,11 @@ namespace MonoDevelop.StressTest
 
 		void ReportMemoryUsage (int iteration)
 		{
+			//Make sure IDE stops doing what it was doing
+			UserInterfaceTests.Ide.WaitForIdeIdle ();
+
 			// This is to prevent leaking of AppQuery instances.
 			TestService.Session.DisconnectQueries ();
-
-			UserInterfaceTests.Ide.WaitForIdeIdle ();//Make sure IDE stops doing what it was doing
 			Heapshot heapshot = null;
 			if (profilerProcessor != null) {
 				heapshot = profilerProcessor.TakeHeapshotAndMakeReport ().Result;

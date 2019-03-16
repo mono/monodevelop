@@ -85,7 +85,6 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			lock (queries) {
 				foreach (var query in queries) {
-					RemotingServices.Disconnect (query);
 					query.Dispose ();
 				}
 				queries.Clear ();
