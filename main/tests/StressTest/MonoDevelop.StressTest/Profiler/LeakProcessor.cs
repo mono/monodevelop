@@ -40,7 +40,7 @@ namespace MonoDevelop.StressTest
 			}
 		}
 
-		public void Process (Heapshot heapshot, bool isCleanup, string iterationName)
+		public void Process (Heapshot heapshot, bool isCleanup, string iterationName, Components.AutoTest.AutoTestSession.MemoryStats memoryStats)
 		{
 			if (heapshot == null)
 				return;
@@ -49,16 +49,14 @@ namespace MonoDevelop.StressTest
 
 			var previousData = result.Iterations.LastOrDefault ();
 			var leakedObjects = DetectLeakedObjects (heapshot, isCleanup, previousData, iterationName);
-			var leakResult = new ResultIterationData (iterationName, leakedObjects) {
-				//MemoryStats = memoryStats,
-			};
+			var leakResult = new ResultIterationData (iterationName, leakedObjects, memoryStats);
 
 			result.Iterations.Add (leakResult);
 		}
 
 		Dictionary<string, LeakItem> DetectLeakedObjects (Heapshot heapshot, bool isCleanup, ResultIterationData previousData, string iterationName)
 		{
-			if (ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
+			if (heapshot == null || ProfilerOptions.Type == ProfilerOptions.ProfilerType.Disabled)
 				return new Dictionary<string, LeakItem> ();
 
 			var trackedLeaks = scenario.GetLeakAttributes (isCleanup);

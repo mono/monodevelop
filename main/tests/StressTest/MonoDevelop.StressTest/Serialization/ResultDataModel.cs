@@ -37,15 +37,15 @@ namespace MonoDevelop.StressTest
 		/// </summary>
 		public Dictionary<string, LeakItem> Leaks { get; }
 
-		// TODO: Make this serializable in MD.
-		//public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; set; }
+		public Components.AutoTest.AutoTestSession.MemoryStats MemoryStats { get; }
 
 		// TODO: add more.
 
-		public ResultIterationData (string id, Dictionary<string, LeakItem> leaks)
+		public ResultIterationData (string id, Dictionary<string, LeakItem> leaks, Components.AutoTest.AutoTestSession.MemoryStats memoryStats)
 		{
 			Id = id;
 			Leaks = leaks;
+			MemoryStats = memoryStats;
 		}
 	}
 

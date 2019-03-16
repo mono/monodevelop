@@ -212,7 +212,7 @@ namespace MonoDevelop.StressTest
 
 			Console.WriteLine ();
 
-			leakProcessor.Process (heapshot, iteration == cleanupIteration, iterationName);
+			leakProcessor.Process (heapshot, iteration == cleanupIteration, iterationName, memoryStats);
 		}
 	}
 }
