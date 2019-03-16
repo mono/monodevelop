@@ -423,7 +423,7 @@ namespace MonoDevelop.Components.AutoTest
 			try {
 				ExecuteOnIdle (() => {
 					resultSet = ExecuteQueryNoWait (query);
-				});
+				}, timeout: timeout);
 			} catch (TimeoutException e) {
 				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}
