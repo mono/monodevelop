@@ -241,7 +241,8 @@ namespace MonoDevelop.StressTest
 					throw new NotImplementedException (Options.Type.ToString ());
 			}
 		}
-		List<Heapshot> heapshots = new List<Heapshot> ();
+
+		Heapshot lastHeapshot;
 		public async Task<Heapshot> TakeHeapshotAndMakeReport ()
 		{
 			var newHeapshot = await TakeHeapshot ();
@@ -256,13 +257,13 @@ namespace MonoDevelop.StressTest
 			}
 
 			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsDiff)) {
-				heapshots.Add (newHeapshot);
-				if (heapshots.Count == 1) {
+				Heapshot oldHeapshot;
+				(oldHeapshot, lastHeapshot) = (lastHeapshot, newHeapshot);
+				if (oldHeapshot == null) {
 					Console.WriteLine ("No objects diff report on 1st Heapshot.");
 					return newHeapshot;
 				}
 
-				var oldHeapshot = heapshots[heapshots.Count - 2];
 				var diffCounter = new List<Tuple<string, int>> ();
 				foreach (var kvp in newHeapshot.Types)//ClassInfos is not Heapshot specific, all heapshot has same
 				{
