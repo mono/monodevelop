@@ -257,8 +257,9 @@ namespace MonoDevelop.StressTest
 			}
 
 			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsDiff)) {
-				Heapshot oldHeapshot;
-				(oldHeapshot, lastHeapshot) = (lastHeapshot, newHeapshot);
+				Heapshot oldHeapshot = lastHeapshot;
+				lastHeapshot = newHeapshot;
+
 				if (oldHeapshot == null) {
 					Console.WriteLine ("No objects diff report on 1st Heapshot.");
 					return newHeapshot;
