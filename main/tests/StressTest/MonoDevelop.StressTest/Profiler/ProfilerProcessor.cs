@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mono.Profiler.Log;
 using QuickGraph;
-using MonoDevelop.StressTest.MonoDevelop.StressTest.Profiler;
 
 namespace MonoDevelop.StressTest
 {

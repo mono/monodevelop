@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using MonoDevelop.StressTest.Attributes;
 
-namespace MonoDevelop.StressTest.MonoDevelop.StressTest.Profiler
+namespace MonoDevelop.StressTest
 {
 	public static class TestScenarioLeakExtensions
 	{
