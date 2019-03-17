@@ -8,6 +8,7 @@ using QuickGraph.Algorithms.Observers;
 using QuickGraph;
 using QuickGraph.Graphviz;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MonoDevelop.StressTest
 {
@@ -70,22 +71,22 @@ namespace MonoDevelop.StressTest
 			foreach (var kvp in trackedLeaks) {
 				var name = kvp.Key;
 
-				if (heapshot.ObjectCounts.TryGetValue (name, out var tuple)) {
-					var (count, typeId) = tuple;
-
-					var resultFile = ReportPathsToRoots (heapshot, typeId, iterationName);
-
-					// We need to check if the root is finalizer or ephemeron, and not report the value.
-					leakedObjects.Add (name, new LeakItem (name, count, resultFile));
+				if (!heapshot.TryGetHeapshotTypeInfo (name, out var heapshotTypeInfo)) {
+					continue;
 				}
+
+				var resultFile = ReportPathsToRoots (heapshot, heapshotTypeInfo, iterationName);
+
+				// We need to check if the root is finalizer or ephemeron, and not report the value.
+				leakedObjects.Add (name, new LeakItem (name, heapshotTypeInfo.Objects.Count, resultFile));
 			}
 
 			foreach (var kvp in leakedObjects) {
 				var leak = kvp.Value;
 				int delta = 0;
-				if (previousData.Leaks.TryGetValue (kvp.Key, out var previousLeak)) {
+				if (previousData != null && previousData.Leaks.TryGetValue (kvp.Key, out var previousLeak)) {
 					int previousCount = previousLeak.Count;
-					delta = previousCount - leak.Count;
+					delta = leak.Count - previousCount;
 				}
 
 				Console.WriteLine ("{0}: {1} {2:+0;-#}", leak.ClassName, leak.Count, delta);
@@ -93,10 +94,10 @@ namespace MonoDevelop.StressTest
 			return leakedObjects;
 		}
 
-		string ReportPathsToRoots(Heapshot heapshot, long typeId, string iterationName)
+		string ReportPathsToRoots(Heapshot heapshot, HeapshotTypeInfo typeInfo, string iterationName)
 		{
-			var rootTypeName = heapshot.ClassInfos[typeId].Name;
-			var objects = heapshot.TypeToObjectList[typeId];
+			var rootTypeName = typeInfo.TypeInfo.Name;
+			var objects = typeInfo.Objects;
 
 			// TODO: Iterate a finite number of objects and group by similar retention
 			var obj = objects.First ();

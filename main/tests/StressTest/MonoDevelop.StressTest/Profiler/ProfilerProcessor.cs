@@ -90,23 +90,19 @@ namespace MonoDevelop.StressTest
 		{
 			ProfilerProcessor profilerProcessor;
 			NativeHeapshot currentHeapshot;
-			Dictionary<long, ClassLoadEvent> classInfos = new Dictionary<long, ClassLoadEvent> ();
+			Dictionary<long, TypeInfo> typeInfos = new Dictionary<long, TypeInfo> ();
 			Dictionary<long, long> vtableToClassInfo = new Dictionary<long, long> ();
-			readonly HashSet<string> trackedObjectNames;
-			readonly HashSet<long> trackedObjectClassIds = new HashSet<long> ();
+			readonly HashSet<string> trackedTypeNames;
 
-			public Visitor (ProfilerProcessor profilerProcessor, HashSet<string> trackedObjectNames)
+			public Visitor (ProfilerProcessor profilerProcessor, HashSet<string> trackedTypeNames)
 			{
 				this.profilerProcessor = profilerProcessor;
-				this.trackedObjectNames = trackedObjectNames;
+				this.trackedTypeNames = trackedTypeNames;
 			}
 
 			public override void Visit (ClassLoadEvent ev)
 			{
-				classInfos[ev.ClassPointer] = ev;
-
-				if (trackedObjectNames.Contains (ev.Name))
-					trackedObjectClassIds.Add (ev.ClassPointer);
+				typeInfos[ev.ClassPointer] = new TypeInfo (ev.ClassPointer, ev.Name);
 			}
 
 			public override void Visit (VTableLoadEvent ev)
@@ -116,7 +112,7 @@ namespace MonoDevelop.StressTest
 
 			public override void Visit (HeapBeginEvent ev)
 			{
-				currentHeapshot = new NativeHeapshot ();
+				currentHeapshot = new NativeHeapshot (trackedTypeNames);
 			}
 
 			readonly Dictionary<long, HeapRootRegisterEvent> rootsEvents = new Dictionary<long, HeapRootRegisterEvent> ();
@@ -174,34 +170,14 @@ namespace MonoDevelop.StressTest
 
 			public override void Visit (HeapObjectEvent ev)
 			{
-				if (ev.ObjectSize == 0)//This means it's just reporting references
-					return;
-
 				var classInfoId = vtableToClassInfo[ev.VTablePointer];
-				if (currentHeapshot.ObjectsPerClassCounter.ContainsKey (classInfoId))
-					currentHeapshot.ObjectsPerClassCounter[classInfoId]++;
-				else
-					currentHeapshot.ObjectsPerClassCounter[classInfoId] = 0;
+				var typeInfo = typeInfos[classInfoId];
 
-				currentHeapshot.ObjectToType.Add (ev.ObjectPointer, classInfoId);
-
-				// Filter out type to object list
-				//if (trackedObjectClassIds.Contains(classInfoId)) {
-					if (!currentHeapshot.TypeToObjectList.TryGetValue (classInfoId, out var list)) {
-						currentHeapshot.TypeToObjectList[classInfoId] = list = new List<long> ();
-					}
-					list.Add (ev.ObjectPointer);
-				//}
-
-				currentHeapshot.Graph.AddVertex (ev.ObjectPointer);
-				foreach (var reference in ev.References) {
-					currentHeapshot.Graph.AddEdge (new Edge<long> (ev.ObjectPointer, reference.ObjectPointer));
-				}
+				currentHeapshot.AddObject (typeInfo, ev);
 			}
 
 			public override void Visit (HeapEndEvent ev)
 			{
-				currentHeapshot.ClassInfos = classInfos;
 				profilerProcessor.completionSource.SetResult (new Heapshot (currentHeapshot));
 			}
 
@@ -216,24 +192,20 @@ namespace MonoDevelop.StressTest
 					}
 					var rootReg = rootsEvents[rootsEventsBinary[index - 1]];
 					if (rootReg.RootPointer < rootAddr && rootReg.RootPointer + rootReg.RootSize >= rootAddr) {
-						currentHeapshot.Roots[objAddr] = rootReg;
+						currentHeapshot.RegisterRoot (objAddr, rootReg);
 					} else {
 						Console.WriteLine ($"This should not happen. Closest root is too small({rootAddr}):");
 						Console.WriteLine (rootReg);
 					}
 				} else {
 					//We got exact match
-					currentHeapshot.Roots[objAddr] = rootsEvents[rootAddr];
+					currentHeapshot.RegisterRoot (objAddr, rootsEvents[rootAddr]);
 				}
 			}
 
 		}
 
-		int TcpPort {
-			get {
-				return processor.StreamHeader.Port;
-			}
-		}
+		int TcpPort => processor.StreamHeader.Port;
 		TcpClient client;
 		StreamWriter writer;
 		TaskCompletionSource<Heapshot> completionSource;
@@ -275,11 +247,11 @@ namespace MonoDevelop.StressTest
 			var newHeapshot = await TakeHeapshot ();
 
 			if (Options.PrintReportTypes.HasFlag (ProfilerOptions.PrintReport.ObjectsTotal)) {
-				Console.WriteLine ($"Total objects per type({newHeapshot.ObjectCounts.Count}):");
-				foreach (var nameWithCount in newHeapshot.ObjectCounts.OrderByDescending (p => p.Value)) {
-					var name = nameWithCount.Key;
+				Console.WriteLine ($"Total objects per type({newHeapshot.Types.Count}):");
+				foreach (var heapTypeInfo in newHeapshot.Types.Values.OrderByDescending (p => p.Objects.Count)) {
+					var name = heapTypeInfo.TypeInfo.Name;
 					if (ShouldReportItem(name))
-						Console.WriteLine ($"{name}:{nameWithCount.Value}");
+						Console.WriteLine ($"{name}:{heapTypeInfo.Objects.Count}");
 				}
 			}
 
@@ -289,27 +261,21 @@ namespace MonoDevelop.StressTest
 					Console.WriteLine ("No objects diff report on 1st Heapshot.");
 					return newHeapshot;
 				}
+
 				var oldHeapshot = heapshots[heapshots.Count - 2];
 				var diffCounter = new List<Tuple<string, int>> ();
-				foreach (var kvp in newHeapshot.ClassInfos)//ClassInfos is not Heapshot specific, all heapshot has same
+				foreach (var kvp in newHeapshot.Types)//ClassInfos is not Heapshot specific, all heapshot has same
 				{
-					string name = kvp.Value.Name;
+					var typeId = kvp.Key;
+					var name = kvp.Value.TypeInfo.Name;
 
-					int oldCount, newCount;
-
-					if (!oldHeapshot.ObjectCounts.TryGetValue (name, out var oldTuple))
-						oldCount = 0;
-					else
-						oldCount = oldTuple.Item1;
-
-					if (!newHeapshot.ObjectCounts.TryGetValue (name, out var newTuple))
-						newCount = 0;
-					else
-						newCount = newTuple.Item1;
+					int oldCount = oldHeapshot.GetObjectCount (typeId);
+					int newCount = newHeapshot.GetObjectCount (typeId);
 
 					if (newCount - oldCount != 0)
 						diffCounter.Add (Tuple.Create (name, newCount - oldCount));
 				}
+
 				Console.WriteLine ($"Heapshot diff has {diffCounter.Count} entries:");
 				foreach (var diff in diffCounter.OrderByDescending (d => d.Item2)) {
 					var name = diff.Item1;
