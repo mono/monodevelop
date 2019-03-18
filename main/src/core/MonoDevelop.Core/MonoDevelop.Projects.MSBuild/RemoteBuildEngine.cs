@@ -171,7 +171,8 @@ namespace MonoDevelop.Projects.MSBuild
 			try {
 				await connection.SendMessage (new UnloadProjectRequest { ProjectId = projectId }).ConfigureAwait (false);
 			} catch (Exception ex) {
-				LoggingService.LogError ("Project unloading failed", ex);
+				if (alive)
+					LoggingService.LogError ("Project unloading failed", ex);
 				if (!await CheckDisconnected ())
 					throw;
 			}
