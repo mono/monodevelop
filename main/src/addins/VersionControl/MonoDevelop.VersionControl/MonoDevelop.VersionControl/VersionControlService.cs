@@ -840,7 +840,6 @@ namespace MonoDevelop.VersionControl
 		public void Dispose ()
 		{
 			VersionControlService.referenceCache.TryRemove (repo, out _);
-			VersionControlService.repositoryCache.TryRemove (repo.RepositoryPath.CanonicalPath, out _);
 			repo.Unref ();
 		}
 	}
