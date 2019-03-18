@@ -1514,11 +1514,10 @@ namespace Mono.TextEditor
 
 			if (textIndex < 0)
 				throw new ArgumentOutOfRangeException (nameof (textIndex));
+			if (textIndex > text.Length)
+				throw new ArgumentOutOfRangeException (nameof (textIndex));
 
 			if (textIndex < curIndex) {
-				if (textIndex > text.Length)
-					throw new ArgumentOutOfRangeException (nameof (textIndex));
-
 				unsafe {
 					fixed (char *p = text)
 						byteIndex = (uint)Encoding.UTF8.GetByteCount (p, (int)textIndex);
