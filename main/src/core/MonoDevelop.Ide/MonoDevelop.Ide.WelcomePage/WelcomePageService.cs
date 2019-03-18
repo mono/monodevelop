@@ -36,7 +36,15 @@ namespace MonoDevelop.Ide.WelcomePage
 		static bool visible;
 		static WelcomePageFrame welcomePage;
 		static IWelcomeWindowProvider welcomeWindowProvider;
-		static Window welcomeWindow;
+		static IWelcomeWindowProvider WelcomeWindowProvider {
+			get {
+				if (welcomeWindowProvider == null) {
+					welcomeWindowProvider = AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().FirstOrDefault ();
+				}
+
+				return welcomeWindowProvider;
+			}
+		}
 
 		public static event EventHandler WelcomePageShown;
 		public static event EventHandler WelcomePageHidden;
@@ -68,11 +76,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static bool WelcomePageVisible => visible;
 
-		public static bool WelcomeWindowVisible => welcomeWindow != null && visible;
+		public static bool WelcomeWindowVisible => WelcomeWindowProvider?.IsWindowVisible ?? false;
 
-		public static Window WelcomeWindow => welcomeWindow;
+		public static Window WelcomeWindow => WelcomeWindowProvider?.WindowInstance;
 
-		public static bool HasWindowImplementation => AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().Any ();
+		public static bool HasWindowImplementation => WelcomeWindowProvider != null;
 
 		public static void ShowWelcomePageOrWindow (WelcomeWindowShowOptions options = null)
 		{
@@ -88,8 +96,8 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static void HideWelcomePageOrWindow ()
 		{
-			if (HasWindowImplementation && welcomeWindowProvider != null && welcomeWindow != null) {
-				welcomeWindowProvider.HideWindow (welcomeWindow);
+			if (WelcomeWindowProvider != null) {
+				WelcomeWindowProvider.HideWindow ();
 			} else {
 				HideWelcomePage (true);
 			}
@@ -125,19 +133,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public static bool ShowWelcomeWindow (WelcomeWindowShowOptions options)
 		{
-			if (welcomeWindowProvider == null) {
-				welcomeWindowProvider = AddinManager.GetExtensionObjects<IWelcomeWindowProvider> ().FirstOrDefault ();
-				if (welcomeWindowProvider == null)
-					return false;
+			if (WelcomeWindowProvider == null) {
+				return false;
 			}
 
-			if (welcomeWindow == null) {
-				welcomeWindow = welcomeWindowProvider.CreateWindow ();
-				if (welcomeWindow == null)
-					return false;
-			}
-
-			welcomeWindowProvider.ShowWindow (welcomeWindow, options);
+			WelcomeWindowProvider.ShowWindow (options);
 			visible = true;
 
 			return true;

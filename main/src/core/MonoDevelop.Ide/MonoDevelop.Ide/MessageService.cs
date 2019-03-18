@@ -330,11 +330,11 @@ namespace MonoDevelop.Ide
 				if (dialog.TransientFor != null)
 					parent = dialog.TransientFor;
 				else
-					parent = RootWindow;
+					parent = DesktopService.GetFocusedTopLevelWindow ();
 			}
 
 			//TODO: use native parenting API for native windows
-			if (parent.nativeWidget is Gtk.Window) {
+			if (parent?.nativeWidget is Gtk.Window) {
 				dialog.TransientFor = parent;
 				dialog.DestroyWithParent = true;
 			}
@@ -348,7 +348,7 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null || parent.nativeWidget is NSWindow) {
+				if (NSApplication.SharedApplication.ModalWindow != null || parent?.nativeWidget is NSWindow) {
 					if (dialog.Modal) {
 						EventHandler shownHandler = null;
 						shownHandler = (s, e) => {
@@ -433,8 +433,8 @@ namespace MonoDevelop.Ide
 				if (nsParent == null || !nsParent.IsVisible) {
 					nsChild.Center ();
 				} else {
-					int x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
-					int y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
+					int x = (int) (nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
+					int y = (int) (nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
 					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
 				}
 
@@ -454,12 +454,25 @@ namespace MonoDevelop.Ide
 					gtkChild.Move (x, y);
 #if MAC
 				} else if (nsParent != null) {
-					x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
-					y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
-					gtkChild.Move (x, y);
+					x = (int) (nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
+					y = (int) (nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
+					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
+					if (nsChild != null) {
+						nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
+					} else {
+						gtkChild.Move (x, y);
+					}
 #endif
 				} else {
+#if MAC
+					// There is no parent, so just center the dialog
+					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
+					if (nsChild != null) {
+						nsChild.Center ();
+					}
+#else
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
+#endif
 				}
 			}
 		}
