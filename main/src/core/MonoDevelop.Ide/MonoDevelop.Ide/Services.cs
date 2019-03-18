@@ -164,7 +164,8 @@ namespace MonoDevelop.Ide
 	{
 		public enum DocumentType {
 			Solution,
-			File
+			File,
+			Unknown
 		};
 
 		public long CorrectedDuration {
