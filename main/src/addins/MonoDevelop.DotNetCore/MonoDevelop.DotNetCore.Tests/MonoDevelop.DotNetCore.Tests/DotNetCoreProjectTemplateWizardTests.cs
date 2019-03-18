@@ -434,7 +434,9 @@ namespace MonoDevelop.DotNetCore.Tests
 		public void NetCoreApp_NetCore30Installed ()
 		{
 			CreateWizard ();
-			DotNetCoreRuntimesInstalled ("3.0.0");
+			//NOTE: since we are now checking unsupported runtime version
+			// here we set the latest supported one
+			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5");
 
 			int pages = wizard.TotalPages;
 
