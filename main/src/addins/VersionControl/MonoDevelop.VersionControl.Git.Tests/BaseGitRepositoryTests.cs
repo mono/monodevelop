@@ -300,46 +300,67 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			return string.Format ("On {0}: __MD_{0}\n\n", branch);
 		}
-		[Test]
-		public void TestGitBranchCreation ()
+
+		[TestCase (false)]
+		[TestCase (true, Ignore = true, IgnoreReason = "We stash now only if there are conflicts, this needs to be updated")]
+		public void TestGitBranchCreation (bool automaticStashCreation)
 		{
-			var repo2 = (GitRepository)Repo;
-			var monitor = new ProgressMonitor ();
+			var autoStashDefault = GitService.StashUnstashWhenSwitchingBranches.Value;
+			GitService.StashUnstashWhenSwitchingBranches.Value = automaticStashCreation;
+			try {
+				var repo2 = (GitRepository)Repo;
+				var monitor = new ProgressMonitor ();
 
-			AddFile ("file1", "text", true, true);
+				AddFile ("file1", "text", true, true);
 
-			Task.Run (() => repo2.CreateBranch ("branch1", null, null)).Wait ();
+				Task.Run (() => repo2.CreateBranch ("branch1", null, null)).Wait ();
 
-			Task.Run (() => repo2.SwitchToBranch (monitor, "branch1")).Wait ();
-			// Nothing could be stashed for master. Branch1 should be popped in any case if it exists.
-			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("master")));
-			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+				Task.Run (() => repo2.SwitchToBranch (monitor, "branch1")).Wait ();
+				// Nothing could be stashed for master. Branch1 should be popped in any case if it exists.
+				Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("master")));
+				Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
 
-			Assert.AreEqual ("branch1", repo2.GetCurrentBranch ());
-			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
+				Assert.AreEqual ("branch1", repo2.GetCurrentBranch ());
+				Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
 
-			AddFile ("file2", "text", true, false);
-			Task.Run (() => repo2.CreateBranch ("branch2", null, null)).Wait ();
+				AddFile ("file2", "text", true, false);
+				Task.Run (() => repo2.CreateBranch ("branch2", null, null)).Wait ();
 
-			Task.Run (() => repo2.SwitchToBranch (monitor, "branch2")).Wait ();
-			// Branch1 has a stash created and assert clean workdir. Branch2 should be popped in any case.
-			Assert.IsTrue (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
-			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
-			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
+				Task.Run (() => repo2.SwitchToBranch (monitor, "branch2")).Wait ();
+				if (automaticStashCreation) {
+					// Branch1 has a stash created and assert clean workdir. Branch2 should be popped in any case.
+					Assert.IsTrue (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+					Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
+					Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
+				} else {
+					Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("master")));
+					Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+					Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were stashed");
+				}
 
-			AddFile ("file2", "text", true, false);
-			Task.Run (() => repo2.SwitchToBranch (monitor, "branch1")).Wait ();
-			// Branch2 has a stash created. Branch1 should be popped with file2 reinstated.
-			Assert.True (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
-			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
-			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
+				AddFile ("file2", "text", true, false);
+				Task.Run (() => repo2.SwitchToBranch (monitor, "branch1")).Wait ();
+				// Branch2 has a stash created. Branch1 should be popped with file2 reinstated.
 
-			Task.Run (() => repo2.SwitchToBranch (monitor, "master")).Wait ();
-			Task.Run (() => repo2.RemoveBranch ("branch1")).Wait ();
-			Assert.IsFalse (repo2.GetBranches ().Any (b => b.FriendlyName == "branch1"), "Failed to delete branch");
+				if (automaticStashCreation) {
+					Assert.True (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
+					Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+					Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
+				} else {
+					Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
+					Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+					Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were stashed");
+				}
 
-			repo2.RenameBranch ("branch2", "branch3");
-			Assert.IsTrue (repo2.GetBranches ().Any (b => b.FriendlyName == "branch3") && repo2.GetBranches ().All (b => b.FriendlyName != "branch2"), "Failed to rename branch");
+				Task.Run (() => repo2.SwitchToBranch (monitor, "master")).Wait ();
+				Task.Run (() => repo2.RemoveBranch ("branch1")).Wait ();
+				Assert.IsFalse (repo2.GetBranches ().Any (b => b.FriendlyName == "branch1"), "Failed to delete branch");
+
+				repo2.RenameBranch ("branch2", "branch3");
+				Assert.IsTrue (repo2.GetBranches ().Any (b => b.FriendlyName == "branch3") && repo2.GetBranches ().All (b => b.FriendlyName != "branch2"), "Failed to rename branch");
+			} finally {
+				GitService.StashUnstashWhenSwitchingBranches.Value = autoStashDefault;
+			}
 
 			// TODO: Add CreateBranchFromCommit tests.
 		}
