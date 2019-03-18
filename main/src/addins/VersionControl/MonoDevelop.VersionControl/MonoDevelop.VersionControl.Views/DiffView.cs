@@ -101,7 +101,8 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnSelected ()
 		{
 			info.Start ();
-			ComparisonWidget.UpdateLocalText ();
+			if (ComparisonWidget.originalComboBox.Text == GettextCatalog.GetString ("Local"))
+				ComparisonWidget.UpdateLocalText ();
 			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
 				var loc = buffer.CaretLocation;
