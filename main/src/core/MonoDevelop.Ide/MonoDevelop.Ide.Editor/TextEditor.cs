@@ -1085,8 +1085,16 @@ namespace MonoDevelop.Ide.Editor
 		{
 			textEditorImpl.ClearTooltipProviders ();
 			foreach (var extensionNode in allProviders) {
-				if (extensionNode.IsValidFor (MimeType))
-					textEditorImpl.AddTooltipProvider ((TooltipProvider)extensionNode.CreateInstance ());
+				if (extensionNode.IsValidFor (MimeType)) {
+					TooltipProvider provider;
+					try {
+						provider = (TooltipProvider)extensionNode.CreateInstance ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Error while creating tooltip provider " + extensionNode.Id, ex);
+						continue;
+					}
+					textEditorImpl.AddTooltipProvider (provider);
+				}
 			}
 		}
 
