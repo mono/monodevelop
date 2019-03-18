@@ -3137,6 +3137,10 @@ namespace MonoDevelop.SourceEditor
 			public override void DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 			{
 				try {
+					foreach (var fold in editor.Document.GetFoldingsFromOffset (Offset)) {
+						if (fold.IsCollapsed)
+							return;
+					}
 					double fromX, toX;
 					GetLineDrawingPosition (metrics, startOffset, out fromX, out toX);
 
