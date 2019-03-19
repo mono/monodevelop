@@ -7,13 +7,14 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using Xwt;
 using MonoDevelop.Ide.Gui.Documents;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
 	/// <summary>
 	/// ViewContent host for the services gallery and service details widgets
 	/// </summary>
-	class ConnectedServicesViewContent : DocumentController
+	class ConnectedServicesViewContent : DocumentController, IProjectPadNodeSelector
 	{
 		ConnectedServicesWidget widget;
 
@@ -78,13 +79,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 		}
 
-		public override object GetDocumentObject ()
-		{
-			if (currentNodeObject == null)
-				UpdateCurrentNode ().Wait ();
-			return currentNodeObject;
-		}
-
 		protected override void OnDispose ()
 		{
 			if (widget != null) {
@@ -92,6 +86,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				widget = null;
 			}
 			base.OnDispose ();
+		}
+
+		public object GetNodeObjext ()
+		{
+			if (currentNodeObject == null)
+				UpdateCurrentNode ().Wait ();
+			return currentNodeObject;
 		}
 	}
 }

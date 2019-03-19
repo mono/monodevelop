@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		
 		public Task<IWorkbenchWindow> ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler)
 		{
-			var mimeimage = controller.DocumentIcon.WithSize (Gtk.IconSize.Menu);
+			var mimeimage = controller.DocumentIcon?.WithSize (Gtk.IconSize.Menu);
 
 			var addToControl = (DockNotebook) notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
 			var tab = addToControl.AddTab ();

@@ -519,12 +519,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return contents;
 		}
 
-		public virtual object GetDocumentObject ()
-		{
-			// TODO
-			return null;
-		}
-
 		/// <summary>
 		/// Gets the view that will show the content of the document.
 		/// </summary>
@@ -935,7 +929,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual object OnGetContent (Type type)
 		{
-			if (type.IsInstanceOfType (this))
+			if (type.IsAssignableFrom (GetType()))
 				return this;
 			return null;
 		}

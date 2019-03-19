@@ -132,7 +132,7 @@ namespace MonoDevelop.ConnectedServices
 			Ide.Gui.Document document = null;
 			var servicesView = LocateServiceView(project, out document);
 			if (servicesView != null) {
-				var docObject = document.GetDocumentObject ();
+				var docObject = servicesView.GetNodeObjext ();
 				var serviceNode = docObject as ConnectedServiceNode;
 				if (serviceNode != null && serviceNode.Id == serviceId) {
 					servicesView.UpdateContent (null);

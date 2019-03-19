@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			if (!string.IsNullOrEmpty (controller.DocumentTitle)) {
 				tab.Tooltip = controller.DocumentTitle;
 			}
-			tab.Icon = controller.DocumentIcon.WithSize (IconSize.Menu);
+			tab.Icon = controller.DocumentIcon?.WithSize (IconSize.Menu);
 		}
 		
 		void OnTitleChanged(EventArgs e)

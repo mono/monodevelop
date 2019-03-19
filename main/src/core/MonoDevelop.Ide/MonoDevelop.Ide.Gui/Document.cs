@@ -273,11 +273,6 @@ namespace MonoDevelop.Ide.Gui
 			set { controller.HasUnsavedChanges = value; }
 		}
 
-		public object GetDocumentObject ()
-		{
-			return controller.GetDocumentObject ();
-		}
-
 		public async Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return await GetContent<RoslynDocumentExtension> ()?.DocumentContext.GetCompilationAsync (cancellationToken);
