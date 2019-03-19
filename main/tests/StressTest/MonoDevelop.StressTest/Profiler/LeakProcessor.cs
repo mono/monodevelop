@@ -76,14 +76,14 @@ namespace MonoDevelop.StressTest
 					continue;
 				}
 
-				var resultFile = ReportPathsToRoots (heapshot, heapshotTypeInfo, iterationName, out var rootKids);
+				var resultFile = ReportPathsToRoots (heapshot, heapshotTypeInfo, iterationName, out int objectCount);
 				if (resultFile == null) {
 					// We have determined the leak is not an actual leak.
 					continue;
 				}
 
 				// We need to check if the root is finalizer or ephemeron, and not report the value.
-				leakedObjects.Add (name, new LeakItem (name, heapshotTypeInfo.Objects.Count, resultFile));
+				leakedObjects.Add (name, new LeakItem (name, objectCount, resultFile));
 			}
 
 			foreach (var kvp in leakedObjects) {
@@ -99,44 +99,41 @@ namespace MonoDevelop.StressTest
 			return leakedObjects;
 		}
 
-		bool IsActualLeak(HashSet<LogHeapRootSource> rootKinds)
+		bool IsActualLeakSource (LogHeapRootSource rootKind)
 		{
-			return rootKinds.Contains (LogHeapRootSource.Static)
-				|| rootKinds.Contains (LogHeapRootSource.ContextStatic)
-				|| rootKinds.Contains (LogHeapRootSource.GCHandle)
-				|| rootKinds.Contains (LogHeapRootSource.ThreadStatic);
+			return rootKind == LogHeapRootSource.Static
+				|| rootKind == LogHeapRootSource.ContextStatic
+				|| rootKind == LogHeapRootSource.GCHandle
+				|| rootKind == LogHeapRootSource.ThreadStatic;
 		}
 
-		string ReportPathsToRoots(Heapshot heapshot, HeapshotTypeInfo typeInfo, string iterationName, out HashSet<LogHeapRootSource> rootKinds)
+		string ReportPathsToRoots(Heapshot heapshot, HeapshotTypeInfo typeInfo, string iterationName, out int objectCount)
 		{
-			var rootKindsSet = new HashSet<LogHeapRootSource> ();
-			rootKinds = rootKindsSet;
+			string outputPath = null;
 
 			var rootTypeName = typeInfo.TypeInfo.Name;
 			var objects = typeInfo.Objects;
+			objectCount = objects.Count;
 
 			// Look for the first object that is definitely leaked.
 			foreach (var obj in objects) {
-				rootKindsSet.Clear ();
+				bool isLeak = false;
 
 				var objectGraph = heapshot.Graph.GetObjectGraph (obj, vertex => {
-					if (heapshot.Roots.TryGetValue(vertex.Address, out var heapRootRegisterEvent)) {
-						rootKindsSet.Add (heapRootRegisterEvent.Source);
-					}
+					isLeak |= (heapshot.Roots.TryGetValue (vertex.Address, out var heapRootRegisterEvent) && IsActualLeakSource (heapRootRegisterEvent.Source));
 				});
 
-				if (IsActualLeak (rootKindsSet)) {
+				if (outputPath == null && isLeak) {
 					var graphviz = objectGraph.ToLeakGraphviz (heapshot);
 
-					var outputPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
+					outputPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
 					File.WriteAllText (outputPath, graphviz.Generate ());
-
-					return outputPath;
-				}
+				} else
+					objectCount--;
 			}
 
-			// We have not found a definite leak.
-			return null;
+			// We have not found a definite leak if outputPath is null.
+			return outputPath;
 		}
 	}
 }
