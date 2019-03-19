@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using MonoDevelop.StressTest;
 using Newtonsoft.Json;
+using Xamarin.TestReporting.CloudStorage;
 
 namespace ResultParser
 {
@@ -30,7 +31,8 @@ namespace ResultParser
 
 						foreach (var kvp in iteration.Leaks) {
 							var leak = kvp.Value;
-							Console.WriteLine ("{0}: {1}", leak.ClassName, leak.Count);
+							var url = AzureBlobStorage.DefaultInstance.UploadFile (leak.GraphFileName, "image/jpeg").ToString ();
+							Console.WriteLine ("{0}: {1} {2}", leak.ClassName, leak.Count, url);
 						}
 					}
 				}

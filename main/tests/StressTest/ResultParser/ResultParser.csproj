@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Xamarin.TestReporting" Version="1.0.7016.4164" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
