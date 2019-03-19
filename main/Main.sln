@@ -339,6 +339,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNetCore.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTools", "src\tools\ExtensionTools\ExtensionTools.csproj", "{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.PropertyEditing", "external\Xamarin.PropertyEditing\Xamarin.PropertyEditing\Xamarin.PropertyEditing.csproj", "{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xamarin.PropertyEditing", "Xamarin.PropertyEditing", "{48087117-8851-402C-B8EA-38681EEF48ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.PropertyEditing.Mac", "external\Xamarin.PropertyEditing\Xamarin.PropertyEditing.Mac\Xamarin.PropertyEditing.Mac.csproj", "{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\core\Mono.TextEditor.Shared\Mono.TextEditor.Shared.projitems*{f8f92aa4-a376-4679-a9d4-60e7b7fbf477}*SharedItemsImports = 4
@@ -2133,6 +2139,14 @@ Global
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Debug|x86.Build.0 = Debug|Any CPU
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|x86.ActiveCfg = Release|Any CPU
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}.Release|x86.Build.0 = Release|Any CPU
+		{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{E8F4F0EB-C2B1-4116-8459-E076E0E0E485}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE;
@@ -2285,6 +2299,9 @@ Global
 		{82B9A5C5-5713-49B5-93D1-BE29B00FF35A} = {D0469BC0-3DF4-4CE9-A9E3-3268359BAC2E}
 		{44FFFDDA-156F-49F9-AE6A-BA640C198B33} = {1DEFDD53-2677-439D-906E-141ED2AEC19B}
 		{E33F7901-AA45-4C25-9868-DBB6CC8DC40C} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
+		{A0B6FE73-D046-4E1C-BA9D-F20683889C5A} = {48087117-8851-402C-B8EA-38681EEF48ED}
+		{48087117-8851-402C-B8EA-38681EEF48ED} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
+		{E8F4F0EB-C2B1-4116-8459-E076E0E0E485} = {48087117-8851-402C-B8EA-38681EEF48ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {856CF524-E2A7-4DB0-B80F-8F1B080A2E25}

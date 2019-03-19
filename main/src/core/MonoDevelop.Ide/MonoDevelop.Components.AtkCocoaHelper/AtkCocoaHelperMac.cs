@@ -311,6 +311,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		}
 
 		static readonly IntPtr selSetAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("setAccessibilityServesAsTitleForUIElements:");
+		static readonly IntPtr selAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("accessibilityServesAsTitleForUIElements:");
 		public static void SetTitleFor (this Atk.Object o, params Atk.Object [] objects)
 		{
 			var nsa = GetNSAccessibilityElement (o);
@@ -348,7 +349,6 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		static readonly IntPtr selAccessibilityServesAsTitleForUIElements_Handle = Selector.GetHandle ("setAccessibilityServesAsTitleForUIElements:");
 		public static void AddElementToTitle (this Atk.Object title, Atk.Object o)
 		{
 			var titleNsa = GetNSAccessibilityElement (title);

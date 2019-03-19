@@ -57,12 +57,19 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 		}
 		
-		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, bool hideWhenDone): base (Runtime.MainSynchronizationContext)
+		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, bool hideWhenDone)
+			: this (showProgress, allowCancel, showDetails, hideWhenDone, null)
+		{
+		}
+
+		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, bool hideWhenDone, Components.Window parent)
+			: base (Runtime.MainSynchronizationContext)
 		{
 			if (showProgress) {
-				dialog = new ProgressDialog (MessageService.RootWindow, allowCancel, showDetails);
+				var parentWindow = parent ?? DesktopService.GetFocusedTopLevelWindow ();
+				dialog = new ProgressDialog (parentWindow, allowCancel, showDetails);
 				dialog.Message = "";
-				MessageService.PlaceDialog (dialog, MessageService.RootWindow);
+				MessageService.PlaceDialog (dialog, parentWindow);
 				dialog.Show ();
 				dialog.CancellationTokenSource = CancellationTokenSource;
 				DispatchService.RunPendingEvents ();
