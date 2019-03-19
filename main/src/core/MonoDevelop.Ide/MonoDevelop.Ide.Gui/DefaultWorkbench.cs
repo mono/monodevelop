@@ -696,35 +696,42 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (var e in args) {
 				if (e.IsDirectory) {
-					var views = new ViewContent [viewContentCollection.Count];
-					viewContentCollection.CopyTo (views, 0);
-					foreach (var content in views) {
-						if (content.ContentName.StartsWith (e.FileName, StringComparison.CurrentCulture)) {
-							if (content.IsDirty) {
-								content.UntitledName = content.ContentName;
-								content.ContentName = null;
-							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
-							}
-						}
-					}
+					CheckRemovedDirectory (e.FileName);
 				} else {
 					foreach (var content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
-							if (content.IsDirty) {
-								content.UntitledName = content.ContentName;
-								content.ContentName = null;
-							} else {
-								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore();
-							}
+							CloseViewForRemovedFile (content);
 							return;
 						}
 					}
+					CheckRemovedDirectory (e.FileName);
 				}
 			}
 		}
-		
+
+		void CheckRemovedDirectory (FilePath fileName)
+		{
+			var views = new ViewContent [viewContentCollection.Count];
+			viewContentCollection.CopyTo (views, 0);
+			foreach (var content in views) {
+				if (content.ContentName != null &&
+					((FilePath)content.ContentName).IsChildPathOf (fileName)) {
+					CloseViewForRemovedFile (content);
+				}
+			}
+		}
+
+		static void CloseViewForRemovedFile (ViewContent content)
+		{
+			if (content.IsDirty) {
+				content.UntitledName = content.ContentName;
+				content.ContentName = null;
+			} else {
+				((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true).Ignore ();
+			}
+		}
+
 		void CheckRenamedFile(object sender, FileCopyEventArgs args)
 		{
 			foreach (FileEventInfo e in args) {
