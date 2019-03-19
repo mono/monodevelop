@@ -345,6 +345,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool SetActiveRuntime (string runtimeName)
 		{
+			LoggingService.LogDebug ($"Set Active runtime with name/ID as '{runtimeName}'");
 			Type type = ResultObject.GetType ();
 			PropertyInfo pinfo = type.GetProperty ("RuntimeModel");
 			if (pinfo == null) {
@@ -353,8 +354,28 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			IEnumerable<IRuntimeModel> model = (IEnumerable<IRuntimeModel>)pinfo.GetValue (ResultObject, null);
 
-			var runtime = model.FirstOrDefault (r => r.GetMutableModel ().FullDisplayString == runtimeName);
+			var runtime = model.FirstOrDefault (r => {
+				var mutableModel = r.GetMutableModel ();
+				LoggingService.LogDebug ($"[IRuntimeModel.IRuntimeMutableModel] FullDisplayString: '{mutableModel.FullDisplayString}' | DisplayString: '{mutableModel.DisplayString}'");
+				if (mutableModel.FullDisplayString.Contains (runtimeName))
+					return true;
+				if (mutableModel.DisplayString.Contains (runtimeName))
+					return true;
+				var execTargetPInfo = r.GetType().GetProperty ("ExecutionTarget");
+				if(execTargetPInfo != null) {
+					var execTarget = execTargetPInfo.GetValue (r) as Core.Execution.ExecutionTarget;
+					if (execTarget != null) {
+						LoggingService.LogDebug ($"[IRuntimeModel.ExecutionTarget] Id: '{execTarget.Id}' | FullName: '{execTarget.FullName}'");
+						if (execTarget.Id != null && execTarget.Id.Contains (runtimeName))
+							return true;
+						if (execTarget.FullName != null && execTarget.FullName.Contains (runtimeName))
+							return true;
+					}
+				}
+				return false;
+			});
 			if (runtime == null) {
+				LoggingService.LogDebug ($"Did not find an IRuntimeModel for '{runtimeName}'");
 				return false;
 			}
 
