@@ -47,6 +47,10 @@ namespace MonoDevelop.Projects.MSBuild
 			// This is required for MSBuild to properly load the .exe.config configuration file for this executable.
 			Environment.SetEnvironmentVariable ("MSBUILD_EXE_PATH", typeof(MainClass).Assembly.Location);
 
+			// Disable VBCSCompiler until it is reliable on mono. Currently leaves orphaned processes for VB projects taking up 100% CPU.
+			// https://github.com/mono/mono/issues/11939
+			Environment.SetEnvironmentVariable ("UseSharedCompilation", bool.FalseString);
+
 			RemoteProcessServer server = new RemoteProcessServer ();
 			server.Connect (args, new AssemblyResolver (server));
 		}
