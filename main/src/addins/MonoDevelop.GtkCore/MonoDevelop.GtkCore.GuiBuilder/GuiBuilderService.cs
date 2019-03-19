@@ -218,7 +218,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (!exists) {
 					Pad p = IdeApp.Workbench.GetPad<MonoDevelop.DesignerSupport.ToolboxPad> ();
 					if (p != null) p.Visible = true;
-					p = IdeApp.Workbench.GetPad<MonoDevelop.DesignerSupport.PropertyPad> ();
+					p = IdeApp.Workbench.GetPad<MonoDevelop.DesignerSupport.IPropertyPad> ();
 					if (p != null) p.Visible = true;
 				}
 			}

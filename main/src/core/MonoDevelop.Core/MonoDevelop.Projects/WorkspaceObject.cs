@@ -99,8 +99,11 @@ namespace MonoDevelop.Projects
 		public Task<T> BindTask<T> (Func<CancellationToken, Task<T>> f)
 		{
 			var t = f (disposeCancellation.Token);
-			lock (activeTasks)
+			lock (activeTasks) {
+				if (disposeCancellation.IsCancellationRequested)
+					return Task.FromCanceled<T> (disposeCancellation.Token);
 				activeTasks.Add (t);
+			}
 			t.ContinueWith (tr => {
 				lock (activeTasks)
 					activeTasks.Remove (t);
@@ -118,13 +121,32 @@ namespace MonoDevelop.Projects
 		public Task BindTask (Func<CancellationToken, Task> f)
 		{
 			var t = f (disposeCancellation.Token);
-			lock (activeTasks)
+			lock (activeTasks) {
+				if (disposeCancellation.IsCancellationRequested)
+					return Task.FromCanceled (disposeCancellation.Token);
 				activeTasks.Add (t);
+			}
 			t.ContinueWith (tr => {
 				lock (activeTasks)
 					activeTasks.Remove (t);
 			});
 			return t;
+		}
+
+		/// <summary>
+		/// Gathers all the tasks for this WorkspaceObject and all children that need to finish before
+		/// this object can be disposed.
+		/// </summary>
+		internal void GetAllActiveTasksForDispose (List<Task> tasks)
+		{
+			lock (activeTasks) {
+				disposeCancellation.Cancel ();
+				tasks.AddRange (activeTasks);
+			}
+
+			foreach (var child in GetChildren ()) {
+				child.GetAllActiveTasksForDispose (tasks);
+			}
 		}
 
 		/// <summary>
@@ -210,14 +232,10 @@ namespace MonoDevelop.Projects
 
 			Disposed = true;
 
-			disposeCancellation.Cancel ();
+			var allTasks = new List<Task> ();
+			GetAllActiveTasksForDispose (allTasks);
 
-			Task[] allTasks;
-
-			lock (activeTasks)
-				allTasks = activeTasks.ToArray ();
-
-			if (allTasks.Length > 0)
+			if (allTasks.Count > 0)
 				Task.WhenAll (allTasks).ContinueWith (t => OnDispose (), TaskScheduler.FromCurrentSynchronizationContext ());
 			else
 				OnDispose ();

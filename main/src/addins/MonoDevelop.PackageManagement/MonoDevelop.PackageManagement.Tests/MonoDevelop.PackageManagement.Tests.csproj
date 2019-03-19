@@ -199,6 +199,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectReferenceMaintainerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FullyQualifiedReferencePathTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildPackageSpecCreatorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\InstallPackageWithAvailableItemNameTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

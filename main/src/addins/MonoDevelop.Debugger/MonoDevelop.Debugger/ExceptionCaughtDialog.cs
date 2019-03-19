@@ -1,4 +1,4 @@
-﻿//
+//
 // ExceptionCaughtDialog.cs
 //
 // Authors: Lluis Sanchez Gual <lluis@novell.com>
@@ -60,7 +60,7 @@ namespace MonoDevelop.Debugger
 
 		protected Label ExceptionMessageLabel { get; private set; }
 
-		protected Label ExceptionHelpLinkLabel { get; private set; }
+		protected Button ExceptionHelpLinkButton { get; private set; }
 
 		protected Label ExceptionTypeLabel { get; private set; }
 
@@ -105,8 +105,8 @@ namespace MonoDevelop.Debugger
 
 			ExceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
 			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
-			ExceptionHelpLinkLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false, UseMarkup = true, LineWrapMode = Pango.WrapMode.Char };
-			ExceptionHelpLinkLabel.Name = "exception_help_link_label";
+			ExceptionHelpLinkButton = new Button { HasFocus = true, Xalign = 0, Relief = ReliefStyle.None, BorderWidth = 0 };
+			ExceptionHelpLinkButton.Name = "exception_help_link_label";
 			Gtk.Rc.ParseString (@"style ""exception-help-link-label""
 {
 	GtkWidget::link-color = ""#ffffff""
@@ -114,23 +114,26 @@ namespace MonoDevelop.Debugger
 }
 widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 ");
-
 			var textColor = Styles.ExceptionCaughtDialog.HeaderTextColor.ToGdkColor ();
+			var headerColor = Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ();
 
-			ExceptionHelpLinkLabel.ModifyBase (StateType.Prelight, Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ());
-			ExceptionHelpLinkLabel.SetLinkHandler ((str) => IdeServices.DesktopService.ShowUrl (str));
+			ExceptionHelpLinkButton.ModifyBg (StateType.Selected, headerColor);
+
+			ExceptionHelpLinkButton.Clicked += ExceptionHelpLinkLabel_Clicked;
+			ExceptionHelpLinkButton.KeyPressEvent += EventBoxLink_KeyPressEvent;
+
 			ExceptionTypeLabel.ModifyFg (StateType.Normal, textColor);
 			ExceptionMessageLabel.ModifyFg (StateType.Normal, textColor);
-			ExceptionHelpLinkLabel.ModifyFg (StateType.Normal, textColor);
+			ExceptionHelpLinkButton.ModifyFg (StateType.Normal, textColor);
 
 			if (Platform.IsWindows) {
 				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("bold 19"));
 				ExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("10"));
-				ExceptionHelpLinkLabel.ModifyFont (Pango.FontDescription.FromString ("10"));
+				ExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString ("10"));
 			} else {
 				ExceptionTypeLabel.ModifyFont (Pango.FontDescription.FromString ("21"));
 				ExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString ("12"));
-				ExceptionHelpLinkLabel.ModifyFont (Pango.FontDescription.FromString ("12"));
+				ExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString ("12"));
 			}
 
 			//Force rendering of background with EventBox
@@ -141,8 +144,13 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			leftVBox.PackStart (icon, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
 
 			rightVBox.PackStart (ExceptionTypeLabel, false, false, (uint)(Platform.IsWindows ? 0 : 2));
+
+			var exceptionHContainer = new HBox ();
+			exceptionHContainer.PackStart (ExceptionHelpLinkButton, false, false, 0);
+			exceptionHContainer.PackStart (new Fixed (), true, true, 0);
+
 			rightVBox.PackStart (ExceptionMessageLabel, true, true, (uint)(Platform.IsWindows ? 6 : 5));
-			rightVBox.PackStart (ExceptionHelpLinkLabel, false, false, 2);
+			rightVBox.PackStart (exceptionHContainer, false, false, 2);
 
 			hBox.PackStart (leftVBox, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
 			hBox.PackStart (rightVBox, true, true, (uint)(Platform.IsWindows ? 5 : 10));
@@ -155,19 +163,27 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 			eventBox.Add (frame);
 			eventBox.ShowAll ();
-			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.HeaderBackgroundColor.ToGdkColor ());
+			eventBox.ModifyBg (StateType.Normal, headerColor);
 
 			return eventBox;
 		}
+
+		void ExceptionHelpLinkLabel_Clicked (object sender, EventArgs e) => IdeServices.DesktopService.ShowUrl (exceptionHelpLink);
+
+		void EventBoxLink_KeyPressEvent (object o, KeyPressEventArgs args)
+		{ 
+			if (args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.KP_Space)
+				IdeServices.DesktopService.ShowUrl (exceptionHelpLink);
+		}
+
+		void EventBoxLink_ExceptionHelpLink (object o, ButtonPressEventArgs args) => IdeServices.DesktopService.ShowUrl (exceptionHelpLink);
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
 			ExceptionMessageLabel.WidthRequest = rightVBox.Allocation.Width;
-			ExceptionHelpLinkLabel.WidthRequest = rightVBox.Allocation.Width;
 			if (vboxAroundInnerExceptionMessage != null) {
 				InnerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
-				InnerExceptionHelpLinkLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
 			}
 		}
 
@@ -180,6 +196,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
 			ExceptionValueTreeView.AllowEditing = false;
+			ExceptionValueTreeView.CanFocus = true;
 			ExceptionValueTreeView.AllowAdding = false;
 			ExceptionValueTreeView.RulesHint = true;
 			ExceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
@@ -189,6 +206,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 			var scrolled = new ScrolledWindow {
 				HeightRequest = 180,
+				CanFocus = true,
 				HscrollbarPolicy = PolicyType.Automatic,
 				VscrollbarPolicy = PolicyType.Automatic
 			};
@@ -230,7 +248,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			expander.Child = widget;
 			expander.Spacing = 0;
 			expander.Show ();
-			expander.CanFocus = false;
+			expander.CanFocus = true;
 			expander.UseMarkup = true;
 			expander.Expanded = true;
 			expander.Activated += Expander_Activated;
@@ -399,7 +417,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 		Label InnerExceptionTypeLabel;
 		Label InnerExceptionMessageLabel;
-		Label InnerExceptionHelpLinkLabel;
+		Button InnerExceptionHelpLinkButton;
 
 		Widget CreateInnerExceptionMessage ()
 		{
@@ -425,22 +443,37 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			InnerExceptionMessageLabel.Xalign = 0;
 			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
 
-			InnerExceptionHelpLinkLabel = new Label ();
-			InnerExceptionHelpLinkLabel.UseMarkup = true;
-			InnerExceptionHelpLinkLabel.Wrap = true;
-			InnerExceptionHelpLinkLabel.LineWrapMode = Pango.WrapMode.Char;
-			InnerExceptionHelpLinkLabel.Selectable = true;
-			InnerExceptionHelpLinkLabel.CanFocus = false;
-			InnerExceptionHelpLinkLabel.Xalign = 0;
-			InnerExceptionHelpLinkLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			InnerExceptionHelpLinkLabel.SetLinkHandler ((str) => IdeServices.DesktopService.ShowUrl (str));
+			InnerExceptionHelpLinkButton = new Button {
+				CanFocus = true,
+				BorderWidth = 0,
+				Relief = ReliefStyle.Half,
+				Xalign = 0
+			};
+			InnerExceptionHelpLinkButton.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
+			InnerExceptionHelpLinkButton.KeyPressEvent += InnerExceptionHelpLinkLabel_KeyPressEvent;
+			InnerExceptionHelpLinkButton.Clicked += InnerExceptionHelpLinkLabel_Pressed;
+
+			InnerExceptionHelpLinkButton.ModifyBg (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ());
 
 			vboxAroundInnerExceptionMessage.PackStart (hbox, false, true, 0);
 			vboxAroundInnerExceptionMessage.PackStart (InnerExceptionMessageLabel, true, true, 10);
-			vboxAroundInnerExceptionMessage.PackStart (InnerExceptionHelpLinkLabel, true, true, 2);
+
+			var innerExceptionHContainer = new HBox ();
+
+			innerExceptionHContainer.PackStart (InnerExceptionHelpLinkButton, false, false, 0);
+			innerExceptionHContainer.PackStart (new Fixed (), true, true, 0);
+
+			vboxAroundInnerExceptionMessage.PackStart (innerExceptionHContainer, true, true, 2);
 			hboxMain.PackStart (vboxAroundInnerExceptionMessage, true, true, 10);
 			hboxMain.ShowAll ();
 			return hboxMain;
+		}
+
+		void InnerExceptionHelpLinkLabel_Pressed (object sender, EventArgs e) => IdeServices.DesktopService.ShowUrl (innerExceptionHelpLink);
+		void InnerExceptionHelpLinkLabel_KeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.KP_Space)
+				IdeServices.DesktopService.ShowUrl (innerExceptionHelpLink);
 		}
 
 		TreeStore InnerExceptionsStore;
@@ -606,13 +639,18 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 				InnerExceptionTypeLabel.Markup = "<b>" + GLib.Markup.EscapeText (ex.Type) + "</b>";
 				InnerExceptionMessageLabel.Text = ex.Message;
 				if (!string.IsNullOrEmpty (ex.HelpLink)) {
-					InnerExceptionHelpLinkLabel.Markup = GetHelpLinkMarkup (ex);
-					InnerExceptionHelpLinkLabel.Show ();
+					InnerExceptionHelpLinkButton.Label = GettextCatalog.GetString ("Read More…");
+					innerExceptionHelpLink = ex.HelpLink;
+					InnerExceptionHelpLinkButton.Show ();
 				} else {
-					InnerExceptionHelpLinkLabel.Hide ();
+					innerExceptionHelpLink = string.Empty;
+					InnerExceptionHelpLinkButton.Hide ();
 				}
 			}
 		}
+
+		string innerExceptionHelpLink;
+		string exceptionHelpLink;
 
 		void UpdateDisplay ()
 		{
@@ -622,18 +660,14 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			ExceptionTypeLabel.Text = exception.Type;
 			ExceptionMessageLabel.Text = exception.Message ?? string.Empty;
 			if (!string.IsNullOrEmpty (exception.HelpLink)) {
-				ExceptionHelpLinkLabel.Show ();
-				ExceptionHelpLinkLabel.Markup = GetHelpLinkMarkup (exception);
+				ExceptionHelpLinkButton.Show ();
+				exceptionHelpLink = exception.HelpLink;
+				ExceptionHelpLinkButton.Label = GettextCatalog.GetString ("More information");
 			} else {
-				ExceptionHelpLinkLabel.Hide ();
+				ExceptionHelpLinkButton.Hide ();
 			}
 
 			UpdateSelectedException (exception);
-		}
-
-		internal static string GetHelpLinkMarkup (ExceptionInfo exception)
-		{
-			return $"<a href=\"{System.Security.SecurityElement.Escape (exception.HelpLink)}\">{GettextCatalog.GetString ("More information")}</a>";
 		}
 
 		void ExceptionChanged (object sender, EventArgs e)

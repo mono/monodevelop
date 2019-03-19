@@ -223,6 +223,7 @@ namespace MonoDevelop.Ide.Commands
 				info.Text = IdeApp.Workbench.FullScreen
 					? GettextCatalog.GetString ("Exit Full Screen")
 					: GettextCatalog.GetString ("Enter Full Screen");
+				info.Enabled = IdeApp.Workbench.RootWindow.Visible && !WelcomePage.WelcomePageService.WelcomeWindowVisible;
 			} else if (Platform.IsWindows) {
 				//this is currently a no-op on Windows as it's broken, so hide it
 				info.Visible = info.Enabled = false;

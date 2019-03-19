@@ -1,4 +1,4 @@
-﻿//
+//
 // IdeApp.cs
 //
 // Author:
@@ -53,6 +53,7 @@ using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Composition;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide
 {
@@ -98,8 +99,23 @@ namespace MonoDevelop.Ide
 				});
 			}
 		}
-		internal static void OnStartupCompleted ()
+
+		static TimeToCodeMetadata ttcMetadata;
+		static Stopwatch ttcStopwatch;
+		static long startupCompletedTicks;
+		static long ttcDuration = 3 * TimeSpan.TicksPerSecond; // Wait 3 seconds before ignoring TTC events
+
+		internal static void OnStartupCompleted (StartupMetadata startupMetadata, Stopwatch ttcTimer)
 		{
+			ttcMetadata = new TimeToCodeMetadata {
+				StartupTime = startupMetadata.CorrectedStartupTime
+			};
+			ttcMetadata.AddProperties (startupMetadata);
+
+			ttcStopwatch = ttcTimer;
+			startupCompletedTicks = ttcStopwatch.ElapsedTicks;
+			LoggingService.LogDebug ("TTC starting");
+
 			startupCompleted?.Invoke (null, EventArgs.Empty);
 		}
 
@@ -174,20 +190,6 @@ namespace MonoDevelop.Ide
 		public static Version Version {
 			get {
 				return Runtime.Version;
-			}
-		}
-
-		// This flag tells us whether or not the solution being loaded was from the file manager.
-		static bool reportTimeToCode;
-		static bool fmTimeoutExpired;
-		public static bool ReportTimeToCode {
-			get => reportTimeToCode && !fmTimeoutExpired;
-			set {
-				reportTimeToCode = value;
-				if (fmTimeoutId > 0) {
-					GLib.Source.Remove (fmTimeoutId);
-					fmTimeoutId = 0;
-				}
 			}
 		}
 
@@ -325,20 +327,45 @@ namespace MonoDevelop.Ide
 			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
 		}
 
-		static readonly uint fmTimeoutMs = 2500;
-		static uint fmTimeoutId;
-		internal static void StartFMOpenTimer (Action timeCompletion)
+		internal static void TrackTimeToCode (TimeToCodeMetadata.DocumentType documentType)
 		{
-			// We only track time to code if the reportTimeToCode flag is set within fmTimeoutMs from this method being called
-			fmTimeoutId = GLib.Timeout.Add (fmTimeoutMs, () => FMOpenTimerExpired (timeCompletion));
+			LoggingService.LogDebug("Tracking TTC");
+			if (ttcStopwatch == null || timeToCodeSolutionTimer == null) {
+				LoggingService.LogDebug("Ignoring TTC");
+				return;
+			}
+
+			ttcStopwatch.Stop ();
+			timeToCodeSolutionTimer.Stop ();
+
+			if (ttcMetadata == null) {
+				timeToCodeSolutionTimer = null;
+				ttcStopwatch = null;
+				throw new Exception ("SendTimeToCode called before initialisation completed");
+			}
+
+			LoggingService.LogDebug ("Processing TTC");
+			ttcMetadata.SolutionLoadTime = timeToCodeSolutionTimer.ElapsedMilliseconds;
+
+			ttcMetadata.CorrectedDuration = ttcStopwatch.ElapsedMilliseconds;
+			ttcMetadata.Type = documentType;
+
+			Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
+
+			timeToCodeSolutionTimer = null;
 		}
 
-		static bool FMOpenTimerExpired (Action timeCompletion)
+		static Stopwatch timeToCodeSolutionTimer = new Stopwatch ();
+		internal static bool StartTimeToCodeLoadTimer ()
 		{
-			fmTimeoutExpired = true;
-			fmTimeoutId = 0;
-			timeCompletion ();
-			return false;
+			if (ttcStopwatch.ElapsedTicks - startupCompletedTicks > ttcDuration) {
+				LoggingService.LogDebug ($"Not starting TTC timer: {ttcStopwatch.ElapsedTicks - startupCompletedTicks}");
+				return false;
+			}
+			LoggingService.LogDebug ("Starting TTC timer");
+			timeToCodeSolutionTimer.Start ();
+
+			return true;
 		}
 
 		public static void BringToFront ()
@@ -356,10 +383,10 @@ namespace MonoDevelop.Ide
 		}
 
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		internal static async void OpenFiles (IEnumerable<FileOpenInformation> files, OpenWorkspaceItemMetadata metadata)
+		internal static async Task<bool> OpenFiles (IEnumerable<FileOpenInformation> files, OpenWorkspaceItemMetadata metadata)
 		{
 			if (!files.Any ())
-				return;
+				return false;
 			
 			if (!IsInitialized) {
 				EventHandler onInit = null;
@@ -368,7 +395,7 @@ namespace MonoDevelop.Ide
 					OpenFiles (files, metadata);
 				};
 				Initialized += onInit;
-				return;
+				return false;
 			}
 			
 			var filteredFiles = new List<FileOpenInformation> ();
@@ -412,6 +439,8 @@ namespace MonoDevelop.Ide
 			}
 
 			Workbench.Present ();
+
+			return true;
 		}
 
 		static bool FileServiceErrorHandler (string message, Exception ex)

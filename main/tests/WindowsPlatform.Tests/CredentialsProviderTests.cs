@@ -30,7 +30,7 @@ using System.IO;
 namespace WindowsPlatform.Tests
 {
 	[TestFixture]
-	public class CredentialsProviderTests : MonoDevelop.Core.BaseCredentialsProviderTests
+	public class CredentialsProviderTests : MonoDevelop.Ide.BaseCredentialsProviderTests
 	{
 		protected override MonoDevelop.Core.IPasswordProvider GetPasswordProvider ()
 		{

@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
     <Compile Include="MonoDevelop.Core\CoreExtensionsTests.cs" />
     <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />
@@ -153,6 +152,7 @@
     <Compile Include="MonoDevelop.Core\SdkResolverTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceEventQueueTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceEventStateMachineTests.cs" />
+    <Compile Include="MonoDevelop.Projects\AsyncCriticalSectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

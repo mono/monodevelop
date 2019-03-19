@@ -37,6 +37,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			Build ();
 			
+			GtkWorkarounds.DisableMinimizeMaximizeButtons (this);
+			Modal = true;
 			foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
 				if (vcs.IsInstalled) {
 					repCombo.AppendText (vcs.Name);
@@ -389,7 +391,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		void AppendRelativePath ()
 		{
-			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
+			var edit = currentEditor as UrlBasedRepositoryEditor;
 			if (edit == null)
 				return;
 
@@ -399,7 +401,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 				return;
 			}
 
-			entryFolder.Text = defaultPath + edit.RelativePath.Replace ('/', System.IO.Path.DirectorySeparatorChar);
+			var vcs = systems [repCombo.Active];
+			entryFolder.Text = defaultPath + vcs.GetRelativeCheckoutPathForRemote (edit.RelativePath);
 		}
 	}
 }

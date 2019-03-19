@@ -1498,8 +1498,9 @@ namespace MonoDevelop.SourceEditor
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (Document.FileName)) {
 					if (args.LineSegment != null) {
-						int column = TextEditor.Caret.Line == args.LineNumber ? TextEditor.Caret.Column : 1;
-
+						int column = TextEditor.Caret.Line == args.LineNumber ? 
+												Math.Min (TextEditor.Caret.Column, args.LineSegment.Length) : 1;
+							
 						lock (breakpoints)
 							breakpoints.Toggle (Document.FileName, args.LineNumber, column);
 					}

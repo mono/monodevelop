@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 using NUnit.Framework;
 using System.Linq;
 using UnitTests;
@@ -546,6 +548,36 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (r.IsValid);
 
 			sol.Dispose ();
+		}
+
+		/// <summary>
+		/// Ensures that when the SharedAssetsProject has no language defined a null reference exception is not
+		/// thrown on saving.
+		/// </summary>
+		[Test]
+		public async Task SaveSharedProjectMissingImports ()
+		{
+			string projectFile = Util.GetSampleProject ("SharedProjectMissingImport", "Shared.shproj");
+			using (var project = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile)) {
+				await project.SaveAsync (Util.GetMonitor ());
+			}
+		}
+
+		/// <summary>
+		/// If a solution file is edited by hand and a shared assets project type GUID is being used then
+		/// a SharedAssetsProject would be used. Since this is an invalid solution file the SharedAssetsProject
+		/// will throw an exception indicating a problem.
+		/// </summary>
+		[Test]
+		public async Task LoadSolutionWithSharedAssetsProjectTypeGuidUsedForCSharpProject ()
+		{
+			string solutionFile = Util.GetSampleProject ("SharedProjectTypeGuidMismatch", "SharedProjectTypeGuidMismatch.sln");
+			using (var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFile)) {
+				var project = solution.Items [0] as UnknownSolutionItem;
+
+				Assert.IsNotNull (project);
+				Assert.That (project.LoadError, Contains.Substring ("Project Library is being loaded as a Shared Assets project but has a different file extension"));
+			}
 		}
 	}
 }

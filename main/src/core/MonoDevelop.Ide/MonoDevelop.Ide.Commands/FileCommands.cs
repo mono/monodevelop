@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			using (var dlg = new NewFileDialog (null, null)) // new file seems to fail if I pass the project IdeApp.ProjectOperations.CurrentSelectedProject
-				MessageService.ShowCustomDialog (dlg, IdeApp.Workbench.RootWindow);
+				MessageService.ShowCustomDialog (dlg, IdeServices.DesktopService.GetFocusedTopLevelWindow ());
 		}
 	}
 

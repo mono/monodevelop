@@ -348,10 +348,16 @@ namespace MonoDevelop.Ide
 			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
-				if (NSApplication.SharedApplication.ModalWindow != null)
-					dialog.Shown += HandleShown;
-				else
+				if (NSApplication.SharedApplication.ModalWindow != null || (parent.nativeWidget is NSWindow && dialog.Modal)) {
+					EventHandler shownHandler = null;
+					shownHandler = (s,e) => {
+						ShowCustomModalDialog (dialog, parent);
+						dialog.Shown -= shownHandler;
+					};
+					dialog.Shown += shownHandler;
+				} else {
 					PlaceDialog (dialog, parent);
+				}
 			}).Wait ();
 			#endif
 
@@ -359,7 +365,13 @@ namespace MonoDevelop.Ide
 			try {
 				Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (dialog);
 				IdeApp.DisableIdleActions ();
-				return GtkWorkarounds.RunDialogWithNotification (dialog);
+				int result = GtkWorkarounds.RunDialogWithNotification (dialog);
+				// Focus parent window once the dialog is ran, as focus gets lost
+				if (parent != null) {
+					IdeServices.DesktopService.FocusWindow (parent);
+				}
+
+				return result;
 			} finally {
 				Xwt.MessageDialog.RootWindow = initialRootWindow;
 				IdeApp.EnableIdleActions ();
@@ -367,11 +379,11 @@ namespace MonoDevelop.Ide
 		}
 
 		#if MAC
-		static void HandleShown (object sender, EventArgs e)
+		static void ShowCustomModalDialog (Gtk.Window dialog, Window parent)
 		{
-			var dialog = (Gtk.Window)sender;
-			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
+			CenterWindow (dialog, parent);
 
+			var nsdialog = GtkMacInterop.GetNSWindow (dialog);
 			// Make the GTK window modal WRT the current modal NSWindow
 			var s = NSApplication.SharedApplication.BeginModalSession (nsdialog);
 
@@ -381,7 +393,6 @@ namespace MonoDevelop.Ide
 				dialog.Unrealized -= unrealizer;
 			};
 			dialog.Unrealized += unrealizer;
-			dialog.Shown -= HandleShown;
 		}
 		#endif
 		
@@ -417,16 +428,16 @@ namespace MonoDevelop.Ide
 				if (nsParent == null || !nsParent.IsVisible) {
 					nsChild.Center ();
 				} else {
-					int x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2));
-					int y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2));
-					nsChild.SetFrame (new CoreGraphics.CGRect (x, y, nsChild.Frame.Width, nsChild.Frame.Height), true);
+					int x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - nsChild.Frame.Width) / 2);
+					int y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - nsChild.Frame.Height) / 2);
+					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
 				}
 
 				return;
 			}
 #endif
 			if (gtkChild != null) {
-				gtkChild.Child.Show ();
+				gtkChild.Show ();
 				int x, y;
 				gtkChild.GetSize (out var w, out var h);
 				if (gtkParent != null) {
@@ -438,9 +449,10 @@ namespace MonoDevelop.Ide
 					gtkChild.Move (x, y);
 #if MAC
 				} else if (nsParent != null) {
-					x = (int)(Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2));
-					y = (int)(Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2));
-					gtkChild.Move (x, y);
+					nsChild = GtkMacInterop.GetNSWindow (gtkChild);
+					x = (int) Math.Max (0, nsParent.Frame.Left + (nsParent.Frame.Width - w) / 2);
+					y = (int) Math.Max (0, nsParent.Frame.Top + (nsParent.Frame.Height - h) / 2);
+					nsChild.SetFrameOrigin (new CoreGraphics.CGPoint (x, y));
 #endif
 				} else {
 					gtkChild.SetPosition (Gtk.WindowPosition.Center);
@@ -589,7 +601,6 @@ namespace MonoDevelop.Ide
 					Caption = caption,
 					Value = initialValue,
 					IsPassword = isPassword,
-					TransientFor = parent ?? IdeServices.DesktopService.GetParentForModalWindow ()
 				};
 				if (dialog.Run ())
 					return dialog.Value;

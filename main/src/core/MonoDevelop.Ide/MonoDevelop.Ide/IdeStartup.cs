@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide
 				// XBC #33699
 				Counters.Initialization.Trace ("Initializing IdeApp");
 
-				hideWelcomePage = startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
+				hideWelcomePage = options.NoStartWindow || startupInfo.HasFiles || IdeApp.Preferences.StartupBehaviour.Value != OnStartupBehaviour.ShowStartWindow;
 				await IdeApp.Initialize (monitor);
 
 				sectionTimings ["AppInitialization"] = startupSectionTimer.ElapsedMilliseconds;
@@ -379,17 +379,6 @@ namespace MonoDevelop.Ide
 			startupTimer.Stop ();
 			startupSectionTimer.Stop ();
 
-			// Need to start this timer because we don't know yet if we've been asked to open a solution from the file manager.
-			timeToCodeTimer.Start ();
-			ttcMetadata = new TimeToCodeMetadata {
-				StartupTime = startupTimer.ElapsedMilliseconds
-			};
-
-			// Start this timer to limit the time to decide if the app was opened by a file manager
-			IdeApp.StartFMOpenTimer (FMOpenTimerExpired);
-			IdeApp.Workspace.FirstWorkspaceItemOpened += CompleteSolutionTimeToCode;
-			IdeApp.Workbench.DocumentOpened += CompleteFileTimeToCode;
-
 			CreateStartupMetadata (startupInfo, sectionTimings);
 
 			GLib.Idle.Add (OnIdle);
@@ -401,17 +390,6 @@ namespace MonoDevelop.Ide
 		{
 			Runtime.RegisterServiceType<ProgressMonitorManager, IdeProgressMonitorManager> ();
 			Runtime.RegisterServiceType<IShell, DefaultWorkbench> ();
-		}
-
-		void FMOpenTimerExpired ()
-		{
-			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteSolutionTimeToCode;
-			IdeApp.Workbench.DocumentOpened -= CompleteFileTimeToCode;
-
-			timeToCodeTimer.Stop ();
-			timeToCodeTimer = null;
-
-			ttcMetadata = null;
 		}
 
 		/// <summary>
@@ -482,49 +460,7 @@ namespace MonoDevelop.Ide
 			var startupMetadata = GetStartupMetadata (si, result, timings);
 			Counters.Startup.Inc (startupMetadata);
 
-			if (ttcMetadata != null) {
-				ttcMetadata.AddProperties (startupMetadata);
-			}
-
-			IdeApp.OnStartupCompleted ();
-		}
-
-		enum TimeToCodeFileType
-		{
-			Solution,
-			Document
-		}
-
-		static void CompleteSolutionTimeToCode (object sender, EventArgs args)
-		{
-			CompleteTimeToCode (TimeToCodeMetadata.DocumentType.Solution);
-		}
-
-		static void CompleteFileTimeToCode (object sender, EventArgs args)
-		{
-			CompleteTimeToCode (TimeToCodeMetadata.DocumentType.File);
-		}
-
-		static void CompleteTimeToCode (TimeToCodeMetadata.DocumentType type)
-		{
-			IdeApp.Workspace.FirstWorkspaceItemOpened -= CompleteSolutionTimeToCode;
-			IdeApp.Workbench.DocumentOpened -= CompleteFileTimeToCode;
-
-			if (timeToCodeTimer == null) {
-				return;
-			}
-
-			timeToCodeTimer.Stop ();
-			ttcMetadata.SolutionLoadTime = timeToCodeTimer.ElapsedMilliseconds;
-
-			ttcMetadata.CorrectedDuration = ttcMetadata.StartupTime + ttcMetadata.SolutionLoadTime;
-			ttcMetadata.Type = type;
-
-			if (IdeApp.ReportTimeToCode) {
-				Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
-				IdeApp.ReportTimeToCode = false;
-			}
-			timeToCodeTimer = null;
+			IdeApp.OnStartupCompleted (startupMetadata, timeToCodeTimer);
 		}
 
 		static DateTime lastIdle;
@@ -777,6 +713,7 @@ namespace MonoDevelop.Ide
 			// set as a metadata property on the Counters.Startup counter.
 			startupTimer.Start ();
 			startupSectionTimer.Start ();
+			timeToCodeTimer.Start ();
 
 			var options = MonoDevelopOptions.Parse (args);
 			if (options.ShowHelp || options.Error != null)
