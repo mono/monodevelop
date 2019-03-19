@@ -152,7 +152,7 @@ namespace MonoDevelop.Autotools
 					{
 						case BuildAction.Compile:
 							
-							if ( projectFile.Subtype != Subtype.Code ) continue;
+							if (projectFile.Subtype != Subtype.Code && projectFile.Subtype != Subtype.Designer) continue;
 							files.AppendFormat ( "\\\n\t{0} ", MakefileData.ToMakefilePath (pfpath));
 							break;
 
