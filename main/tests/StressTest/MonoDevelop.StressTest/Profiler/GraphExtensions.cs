@@ -7,13 +7,14 @@ namespace MonoDevelop.StressTest
 {
 	public static class GraphExtensions
 	{
-		public static IEdgeListGraph<TVertex, TEdge> GetObjectGraph<TVertex, TEdge> (this IVertexListGraph<TVertex, TEdge> graph, TVertex obj) where TEdge : IEdge<TVertex>
+		public static IEdgeListGraph<TVertex, TEdge> GetObjectGraph<TVertex, TEdge> (this IVertexListGraph<TVertex, TEdge> graph, TVertex obj, VertexAction<TVertex> onVertex) where TEdge : IEdge<TVertex>
 		{
 			var bfsa = new BreadthFirstSearchAlgorithm<TVertex, TEdge> (graph);
 
 			var partialGraph = new AdjacencyGraph<TVertex, TEdge> ();
 			bfsa.ExamineVertex += (vertex) => {
 				partialGraph.AddVertex (vertex);
+				onVertex?.Invoke (vertex);
 			};
 			bfsa.ExamineEdge += (edge) => {
 				partialGraph.AddEdge (edge);
