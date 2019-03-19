@@ -322,6 +322,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 #region MacPlatform.MacIntegration.MainToolbar.SelectorView
 		public override bool SetActiveConfiguration (string configurationName)
 		{
+			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
 			Type type = ResultObject.GetType ();
 			PropertyInfo pinfo = type.GetProperty ("ConfigurationModel");
 			if (pinfo == null) {
@@ -329,7 +330,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			IEnumerable<IConfigurationModel> model = (IEnumerable<IConfigurationModel>)pinfo.GetValue (ResultObject, null);
-			var configuration = model.FirstOrDefault (c => c.DisplayString == configurationName);
+			LoggingService.LogDebug (string.Format ("Found configurations: {0}",
+				string.Join(", ", model.Select(m => $"['{m.OriginalId}' '{m.DisplayString}']"))));
+			var configuration = model.FirstOrDefault (
+				c => c.DisplayString.Contains(configurationName) || c.OriginalId.Contains(configurationName));
 			if (configuration == null) {
 				return false;
 			}
@@ -339,6 +343,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
+			LoggingService.LogDebug ($"Setting the active configuration as: '{configuration.OriginalId}' '{configuration.DisplayString}'");
 			pinfo.SetValue (ResultObject, configuration);
 			return true;
 		}
