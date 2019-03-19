@@ -64,8 +64,8 @@ namespace MonoDevelop.VersionControl
 					try {
 						list [0].Repository.Lock (Monitor, list.Paths);
 					} catch (Exception ex) {
-						Monitor.ReportError (ex.Message, null);
 						LoggingService.LogError ("Lock operation failed", ex);
+						Monitor.ReportError (ex.Message, null);
 						return;
 					}
 				}

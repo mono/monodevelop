@@ -85,5 +85,4 @@ namespace MonoDevelop.VersionControl
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unlock operation failed", ex);
 					MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
-					LoggingService.LogError ("Unlock operation failed", ex);
 				}

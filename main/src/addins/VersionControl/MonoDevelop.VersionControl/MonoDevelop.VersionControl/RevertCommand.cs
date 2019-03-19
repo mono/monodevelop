@@ -62,7 +62,6 @@ namespace MonoDevelop.VersionControl
 					} catch (Exception ex) {
 						LoggingService.LogError ("Revert operation failed", ex);
 						Monitor.ReportError (ex.Message, null);
-						LoggingService.LogError ("Revert operation failed", ex);
 						return;
 					}
 				}
