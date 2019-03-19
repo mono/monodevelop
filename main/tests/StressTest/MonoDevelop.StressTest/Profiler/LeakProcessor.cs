@@ -10,6 +10,7 @@ using QuickGraph.Graphviz;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Mono.Profiler.Log;
+using QuickGraph.Graphviz.Dot;
 
 namespace MonoDevelop.StressTest
 {
@@ -126,14 +127,32 @@ namespace MonoDevelop.StressTest
 				if (outputPath == null && isLeak) {
 					var graphviz = objectGraph.ToLeakGraphviz (heapshot);
 
-					outputPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
-					File.WriteAllText (outputPath, graphviz.Generate ());
+					var dotPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
+					outputPath = graphviz.Generate (DotEngine.Instance, dotPath);
 				} else
 					objectCount--;
 			}
 
 			// We have not found a definite leak if outputPath is null.
 			return outputPath;
+		}
+
+		class DotEngine : IDotEngine
+		{
+			public static IDotEngine Instance = new DotEngine ();
+
+			public string Run (GraphvizImageType imageType, string dot, string outputFileName)
+			{
+				// Maybe read from stdin?
+				File.WriteAllText (outputFileName, dot);
+
+				var imagePath = Path.ChangeExtension (outputFileName, "jpg");
+				var args = $"{outputFileName} -Tjpg -o\"{imagePath}\"";
+
+				System.Diagnostics.Process.Start ("dot", args).WaitForExit();
+
+				return imagePath;
+			}
 		}
 	}
 }
