@@ -146,6 +146,8 @@ namespace MonoDevelop.StressTest
 				// Maybe read from stdin?
 				File.WriteAllText (outputFileName, dot);
 
+				return outputFileName;
+
 				var imagePath = Path.ChangeExtension (outputFileName, "svg");
 				var args = $"{outputFileName} -Tsvg -o\"{imagePath}\"";
 
