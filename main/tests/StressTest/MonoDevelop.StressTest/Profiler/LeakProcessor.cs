@@ -110,6 +110,7 @@ namespace MonoDevelop.StressTest
 
 		string ReportPathsToRoots(Heapshot heapshot, HeapshotTypeInfo typeInfo, string iterationName, out int objectCount)
 		{
+			var visitedRoots = new HashSet<HeapObject> ();
 			string outputPath = null;
 
 			var rootTypeName = typeInfo.TypeInfo.Name;
@@ -118,14 +119,24 @@ namespace MonoDevelop.StressTest
 
 			// Look for the first object that is definitely leaked.
 			foreach (var obj in objects) {
+				visitedRoots.Clear ();
 				bool isLeak = false;
 
-				var objectGraph = heapshot.Graph.GetObjectGraph (obj, vertex => {
-					isLeak |= (heapshot.Roots.TryGetValue (vertex.Address, out var heapRootRegisterEvent) && IsActualLeakSource (heapRootRegisterEvent.Source));
+				var paths = heapshot.Graph.GetPredecessors (obj, vertex => {
+					if (heapshot.Roots.TryGetValue (vertex.Address, out var heapRootRegisterEvent)) {
+						visitedRoots.Add (vertex);
+						isLeak |= IsActualLeakSource (heapRootRegisterEvent.Source);
+					}
 				});
 
 				if (outputPath == null && isLeak) {
-					var graphviz = objectGraph.ToLeakGraphviz (heapshot);
+					var objectRetentionGraph = new AdjacencyGraph<HeapObject, SReversedEdge<HeapObject, Edge<HeapObject>>> ();
+
+					foreach (var root in visitedRoots) {
+						if (paths.TryGetPath (root, out var edges))
+							objectRetentionGraph.AddVerticesAndEdgeRange (edges);
+					}
+					var graphviz = objectRetentionGraph.ToLeakGraphviz (heapshot);
 
 					var dotPath = Path.Combine (graphsDirectory, iterationName + "_" + rootTypeName + ".dot");
 					outputPath = graphviz.Generate (DotEngine.Instance, dotPath);
@@ -145,8 +156,6 @@ namespace MonoDevelop.StressTest
 			{
 				// Maybe read from stdin?
 				File.WriteAllText (outputFileName, dot);
-
-				return outputFileName;
 
 				var imagePath = Path.ChangeExtension (outputFileName, "svg");
 				var args = $"{outputFileName} -Tsvg -o\"{imagePath}\"";

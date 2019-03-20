@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using QuickGraph;
+using QuickGraph.Algorithms.Observers;
 using QuickGraph.Algorithms.Search;
 using QuickGraph.Graphviz;
 
@@ -7,21 +9,20 @@ namespace MonoDevelop.StressTest
 {
 	public static class GraphExtensions
 	{
-		public static IEdgeListGraph<TVertex, TEdge> GetObjectGraph<TVertex, TEdge> (this IVertexListGraph<TVertex, TEdge> graph, TVertex obj, VertexAction<TVertex> onVertex) where TEdge : IEdge<TVertex>
+		public static VertexPredecessorRecorderObserver<TVertex, TEdge> GetPredecessors<TVertex, TEdge> (this IVertexListGraph<TVertex, TEdge> graph, TVertex obj, VertexAction<TVertex> onVertex) where TEdge : IEdge<TVertex>
 		{
 			var bfsa = new BreadthFirstSearchAlgorithm<TVertex, TEdge> (graph);
 
-			var partialGraph = new AdjacencyGraph<TVertex, TEdge> ();
 			bfsa.ExamineVertex += (vertex) => {
-				partialGraph.AddVertex (vertex);
 				onVertex?.Invoke (vertex);
 			};
-			bfsa.ExamineEdge += (edge) => {
-				partialGraph.AddEdge (edge);
-			};
-			bfsa.Compute (obj);
 
-			return partialGraph;
+			var vertexPredecessorRecorderObserver = new VertexPredecessorRecorderObserver<TVertex, TEdge> ();
+			using (vertexPredecessorRecorderObserver.Attach (bfsa)) {
+				bfsa.Compute (obj);
+			}
+
+			return vertexPredecessorRecorderObserver;
 		}
 
 		public static GraphvizAlgorithm<HeapObject, TEdge> ToLeakGraphviz<TEdge> (this IEdgeListGraph<HeapObject, TEdge> graph, Heapshot heapshot) where TEdge : IEdge<HeapObject>
