@@ -568,8 +568,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 			// Ensure conditions are re-evaluated.
 			extensionContext = CreateExtensionContext ();
 
+			var documentControllerService = await Runtime.GetService<DocumentControllerService> ();
+
 			using (extensionChain.BatchModify ()) {
-				foreach (var node in IdeServices.DocumentControllerService.GetModelExtensions (extensionContext)) {
+				foreach (var node in documentControllerService.GetModelExtensions (extensionContext)) {
 					// If the node already generated an extension, skip it
 					if (loadedNodes.Contains (node.Data.NodeId)) {
 						lastAddedNode = node;
@@ -662,8 +664,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			// Collect extensions that support this object
 
+			var documentControllerService = await Runtime.GetService<DocumentControllerService> ();
+
 			var extensions = new List<DocumentControllerExtension> ();
-			foreach (var node in IdeServices.DocumentControllerService.GetModelExtensions (extensionContext)) {
+			foreach (var node in documentControllerService.GetModelExtensions (extensionContext)) {
 				if (node.Data.CanHandle (this)) {
 					var ext = node.CreateInstance ();
 					if (!(ext is DocumentControllerExtension controllerExtension))
