@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class AbstractCodeFormatter
 	{
 		protected abstract ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length);

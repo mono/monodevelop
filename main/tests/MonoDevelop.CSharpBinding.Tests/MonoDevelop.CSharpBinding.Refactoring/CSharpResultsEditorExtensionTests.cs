@@ -1,4 +1,4 @@
-﻿//
+//
 // CSharpResultsEditorExtensionTests.cs
 //
 // Author:
@@ -55,6 +55,16 @@ class MyClass
 			new ExpectedDiagnostic (251, DiagnosticSeverity.Error, "; expected"),
 			new ExpectedDiagnostic (254, DiagnosticSeverity.Error, "} expected"),
 
+			new ExpectedDiagnostic (78, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (143, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (162, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (165, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (191, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (195, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (198, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (246, DiagnosticSeverity.Hidden, "Fix formatting"),
+			new ExpectedDiagnostic (252, DiagnosticSeverity.Hidden, "Fix formatting"),
+
 			new ExpectedDiagnostic (68, DiagnosticSeverity.Hidden, "Accessibility modifiers required"),
 			new ExpectedDiagnostic (248, DiagnosticSeverity.Error, "The name 'cls' does not exist in the current context"),
 			new ExpectedDiagnostic (144, DiagnosticSeverity.Info, "Empty constructor is redundant"),
@@ -65,7 +75,7 @@ class MyClass
 		[Test]
 		public async Task DiagnosticsAreReportedByExtension ()
 		{
-			await RunTest (4, OneFromEach, (remainingUpdates, doc) => {
+			await RunTest (5, OneFromEach, (remainingUpdates, doc) => {
 				if (remainingUpdates == 0) {
 					AssertExpectedDiagnostics (OneFromEachDiagnostics, doc);
 				}
@@ -76,8 +86,8 @@ class MyClass
 		[Test]
 		public async Task DiagnosticEnableSourceAnalysisChanged ()
 		{
-			await RunTest (5, OneFromEach, (remainingUpdates, doc) => {
-				if (remainingUpdates == 4) {
+			await RunTest (6, OneFromEach, (remainingUpdates, doc) => {
+				if (remainingUpdates == 5) {
 					AssertExpectedDiagnostics (OneFromEachDiagnostics.Take (2), doc);
 				}
 

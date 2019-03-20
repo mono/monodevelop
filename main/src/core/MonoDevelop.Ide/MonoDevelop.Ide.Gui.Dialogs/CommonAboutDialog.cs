@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public CommonAboutDialog ()
 		{
 			Name = "wizard_dialog";
-			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationLongName);
+			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationName);
 			AllowGrow = false;
 			HasSeparator = false;
 			BorderWidth = 0;
@@ -91,8 +91,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			};
 			backButton.HasDefault = backButton.CanDefault = true;
-
-			ShowAll ();
 		}
 
 		static void CopyBufferToClipboard ()
@@ -124,8 +122,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (Platform.IsMac) {
 				if (instance == null) {
+					var parent = DesktopService.GetFocusedTopLevelWindow ();
 					instance = new CommonAboutDialog ();
-					MessageService.PlaceDialog (instance, WelcomePage.WelcomePageService.WelcomeWindow ?? IdeApp.Workbench.RootWindow);
+					instance.ShowAll ();
+					MessageService.PlaceDialog (instance, parent);
 					instance.Response += delegate {
 						instance.Destroy ();
 						instance.Dispose ();

@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextMarkerFactory.cs
 //
 // Author:
@@ -31,12 +31,14 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public enum LinkRequest
 	{
 		SameView,
 		RequestNewView
 	}
 
+	[Obsolete]
 	interface ITextMarkerFactory
 	{
 		#region Line marker

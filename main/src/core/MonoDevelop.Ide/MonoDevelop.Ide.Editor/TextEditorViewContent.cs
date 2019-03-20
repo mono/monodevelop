@@ -49,6 +49,8 @@ using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.CodingConventions;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -56,6 +58,7 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through BaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
+	[Obsolete]
 	class TextEditorViewContent : ViewContent, ICommandRouter
 	{
 		readonly TextEditor textEditor;
@@ -290,7 +293,17 @@ namespace MonoDevelop.Ide.Editor
 		{
 			foreach (var r in base.OnGetContents (type))
 				yield return r;
-			if (type.IsAssignableFrom (typeof (TextEditor))) {
+
+			if (type == typeof(ITextBuffer)) {
+				yield return textEditor.TextView.TextBuffer;
+				yield break;
+			}
+			if (type == typeof (ITextView)) {
+				yield return textEditor.TextView;
+				yield break;
+			}
+
+			if (type.IsAssignableFrom (typeof (TextEditor))) {
 				yield return textEditor;
 				yield break;
 			}
@@ -380,6 +393,7 @@ namespace MonoDevelop.Ide.Editor
 		public override void GrabFocus ()
 		{
 			textEditor.GrabFocus ();
+			DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
 		}
 	}
 }

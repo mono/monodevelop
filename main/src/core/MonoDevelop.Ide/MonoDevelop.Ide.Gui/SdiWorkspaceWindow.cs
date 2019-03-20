@@ -8,17 +8,17 @@
 //
 //  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 //  Copyright (C) 2006 Novell, Inc (http://www.novell.com)
-// 
+//
 //  This library is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as
 //  published by the Free Software Foundation; either version 2.1 of the
 //  License, or (at your option) any later version.
-// 
+//
 //  This library is distributed in the hope that it will be useful, but
 //  WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 //  Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui
 		ViewContent content;
 		ExtensionContext extensionContext;
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
-		
+
 		List<BaseViewContent> viewContents = new List<BaseViewContent> ();
 		Notebook subViewNotebook = null;
 		Tabstrip subViewToolbar = null;
@@ -61,25 +61,25 @@ namespace MonoDevelop.Ide.Gui
 		DockNotebookTab tab;
 		Widget tabPage;
 		DockNotebook tabControl;
-		
+
 		string myUntitledTitle = null;
 		string _titleHolder = "";
-		
+
 		string documentType;
 		MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc;
-		
+
 		bool show_notification = false;
 
 		ViewCommandHandlers commandHandler;
 
 		public event EventHandler ViewsChanged;
-		
+
 		public DockNotebook TabControl {
 			get {
 				return this.tabControl;
 			}
 		}
-		
+
 		internal void SetDockNotebook (DockNotebook tabControl, DockNotebookTab tabLabel)
 		{
 			this.tabControl = tabControl;
@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Gui
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 			extensionContext = AddinManager.CreateExtensionContext ();
 			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
-			
+
 			box = new VBox ();
 			box.Accessible.SetShouldIgnore (true);
 
@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui
 			content.DirtyChanged       += HandleDirtyChanged;
 			box.Show ();
 			Add (box);
-			
+
 			SetTitleEvent (false);
 		}
 
@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			OnTitleChanged (null);
 		}
-		
+
 		public Widget TabPage {
 			get {
 				if (tabPage == null)
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui
 				tabPage = value;
 			}
 		}
-		
+
 		internal DockNotebookTab TabLabel {
 			get { return tab; }
 		}
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui
 				OnDocumentChanged (EventArgs.Empty);
 			}
 		}
-		
+
 		public ExtensionContext ExtensionContext {
 			get { return extensionContext; }
 		}
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui
 
 			return base.OnWidgetEvent (evt);
 		}
-		
+
 		protected virtual void OnDocumentChanged (EventArgs e)
 		{
 			EventHandler handler = this.DocumentChanged;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Gui
 				handler (this, e);
 		}
 		public event EventHandler DocumentChanged;
-		
+
 		public bool ShowNotification {
 			get {
 				return show_notification;
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 		}
-		
+
 		public string Title {
 			get {
 				//FIXME: This breaks, Why? --Todd
@@ -207,13 +207,13 @@ namespace MonoDevelop.Ide.Gui
 				OnTitleChanged(null);
 			}
 		}
-		
+
 		public IEnumerable<BaseViewContent> SubViewContents {
 			get {
 				return viewContents.OfType<BaseViewContent> ();
 			}
 		}
-		
+
 		// caution use activeView with care !!
 		BaseViewContent activeView = null;
 		public BaseViewContent ActiveViewContent {
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Gui
 				this.OnActiveViewContentChanged (new ActiveViewContentEventArgs (value));
 			}
 		}
-		
+
 		public void SwitchView (int viewNumber)
 		{
 			if (subViewNotebook != null)
@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.Gui
 			if (subViewNotebook != null)
 				ShowPage (viewContents.IndexOf (view));
 		}
-		
+
 		public int FindView<T> ()
 		{
 			for (int i = 0; i < viewContents.Count; i++) {
@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Gui
 			if (pathBar != null)
 				pathBar.HideMenu ();
 		}
-		
+
 		public void OnActivated ()
 		{
 			if (subViewToolbar != null)
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Gui
 					nswindow.MakeKeyAndOrderFront (nswindow);
 				}
 				#endif
-			}	
+			}
 
 			// The tab change must be done now to ensure that the content is created
 			// before exiting this method.
@@ -356,6 +356,60 @@ namespace MonoDevelop.Ide.Gui
 			SelectWindow ();
 		}
 
+		static void DeepGrabFocus (Gtk.Widget widget)
+		{
+			Widget first = null;
+
+			foreach (var f in GetFocusableWidgets (widget)) {
+				if (f.HasFocus)
+					return;
+
+				if (first == null)
+					first = f;
+			}
+			if (first != null) {
+				first.GrabFocus ();
+			}
+		}
+
+		static IEnumerable<Gtk.Widget> GetFocusableWidgets (Gtk.Widget widget)
+		{
+			if (widget.CanFocus) {
+				yield return widget;
+			}
+
+			if (widget is Container c) {
+				foreach (var f in c.FocusChain.SelectMany (GetFocusableWidgets).Where (y => y != null)) {
+					yield return f;
+				}
+
+				if (c.Children is var children) {
+					foreach (var f in children) {
+						if (f is Container container) {
+							foreach (var child in GetFocusableChildren (container)) {
+								yield return child;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		static IEnumerable<Gtk.Widget> GetFocusableChildren (Gtk.Container container)
+		{
+			if (container.CanFocus) {
+				yield return container;
+			}
+
+			foreach (var f in container.Children) {
+				if (f is Container c) {
+					foreach (var child in GetFocusableChildren (c)) {
+						yield return child;
+					}
+				}
+			}
+		}
+
 		public DocumentToolbar GetToolbar (BaseViewContent targetView)
 		{
 			DocumentToolbar toolbar;
@@ -393,7 +447,7 @@ namespace MonoDevelop.Ide.Gui
 				documentType = value;
 			}
 		}
-		
+
 		public void SetTitleEvent(object sender, EventArgs e)
 		{
 			SetTitleEvent ();
@@ -403,7 +457,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (content == null)
 				return;
-				
+
 			string newTitle = "";
 			if (content.ContentName == null) {
 				if (myUntitledTitle == null) {
@@ -431,7 +485,7 @@ namespace MonoDevelop.Ide.Gui
 			} else {
 				newTitle = System.IO.Path.GetFileName(content.ContentName);
 			}
-			
+
 			if (content.IsDirty) {
 				if (allowMarkFileDirty && !String.IsNullOrEmpty (content.ContentName))
 					IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
@@ -442,7 +496,7 @@ namespace MonoDevelop.Ide.Gui
 				Title = newTitle;
 			}
 		}
-		
+
 		public Task<bool> CloseWindow (bool force)
 		{
 			return CloseWindow (force, false);
@@ -456,7 +510,7 @@ namespace MonoDevelop.Ide.Gui
 			await OnClosing (args);
 			if (args.Cancel)
 				return false;
-			
+
 			workbench.RemoveTab (tabControl, tab.Index, animate);
 
 			OnClosed (args);
@@ -471,7 +525,7 @@ namespace MonoDevelop.Ide.Gui
 			// Destroy after the document is destroyed, since attached views may have references to the main view
 			if (destroyMainPage)
 				tabPage.Destroy ();
-			
+
 			return true;
 		}
 
@@ -503,21 +557,21 @@ namespace MonoDevelop.Ide.Gui
 			extensionContext = null;
 			base.OnDestroyed ();
 		}
-		
+
 		#region lazy UI element creation
-		
+
 		void CheckCreateSubViewToolbar ()
 		{
 			if (subViewToolbar != null)
 				return;
-			
+
 			subViewToolbar = new Tabstrip ();
 			subViewToolbar.Show ();
-			
+
 			CheckCreateToolbarBox ();
 			toolbarBox.PackStart (subViewToolbar, true, true, 0);
 		}
-		
+
 		void EnsureToolbarBoxSeparator ()
 		{
 /*			The path bar is now shown at the top
@@ -538,7 +592,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			*/
 		}
-		
+
 		void CheckCreateToolbarBox ()
 		{
 			if (toolbarBox != null)
@@ -547,7 +601,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarBox.Show ();
 			box.PackEnd (toolbarBox, false, false, 0);
 		}
-		
+
 		void CheckCreateSubViewContents ()
 		{
 			if (subViewNotebook != null)
@@ -560,16 +614,16 @@ namespace MonoDevelop.Ide.Gui
 			Gtk.Widget viewWidget = ViewContent.Control;
 			if (viewWidget.Parent != null)
 				box.Remove (viewWidget);
-			
+
 			subViewNotebook = new Notebook ();
 			subViewNotebook.TabPos = PositionType.Bottom;
 			subViewNotebook.ShowTabs = false;
 			subViewNotebook.ShowBorder = false;
 			subViewNotebook.Show ();
-			
+
 			//add existing ViewContent
 			AddButton (this.ViewContent.TabPageLabel, this.ViewContent);
-			
+
 			//pack them in a box
 			subViewNotebook.Show ();
 			box.PackStart (subViewNotebook, true, true, 1);
@@ -619,7 +673,7 @@ namespace MonoDevelop.Ide.Gui
 			if (tab.Accessible != null) {
 				tab.Accessible.Help = viewContent.TabAccessibilityDescription;
 			}
-			
+
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent) {
 				widgetBox.Add (viewContent.Control);
@@ -648,9 +702,9 @@ namespace MonoDevelop.Ide.Gui
 
 			return tab;
 		}
-		
+
 		#region Track and display document's "path"
-		
+
 		internal void AttachToPathedDocument (MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc)
 		{
 			if (this.pathDoc != pathDoc)
@@ -668,7 +722,7 @@ namespace MonoDevelop.Ide.Gui
 			PathWidgetEnabled = true;
 			pathBar.SetPath (pathDoc.CurrentPath);
 		}
-		
+
 		internal void DetachFromPathedDocument ()
 		{
 			if (pathDoc == null)
@@ -677,7 +731,7 @@ namespace MonoDevelop.Ide.Gui
 			pathDoc.PathChanged -= HandlePathChange;
 			pathDoc = null;
 		}
-		
+
 		void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
 		{
 			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
@@ -685,7 +739,7 @@ namespace MonoDevelop.Ide.Gui
 				pathBar.SetPath (pathDoc.CurrentPath);
 //			pathBar.SetActive (pathDoc.SelectedIndex);
 		}
-		
+
 		bool PathWidgetEnabled {
 			get { return (pathBar != null); }
 			set {
@@ -703,9 +757,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 		}
-		
+
 		#endregion
-		
+
 		protected void ShowPage (int npage)
 		{
 			if (updating || npage < 0) return;
@@ -713,7 +767,7 @@ namespace MonoDevelop.Ide.Gui
 			subViewToolbar.ActiveTab = npage;
 			updating = false;
 		}
-		
+
 		void SetCurrentView (int newIndex)
 		{
 			BaseViewContent subViewContent;
@@ -730,7 +784,7 @@ namespace MonoDevelop.Ide.Gui
 			subViewContent = viewContents[newIndex] as BaseViewContent;
 
 			DetachFromPathedDocument ();
-			
+
 			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
 			if (newIndex < 0 || newIndex == viewContents.IndexOf ((BaseViewContent)ViewContent)) {
 				pathedDocument = Document != null ? Document.GetContent<IPathedDocument> () : (IPathedDocument)ViewContent.GetContent (typeof(IPathedDocument));
@@ -757,7 +811,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return Parent;
 		}
-		
+
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
 		{
 			// If command checks are flowing through this view, it means the view's notebook
@@ -797,7 +851,7 @@ namespace MonoDevelop.Ide.Gui
 				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 			}
 		}
-		
+
 		protected virtual void OnTitleChanged(EventArgs e)
 		{
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
@@ -824,7 +878,7 @@ namespace MonoDevelop.Ide.Gui
 				Closed (this, e);
 			}
 		}
-		
+
 		protected virtual void OnActiveViewContentChanged (ActiveViewContentEventArgs e)
 		{
 			if (ActiveViewContentChanged != null)

@@ -32,65 +32,57 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Shared.TestHooks;
 using Microsoft.CodeAnalysis.Editor.Implementation.Workspaces;
 using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
-using Microsoft.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 using System.Threading;
-using MonoDevelop.Core;
+using Microsoft.VisualStudio.Threading;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
 	[ExportWorkspaceService(typeof(IWorkspaceTaskSchedulerFactory), ServiceLayer.Host), Shared]
 	class MonoDevelopTaskSchedulerFactory : EditorTaskSchedulerFactory
 	{
+		readonly IThreadingContext _threadingContext;
+
 		[ImportingConstructor]
-		public MonoDevelopTaskSchedulerFactory (IAsynchronousOperationListenerProvider listenerProvider) : base (listenerProvider)
+		[Obsolete (MefConstruction.ImportingConstructorMessage, error: true)]
+		public MonoDevelopTaskSchedulerFactory (IThreadingContext threadingContext, IAsynchronousOperationListenerProvider listenerProvider) : base (listenerProvider)
 		{
+			_threadingContext = threadingContext;
 		}
 
 		public override IWorkspaceTaskScheduler CreateEventingTaskQueue ()
 		{
-			// When we are creating the workspace, we might not actually have established what the UI thread is, since
-			// we might be getting created via MEF. So we'll allow the queue to be created now, and once we actually need
-			// to queue something we'll then start using the task queue from there.
-			// In Visual Studio, we raise these events on the UI thread. At this point we should know
-			// exactly which thread that is.
-			return new MonoDevelopTaskScheduler (this);
+			return new WorkspaceTaskQueue(this, new JoinableTaskFactoryTaskScheduler(_threadingContext.JoinableTaskFactory));
 		}
 
-		class MonoDevelopTaskScheduler : IWorkspaceTaskScheduler
+		class JoinableTaskFactoryTaskScheduler : TaskScheduler
 		{
-			readonly Lazy<WorkspaceTaskQueue> _queue;
-			readonly WorkspaceTaskSchedulerFactory _factory;
+			readonly JoinableTaskFactory _joinableTaskFactory;
 
-			public MonoDevelopTaskScheduler (WorkspaceTaskSchedulerFactory factory)
+			public JoinableTaskFactoryTaskScheduler (JoinableTaskFactory joinableTaskFactory)
 			{
-				_factory = factory;
-				_queue = new Lazy<WorkspaceTaskQueue> (CreateQueue);
+				_joinableTaskFactory = joinableTaskFactory;
 			}
 
-			WorkspaceTaskQueue CreateQueue ()
+			public override int MaximumConcurrencyLevel => 1;
+
+			protected override IEnumerable<Task> GetScheduledTasks () => null;
+
+			protected override void QueueTask (Task task)
 			{
-				return new WorkspaceTaskQueue (_factory, Runtime.MainTaskScheduler ?? TaskScheduler.Default);
+				_joinableTaskFactory.RunAsync (async () => {
+					await _joinableTaskFactory.SwitchToMainThreadAsync (alwaysYield: true);
+					TryExecuteTask (task);
+				});
 			}
 
-			public Task ScheduleTask (Action taskAction, string taskName, CancellationToken cancellationToken = default(CancellationToken))
+			protected override bool TryExecuteTaskInline (Task task, bool taskWasPreviouslyQueued)
 			{
-				return _queue.Value.ScheduleTask (taskAction, taskName, cancellationToken);
-			}
+				if (_joinableTaskFactory.Context.IsOnMainThread) {
+					return TryExecuteTask (task);
+				}
 
-			public Task<T> ScheduleTask<T> (Func<T> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
-			}
-
-			public Task ScheduleTask (Func<Task> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
-			}
-
-			public Task<T> ScheduleTask<T> (Func<Task<T>> taskFunc, string taskName, CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return _queue.Value.ScheduleTask (taskFunc, taskName, cancellationToken);
+				return false;
 			}
 		}
 	}

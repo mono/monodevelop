@@ -28,7 +28,6 @@
 using System;
 using Gdk;
 using Gtk;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 

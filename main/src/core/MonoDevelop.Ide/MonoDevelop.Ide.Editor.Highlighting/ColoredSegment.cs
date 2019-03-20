@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// <summary>
 	/// A colored segment is used in the highlighter to specify a color scheme style to a specfic part of text.
 	/// </summary>
+	[Obsolete ("Old editor")]
 	public sealed class ColoredSegment : AbstractSegment
 	{
 		readonly ScopeStack scopeStack;

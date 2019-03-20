@@ -41,7 +41,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	/// The controller takes code completion data and keystrokes as input, and shows the
 	/// results in the code completion view.
 	/// </summary>
-	class CompletionController: IDisposable, IListDataProvider, ICompletionViewEventSink
+	[Obsolete]
+	class CompletionController : IDisposable, IListDataProvider, ICompletionViewEventSink
 	{
 		ICompletionView view;
 		ICompletionDataList dataList;
@@ -67,11 +68,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// Front end for the completion window
 		/// </summary>
 		CompletionListWindow listWindow;
-
-		/// <summary>
-		/// Completion context provided by the completion widget. Has information about the location of the caret.
-		/// </summary>
-		CodeCompletionContext context;
 
 		/// <summary>
 		/// The widget for which the completion window is shown
@@ -1139,7 +1135,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					item.InsertCompletionText (listWindow, ref ka, descriptor);
 				}
 				cache.CommitCompletionData (item);
-				OnWordCompleted (new CodeCompletionContextEventArgs (completionWidget, context, item.DisplayText));
+				OnWordCompleted (new CodeCompletionContextEventArgs (completionWidget, item.DisplayText));
 			} finally {
 				IsInCompletion = false;
 				HideWindow ();

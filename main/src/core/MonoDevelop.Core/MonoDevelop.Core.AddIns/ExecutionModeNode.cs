@@ -23,9 +23,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-//
 
-using System;
 using Mono.Addins;
 using MonoDevelop.Core.Execution;
 
@@ -33,12 +31,8 @@ namespace MonoDevelop.Core.AddIns
 {
 	class ExecutionModeNode: TypeExtensionNode, IExecutionMode
 	{
-		[NodeAttribute ("_name", Localizable=true)]
-		string name = null;
-		
-		public string Name {
-			get { return name; }
-		}
+		[NodeAttribute ("_name", Localizable = true)]
+		public string Name { get; private set; }
 		
 		public IExecutionHandler ExecutionHandler {
 			get {

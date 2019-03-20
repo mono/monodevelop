@@ -71,6 +71,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		// by the compilations being freed out of memory due to only being weakly referenced, and recomputing them on
 		// a case by case basis.
 		BackgroundCompiler backgroundCompiler;
+
+		// Background parser is an optimized task queue for the roslyn use-case, where a parse that's already in-progress
+		// is not canceled, but used later on to help incremental parsing.
+		readonly BackgroundParser backgroundParser;
+
 		internal readonly WorkspaceId Id;
 
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -126,6 +131,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 			
 			backgroundCompiler = new BackgroundCompiler (this);
+			backgroundParser = new BackgroundParser (this);
+			backgroundParser.Start ();
 
 			var cacheService = Services.GetService<IWorkspaceCacheService> ();
 			if (cacheService != null)
@@ -429,18 +436,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal void InformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
+		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
-			var document = InternalInformDocumentOpen (documentId, editor, context);
+			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, context, true);
 			if (document as Document != null) {
 				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
-					InternalInformDocumentOpen (linkedDoc, editor, context);
+					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, context, false);
 				}
 			}
-			OnDocumentContextUpdated (documentId);
 		}
 
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, TextEditor editor, DocumentContext context)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context, bool isCurrentContext)
 		{
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
@@ -449,12 +455,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
-			var textContainer = editor.TextView.TextBuffer.AsTextContainer ();
-			OpenDocuments.Add (documentId, textContainer, editor, context);
+			OpenDocuments.Add (documentId, sourceTextContainer, context);
 			if (document is Document) {
-				OnDocumentOpened (documentId, textContainer);
+				OnDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			} else {
-				OnAdditionalDocumentOpened (documentId, textContainer);
+				OnAdditionalDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			}
 			return document;
 		}
@@ -465,6 +470,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			base.OnDocumentClosing (documentId);
 			OpenDocuments.Remove (documentId);
+
+			backgroundParser.CancelParse (documentId);
 		}
 
 //		internal override bool CanChangeActiveContextDocument {
@@ -485,8 +492,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				var loader = new MonoDevelopTextLoader (filePath);
 				var document = this.GetDocument (analysisDocument);
-				// FIXME: Is this really needed?
-				OpenDocuments.Remove (analysisDocument);
 
 				if (document == null) {
 					var ad = this.GetAdditionalDocument (analysisDocument);
@@ -503,8 +508,31 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public override void CloseDocument (DocumentId documentId)
+		internal static void UpdateText (SourceText newText, Microsoft.VisualStudio.Text.ITextBuffer buffer, Microsoft.VisualStudio.Text.EditOptions options)
 		{
+			using (var edit = buffer.CreateEdit (options, reiteratedVersionNumber: null, editTag: null)) {
+				var oldSnapshot = buffer.CurrentSnapshot;
+				var oldText = oldSnapshot.AsText ();
+				var changes = newText.GetTextChanges (oldText);
+				//if (Microsoft.CodeAnalysis.Workspace.TryGetWorkspace(oldText.Container, out var workspace))
+				//{
+				//    var undoService = workspace.Services.GetService<ISourceTextUndoService>();
+				//    undoService.BeginUndoTransaction(oldSnapshot);
+				//}
+
+				foreach (var change in changes) {
+					edit.Replace (change.Span.Start, change.Span.Length, change.NewText);
+				}
+
+				edit.Apply ();
+			}
+		}
+
+		protected override void OnDocumentTextChanged (Document document)
+		{
+			base.OnDocumentTextChanged (document);
+
+			backgroundParser.Parse (document);
 		}
 
 		//FIXME: this should NOT be async. our implementation is doing some very expensive things like formatting that it shouldn't need to do.
@@ -525,7 +553,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				hostDocument.UpdateText (text);
 				return;
 			}
+			if (IsDocumentOpen (id)) {
+				var textBuffer = (await document.GetTextAsync (CancellationToken.None)).Container.TryGetTextBuffer ();
 
+				if (textBuffer != null) {
+					UpdateText (text, textBuffer, Microsoft.VisualStudio.Text.EditOptions.DefaultMinimalChange);
+					return;
+				}
+			}
 			var (projection, filePath) = Projections.Get (document.FilePath);
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
 			// Guard against already done changes in linked files.
@@ -1183,6 +1218,7 @@ namespace MonoDevelop.Ide.TypeSystem
 									// correct openDocument ids - they may change due to project reload.
 									OpenDocuments.CorrectDocumentIds (project, t.Result);
 									OnProjectReloaded (t.Result);
+									ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
 								}
 							} catch (Exception e) {
 								LoggingService.LogError ("Error while reloading project " + project.Name, e);
@@ -1195,6 +1231,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					LoggingService.LogInternalError (ex);
 				}
 			}
+		}
+
+		internal override void SetDocumentContext (DocumentId documentId)
+		{
+			base.OnDocumentContextUpdated (documentId);
 		}
 
 		#endregion

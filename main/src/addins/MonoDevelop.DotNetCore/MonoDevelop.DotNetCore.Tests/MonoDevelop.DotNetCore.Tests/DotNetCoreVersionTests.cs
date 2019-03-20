@@ -216,6 +216,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("1.0.0", "1.0.2", false)]
 		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", true)]
 		[TestCase ("1.0.2-preview1-002912-00", "1.0.2", false)]
+		[TestCase ("3.0.100-preview3-010431", "3.0.100-preview-010184", true)]
+		[TestCase ("3.0.100-preview3-010431", "3.0.100-preview4-010763", false)]
 		public void GreaterThanOperator_Version (string x, string y, bool expected)
 		{
 			var versionX = DotNetCoreVersion.Parse (x);
@@ -228,6 +230,8 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("1.0.0", "1.0.2", false)]
 		[TestCase ("1.0.2", "1.0.2-preview1-002912-00", true)]
 		[TestCase ("1.0.2-preview1-002912-00", "1.0.2", false)]
+		[TestCase ("3.0.100-preview3-010431", "3.0.100-preview-010184", true)]
+		[TestCase ("3.0.100-preview3-010431", "3.0.100-preview4-010763", false)]
 		public void GreaterThanOrEqualtoOperator_Version (string x, string y, bool expected)
 		{
 			var versionX = DotNetCoreVersion.Parse (x);

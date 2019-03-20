@@ -12,7 +12,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using System.Text;
 
 namespace MonoDevelop.VersionControl.Views

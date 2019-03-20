@@ -1,1 +1,0 @@
-SUBDIRS = core addins tools

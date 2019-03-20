@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 #if !SILVERLIGHT
 	[ Serializable() ] 
 #endif
+	[Obsolete ("Old editor")]
     class Match : Group {
 		internal static Match _empty = new Match(null, 1, "", 0, 0, 0);
         internal GroupCollection _groupcoll;
@@ -415,6 +416,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
      * MatchSparse is for handling the case where slots are
      * sparsely arranged (e.g., if somebody says use slot 100000)
      */
+	[Obsolete ("Old editor")]
     internal class MatchSparse : Match {
         // the lookup hashtable
 #if SILVERLIGHT

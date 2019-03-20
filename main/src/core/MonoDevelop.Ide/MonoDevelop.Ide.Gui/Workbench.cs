@@ -57,6 +57,10 @@ using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui.Components;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Operations;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -65,6 +69,8 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public sealed class Workbench
 	{
+		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.GetExportedValue<IEditorOperationsFactoryService> ();
+
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		DefaultWorkbench workbench;
@@ -194,9 +200,9 @@ namespace MonoDevelop.Ide.Gui
 			foreach (var f in filenames) {
 				var fullPath = (FilePath)FileService.GetFullPath (f);
 
-				Document doc = documents.Find (d => d.Editor != null && (fullPath == FileService.GetFullPath (d.Name)));
+				var doc = documents.Find (d => d.GetContent<ITextBuffer>() != null && (fullPath == FileService.GetFullPath (d.Name)));
 				if (doc != null) {
-					results [idx] = doc.Editor.CreateReader ();
+					results [idx] = new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader (doc.GetContent<ITextBuffer> ().CurrentSnapshot);
 				} else {
 					results [idx] = null;
 				}
@@ -545,19 +551,41 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
+		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info, IEditorOperationsFactoryService operationsFactory)
 		{
+			if (info.Line < 1 && info.Offset < 0)
+				return;
 			var ipos = doc.Editor;
-			if ((info.Line >= 1 || info.Offset >= 0) && ipos != null) {
+			var textView = doc.GetContent<ITextView> ();
+			if (ipos != null || textView != null) {
 				doc.DisableAutoScroll ();
 				doc.RunWhenLoaded (() => {
-					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
-					if (info.Offset >= 0) {
-						loc = ipos.OffsetToLocation (info.Offset);
+					if (ipos != null) {
+						var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
+						if (info.Offset >= 0) {
+							loc = ipos.OffsetToLocation (info.Offset);
+						}
+						if (loc.IsEmpty)
+							return;
+						ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+					} else {
+						var offset = info.Offset;
+						if (offset < 0) {
+							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
+							if (info.Column >= 1)
+								offset = line.Start + info.Column - 1;
+							else
+								offset = line.Start;
+						}
+
+						if (operationsFactory != null) {
+							var editorOperations = operationsFactory.GetEditorOperations (textView);
+							var point = new VirtualSnapshotPoint (textView.TextSnapshot, offset);
+							editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+						} else {
+							LoggingService.LogError ("Missing editor operations");
+						}
 					}
-					if (loc.IsEmpty)
-						return;
-					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 				});
 			}
 		}
@@ -604,7 +632,7 @@ namespace MonoDevelop.Ide.Gui
 								doc.SetProject (info.Project);
 							}
 
-							ScrollToRequestedCaretLocation (doc, info);
+							ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService);
 
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
@@ -636,7 +664,7 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
 					
-					ScrollToRequestedCaretLocation (doc, info);
+					ScrollToRequestedCaretLocation (doc, info, editorOperationsFactoryService);
 					
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						doc.RunWhenLoaded (() => {
@@ -1204,9 +1232,11 @@ namespace MonoDevelop.Ide.Gui
 
 			var dp = new DocumentUserPrefs ();
 			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, path);
-			if (document.Editor != null) {
-				dp.Line = document.Editor.CaretLine;
-				dp.Column = document.Editor.CaretColumn;
+			if (document.GetContent<ITextView> () is ITextView view) {
+				var pos = view.Caret.Position.BufferPosition;
+				var line = pos.Snapshot.GetLineFromPosition (pos.Position);
+				dp.Line = line.LineNumber + 1;
+				dp.Column = pos.Position - line.Start + 1;
 			}
 			return dp;
 		}

@@ -231,12 +231,22 @@
 			<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DebugEntry" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		</Condition>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<SeparatorItem id = "DebuggerSectionStart" insertafter="Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement"  />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
+		<SeparatorItem id = "DebuggerSectionEnd" />
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/ExecutionModes/Debug">
 		<ModeSetType id="MonoDevelop.Debugger" class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-exception-caught-template" resource = "exception-caught-template-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-continue-debug" resource = "continue-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-pause-debug" resource = "pause-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
@@ -250,6 +260,11 @@
 		<StockIcon stockid = "md-view-debug-immediate" resource = "pad-immediate-16.png" size="Menu" />
 		<StockIcon stockid = "md-prefs-debugger" resource = "prefs-debugger-16.png" size="Menu" />
 		<StockIcon stockid = "md-stack-pointer" resource = "stack-pointer-16.png" size="Menu" />
+		<StockIcon stockid = "md-gutter-execution" resource = "gutter-execution-15.png" size="Menu" imageid="807" />
+		<StockIcon stockid = "md-gutter-stack" resource = "gutter-stack-15.png" size="Menu" imageid="386" />
+		<StockIcon stockid = "md-gutter-tracepoint" resource = "gutter-tracepoint-15.png" size="Menu" imageid="3175" />
+		<StockIcon stockid = "md-gutter-tracepoint-disabled" resource = "gutter-tracepoint-disabled-15.png" size="Menu" imageid="3174" />
+		<StockIcon stockid = "md-gutter-tracepoint-invalid" resource = "gutter-tracepoint-invalid-15.png" size="Menu" imageid="3178" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CommandBar">
@@ -279,6 +294,9 @@
 					class="MonoDevelop.Debugger.DebugSourceFilesOptionsPanel" />
 			</Condition>
 		</Condition>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="MonoDevelop.Debugger.dll"/>
 	</Extension>
 </ExtensionModel>
 

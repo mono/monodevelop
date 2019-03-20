@@ -1,4 +1,4 @@
-﻿//
+//
 // InsertionModeOptions.cs
 //
 // Author:
@@ -31,6 +31,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// This class contains information the editor needs to initiate the insertion mode.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class InsertionModeOptions
 	{
 		/// <summary>

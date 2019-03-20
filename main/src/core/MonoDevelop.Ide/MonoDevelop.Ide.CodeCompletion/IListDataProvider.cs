@@ -1,4 +1,4 @@
-﻿// ListWindow.cs
+// ListWindow.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	interface IListDataProvider
 	{
 		int ItemCount { get; }

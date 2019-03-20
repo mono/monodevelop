@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.RepresentationModel;
@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Execution;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class SyntaxHighlighting : ISyntaxHighlighting
 	{
 		readonly SyntaxHighlightingDefinition definition;
@@ -178,10 +179,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			static readonly TimeSpan matchTimeout = TimeSpan.FromMilliseconds (500);
+			const int maxLineLength = 1 << 16;
 
 			public Task<HighlightedLine> GetColoredSegments (ITextSource text, int startOffset, int length)
 			{
-				if (ContextStack.IsEmpty)
+				if (ContextStack.IsEmpty || length > maxLineLength)
 					return Task.FromResult (new HighlightedLine (new TextSegment (startOffset, length), new [] { new ColoredSegment (0, length, ScopeStack.Empty) }));
 				SyntaxContext currentContext = null;
 				Match match = null;

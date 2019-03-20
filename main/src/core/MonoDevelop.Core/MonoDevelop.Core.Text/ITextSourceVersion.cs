@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Text
@@ -37,6 +38,7 @@ namespace MonoDevelop.Core.Text
 	/// It is a separate class from ITextSource to allow the GC to collect the text source while
 	/// the version checkpoint is still in use.
 	/// </remarks>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public interface ITextSourceVersion
 	{
 		/// <summary>

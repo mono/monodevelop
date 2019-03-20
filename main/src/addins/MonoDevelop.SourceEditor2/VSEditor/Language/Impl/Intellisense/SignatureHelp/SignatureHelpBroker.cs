@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
 {
-    [Export(typeof(ISignatureHelpBroker))]
+    //[Export(typeof(ISignatureHelpBroker))]
     internal class SignatureHelpBroker : ISignatureHelpBroker
     {
         [ImportMany]
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.Implementation
         internal IIntellisenseSessionStackMapService IntellisenseSessionStackMap { get; set; }
 
         [Import]
-        internal GuardedOperations GuardedOperations { get; set; }
+        internal IGuardedOperations GuardedOperations { get; set; }
 
 #if DEBUG
         [ImportMany]

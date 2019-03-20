@@ -15,10 +15,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.AspNetCore.Templating\AspNetCoreFileTemplateCondition.cs" />
@@ -114,7 +110,6 @@
     <None Include="Templates\WebApiControllerTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="Templates\AppSettingsFile.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -150,23 +145,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <DownloadNupkg Include="Microsoft.DotNet.Web.ProjectTemplates.1.x" Version="$(TemplatesVersion1x)" ExtensionDir="Templates" />
+    <DownloadNupkg Include="Microsoft.DotNet.Web.ProjectTemplates.2.0" Version="$(TemplatesVersion20)" ExtensionDir="Templates" />
+  </ItemGroup>
+  <ItemGroup>
     <InternalsVisibleTo Include="DotNetCore.Debugger" />
     <InternalsVisibleTo Include="MonoDevelop.AspNetCore.Tests" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.AspNetCore.Commands\" />
-    <Folder Include="MonoDevelop.AspNetCore.Dialogs\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-     <ItemGroup>
-       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.1.x">
-         <Version>$(TemplatesVersion1x)</Version>
-       </NuGetPackage>
-       <NuGetPackage Include="Microsoft.DotNet.Web.ProjectTemplates.2.0">
-         <Version>$(TemplatesVersion20)</Version>
-       </NuGetPackage>
-     </ItemGroup>
-     <Copy SourceFiles="..\..\..\packages\%(NuGetPackage.Identity).%(NuGetPackage.Version)\%(NuGetPackage.Identity).%(NuGetPackage.Version).nupkg" DestinationFolder="$(OutputPath)\Templates" SkipUnchangedFiles="true" />
-   </Target>
 </Project>

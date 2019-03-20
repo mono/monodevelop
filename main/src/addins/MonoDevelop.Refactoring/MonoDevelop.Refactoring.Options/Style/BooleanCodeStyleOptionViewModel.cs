@@ -1,4 +1,4 @@
-﻿//
+//
 // BooleanCodeStyleOptionViewModel.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis.CodeStyle;
 using Microsoft.CodeAnalysis.Options;
+using System;
 
 namespace MonoDevelop.Refactoring.Options
 {
@@ -58,11 +59,13 @@ namespace MonoDevelop.Refactoring.Options
 			_truePreview = truePreview;
 			_falsePreview = falsePreview;
 
-			var codeStyleOption = ((CodeStyleOption<bool>)options.GetOption (new OptionKey (option, option.IsPerLanguage ? info.Language : null)));
+			var optionValue = options.GetOption (new OptionKey (option, option.IsPerLanguage ? info.Language : null));
+			if (!(optionValue is CodeStyleOption<bool> codeStyleOption))
+				throw new InvalidOperationException (optionValue + " is no CodeStyleOption<bool>. Queried option: " + option);
 			_selectedPreference = Preferences.Single (c => c.IsChecked == codeStyleOption.Value);
 
-			var notificationViewModel = NotificationPreferences.Single (i => i.Notification.Value == codeStyleOption.Notification.Value);
-			_selectedNotificationPreference = NotificationPreferences.Single (p => p.Notification.Value == notificationViewModel.Notification.Value);
+			var notificationViewModel = NotificationPreferences.Single (i => i.Notification.Severity == codeStyleOption.Notification.Severity);
+			_selectedNotificationPreference = NotificationPreferences.Single (p => p.Notification.Severity == notificationViewModel.Notification.Severity);
 
 			NotifyPropertyChanged (nameof (SelectedPreference));
 			NotifyPropertyChanged (nameof (SelectedNotificationPreference));

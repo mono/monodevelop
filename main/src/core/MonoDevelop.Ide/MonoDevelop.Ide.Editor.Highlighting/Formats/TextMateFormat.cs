@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMatePlistFormat.cs
 //
 // Author:
@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var uuid = (PString)dictionary ["uuid"];
 
+			#pragma warning disable CS0618 // Type or member is obsolete
 			var methodDecl = GetSetting (settings, EditorThemeColors.UserMethodDeclaration);
 			var methodUsage = GetSetting (settings, EditorThemeColors.UserMethodUsage);
 			if (methodUsage == null && methodDecl != null) {
@@ -73,6 +74,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					settings [0].Settings
 				));
 			}
+			#pragma warning restore CS0618 // Type or member is obsolete
+
 			ConvertSetting (settings, "storage.type", EditorThemeColors.UserTypesInterfaces);
 			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypes);
 			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesEnums);
@@ -93,6 +96,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				EditorThemeColors.UserTypesTypeParameters,
 				EditorThemeColors.UserTypesDelegates,
 				EditorThemeColors.UserTypesMutable,
+				#pragma warning disable CS0618 // Type or member is obsolete
 				EditorThemeColors.UserFieldDeclaration,
 				EditorThemeColors.UserFieldUsage,
 				EditorThemeColors.UserPropertyDeclaration,
@@ -105,6 +109,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				EditorThemeColors.UserParameterUsage,
 				EditorThemeColors.UserVariableDeclaration,
 				EditorThemeColors.UserVariableUsage
+				#pragma warning restore CS0618 // Type or member is obsolete
 			};
 			foreach (var semanticColor in semanticColors) {
 				if (GetSetting (settings, semanticColor) == null) {
@@ -289,12 +294,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		#region Syntax highlighting
 
+		[Obsolete ("Old editor")]
 		internal static SyntaxHighlightingDefinition ReadHighlighting (Stream stream)
 		{
 			var dictionary = PDictionary.FromStream (stream);
 			return ReadHighlighting (dictionary);
 		}
 
+		[Obsolete ("Old editor")]
 		internal static SyntaxHighlightingDefinition ReadHighlighting (PDictionary dictionary)
 		{
 
@@ -329,6 +336,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, hideFromUser == true, extensions, contexts);
 		}
 
+		[Obsolete ("Old editor")]
 		private static void ReadRepository (PDictionary repository, List<SyntaxContext> contexts)
 		{
 			foreach (var kv in repository) {
@@ -358,6 +366,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		[Obsolete ("Old editor")]
 		static void ReadPatterns (PArray patternsArray, List<object> includesAndMatches)
 		{
 			foreach (var type in patternsArray) {
@@ -384,6 +393,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		[Obsolete ("Old editor")]
 		static SyntaxMatch ReadMatch (PDictionary dict)
 		{
 			List<string> matchScope  = new List<string> ();
@@ -470,6 +480,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null, null);
 		}
 
+		[Obsolete ("Old editor")]
 		static Captures ReadCaptureDictionary (PDictionary captureDict)
 		{
 			var group = new List<Tuple<int, string>> ();
@@ -492,6 +503,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		#endregion
 
 		#region JSon Format
+
+		[Obsolete ("Old editor")]
 		internal static SyntaxHighlightingDefinition ReadHighlightingFromJson(Stream stream)
 		{
 			byte [] bytes;

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using Microsoft.CodeAnalysis;
@@ -44,52 +42,6 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Determines if the other is derived from type
-		/// </summary>
-		public static bool IsDerivedFromClass (this IType type, IType other)
-		{
-			var derived = type.DirectBaseTypes.Any (baseType => baseType == other);
-			if (derived)
-				return true;
-
-			foreach (var baseType in type.DirectBaseTypes) {
-				derived = IsDerivedFromClass (baseType, other);
-				if (derived)
-					return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Determines if the given type is defined in source code, ie is part of the project
-		/// </summary>
-		public static bool IsDefinedInSource (this ITypeDefinition type, ICompilation compilation)
-		{
-			if (compilation == null)
-				return false;
-
-			return type.ParentAssembly.UnresolvedAssembly.Location == compilation.MainAssembly.UnresolvedAssembly.Location;
-		}
-
-		/// <summary>
-		/// Determines if the given type is defined in source code, ie is part of the project
-		/// </summary>
-		public static bool IsDefinedInSource (this IMember type, ICompilation compilation)
-		{
-			return type.ParentAssembly.UnresolvedAssembly.Location == compilation.MainAssembly.UnresolvedAssembly.Location;
-		}
-
-		/// <summary>
-		/// Formats the syntax tree and saves it
-		/// </summary>
-		public static void FormatAndSave (this ICSharpCode.NRefactory.CSharp.SyntaxTree file, string fileName)
-		{
-			var result = FormatFile (file);
-			SaveFile (fileName, result);
-		}
-
-		/// <summary>
 		/// Returns true if the given type is a derived class of 'param name="class"' and has an attribute of type 'param name="attributeType"' applied
 		/// </summary>
 		public static bool IsAttributedSubclass (this INamedTypeSymbol type, INamedTypeSymbol classType, INamedTypeSymbol attributeType)
@@ -111,22 +63,6 @@ namespace MonoDevelop.ConnectedServices
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// Formats the file
-		/// </summary>
-		static string FormatFile (ICSharpCode.NRefactory.CSharp.SyntaxTree file)
-		{
-			var formatting = FormattingOptionsFactory.CreateMono ();
-			formatting.AutoPropertyFormatting = PropertyFormatting.ForceOneLine;
-			formatting.SimplePropertyFormatting = PropertyFormatting.ForceOneLine;
-
-			var formatter = new CSharpFormatter (formatting) {
-				FormattingMode = FormattingMode.Intrusive
-			};
-
-			return formatter.Format (file.ToString ());
 		}
 
 		/// <summary>

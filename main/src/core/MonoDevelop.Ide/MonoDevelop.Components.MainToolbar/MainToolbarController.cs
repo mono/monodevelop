@@ -1,4 +1,4 @@
-﻿//
+//
 // MainToolbarController.cs
 //
 // Author:
@@ -26,16 +26,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Ide;
+using Gtk;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Core;
-using Gtk;
-using Mono.Addins;
-using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
-using System.Text;
-using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -245,6 +246,7 @@ namespace MonoDevelop.Components.MainToolbar
 				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
 				if (cmds.Count > 0) {
 					bool needsSeparator = runtimes > 0;
+					var an = DockNotebook.DockNotebook.ActiveNotebook;
 					foreach (CommandEntry ce in cmds) {
 						if (ce.CommandId == Command.Separator) {
 							needsSeparator = true;
@@ -263,6 +265,7 @@ namespace MonoDevelop.Components.MainToolbar
 							}
 						}
 					}
+					DockNotebook.DockNotebook.ActiveNotebook = an;
 				}
 
 				ToolbarView.PlatformSensitivity = runtimes > 1;
@@ -717,11 +720,14 @@ namespace MonoDevelop.Components.MainToolbar
 			if (pattern.Pattern == null && pattern.LineNumber > 0) {
 				DestroyPopup ();
 				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null && doc.Editor != null) {
+				if (doc?.GetContent<ITextView> () is ITextView view) {
 					doc.Select ();
-					doc.Editor.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
-					doc.Editor.CenterToCaret ();
-					doc.Editor.StartCaretPulseAnimation ();
+					var snapshot = view.TextBuffer.CurrentSnapshot;
+					var line = snapshot.GetLineFromLineNumber (pattern.LineNumber - 1);
+					if (line != null) {
+						view.Caret.MoveTo (new SnapshotPoint (snapshot, line.Start + Math.Min (pattern.Column - 1, line.Length)));
+						IdeApp.CommandService.DispatchCommand (ViewCommands.CenterAndFocusCurrentDocument);
+					}
 				}
 				return;
 			}
@@ -747,9 +753,9 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			IdeApp.Workbench.Present ();
 			var text = lastSearchText;
-			var actDoc = IdeApp.Workbench.ActiveDocument;
-			if (actDoc != null && actDoc.Editor != null && actDoc.Editor.IsSomethingSelected) {
-				string selected = actDoc.Editor.SelectedText;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc?.GetContent<ITextView> () is ITextView view && !view.Selection.IsEmpty) {
+				string selected = view.Selection.SelectedSpans[0].GetText ();
 				int whitespaceIndex = selected.TakeWhile (c => !char.IsWhiteSpace (c)).Count ();
 				text = selected.Substring (0, whitespaceIndex);
 			}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
@@ -21,7 +21,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			this.threadId = threadId;
 			this.vsCodeDebuggerSession = vsCodeDebuggerSession;
 			frame0Format = VsCodeStackFrame.GetStackFrameFormat (vsCodeDebuggerSession.EvaluationOptions);
-			var body = vsCodeDebuggerSession.protocolClient.SendRequestSync (new StackTraceRequest (threadId, 0, 1, frame0Format));
+			var body = vsCodeDebuggerSession.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = 0, Levels = 1, Format = frame0Format });
 			totalFramesCount = body.TotalFrames ?? 0;
 			frames = new Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame [totalFramesCount];
 			if (totalFramesCount > 0 && body.StackFrames.Count > 0)
@@ -70,9 +70,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			var results = new List<ObjectValue> ();
 			foreach (var expr in expressions) {
 				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
-					var responseBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (
-						expr,
-						frames [frameIndex].Id));
+					var responseBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (expr) { FrameId = frames[frameIndex].Id });
 					results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, expr, expr, responseBody.Type, responseBody.Result, responseBody.VariablesReference, 0, frames [frameIndex].Id));
 					timer.Success = true;
 				}
@@ -114,7 +112,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			}
 			var stackFrames = new Mono.Debugging.Client.StackFrame [Math.Min (lastIndex - firstIndex, totalFramesCount - firstIndex)];
 			var format = VsCodeStackFrame.GetStackFrameFormat (vsCodeDebuggerSession.EvaluationOptions);
-			var body = vsCodeDebuggerSession.protocolClient.SendRequestSync (new StackTraceRequest (threadId, firstIndex, stackFrames.Length, format));
+			var body = vsCodeDebuggerSession.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = firstIndex, Levels = stackFrames.Length, Format = format });
 			for (int i = 0; i < stackFrames.Length; i++) {
 				frames [i + firstIndex] = body.StackFrames [i];
 				stackFrames [i] = new VsCodeStackFrame (format, threadId, i, body.StackFrames [i]);

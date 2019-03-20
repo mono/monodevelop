@@ -38,6 +38,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Navigation
 {
+	[Obsolete]
 	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
 		int line;
@@ -45,6 +46,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		int offset;
 		ITextSourceVersion version;
+		TextEditor buffer;
 
 		public TextFileNavigationPoint (Document doc, TextEditor buffer)
 			: base (doc)
@@ -54,17 +56,25 @@ namespace MonoDevelop.Ide.Navigation
 			offset = buffer.CaretOffset;
 			line = location.Line;
 			column = location.Column;
+			this.buffer = buffer;
 		}
 
 		protected override void OnDocumentClosing ()
 		{
-			// text source version becomes invalid on document close.
-			var editor = Document.Editor;
-			offset = version.MoveOffsetTo (editor.Version, offset);
-			var location = editor.CaretLocation;
-			line = location.Line;
-			column = location.Column;
+			try {
+				// text source version becomes invalid on document close.
+				if (buffer != null) {
+					if (version.BelongsToSameDocumentAs (buffer.Version))
+						offset = version.MoveOffsetTo (buffer.Version, offset);
+					var location = buffer.CaretLocation;
+					line = location.Line;
+					column = location.Column;
+				}
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+			}
 			version = null;
+			buffer = null;
 		}
 
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -121,8 +131,9 @@ namespace MonoDevelop.Ide.Navigation
 			} else {
 				var doc = IdeApp.Workbench.Documents.FirstOrDefault (d => d.Editor == editor);
 				if (doc != null) {
-					version = editor.Version;
-					offset = editor.LocationToOffset (line, column);
+					buffer = doc.Editor;
+					version = buffer.Version;
+					offset = buffer.LocationToOffset (line, column);
 					SetDocument (doc);
 				}
 				editor.SetCaretLocation (Math.Max (line, 1), Math.Max (column, 1));

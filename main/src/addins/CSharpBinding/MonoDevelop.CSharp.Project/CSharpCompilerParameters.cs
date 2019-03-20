@@ -398,18 +398,7 @@ namespace MonoDevelop.CSharp.Project
 		#endregion
 
 		internal static string LanguageVersionToString (LanguageVersion value)
-		{
-			switch (value) {
-			case LanguageVersion.Default: return "Default";
-			case LanguageVersion.Latest: return "Latest";
-			case LanguageVersion.CSharp1: return "ISO-1";
-			case LanguageVersion.CSharp2: return "ISO-2";
-			case LanguageVersion.CSharp7_1: return "7.1";
-			case LanguageVersion.CSharp7_2: return "7.2";
-			case LanguageVersion.CSharp7_3: return "7.3";
-			default: return ((int)value).ToString ();
-			}
-		}
+			=> LanguageVersionFacts.ToDisplayString (value);
 
 		void NotifyChange ()
 		{

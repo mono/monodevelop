@@ -35,7 +35,6 @@ namespace MonoDevelop.DotNetCore
 	{
 		static readonly string DotNetCoreDownloadUrl = "https://aka.ms/vs/mac/install-netcore{0}";
 
-		//FIXME: aka.ms is not available yet for netcore30 (https://dotnet.microsoft.com/download/dotnet-core/3.0)
 		public static string GetDotNetCoreDownloadUrl (string version = "")
 		{
 			if (string.IsNullOrEmpty (version))
@@ -49,11 +48,11 @@ namespace MonoDevelop.DotNetCore
 		}
 
 		static readonly string defaultMessage = GettextCatalog.GetString (".NET Core SDK is not installed. This is required to build and run .NET Core projects.");
-		static readonly string unsupportedMessage = GettextCatalog.GetString ("The .NET Core SDK installed is not supported. Please install a more recent version.");
-		public static string GetDotNetCoreMessage (string version = "")
+
+		public static string GetDotNetCoreMessage (string currentPath, string version = "")
 		{
 			if (string.IsNullOrEmpty (version))
-				return unsupportedMessage;
+				return GettextCatalog.GetString ("The version of the .NET Core SDK currently installed ({0}) is not supported and continuing to use it may result in a broken tooling experience.", currentPath);
 
 			return GettextCatalog.GetString (".NET Core {0} SDK is not installed. This is required to build and run .NET Core {0} projects.", version);
 		}
@@ -96,9 +95,9 @@ namespace MonoDevelop.DotNetCore
 		public void Show ()
 		{
 			if (IsUnsupportedVersion || IsNetStandard) //for .net standard we'll show generic message
-				Message = GetDotNetCoreMessage ();
+				Message = GetDotNetCoreMessage (CurrentDotNetCorePath);
 			else {
-				Message = GetDotNetCoreMessage (RequiredDotNetCoreVersion.OriginalString);
+				Message = GetDotNetCoreMessage (CurrentDotNetCorePath, RequiredDotNetCoreVersion.OriginalString);
 				downloadUrl = GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion.OriginalString);
 			}
 
@@ -113,5 +112,6 @@ namespace MonoDevelop.DotNetCore
 		public bool IsUnsupportedVersion { get; set; }
 		public bool IsNetStandard { get; set; }
 		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
+		public string CurrentDotNetCorePath { get; set; }
 	}
 }

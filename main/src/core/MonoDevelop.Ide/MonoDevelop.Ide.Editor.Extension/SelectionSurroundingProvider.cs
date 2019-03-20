@@ -1,4 +1,4 @@
-﻿//
+//
 // ISelectionSurroundingProvider.cs
 //
 // Author:
@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// A selection surrounding provider handles a special handling how the text editor behaves when the user
 	/// types a key with a selection. The selection can be surrounded instead of beeing replaced.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class SelectionSurroundingProvider	
 	{
 		/// <summary>

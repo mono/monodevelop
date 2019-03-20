@@ -42,12 +42,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			var content = consumer as ViewContent;
-			if (content == null || !content.IsFile)
+			if (!(consumer is ViewContent content) || !content.IsFile || !consumer.IsTextView ()) {
 				yield break;
-			// Hack: Ensure that this category is only filled if the current page is a text editor.
-			if (!(content is ITextEditorResolver))
-				yield break;
+			}
+
 			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.ContentName)) {
 				if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 					continue;

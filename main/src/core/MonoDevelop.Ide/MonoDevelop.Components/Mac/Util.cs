@@ -123,9 +123,15 @@ namespace MonoDevelop.Components.Mac
 		static Selector applyFontTraits = new Selector ("applyFontTraits:range:");
 
 		public static NSAttributedString ToAttributedString (this FormattedText ft)
+			=> ToAttributedString (ft, null);
+
+		public static NSAttributedString ToAttributedString (
+			this FormattedText ft,
+			Action<NSMutableAttributedString, NSRange> beforeAttribution)
 		{
 			NSMutableAttributedString ns = new NSMutableAttributedString (ft.Text);
 			ns.BeginEditing ();
+			beforeAttribution?.Invoke (ns, new NSRange (0, ns.Length));
 			foreach (var att in ft.Attributes) {
 				var r = new NSRange (att.StartIndex, att.Count);
 				if (att is BackgroundTextAttribute) {

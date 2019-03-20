@@ -29,8 +29,6 @@
 using System;
 using System.Collections.Generic;
 
-using Mono.Cecil;
-
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;

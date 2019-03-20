@@ -1,4 +1,4 @@
-﻿//
+//
 // CSharpCodeActionEditorExtensionTests.cs
 //
 // Author:
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
 using MonoDevelop.Refactoring.Tests;
@@ -59,7 +60,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					new CodeActionData { Message = "Generate constructor 'MyClass()'" },
 					new CodeActionData { Message = "Rename file to MyClass.cs" },
 					new CodeActionData { Message = "Rename type to a" },
-				}
+				}.OrderBy (d => d.Message).ToArray (),
 			};
 
 			await RunTest (1, SimpleClass, async (remainingUpdates, doc) => {
@@ -80,6 +81,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var diagnostics = new ExpectedDiagnostic [] {
 				new ExpectedDiagnostic (6, DiagnosticSeverity.Hidden, "Accessibility modifiers required"),
 				new ExpectedDiagnostic (16, DiagnosticSeverity.Error, "'MyClass' does not implement interface member 'IDisposable.Dispose()'"),
+				new ExpectedDiagnostic (36, DiagnosticSeverity.Hidden, "Fix formatting"),
 			};
 
 			var expected = new ExpectedCodeFixes {
@@ -89,15 +91,16 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					new CodeActionData { Message = "Implement interface explicitly" },
 					new CodeActionData { Message = "Implement interface explicitly with Dispose pattern" },
 					new CodeActionData { Message = "Add accessibility modifiers" },
-				},
+					new CodeActionData { Message = "Fix formatting" },
+				}.OrderBy(d => d.Message).ToArray(),
 				CodeRefactoringData = new CodeActionData [0],
 			};
 
-			await RunTest (2, IDisposableImplement, async (remainingUpdates, doc) => {
+			await RunTest (3, IDisposableImplement, async (remainingUpdates, doc) => {
 				if (remainingUpdates == 0) {
 					AssertExpectedDiagnostics (diagnostics, doc);
 
-					doc.Editor.CaretOffset = diagnostics [1].Location;
+					doc.Editor.CaretOffset = diagnostics [2].Location;
 					await AssertExpectedCodeFixes (expected, doc);
 				}
 			});

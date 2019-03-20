@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractNavigationExtension.cs
 //
 // Author:
@@ -35,6 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public abstract class AbstractNavigationExtension : TextEditorExtension
 	{
 		uint timerId;

@@ -15,4 +15,5 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("TextEditor", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("RegexToolkit", MonoDevelop.BuildInfo.Version)]

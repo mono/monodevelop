@@ -8,40 +8,32 @@
     <ProjectGuid>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</ProjectGuid>
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.Debugger</OutputPath>
+    <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="$(OS) == 'Windows_NT'">
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -72,6 +64,10 @@
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="../../../external/vs-editor-core/src/CocoaControls/CocoaControls.csproj" Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
+      <Name>CocoaControls</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -136,6 +132,55 @@
     <Compile Include="Gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
     <Compile Include="Gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphTag.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\IInteractiveGlyph.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\IActiveGlyphDropHandler.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\GlyphCommandType.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\CurrentStatementGlyphTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\CurrentStatementGlyphTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\CurrentStatementGlyphTag.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphTag.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphMouseProcessorProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphMouseProcessor.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\AbstractCurrentStatementTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementTag.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementMarkerDefinition.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ReturnStatementForegroundTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\CurrentStatementTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\CurrentStatementTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\CurrentStatementTag.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\CurrentStatementMarkerDefinition.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\CurrentStatementForegroundTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\CurrentStatementForegroundTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\ClassificationTypes.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointTag.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointMarkerDefinition.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointForegroundTaggerProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\BreakpointForegroundTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Tags\AbstractBreakpointTagger.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSourceProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\DebuggerQuickInfoSource.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\IDebugInfoProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebugValueWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger\TextViewExtensions.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManagerService.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\BreakpointManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtAdornmentManager.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="$(OS) != 'Windows_NT'">
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\BreakpointGlyphFactoryProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\CurrentStatementGlyphFactoryProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ImageSourceGlyphFactory.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\Glyphs\ReturnStatementGlyphFactoryProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml" />
@@ -203,6 +248,8 @@
     <EmbeddedResource Include="icons\lightning-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\lightning-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\lightning-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\exception-caught-template-16.png" />
+    <EmbeddedResource Include="icons\exception-caught-template-16%402x.png" />
     <EmbeddedResource Include="icons\exception-48~dark.png" />
     <EmbeddedResource Include="icons\exception-48~dark%402x.png" />
     <EmbeddedResource Include="icons\gutter-breakpoint-15.png" />
@@ -309,7 +356,14 @@
     <EmbeddedResource Include="icons\mac\step-over-16~disabled~dark%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\Glyphs\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\Tags\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\QuickInfo\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

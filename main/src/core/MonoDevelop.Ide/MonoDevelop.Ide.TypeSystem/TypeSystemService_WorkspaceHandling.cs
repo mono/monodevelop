@@ -1,4 +1,4 @@
-﻿//
+//
 // IdeApp.TypeSystemService.cs
 //
 // Author:
@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
@@ -36,6 +37,7 @@ using System.Linq;
 using System.Collections.Immutable;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -257,6 +259,106 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		void OnDocumentOpened (object sender, Gui.DocumentEventArgs e)
+		{
+			var filePath = e.Document.FileName;
+			var textBuffer = e.Document.GetContent<ITextBuffer> ();
+			if (textBuffer == null || filePath == null) {
+				return;
+			}
+
+			// First offer the document to the primary workspace and see if it's owned by it.
+			// This is the common case, so avoid adding the document to the miscellaneous workspace
+			// unnecessarily, as it will be immediately removed anyway.
+			TryOpenDocumentInWorkspace (e, filePath, textBuffer);
+
+			// Only use misc workspace with the new editor; old editor has its own
+			if (e.Document.Editor == null) {
+				// If the primary workspace didn't claim the document notify the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentOpened (filePath, textBuffer);
+			}
+		}
+
+		private void TryOpenDocumentInWorkspace (Gui.DocumentEventArgs e, FilePath filePath, ITextBuffer textBuffer)
+		{
+			var project = e.Document.Project;
+			if (project == null || !project.IsCompileable (filePath)) {
+				return;
+			}
+
+			var workspace = GetWorkspace (project.ParentSolution);
+			if (workspace == emptyWorkspace) {
+				return;
+			}
+
+			var projectId = workspace.GetProjectId (project);
+
+			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+			var bestDoc = documentIds.FirstOrDefault ();
+			if (documentIds.Length > 1) {
+				foreach (var documentId in documentIds) {
+					// projectId == null, when opening document from Solution pad, for file in shared project
+					if (projectId == null) {
+						var p = workspace.GetMonoProject (documentId.ProjectId);
+						if (p == null)
+							continue;
+						var solConf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+						if (solConf == null || !solConf.BuildEnabledForItem (p))
+							continue;
+						if (p == p.ParentSolution.StartupItem) {
+							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+							return;
+						}
+						bestDoc = documentId;
+					} else if (documentId.ProjectId == projectId) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+						return;
+					}
+				}
+			}
+
+			if (bestDoc != null) {
+				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document);
+			}
+		}
+
+		void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)
+		{
+			var filePath = e.Document.FileName;
+			var project = e.Document.Project;
+			if (project == null || filePath == null || !project.IsCompileable (filePath)) {
+				return;
+			}
+
+			var textBuffer = e.Document.GetContent<ITextBuffer> ();
+			if (textBuffer == null) {
+				return;
+			}
+
+			// Only use misc workspace with the new editor; old editor has its own
+			if (e.Document.Editor == null) {
+				// In the common case the primary workspace will own the document, so shut down
+				// miscellaneous workspace first to avoid adding and then immediately removing
+				// the document to the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentClosed (filePath, textBuffer);
+			}
+
+			TryCloseDocumentInWorkspace (filePath, project);
+		}
+
+		private void TryCloseDocumentInWorkspace (FilePath filePath, MonoDevelop.Projects.Project project)
+		{
+			var workspace = GetWorkspace (project.ParentSolution);
+			if (workspace == emptyWorkspace) {
+				return;
+			}
+
+			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+			foreach (var documentId in documentIds) {
+				workspace.InformDocumentClose (documentId, filePath);
+			}
+		}
+
 		public Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
@@ -282,14 +384,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			//We assume that since we have projectId and project is not found in solution
 			//project is being loaded(waiting MSBuild to return list of source files)
 			var taskSource = new TaskCompletionSource<Microsoft.CodeAnalysis.Project> ();
+			var registration = cancellationToken.Register (() => taskSource.TrySetCanceled ());
 			EventHandler<WorkspaceChangeEventArgs> del = (s, e) => {
 				if (e.Kind == WorkspaceChangeKind.SolutionAdded || e.Kind == WorkspaceChangeKind.SolutionReloaded) {
 					proj = workspace.CurrentSolution.GetProject (projectId);
-					if (proj != null)
-						taskSource.SetResult (proj);
+					if (proj != null) {
+						registration.Dispose ();
+						taskSource.TrySetResult (proj);
+					}
 				}
 			};
-			cancellationToken.Register (taskSource.SetCanceled);
 			workspace.WorkspaceChanged += del;
 			try {
 				proj = await taskSource.Task;

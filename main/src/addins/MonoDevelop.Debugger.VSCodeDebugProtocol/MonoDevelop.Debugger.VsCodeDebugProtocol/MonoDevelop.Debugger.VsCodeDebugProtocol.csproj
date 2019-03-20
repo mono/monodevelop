@@ -11,13 +11,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol">
-      <HintPath>..\..\..\..\packages\Microsoft.VisualStudio.Shared.VsCodeDebugProtocol.15.8.20719.1\lib\net45\Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.VisualStudio.Shared.VsCodeDebugProtocol" Version="$(NuGetVersionVSCodeDebugProtocol)" PrivateAssets="runtime" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
@@ -45,6 +40,7 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddinInfo.cs" />
@@ -52,9 +48,6 @@
     <Compile Include="VsCodeStackFrame.cs" />
     <Compile Include="VsCodeObjectSource.cs" />
     <Compile Include="VsCodeBacktrace.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,4 @@
-﻿//
+//
 // ErrorHandlerTextEditorExtension.cs
 //
 // Author:
@@ -38,6 +38,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class ErrorHandlerTextEditorExtension: TextEditorExtension, IQuickTaskProvider
 	{
 		CancellationTokenSource src = new CancellationTokenSource ();

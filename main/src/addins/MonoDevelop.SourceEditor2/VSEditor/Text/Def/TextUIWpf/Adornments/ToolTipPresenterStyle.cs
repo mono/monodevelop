@@ -14,7 +14,7 @@
     /// All exports of this component part should be ordered before the "default" ToolTip presenter style.  At a minimum, this
     /// means adding [Order(Before="default")] to the export metadata.
     /// </remarks>
-    public class ToolTipPresenterStyle
+    public class ToolTipPresenterStyle2
     {
         /// <summary>
         /// Gets a string that identifies the appearance category for the <see cref="ITextView"/>

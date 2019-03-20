@@ -50,8 +50,9 @@ namespace MonoDevelop.Ide.WelcomePage
 	[TypeExtensionPoint]
 	public interface IWelcomeWindowProvider
 	{
-		Window CreateWindow ();
-		void ShowWindow (Window window, WelcomeWindowShowOptions options);
-		void HideWindow (Window window);
+		void ShowWindow (WelcomeWindowShowOptions options);
+		void HideWindow ();
+		bool IsWindowVisible { get; }
+		Window WindowInstance { get; }
 	}
 }

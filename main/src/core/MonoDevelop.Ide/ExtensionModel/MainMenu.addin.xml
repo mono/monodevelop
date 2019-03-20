@@ -101,6 +101,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
 		</Condition>
+		<SeparatorItem id = "Separator6" />
 	</ItemSet>
 	
 	<ItemSet id = "View" _label = "_View">

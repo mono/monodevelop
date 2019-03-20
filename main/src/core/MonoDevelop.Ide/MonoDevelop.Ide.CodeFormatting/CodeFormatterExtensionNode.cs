@@ -1,8 +1,5 @@
 // 
 // CodeFormatterNode.cs
-//  
-// Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
 // 
@@ -23,23 +20,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete]
 	class CodeFormatterExtensionNode : TypeExtensionNode
 	{
 		[NodeAttribute ("mimeType", true, "The mimetype that this formatter can handle.")]
-		string mimeType;
-		
-		public string MimeType {
-			get { return mimeType; }
-		}
+		public string MimeType { get; private set; }
 		
 		public AbstractCodeFormatter GetFormatter ()
 		{
-			return (AbstractCodeFormatter) this.GetInstance ();
+			return (AbstractCodeFormatter) GetInstance ();
 		}
 	}
 }

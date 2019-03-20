@@ -955,6 +955,7 @@ namespace MonoDevelop.Projects.MSBuild
 			Tuple.Create (typeof(System.TimeSpan), (string[]) null),
 			Tuple.Create (typeof(System.Text.RegularExpressions.Regex), (string[]) null),
 			Tuple.Create (typeof(Microsoft.Build.Utilities.ToolLocationHelper), (string[]) null),
+			Tuple.Create (typeof(System.Globalization.CultureInfo), (string[]) null),
 			Tuple.Create (typeof(System.Environment), new string [] {
 				"CommandLine", "ExpandEnvironmentVariables", "GetEnvironmentVariable", "GetEnvironmentVariables", "GetFolderPath", "GetLogicalDrives"
 			}),

@@ -1,4 +1,4 @@
-﻿//
+//
 // LineEventArgs.cs
 //
 // Author:
@@ -27,6 +27,7 @@ using System;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Old editor")]
 	public class LineEventArgs : System.EventArgs
 	{
 		public readonly static LineEventArgs AllLines = new LineEventArgs ();

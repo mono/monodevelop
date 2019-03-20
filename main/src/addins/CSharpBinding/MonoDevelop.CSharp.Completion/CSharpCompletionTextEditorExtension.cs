@@ -280,7 +280,10 @@ namespace MonoDevelop.CSharp.Completion
 					syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 					return;
 
-				var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
+				var extensionMethodImport = syntaxTree.IsRightOfDotOrArrowOrColonColon (
+					position,
+					syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken).GetPreviousTokenIfTouchingWord (position),
+					cancellationToken);
 				ITypeSymbol extensionMethodReceiverType = null;
 
 				if (extensionMethodImport) {

@@ -52,7 +52,7 @@ type FSharpBraceMatcher() =
         if caretOffset = -1 || caretOffset >= editor.Length then
             Task.FromResult(Nullable())
         else
-        let isFsi = editor.FileName.ToString() = "__FSI__.fsx"
+        let isFsi = editor.FileName.ToString() = FsiDocumentContext.DocumentName
         match editor.GetCharAt(caretOffset), isFsi with
         | '(', false
         | ')', false ->

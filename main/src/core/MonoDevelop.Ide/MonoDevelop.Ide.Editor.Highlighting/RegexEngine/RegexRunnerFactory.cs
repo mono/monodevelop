@@ -9,15 +9,17 @@
 // than calling the constructor directly.
 
 namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
-
-    using System.ComponentModel;
+	using System;
+	using System.ComponentModel;
 
 #if !SILVERLIGHT   
     /// <internalonly/>
     [ EditorBrowsable(EditorBrowsableState.Never) ]
 #endif
 #if !SILVERLIGHT
-    abstract class RegexRunnerFactory {
+	[Obsolete ("Old editor")]
+    abstract class RegexRunnerFactory
+	{
 #else
     abstract internal class RegexRunnerFactory {
 #endif

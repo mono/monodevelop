@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextLineMarker.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Old editor")]
 	public interface ITextLineMarker
 	{
 		IDocumentLine Line {
@@ -45,12 +46,15 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
-	public enum UrlType {
+	[Obsolete ("Old editor")]
+	public enum UrlType
+	{
 		Unknown,
 		Url,
 		Email
 	}
 
+	[Obsolete ("Old editor")]
 	public interface IUrlTextLineMarker : ITextLineMarker
 	{
 		UrlType UrlType {
@@ -62,11 +66,13 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public interface ICurrentDebugLineTextMarker :  ITextLineMarker
 	{
 
 	}
 
+	[Obsolete ("Old editor")]
 	public interface IMessageBubbleLineMarker : ITextLineMarker
 	{
 		int TaskCount { get; }

@@ -47,7 +47,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 			readonly Cairo.Point point;
 			uint destroyTimeout;
 
-			public FloatingQuickFixIconWidget (CodeActionEditorExtension codeActionEditorExtension, LanguageItemWindow window, SourceEditorView sourceEditorView, CodeActionContainer fixes, Cairo.Point point) : base (Gtk.WindowType.Popup)
+			public FloatingQuickFixIconWidget (
+				CodeActionEditorExtension codeActionEditorExtension,
+				LanguageItemWindow window,
+				SourceEditorView sourceEditorView,
+				CodeActionContainer fixes,
+				Cairo.Point point) : base (Gtk.WindowType.Popup)
 			{
 				this.ext = codeActionEditorExtension;
 				this.window = window;
@@ -94,7 +99,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				ext.CancelSmartTagPopupTimeout ();
 				ext.smartTagPopupTimeoutId = GLib.Timeout.Add (150, delegate {
 					ext.PopupQuickFixMenu (null, fixes, menu => { }, new Xwt.Point (
-						point.X, 
+						point.X,
 						point.Y + Allocation.Height + 10));
 					ext.smartTagPopupTimeoutId = 0;
 					return false;

@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.RoslynServices
 
 				if (documentTrackingService != null) {
 					documentTrackingService.ActiveDocumentChanged += UpdateCache;
-					UpdateCache (null, documentTrackingService.GetActiveDocument ());
+					UpdateCache (null, documentTrackingService.TryGetActiveDocument ());
 				}
 			}
 

@@ -1,0 +1,214 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+		<MDBuildTasksAssembly>$(MSBuildThisFileDirectory)MDBuildTasks\bin\MDBuildTasks.dll</MDBuildTasksAssembly>
+	</PropertyGroup>
+
+	<!-- Ensure the tasks are built before any project that includes these files -->
+	<ItemGroup>
+		<ProjectReference
+			Include="$(MSBuildThisFileDirectory)MDBuildTasks\MDBuildTasks.csproj"
+			Project="{37E01D0B-8C44-441F-9F5D-56C36AB0B918}"
+			Name="MDBuildTasks"
+			ReferenceOutputAssembly="false"
+			SkipGetTargetFrameworkProperties="true"
+			/>
+	</ItemGroup>
+
+	<UsingTask TaskName="DownloadFiles" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="DownloadNupkg" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="GenerateExtensionContentManifest" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="CollectExtensionContent" AssemblyFile="$(MDBuildTasksAssembly)" />
+	<UsingTask TaskName="FilterLocalCopyReferences" AssemblyFile="$(MDBuildTasksAssembly)" />
+
+	<!--
+	=================================================================
+	File download logic adapted from Xamarin.Build.Download
+	Files can be downloaded with <Download Include="url" />
+
+	 * Hashes may be included in SHA1 or SHA2 metadata, and will be verified.
+	 * By default the file will be downloaded to the project folder,
+	   but this can be overridden with DownloadFolder.
+	 * By default the file will use the filename from the URL, but this can
+	  be overridden with DownloadName.
+	* If the file is a zip file, it can be unpacked by setting Unpack to
+	  true.
+
+	=================================================================
+	-->
+
+	<Target Name="DownloadFiles" Condition="'@(Download)' != ''" AfterTargets="Build">
+		<DownloadFiles Downloads="@(Download)" />
+	</Target>
+
+	<!--
+	=================================================================
+	NuGet download logic
+	NuGets specified with <DownloadNupkg Include="id" Version="version">
+	items will be downloaded, and DownloadedNupkg items will be created
+	that point to the downloaded nupkgs
+	=================================================================
+	-->
+
+	<!--
+	FIXME: wire this into Restore when RoslynCodeTaskFactory works
+	and we no longer get it via a PackageReference
+	-->
+	<Target Name="DownloadNupkg"
+		Condition="'@(DownloadNupkg)' != ''"
+		BeforeTargets="ResolveAssemblyReferences"
+		DependsOnTargets="_DownloadNupkgPrepare;_DownloadNupkgIfNeeded" />
+
+	<Target Name="_DownloadNupkgPrepare">
+		<PropertyGroup>
+			<DownloadNupkgDirectory Condition="'$(DownloadNupkgDirectory)'==''">packages\</DownloadNupkgDirectory>
+			<DownloadNupkgDirectory Condition="!HasTrailingSlash('$(DownloadNupkgDirectory)')">$(DownloadNupkgDirectory)\</DownloadNupkgDirectory>
+			<_DownloadNupkgStamp>$(IntermediateOutputPath)MDDownloadFiles\stamp</_DownloadNupkgStamp>
+			<_DownloadNupkgPkgCfg>$(IntermediateOutputPath)MDDownloadFiles\packages.config</_DownloadNupkgPkgCfg>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="_DownloadNupkgIfNeeded" Inputs="$(MSBuildAllProjects)" Outputs="@(DownloadedNupkg);$(_DownloadNupkgStamp)" >
+		<DownloadNupkg
+			ToolPath="$(MSBuildThisFileDirectory)\..\external\nuget-binary"
+			ToolExe="nuget.exe"
+			Packages="@(DownloadNupkg)"
+			PackagesDirectory="$(DownloadNupkgDirectory)"
+			StampFile="$(_DownloadNupkgStamp)"
+			PackagesConfigFile="$(_DownloadNupkgPkgCfg)"
+		/>
+	</Target>
+
+	<Target Name="_DownloadNupkgGatherOutput" DependsOnTargets="DownloadNupkg">
+		<ItemGroup>
+			<DownloadedNupkg Include="@(DownloadNupkg->'$(DownloadNupkgDirectory)%(Identity).%(Version)\%(Identity).%(Version).nupkg')" />
+			<FileWrites Include="$(_DownloadNupkgStamp);$(_DownloadNupkgPkgCfg)" />
+		</ItemGroup>
+		<ItemGroup>
+			<ExtensionContent
+				Include="@(DownloadedNupkg->HasMetadata('ExtensionDir'))"
+				Link="$([MSBuild]::EnsureTrailingSlash('%(DownloadedNupkg.ExtensionDir)'))%(Filename)%(Extension)" />
+			<ExtensionContent
+				Include="@(DownloadedNupkg->HasMetadata('ExtensionPath'))"
+				Link="%(DownloadedNupkg.ExtensionPath)" />
+		</ItemGroup>
+	</Target>
+
+	<!--
+	=================================================================
+	ExtensionContent logic from AddinMaker
+	ExtensionContent items are copied into the output directory and
+	automatically included in the extension using a generated manifest
+	=================================================================
+	-->
+
+	<!--
+  beforetargets is kinda messy. We can't just go before PrepareResources, because that's _empty_ and actually
+  just depends on a bunch of other targets that do the real work, and we need to go before _those_.
+  SplitResourcesByCulture seems to be the first.
+  -->
+  <Target
+		Name="_PrepareExtensionResources"
+		BeforeTargets="SplitResourcesByCulture"
+		DependsOnTargets="_DownloadNupkgGatherOutput;_CollectExtensionOutputFiles;_GenerateExtensionContentManifest" />
+
+	<Target
+		Name="_CollectExtensionOutputFiles"
+		Condition="'@(ExtensionContent)' != ''"
+		>
+    <!--declare this here instead of toplevel so that IntermediateOutputPath has a value w/SDK style projects-->
+    <PropertyGroup>
+      <_ExtensionContentManifest>$(IntermediateOutputPath)_Manifest.addin.xml</_ExtensionContentManifest>
+    </PropertyGroup>
+
+    <CollectExtensionContent ExtensionContent="@(ExtensionContent)">
+      <Output TaskParameter="ExtensionContentWithLinkMetadata" ItemName="_ExtensionContentWithLinkMetadata" />
+    </CollectExtensionContent>
+
+    <ItemGroup>
+      <FileWrites Include="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')" />
+      <FileWrites Include="$(_ExtensionContentManifest)" />
+      <EmbeddedResource Include="$(_ExtensionContentManifest)">
+        <LogicalName>_Manifest.addin.xml</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+
+  </Target>
+
+  <Target Name="_CopyExtensionOutputFiles"
+    Inputs="@(_ExtensionContentWithLinkMetadata)"
+    Outputs="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')"
+		Condition="'@(_ExtensionContentWithLinkMetadata)' != ''"
+    BeforeTargets="PrepareForRun">
+    <Copy
+      SkipUnchangedFiles="True"
+      SourceFiles="@(_ExtensionContentWithLinkMetadata)"
+      DestinationFiles="@(_ExtensionContentWithLinkMetadata->'$(OutputPath)%(Link)')" />
+  </Target>
+
+  <Target Name="_GenerateExtensionContentManifest"
+    Inputs="$(MSBuildAllProjects);@(ExtensionContent)"
+    Outputs="$(_ExtensionContentManifest)">
+    <GenerateExtensionContentManifest
+      ManifestFile="$(_ExtensionContentManifest)"
+      ExtensionContentWithLinkMetadata="@(_ExtensionContentWithLinkMetadata)" />
+			<!-- disable these for now, they need fixup
+      ReferenceCopyLocalPaths="@(ReferenceCopyLocalPaths)"
+      ExtensionDependencies="@(_ResolvedExtension)"
+			-->
+  </Target>
+
+	<!--
+	=================================================================
+	Remove CopyLocal items from references unless thir filenames
+	match an IncludeCopyLocal item.
+
+	This works around a NuGet issue where PrivateAssets="runtime"
+	doesn't work. It also prevents accidental unwanted local copying.
+
+  Additional diagnostic information can be printed by setting the
+	property -p:DebugFilterCopyReferences=true. This will print
+	which files are being removed, which are being kept, and
+	a list of probable IncludeCopyLocal items. Search the log
+	for "<IncludeCopyLocal Include=" and audit each occurrence. These
+	can be suppressed with corresponding SuppressCopyLocal items.
+
+	=================================================================
+	-->
+
+	<Target Name="_NuGetPrivateAssetsWorkaround_FilterLocalCopyReferences" BeforeTargets="_CopyFilesMarkedCopyLocal">
+		<FilterLocalCopyReferences
+			ReferenceCopyLocalPaths="@(ReferenceCopyLocalPaths)"
+			IncludeList="@(IncludeCopyLocal)"
+			SuppressList="@(SuppressCopyLocal)"
+			ReferencedProjects="@(_MSBuildProjectReferenceExistent)"
+			Configuration="$(Configuration)"
+			Platform="$(Platform)"
+			ProjectDir="$(MSBuildProjectDirectory)"
+			ProjectName="$(MSBuildProjectName)"
+			DebugCopies="$(DebugFilterCopyReferences)">
+			<Output TaskParameter="ItemsToRemove" ItemName="_ReferenceCopyLocalPathsRemove" />
+		</FilterLocalCopyReferences>
+		<ItemGroup>
+		  <ReferenceCopyLocalPaths Remove="@(_ReferenceCopyLocalPathsRemove)" />
+			<_ReferenceCopyLocalPathsRemove Remove="@(_ReferenceCopyLocalPathsRemove)" />
+		</ItemGroup>
+	</Target>
+
+	<!--
+	HACK: Another workaround for broken PrivateAssets.
+	This is injected directly into the project by a target from the package as a Content+CopyToOutputDirectory
+	item. Unlike the items added by NuGet itself there  isn't any way we can generically identify things like
+	this so we have to resort to horrible hacks.
+	-->
+	<Target Name="_NuGetPrivateAssetsWorkaround_RemoveSqliteInjectedContent" Condition="'$(MSBuildProjectName)' != 'MonoDevelop.Core'" AfterTargets="ResolveAssemblyReferences">
+		<ItemGroup>
+			<Content Remove="@(Content->WithMetadataValue('Filename', 'libe_sqlite3'))" />
+			<Content Remove="@(Content->WithMetadataValue('Filename', 'e_sqlite3'))" />
+			<!-- for some reason it also shows up in ReferenceCopyLocalPaths in some projects, suppress the FilterLocalCopyReferences warning -->
+			<SuppressCopyLocal Include="e_sqlite3.dll" />
+			<SuppressCopyLocal Include="libe_sqlite3.dylib" />
+			<SuppressCopyLocal Include="libe_sqlite3.so" />
+		</ItemGroup>
+	</Target>
+</Project>

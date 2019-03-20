@@ -17,7 +17,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
 	using System.Collections;
     using System.Diagnostics;
     using System.Globalization;
-        
+
+	[Obsolete ("Old editor")]
     internal sealed class RegexInterpreter : RegexRunner {
         internal int runoperator;
         internal int [] runcodes;

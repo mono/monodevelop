@@ -33,7 +33,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 			set;
 		}
-		
+
+		[Obsolete]
 		public CodeCompletionContext CodeCompletionContext {
 			get;
 			set;
@@ -44,10 +45,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
-		internal CodeCompletionContextEventArgs (ICompletionWidget widget, CodeCompletionContext codeCompletionContext, string completedWord)
+		internal CodeCompletionContextEventArgs (ICompletionWidget widget, string completedWord)
 		{
 			this.Widget = widget;
-			this.CodeCompletionContext = codeCompletionContext;
 			this.CompletedWord = completedWord;
 		}
 		

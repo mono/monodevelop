@@ -32,6 +32,10 @@ using System.Linq;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.Decompiler.CSharp.Syntax;
+using ICSharpCode.Decompiler.Disassembler;
+using ICSharpCode.Decompiler.Metadata;
+using System.Reflection.Metadata;
+using ICSharpCode.Decompiler.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -46,7 +50,9 @@ namespace MonoDevelop.AssemblyBrowser
 			get;
 			set;
 		}
-		
+		public bool IsLocal { get; set; }
+		public bool IsLocalTarget { get; set; }
+
 		public ReferenceSegment (int offset, int length, object reference)
 		{
 			this.Reference = reference;
@@ -76,8 +82,26 @@ namespace MonoDevelop.AssemblyBrowser
 			return referenceSegment.Segment;
 		}
 	}
-	
-		
+
+	sealed class DefinitionLookup
+	{
+		internal Dictionary<object, int> definitions = new Dictionary<object, int> ();
+
+		public int GetDefinitionPosition (object definition)
+		{
+			if (!definitions.TryGetValue (definition, out int val))
+				val = -1;
+
+			return val;
+		}
+
+		public void AddDefinition (object definition, int offset)
+		{
+			definitions [definition] = offset;
+		}
+	}
+
+
 	class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
@@ -86,7 +110,8 @@ namespace MonoDevelop.AssemblyBrowser
 		int indent;
 		public List<IFoldSegment>     FoldSegments       = new List<IFoldSegment>();
 		public List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
-		
+		internal readonly DefinitionLookup DefinitionLookup = new DefinitionLookup ();
+
 		public ColoredCSharpFormatter (TextEditor doc)
 		{
 			this.doc = doc;
@@ -128,9 +153,62 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append (ch);
 		}
 
-		void ITextOutput.Write (string text)
+		public void Write (string text)
 		{
 			WriteIndent ();
+			sb.Append (text);
+		}
+
+		public void WriteReference (OpCodeInfo opCode)
+		{
+			WriteIndent ();
+			ReferencedSegments.Add (new ReferenceSegment (sb.Length, opCode.Name.Length, opCode));
+			sb.Append (opCode.Name);
+		}
+
+		public void WriteReference (PEFile module, EntityHandle handle, string text, bool isDefinition = false)
+		{
+			WriteIndent ();
+			if (isDefinition) {
+				this.DefinitionLookup.AddDefinition ((module, handle), sb.Length);
+			}
+
+			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, (module, handle)));
+			sb.Append (text);
+		}
+
+		public void WriteReference (IType type, string text, bool isDefinition = false)
+		{
+			WriteIndent ();
+			if (isDefinition) {
+				this.DefinitionLookup.AddDefinition (type, sb.Length);
+			}
+
+			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, type));
+			sb.Append (text);
+		}
+
+		public void WriteReference (IMember member, string text, bool isDefinition = false)
+		{
+			WriteIndent ();
+			if (isDefinition) {
+				this.DefinitionLookup.AddDefinition (member, sb.Length);
+			}
+			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, member));
+			sb.Append (text);
+		}
+
+		public void WriteLocalReference (string text, object reference, bool isDefinition)
+		{
+			WriteIndent ();
+
+			bool isLocalTarget = false;
+			if (isDefinition) {
+				this.DefinitionLookup.AddDefinition (reference, sb.Length);
+				isLocalTarget = true;
+			}
+
+			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, reference) { IsLocal = true, IsLocalTarget = isLocalTarget });
 			sb.Append (text);
 		}
 

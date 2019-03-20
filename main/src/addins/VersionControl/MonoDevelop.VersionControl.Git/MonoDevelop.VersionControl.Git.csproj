@@ -127,6 +127,7 @@
       <Link>libssh2.license.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <IncludeCopyLocal Include="LibGit2Sharp.dll" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
