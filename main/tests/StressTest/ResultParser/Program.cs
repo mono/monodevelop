@@ -31,7 +31,7 @@ namespace ResultParser
 
 						foreach (var kvp in iteration.Leaks) {
 							var leak = kvp.Value;
-							var url = AzureBlobStorage.DefaultInstance.UploadFile (leak.GraphFileName, "image/jpeg").ToString ();
+							var url = AzureBlobStorage.DefaultInstance.UploadFile (leak.GraphFileName, "image/svg+xml").ToString ();
 							Console.WriteLine ("{0}: {1} {2}", leak.ClassName, leak.Count, url);
 						}
 					}
