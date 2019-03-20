@@ -368,8 +368,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 					return true;
 				var execTargetPInfo = r.GetType().GetProperty ("ExecutionTarget");
 				if(execTargetPInfo != null) {
-					var execTarget = execTargetPInfo.GetValue (r) as Core.Execution.ExecutionTarget;
-					if (execTarget != null) {
+					if (execTargetPInfo.GetValue (r) is Core.Execution.ExecutionTarget execTarget) {
 						LoggingService.LogDebug ($"[IRuntimeModel.ExecutionTarget] Id: '{execTarget.Id}' | FullName: '{execTarget.FullName}'");
 						if (execTarget.Id != null && execTarget.Id.Contains (runtimeName))
 							return true;
@@ -389,8 +388,17 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
+			LoggingService.LogDebug ($"Setting ActiveRuntime: Id: '{runtime.GetMutableModel ().FullDisplayString}'");
 			pinfo.SetValue (ResultObject, runtime);
-			return true;
+
+			// Now we need to make sure that the ActiveRuntime is actually set
+			var activeRuntime = (IRuntimeModel)pinfo.GetValue (ResultObject);
+			if(activeRuntime != null) {
+				LoggingService.LogDebug ($"Checking ActiveRuntime: Id: '{activeRuntime.GetMutableModel().FullDisplayString}'");
+				if (activeRuntime.GetMutableModel ().DisplayString == runtime.GetMutableModel ().DisplayString)
+					return true;
+			}
+			return false;
 		}
 		#endregion
 
