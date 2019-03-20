@@ -39,7 +39,7 @@ namespace IdeUnitTests
 		string title;
 		string accessibilityDescription;
 
-		DocumentView IShellDocumentViewItem.Item { get => throw new NotImplementedException (); set => throw new NotImplementedException (); }
+		DocumentView IShellDocumentViewItem.Item { get; set; }
 
 		public virtual Task Show ()
 		{

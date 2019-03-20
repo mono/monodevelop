@@ -756,6 +756,44 @@ namespace MonoDevelop.Ide.Gui.Documents
 			OnSelected ();
 		}
 
+		internal void NotifyShown ()
+		{
+			try {
+				OnContentShown ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					try {
+						ext.OnContentShown ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
+				}
+			}
+		}
+
+		internal void NotifyHidden ()
+		{
+			try {
+				OnContentHidden ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
+			if (extensionChain != null) {
+				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
+					try {
+						ext.OnContentHidden ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+					}
+				}
+			}
+		}
+
 
 		// ****** Virtual and protected methods ******
 
@@ -960,6 +998,20 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (Model is FileModel file)
 				yield return file.FilePath;
+		}
+
+		/// <summary>
+		/// Called when the content of this controller is made visible in the shell.
+		/// </summary>
+		protected virtual void OnContentShown ()
+		{
+		}
+
+		/// <summary>
+		/// Called when the content of this controller is hidden in the shell
+		/// </summary>
+		protected virtual void OnContentHidden ()
+		{
 		}
 
 		protected virtual void OnSelected ()

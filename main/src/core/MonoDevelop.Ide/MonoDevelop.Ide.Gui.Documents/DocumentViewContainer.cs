@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					currentMode = value;
 					if (shellViewContainer != null)
 						shellViewContainer.SetCurrentMode (currentMode);
+					UpdateChildrenVisibility ();
 				}
 			}
 		}
@@ -111,12 +112,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 						throw new InvalidOperationException ("View doesn't belong to this container");
 					if (shellViewContainer == null) {
 						activeView = value;
+						UpdateChildrenVisibility ();
 						activeView.OnActivated ();
 						ActiveViewChanged?.Invoke (this, EventArgs.Empty);
 					} else
 						shellViewContainer.ActiveView = value.ShellView;
 				} else {
 					activeView = null;
+					UpdateChildrenVisibility ();
 					if (shellViewContainer != null)
 						shellViewContainer.ActiveView = null;
 				}
@@ -165,6 +168,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void ShellViewContainer_ActiveViewChanged (object sender, EventArgs e)
 		{
 			activeView = shellViewContainer.ActiveView?.Item;
+			UpdateChildrenVisibility ();
 			activeView?.OnActivated ();
 			ActiveViewChanged?.Invoke (this, EventArgs.Empty);
 		}
@@ -200,6 +204,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					ActiveView = item;
 			} else
 				base.OnInsertItem (list, index, item);
+			UpdateChildVisibleStatus (item);
 		}
 
 		internal override void OnRemoveItem (DocumentViewContentCollection list, int index)
@@ -221,18 +226,18 @@ namespace MonoDevelop.Ide.Gui.Documents
 				base.OnRemoveItem (list, index);
 		}
 
-		internal override void OnSetItem (DocumentViewContentCollection list, int index, DocumentView item)
+		internal override void OnItemSet (DocumentViewContentCollection list, int index, DocumentView oldItem, DocumentView item)
 		{
 			if (list == Views) {
-				var oldItem = Views [index];
 				oldItem.Parent = null;
 				item.Parent = this;
 				if (shellViewContainer != null)
 					shellViewContainer.ReplaceView (index, item.CreateShellView (window));
 				else if (ActiveView == oldItem)
 					ActiveView = item;
+				UpdateChildVisibleStatus (item);
 			} else
-				base.OnSetItem (list, index, item);
+				base.OnItemSet (list, index, oldItem, item);
 		}
 
 		internal override bool ReplaceChildView (DocumentView documentView)
@@ -244,6 +249,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return false;
 			if (shellViewContainer != null)
 				shellViewContainer.ReplaceView (index, documentView.CreateShellView (window));
+			UpdateChildVisibleStatus (documentView);
 			return true;
 		}
 
@@ -274,6 +280,23 @@ namespace MonoDevelop.Ide.Gui.Documents
 			foreach (var c in Views.ToList ())
 				c.Dispose ();
 			base.OnDispose ();
+		}
+
+		internal override void UpdateContentVisibility (bool parentIsVisible)
+		{
+			base.UpdateContentVisibility (parentIsVisible);
+			UpdateChildrenVisibility ();
+		}
+
+		void UpdateChildrenVisibility ()
+		{
+			foreach (var view in Views)
+				UpdateChildVisibleStatus (view);
+		}
+
+		void UpdateChildVisibleStatus (DocumentView view)
+		{
+			view.UpdateContentVisibility (ContentVisible && (view == activeView || CurrentMode == DocumentViewContainerMode.HorizontalSplit || CurrentMode == DocumentViewContainerMode.VerticalSplit));
 		}
 	}
 }

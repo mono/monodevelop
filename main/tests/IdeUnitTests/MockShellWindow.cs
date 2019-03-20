@@ -70,8 +70,12 @@ namespace IdeUnitTests
 
 		public void SelectWindow ()
 		{
+			if (Notebook != null)
+				Notebook.ActiveWindow = this;
 			Shell.ActiveWorkbenchWindow = this;
 		}
+
+		public bool ContentVisible => Notebook.ActiveWindow == this;
 
 		IShellDocumentViewContent IWorkbenchWindow.CreateViewContent ()
 		{

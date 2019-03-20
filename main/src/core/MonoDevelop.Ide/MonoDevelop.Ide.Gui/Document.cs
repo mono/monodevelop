@@ -646,6 +646,11 @@ namespace MonoDevelop.Ide.Gui
 			if (IsFile)
 				FileSettingsStore.Remove (FileName);
 		}
+
+		internal void UpdateContentVisibility ()
+		{
+			view.UpdateContentVisibility (window.ContentVisible);
+		}
 	}
 
 

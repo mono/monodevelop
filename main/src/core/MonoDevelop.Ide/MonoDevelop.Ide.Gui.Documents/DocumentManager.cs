@@ -726,6 +726,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			activeDocument = workbench.ActiveWorkbenchWindow?.Document;
 
+			foreach (var doc in documents)
+				doc.UpdateContentVisibility ();
+
 			ActiveDocumentChanged?.Invoke (s, new DocumentEventArgs (activeDocument));
 
 			if (activeDocument != null)

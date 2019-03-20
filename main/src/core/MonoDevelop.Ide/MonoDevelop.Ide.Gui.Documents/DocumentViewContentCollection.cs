@@ -72,9 +72,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (listener != null)
 				listener.SetItem (this, index, item);
+			var oldItem = Items [index];
 			base.SetItem (index, item);
 			if (listener != null)
-				listener.ItemSet (this, index, item);
+				listener.ItemSet (this, index, oldItem, item);
 		}
 	}
 
@@ -87,6 +88,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void ItemsCleared (DocumentViewContentCollection list);
 		void ItemInserted (DocumentViewContentCollection list, int index, DocumentView item);
 		void ItemRemoved (DocumentViewContentCollection list, int index);
-		void ItemSet (DocumentViewContentCollection list, int index, DocumentView item);
+		void ItemSet (DocumentViewContentCollection list, int index, DocumentView oldItem, DocumentView item);
 	}
 }

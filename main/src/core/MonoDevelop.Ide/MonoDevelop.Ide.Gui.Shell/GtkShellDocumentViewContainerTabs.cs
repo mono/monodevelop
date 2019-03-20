@@ -141,8 +141,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 		public void ReplaceView (int position, GtkShellDocumentViewItem view)
 		{
 			notebook.RemovePage (position);
-			tabstrip.RemoveTab (position);
-			InsertView (position, view);
+			notebook.InsertPage (view, new Gtk.Label (), position);
+			tabstrip.ReplaceTab (position, CreateTab (view));
 		}
 
 		public IEnumerable<GtkShellDocumentViewItem> GetAllViews ()

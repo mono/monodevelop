@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 		VBox rootTabsBox;
 		HBox bottomBarBox;
 		DocumentViewContainerMode currentMode;
+		bool hasSplit;
 
 		IGtkShellDocumentViewContainer currentContainer;
 		GtkShellDocumentViewContainerTabs tabsContainer;
@@ -74,12 +75,12 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		public void SetSupportedModes (DocumentViewContainerMode supportedModes)
 		{
-			var hadSplit = (this.supportedModes & DocumentViewContainerMode.VerticalSplit) != 0 || (this.supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0;
+			var hadSplit = hasSplit;
 
 			this.supportedModes = supportedModes;
 			tabstrip.Visible = (supportedModes & DocumentViewContainerMode.Tabs) != 0;
 
-			var hasSplit = (this.supportedModes & DocumentViewContainerMode.VerticalSplit) != 0 || (this.supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0;
+			hasSplit = (this.supportedModes & DocumentViewContainerMode.VerticalSplit) != 0 || (this.supportedModes & DocumentViewContainerMode.HorizontalSplit) != 0;
 			if (hasSplit && !hadSplit) {
 				var currentActive = tabstrip.ActiveTab;
 				var tab = new Tab (tabstrip, GettextCatalog.GetString ("Split"));
@@ -181,7 +182,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		void TabActivated (object s, EventArgs args)
 		{
-			if (tabstrip.ActiveTab == tabstrip.TabCount - 1) {
+			if (hasSplit && tabstrip.ActiveTab == tabstrip.TabCount - 1) {
 				SetCurrentMode (DocumentViewContainerMode.VerticalSplit);
 			} else {
 				var tab = (Tab)s;
@@ -195,8 +196,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 			var newView = (GtkShellDocumentViewItem)shellView;
 			newView.Show ();
 			currentContainer.ReplaceView (position, newView);
-			tabstrip.RemoveTab (position);
-			tabstrip.InsertTab (position, CreateTab (newView));
+			tabstrip.ReplaceTab (position, CreateTab (newView));
 		}
 
 		public void RemoveView (int tabPos)

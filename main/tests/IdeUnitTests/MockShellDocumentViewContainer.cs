@@ -34,11 +34,21 @@ namespace IdeUnitTests
 {
 	public class MockShellDocumentViewContainer : MockShellDocumentView, IShellDocumentViewContainer
 	{
+		IShellDocumentViewItem activeView;
+
 		public override string Tag => "Container";
 
 		public List<MockShellDocumentView> Views = new List<MockShellDocumentView> ();
 
-		IShellDocumentViewItem IShellDocumentViewContainer.ActiveView { get; set; }
+		IShellDocumentViewItem IShellDocumentViewContainer.ActiveView {
+			get => activeView;
+			set {
+				if (activeView != value) {
+					activeView = value;
+					ActiveViewChanged?.Invoke (this, EventArgs.Empty);
+				}
+			}
+		}
 
 		public event EventHandler ActiveViewChanged;
 
@@ -68,7 +78,10 @@ namespace IdeUnitTests
 
 		void IShellDocumentViewContainer.ReplaceView (int position, IShellDocumentViewItem view)
 		{
+			var oldView = Views [position];
 			Views [position] = (MockShellDocumentView)view;
+			if (oldView == activeView)
+				((IShellDocumentViewContainer)this).ActiveView = view;
 		}
 
 		void IShellDocumentViewContainer.SetCurrentMode (DocumentViewContainerMode currentMode)

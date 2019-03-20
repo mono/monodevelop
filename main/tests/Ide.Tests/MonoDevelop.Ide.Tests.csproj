@@ -153,7 +153,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentManagerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\FileDocumentControllerTests.cs" />
     <Compile Include="TestHelper.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentViewTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentViewVisibilityTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerExtensionTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Documents\DocumentControllerTests.cs" />
     <Compile Include="MonoDevelop.Ide\BaseCredentialsProviderTests.cs" />

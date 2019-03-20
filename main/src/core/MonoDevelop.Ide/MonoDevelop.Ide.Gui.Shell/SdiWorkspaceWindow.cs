@@ -204,6 +204,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 			});
 		}
 
+		public bool ContentVisible => TabControl.CurrentTab.Content == this;
+
 		public bool CanMoveToNextNotebook ()
 		{
 			return TabControl.GetNextNotebook () != null || (TabControl.Container.AllowRightInsert && TabControl.TabCount > 1);

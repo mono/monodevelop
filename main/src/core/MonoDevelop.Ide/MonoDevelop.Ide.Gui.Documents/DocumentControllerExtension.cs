@@ -43,8 +43,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 	[TypeExtensionPoint (Path = DocumentController.DocumentControllerExtensionsPath, ExtensionAttributeType = typeof (ExportDocumentControllerExtensionAttribute), Name = "Document controller extensions")]
 	public class DocumentControllerExtension : ChainedExtension, IDisposable
 	{
-		DocumentView viewItem;
-
 		DocumentControllerExtension next;
 
 		internal TypeExtensionNode<ExportDocumentControllerExtensionAttribute> SourceExtensionNode { get; set; }
@@ -142,6 +140,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		protected virtual void OnUnfocused ()
+		{
+		}
+
+		internal protected virtual void OnContentShown ()
+		{
+		}
+
+		internal protected virtual void OnContentHidden ()
 		{
 		}
 

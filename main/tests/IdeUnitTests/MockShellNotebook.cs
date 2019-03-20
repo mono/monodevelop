@@ -29,7 +29,8 @@ using MonoDevelop.Ide.Gui.Shell;
 
 namespace IdeUnitTests
 {
-	public class MockShellNotebook: IShellNotebook
+	public class MockShellNotebook : IShellNotebook
 	{
+		public MockShellWindow ActiveWindow { get; set; }
 	}
 }

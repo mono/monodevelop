@@ -157,6 +157,33 @@ namespace MonoDevelop.Components
 			tab.Dispose ();
 		}
 
+		public void ReplaceTab (int position, Tab tab)
+		{
+			var oldTab = tabs [position];
+			tabs [position] = tab;
+			tabSizes [position] = tab.Size;
+
+			if (oldTab.Active)
+				tab.Active = true;
+
+			if (oldTab.Accessible != null) {
+				Accessible.RemoveAccessibleElement (oldTab.Accessible);
+				oldTab.AccessibilityPressed -= OnTabPressed;
+				UpdateAccessibilityTabs ();
+			}
+
+			oldTab.Dispose ();
+
+			QueueResize ();
+
+			tab.Allocation = GetBounds (tab);
+			if (tab.Accessible != null) {
+				Accessible.AddAccessibleElement (tab.Accessible);
+				tab.AccessibilityPressed += OnTabPressed;
+				UpdateAccessibilityTabs ();
+			}
+		}
+
 		internal void ReorderTabs (int currentIndex, int newIndex)
 		{
 			var replaced = tabs [newIndex];

@@ -44,17 +44,26 @@ namespace MonoDevelop.Ide.Gui.Documents
 		IShellDocumentViewContainer attachmentsContainer;
 		IShellDocumentViewItem mainShellView;
 		DocumentView activeAttachedView;
+		DocumentController sourceController;
+		bool contentVisible;
+		DocumentView parent;
+
 		internal IWorkbenchWindow window;
 
 		/// <summary>
 		/// Raised when the active view in this hierarchy of views changes
 		/// </summary>
 		public EventHandler ActiveViewInHierarchyChanged;
-		private DocumentController sourceController;
+
+		/// <summary>
+		/// Raised when the ContentVisible property changes
+		/// </summary>
+		public EventHandler ContentVisibleChanged;
 
 		public DocumentView ()
 		{
 			AttachedViews.AttachListener (this);
+			activeAttachedView = this;
 		}
 
 		/// <summary>
@@ -113,6 +122,24 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
+		/// <summary>
+		/// Returns true when the view is currently visible in the shell
+		/// </summary>
+		/// <value><c>true</c> if content visible; otherwise, <c>false</c>.</value>
+		public bool ContentVisible {
+			get { return contentVisible; }
+			internal set {
+				if (value != contentVisible) {
+					contentVisible = value;
+					ContentVisibleChanged?.Invoke (this, EventArgs.Empty);
+					if (contentVisible)
+						SourceController?.NotifyShown ();
+					else
+						SourceController?.NotifyHidden ();
+				}
+			}
+		}
+
 		internal void UpdateActiveViewInHierarchy ()
 		{
 		}
@@ -125,7 +152,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Container that contains this view
 		/// </summary>
 		/// <value>The parent.</value>
-		public DocumentView Parent { get; internal set; }
+		public DocumentView Parent {
+			get => parent;
+			set {
+				parent = value;
+
+				// If a view is detached, reset all visible flags
+				if (!IsRoot && parent == null)
+					UpdateContentVisibility (false);
+			}
+		}
 
 		internal IShellDocumentViewItem ShellView {
 			get {
@@ -144,6 +180,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					activeAttachedView = this;
 					activeAttachedView.OnActivated ();
 				}
+				UpdateContentVisibility ();
 				return;
 			}
 			if (Parent != null)
@@ -171,6 +208,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 					activeAttachedView = child;
 					activeAttachedView.OnActivated ();
 				}
+				UpdateContentVisibility ();
 			}
 		}
 
@@ -190,6 +228,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				return shellView;
 			this.window = window;
 			mainShellView = OnCreateShellView (window);
+			mainShellView.Item = this;
 			if (IsRoot && AttachedViews.Count > 0) {
 				attachmentsContainer = window.CreateViewContainer ();
 				attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
@@ -267,6 +306,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			activeAttachedView = attachmentsContainer.ActiveView?.Item;
 			activeAttachedView?.OnActivated ();
+			UpdateContentVisibility ();
 		}
 
 		internal abstract IShellDocumentViewItem OnCreateShellView (IWorkbenchWindow window);
@@ -303,6 +343,24 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (SourceController != null)
 				result = result.Concat (SourceController);
 			return result;
+		}
+
+		bool parentIsVisible;
+
+		internal virtual void UpdateContentVisibility (bool parentIsVisible)
+		{
+			this.parentIsVisible = parentIsVisible;
+			UpdateContentVisibility ();
+		}
+
+		void UpdateContentVisibility ()
+		{
+			if (AttachedViews.Count > 0) {
+				ContentVisible = parentIsVisible && activeAttachedView == this;
+				foreach (var v in AttachedViews)
+					v.UpdateContentVisibility (parentIsVisible && v == activeAttachedView);
+			} else
+				ContentVisible = parentIsVisible;
 		}
 
 		void SubscribeControllerEvents ()
@@ -361,9 +419,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 			OnItemRemoved (list, index);
 		}
 
-		void IDocumentViewContentCollectionListener.ItemSet (DocumentViewContentCollection list, int index, DocumentView item)
+		void IDocumentViewContentCollectionListener.ItemSet (DocumentViewContentCollection list, int index, DocumentView oldItem, DocumentView item)
 		{
-			OnItemSet (list, index, item);
+			OnItemSet (list, index, oldItem, item);
 		}
 
 		internal virtual void OnClearItems (DocumentViewContentCollection list)
@@ -396,12 +454,6 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal virtual void OnSetItem (DocumentViewContentCollection list, int index, DocumentView item)
 		{
-			if (list == AttachedViews) {
-				AttachedViews [index].Parent = null;
-				item.Parent = this;
-				if (attachmentsContainer != null)
-					attachmentsContainer.ReplaceView (index, item.CreateShellView (window));
-			}
 		}
 
 		internal virtual void OnItemsCleared (DocumentViewContentCollection list)
@@ -423,8 +475,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 			}
 		}
 
-		internal virtual void OnItemSet (DocumentViewContentCollection list, int index, DocumentView item)
+		internal virtual void OnItemSet (DocumentViewContentCollection list, int index, DocumentView oldItem, DocumentView item)
 		{
+			if (list == AttachedViews) {
+				oldItem.Parent = null;
+				item.Parent = this;
+				if (attachmentsContainer != null)
+					attachmentsContainer.ReplaceView (index, item.CreateShellView (window));
+				UpdateContentVisibility ();
+			}
 		}
 
 		public override string ToString ()

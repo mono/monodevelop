@@ -52,6 +52,8 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			widgetContainer = new MergeWidgetContainer ();
 			NoMergeConflictsLabel = new Gtk.Label () { Text = GettextCatalog.GetString ("No merge conflicts detected.") };
+			RefreshContent ();
+			RefreshMergeEditor ();
 			FileService.FileChanged += FileService_FileChanged;
 			return widgetContainer;
 		}
@@ -87,13 +89,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			//if it is shown we refresh we show the content and refresh the editor (probably this nee
-			info.Start ();
-			RefreshContent ();
-			RefreshMergeEditor ();
-		}
-
-		protected override void OnSelected ()
-		{
 			info.Start ();
 			RefreshContent ();
 			RefreshMergeEditor ();

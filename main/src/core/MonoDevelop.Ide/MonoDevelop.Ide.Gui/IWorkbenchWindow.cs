@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Gui
 		string Title { get; }
 		bool ShowNotification { get; set; }
 		IShellNotebook Notebook { get; }
+		bool ContentVisible { get; }
 
 		void SelectWindow ();
 

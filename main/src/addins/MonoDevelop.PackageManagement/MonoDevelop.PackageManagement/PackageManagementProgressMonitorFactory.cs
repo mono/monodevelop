@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 
 			OutputProgressMonitor consoleMonitor = CreatePackageConsoleOutputMonitor ();
 
-			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
+			Pad pad = Runtime.RunInMainThread (() => IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor)).Result;
 
 			ProgressMonitor statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 				title,

@@ -39,6 +39,7 @@ namespace IdeUnitTests
 		List<MockShellWindow> windows = new List<MockShellWindow> ();
 
 		MockShellWindow activeWindow;
+		MockShellNotebook mainNotebook = new MockShellNotebook ();
 
 		EventHandler<WindowReorderedEventArgs> windowReordered;
 		EventHandler<NotebookEventArgs> notebookClosed;
@@ -86,8 +87,11 @@ namespace IdeUnitTests
 
 		Task<IWorkbenchWindow> IShell.ShowView (DocumentController controller, IShellNotebook notebook, object viewCommandHandler)
 		{
-			var view = new MockShellWindow (this, controller, (MockShellNotebook) notebook);
+			var nb = ((MockShellNotebook)notebook) ?? mainNotebook;
+			var view = new MockShellWindow (this, controller, nb);
 			windows.Add (view);
+			if (nb.ActiveWindow == null)
+				nb.ActiveWindow = view;
 			return Task.FromResult<IWorkbenchWindow> (view);
 		}
 
