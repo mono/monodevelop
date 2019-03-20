@@ -25,7 +25,6 @@
 //
 //
 
-using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
@@ -33,10 +32,6 @@ namespace MonoDevelop.Ide.Codons
 	public class CategoryNode: ExtensionNode
 	{
 		[NodeAttribute("_name", "Category name", Localizable=true, Required=true)]
-		string name;
-		
-		public string Name {
-			get { return name; }
-		}
+		public string Name { get; private set; }
 	}
 }

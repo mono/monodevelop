@@ -1,8 +1,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems" Label="Shared Mac"
+    Condition="Exists('..\..\..\external\vs-editor-core\src\RoslynIntegration\RoslynIntegration.projitems') And ('$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac')" />
   <Import Project="..\..\..\MonoDevelop.props" />
-  <Import Project="$(ReferencesRoslyn)" />
-  <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
+  <Import Project="$(ReferencesVSEditor)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -22,80 +23,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\packages\JetBrains.SharpZipLib.Stripped.0.87.20170615.10\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.TemplateEngine.Abstractions">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Abstractions.1.0.0-beta3-20171117-314\lib\net45\Microsoft.TemplateEngine.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.TemplateEngine.Core">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.1.0.0-beta3-20171117-314\lib\net45\Microsoft.TemplateEngine.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.TemplateEngine.Core.Contracts">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Core.Contracts.1.0.0-beta3-20171117-314\lib\net45\Microsoft.TemplateEngine.Core.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.TemplateEngine.Edge">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Edge.1.0.0-beta3-20171117-314\lib\net45\Microsoft.TemplateEngine.Edge.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.1.0.0-beta3-20171117-314\lib\net45\Microsoft.TemplateEngine.Orchestrator.RunnableProjects.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.TemplateEngine.Utils">
-      <HintPath>..\..\..\packages\Microsoft.TemplateEngine.Utils.1.0.0-beta3-20171117-314\lib\net45\Microsoft.TemplateEngine.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Composition, Version=15.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Composition.15.6.36\lib\net45\Microsoft.VisualStudio.Composition.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=15.8.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Threading.15.8.209\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Validation, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\Microsoft.VisualStudio.Validation.15.3.32\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PresentationCore" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.5.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\packages\System.Composition.AttributedModel.1.0.31\lib\netstandard1.0\System.Composition.AttributedModel.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Convention">
-      <HintPath>..\..\..\packages\Microsoft.Composition.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Hosting">
-      <HintPath>..\..\..\packages\System.Composition.Hosting.1.0.31\lib\netstandard1.0\System.Composition.Hosting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.Runtime">
-      <HintPath>..\..\..\packages\System.Composition.Runtime.1.0.31\lib\netstandard1.0\System.Composition.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Composition.TypedParts">
-      <HintPath>..\..\..\packages\System.Composition.TypedParts.1.0.31\lib\netstandard1.0\System.Composition.TypedParts.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression">
-      <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard1.1\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\..\..\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\netstandard1.0\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
@@ -107,10 +46,6 @@
     <Reference Include="WindowsFormsIntegration" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
     when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
@@ -128,14 +63,26 @@
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.CodingConventions">
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.CodingConventions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\..\..\packages\YamlDotNet.Signed.5.2.1\lib\net45\YamlDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http" />
+    <PackageReference Include="Microsoft.TemplateEngine.Edge" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
+    <PackageReference Include="YamlDotNet.Signed" Version="5.2.1" />
+    <IncludeCopyLocal Include="ICSharpCode.NRefactory.Cecil.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.NRefactory.CSharp.dll" />
+    <IncludeCopyLocal Include="ICSharpCode.NRefactory.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Abstractions.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Core.Contracts.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Core.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Edge.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects.dll" />
+    <IncludeCopyLocal Include="Microsoft.TemplateEngine.Utils.dll" />
+    <IncludeCopyLocal Include="Mono.Addins.Gui.dll" />
+    <IncludeCopyLocal Include="Mono.Debugging.dll" />
+    <IncludeCopyLocal Include="Xamarin.Mac.dll" />
+    <IncludeCopyLocal Include="Xwt.dll" />
+    <IncludeCopyLocal Include="Xwt.Gtk.dll" />
+    <IncludeCopyLocal Include="Xwt.XamMac.dll" />
+    <IncludeCopyLocal Include="YamlDotNet.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -3072,6 +3019,7 @@
     <EmbeddedResource Include="icons\code-actions\lightbulb-screwdriver-16~sel%402x.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.Components.Commands\ICustomCommandTarget.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\EditCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\FileCommands.cs" />
@@ -3084,15 +3032,19 @@
     <Compile Include="MonoDevelop.Ide.Composition\CommonEditorAssetServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\CompositionManager.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\EditorExperimentationServiceInternal.cs" />
-    <Compile Include="MonoDevelop.Ide.Composition\InlineRenameService.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\EditorWaitIndicator.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\ExtensionSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\JoinableTaskContextHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\ObscuringTipManager.cs" />
+    <!--<Compile Include="MonoDevelop.Ide.Composition\PeekResultFactory.cs" />-->
     <Compile Include="MonoDevelop.Ide.Composition\PlatformCatalog.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PlatformExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\PreviewFactoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\RoslynWaitIndicator.cs" />
-    <Compile Include="MonoDevelop.Ide.Composition\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Ide.Composition\SuggestedActionCategoryRegistryService.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorFactoryService.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MiscellaneousFilesWorkspace.cs" />
+    <Compile Include="MonoDevelop.Ide\MimeTypeCatalog.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorInitializationService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
@@ -4226,18 +4178,27 @@
     <Compile Include="MonoDevelop.Ide.Desktop\ThermalMonitor.cs" />
     <Compile Include="MonoDevelop.Ide\PlatformThermalStatusEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopFrameworkAssemblyPathResolver.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopDocumentNavigationService.cs" />
+    <Compile Include="MonoDevelop.Ide.RoslynServices\MonoDevelopSymbolNavigationService.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopMetadataReferenceManager.FileKey.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomeWindowProvider.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynLogger.cs" />
     <Compile Include="MonoDevelop.Ide.RoslynServices\RoslynFileLogger.cs" />
+    <Compile Include="MonoDevelop.Ide.Composition\VisualStudioMefHostServices.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewSolutionRunConfigurationDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="DeleteAfterWebToolsFixesDep\VacuousTextDataModel.cs" />
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="DeleteAfterWebToolsFixesDep\VacuousTextViewModel.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorPreferences.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\IPropertyGrid.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
-    <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomeWindowProvider.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NativeViewHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLabel.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSLine.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\NewSolutionRunConfigurationDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\HackyWorkspaceFilesCache.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\IPropertyGrid.cs" />
   </ItemGroup>
   <ItemGroup>
     <Data Include="options\DefaultEditingLayout.xml" />
@@ -4248,7 +4209,6 @@
     <None Include="MonoDevelop.Ide.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\F#Comments.tmPreferences" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\AppleStrings\AppleStrings.sublime-syntax" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\make\OSSREADME.json" />
@@ -4315,6 +4275,8 @@
     <InternalsVisibleTo Include="MonoDevelop.Refactoring.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor2" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor" />
+    <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Tests" />
     <InternalsVisibleTo Include="MonoDevelop.UnitTesting" />
     <InternalsVisibleTo Include="MonoDevelop.VBNetBinding" />
@@ -4331,9 +4293,6 @@
     <InternalsVisibleTo Include="Xamarin.iOSDesigner.MonoDevelop" />
     <InternalsVisibleTo Include="Xamarin.OSXEditor" />
     <InternalsVisibleTo Include="Xamarin.Sketches" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="icons\code-actions\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

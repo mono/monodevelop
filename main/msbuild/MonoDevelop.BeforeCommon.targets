@@ -19,9 +19,17 @@
 		<DebugType>portable</DebugType>
 		<WarningLevel>4</WarningLevel>
 		<Deterministic>True</Deterministic>
-		<!-- always produce docs -->
-		<OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
-		<DocumentationFile Condition="'$(SuppressDocs)'!='True'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<!-- AddinBuildDir is shorthand for which subdir of build\Addins to build into -->
+	<PropertyGroup Condition="'$(AddinBuildDir)'!=''">
+		<OutDir>$(MonoDevelopRootDir)build\AddIns\$([MSBuild]::EnsureTrailingSlash('$(AddinBuildDir)'))</OutDir>
+	</PropertyGroup>
+
+	<!-- produce docs unless explicitly disabled -->
+	<PropertyGroup Condition="'$(SuppressDocs)'!='True'">
+		<DocsDir>$([MSBuild]::ValueOrDefault('$(OutDir)', '$(OutputPath)'))</DocsDir>
+		<DocumentationFile Condition="'$(DocsDir)' !=''">$([MSBuild]::EnsureTrailingSlash('$(DocsDir)'))$(AssemblyName).xml</DocumentationFile>
 		<!-- don't warn about missing doc comments -->
 		<NoWarn>$(NoWarn);1591;1573</NoWarn>
 	</PropertyGroup>
@@ -75,4 +83,18 @@
 			<Analyzer Remove="@(Analyzer->WithMetadataValue('Filename', 'Microsoft.CodeAnalysis.Analyzers'))" />
 		</ItemGroup>
 	</Target>
+
+	<ItemGroup Condition="$(MSBuildProjectName) != 'MonoDevelop.Core'">
+		<Reference Include="$(NuGetPackageRoot)microsoft.visualstudio.composition/$(NuGetVersionVSComposition)/lib/net45/Microsoft.VisualStudio.Composition.dll">
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<!--
+	Hide these refs behind an import so NuGet doesn't see them and generate spurious NU1108 "cycle detected" errors even when the condition is false.
+	This means that they have to be imported AFTER the project instead of before it, so the project can set AddMonoDevelopCoreReferences.
+	-->
+	<Import Project="$(MSBuildThisFileDirectory)CoreReferences.props" Condition="'$(AddMonoDevelopCoreReferences)' == 'true'" />
+
+
 </Project>

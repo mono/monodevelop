@@ -1,4 +1,4 @@
-﻿// Caret.cs
+// Caret.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,6 +28,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 
@@ -329,10 +330,14 @@ namespace Mono.TextEditor
 
 		protected override void OnPositionChanged (CaretLocationEventArgs args)
 		{
-			TextEditorData.Document.EnsureOffsetIsUnfolded (Offset);
-			base.OnPositionChanged (args);
-			PositionChanged_ITextCaret (args);
-			currentBuffer = TextEditorData.Document.TextBuffer.CurrentSnapshot;
+			try {
+				TextEditorData.Document.EnsureOffsetIsUnfolded (Offset);
+				base.OnPositionChanged (args);
+				PositionChanged_ITextCaret (args);
+				currentBuffer = TextEditorData.Document.TextBuffer.CurrentSnapshot;
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Error when updating caret position", ex);
+			}
 		}
 		
 		protected virtual void OnModeChanged ()

@@ -1,4 +1,4 @@
-﻿//
+//
 // MyClass.cs
 //
 // Author:

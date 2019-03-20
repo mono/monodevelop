@@ -450,9 +450,6 @@ int main (int argc, char **argv)
 
 	char *mono_version = _mono_get_runtime_build_info ();
 
-	// There is a JIT fix that is in mono 5.8.0.130 and 5.10.0.124
-	// Check mono > 5.10 first, then check > 5.8 and < 5.9. Otherwise it falls
-	// into the broken range of [5.9.0 5.10.0.123]
 	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
 		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]];
 		exit_with_message ((char *)[msg UTF8String], argv[0]);

@@ -92,7 +92,8 @@ namespace MonoDevelop.Refactoring.Options
 				new NotificationOptionViewModel(NotificationOption.None, "issues-hide"),
 				new NotificationOptionViewModel(NotificationOption.Suggestion, "issues-suggestion"),
 				new NotificationOptionViewModel(NotificationOption.Warning, "issues-warning"),
-				new NotificationOptionViewModel(NotificationOption.Error, "issues-error")
+				new NotificationOptionViewModel(NotificationOption.Error, "issues-error"),
+				new NotificationOptionViewModel(NotificationOption.Silent, "issues-hide")
 			};
 		}
 

@@ -36,6 +36,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete]
 	class DefaultCodeFormatter : AbstractCodeFormatter
 	{
 		static int GetNextTabstop (int currentColumn, int tabSize)

@@ -3,12 +3,15 @@
 !Contents/Resources/lib/monodevelop/AddIns/designer/Xamarin.iOSDesigner/MonoTouchDesignServerUnified.app
 !Contents/Resources/lib/monodevelop/AddIns/designer/Xamarin.iOSDesigner/XamarinFormsPrevieweriOS.app
 !Contents/Resources/lib/monodevelop/AddIns/docker/MonoDevelop.Docker/MSBuild/Sdks/Microsoft.Docker.Sdk
+!Contents/Resources/lib/monodevelop/AddIns/docker/MonoDevelop.Docker/mscorlib.dll
 !Contents/Resources/lib/monodevelop/AddIns/DotNetCore.Debugger/Adapter
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.AzureFunctions/azure-functions-cli
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.UnitTesting/NUnit3/Mono.Cecil.dll
+!Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.UnitTesting/VsTestConsole
 !Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.Unity/Editor
 !Contents/Resources/lib/monodevelop/AddIns/Xamarin.Ide.Identity
 !Contents/Resources/lib/monodevelop/AddIns/Xamarin.Interactive.XS/Xamarin Inspector.app
+!Contents/Resources/lib/monodevelop/bin/Microsoft.VisualStudio.Imaging.dll
 !Contents/Resources/lib/monodevelop/bin/ServiceHub
 Contents/Resources/lib/monodevelop/AddIns/FSharpBinding/MonoDevelop.FSharpInteractive.Service.exe.config
 Contents/Resources/lib/monodevelop/bin/VisualStudio.exe.config

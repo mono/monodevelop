@@ -32,6 +32,7 @@ using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class Usage : AbstractSegment
 	{
 		public readonly ReferenceUsageType UsageType;

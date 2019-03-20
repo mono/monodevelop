@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <copyright file="Regex.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>                                                                
@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
 #if !SILVERLIGHT
     [ Serializable() ] 
 #endif
+	[Obsolete ("Old editor")]
     class Regex 
 #if !SILVERLIGHT
     : ISerializable 
@@ -1346,13 +1347,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
 #if !SILVERLIGHT
     [ Serializable() ] 
 #endif
+	[Obsolete ("Old editor")]
     delegate String MatchEvaluator(Match match);
 
 
     /*
      * Used to cache byte codes or compiled factories
      */
-    internal sealed class CachedCodeEntry {
+	[Obsolete ("Old editor")]
+    internal sealed class CachedCodeEntry
+	{
         internal string _key;
         internal RegexCode _code;
 #if SILVERLIGHT
@@ -1398,7 +1402,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
     /*
      * Used to cache one exclusive runner reference
      */
-    internal sealed class ExclusiveReference {
+	[Obsolete ("Old editor")]
+    internal sealed class ExclusiveReference
+	{
         RegexRunner _ref;
         Object _obj;
         int _locked;
@@ -1480,7 +1486,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
     /*
      * Used to cache a weak reference in a threadsafe way
      */
-    internal sealed class SharedReference {
+	[Obsolete ("Old editor")]
+    internal sealed class SharedReference
+	{
         WeakReference _ref = new WeakReference(null);
         int _locked;
 

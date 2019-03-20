@@ -16,7 +16,7 @@ if test ! -e "$DMG_APP" ; then
 	exit 1
 fi
 
-NAME=`grep -A1 CFBundleName "$DMG_APP/Contents/Info.plist"  | grep string | sed -e 's/.*<string>//' -e 's,</string>,,'`
+NAME=`grep -A1 CFBundleDisplayName "$DMG_APP/Contents/Info.plist"  | grep string | sed -e 's/.*<string>//' -e 's,</string>,,'`
 VERSION=`grep -A1 CFBundleVersion "$DMG_APP/Contents/Info.plist"  | grep string | sed -e 's/.*<string>//' -e 's,</string>,,'`
 
 #if we use the version in the volume name, Finder can't find the background image

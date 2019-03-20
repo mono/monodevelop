@@ -48,10 +48,11 @@ using System.Windows.Input;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+	[Obsolete ("Old editor")]
 	partial class ResultTooltipProvider : TooltipProvider
 	{
 		#region ITooltipProvider implementation 
-		public override async Task<TooltipItem> GetItem (TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
+		public override async Task<TooltipItem> GetItem (Ide.Editor.TextEditor editor, DocumentContext ctx, int offset, CancellationToken token = default (CancellationToken))
 		{
 			var results = new List<Result> ();
 			int markerOffset = -1, markerEndOffset = -1;
@@ -148,7 +149,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return new TooltipItem (tooltipInfo, markerOffset, markerEndOffset - markerOffset);
 		}
 
-		public override Window CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
+		public override Window CreateTooltipWindow (Ide.Editor.TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = item.Item as TooltipInformation;
 			if (result == null)
@@ -164,9 +165,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return window;
 		}
 
-		public override void GetRequiredPosition (TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (Ide.Editor.TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			var win = (LanguageItemWindow) tipWindow;
+			var win = (LanguageItemWindow)tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
 			xalign = 0.5;
 		}
@@ -175,7 +176,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		const int xPadding = 4;
 		const int windowSize = 36;
 
-		protected override Xwt.Point CalculateWindowLocation (TextEditor editor, TooltipItem item, Xwt.WindowFrame xwtWindow, int mouseX, int mouseY, Xwt.Point origin)
+		protected override Xwt.Point CalculateWindowLocation (Ide.Editor.TextEditor editor, TooltipItem item, Xwt.WindowFrame xwtWindow, int mouseX, int mouseY, Xwt.Point origin)
 		{
 			int w;
 			double xalign;
@@ -211,7 +212,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return new Xwt.Point (x, y);
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Components.Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
+		public override void ShowTooltipWindow (Ide.Editor.TextEditor editor, Components.Window tipWindow, TooltipItem item, Xwt.ModifierKeys modifierState, int mouseX, int mouseY)
 		{
 			base.ShowTooltipWindow (editor, tipWindow, item, modifierState, mouseX, mouseY);
 			var info = (TaggedTooltipInformation<CodeActions.CodeActionContainer>)item.Item;

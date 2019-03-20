@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -597,7 +598,7 @@ namespace MonoDevelop.Ide.Completion.Presentation
 			}
 
 			var originalText = document.GetTextAsync (CancellationToken.None).WaitAndGetResult (CancellationToken.None);
-			Contract.Requires (object.ReferenceEquals (originalText, snapshot.AsText ()));
+			Debug.Assert (object.ReferenceEquals (originalText, snapshot.AsText ()));
 
 			var root = document.GetSyntaxRootSynchronously (CancellationToken.None);
 

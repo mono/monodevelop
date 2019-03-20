@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextEditorOptions.cs
 //
 // Author:
@@ -86,7 +86,8 @@ namespace MonoDevelop.Ide.Editor
 		bool OverrideDocumentEolMarker { get; }
 		bool EnableSyntaxHighlighting { get; }
 		bool RemoveTrailingWhitespaces { get; }
-		
+
+		[Obsolete ("Old editor")]
 		bool WrapLines { get; }
 
 		string FontName { get; }

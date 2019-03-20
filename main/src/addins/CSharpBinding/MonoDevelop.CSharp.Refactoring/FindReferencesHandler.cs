@@ -173,7 +173,14 @@ namespace MonoDevelop.CSharp.Refactoring
 						streamingProgresses [i] = reportingProgress;
 					}
 					for (int i = 0; i < tasks.Length; i++) {
-						tasks [i] = SymbolFinder.FindReferencesAsync (symbolAndProjectIds [i], solution, streamingProgresses [i], null, monitor.CancellationToken);
+						tasks [i] = SymbolFinder.FindReferencesAsync (
+							symbolAndProjectIds [i],
+							solution,
+							streamingProgresses [i],
+							null,
+							FindReferencesSearchOptions.GetFeatureOptionsForStartingSymbol (symbolAndProjectIds [i].Symbol),
+							monitor.CancellationToken
+						);
 					}
 					await Task.WhenAll (tasks);
 				} catch (OperationCanceledException) {

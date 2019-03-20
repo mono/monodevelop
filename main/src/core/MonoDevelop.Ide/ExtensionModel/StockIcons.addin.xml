@@ -76,17 +76,17 @@
 	<StockIcon stockid="md-bookmark-toggle" resource="bookmark-toggle-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-next" resource="breadcrumb-next-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-prev" resource="breadcrumb-prev-16.png" size="Menu" />
-	<StockIcon stockid="md-breakpoint" resource="breakpoint-16.png" size="Menu" />
+	<StockIcon stockid="md-breakpoint" resource="breakpoint-16.png" size="Menu" imageid="324" />
 	<StockIcon stockid="md-breakpoint-disable-all" resource="breakpoint-disable-all-16.png" size="Menu" />
-	<StockIcon stockid="md-breakpoint-disabled" resource="breakpoint-disabled-16.png" size="Menu" />
-	<StockIcon stockid="md-breakpoint-invalid" resource="breakpoint-invalid-16.png" size="Menu" />
+	<StockIcon stockid="md-breakpoint-disabled" resource="breakpoint-disabled-16.png" size="Menu" imageid="323" />
+	<StockIcon stockid="md-breakpoint-invalid" resource="breakpoint-invalid-16.png" size="Menu" imageid="327" />
 	<StockIcon stockid="md-breakpoint-new" resource="breakpoint-new-16.png" size="Menu" />
 	<StockIcon stockid="md-breakpoint-on-off" resource="breakpoint-on-off-16.png" size="Menu" />
 	<StockIcon stockid="md-bug" resource="bug-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint" resource="catchpoint-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint-new" resource="catchpoint-new-16.png" size="Menu" />
 	<StockIcon stockid="md-catchpoint-disabled" resource="catchpoint-disabled-16.png" size="Menu" />
-	<StockIcon stockid="md-class" resource="element-class-16.png" size="Menu" />
+	<StockIcon stockid="md-class" resource="element-class-16.png" size="Menu" imageid="463;466;471;472;473;474" />
 	<StockIcon stockid="md-classes-pad" resource="pad-classes-16.png" size="Menu" />
 	<StockIcon stockid="md-class-file" resource="file-class-16.png" size="Menu" />
 	<StockIcon stockid="md-class-file" resource="file-class-32.png" size="Dnd" />
@@ -98,7 +98,7 @@
 	<StockIcon stockid="md-command" resource="command-16.png" size="Menu" />
 	<StockIcon stockid="md-comment" resource="comment-16.png" size="Menu" />
 	<StockIcon stockid="md-console" resource="pad-application-output-16.png" size="Menu" />
-	<StockIcon stockid="md-delegate" resource="element-delegate-16.png" size="Menu" />
+	<StockIcon stockid="md-delegate" resource="element-delegate-16.png" size="Menu" imageid="909;910;911;912;913;914" />
 	<StockIcon stockid="md-delete" resource="remove-16.png" size="Menu" />
 	<StockIcon stockid="md-delete-simple" resource="remove-simple-16.png" size="Menu" />
 	<StockIcon stockid="md-disclose-arrow-down" resource="disclose-arrow-down-16.png" size="Menu" />
@@ -106,18 +106,18 @@
 	<StockIcon stockid="md-done" resource="done-16.png" size="Menu" />
 	<StockIcon stockid="md-empty" resource="empty-16.png" size="Menu" />
 	<StockIcon stockid="md-empty-file-icon" resource="file-generic-16.png" size="Menu" />
-	<StockIcon stockid="md-enum" resource="element-enum-16.png" size="Menu" />
+	<StockIcon stockid="md-enum" resource="element-enum-16.png" size="Menu" imageid="1120;1121;1129;1130;1131;1132" />
 	<StockIcon stockid="md-enum-file" resource="file-enum-16.png" size="Menu" />
 	<StockIcon stockid="md-enum-file" resource="file-enum-32.png" size="Dnd" />
 	<StockIcon stockid="md-errors-list" resource="pad-error-list-16.png" size="Menu" />
 	<StockIcon stockid="md-errors-list-has-errors" resource="pad-error-list-errors-16.png" size="Menu" />
 	<StockIcon stockid="md-errors-list-has-warnings" resource="pad-error-list-warnings-16.png" size="Menu" />
-	<StockIcon stockid="md-event" resource="element-event-16.png" size="Menu" />
-	<StockIcon stockid="md-exception" resource="element-exception-16.png" size="Menu" />
+	<StockIcon stockid="md-event" resource="element-event-16.png" size="Menu" imageid="1142;1145;1150;1151;1152;1153" />
+	<StockIcon stockid="md-exception" resource="element-exception-16.png" size="Menu" imageid="1161;1162;1163;1164;1165" />
 	<StockIcon stockid="md-execute-all" resource="execute-all-16.png" size="Menu" />
-	<StockIcon stockid="md-extensionmethod" resource="element-extensionmethod-16.png" size="Menu" />
+	<StockIcon stockid="md-extensionmethod" resource="element-extensionmethod-16.png" size="Menu" imageid="1204" />
 	<StockIcon stockid="md-feedback" resource="feedback-16.png" size="Menu" />
-	<StockIcon stockid="md-field" resource="element-field-16.png" size="Menu" />
+	<StockIcon stockid="md-field" resource="element-field-16.png" size="Menu" imageid="1217;1218;1220;1221;1222;1223" />
 	<StockIcon stockid="md-file-css" resource="file-css-16.png" size="Menu" />
 	<StockIcon stockid="md-file-css" resource="file-css-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-less" resource="file-less-16.png" size="Menu" />
@@ -154,24 +154,24 @@
 	<StockIcon stockid="md-help" resource="help-16.png" size="Menu" />
 	<StockIcon stockid="md-html-file-icon" resource="file-web-16.png" size="Menu" />
 	<StockIcon stockid="md-html-file-icon" resource="file-web-32.png" size="Dnd" />
-	<StockIcon stockid="md-interface" resource="element-interface-16.png" size="Menu" />
+	<StockIcon stockid="md-interface" resource="element-interface-16.png" size="Menu" imageid="1603;1605;1606;1607;1608;1609" />
 	<StockIcon stockid="md-interface-file" resource="file-interface-16.png" size="Menu" />
 	<StockIcon stockid="md-interface-file" resource="file-interface-32.png" size="Dnd" />
-	<StockIcon stockid="md-keyword" resource="element-keyword-16.png" size="Menu" />
+	<StockIcon stockid="md-keyword" resource="element-keyword-16.png" size="Menu" imageid="1589" />
 	<StockIcon stockid="md-link-overlay" resource="link-overlay-16.png" size="Menu" />
-	<StockIcon stockid="md-literal" resource="element-constant-16.png" size="Menu" />
+	<StockIcon stockid="md-literal" resource="element-constant-16.png" size="Menu" imageid="616;617;618;619;620;621;1122;1123;1124;1125;1126;1127;1128" />
 	<StockIcon stockid="md-live" resource="live-16.png" size="Menu" />
 	<StockIcon stockid="md-magnify" resource="pad-search-16.png" size="Menu" />
 	<StockIcon stockid="md-message-log" resource="pad-application-output-16.png" size="Menu" />
-	<StockIcon stockid="md-method" resource="element-method-16.png" size="Menu" />
+	<StockIcon stockid="md-method" resource="element-method-16.png" size="Menu" imageid="1874;1876;1878;1879;1880;1881" />
 	<StockIcon stockid="md-misc-files" resource="file-generic-16.png" size="Menu" />
-	<StockIcon stockid="md-module" resource="element-module-16.png" size="Menu" />
+	<StockIcon stockid="md-module" resource="element-module-16.png" size="Menu" imageid="1913;1916;1917;1918;1919;1920" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-16.png" size="Menu" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" size="Button" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-32.png" size="Dnd" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-48.png" size="Dialog" />
-	<StockIcon stockid="md-name-space" resource="element-namespace-16.png" size="Menu" />
+	<StockIcon stockid="md-name-space" resource="element-namespace-16.png" size="Menu" imageid="1951;1952;1953;1054;1955;1956" />
 	<StockIcon stockid="md-navigate-back" resource="breadcrumb-prev-16.png" size="Menu" />
 	<StockIcon stockid="md-navigate-forward" resource="breadcrumb-next-16.png" size="Menu" />
 	<StockIcon stockid="md-newmethod" resource="element-method-new-16.png" size="Menu" />
@@ -233,7 +233,7 @@
 	<StockIcon stockid="md-reference-project" resource="reference-project-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-invalid" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-warning" resource="reference-invalid-16.png" size="Menu" />
-	<StockIcon stockid="md-property" resource="element-property-16.png" size="Menu" />
+	<StockIcon stockid="md-property" resource="element-property-16.png" size="Menu" imageid="2429;2431;2434;2435;2436;2437" />
 	<StockIcon stockid="md-reference" resource="reference-16.png" size="Menu" />
 	<StockIcon stockid="md-reference-package" resource="reference-16.png" size="Menu" />
 	<StockIcon stockid="md-region" resource="region-16.png" size="Menu" />
@@ -249,16 +249,16 @@
 	<StockIcon stockid="md-solution-pad" resource="pad-solution-16.png" size="Menu" />
 	<StockIcon stockid="md-sort-alphabetically" resource="sort-alphabetically-16.png" size="Menu" />
 	<StockIcon stockid="md-stop" resource="stop-16.png" size="Menu" />
-	<StockIcon stockid="md-struct" resource="element-struct-16.png" size="Menu" />
+	<StockIcon stockid="md-struct" resource="element-struct-16.png" size="Menu" imageid="2992;2993;2994;2995;2996;2997;3331;3332;3333;3334;3335;3336;3337" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-16.png" size="Menu" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-32.png" size="Dnd" />
 	<StockIcon stockid="md-task-list" resource="pad-task-list-16.png" size="Menu" />
-	<StockIcon stockid="md-template" resource="element-template-16.png" size="Menu" />
-	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-16.png" size="Menu" />
+	<StockIcon stockid="md-template" resource="element-template-16.png" size="Menu" imageid="2852" />
+	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-16.png" size="Menu" imageid="2853" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-32.png" size="Dnd" />
-	<StockIcon stockid="md-type" resource="element-type-16.png" size="Menu" />
-	<StockIcon stockid="md-variable" resource="element-variable-16.png" size="Menu" />
+	<StockIcon stockid="md-type" resource="element-type-16.png" size="Menu" imageid="3233;3241;3242;3243;3244;3245" />
+	<StockIcon stockid="md-variable" resource="element-variable-16.png" size="Menu" imageid="1409;1747;1847;2242" />
 	<StockIcon stockid="md-warning-overlay" resource="reference-invalid-16.png" size="Menu" />
 	<StockIcon stockid="md-workspace" resource="workspace-16.png" size="Menu" />
 	<StockIcon stockid="md-xml-file-icon" resource="file-xml-16.png" size="Menu" />
@@ -295,9 +295,9 @@
 	<StockIcon stockid="md-typography" resource="typography-16.png" size="Menu" />
 	<StockIcon stockid="md-scroll" resource="scroll-16.png" size="Menu" />
 	<StockIcon stockid="md-widget" resource="widget-16.png" size="Menu" />
-	<StockIcon stockid="md-lightbulb" resource="lightbulb-16.png" size="Menu" />
-	<StockIcon stockid="md-lightbulb-error" resource="lightbulb-error-16.png" size="Menu" />
-	<StockIcon stockid="md-lightbulb-screwdriver" resource="lightbulb-screwdriver-16.png" size="Menu" />
+	<StockIcon stockid="md-lightbulb" resource="lightbulb-16.png" size="Menu" imageid="1590;{f09c8ce2-d515-4226-a430-dec104c81f05}#2" />
+	<StockIcon stockid="md-lightbulb-error" resource="lightbulb-error-16.png" size="Menu" imageid="3751;{f09c8ce2-d515-4226-a430-dec104c81f05}#3" />
+	<StockIcon stockid="md-lightbulb-screwdriver" resource="lightbulb-screwdriver-16.png" size="Menu" imageid="3752;{f09c8ce2-d515-4226-a430-dec104c81f05}#1" />
 
 	<!-- Project icons -->
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />
@@ -342,7 +342,7 @@
 	<StockIcon stockid="gtk-dialog-question" resource="question-32.png" size="Dnd" />
 	<StockIcon stockid="gtk-dialog-question" resource="question-48.png" size="Dialog" />
 
-	<StockIcon stockid="md-error" resource="error-16.png" />
+	<StockIcon stockid="md-error" resource="error-16.png" imageid="2854" />
 	<StockIcon stockid="md-error" resource="error-16.png" size="Menu" />
 	<StockIcon stockid="md-error" resource="error-24.png" size="Button" />
 	<StockIcon stockid="md-error" resource="error-24.png" size="LargeToolbar" />

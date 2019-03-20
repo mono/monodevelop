@@ -30,7 +30,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.Platform
 {
     [Export]
-    public class PlatformCatalog
+	// TODO: editor obsolete
+    internal class PlatformCatalog
     {
 		static PlatformCatalog instance;
 		public static PlatformCatalog Instance {
@@ -52,12 +53,6 @@ namespace Microsoft.VisualStudio.Platform
         internal ITextDocumentFactoryService TextDocumentFactoryService { get; private set; }
 
         [Import]
-        internal ITextEditorFactoryService TextEditorFactoryService { get; private set; }
-
-        [Import]
-        internal IMimeToContentTypeRegistryService MimeToContentTypeRegistryService { get; private set; }
-
-        [Import]
         internal IContentTypeRegistryService ContentTypeRegistryService { get; private set; }
 
         [Import]
@@ -70,82 +65,9 @@ namespace Microsoft.VisualStudio.Platform
 		internal IViewClassifierAggregatorService ViewClassifierAggregatorService { get; private set; }
     }
 
-    public interface IMimeToContentTypeRegistryService
-    {
-        string GetMimeType(IContentType type);
-        IContentType GetContentType(string type);
-
-        void LinkTypes(string mimeType, IContentType contentType);
-    }
-
-    [Export(typeof(IMimeToContentTypeRegistryService))]
-    public class MimeToContentTypeRegistryService : IMimeToContentTypeRegistryService, IPartImportsSatisfiedNotification
-    {
-		[Import]
-		IContentTypeRegistryService ContentTypeRegistryService { get; set; }
-
-		[Export]
-		[Name ("csharp")]
-		[BaseDefinition ("code")]
-		public ContentTypeDefinition codeContentType;
-
-		public string GetMimeType(IContentType type)
-        {
-            string mimeType;
-            if (this.maps.Item2.TryGetValue(type, out mimeType))
-            {
-                return mimeType;
-            }
-
-            return (ContentTypeRegistryService as IContentTypeRegistryService2).GetMimeType (type);
-        }
-
-        public IContentType GetContentType(string type)
-        {
-            IContentType contentType;
-            if (this.maps.Item1.TryGetValue(type, out contentType))
-            {
-                return contentType;
-            }
-
-            return (ContentTypeRegistryService as IContentTypeRegistryService2).GetContentTypeForMimeType (type);
-        }
-
-        public void LinkTypes(string mimeType, IContentType contentType)
-        {
-            var oldMap = Volatile.Read(ref this.maps);
-            while (true)
-            {
-                if (oldMap.Item1.ContainsKey(mimeType) || oldMap.Item2.ContainsKey(contentType))
-                    break;
-
-                var newMap = Tuple.Create(oldMap.Item1.Add(mimeType, contentType), oldMap.Item2.Add(contentType, mimeType));
-                var result = Interlocked.CompareExchange(ref this.maps, newMap, oldMap);
-                if (result == oldMap)
-                {
-                    break;
-                }
-
-                oldMap = result;
-            }
-        }
-
-		void LinkTypes (string mimeType, string contentType)
-		{
-			LinkTypes (mimeType, ContentTypeRegistryService.GetContentType (contentType));
-		}
-
-		void IPartImportsSatisfiedNotification.OnImportsSatisfied ()
-		{
-			LinkTypes ("text/plain", "text");
-			LinkTypes ("text/x-csharp", "csharp");
-		}
-
-		Tuple<ImmutableDictionary<string, IContentType>, ImmutableDictionary<IContentType, string>> maps = Tuple.Create(ImmutableDictionary<string, IContentType>.Empty, ImmutableDictionary<IContentType, string>.Empty);
-    }
-
     // Fold back into Text.Def.TextData.TextSnapshotToTextReader
-    public sealed class NewTextSnapshotToTextReader : TextReader
+	// TODO: editor obsolete
+    internal sealed class NewTextSnapshotToTextReader : TextReader
     {
         #region TextReader methods
         /// <summary>
@@ -327,69 +249,4 @@ namespace Microsoft.VisualStudio.Platform
 
         int _end;
     }
-
-#if false
-    [Export(typeof(ITaggerProvider))]
-    [ContentType("text")]
-    [TagType(typeof(IClassificationTag))]
-    public class TestClassifierProvider : ITaggerProvider
-    {
-        [Import]
-        internal IClassificationTypeRegistryService ClassificationTypeRegistryService { get; private set; }
-
-        [Export]
-        [Name("keyword")]
-        public ClassificationTypeDefinition textClassificationType;
-
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
-        {
-            return buffer.Properties.GetOrCreateSingletonProperty(typeof(TestClassifier), () => new TestClassifier(this)) as ITagger<T>;
-        }
-    }
-
-    public class TestClassifier : ITagger<IClassificationTag>
-    {
-        private ClassificationTag _keyword { get; }
-
-        public TestClassifier(TestClassifierProvider provider)
-        {
-            _keyword = new ClassificationTag(provider.ClassificationTypeRegistryService.GetClassificationType("keyword"));
-        }
-
-        public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-        {
-            foreach (var span in spans)
-            {
-                int start = -1;
-                for (int i = span.Start; (i < span.End); ++i)
-                {
-                    var c = span.Snapshot[i];
-                    if ((c == 'a') || (c == 'A'))
-                    {
-                        if (start == -1)
-                        {
-                            start = i;
-                        }
-                    }
-                    else if (start != -1)
-                    {
-                        yield return new TagSpan<ClassificationTag>(
-                                new SnapshotSpan(span.Snapshot, start, i - start),
-                                _keyword);
-                        start = -1;
-                    }
-                }
-
-                if (start != -1)
-                {
-                    yield return new TagSpan<ClassificationTag>(
-                            new SnapshotSpan(span.Snapshot, start, span.End - start),
-                            _keyword);
-                }
-            }
-        }
-
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
-    }
-#endif
 }

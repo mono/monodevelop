@@ -83,7 +83,9 @@ namespace MonoDevelop.DotNetCore.Tests
 		[Test]
 		public void GetNetCoreAppTargetFrameworks_NetCore30RuntimeInstalled ()
 		{
-			DotNetCoreRuntimesInstalled ("3.0.0");
+			//NOTE: since we are now checking unsupported runtime version
+			// here we set the latest supported one
+			DotNetCoreRuntimesInstalled ("3.0.0-preview-27324-5");
 
 			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
 
@@ -111,6 +113,16 @@ namespace MonoDevelop.DotNetCore.Tests
 
 			Assert.AreEqual (".NETCoreApp,Version=v2.1", frameworks [0].Id.ToString ());
 			Assert.AreEqual (1, frameworks.Count);
+		}
+
+		[Test]
+		public void CheckNetCoreAppTargetFrameworks_NetCoreUnsupportedRuntimeInstalled_ReturnsNoFramework ()
+		{
+			DotNetCoreRuntimesInstalled (DotNetCoreVersion.UnSupportedRuntimeVersion.ToString());
+
+			var frameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+
+			Assert.AreEqual (0, frameworks.Count);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <Import Project="..\..\..\MonoDevelop.props" />
-  <Import Project="$(ReferencesRoslyn)" />
   <Import Project="$(ReferencesVSEditor)" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
@@ -10,6 +9,12 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
+    <!--
+    This entire assembly is obsolete, and uses many obsoleted APIs from Core/Ide
+    so disable deprecation warnings.
+    -->
+    <NoWarn>$(NoWarn);618;612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
@@ -64,39 +69,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Threading.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Reference Include="WindowsBase" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\build\bin\System.Reflection.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Composition">
-      <HintPath>..\..\..\build\bin\Microsoft.VisualStudio.Composition.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BaseViewImpl\VacuousTextDataModel.cs" Link="Util\VacuousTextDataModel.cs" />
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\VacuousTextViewModel.cs" Link="Util\VacuousTextViewModel.cs" />
     <None Include="MonoDevelop.SourceEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -120,7 +109,6 @@
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\GotoLineNumberWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
@@ -193,7 +181,7 @@
     <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
-    <None Include="packages.config" />
+    <Compile Include="VSEditor\TextEditorInitializationService.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LineSeparatorMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IndicatorDrawingCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.IdleUpdater.cs" />
@@ -204,19 +192,14 @@
     <Compile Include="VSEditor\MDUtils.cs" />
     <Compile Include="VSEditor\SmartIndentationService.cs" />
     <Compile Include="VSEditor\TagBasedSyntaxHighlighting.cs" />
-    <Compile Include="VSEditor\TextEditorFactoryService.cs" />
     <Compile Include="VSEditor\TextSelection.cs" />
     <Compile Include="VSEditor\TextViewRoleSet.cs" />
-    <Compile Include="VSEditor\VacuousTextDataModel.cs" />
-    <Compile Include="VSEditor\FakeWpf\Geometry.cs" />
-    <Compile Include="VSEditor\FakeWpf\Mouse.cs" />
     <Compile Include="VSEditor\FakeWpf\SimulatingExtensions.cs" />
     <Compile Include="VSEditor\Language\Def\Intellisense\IPopupIntellisensePresenter.cs" />
     <Compile Include="VSEditor\Language\Impl\Helpers.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\BaseIntellisenseSession.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\CurrentLineSpaceReservationAgent.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IMultiSessionIntellisensePresenter.cs" />
-    <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseManager.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseSession.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseSessionStack.cs" />
     <Compile Include="VSEditor\Language\Impl\Intellisense\IntellisenseSessionStackMapService.cs" />
@@ -255,7 +238,6 @@
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationManager.cs" />
     <Compile Include="VSEditor\Text\Impl\WpfView\SpaceReservationStack.cs" />
     <Compile Include="VSEditor\Text\Util\TextDataUtil\MappingHelper.cs" />
-    <Compile Include="VSEditor\VisualStudio\Impl\ViewAdapter\TipManager.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs" />
     <Compile Include="Gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
@@ -292,6 +274,7 @@
     <Compile Include="Mono.TextEditor\Gui\CodePreviewWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarginMarker.cs" />
     <Compile Include="Mono.TextEditor\Gui\QuickFixMargin.cs" />
+    <Compile Include="..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\UIExtensionSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml" />

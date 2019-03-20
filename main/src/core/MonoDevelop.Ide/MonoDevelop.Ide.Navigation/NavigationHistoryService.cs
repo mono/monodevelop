@@ -1,10 +1,9 @@
 // 
-// NavigationHistoryService.cs
-// 
 // Author:
-//   Michael Hutchinson <mhutchinson@novell.com>
+//   Mikayla Hutchinson <m.j.hutchinson@gmail.com>
 //   Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
+// Copyright (C) Microsoft. All rights reserved.
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -29,12 +28,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -79,29 +75,28 @@ namespace MonoDevelop.Ide.Navigation
 			};
 
 			//keep nav points up to date
-			TextEditorService.LineCountChanged += LineCountChanged;
-			TextEditorService.LineCountChangesCommitted += CommitCountChanges;
-			TextEditorService.LineCountChangesReset += ResetCountChanges;
 			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
-			
 			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
 		}
-		
-		public static void LogActiveDocument ()
-		{
-			LogActiveDocument (false);
-		}
-		
-		public static void LogActiveDocument (bool transient)
+
+		public static void LogActiveDocument (bool transient = false)
 		{
 			if (switching)
 				return;
-			
-			NavigationPoint point = GetNavPointForActiveDoc (false);
-			if (point == null)
-				return;
-			
-			NavigationHistoryItem item = new NavigationHistoryItem (point);
+
+			var point = GetNavPointForActiveDoc ();
+			if (point != null) {
+				LogNavigationPoint (point, transient);
+			}
+		}
+
+		public static void LogNavigationPoint (NavigationPoint point, bool transient = false)
+		{
+			if (point == null) {
+				throw new ArgumentNullException (nameof (point));
+			}
+
+			var item = new NavigationHistoryItem (point);
 			
 			//if the current node's transient but has been around for a while, consider making it permanent
 			if (Current == null ||
@@ -114,7 +109,7 @@ namespace MonoDevelop.Ide.Navigation
 			if (currentIsTransient)
 			{
 				//collapse down possible extra point in history
-				NavigationHistoryItem backOne = history[-1];
+				var backOne = history[-1];
 				if (backOne != null && point.ShouldReplace (backOne.NavigationPoint)) {
 					// The new node is the same as the last permanent, so we can discard it
 					history.RemoveCurrent ();
@@ -147,9 +142,9 @@ namespace MonoDevelop.Ide.Navigation
 			OnHistoryChanged ();
 		}
 		
-		static NavigationPoint GetNavPointForActiveDoc (bool forClosedHistory)
+		static NavigationPoint GetNavPointForActiveDoc ()
 		{
-			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, forClosedHistory);
+			return GetNavPointForDoc (IdeApp.Workbench.ActiveDocument, false);
 		}
 		
 		static NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
@@ -165,7 +160,8 @@ namespace MonoDevelop.Ide.Navigation
 				if (point != null)
 					return point;
 			}
-			
+
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			var editBuf = doc.Editor;
 			if (editBuf != null) {
 				if (forClosedHistory) {
@@ -176,7 +172,8 @@ namespace MonoDevelop.Ide.Navigation
 				if (point != null)
 					return point;
 			}
-			
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
+
 			return new DocumentNavigationPoint (doc);
 		}
 		
@@ -303,10 +300,12 @@ namespace MonoDevelop.Ide.Navigation
 			
 			currentDoc.Closed += HandleCurrentDocClosed;
 			
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (currentDoc.Editor != null) {
 				currentDoc.Editor.TextChanged += BufferTextChanged;
 				currentDoc.Editor.CaretPositionChanged += BufferCaretPositionChanged;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
 		static void HandleCurrentDocClosed (object sender, EventArgs e)
@@ -320,10 +319,12 @@ namespace MonoDevelop.Ide.Navigation
 				return;
 			
 			currentDoc.Closed -= HandleCurrentDocClosed;
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (currentDoc.Editor != null) {
 				currentDoc.Editor.TextChanged -= BufferTextChanged;
 				currentDoc.Editor.CaretPositionChanged -= BufferCaretPositionChanged;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 			currentDoc = null;
 		}
 		
@@ -340,21 +341,6 @@ namespace MonoDevelop.Ide.Navigation
 		#endregion
 		
 		#region Text file line number and snippet updating
-		
-		static void LineCountChanged (object sender, LineCountEventArgs args)
-		{
-//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-		
-		static void CommitCountChanges (object sender, TextFileEventArgs args)
-		{
-//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-		
-		static void ResetCountChanges (object sender, TextFileEventArgs args)
-		{
-//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
 		
 		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{

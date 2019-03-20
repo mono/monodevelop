@@ -28,8 +28,6 @@ using System;
 using System.Linq;
 using System.Text;
 
-using Mono.Cecil;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;

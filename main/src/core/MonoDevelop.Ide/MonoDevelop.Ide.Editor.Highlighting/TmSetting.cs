@@ -35,7 +35,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	sealed class TmSetting 
+	sealed class TmSetting
 	{
 		public readonly string Name = ""; // not defined in vs.net
 

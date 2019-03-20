@@ -38,6 +38,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	public class ParameterInformationWindowManager
 	{
 		static MethodData currentMethodGroup;
@@ -292,6 +293,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}		
 	}
 		
+	[Obsolete ("Use the Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion APIs")]
 	class MethodData
 	{
 		public ParameterHintingResult MethodProvider;

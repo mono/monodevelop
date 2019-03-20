@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMateFoldingTextEditorExtension.cs
 //
 // Author:
@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete]
 	class TextMateFoldingTextEditorExtension : TextEditorExtension
 	{
 		Regex foldingStartMarker, foldingStopMarker;

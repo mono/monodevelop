@@ -1,4 +1,4 @@
-﻿//
+//
 // KeyDescriptor.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using AppKit;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public readonly struct KeyDescriptor
 	{
 		public static KeyDescriptor Empty = new KeyDescriptor (SpecialKey.None, '\0', ModifierKeys.None, null);

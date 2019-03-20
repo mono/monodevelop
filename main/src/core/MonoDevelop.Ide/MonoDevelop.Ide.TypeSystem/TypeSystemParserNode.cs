@@ -34,6 +34,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete ("Use the Visual Studio Editor APIs")]
 	class TypeSystemParserNode : TypeExtensionNode
 	{
 		const string ApiDefinitionBuildAction = "ObjcBindingApiDefinition";

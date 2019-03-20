@@ -69,7 +69,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		static void Rollback (TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
+		static void Rollback (Ide.Editor.TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
 		{
 			for (int i = textChanges.Count - 1; i >= 0; i--) {
 				for (int j = 0; j < textChanges [i].TextChanges.Count; ++j) {

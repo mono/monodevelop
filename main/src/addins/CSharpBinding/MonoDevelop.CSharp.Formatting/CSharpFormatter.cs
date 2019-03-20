@@ -23,35 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using ICSharpCode.NRefactory6.CSharp;
-using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Editor.Shared.Preview;
+using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Formatting.Rules;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
-using Microsoft.CodeAnalysis.Editor;
-using Microsoft.CodeAnalysis.Shared.Extensions;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory6.CSharp;
-using MonoDevelop.Ide;
 using MonoDevelop.Core.Text;
+using MonoDevelop.CSharp.OptionProvider;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Completion.Presentation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects.Policies;
 using Roslyn.Utilities;
-using System.Threading;
-using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.CSharp.OptionProvider;
-using Microsoft.VisualStudio.CodingConventions;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.Formatting.Rules;
-using MonoDevelop.Ide.Completion.Presentation;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -65,15 +59,15 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsPartialDocumentFormatting { get { return true; } }
 
-		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, Ide.Editor.TextEditor editor, int line)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
-			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Wait ();
+			CorrectIndentingImplementationAsync (editor, doc, line, line, default).Ignore ();
 		}
 
-		protected async override Task CorrectIndentingImplementationAsync (TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
+		protected async override Task CorrectIndentingImplementationAsync (Ide.Editor.TextEditor editor, DocumentContext context, int startLine, int endLine, CancellationToken cancellationToken)
 		{
 			if (editor.IndentationTracker == null)
 				return;
@@ -96,21 +90,23 @@ namespace MonoDevelop.CSharp.Formatting
 				formattingRules.AddRange (Formatter.GetDefaultFormattingRules (document));
 
 				var workspace = document.Project.Solution.Workspace;
-				var root = await document.GetSyntaxRootAsync (cancellationToken);
-				var options = await document.GetOptionsAsync (cancellationToken);
+				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+				var options = await document.GetOptionsAsync (cancellationToken).ConfigureAwait (false);
 				var changes = Formatter.GetFormattedTextChanges (
 					root, new TextSpan [] { new TextSpan (startSegment.Offset, endSegment.EndOffset - startSegment.Offset) },
 					workspace, options, formattingRules, cancellationToken);
 
 				if (changes == null)
 					return;
-				editor.ApplyTextChanges (changes);
-				editor.FixVirtualIndentation ();
+				await Runtime.RunInMainThread (delegate {
+					editor.ApplyTextChanges (changes);
+					editor.FixVirtualIndentation ();
+				});
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);
 			}
 		}
-		protected override async void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
+		protected override async void OnTheFlyFormatImplementation (Ide.Editor.TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
 			var doc = context.AnalysisDocument;
 

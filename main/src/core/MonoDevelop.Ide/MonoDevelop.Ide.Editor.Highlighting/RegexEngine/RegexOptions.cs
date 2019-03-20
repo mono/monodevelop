@@ -13,7 +13,9 @@ using System;
     ///    <para>[To be supplied.]</para>
     /// </devdoc>
     [Flags]
-    enum RegexOptions {
+	[Obsolete ("Old editor")]
+    enum RegexOptions
+	{
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>

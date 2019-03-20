@@ -22,7 +22,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine
 	using System.Globalization;
 	using MonoDevelop.Core.Text;
 
-	internal sealed class RegexBoyerMoore {
+	[Obsolete ("Old editor")]
+	internal sealed class RegexBoyerMoore
+	{
         internal int[] _positive;
         internal int[] _negativeASCII;
         internal int[][] _negativeUnicode;

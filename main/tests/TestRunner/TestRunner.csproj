@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,23 +12,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core">
-      <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.util">
-      <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.util.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit-console-runner">
-      <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit-console-runner.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NUnit" Version="$(NuGetVersionNUnit2)" PrivateAssets="runtime" />
+    <PackageReference Include="NUnitV2.Core" Version="$(NuGetVersionNUnit2)" PrivateAssets="runtime" />
+    <!-- this is hacky but there is no package that exposes nunit.util.dll as a lib assembly -->
+    <DownloadNupkg Include="NUnit.Runners" Version="$(NuGetVersionNUnit2)" />
+    <Reference Include="nunit.util" HintPath="$(DownloadNupkgDirectory)NUnit.Runners.$(NuGetVersionNUnit2)\tools\lib\nunit.util.dll" />
+    <Reference Include="nunit-console-runner" HintPath="$(DownloadNupkgDirectory)NUnit.Runners.$(NuGetVersionNUnit2)\tools\lib\nunit-console-runner.dll" />
+    <IncludeCopyLocal Include="nunit.framework.dll" />
+    <IncludeCopyLocal Include="nunit.core.dll" />
+    <IncludeCopyLocal Include="nunit.core.interfaces.dll" />
+    <IncludeCopyLocal Include="nunit-console-runner.dll" />
+    <IncludeCopyLocal Include="nunit.util.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

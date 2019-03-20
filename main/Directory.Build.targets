@@ -13,4 +13,13 @@
     <AllowedReferenceRelatedFileExtensions>.pdb;.xml;.dll.config;.exe.config</AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
+  <Target Name="FixWindowsAccessibilityReference"
+    AfterTargets="ResolveAssemblyReference"
+    BeforeTargets="CoreCompile;FindReferenceAssembliesForReferences"
+    Condition="'$(OS)' == 'Windows_NT'">
+    <ItemGroup>
+      <ReferencePath Remove="@(ReferencePath)" Condition="%(ReferencePath.OriginalItemSpec) == 'Accessibility'" />
+    </ItemGroup>
+  </Target>
+
 </Project>

@@ -44,7 +44,6 @@ using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-
 	public static class SyntaxHighlightingService
 	{
 		static LanguageBundle builtInBundle = new LanguageBundle ("default", null) { BuiltInBundle = true };
@@ -214,11 +213,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static void PrepareMatches ()
 		{
+			#pragma warning disable CS0618 // Type or member is obsolete
 			foreach (var bundle in languageBundles) {
 				foreach (var h in bundle.Highlightings)
 					if (h is SyntaxHighlightingDefinition def)
 						def.PrepareMatches ();
 			}
+			#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		internal static object LoadStyleOrMode (LanguageBundle bundle, string file)
@@ -241,6 +242,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static object LoadFile (LanguageBundle bundle, string file, Func<Stream> openStream, Func<IStreamProvider> getStreamProvider)
 		{
+			// this method dispatches to obsoleted methods for loading highlighting definitions and non-obsoleted methods for loading color themes
+			#pragma warning disable CS0618 // Type or member is obsolete
 			if (file.EndsWith (".json", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
 					string styleName;
@@ -344,6 +347,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			return null;
+			#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		static void LoadStylesAndModes (Assembly assembly)
@@ -592,6 +596,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static void AddStyle (IStreamProvider provider)
 		{
+			// this method dispatches to obsoleted methods for loading highlighting definitions and non-obsoleted methods for loading color themes
+			#pragma warning disable CS0618 // Type or member is obsolete
 			string styleName;
 			JSonFormat format;
 			using (var stream = provider.Open ()) {
@@ -608,6 +614,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 				}
 			}
+			#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		internal static void RemoveStyle (IStreamProvider provider)
@@ -650,6 +657,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
+			#pragma warning disable CS0618 // Type or member is obsolete
 			var codon = (TemplateCodon)args.ExtensionNode;
 
 			if (args.Change == ExtensionChange.Add) {
@@ -667,6 +675,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					LoggingService.LogError ("Error while loading custom editor extension file.", e);
 				}
 			}
+			#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public static HslColor GetColor (EditorTheme style, string key)
@@ -699,6 +708,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new ChunkStyle() { Foreground = result };
 		}
 
+		[Obsolete ("Old editor")]
 		static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinitionByName (FilePath fileName)
 		{
 			SyntaxHighlightingDefinition bestMatch = null;
@@ -739,6 +749,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return bestMatch;
 		}
 
+		[Obsolete ("Old editor")]
 		static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinitionByMimeType (string mimeType)
 		{
 			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
@@ -760,6 +771,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return null;
 		}
 
+		[Obsolete ("Old editor")]
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
 			if (!fileName.IsNullOrEmpty) {
@@ -780,6 +792,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return GetSyntaxHighlightingDefinitionByMimeType (mimeType);
 		}
 
+		[Obsolete ("Old editor")]
 		internal static ScopeStack GetScopeForFileName (string fileName)
 		{
 			string scope = null;

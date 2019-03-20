@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			await Run (doc.Editor, doc);
 		}
 
-		internal async Task Run (TextEditor editor, DocumentContext ctx)
+		internal async Task Run (Ide.Editor.TextEditor editor, DocumentContext ctx)
 		{
 			var cts = new CancellationTokenSource ();
 			var getSymbolTask = RenameLocations.ReferenceProcessing.GetRenamableSymbolAsync (ctx.AnalysisDocument, editor.CaretOffset, cts.Token);

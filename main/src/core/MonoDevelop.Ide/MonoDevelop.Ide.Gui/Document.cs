@@ -1,4 +1,4 @@
-﻿//
+//
 // Document.cs
 //
 // Author:
@@ -61,6 +61,8 @@ using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor.TextMate;
 using MonoDevelop.Core.Assemblies;
 using Roslyn.Utilities;
+using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -70,7 +72,9 @@ namespace MonoDevelop.Ide.Gui
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
 		IWorkbenchWindow window;
+		[Obsolete]
 		ParsedDocument parsedDocument;
+		[Obsolete]
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
@@ -88,6 +92,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
 		/// Even if it's a C# file.
 		/// </summary>
+		[Obsolete("Use Roslyn directly")]
 		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get {
 				if (analysisDocument == null)
@@ -150,9 +155,11 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workbench.ActiveDocumentChanged += delegate {
 					// reparse on document switch to update the current file with changes done in other files.
 					var doc = IdeApp.Workbench.ActiveDocument;
+					#pragma warning disable CS0618, 612 // Type or member is obsolete
 					if (doc == null || doc.Editor == null)
 						return;
 					doc.StartReparseThread ();
+					#pragma warning restore CS0618, 612 // Type or member is obsolete
 				};
 			}
 		}
@@ -166,27 +173,34 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
+			#pragma warning disable CS0612 // Type or member is obsolete
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += OnContentNameChanged;
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
+			#pragma warning restore CS0612 // Type or member is obsolete
 			DocumentRegistry.Add (this);
 		}
 
 		void OnContentNameChanged (object sender, EventArgs e)
 		{
 			OnFileNameChanged ();
+			#pragma warning disable CS0612 // Type or member is obsolete
 			ReloadAnalysisDocumentHandler (sender, e);
+			#pragma warning restore CS0612 // Type or member is obsolete
 		}
 
+		[Obsolete]
 		void ReloadAnalysisDocumentHandler (object sender, EventArgs e)
 		{
 			UnsubscribeAnalysisDocument ();
 			UnloadAdhocProject ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
+					#pragma warning disable CS0612 // Type or member is obsolete
 					StartReparseThread ();
+					#pragma warning restore CS0612 // Type or member is obsolete
 			});
 		}
 
@@ -256,6 +270,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return adhocProject != null; }
 		}
 
+		[Obsolete ("Use Visual Studio Editor APIs")]
 		public override bool IsCompileableInProject {
 			get {
 				var project = Project;
@@ -288,6 +303,7 @@ namespace MonoDevelop.Ide.Gui
 			return project.GetCompilationAsync (cancellationToken);
 		}
 
+		[Obsolete ("Use Visual Studio Editor APIs")]
 		public override ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
@@ -363,11 +379,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete("Use GetContent<ITextBuffer>()")]
 		public TextEditor Editor {
 			get {
 				return GetContent <TextEditor> ();
 			}
 		}
+
+		[Obsolete("Use GetContent<ITextBuffer> ()")]
+		public ITextBuffer TextBuffer => GetContent<ITextBuffer> ();
 
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
@@ -467,7 +487,9 @@ namespace MonoDevelop.Ide.Gui
 
 				// Set the file time of the current document after the file time of the written file, to prevent double file updates.
 				// Note that the parsed document may be overwritten by a background thread to a more recent one.
+				#pragma warning disable CS0612 // Type or member is obsolete
 				var doc = parsedDocument;
+				#pragma warning restore CS0612 // Type or member is obsolete
 				if (doc != null) {
 					string fileName = Window.ViewContent.ContentName;
 					try {
@@ -499,9 +521,9 @@ namespace MonoDevelop.Ide.Gui
 
 			Encoding encoding = null;
 			
-			var tbuffer = GetContent <ITextSource> ();
+			var tbuffer = GetContent <ITextBuffer> ();
 			if (tbuffer != null) {
-				encoding = tbuffer.Encoding;
+				encoding = tbuffer.GetEncodingOrUTF8 ();
 				if (encoding == null)
 					encoding = Encoding.UTF8;
 			}
@@ -539,11 +561,10 @@ namespace MonoDevelop.Ide.Gui
 			// save backup first
 			if (IdeApp.Preferences.CreateFileBackupCopies) {
 				if (tbuffer != null && encoding != null)
-					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding);
+					TextFileUtility.WriteText (filename + "~", tbuffer.CurrentSnapshot.GetText (), encoding);
 				else
 					await Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
-			TypeSystemService.RemoveSkippedfile (FileName);
 
 			// do actual save
 			Window.ViewContent.ContentName = filename;
@@ -553,7 +574,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			OnSaved (EventArgs.Empty);
 
+			#pragma warning disable CS0618 // Type or member is obsolete
 			await UpdateParseDocument ();
+			#pragma warning restore CS0618 // Type or member is obsolete
 			return true;
 		}
 		
@@ -585,7 +608,6 @@ namespace MonoDevelop.Ide.Gui
 //			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
-			TypeSystemService.RemoveSkippedfile (FileName);
 
 
 			try {
@@ -615,6 +637,7 @@ namespace MonoDevelop.Ide.Gui
 			if (IsDisposed)
 				return;
 			DocumentRegistry.Remove (this);
+			#pragma warning disable CS0612 // Type or member is obsolete
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
 			UnloadAdhocProject ();
@@ -635,11 +658,13 @@ namespace MonoDevelop.Ide.Gui
 			window = null;
 
 			parsedDocument = null;
+			#pragma warning restore CS0612 // Type or member is obsolete
 			views = null;
 			viewsRO = null;
 			base.OnDispose (disposing);
 		}
 
+		[Obsolete]
 		void UnsubscribeAnalysisDocument ()
 		{
 			lock (analysisDocumentLock) {
@@ -695,15 +720,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool wasEdited;
 
+		[Obsolete]
 		void InitializeExtensionChain ()
 		{
 			Editor.InitializeExtensionChain (this);
-
-			if (window is SdiWorkspaceWindow)
-				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
-
 		}
 
+		void AttachPathedDocument ()
+		{
+			if (window is SdiWorkspaceWindow) {
+				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+			}
+		}
+
+		[Obsolete]
 		void InitializeEditor ()
 		{
 			Editor.TextChanged += (o, a) => {
@@ -733,11 +763,21 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnDocumentAttached ()
 		{
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (Editor != null) {
 				InitializeEditor ();
 				RunWhenRealized (delegate { ListenToProjectLoad (Project); });
 			}
-			
+			#pragma warning restore CS0618, CS0612
+
+			// this is used by TextViewExtensions.TryGetParentDocument
+			var textView = GetContent<Microsoft.VisualStudio.Text.Editor.ITextView> ();
+			if (textView != null) {
+				textView.Properties.AddProperty (typeof(Document), this);
+			}
+
+			AttachPathedDocument ();
+
 			window.Document = this;
 		}
 		
@@ -747,6 +787,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <param name='action'>
 		/// The action to run.
 		/// </param>
+		[Obsolete("This only works for the old editor")]
 		public void RunWhenLoaded (System.Action action)
 		{
 			var e = Editor;
@@ -757,6 +798,7 @@ namespace MonoDevelop.Ide.Gui
 			e.RunWhenLoaded (action);
 		}
 
+		[Obsolete("This only works for the old editor")]
 		public void RunWhenRealized (System.Action action)
 		{
 			var e = Editor;
@@ -774,31 +816,47 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void SetProject (Project project)
 		{
-			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || project == adhocProject)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project || (IsAdHocProject && project == adhocProject))
 				return;
+			bool usingAdHocProject = IsAdHocProject;
 			UnloadAdhocProject ();
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
+			if (Editor == null) {
+				Window.ViewContent.Project = project;
+				AttachPathedDocument ();
+				return;
+			}
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
-			// Unsubscribe project events
+							  // Unsubscribe project events
 			if (Window.ViewContent.Project != null)
 				Window.ViewContent.Project.Modified -= HandleProjectModified;
 			Window.ViewContent.Project = project;
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			ListenToProjectLoad (project);
+			AttachPathedDocument ();
+			// Do not start the parser when the project is set to null and an adHocProject is not being used. This
+			// would result in a new adHocProject being created and then RootWorkspace would not update the Document's
+			// project since it is non-null.
+			if (project != null || (project == null && usingAdHocProject))
+				ListenToProjectLoad (project);
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
+		[Obsolete]
 		void ListenToProjectLoad (Project project)
 		{
 			StartReparseThread ();
 		}
 
+		[Obsolete]
 		void HandleInLoadChanged (object sender, EventArgs e)
 		{
 			StartReparseThread ();
 		}
 
+		[Obsolete]
 		void HandleProjectModified (object sender, SolutionItemModifiedEventArgs e)
 		{
 			if (!e.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
@@ -812,6 +870,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <returns>
 		/// A <see cref="ParsedDocument"/> that contains the current dom.
 		/// </returns>
+		[Obsolete("Use Visual Studio Editor APIs")]
 		public override async Task<ParsedDocument> UpdateParseDocument ()
 		{
 			try {
@@ -820,7 +879,6 @@ namespace MonoDevelop.Ide.Gui
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
-				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
 				var project = adhocProject ?? Project;
@@ -860,6 +918,7 @@ namespace MonoDevelop.Ide.Gui
 		uint parseTimeout = 0;
 		CancellationTokenSource analysisDocumentSrc = new CancellationTokenSource ();
 
+		[Obsolete]
 		void CancelEnsureAnalysisDocumentIsOpen ()
 		{
 			analysisDocumentSrc.Cancel ();
@@ -871,6 +930,7 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		internal static bool IsInProjectSettingLoadingProcess { get; set; }
 
+		[Obsolete]
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
 			if (analysisDocument != null) {
@@ -897,11 +957,14 @@ namespace MonoDevelop.Ide.Gui
 					if (RoslynWorkspace == null) // Solution not loaded yet
 						return Task.CompletedTask;
 					SubscribeRoslynWorkspace ();
-					analysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					var newAnalysisDocument = FileName != null ? TypeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					var changedAnalysisDocument = newAnalysisDocument != analysisDocument;
+					analysisDocument = newAnalysisDocument;
 					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen(analysisDocument)) {
-						TypeSystemService.InformDocumentOpen (analysisDocument, Editor, this);
-						OnAnalysisDocumentChanged (EventArgs.Empty);
+						TypeSystemService.InformDocumentOpen (analysisDocument, TextBuffer.AsTextContainer(), this);
 					}
+					if (changedAnalysisDocument)
+						OnAnalysisDocumentChanged (EventArgs.Empty);
 					return Task.CompletedTask;
 				}
 			}
@@ -911,47 +974,45 @@ namespace MonoDevelop.Ide.Gui
 					return Task.CompletedTask;
 				}
 
-				if (Editor != null) {
-					var node = TypeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
-					if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string[0]) == true) {
-						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+				if (TextBuffer.ContentType.TypeName == "CSharp") {
+					var newProject = Services.ProjectService.CreateDotNetProject ("C#");
 
-						this.adhocProject = newProject;
+					this.adhocProject = newProject;
 
-						newProject.Name = "InvisibleProject";
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
+					newProject.Name = "InvisibleProject";
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
-						// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
-						newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
-						if (!Window.ViewContent.IsUntitled) {
-							adHocFile = Editor.FileName;
-						} else {
-							adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
-						}
-
-						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
-
-						adhocSolution = new Solution ();
-						adhocSolution.AddConfiguration ("", true);
-						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
-							if (token.IsCancellationRequested)
-								return;
-							UnsubscribeRoslynWorkspace ();
-							RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
-							SubscribeRoslynWorkspace ();
-							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
-							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor, this);
-							OnAnalysisDocumentChanged (EventArgs.Empty);
-						});
+					// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
+					newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
+					if (!Window.ViewContent.IsUntitled) {
+						adHocFile = FileName;
+					} else {
+						adHocFile = (Platform.IsWindows ? "C:\\" : "/") + Window.ViewContent.UntitledName + ".cs";
 					}
+
+					newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
+
+					adhocSolution = new Solution ();
+					adhocSolution.AddConfiguration ("", true);
+					adhocSolution.DefaultSolutionFolder.AddItem (newProject);
+					return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
+						if (token.IsCancellationRequested)
+							return;
+						UnsubscribeRoslynWorkspace ();
+						RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
+						SubscribeRoslynWorkspace ();
+						analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
+						TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, TextBuffer.AsTextContainer (), this);
+						OnAnalysisDocumentChanged (EventArgs.Empty);
+					});
 				}
 			}
 			return Task.CompletedTask;
 		}
 
+		[Obsolete]
 		void UnsubscribeRoslynWorkspace ()
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
@@ -961,6 +1022,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete]
 		void SubscribeRoslynWorkspace ()
 		{
 			var ws = RoslynWorkspace as MonoDevelopWorkspace;
@@ -970,6 +1032,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete]
 		void HandleRoslynDocumentClosed (object sender, Microsoft.CodeAnalysis.DocumentEventArgs e)
 		{
 			lock (analysisDocumentLock) {
@@ -979,6 +1042,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete]
 		void HandleRoslynProjectChange (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
 		{
 			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectChanged ||
@@ -999,7 +1063,9 @@ namespace MonoDevelop.Ide.Gui
 		object analysisDocumentLock = new object ();
 		void UnloadAdhocProject ()
 		{
+			#pragma warning disable CS0612 // Type or member is obsolete
 			CancelEnsureAnalysisDocumentIsOpen ();
+			#pragma warning restore CS0612 // Type or member is obsolete
 			lock (adhocProjectLock) {
 				if (adhocProject == null)
 					return;
@@ -1014,6 +1080,7 @@ namespace MonoDevelop.Ide.Gui
 
 		CancellationTokenSource parseTokenSource = new CancellationTokenSource();
 
+		[Obsolete]
 		void CancelOldParsing()
 		{
 			parseTokenSource.Cancel ();
@@ -1022,6 +1089,7 @@ namespace MonoDevelop.Ide.Gui
 
 		object reparseTimeoutLock = new object ();
 
+		[Obsolete]
 		internal void StartReparseThread ()
 		{
 			RunWhenRealized (() => {
@@ -1041,6 +1109,7 @@ namespace MonoDevelop.Ide.Gui
 			});
 		}
 
+		[Obsolete]
 		string GetCurrentParseFileName ()
 		{
 			var editor = Editor;
@@ -1048,6 +1117,7 @@ namespace MonoDevelop.Ide.Gui
 			return result ?? FileName;
 		}
 
+		[Obsolete]
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
 		{
 			var editor = Editor;
@@ -1069,7 +1139,6 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 				foreach (var project in projectsContainingFile) {
 					var projectFile = project?.GetProjectFile (currentParseFile);
-					TypeSystemService.AddSkippedFile (currentParseFile);
 					var options = new ParseOptions {
 						Project = project,
 						Content = currentParseText,
@@ -1116,11 +1185,12 @@ namespace MonoDevelop.Ide.Gui
 				}
 			});
 		}
-		
+
 		/// <summary>
 		/// This method kicks off an async document parser and should be used instead of 
 		/// <see cref="UpdateParseDocument"/> unless you need the parsed document immediately.
 		/// </summary>
+		[Obsolete("Use Visual Studio Editor APIs")]
 		public override void ReparseDocument ()
 		{
 			StartReparseThread ();
@@ -1185,6 +1255,7 @@ namespace MonoDevelop.Ide.Gui
 			return TypeSystemService.Workspace.Options;
 		}
 
+		[Obsolete]
 		internal override Task<IReadOnlyList<Editor.Projection.Projection>> GetPartialProjectionsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var parser = TypeSystemService.GetParser (Editor.MimeType);
@@ -1205,6 +1276,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[Obsolete]
 		internal override void UpdateDocumentId (Microsoft.CodeAnalysis.DocumentId newId)
 		{
 			this.analysisDocument = newId;

@@ -74,10 +74,14 @@ namespace MonoDevelop.Ide
 
 	public class IdePreferences
 	{
+		readonly Lazy<EditorPreferences> editor;
+		internal EditorPreferences Editor { get => editor.Value; }
 		internal RoslynPreferences Roslyn { get; }
+
 		internal IdePreferences ()
 		{
 			Roslyn = new RoslynPreferences ();
+			editor = new Lazy<EditorPreferences> (() => new EditorPreferences ());
 		}
 
 		public readonly ConfigurationProperty<bool> EnableInstrumentation = Runtime.Preferences.EnableInstrumentation;
@@ -150,11 +154,6 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> AddImportedItemsToCompletionList = ConfigurationProperty.Create ("AddImportedItemsToCompletionList", false);
 		public readonly ConfigurationProperty<bool> IncludeKeywordsInCompletionList = ConfigurationProperty.Create ("IncludeKeywordsInCompletionList", true);
 		public readonly ConfigurationProperty<bool> IncludeCodeSnippetsInCompletionList = ConfigurationProperty.Create ("IncludeCodeSnippetsInCompletionList", true);
-
-		[Obsolete ("Unused use CompletionOptionsHideAdvancedMembers")]
-		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
-		[Obsolete ("Unused use CompletionOptionsHideAdvancedMembers")]
-		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
 
 		public readonly ConfigurationProperty<bool> CompletionOptionsHideAdvancedMembers = ConfigurationProperty.Create ("CompletionOptionsHideAdvancedMembers", true);
 

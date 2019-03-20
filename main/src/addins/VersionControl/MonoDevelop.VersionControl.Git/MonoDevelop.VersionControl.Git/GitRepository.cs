@@ -37,6 +37,7 @@ using ProgressMonitor = MonoDevelop.Core.ProgressMonitor;
 using LibGit2Sharp;
 using System.Threading.Tasks;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -480,6 +481,14 @@ namespace MonoDevelop.VersionControl.Git
 			return readingOperationFactory.StartNew (action).RunWaitAndCapture ();
 		}
 
+		internal Task<T> RunOperationAsync<T> (Func<T> action, bool hasUICallbacks = false, CancellationToken cancellationToken = default)
+		{
+			EnsureInitialized ();
+			if (hasUICallbacks)
+				EnsureBackgroundThread ();
+			return readingOperationFactory.StartNew (action, cancellationToken);
+		}
+
 		internal T RunOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
 		{
 			EnsureInitialized ();
@@ -492,7 +501,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
+			try {
+				FileService.FreezeEvents ();
+				blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
+			} finally {
+				FileService.ThawEvents ();
+			}
 		}
 
 		internal void RunBlockingOperation (FilePath localPath, Action<LibGit2Sharp.Repository> action, bool hasUICallbacks = false)
@@ -500,7 +514,12 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			try {
+				FileService.FreezeEvents ();
+				blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			} finally {
+				FileService.ThawEvents ();
+			}
 		}
 
 		internal T RunBlockingOperation<T> (Func<T> action, bool hasUICallbacks = false)
@@ -508,7 +527,12 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
+			try {
+				FileService.FreezeEvents ();
+				return blockingOperationFactory.StartNew (action).RunWaitAndCapture ();
+			} finally {
+				FileService.ThawEvents ();
+			}
 		}
 
 		internal T RunBlockingOperation<T> (FilePath localPath, Func<LibGit2Sharp.Repository, T> action, bool hasUICallbacks = false)
@@ -516,7 +540,12 @@ namespace MonoDevelop.VersionControl.Git
 			EnsureInitialized ();
 			if (hasUICallbacks)
 				EnsureBackgroundThread ();
-			return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			try {
+				FileService.FreezeEvents ();
+				return blockingOperationFactory.StartNew (() => action (GetRepository (localPath))).RunWaitAndCapture ();
+			} finally {
+				FileService.ThawEvents ();
+			}
 		}
 
 		LibGit2Sharp.Repository GetRepository (FilePath localPath)
@@ -594,7 +623,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
 		{
-			var rev = (GitRevision) revision;
+			var rev = (GitRevision)revision;
 			return RunOperation (() => {
 				var commit = rev.GetCommit (RootRepository);
 				if (commit == null)
@@ -619,6 +648,47 @@ namespace MonoDevelop.VersionControl.Git
 				return paths.ToArray ();
 			});
 		}
+
+		protected override Task<RevisionPath []> OnGetRevisionChangesAsync (Revision revision, CancellationToken cancellationToken = default)
+		{
+			var rev = (GitRevision)revision;
+			return RunOperationAsync (() => {
+				var commit = rev.GetCommit (RootRepository);
+				if (commit == null)
+					return new RevisionPath [0];
+
+				var paths = new List<RevisionPath> ();
+				var parent = commit.Parents.FirstOrDefault ();
+				var changes = RootRepository.Diff.Compare<TreeChanges> (parent?.Tree, commit.Tree);
+
+				foreach (var entry in changes.Added) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Add, null));
+				}
+				foreach (var entry in changes.Copied) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Add, null));
+				}
+				foreach (var entry in changes.Deleted) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
+				}
+				foreach (var entry in changes.Renamed) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RootRepository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
+				}
+				foreach (var entry in changes.Modified) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
+				}
+				foreach (var entry in changes.TypeChanged) {
+					cancellationToken.ThrowIfCancellationRequested ();
+					paths.Add (new RevisionPath (RootRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
+				}
+				return paths.ToArray ();
+			}, cancellationToken: cancellationToken);
+		}
+
 
 		protected override IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
 		{
@@ -768,7 +838,7 @@ namespace MonoDevelop.VersionControl.Git
 					fstatus |= VersionStatus.ScheduledAdd;
 				else if ((status & (FileStatus.DeletedFromIndex | FileStatus.DeletedFromWorkdir)) != 0)
 					fstatus |= VersionStatus.ScheduledDelete;
-				else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.ModifiedInWorkdir)) != 0)
+				else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.TypeChangeInIndex | FileStatus.ModifiedInWorkdir | FileStatus.ModifiedInIndex)) != 0)
 					fstatus |= VersionStatus.Modified;
 				else if ((status & (FileStatus.RenamedInIndex | FileStatus.RenamedInWorkdir)) != 0)
 					fstatus |= VersionStatus.ScheduledReplace;
@@ -876,9 +946,9 @@ namespace MonoDevelop.VersionControl.Git
 
 				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 				if (GitService.UseRebaseOptionWhenPulling)
-					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor, true);
 				else
-					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
+					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor, true);
 
 				monitor.Step (1);
 			}
@@ -965,8 +1035,9 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex)
+		bool CommonPreMergeRebase (GitUpdateOptions options, ProgressMonitor monitor, out int stashIndex, string branch, string actionButtonTitle, bool isUpdate)
 		{
+			FileService.FreezeEvents ();
 			stashIndex = -1;
 			monitor.Step (1);
 
@@ -977,12 +1048,11 @@ namespace MonoDevelop.VersionControl.Git
 					modified = true;
 
 				if (modified) {
-					if (MessageService.GenericAlert (
-						    MonoDevelop.Ide.Gui.Stock.Question,
-						    GettextCatalog.GetString ("You have uncommitted changes"),
-						    GettextCatalog.GetString ("What do you want to do?"),
-						    AlertButton.Cancel,
-						    new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel)
+					if (!PromptToStash (
+						GettextCatalog.GetString ("There are local changes that conflict with changes committed in the <b>{0}</b> branch. Would you like to stash the changes and continue?", branch),
+						actionButtonTitle,
+						isUpdate ? GettextCatalog.GetString ("Automatically stash/unstash changes when merging/rebasing") : null,
+						isUpdate ? GitService.StashUnstashWhenUpdating : null))
 						return false;
 
 					options |= GitUpdateOptions.SaveLocalChanges;
@@ -999,6 +1069,27 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.Step (1);
 			}
 			return true;
+		}
+
+		bool PromptToStash (string messageText, string actionButtonTitle, string dontAskLabel = null, ConfigurationProperty<bool> dontAskProperty = null)
+		{
+			bool showDontAsk = !string.IsNullOrEmpty (dontAskLabel) && dontAskProperty != null;
+			var message = new GenericMessage {
+				Text = GettextCatalog.GetString ("Conflicting local changes found"),
+				SecondaryText = messageText,
+				Icon = Ide.Gui.Stock.Question
+			};
+			if (showDontAsk) {
+				message.AddOption (nameof (dontAskLabel), dontAskLabel, dontAskProperty.Value);
+			}
+			message.Buttons.Add (AlertButton.Cancel);
+			message.Buttons.Add (new AlertButton (actionButtonTitle));
+			message.DefaultButton = 1;
+
+			var result = MessageService.GenericAlert (message) != AlertButton.Cancel;
+			if (result && showDontAsk)
+				dontAskProperty.Value = message.GetOptionValue (nameof (dontAskLabel));
+			return result;
 		}
 
 		bool ConflictResolver(LibGit2Sharp.Repository repository, ProgressMonitor monitor, Commit resetToIfFail, string message)
@@ -1026,32 +1117,41 @@ namespace MonoDevelop.VersionControl.Git
 
 		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, ProgressMonitor monitor, Commit oldHead)
 		{
-			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
-				monitor.Step (1);
-
-				// Restore local changes
-				if (stashIndex != -1) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					ApplyStash (monitor, stashIndex);
-					// FIXME: No StashApplyStatus.Conflicts here.
-					if (RootRepository.Index.Conflicts.Any () && !ConflictResolver (RootRepository, monitor, oldHead, string.Empty))
-						PopStash (monitor, stashIndex);
-					else
-						RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex));
+			try {
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Step (1);
+
+					// Restore local changes
+					if (stashIndex != -1) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
+						ApplyStash (monitor, stashIndex);
+						// FIXME: No StashApplyStatus.Conflicts here.
+						if (RootRepository.Index.Conflicts.Any () && !ConflictResolver (RootRepository, monitor, oldHead, string.Empty))
+							PopStash (monitor, stashIndex);
+						else
+							RunBlockingOperation (() => RootRepository.Stashes.Remove (stashIndex));
+						monitor.Step (1);
+					}
 				}
+			} finally {
+				FileService.ThawEvents ();
+				monitor.EndTask ();
 			}
-			monitor.EndTask ();
 		}
 
 		public void Rebase (string branch, GitUpdateOptions options, ProgressMonitor monitor)
+		{
+			Rebase (branch, options, monitor, false);
+		}
+
+		void Rebase (string branch, GitUpdateOptions options, ProgressMonitor monitor, bool isUpdate)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Rebase"), isUpdate))
 					return;
 
 				RunBlockingOperation (() => {
@@ -1086,6 +1186,11 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy strategy = FastForwardStrategy.Default)
 		{
+			Merge (branch, options, monitor, false, strategy);
+		}
+
+		void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, bool isUpdate, FastForwardStrategy strategy = FastForwardStrategy.Default)
+		{
 			int stashIndex = -1;
 
 			Signature sig = GetSignature ();
@@ -1096,7 +1201,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				CommonPreMergeRebase (options, monitor, out stashIndex);
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex, branch, GettextCatalog.GetString ("Stash and Merge"), isUpdate))
+					return;
 				// Do a merge.
 				MergeResult mergeResult = RunBlockingOperation (() =>
 					RootRepository.Merge (branch, sig, new MergeOptions {
@@ -1456,7 +1562,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			try {
 				return RunOperation (versionInfo.LocalPath, repository => {
-					var patch = repository.Diff.Compare<Patch> (new [] { repository.ToGitPath (versionInfo.LocalPath) });
+					var patch = repository.Diff.Compare<Patch> (repository.Head?.Tip?.Tree, DiffTargets.WorkingDirectory | DiffTargets.Index, new [] { repository.ToGitPath (versionInfo.LocalPath) });
 					// Trim the header by taking out the first 2 lines.
 					int diffStart = patch.Content.IndexOf ('\n', patch.Content.IndexOf ('\n') + 1);
 					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, patch.Content.Substring (diffStart + 1));
@@ -1676,6 +1782,33 @@ namespace MonoDevelop.VersionControl.Git
 			return RunOperation (() => RootRepository.Head.FriendlyName);
 		}
 
+		void SwitchBranchInternal (ProgressMonitor monitor, string branch)
+		{
+			int progress = 0;
+			RunBlockingOperation (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
+				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+				OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
+				CheckoutNotifyFlags = refreshFlags,
+			}), true);
+			monitor.Step (1);
+
+			if (GitService.StashUnstashWhenSwitchingBranches) {
+				try {
+					// Restore the branch stash
+					var stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, branch));
+					if (stashIndex != -1)
+						PopStash (monitor, stashIndex);
+				} catch (Exception e) {
+					monitor.ReportError (GettextCatalog.GetString ("Restoring stash for branch {0} failed", branch), e);
+				}
+			}
+			monitor.Step (1);
+
+			Runtime.RunInMainThread (() => {
+				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
+			}).Ignore ();
+		}
+
 		public bool SwitchToBranch (ProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
@@ -1684,10 +1817,31 @@ namespace MonoDevelop.VersionControl.Git
 			if (sig == null)
 				return false;
 
-			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
+			FileService.FreezeEvents ();
+			try {
+				// try to switch without stashing
+				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 2);
+				SwitchBranchInternal (monitor, branch);
+			} catch (CheckoutConflictException ex) {
+				// retry with stashing
+				monitor.EndTask ();
+				if (!GitService.StashUnstashWhenSwitchingBranches) {
+					if (!PromptToStash (
+						GettextCatalog.GetString ("There are local changes that conflict with changes committed in the <b>{0}</b> branch. Would you like to stash the changes and continue with the checkout?", branch),
+						GettextCatalog.GetString ("Stash and Switch"),
+						GettextCatalog.GetString ("Automatically stash/unstash changes when switching branches"),
+						GitService.StashUnstashWhenSwitchingBranches)) {
+						// if canceled, report the error and return
+						monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
+						return false;
+					}
+				}
 
-			if (GitService.StashUnstashWhenSwitchingBranches) {
+				// stash automatically is selected or user requested a stash
+
+				monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 4);
 				// Remove the stash for this branch, if exists
+				// TODO: why do with do this?
 				string currentBranch = RootRepository.Head.FriendlyName;
 				stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, currentBranch));
 				if (stashIndex != -1)
@@ -1697,31 +1851,21 @@ namespace MonoDevelop.VersionControl.Git
 					return false;
 
 				monitor.Step (1);
-			}
 
-			try {
-				int progress = 0;
-				RunBlockingOperation (() => LibGit2Sharp.Commands.Checkout (RootRepository, branch, new CheckoutOptions {
-					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-					OnCheckoutNotify = (string path, CheckoutNotifyFlags flags) => RefreshFile (path, flags),
-					CheckoutNotifyFlags = refreshFlags,
-				}), true);
-			} finally {
-				// Restore the branch stash
-				if (GitService.StashUnstashWhenSwitchingBranches) {
-					stashIndex = RunOperation (() => GetStashForBranch (RootRepository.Stashes, branch));
-					if (stashIndex != -1)
-						PopStash (monitor, stashIndex);
-					monitor.Step (1);
+				try {
+					SwitchBranchInternal (monitor, branch);
+					return true;
+				} catch (Exception e) {
+					monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), e);
+				} finally {
 				}
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Switching to branch {0} failed", branch), ex);
+			} finally {
+				monitor.EndTask ();
+				FileService.ThawEvents ();
 			}
-
-			Runtime.RunInMainThread (() => {
-				BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
-			}).Ignore ();
-
-			monitor.EndTask ();
-			return true;
+			return false;
 		}
 
 		static string GetStashName (string branchName)

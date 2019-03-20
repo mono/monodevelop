@@ -1,4 +1,4 @@
-//
+﻿//
 // MonoDevelopWorkspace.ProjectSystemHandler.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Projection;
 using MonoDevelop.Projects;
@@ -176,7 +177,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var proj in mdProjects) {
 					if (token.IsCancellationRequested)
 						return null;
-					if (proj is MonoDevelop.Projects.DotNetProject netProj && !netProj.SupportsRoslyn)
+					if (!(proj is DotNetProject netProj))
+						continue;
+					if (!netProj.SupportsRoslyn)
 						continue;
 					var tp = LoadProject (proj, token, null).ContinueWith (t => {
 						if (!t.IsCanceled)
@@ -275,15 +278,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						lock (addLock) {
 							if (!added) {
 								added = true;
-								workspace.OnSolutionAdded (solutionInfo);
-								var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
-								service.SetupSolution (workspace);
-								lock (workspace.generatedFiles) {
-									foreach (var generatedFile in workspace.generatedFiles) {
-										if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
-											workspace.OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
-									}
-								}
+								OnSolutionOpened (workspace, solutionInfo);
 							}
 						}
 						// Check for modified projects here after the solution has been added to the workspace
@@ -292,6 +287,47 @@ namespace MonoDevelop.Ide.TypeSystem
 						// the restore.
 						ReloadModifiedProjects ();
 						return (solution, solutionInfo);
+					}
+				}
+			}
+
+			void OnSolutionOpened (MonoDevelopWorkspace workspace, SolutionInfo solutionInfo)
+			{
+				workspace.OnSolutionAdded (solutionInfo);
+				
+				var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
+				service.SetupSolution (workspace);
+
+				AssignOpenDocumentsToWorkspace (workspace);
+				OpenGeneratedFiles (workspace);
+			}
+
+			internal static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace, bool newEditorOnly = false)
+			{
+				if (!IdeApp.IsInitialized)
+					return;
+
+				foreach (var openDocument in IdeApp.Workbench.Documents) {
+					if (newEditorOnly && openDocument.Editor != null) {
+						continue;
+					}
+					var filePath = openDocument.FileName;
+					var solution = workspace.CurrentSolution;
+					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
+					foreach (var documentId in documentIds) {
+						if (!workspace.IsDocumentOpen (documentId)) {
+							workspace.InformDocumentOpen (documentId, openDocument.TextBuffer.AsTextContainer (), openDocument);
+						}
+					}
+				}
+			}
+
+			static void OpenGeneratedFiles (MonoDevelopWorkspace workspace)
+			{
+				lock (workspace.generatedFiles) {
+					foreach (var generatedFile in workspace.generatedFiles) {
+						if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
+							workspace.OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
 					}
 				}
 			}

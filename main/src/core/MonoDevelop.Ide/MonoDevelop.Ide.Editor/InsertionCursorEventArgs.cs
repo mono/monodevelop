@@ -1,4 +1,4 @@
-﻿//
+//
 // InsertionCursorEventArgs.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using System;
 namespace MonoDevelop.Ide.Editor
 {
 	[Serializable]
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class InsertionCursorEventArgs : EventArgs
 	{
 		public bool Success {

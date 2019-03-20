@@ -54,6 +54,7 @@ using Gdk;
 
 namespace MonoDevelop.CodeActions
 {
+	[Obsolete ("Old editor")]
 	class CodeActionEditorExtension : TextEditorExtension
 	{
 		const int menuTimeout = 150;
@@ -425,8 +426,10 @@ namespace MonoDevelop.CodeActions
 		[CommandHandler (RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!AnalysisOptions.EnableFancyFeatures || smartTagMarginMarker == null) {
-				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
+			if (!AnalysisOptions.EnableFancyFeatures
+				|| smartTagMarginMarker == null
+				) {
+				// Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
 
 				PopupQuickFixMenu (null, null);
 				return;

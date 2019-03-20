@@ -6,13 +6,14 @@
 
 using System.Diagnostics;
 using System.Security.Permissions;
+using System;
 
 #if !SILVERLIGHT && !FULL_AOT_RUNTIME
 using System.Reflection.Emit;
 
 namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 
-    
+    [Obsolete ("Old editor")]
     internal sealed class CompiledRegexRunnerFactory : RegexRunnerFactory {
         DynamicMethod goMethod;
         DynamicMethod findFirstCharMethod;
@@ -39,7 +40,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         }
     }
 
-    internal delegate RegexRunner CreateInstanceDelegate();
+    [Obsolete ("Old editor")]
+    internal delegate RegexRunner CreateInstanceDelegate ();
 }
 
 #endif

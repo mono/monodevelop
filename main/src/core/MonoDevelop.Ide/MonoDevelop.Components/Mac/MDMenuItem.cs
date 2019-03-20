@@ -205,7 +205,7 @@ namespace MonoDevelop.Components.Mac
 
 		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
 		{
-			item.SetTitleWithMnemonic (GetCleanCommandText (info, overrideLabel));
+			item.Title = GetCleanCommandText (info, overrideLabel);
 
 			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
@@ -350,11 +350,11 @@ namespace MonoDevelop.Components.Mac
 						i += 3;
 					}
 				} else if (ch == '_') {
+					// macOS hasn't supported mnemonics since 10.6, so strip them entirely,
+					// but still preserve '__' as a literal escaped '_'
 					if (i + 1 < txt.Length && txt[i + 1] == '_') {
 						sb.Append ('_');
 						i++;
-					} else {
-						sb.Append ('&');
 					}
 				} else if (!ci.UseMarkup) {
 					sb.Append (ch);

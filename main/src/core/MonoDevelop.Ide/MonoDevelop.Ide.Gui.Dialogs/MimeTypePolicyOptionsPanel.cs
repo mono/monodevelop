@@ -221,7 +221,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			UpdateDefaultSettingsButton (policyContainer);
 			loaded = true;
 			hasCachedPolicy = false;
-			LoadFrom (policy);
+			if (policy != null)
+				LoadFrom (policy);
 		}
 		
 		T GetCurrentPolicy ()

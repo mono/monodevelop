@@ -1,4 +1,4 @@
-﻿//
+//
 // ImageCodon.cs
 //
 // Author:
@@ -32,11 +32,7 @@ namespace MonoDevelop.Ide.Codons
 	internal class ImageCodon : ExtensionNode
 	{
 		[NodeAttribute ("resource", "Name of the resource where the image is stored.")]
-		string resource;
-
-		public string Resource {
-			get { return resource; }
-		}
+		public string Resource { get; private set; }
 	}
 }
 

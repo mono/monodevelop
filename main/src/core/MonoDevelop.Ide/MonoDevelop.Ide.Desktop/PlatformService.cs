@@ -32,24 +32,16 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
-
-using Microsoft.VisualStudio.Platform;
-using Microsoft.VisualStudio.Utilities;
-
-using Mono.Addins;
 using MonoDevelop.Core;
 using Mono.Unix;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
-using MonoDevelop.Ide.Composition;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Desktop
 {
-	public abstract class PlatformService
+	public abstract partial class PlatformService
 	{
 		Hashtable iconHash = new Hashtable ();
 		static readonly bool UsePlatformFileIcons = false;
@@ -102,7 +94,7 @@ namespace MonoDevelop.Ide.Desktop
 		public string GetMimeTypeForUri (string uri)
 		{
 			if (!String.IsNullOrEmpty (uri)) {
-				MimeTypeNode mt = FindMimeTypeForFile (uri);
+				MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeTypeForFile (uri);
 				if (mt != null)
 					return mt.Id;
 			}
@@ -126,53 +118,11 @@ namespace MonoDevelop.Ide.Desktop
 				return GettextCatalog.GetString ("Text file");
 			if (mimeType == "application/octet-stream")
 				return GettextCatalog.GetString ("Unknown");
-			MimeTypeNode mt = FindMimeType (mimeType);
+			MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeType (mimeType);
 			if (mt != null && mt.Description != null)
 				return mt.Description;
 			else
 				return OnGetMimeTypeDescription (mimeType) ?? string.Empty;
-		}
-
-		public bool GetMimeTypeIsText (string mimeType)
-		{
-			return GetMimeTypeIsSubtype (mimeType, "text/plain");
-		}
-
-		public bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)
-		{
-			foreach (string mt in GetMimeTypeInheritanceChain (subMimeType))
-				if (mt == baseMimeType)
-					return true;
-			return false;
-		}
-
-		public IEnumerable<string> GetMimeTypeInheritanceChain (string mimeType)
-		{
-			yield return mimeType;
-
-			while (mimeType != null && mimeType != "text/plain" && mimeType != "application/octet-stream") {
-				MimeTypeNode mt = FindMimeType (mimeType);
-				if (mt != null && !string.IsNullOrEmpty (mt.BaseType))
-					mimeType = mt.BaseType;
-				else {
-					if (mimeType.EndsWith ("+xml", StringComparison.Ordinal))
-						mimeType = "application/xml";
-					else if (mimeType.StartsWith ("text/", StringComparison.Ordinal) || OnGetMimeTypeIsText (mimeType))
-						mimeType = "text/plain";
-					else
-						break;
-				}
-				yield return mimeType;
-			}
-		}
-
-		public string GetMimeTypeForRoslynLanguage (string language)
-		{
-			foreach (MimeTypeNode mt in MimeTypeNodes.All) {
-				if (mt.RoslynName == language)
-					return mt.Id;
-			}
-			return null;
 		}
 
 		public Xwt.Drawing.Image GetIconForFile (string filename)
@@ -189,7 +139,7 @@ namespace MonoDevelop.Ide.Desktop
 			if (pic == null) {
 				string mtype = GetMimeTypeForUri (filename);
 				if (mtype != null) {
-					foreach (string mt in GetMimeTypeInheritanceChain (mtype)) {
+					foreach (string mt in MimeTypeCatalog.Instance.GetMimeTypeInheritanceChain (mtype)) {
 						pic = GetIconForType (mt);
 						if (pic != null)
 							return pic;
@@ -205,7 +155,7 @@ namespace MonoDevelop.Ide.Desktop
 			if (bf != null)
 				return bf;
 
-			foreach (string type in GetMimeTypeInheritanceChain (mimeType)) {
+			foreach (string type in MimeTypeCatalog.Instance.GetMimeTypeInheritanceChain (mimeType)) {
 				// Try getting an icon name for the type
 				string icon = GetIconIdForType (type);
 				if (icon != null) {
@@ -249,7 +199,7 @@ namespace MonoDevelop.Ide.Desktop
 
 		string GetIconIdForFile (string fileName)
 		{
-			MimeTypeNode mt = FindMimeTypeForFile (fileName);
+			MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeTypeForFile (fileName);
 			if (mt != null)
 				return mt.Icon;
 			else
@@ -260,75 +210,13 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			if (type == "text/plain")
 				return "md-text-file-icon";
-			MimeTypeNode mt = FindMimeType (type);
+			MimeTypeNode mt = MimeTypeCatalog.Instance.FindMimeType (type);
 			if (mt != null)
 				return mt.Icon;
 			else if (UsePlatformFileIcons)
 				return OnGetIconIdForType (type);
 			else
 				return null;
-		}
-
-		static class MimeTypeNodes
-		{
-			public static List<MimeTypeNode> All => mimeTypeNodes;
-
-			static List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
-
-			static MimeTypeNodes ()
-			{
-				if (AddinManager.IsInitialized) {
-					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/MimeTypes", delegate (object sender, ExtensionNodeEventArgs args) {
-						var newList = new List<MimeTypeNode> (mimeTypeNodes);
-						var mimeTypeNode = (MimeTypeNode)args.ExtensionNode;
-						switch (args.Change) {
-						case ExtensionChange.Add:
-							// initialize child nodes.
-							mimeTypeNode.ChildNodes.GetEnumerator ();
-							newList.Add (mimeTypeNode);
-							break;
-						case ExtensionChange.Remove:
-							newList.Remove (mimeTypeNode);
-							break;
-						}
-						mimeTypeNodes = newList;
-					});
-				}
-			}
-		}
-
-		static Lazy<IFileToContentTypeService> fileToContentTypeService = CompositionManager.GetExport<IFileToContentTypeService> ();
-		MimeTypeNode FindMimeTypeForFile (string fileName)
-		{
-			try {
-				IContentType contentType = fileToContentTypeService.Value.GetContentTypeForFilePath (fileName);
-				if (contentType != PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType) {
-					string mimeType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetMimeType (contentType);
-					if (mimeType != null) {
-						MimeTypeNode mt = FindMimeType (mimeType);
-						if (mt != null) {
-							return mt;
-						}
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("IFilePathToContentTypeProvider query failed", ex);
-			}
-
-			foreach (MimeTypeNode mt in MimeTypeNodes.All) {
-				if (mt.SupportsFile (fileName))
-					return mt;
-			}
-			return null;
-		}
-
-		MimeTypeNode FindMimeType (string type)
-		{
-			foreach (MimeTypeNode mt in MimeTypeNodes.All) {
-				if (mt.Id == type)
-					return mt;
-			}
-			return null;
 		}
 
 		protected virtual string OnGetMimeTypeForUri (string uri)
@@ -339,11 +227,6 @@ namespace MonoDevelop.Ide.Desktop
 		protected virtual string OnGetMimeTypeDescription (string mimeType)
 		{
 			return null;
-		}
-
-		protected virtual bool OnGetMimeTypeIsText (string mimeType)
-		{
-			return false;
 		}
 
 		protected virtual string OnGetIconIdForFile (string filename)

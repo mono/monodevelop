@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\MonoDevelop.props" />
+  <Import Project="$(ReferencesVSEditor)" />
+  <Import Project="$(ReferencesGtk)" />
+  <PropertyGroup>
+    <AssemblyTitle>MonoDevelop Cocoa Text Editor</AssemblyTitle>
+    <AssemblyDescription>Integrates the Cocoa version of the Visual Studio Editor into MonoDevelop</AssemblyDescription>
+    <AddinBuildDir>DisplayBindings\TextEditor.Cocoa</AddinBuildDir>
+    <AddMonoDevelopCoreReferences>true</AddMonoDevelopCoreReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <ExternalConsole>false</ExternalConsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Xamarin.Mac" HintPath="..\..\..\..\external\Xamarin.Mac.dll" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\CocoaControls\CocoaControls.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Core\Impl\CoreUtilityImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\Language\LanguageImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Impl\StandardClassification\StandardClassificationImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\BraceCompletion\BraceCompletionImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationAggregator\ClassificationAggregatorImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationFormat\ClassificationFormatMapImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ClassificationType\ClassificationTypeImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Commanding\CommandingImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CurrentLineHighlighter\CurrentLineHighlighterImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\DifferenceAlgorithm\DifferenceAlgorithmImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOperations\EditorOperationsImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorOptions\EditorOptionsImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\EditorPrimitives\EditorPrimitivesImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Find\Find.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Navigation\NavigationImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\NavigationProviders\NavigationProvidersImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\Outlining\Outlining.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\RTF\RtfBuilderServiceImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\StandaloneUndo\StandaloneUndoImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TagAggregator\TagAggregatorImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextAndAdornmentSequencer\TextAndAdornmentSequencerImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextBufferUndoManager\TextBufferUndoManagerImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextModel\TextModelImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\ToolTipAdornment\ToolTipAdornmentImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\TextSearch\TextSearchImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\VisibleWhitespace\VisibleWhitespaceImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\XPlat\MultiCaretImpl\MultiCaretImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextLogicUtil\TextLogicUtil.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\FPF\UIAutomationClient\UIAutomationClient.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\GlyphMargin\GlyphMarginImpl.csproj" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextDataUtil\TextDataUtil.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Util\TextUIUtil\TextUIUtil.csproj" Private="False" />
+    <ProjectReference Include="..\..\..\..\external\vs-editor-core\src\Editor\Text\Def\InfoBar\InfoBar.csproj" />
+    <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj" Private="False" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="icons\vs-find-replace-close-16.png" />
+    <None Remove="icons\vs-find-replace-close-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16.png" />
+    <None Remove="icons\vs-find-replace-option-case-sensitive-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16.png" />
+    <None Remove="icons\vs-find-replace-option-regex-16%402x.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16~disabled.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16~disabled%402x.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16.png" />
+    <None Remove="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
+    <None Remove="icons\vs-find-replace-search-16.png" />
+    <None Remove="icons\vs-find-replace-search-16%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-close-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-case-sensitive-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-regex-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16~disabled.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-option-whole-words-only-16%402x.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-search-16.png" />
+    <EmbeddedResource Include="icons\vs-find-replace-search-16%402x.png" />
+  </ItemGroup>
+</Project>

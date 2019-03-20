@@ -34,12 +34,10 @@ using MonoDevelop.Ide;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using System.Collections.Generic;
-using Mono.Cecil;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.Decompiler.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.Decompiler.CSharp;
-using ICSharpCode.ILSpy;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
@@ -47,7 +45,7 @@ namespace MonoDevelop.AssemblyBrowser
 	class EventDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(EventDefinition); }
+			get { return typeof(IEvent); }
 		}
 		
 		public EventDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -56,37 +54,39 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var evt = (EventDefinition)dataObject;
+			var evt = (IEvent)dataObject;
 			return evt.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			var evt = (EventDefinition)dataObject;
-			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (evt.Name + " : " + CSharpLanguage.Instance.TypeToString (evt.EventType, false, evt));
-			var accessor = evt.AddMethod ?? evt.RemoveMethod;
+			var evt = (IEvent)dataObject;
+			nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (evt.Name + " : ");
+			// TODO: Fix this.
+			//nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (evt.Name + " : " + CSharpLanguage.Instance.TypeToString (evt.ReturnType, false, evt));
+			var accessor = evt.AddAccessor ?? evt.RemoveAccessor;
 
-			if (!accessor.IsPublic)
+			if (!accessor.IsPublic ())
 				nodeInfo.Label = MethodDefinitionNodeBuilder.FormatPrivate (nodeInfo.Label);
 
 			nodeInfo.Icon = Context.GetIcon (GetStockIcon (evt));
 		}
 
-		public static IconId GetStockIcon (EventDefinition evt)
+		public static IconId GetStockIcon (IEvent evt)
 		{
-			var accessor = evt.AddMethod ?? evt.RemoveMethod;
+			var accessor = evt.AddAccessor ?? evt.RemoveAccessor;
 			return MethodDefinitionNodeBuilder.GetStockIcon (accessor);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			var evt = (EventDefinition)dataObject;
-			if (evt.AddMethod != null)
-				ctx.AddChild (evt.AddMethod);
-			if (evt.RemoveMethod != null)
-				ctx.AddChild (evt.RemoveMethod);
-			if (evt.InvokeMethod != null)
-				ctx.AddChild (evt.InvokeMethod);
+			var evt = (IEvent)dataObject;
+			if (evt.AddAccessor != null)
+				ctx.AddChild (evt.AddAccessor);
+			if (evt.RemoveAccessor != null)
+				ctx.AddChild (evt.RemoveAccessor);
+			if (evt.InvokeAccessor != null)
+				ctx.AddChild (evt.InvokeAccessor);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -99,18 +99,18 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var evt = (EventDefinition)navigator.DataItem;
-			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt));
+			var evt = (IEvent)navigator.DataItem;
+			return MethodDefinitionNodeBuilder.Disassemble (data, rd => rd.DisassembleEvent (evt.ParentModule.PEFile, (System.Reflection.Metadata.EventDefinitionHandle)evt.MetadataToken));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditor data, ITreeNavigator navigator, DecompileFlags flags)
 		{
 			if (MethodDefinitionNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var evt = navigator.DataItem as EventDefinition;
+			var evt = navigator.DataItem as IEvent;
 			if (evt == null)
 				return null;
-			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (evt), flags: flags);
+			return MethodDefinitionNodeBuilder.Decompile (data, MethodDefinitionNodeBuilder.GetAssemblyLoader (navigator), b => b.Decompile (evt.MetadataToken), flags: flags);
 		}
 
 		#endregion

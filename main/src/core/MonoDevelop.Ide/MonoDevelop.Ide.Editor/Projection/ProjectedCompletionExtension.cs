@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectedCompletionExtension.cs
 //
 // Author:
@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
+	[Obsolete]
 	sealed class ProjectedCompletionExtension : CompletionTextEditorExtension, IProjectionExtension
 	{
 		DocumentContext ctx;

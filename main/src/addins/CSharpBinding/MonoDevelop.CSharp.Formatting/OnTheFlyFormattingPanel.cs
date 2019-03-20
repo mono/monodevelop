@@ -25,13 +25,9 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Components;
-using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
-using Mono.TextEditor;
-using MonoDevelop.Ide.Editor;
 using Xwt;
-using MonoDevelop.Ide.Composition;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis.Editor.Shared.Options;

@@ -14,7 +14,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	using System.Collections;
     using System.Collections.Generic;
 
-    internal sealed class RegexTree {
+	[Obsolete ("Old editor")]
+    internal sealed class RegexTree
+	{
 #if SILVERLIGHT
         internal RegexTree(RegexNode root, Dictionary<Int32, Int32> caps, Int32[] capnumlist, int captop, Dictionary<String, Int32> capnames, String[] capslist, RegexOptions opts)
 #else

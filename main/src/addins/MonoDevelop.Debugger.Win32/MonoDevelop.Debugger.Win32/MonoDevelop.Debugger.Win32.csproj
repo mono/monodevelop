@@ -61,6 +61,9 @@
       <Project>{74704c00-5861-4f86-920c-865148a175c5}</Project>
       <Name>Mono.Debugging.Win32</Name>
     </ProjectReference>
+    <IncludeCopyLocal Include="Mono.Debugging.Win32.dll" />
+    <IncludeCopyLocal Include="CorApi2.dll" />
+    <IncludeCopyLocal Include="CorApi.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

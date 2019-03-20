@@ -48,12 +48,14 @@ namespace MonoDevelop.Ide.TypeSystem
 	public static partial class TypeSystemService
 	{
 		const string CurrentVersion = "1.1.9";
+
+		[Obsolete]
 		static IEnumerable<TypeSystemParserNode> parsers;
-		static string[] filesSkippedInParseThread = new string[0];
 		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
 		internal static MonoDevelopRuleSetManager RuleSetManager { get; } = new MonoDevelopRuleSetManager ();
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
@@ -63,22 +65,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static void RemoveSkippedfile (FilePath fileName)
-		{
-			filesSkippedInParseThread = filesSkippedInParseThread.Where (f => f != fileName).ToArray ();
-		}
-
-		public static void AddSkippedFile (FilePath fileName)
-		{
-			if (filesSkippedInParseThread.Any (f => f == fileName))
-				return;
-			filesSkippedInParseThread = filesSkippedInParseThread.Concat (new string[] { fileName }).ToArray ();
-		}
+		static MiscellaneousFilesWorkspace miscellaneousFilesWorkspace;
 
 		static TypeSystemService ()
 		{
 			RoslynServices.RoslynService.Initialize ();
 			CleanupCache ();
+
+			#pragma warning disable CS0618, 612 // Type or member is obsolete
 			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			bool initialLoad = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
@@ -86,6 +80,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!initialLoad)
 					parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			});
+			#pragma warning restore CS0618, 612 // Type or member is obsolete
 			initialLoad = false;
 
 			try {
@@ -136,14 +131,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 
 			IntitializeTrackedProjectHandling ();
+
+			IdeApp.Initialized += (sender, args) => {
+				miscellaneousFilesWorkspace = Composition.CompositionManager.GetExportedValue<MiscellaneousFilesWorkspace> ();
+				IdeApp.Workbench.DocumentOpened += OnDocumentOpened;
+				IdeApp.Workbench.DocumentClosed += OnDocumentClosed;
+			};
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
 			var n = GetTypeSystemParserNode (mimeType, buildAction);
 			return n != null ? n.Parser : null;
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
 			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
@@ -154,6 +157,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			StringTextSource text;
@@ -169,6 +173,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
@@ -194,6 +199,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static bool CanParseProjections (Project project, string mimeType, string fileName)
 		{
 			var projectFile = project.GetProjectFile (fileName);
@@ -205,21 +211,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			return parser.CanGenerateProjection (mimeType, projectFile.BuildAction, project.SupportedLanguages);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		public static Task<ParsedDocument> ParseFile (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static async Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
@@ -273,16 +283,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseProjection (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseProjection (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
 		}
 
+		[Obsolete ("Use the Visual Studio Editor APIs")]
 		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseProjection (project, data.FileName, data.MimeType, data, cancellationToken);
@@ -663,29 +676,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor, DocumentContext context)
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
 			foreach (var w in workspaces) {
 				if (w.Contains (analysisDocument.ProjectId)) {
-					w.InformDocumentOpen (analysisDocument, editor, context); 
+					w.InformDocumentOpen (analysisDocument, sourceTextContainer, context); 
 					return;
 				}
 			}
 			if (!gotDocumentRequestError) {
 				gotDocumentRequestError = true;
-				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument + ":" + editor.FileName);
+				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument);
 			}
 		}
 
-		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor, DocumentContext context)
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer sourceTextContainer, DocumentContext context)
 		{
 			if (ws == null)
 				throw new ArgumentNullException (nameof (ws));
 			if (analysisDocument == null)
 				throw new ArgumentNullException (nameof (analysisDocument));
-			if (editor == null)
-				throw new ArgumentNullException (nameof (editor));
-			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, editor, context); 
+			if (sourceTextContainer == null)
+				throw new ArgumentNullException (nameof (sourceTextContainer));
+			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, sourceTextContainer, context); 
 		}
 
 		static bool gotDocumentRequestError = false;

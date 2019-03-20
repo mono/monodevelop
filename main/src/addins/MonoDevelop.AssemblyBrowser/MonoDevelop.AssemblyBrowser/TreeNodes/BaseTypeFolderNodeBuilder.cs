@@ -28,9 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-
-using Mono.Cecil;
-
+	
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
@@ -100,9 +98,9 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var baseTypeFolder = (BaseTypeFolder)dataObject;
-			builder.AddChild (baseTypeFolder.Type.BaseType);
-			builder.AddChildren (baseTypeFolder.Type.Interfaces);
+			builder.AddChildren (baseTypeFolder.Type.DirectBaseTypes);
 		}
+
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;

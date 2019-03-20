@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Linq;
 using Gtk;
 
 using MonoDevelop.Components;
@@ -49,6 +50,11 @@ namespace MonoDevelop.CSharp.Project
 		DotNetProject project;
 		ListStore classListStore;
 		bool classListFilled;
+		LanguageVersion[] unsupportedLanguageVersions = {
+			LanguageVersion.CSharp8,
+			LanguageVersion.LatestMajor,
+			LanguageVersion.Preview
+		};
 		
 		public CompilerOptionsPanelWidget (DotNetProject project)
 		{
@@ -95,7 +101,11 @@ namespace MonoDevelop.CSharp.Project
 
 			var langVerStore = new ListStore (typeof (string), typeof(LanguageVersion));
 			foreach (var (text, version) in CSharpLanguageVersionHelper.GetKnownLanguageVersions ()) {
-				langVerStore.AppendValues (text, version);
+				if (unsupportedLanguageVersions.Contains (version) && compilerParameters.LangVersion != version) {
+					// Mono's MSBuild does not currently support C# 8.
+				} else {
+					langVerStore.AppendValues (text, version);
+				}
 			}
 			langVerCombo.Model = langVerStore;
 

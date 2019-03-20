@@ -53,9 +53,10 @@ using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CodeActions
 {
+	[Obsolete ("Old editor")]
 	internal static class CodeFixMenuService
 	{
-		public static CodeFixMenu CreateFixMenu (TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
+		public static CodeFixMenu CreateFixMenu (Ide.Editor.TextEditor editor, CodeActionContainer fixes, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var menu = new CodeFixMenu ();
 
@@ -155,7 +156,7 @@ namespace MonoDevelop.CodeActions
 			return desc.CustomTags.Any (c => CultureInfo.InvariantCulture.CompareInfo.Compare (c, tag) == 0);
 		}
 
-		static CodeFixMenuEntry CreateFixMenuEntry (TextEditor editor, CodeAction fix, ref int mnemonic)
+		static CodeFixMenuEntry CreateFixMenuEntry (Ide.Editor.TextEditor editor, CodeAction fix, ref int mnemonic)
 		{
 			var label = mnemonic < 0 ? fix.Title : CreateLabel (fix.Title, ref mnemonic);
 			var item = new CodeFixMenuEntry (label, async delegate {
@@ -169,7 +170,7 @@ namespace MonoDevelop.CodeActions
 			return item;
 		}
 
-		static CodeFixMenuEntry CreateFixAllMenuEntry (TextEditor editor, FixAllState fixState, ref int mnemonic, CancellationToken token)
+		static CodeFixMenuEntry CreateFixAllMenuEntry (Ide.Editor.TextEditor editor, FixAllState fixState, ref int mnemonic, CancellationToken token)
 		{
 			var provider = fixState?.FixAllProvider;
 			if (provider == null)
@@ -214,7 +215,7 @@ namespace MonoDevelop.CodeActions
 			return item;
 		}
 
-		static void AddFixMenuItem (TextEditor editor, CodeFixMenu menu, CodeFixMenu fixAllMenu, ref int mnemonic, CodeAction fix, FixAllState fixState, CancellationToken token)
+		static void AddFixMenuItem (Ide.Editor.TextEditor editor, CodeFixMenu menu, CodeFixMenu fixAllMenu, ref int mnemonic, CodeAction fix, FixAllState fixState, CancellationToken token)
 		{
 			if (fix is CodeAction.CodeActionWithNestedActions nested) {
 				// Inline code actions if they are, otherwise add a nested fix menu
@@ -244,7 +245,7 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		static void AddNestedFixMenu (TextEditor editor, CodeFixMenu menu, CodeFixMenu fixAllMenu, CodeAction.CodeActionWithNestedActions fixes, FixAllState fixState, CancellationToken token)
+		static void AddNestedFixMenu (Ide.Editor.TextEditor editor, CodeFixMenu menu, CodeFixMenu fixAllMenu, CodeAction.CodeActionWithNestedActions fixes, FixAllState fixState, CancellationToken token)
 		{
 			int subMnemonic = 0;
 			var subMenu = new CodeFixMenu (fixes.Title);
@@ -267,10 +268,10 @@ namespace MonoDevelop.CodeActions
 		internal class ContextActionRunner
 		{
 			readonly CodeAction act;
-			readonly TextEditor editor;
+			readonly Ide.Editor.TextEditor editor;
 			DocumentContext documentContext;
 
-			public ContextActionRunner (TextEditor editor, CodeAction act)
+			public ContextActionRunner (Ide.Editor.TextEditor editor, CodeAction act)
 			{
 				this.editor = editor;
 				this.act = act;

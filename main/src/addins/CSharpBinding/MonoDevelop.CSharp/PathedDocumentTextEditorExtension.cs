@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp
 	{
 		static PathedDocumentTextEditorExtension ()
 		{
-			MonoDevelopWorkspace.GetInsertionPoints = async delegate (TextEditor editor, int offset) {
+			MonoDevelopWorkspace.GetInsertionPoints = async delegate (Ide.Editor.TextEditor editor, int offset) {
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc == null || doc.AnalysisDocument == null)
 					return new List<InsertionPoint> ();
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp
 					offset
 				);
 			};
-			MonoDevelopWorkspace.StartRenameSession = async (TextEditor editor, DocumentContext ctx, Core.Text.ITextSourceVersion version, SyntaxToken? token) => {
+			MonoDevelopWorkspace.StartRenameSession = async (Ide.Editor.TextEditor editor, DocumentContext ctx, Core.Text.ITextSourceVersion version, SyntaxToken? token) => {
 				var latestDocument = ctx.AnalysisDocument;
 				var cancellationToken = default (CancellationToken);
 				var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
@@ -133,6 +133,8 @@ namespace MonoDevelop.CSharp
 			// Delay the execution of UpdateOwnerProjects since it may end calling DocumentContext.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
 			Gtk.Application.Invoke ((o, args) => {
+				if (Editor == null)
+					return;
 				UpdateOwnerProjects ();
 				Editor_CaretPositionChanged (null, null);
 			});
@@ -550,7 +552,7 @@ namespace MonoDevelop.CSharp
 					ext.DocumentContext.AttachToProject (ext.ownerProjects [n]);
 				} else {
 					var node = memberList [n];
-					var extEditor = ext.DocumentContext.GetContent<TextEditor> ();
+					var extEditor = ext.DocumentContext.GetContent<Ide.Editor.TextEditor> ();
 					if (extEditor != null) {
 						int offset;
 						if (node is OperatorDeclarationSyntax) { 
@@ -580,14 +582,14 @@ namespace MonoDevelop.CSharp
 
 		class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			TextEditor editor;
+			Ide.Editor.TextEditor editor;
 
 			DocumentContext DocumentContext {
 				get;
 				set;
 			}
 
-			public CompilationUnitDataProvider (TextEditor editor, DocumentContext documentContext)
+			public CompilationUnitDataProvider (Ide.Editor.TextEditor editor, DocumentContext documentContext)
 			{
 				this.editor = editor;
 				this.DocumentContext = documentContext;

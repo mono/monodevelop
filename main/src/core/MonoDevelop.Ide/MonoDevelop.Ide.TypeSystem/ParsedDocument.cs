@@ -36,6 +36,7 @@ using MonoDevelop.Core.Text;
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[Flags]
+	[Obsolete ("Not supported in new editor")]
 	public enum ParsedDocumentFlags
 	{
 		None            = 0,
@@ -52,6 +53,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		HasCustomCompletionExtension = 4
 	}
 
+	[Obsolete ("Not supported in new editor")]
 	public abstract class ParsedDocument
 	{
 		DateTime lastWriteTimeUtc = DateTime.UtcNow;
@@ -106,13 +108,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return (await GetErrorsAsync (cancellationToken).ConfigureAwait (false)).Any (e => e.ErrorType == ErrorType.Error);
 		}
-
-		[Obsolete ("Use the HasErrorsAsync method for cancellation and async support.")]
-		public bool HasErrors {
-			get {
-				return GetErrorsAsync ().Result.Any (e => e.ErrorType == ErrorType.Error);
-			}
-		}
 		
 		/// <summary>
 		/// Gets or sets the language ast used by specific language backends.
@@ -120,13 +115,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		public object Ast {
 			get;
 			set;
-		}
-
-
-		[Obsolete("Do not use this system anymore. Use the analysisDocument.GetSemanticModelAsync () instead.")]
-		public T GetAst<T> () where T : class
-		{
-			return Ast as T;
 		}
 		
 		public ParsedDocument ()
@@ -138,7 +126,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.fileName = fileName;
 		}
 	}
-	
+
+	[Obsolete]
 	public class DefaultParsedDocument : ParsedDocument
 	{
 		public DefaultParsedDocument (string fileName) : base (fileName)
@@ -215,6 +204,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public static class FoldingUtilities
 	{
 		static bool IncompleteOrSingleLine (DomRegion region)

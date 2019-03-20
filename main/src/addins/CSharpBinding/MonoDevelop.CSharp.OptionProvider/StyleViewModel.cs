@@ -1,4 +1,4 @@
-﻿//
+//
 // StyleViewModel.cs
 //
 // Author:
@@ -27,12 +27,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeStyle;
 using Microsoft.CodeAnalysis.CSharp.CodeStyle;
 using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.Refactoring.Options;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring.Options;
@@ -708,7 +706,75 @@ class Customer
     }}
 }}
 ";
+		private static readonly string s_doNotPreferBraces = $@"
+using System;
 
+class Customer
+{{
+    private int Age;
+
+    void M1()
+    {{
+//[
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test) Console.WriteLine(""Text"");
+
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test)
+            Console.WriteLine(""Text"");
+
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test)
+            Console.WriteLine(
+                ""Text"");
+
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test)
+        {{
+            Console.WriteLine(
+                ""Text"");
+        }}
+//]
+    }}
+}}
+";
+
+		private static readonly string s_preferBracesWhenMultiline = $@"
+using System;
+
+class Customer
+{{
+    private int Age;
+
+    void M1()
+    {{
+//[
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test) Console.WriteLine(""Text"");
+
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test)
+            Console.WriteLine(""Text"");
+
+        // {GettextCatalog.GetString ("Allow:")}
+        if (test)
+        {{
+            Console.WriteLine(
+                ""Text"");
+        }}
+//]
+    }}
+    void M2()
+    {{
+//[
+        // {GettextCatalog.GetString ("Over:")}
+        if (test)
+            Console.WriteLine(
+                ""Text"");
+//]
+    }}
+}}
+";
 		private static readonly string s_preferAutoProperties = $@"
 using System;
 
@@ -1168,7 +1234,7 @@ class C
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.UseImplicitTypeWherePossible, GettextCatalog.GetString("Elsewhere"), s_varWherePossiblePreviewTrue, s_varWherePossiblePreviewFalse, this, optionSet, varGroupTitle, typeStylePreferences));
 
 			// Code block
-			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CSharpCodeStyleOptions.PreferBraces, GettextCatalog.GetString("Prefer braces"), s_preferBraces, s_preferBraces, this, optionSet, codeBlockPreferencesGroupTitle));
+			AddBracesOptions (optionSet, codeBlockPreferencesGroupTitle);
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferAutoProperties, GettextCatalog.GetString("Prefer auto properties"), s_preferAutoProperties, s_preferAutoProperties, this, optionSet, codeBlockPreferencesGroupTitle));
 
 			AddParenthesesOptions (Options);
@@ -1201,6 +1267,26 @@ class C
 
 			// Field preferences.
 			CodeStyleItems.Add (new BooleanCodeStyleOptionViewModel (CodeStyleOptions.PreferReadonly, GettextCatalog.GetString("Prefer readonly"), s_preferReadonly, s_preferReadonly, this, optionSet, fieldGroupTitle));
+		}
+
+
+		private void AddBracesOptions (OptionSet optionSet, string bracesPreferenceGroupTitle)
+		{
+			var bracesPreferences = new List<CodeStylePreference>
+			{
+				new CodeStylePreference(GettextCatalog.GetString("Yes"), isChecked: false),
+				new CodeStylePreference(GettextCatalog.GetString("No"), isChecked: false),
+				new CodeStylePreference(GettextCatalog.GetString("When on multiple lines"), isChecked: false),
+			};
+
+			var enumValues = new [] { PreferBracesPreference.Always, PreferBracesPreference.None, PreferBracesPreference.WhenMultiline };
+
+			CodeStyleItems.Add (new EnumCodeStyleOptionViewModel<PreferBracesPreference> (
+				CSharpCodeStyleOptions.PreferBraces,
+				GettextCatalog.GetString ("Prefer Braces"),
+				enumValues,
+				new [] { s_preferBraces, s_doNotPreferBraces, s_preferBracesWhenMultiline },
+				this, optionSet, bracesPreferenceGroupTitle, bracesPreferences));
 		}
 
 		private void AddParenthesesOptions (OptionSet optionSet)

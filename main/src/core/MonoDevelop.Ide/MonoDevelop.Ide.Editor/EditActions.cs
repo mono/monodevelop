@@ -1,4 +1,4 @@
-﻿//
+//
 // EditActions.cs
 //
 // Author:
@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor
 	/// <summary>
 	/// This class contains some common actions for the text editor.
 	/// </summary>
+	[Obsolete("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class EditActions
 	{
 		public static void MoveCaretDown (TextEditor editor)

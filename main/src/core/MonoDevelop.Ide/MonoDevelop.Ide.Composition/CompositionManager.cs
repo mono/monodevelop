@@ -1,4 +1,4 @@
-﻿// CompositionManager.cs
+// CompositionManager.cs
 //
 // Author:
 //   Kirill Osenkov <https://github.com/KirillOsenkov>
@@ -110,7 +110,6 @@ namespace MonoDevelop.Ide.Composition
 		public IExportProviderFactory ExportProviderFactory { get; private set; }
 		public ExportProvider ExportProvider { get; private set; }
 		public HostServices HostServices { get; private set; }
-		public System.ComponentModel.Composition.Hosting.ExportProvider ExportProviderV1 { get; private set; }
 
 		internal CompositionManager ()
 		{
@@ -162,8 +161,7 @@ namespace MonoDevelop.Ide.Composition
 
 				ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
 				ExportProvider = ExportProviderFactory.CreateExportProvider ();
-				HostServices = MefV1HostServices.Create (ExportProvider.AsExportProvider ());
-				ExportProviderV1 = NetFxAdapters.AsExportProvider (ExportProvider);
+				HostServices = Microsoft.VisualStudio.LanguageServices.VisualStudioMefHostServices.Create (ExportProvider);
 
 				timings ["CreateServices"] = stepTimer.ElapsedMilliseconds;
 				metadata.Duration = fullTimer.ElapsedMilliseconds;

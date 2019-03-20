@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
     using System.Diagnostics;
     using System.Globalization;
 
+	[Obsolete ("Old editor")]
     internal sealed class RegexNode {
         /*
          * RegexNode types

@@ -4,8 +4,6 @@
 // Author:
 //   Lluis Sanchez Gual
 //
-
-//
 // Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -15,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -28,36 +26,33 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
-using System.Collections;
-using System.ComponentModel;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
 	[ExtensionNode (Description="A submenu")]
-	internal class ItemSetCodon : InstanceExtensionNode
+	class ItemSetCodon : InstanceExtensionNode
 	{
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
+
 		[NodeAttribute ("_label", "Label of the submenu", Localizable=true)]
 		string label;
-		public string Label {
-			get {
-				return label ?? Id;
-			}
-
-			private set {
-				label = value;
-			}
-		}
 
 		[NodeAttribute("icon", "Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		string icon;
 		
 		[NodeAttribute("autohide", "Whether the submenu should be hidden when it contains no items.")]
 		bool autohide;
+
+		#pragma warning restore 649
+
+		public string Label {
+			get => label ?? Id;
+			private set => label = value;
+		}
 		
 		public override object CreateInstance ()
 		{
@@ -65,11 +60,12 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 
 			label = StringParserService.Parse (label);
 			if (icon != null) icon = CommandCodon.GetStockId (Addin, icon);
-			CommandEntrySet cset = new CommandEntrySet (label, icon);
-			cset.CommandId = Id;
-			cset.AutoHide = autohide;
+			var cset = new CommandEntrySet (label, icon) {
+				CommandId = Id,
+				AutoHide = autohide
+			};
 			foreach (InstanceExtensionNode e in ChildNodes) {
-				CommandEntry ce = e.CreateInstance () as CommandEntry;
+				var ce = e.CreateInstance () as CommandEntry;
 				if (ce != null)
 					cset.Add (ce);
 				else

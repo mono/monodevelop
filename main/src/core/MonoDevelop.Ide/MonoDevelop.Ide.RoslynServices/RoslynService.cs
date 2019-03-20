@@ -23,18 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
 using Microsoft.CodeAnalysis.ErrorReporting;
 using Microsoft.CodeAnalysis.Internal.Log;
-using Microsoft.CodeAnalysis.Host;
-using Microsoft.CodeAnalysis.Utilities;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.RoslynServices.Options;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
@@ -64,13 +60,6 @@ namespace MonoDevelop.Ide.RoslynServices
 			FatalError.NonFatalHandler = exception => LoggingService.LogInternalError ("Roslyn non-fatal exception", exception);
 
 			AttachLoggers ();
-
-			// Initialize Roslyn foreground thread data.
-			ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData (
-				Runtime.MainThread,
-				Runtime.MainTaskScheduler,
-				ForegroundThreadDataInfo.CreateDefault (ForegroundThreadDataKind.ForcedByPackageInitialize)
-			);
 		}
 
 		static void AttachLoggers ()
