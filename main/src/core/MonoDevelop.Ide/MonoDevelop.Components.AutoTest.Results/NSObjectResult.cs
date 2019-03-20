@@ -348,7 +348,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			var activeConfiguration = (IConfigurationModel)pinfo.GetValue (ResultObject);
 			if (activeConfiguration != null) {
-				LoggingService.LogDebug ($"Checking active configuration is actuallt set: '{configuration.OriginalId}' '{configuration.DisplayString}'");
+				LoggingService.LogDebug ($"Checking active configuration is actually set: '{configuration.OriginalId}' '{configuration.DisplayString}'");
 				if (configuration.OriginalId == activeConfiguration.OriginalId)
 					return true;
 			}
