@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		private void TryOpenDocumentInWorkspace (Gui.DocumentEventArgs e, FilePath filePath, ITextBuffer textBuffer)
 		{
-			var project = e.Document.Project;
+			var project = e.Document.Owner as MonoDevelop.Projects.Project;
 			if (project == null || !project.IsCompileable (filePath)) {
 				return;
 			}
@@ -306,26 +306,26 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (solConf == null || !solConf.BuildEnabledForItem (p))
 							continue;
 						if (p == p.ParentSolution.StartupItem) {
-							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document.DocumentContext);
 							return;
 						}
 						bestDoc = documentId;
 					} else if (documentId.ProjectId == projectId) {
-						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document);
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document.DocumentContext);
 						return;
 					}
 				}
 			}
 
 			if (bestDoc != null) {
-				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document);
+				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document.DocumentContext);
 			}
 		}
 
 		void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)
 		{
 			var filePath = e.Document.FileName;
-			var project = e.Document.Project;
+			var project = e.Document.Owner as MonoDevelop.Projects.Project;
 			if (project == null || filePath == null || !project.IsCompileable (filePath)) {
 				return;
 			}

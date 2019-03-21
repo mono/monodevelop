@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 						return contentTypeFromPath;
 					}
 				}
-				var contentType = PlatformCatalog.Instance.MimeToContentTypeRegistryService.GetContentType (mimeType);
+				var contentType = MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType);
 				if (contentType == null) {
 					// fallback 1: see if there is a content tyhpe with the same name
 					contentType = PlatformCatalog.Instance.ContentTypeRegistryService.GetContentType (mimeType);

@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Gui.Documents;
 using System.IO;
 using System.Linq;
 using MonoDevelop.Projects.SharedAssetsProjects;
+using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -147,6 +149,8 @@ namespace MonoDevelop.Ide.Gui
 				return controller.GetContent<TextEditor> ();
 			}
 		}
+
+		public ITextBuffer TextBuffer => GetContent<ITextBuffer> ();
 
 		public string OriginalFileName => controller.OriginalContentName;
 
@@ -271,7 +275,7 @@ namespace MonoDevelop.Ide.Gui
 
 			project = newProject;
 
-			bool usingAdHocProject = IsAdHocProject
+			bool usingAdHocProject = IsAdHocProject;
 			UnloadAdhocProject ();
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
@@ -339,7 +343,6 @@ namespace MonoDevelop.Ide.Gui
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
-				typeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing ();
 				var project = adhocProject ?? Project;
@@ -493,7 +496,7 @@ namespace MonoDevelop.Ide.Gui
 					SubscribeRoslynWorkspace ();
 					var newAnalysisDocument = FileName != null ? typeSystemService.GetDocumentId (this.Project, this.FileName) : null;
 					var changedAnalysisDocument = newAnalysisDocument != analysisDocument;
-					analysisDocument = newAnalysisDocument
+					analysisDocument = newAnalysisDocument;
 					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen (analysisDocument)) {
 						typeSystemService.InformDocumentOpen (analysisDocument, TextBuffer.AsTextContainer(), this);
 					}
@@ -680,7 +683,6 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 				foreach (var project in projectsContainingFile) {
 					var projectFile = project?.GetProjectFile (currentParseFile);
-					typeSystemService.AddSkippedFile (currentParseFile);
 					var options = new ParseOptions {
 						Project = project,
 						Content = currentParseText,

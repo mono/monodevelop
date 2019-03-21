@@ -85,7 +85,37 @@ namespace MonoDevelop.Ide.Navigation
 			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
 		}
 
-		public static void LogActiveDocument (bool transient = false)
+		void Workspace_LastWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			Reset ();
+		}
+
+		void DocumentManager_DocumentOpened (object sender, DocumentEventArgs e)
+		{
+			closedHistory.RemoveAll (np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
+			OnClosedHistoryChanged ();
+		}
+
+		Task DocumentManager_DocumentClosing (object sender, DocumentCloseEventArgs e)
+		{
+			NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
+			if (point == null)
+				return Task.CompletedTask;
+
+			closedHistory.Add (new Tuple<NavigationPoint, int> (point, documentManager.Documents.IndexOf (e.Document)));
+			OnClosedHistoryChanged ();
+			return Task.CompletedTask;
+		}
+
+		public void Reset ()
+		{
+			history.Clear ();
+			OnHistoryChanged ();
+			closedHistory.Clear ();
+			OnClosedHistoryChanged ();
+		}
+
+		public void LogActiveDocument (bool transient = false)
 		{
 			if (switching)
 				return;
@@ -96,7 +126,7 @@ namespace MonoDevelop.Ide.Navigation
 			}
 		}
 
-		public static void LogNavigationPoint (NavigationPoint point, bool transient = false)
+		public void LogNavigationPoint (NavigationPoint point, bool transient = false)
 		{
 			if (point == null) {
 				throw new ArgumentNullException (nameof (point));
@@ -144,7 +174,7 @@ namespace MonoDevelop.Ide.Navigation
 			OnHistoryChanged ();
 		}
 		
-		static NavigationPoint GetNavPointForActiveDoc ()
+		NavigationPoint GetNavPointForActiveDoc ()
 		{
 			return GetNavPointForDoc (documentManager.ActiveDocument, false);
 		}
@@ -345,7 +375,7 @@ namespace MonoDevelop.Ide.Navigation
 
 		#region Text file line number and snippet updating
 		
-		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
+		void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
 			bool historyChanged = false, closedHistoryChanged = false;
 

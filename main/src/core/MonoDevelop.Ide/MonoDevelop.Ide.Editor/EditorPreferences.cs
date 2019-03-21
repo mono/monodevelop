@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Editor
 
 		internal EditorPreferences ()
 		{
-			factoryService = CompositionManager.GetExportedValue<IEditorOptionsFactoryService2> ();
+			factoryService = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService2> ();
 			globalOptions = factoryService.GlobalOptions;
 
 			PropertyService.PropertyChanged += PropertyService_PropertyChanged;

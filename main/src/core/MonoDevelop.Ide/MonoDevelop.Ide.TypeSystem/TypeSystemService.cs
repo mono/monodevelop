@@ -41,6 +41,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.RoslynServices.Options;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Composition;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -83,7 +84,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			serviceProvider.WhenServiceInitialized<DocumentManager> (s => {
 				documentManager = s;
-				miscellaneousFilesWorkspace = Composition.CompositionManager.GetExportedValue<MiscellaneousFilesWorkspace> ();
+				miscellaneousFilesWorkspace = CompositionManager.Instance.GetExportedValue<MiscellaneousFilesWorkspace> ();
 				documentManager.DocumentOpened += OnDocumentOpened;
 				documentManager.DocumentClosed += OnDocumentClosed;
 			});

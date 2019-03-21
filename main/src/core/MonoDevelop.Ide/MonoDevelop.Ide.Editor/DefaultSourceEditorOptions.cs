@@ -438,7 +438,7 @@ namespace MonoDevelop.Ide.Editor
 						message.DefaultButton = 1;
 
 						if (new AlertDialog (message).Run () == closeAllFilesButton)
-							IdeApp.Workbench.CloseAllDocumentsAsync (false);
+							IdeApp.Workbench.CloseAllDocuments (false);
 					});
 				}
 
@@ -997,7 +997,7 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		internal static void SetUseAsyncCompletion(bool useAsyncCompletion)
 		{
-			var asyncCompletionService = Composition.CompositionManager.GetExportedValue<Microsoft.CodeAnalysis.Editor.IAsyncCompletionService> ();
+			var asyncCompletionService = Composition.CompositionManager.Instance.GetExportedValue<Microsoft.CodeAnalysis.Editor.IAsyncCompletionService> ();
 			var field = asyncCompletionService.GetType ().GetField (
 				"_newCompletionAPIEnabled",
 				System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);

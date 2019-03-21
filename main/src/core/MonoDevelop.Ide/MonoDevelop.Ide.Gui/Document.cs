@@ -285,12 +285,13 @@ namespace MonoDevelop.Ide.Gui
 			window?.SelectWindow ();
 		}
 
-		[Obsolete("Use GetContent<ITextBuffer>()")]
 		public TextEditor Editor {
 			get {
 				return GetContent <TextEditor> ();
 			}
 		}
+
+		public ITextBuffer TextBuffer => GetContent<ITextBuffer> ();
 
 		Task currentOperationTask = Task.FromResult (true);
 
@@ -477,9 +478,6 @@ namespace MonoDevelop.Ide.Gui
 				return false;
 
 			ClearTasks ();
-
-			var typeSystemService = documentManager.ServiceProvider.PeekService<TypeSystemService> ();
-			typeSystemService?.RemoveSkippedFile (FileName);
 
 			try {
 				Closed?.Invoke (this, args);

@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		// Background parser is an optimized task queue for the roslyn use-case, where a parse that's already in-progress
 		// is not canceled, but used later on to help incremental parsing.
-		readonly BackgroundParser backgroundParser;
+		BackgroundParser backgroundParser;
 
 		internal readonly WorkspaceId Id;
 

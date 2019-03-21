@@ -30,8 +30,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using MonoDevelop.Components.DockNotebook;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Shell;
 using MonoDevelop.Ide.Navigation;
@@ -50,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		IShell workbench;
 		DesktopService desktopService;
 
-		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.GetExportedValue<IEditorOperationsFactoryService> ();
+		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
 
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		Document activeDocument;
@@ -626,8 +630,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 								offset = line.Start;
 						}
 
-						if (operationsFactory != null) {
-							var editorOperations = operationsFactory.GetEditorOperations (textView);
+						if (editorOperationsFactoryService != null) {
+							var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
 							var point = new VirtualSnapshotPoint (textView.TextSnapshot, offset);
 							editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
 						} else {
@@ -794,9 +798,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		void CheckRemovedDirectory (FilePath fileName)
 		{
-			foreach (var content in documents) {
+			foreach (var doc in documents) {
 				if (doc.IsFile && !doc.IsNewDocument && doc.FilePath.IsChildPathOf (fileName)) {
-					CloseViewForRemovedFile (content);
+					CloseViewForRemovedFile (doc);
 				}
 			}
 		}

@@ -68,7 +68,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				view = null;
 				return false;
 			}
-			view = GetDocument (consumer)?.ActiveView?.GetContent<ITextView> ();
+			view = GetDocument (consumer)?.GetContent<ITextView> (true);
 			return view != null;
 		}
 

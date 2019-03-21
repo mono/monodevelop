@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
 					foreach (var documentId in documentIds) {
 						if (!workspace.IsDocumentOpen (documentId)) {
-							workspace.InformDocumentOpen (documentId, openDocument.TextBuffer.AsTextContainer (), openDocument);
+							workspace.InformDocumentOpen (documentId, openDocument.TextBuffer.AsTextContainer (), openDocument.DocumentContext);
 						}
 					}
 				}

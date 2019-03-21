@@ -30,13 +30,13 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			filePath = textView.TextBuffer.GetFilePathOrNull ();
 			if (filePath == null)
 				return;
-			TextEditorService.FileExtensionAdded += FileExtensionAdded;
-			TextEditorService.FileExtensionRemoved += FileExtensionRemoved;
+			IdeServices.TextEditorService.FileExtensionAdded += FileExtensionAdded;
+			IdeServices.TextEditorService.FileExtensionRemoved += FileExtensionRemoved;
 			_exceptionCaughtLayer = textView.GetXPlatAdornmentLayer ("ExceptionCaught");
 			this.textView = textView;
 			this.textView.LayoutChanged += TextView_LayoutChanged;
 
-			foreach (var ext in TextEditorService.GetFileExtensions (filePath))
+			foreach (var ext in IdeServices.TextEditorService.GetFileExtensions (filePath))
 				FileExtensionAdded (null, new FileExtensionEventArgs  { Extension = ext });
 		}
 
@@ -278,8 +278,8 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 
 		public void Dispose ()
 		{
-			TextEditorService.FileExtensionAdded -= FileExtensionAdded;
-			TextEditorService.FileExtensionRemoved -= FileExtensionRemoved;
+			IdeServices.TextEditorService.FileExtensionAdded -= FileExtensionAdded;
+			IdeServices.TextEditorService.FileExtensionRemoved -= FileExtensionRemoved;
 		}
 	}
 }

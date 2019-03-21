@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide
 				if (dialog.TransientFor != null)
 					parent = dialog.TransientFor;
 				else
-					parent = DesktopService.GetFocusedTopLevelWindow ();
+					parent = IdeServices.DesktopService.GetFocusedTopLevelWindow ();
 			}
 
 			//TODO: use native parenting API for native windows
