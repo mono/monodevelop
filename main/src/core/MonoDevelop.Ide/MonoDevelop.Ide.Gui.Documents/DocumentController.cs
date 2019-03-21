@@ -714,6 +714,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return AddinManager.CreateExtensionContext ();
 		}
 
+		public ExtensionContext ExtensionContext {
+			get { return extensionContext ?? AddinManager.AddinEngine; }
+		}
+
 		internal Task EnsureLoaded ()
 		{
 			if (!loaded) {

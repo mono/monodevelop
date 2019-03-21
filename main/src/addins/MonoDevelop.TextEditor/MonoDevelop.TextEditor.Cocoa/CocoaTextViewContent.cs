@@ -174,8 +174,8 @@ namespace MonoDevelop.TextEditor
 			}
 		}
 
-		public CocoaTextViewContent (CocoaTextViewImports imports, FilePath fileName, string mimeType, Project ownerProject)
-			: base (imports, fileName, mimeType, ownerProject)
+		public CocoaTextViewContent (CocoaTextViewImports imports)
+			: base (imports)
 		{
 		}
 
@@ -210,16 +210,17 @@ namespace MonoDevelop.TextEditor
 			return embeddedControl;
 		}
 
-		public override void GrabFocus()
-		{ 
+		public void GrabFocus()
+		{
+			// TOTEST
 			embeddedControl.GrabFocus();
 			base.GrabFocus();
 		}
 
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
+			base.OnDispose ();
 
 			if (textViewHost != null) {
 				textViewHost.Close ();

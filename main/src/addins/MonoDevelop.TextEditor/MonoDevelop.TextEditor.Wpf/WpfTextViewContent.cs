@@ -29,8 +29,8 @@ namespace MonoDevelop.TextEditor
 	{
 		IWpfTextViewHost wpfTextViewHost;
 
-		public WpfTextViewContent (WpfTextViewImports imports, Core.FilePath fileName, string mimeType, Projects.Project ownerProject)
-			: base (imports, fileName, mimeType, ownerProject)
+		public WpfTextViewContent (WpfTextViewImports imports)
+			: base (imports)
 		{
 		}
 
