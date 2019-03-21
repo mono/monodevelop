@@ -85,7 +85,6 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			lock (queries) {
 				foreach (var query in queries) {
-					RemotingServices.Disconnect (query);
 					query.Dispose ();
 				}
 				queries.Clear ();
@@ -424,7 +423,7 @@ namespace MonoDevelop.Components.AutoTest
 			try {
 				ExecuteOnIdle (() => {
 					resultSet = ExecuteQueryNoWait (query);
-				});
+				}, timeout: timeout);
 			} catch (TimeoutException e) {
 				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}

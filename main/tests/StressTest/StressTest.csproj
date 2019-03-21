@@ -5,7 +5,7 @@
     <ProjectGuid>{A1F9B020-6573-4BB2-A887-7F26561A9D18}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.StressTest</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +39,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.StressTest\Program.cs" />
     <Compile Include="MonoDevelop.StressTest\StressTestApp.cs" />
@@ -66,12 +70,9 @@
     <Compile Include="UserInterfaceTests\UITestBase.cs" />
     <Compile Include="UserInterfaceTests\CreateBuildTemplatesTestBase.cs" />
     <Compile Include="UserInterfaceTests\WorkbenchExtensions.cs" />
-    <Compile Include="MonoDevelop.StressTest\TestScenario.cs" />
     <Compile Include="MonoDevelop.StressTest\TextEditor.cs" />
     <Compile Include="MonoDevelop.StressTest\ITestScenario.cs" />
-    <Compile Include="MonoDevelop.StressTest\TestScenarioProvider.cs" />
     <Compile Include="MonoDevelop.StressTest\StressTestOptions.cs" />
-    <Compile Include="MonoDevelop.StressTest\ProfilerProcessor.cs" />
     <Compile Include="Mono.Profiling.Log\LogEnums.cs" />
     <Compile Include="Mono.Profiling.Log\LogStreamHeader.cs" />
     <Compile Include="Mono.Profiling.Log\LogStream.cs" />
@@ -83,6 +84,23 @@
     <Compile Include="Mono.Profiling.Log\LogEventVisitor.cs" />
     <Compile Include="Mono.Profiling.Log\LogEvent.cs" />
     <Compile Include="Mono.Profiling.Log\LogBufferHeader.cs" />
+    <Compile Include="MonoDevelop.StressTest\ITestScenarioProvider.cs" />
+    <Compile Include="MonoDevelop.StressTest.Attributes\NoLeakAttribute.cs" />
+    <Compile Include="MonoDevelop.StressTest\Serialization\ResultDataModel.cs" />
+    <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenario.cs" />
+    <Compile Include="MonoDevelop.StressTest\Scenarios\DefaultScenarioProvider.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerProcessor.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\ProfilerOptions.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\Heapshot.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\LeakProcessor.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\TestScenarioLeakExtensions.cs" />
+    <Compile Include="MonoDevelop.StressTest\Profiler\GraphExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.StressTest.Attributes\" />
+    <Folder Include="MonoDevelop.StressTest\Serialization\" />
+    <Folder Include="MonoDevelop.StressTest\Scenarios\" />
+    <Folder Include="MonoDevelop.StressTest\Profiler\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

@@ -165,18 +165,19 @@ namespace MonoDevelop.Core.Execution
 			
 			try {
 				// Send a stop message to try a graceful stop. Don't wait more than 2s for a response
-				var timeout = Task.Delay (2000);
+				var timeout = Task.Delay (2000, mainCancelSource.Token);
 				if (await Task.WhenAny (SendMessage (new BinaryMessage ("Stop", "Process")), timeout) != timeout) {
 					// Wait for at most two seconds for the process to end
-					timeout = Task.Delay (4000);
+					timeout = Task.Delay (4000, mainCancelSource.Token);
 					if (await Task.WhenAny (process.Task, timeout) != timeout)
 						return; // All done!
 				}
 			} catch {
 			}
 
-			mainCancelSource.Cancel ();
-			mainCancelSource = new CancellationTokenSource ();
+			using (var source = Interlocked.Exchange (ref mainCancelSource, new CancellationTokenSource ())) {
+				source.Cancel ();
+			}
 
 			// The process did not gracefully stop. Kill the process.
 
@@ -291,7 +292,7 @@ namespace MonoDevelop.Core.Execution
 				cmd.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
 				cmd.ProcessExecutionArchitecture = ProcessExecutionArchitecture;
 				process = executionHandler.Execute (cmd, console);
-				process.Task.ContinueWith (t => ProcessExited ());
+				process.Task.ContinueWith (t => ProcessExited (), mainCancelSource.Token);
 			});
 		}
 
