@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class PackageManagementWorkspace
 	{
-		List<MonoDevelopSolutionManager> solutionManagers = new List<MonoDevelopSolutionManager> ();
+		ImmutableList<MonoDevelopSolutionManager> solutionManagers = ImmutableList<MonoDevelopSolutionManager>.Empty;
 
 		public PackageManagementWorkspace ()
 		{
@@ -84,25 +84,33 @@ namespace MonoDevelop.PackageManagement
 		void AddSolution (Solution solution)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (solution);
-			solutionManagers.Add (solutionManager);
+			solutionManagers = solutionManagers.Add (solutionManager);
 		}
 
 		void RemoveSolution (Solution solution)
 		{
-			solutionManagers.RemoveAll (manager => manager.Solution == solution);
+			solutionManagers = solutionManagers.RemoveAll (manager => manager.Solution == solution);
 		}
 
+		/// <summary>
+		/// Get the solution manager.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		public IMonoDevelopSolutionManager GetSolutionManager (Solution solution)
 		{
-			Runtime.AssertMainThread ();
-
 			return GetSolutionManager (new SolutionProxy (solution));
 		}
 
+		/// <summary>
+		/// Get the solution manager.
+		/// 
+		/// NOTE: This method is known to be called from the threadpool, while the UI thread is blocking.
+		/// Therefore, it must be thread-safe and not defer to and then block other threads.
+		/// </summary>
 		public IMonoDevelopSolutionManager GetSolutionManager (ISolution solution)
 		{
-			Runtime.AssertMainThread ();
-
 			var solutionManager = solutionManagers.FirstOrDefault (manager => manager.Solution == solution.Solution);
 			if (solutionManager != null) {
 				return solutionManager;

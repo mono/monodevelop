@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMarkerFactory.cs
 //
 // Author:
@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Editor
 	/// The text marker factory creates line and segment markers for the text editor.
 	/// Note that this is the only valid way of creating markers for the editor.
 	/// </summary>
+	[Obsolete("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class TextMarkerFactory
 	{
 		#region Line marker

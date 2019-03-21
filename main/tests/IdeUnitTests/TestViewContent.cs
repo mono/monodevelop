@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Documents;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.Ide.Gui
 		public TestViewContent ()
 		{
 			data = TextEditorFactory.CreateNewEditor ();
-			AddContent (data);;
+			AddContent (data);
 			Name = "";
 		}
 
@@ -209,7 +210,17 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.OnGetContents (type).Concat (contents.Where (c => type.IsInstanceOfType (c))).Concat (Editor.GetContents (type));
+			if (type == typeof (ITextBuffer)) {
+				yield return data.TextView.TextBuffer;
+				yield break;
+			}
+
+			foreach (var content in base.OnGetContents (type))
+				yield return content;
+
+			foreach (var content in contents)
+				if (type.IsInstanceOfType (content))
+					yield return content;
 		}
 
 		public IDisposable OpenUndoGroup ()

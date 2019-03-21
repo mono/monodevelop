@@ -30,10 +30,13 @@ using MonoDevelop.Core.Text;
 namespace MonoDevelop.Ide.Editor
 {
 	[Flags]
-	public enum BraceMatchingProperties {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
+	public enum BraceMatchingProperties
+	{
 		None   = 0,
 		Hidden = 1
 	}
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public readonly struct BraceMatchingResult
 	{
 		public ISegment LeftSegment { get; }

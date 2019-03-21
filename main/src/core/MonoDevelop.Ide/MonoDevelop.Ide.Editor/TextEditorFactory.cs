@@ -1,4 +1,4 @@
-﻿//
+//
 // DocumentFactory.cs
 //
 // Author:
@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class TextEditorFactory
 	{
 		static ITextEditorFactory currentFactory;

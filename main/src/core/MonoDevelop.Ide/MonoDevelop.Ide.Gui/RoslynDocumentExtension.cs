@@ -1,4 +1,4 @@
-﻿//
+//
 // RoslynDocumentExtension.cs
 //
 // Author:
@@ -266,18 +266,26 @@ namespace MonoDevelop.Ide.Gui
 		{
 			UnsubscribeControllerEvents ();
 
-			if (newProject == project || newProject == adhocProject)
+			if (newProject == project || (IsAdHocProject && newProject == adhocProject))
 				return;
 
 			project = newProject;
 
+			bool usingAdHocProject = IsAdHocProject
 			UnloadAdhocProject ();
 			if (adhocProject == null)
 				UnsubscribeAnalysisDocument ();
 
 			SubscribeControllerEvents ();
+
 			Editor.InitializeExtensionChain (this);
-			ListenToProjectLoad();
+
+			// Do not start the parser when the project is set to null and an adHocProject is not being used. This
+			// would result in a new adHocProject being created and then RootWorkspace would not update the Document's
+			// project since it is non-null.
+
+			if (project != null || (project == null && usingAdHocProject))
+				ListenToProjectLoad();
 		}
 
 		void SubscribeControllerEvents ()
@@ -483,11 +491,14 @@ namespace MonoDevelop.Ide.Gui
 					if (RoslynWorkspace == null) // Solution not loaded yet
 						return Task.CompletedTask;
 					SubscribeRoslynWorkspace ();
-					analysisDocument = FileName != null ? typeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					var newAnalysisDocument = FileName != null ? typeSystemService.GetDocumentId (this.Project, this.FileName) : null;
+					var changedAnalysisDocument = newAnalysisDocument != analysisDocument;
+					analysisDocument = newAnalysisDocument
 					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen (analysisDocument)) {
-						typeSystemService.InformDocumentOpen (analysisDocument, Editor, this);
-						OnAnalysisDocumentChanged (EventArgs.Empty);
+						typeSystemService.InformDocumentOpen (analysisDocument, TextBuffer.AsTextContainer(), this);
 					}
+					if (changedAnalysisDocument)
+						OnAnalysisDocumentChanged (EventArgs.Empty);
 					return Task.CompletedTask;
 				}
 			}
@@ -497,42 +508,39 @@ namespace MonoDevelop.Ide.Gui
 					return Task.CompletedTask;
 				}
 
-				if (Editor != null) {
-					var node = typeSystemService.GetTypeSystemParserNode (Editor.MimeType, BuildAction.Compile);
-					if (Editor.MimeType == "text/x-csharp" || node?.Parser.CanGenerateAnalysisDocument (Editor.MimeType, BuildAction.Compile, new string [0]) == true) {
-						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
+				if (TextBuffer.ContentType.TypeName == "CSharp") {
+					var newProject = Services.ProjectService.CreateDotNetProject ("C#");
 
-						this.adhocProject = newProject;
+					this.adhocProject = newProject;
 
-						newProject.Name = "InvisibleProject";
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
+					newProject.Name = "InvisibleProject";
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
-						// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
-						newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
-						if (!controller.IsNewDocument) {
-							adHocFile = Editor.FileName;
-						} else {
-							adHocFile = (Platform.IsWindows ? "C:\\" : "/") + FileName + ".cs";
-						}
-
-						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
-
-						adhocSolution = new Solution ();
-						adhocSolution.AddConfiguration ("", true);
-						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return typeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
-							if (token.IsCancellationRequested)
-								return;
-							UnsubscribeRoslynWorkspace ();
-							RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
-							SubscribeRoslynWorkspace ();
-							analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
-							typeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor, this);
-							OnAnalysisDocumentChanged (EventArgs.Empty);
-						});
+					// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
+					newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
+					if (!controller.IsNewDocument) {
+						adHocFile = FileName;
+					} else {
+						adHocFile = (Platform.IsWindows ? "C:\\" : "/") + FileName + ".cs";
 					}
+
+					newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
+
+					adhocSolution = new Solution ();
+					adhocSolution.AddConfiguration ("", true);
+					adhocSolution.DefaultSolutionFolder.AddItem (newProject);
+					return typeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
+						if (token.IsCancellationRequested)
+							return;
+						UnsubscribeRoslynWorkspace ();
+						RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
+						SubscribeRoslynWorkspace ();
+						analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
+						typeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, TextBuffer.AsTextContainer (), this);
+						OnAnalysisDocumentChanged (EventArgs.Empty);
+					});
 				}
 			}
 			return Task.CompletedTask;

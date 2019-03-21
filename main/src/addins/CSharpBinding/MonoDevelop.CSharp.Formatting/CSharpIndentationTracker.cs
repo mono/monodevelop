@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 	class CSharpIndentationTracker : IndentationTracker
 	{
-		readonly TextEditor editor;
+		readonly Ide.Editor.TextEditor editor;
 		readonly DocumentContext context;
 		readonly ISmartIndentationService smartIndentationService;
 		int cacheSpaceCount = -1, oldTabCount = -1;
@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override IndentationTrackerFeatures SupportedFeatures => IndentationTrackerFeatures.SmartBackspace | IndentationTrackerFeatures.CustomIndentationEngine;
 
-		public CSharpIndentationTracker (TextEditor editor, DocumentContext context)
+		public CSharpIndentationTracker (Ide.Editor.TextEditor editor, DocumentContext context)
 		{
 			this.editor = editor;
 			this.context = context;

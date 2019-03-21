@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	[Obsolete ("Old editor")]
 	public class SyntaxHighlightingDefinition : ISyntaxHighlightingDefinitionProvider
 	{
 		public string Name { get; internal set; }
@@ -80,7 +81,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		SyntaxHighlightingDefinition ISyntaxHighlightingDefinitionProvider.GetSyntaxHighlightingDefinition () => this;
 	}
 
-
+	[Obsolete ("Old editor")]
 	class SyntaxContextWithPrototype : SyntaxContext
 	{
 		SyntaxContext ctx;
@@ -102,6 +103,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public class SyntaxContext
 	{
 		protected List<SyntaxMatch> matches;
@@ -294,6 +296,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public class Captures
 	{
 		public static readonly Captures Empty = new Captures (new List<Tuple<int, string>> (), new List<Tuple<string, string>> ());
@@ -313,6 +316,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public class SyntaxMatch
 	{
 		public string Match { get; private set; }
@@ -363,11 +367,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public abstract class ContextReference
 	{
 		public abstract IEnumerable<SyntaxContext> GetContexts (SyntaxContext context);
 	}
 
+	[Obsolete ("Old editor")]
 	public class ContextNameContextReference : ContextReference
 	{
 		public string Name { get; private set; }
@@ -395,6 +401,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public class ContextNameListContextReference : ContextReference
 	{
 		public ContextNameListContextReference (IReadOnlyList<string> names)
@@ -411,6 +418,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 
+	[Obsolete ("Old editor")]
 	public class AnonymousMatchContextReference : ContextReference
 	{
 		public SyntaxContext Context { get; private set; }

@@ -219,6 +219,7 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
+		[Obsolete]
 		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (Microsoft.CodeAnalysis.ISymbol part, Microsoft.CodeAnalysis.Location location)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
@@ -2603,6 +2604,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 
+	[Obsolete("Use VS Editor APIs")]
 	public class TextFileProvider : ITextFileProvider
 	{
 		static TextFileProvider instance = new TextFileProvider ();

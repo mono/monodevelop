@@ -52,7 +52,7 @@ namespace MonoDevelop.Refactoring
 { 
 	public static class RefactoringService
 	{
-		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
+		internal static Func<Ide.Editor.TextEditor, DocumentContext, OptionSet> OptionSetCreation;
 		static ImmutableList<FindReferencesProvider> findReferencesProvider = ImmutableList<FindReferencesProvider>.Empty;
 		static ImmutableList<FindReferenceUsagesProvider> findReferenceUsagesProviders = ImmutableList<FindReferenceUsagesProvider>.Empty;
 		static List<JumpToDeclarationHandler> jumpToDeclarationHandler = new List<JumpToDeclarationHandler> ();

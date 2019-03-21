@@ -5,7 +5,7 @@
 // This file contain implementations details that are subject to change without notice.
 // Use at your own risk.
 //
-namespace Microsoft.VisualStudio.Text.Editor.Implementation
+namespace MonoDevelop.SourceEditor
 {
     using System;
     using System.Windows;
@@ -17,16 +17,20 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text.Outlining;
     using Microsoft.VisualStudio.Text.Utilities;
     using System.Windows.Input;
+    using System.Windows.Interop;
     using System.Collections.Generic;
     using Xwt;
     using Mono.TextEditor;
     using MonoDevelop.Components;
     using Rect = Xwt.Rectangle;
+    using Point = Xwt.Point;
+    using Size = Xwt.Size;
+    using System.Runtime.InteropServices;
 
-    internal class PopupAgent : ISpaceReservationAgent
+    internal class PopupAgent : IMDSpaceReservationAgent
     {
-		internal readonly Mono.TextEditor.MonoTextEditor _textView;
-        internal readonly ISpaceReservationManager _manager;
+        internal readonly Mono.TextEditor.MonoTextEditor _textView;
+        internal readonly IMDSpaceReservationManager _manager;
         internal ITrackingSpan _visualSpan;
         internal PopupStyles _style;
         internal Widget _mouseContainer;
@@ -34,7 +38,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         private const int MaxPopupCacheSize = 10;
         private const double BelowTheLineBufferHint = 3.0;
 
-		public PopupAgent(Mono.TextEditor.MonoTextEditor textView, ISpaceReservationManager manager, ITrackingSpan visualSpan, PopupStyles style, Widget content)
+        public PopupAgent(Mono.TextEditor.MonoTextEditor textView, IMDSpaceReservationManager manager, ITrackingSpan visualSpan, PopupStyles style, Widget content)
         {
             if (textView == null)
                 throw new ArgumentNullException("textView");
@@ -156,7 +160,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 Rect spanRect = spanRectangle.Value;
                 spanRect = spanRect.Intersect(viewRect);
 
-				if (spanRect != default(Rect))
+                if (spanRect != default(Rect))
                 {
                     // Determine two different rectangles for the span.  One is the span in its raw form.  The other is a "guess" at
                     // what the already-reserved space around the span will be.  We have a very-prevalent space reservation agent (the
@@ -179,12 +183,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
                     PopupStyles alternateStyle = _style ^ PopupStyles.PreferLeftOrTopPosition;
 
-                    Rect reservedRect = reservedSpace.Bounds;
-                    Point topLeft = new Point(Math.Min(spanRectInScreenCoordinates.Left, reservedRect.Left),
-                                              Math.Min(spanRectInScreenCoordinates.Top, reservedRect.Top));
-                    Point bottomRight = new Point(Math.Max(spanRectInScreenCoordinates.Right, reservedRect.Right),
-                                                  Math.Max(spanRectInScreenCoordinates.Bottom, reservedRect.Bottom));
-                    reservedRect = new Rect(topLeft, bottomRight);
+                    var tr = reservedSpace.Bounds;
+                    Point topLeft = new Point(Math.Min(spanRectInScreenCoordinates.Left, tr.Left),
+                                              Math.Min(spanRectInScreenCoordinates.Top, tr.Top));
+                    Point bottomRight = new Point(Math.Max(spanRectInScreenCoordinates.Right, tr.Right),
+                                                  Math.Max(spanRectInScreenCoordinates.Bottom, tr.Bottom));
+                    var reservedRect = new Rect(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y);
 
                     //There are 6 possible locations for the popup.  The order of preference is determined by the presence of the
                     //'PositionClosest' PopupStyle.
@@ -210,7 +214,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                     //  the edges of the screen.
 
                     Tuple<PopupStyles, Rect>[] positionChoices;
-					if (reservedRect != default(Rect))
+                    if (reservedRect != default(Rect))
                     {
                         if ((_style & PopupStyles.PositionClosest) == 0)
                         {
@@ -248,7 +252,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                         };
                     }
 
-                    Rect location = Rect.Zero;
+                    Rect location = default;
                     foreach (var choice in positionChoices)
                     {
                         Rect locationToTry = GetLocation(choice.Item1, desiredSize, spanRectInScreenCoordinates, choice.Item2, screenRect);
@@ -261,7 +265,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                     }
 
                     // If we couldn't locate a place to live, tell the manager we want to go away.
-                    if (location == Rect.Zero)
+                    if (location == default)
                         return null;
 
                     if (!_popup.IsVisible)
@@ -270,8 +274,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                     _popup.DisplayAt(location.TopLeft);
 
                     GeometryGroup requestedSpace = new GeometryGroup();
-                    requestedSpace.Children.Add(new RectangleGeometry(spanRectInScreenCoordinates));
-                    requestedSpace.Children.Add(new RectangleGeometry(location));
+                    requestedSpace.Children.Add(new RectangleGeometry(FromXwtRect(spanRectInScreenCoordinates)));
+                    requestedSpace.Children.Add(new RectangleGeometry(FromXwtRect(location)));
 
                     return requestedSpace;
                 }
@@ -280,6 +284,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             //The text associated with the popup visualSpan is not visible: tell the manager we want to go away.
             return null;
         }
+
+        static Xwt.Rectangle FromWpfRect(System.Windows.Rect r) => new Xwt.Rectangle(r.Left, r.Top, r.Width, r.Height);
+        static System.Windows.Rect FromXwtRect(Xwt.Rectangle r) => new System.Windows.Rect(r.X, r.Y, r.Width, r.Height);
 
         public bool IsMouseOver
         {
@@ -437,8 +444,8 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             {
                 // The mouse left the element over which it was originally positioned.  This may or
                 // may not mean that the mouse left the span of text to which the popup is bound.
-                _textView.VisualElement.GetPointer (out int x, out int y);
-                if (this.ShouldClearToolTipOnMouseMove(new Point(x,y)))
+                _textView.VisualElement.GetPointer(out int x, out int y);
+                if (this.ShouldClearToolTipOnMouseMove(new Point(x, y)))
                 {
                     shouldRemoveAgent = true;
                 }
@@ -641,7 +648,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
             if ((width > 0.0) && (height > 0.0))
             {
-                Geometry insetLocation = new RectangleGeometry(new Rect(left, top, width, height));
+                Geometry insetLocation = new RectangleGeometry(new System.Windows.Rect(left, top, width, height));
                 return !reserved.Bounds.IntersectsWith(insetLocation.Bounds);//TODO: This was simpliefied
             }
             else
@@ -658,14 +665,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         internal abstract class PopupOrWindowContainer
         {
             private Widget _content;
-			protected Gtk.Container _placementTarget;
+            protected Gtk.Container _placementTarget;
 
-			public static PopupOrWindowContainer Create(Widget content, Gtk.Container placementTarget)
+            public static PopupOrWindowContainer Create(Widget content, Gtk.Container placementTarget)
             {
                 return new PopUpContainer(content, placementTarget);
             }
 
-			public PopupOrWindowContainer(Widget content, Gtk.Container placementTarget)
+            public PopupOrWindowContainer(Widget content, Gtk.Container placementTarget)
             {
                 _content = content;
                 _placementTarget = placementTarget;
@@ -682,34 +689,39 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             public abstract Size Size { get; }
         }
 
-		internal class PopUpContainer : PopupOrWindowContainer
+        internal class PopUpContainer : PopupOrWindowContainer
         {
-#if WINDOWS
+#if false
             private class NoTopmostPopup : XwtThemedPopup
             {
-                protected override void OnShown ()
+                protected override void OnShown()
                 {
                     WpfHelper.SetNoTopmost(this.Child);
-                    base.OnShown ();
+                    base.OnShown();
                 }
             }
 
-        public static void SetNoTopmost(Visual visual)
-        {
-            if (visual != null)
+            public static void SetNoTopmost(Visual visual)
             {
-                HwndSource source = PresentationSource.FromVisual(visual) as HwndSource;
-                if (source != null)
+                if (visual != null)
                 {
-                    const int SWP_NOMOVE = 0x02;
-                    const int SWP_NOSIZE = 0x01;
-                    const int SWP_NOACTIVATE = 0x10;
-                    const int HWND_NOTOPMOST = -2;
-                    NativeMethods.SetWindowPos(source.Handle, (IntPtr)HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+                    HwndSource source = PresentationSource.FromVisual(visual) as HwndSource;
+                    if (source != null)
+                    {
+                        const int SWP_NOMOVE = 0x02;
+                        const int SWP_NOSIZE = 0x01;
+                        const int SWP_NOACTIVATE = 0x10;
+                        const int HWND_NOTOPMOST = -2;
+                        SetWindowPos(source.Handle, (IntPtr)HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+                    }
                 }
             }
-        }
-			internal XwtThemedPopup _popup = new NoTopmostPopup ();
+
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int flags);
+
+            internal XwtThemedPopup _popup = new NoTopmostPopup();
 #else
 			internal XwtThemedPopup _popup = new XwtThemedPopup();
 #endif
@@ -725,7 +737,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             // popup closing.
             FrameBox _popupContentContainer = new FrameBox();
 
-			public PopUpContainer(Widget content, Gtk.Container placementTarget)
+            public PopUpContainer(Widget content, Gtk.Container placementTarget)
                 : base(content, placementTarget)
             {
                 WindowTransparencyDecorator.Attach(_popup);//TODO: not sure we want this on all popus?

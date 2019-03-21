@@ -1,4 +1,4 @@
-﻿//
+//
 // TextMateIndentationTextEditorExtension.cs
 //
 // Author:
@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public class TextMateIndentationTextEditorExtension : TextEditorExtension
 	{
         protected override void Initialize ()

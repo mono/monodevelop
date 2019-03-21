@@ -1,0 +1,460 @@
+﻿<UserControl x:Class="MonoDevelop.TextEditor.Wpf.Find.FindUI" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:System.Windows.Controls;assembly=PresentationFramework" Cursor="Arrow"
+             x:Name="FindControl"
+             Background="#EEEEF2"
+             MinWidth="350"
+             Width="500"
+             KeyboardNavigation.TabNavigation="Cycle"
+             KeyboardNavigation.DirectionalNavigation="Cycle"
+             MouseDown="OnMouseDown"
+             MouseUp="OnMouseUp"
+             GotKeyboardFocus="OnGotKeyboardFocus"
+             LostKeyboardFocus="OnLostKeyboardFocus"
+             AutomationProperties.Name="FindControl"
+             AutomationProperties.AutomationId="FindControl">
+
+  <UserControl.Resources>
+    <ResourceDictionary>
+
+      <!-- Toggle button style that is used to expand/collapse to/from replace mode -->
+      <Style x:Key="ToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Control.Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToggleButton}">
+              <Border Background="Transparent" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                <Grid SnapsToDevicePixels="False" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="19" />
+                  </Grid.ColumnDefinitions>
+                  <Path Data="M1,1.5L4.5,5 8,1.5" Stroke="#717171" StrokeThickness="2" Name="arrow" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="False" />
+                </Grid>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                  <Setter TargetName="arrow" Property="Path.Data">
+                    <Setter.Value>
+                      <StreamGeometry>M1,4.5L4.5,1 8,4.5</StreamGeometry>
+                    </Setter.Value>
+                  </Setter>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MinWidth" Value="20" />
+        <Setter Property="MinHeight" Value="20" />
+      </Style>
+
+      <!-- Search Options Toggle button Style-->
+      <Style x:Key="SearchOptionToggleButtonStyle"
+             TargetType="{x:Type ToggleButton}">
+        <Setter Property="IsTabStop" Value="true"/>
+        <Setter Property="Focusable" Value="true"/>
+        <Setter Property="ClickMode" Value="Press"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToggleButton}">
+              <Border x:Name="Border"
+                      Width="20"
+                      Height="20"
+                      Background="Transparent"
+                      BorderThickness="{TemplateBinding BorderThickness}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      SnapsToDevicePixels="True">
+                <Border.Child>
+                  <ContentPresenter Name="Image"
+                                    Margin="0"
+                                    Visibility="Visible"
+                                    RecognizesAccessKey="True" />
+                </Border.Child>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="False">
+                  <Setter TargetName="Border"
+                          Property="BorderThickness"
+                          Value="0" />
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                  <Setter TargetName="Border"
+                          Property="BorderThickness"
+                          Value="1" />
+                  <Setter TargetName="Border"
+                          Property="BorderBrush"
+                          Value="#3399FF" />
+                  <Setter TargetName="Border" Property="Background" Value="#EEEEF2" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="Border"
+                          Property="BorderThickness"
+                          Value="1" />
+                  <Setter TargetName="Border"
+                          Property="BorderBrush"
+                          Value="#007ACC" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="true">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="1" />
+                  <Setter TargetName="Border" Property="BorderBrush" Value="#3399FF" />
+                  <Setter TargetName="Border" Property="Background" Value="#C9DEF5" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="false">
+                  <Setter TargetName="Border" Property="Background" Value="#EEEEF2" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Path x:Key="ArrowPath" Fill="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource Self}}" Data="M 0 4 L 7 4 L 3.5 0 Z" />
+
+      <Path x:Key="DownArrowPath" Fill="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource Self}}"
+            Width="8"
+            Height="4"
+            Data="F1 M 0,0L 4,4L 8,0L 0,0 Z"
+            SnapsToDevicePixels="True"/>
+
+      <Path x:Key="XShapePath"
+            Width="10"
+            Height="8"
+            Fill="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource Self}}"
+            Stretch="Uniform"
+            Data="F1 M 0,0L 2,0L 5,3L 8,0L 10,0L 6,4L 10,8L 8,8L 5,5L 2,8L 0,8L 4,4L 0,0 Z" />
+
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <UserControl.Content>
+    <Grid Margin="0,3,0,0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="8px"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition />
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Children>
+
+          <ToggleButton Name="FindReplaceToggleButton"
+                        KeyboardNavigation.TabNavigation="Once"
+                        VerticalAlignment="Center"
+                        Padding="0"
+                        Margin="12,0,4,0"
+                        HorizontalAlignment="Center" 
+                        HorizontalContentAlignment="Center" 
+                        KeyboardNavigation.TabIndex="9" 
+                        VerticalContentAlignment="Center" 
+                        Background="Transparent"
+                        ToolTip="Toggle to switch between find and replace modes"
+                        Style="{StaticResource ResourceKey=ToggleButtonStyle}"
+                        Width="21"
+                        Height="21"
+                        AutomationProperties.AutomationId="FindReplaceToggleButton"
+                        AutomationProperties.Name="FindReplaceToggleButton"/>
+
+          <ResizeGrip Grid.RowSpan="3"
+                      Name="Resizer"
+                      VerticalAlignment="Bottom"
+                      HorizontalAlignment="Left"
+                      Cursor="SizeWE"
+                      MouseLeftButtonDown="OnResizerMouseLeftButtonDown"
+                      MouseLeftButtonUp="OnResizerMouseLeftButtonUp"
+                      MouseMove="OnResizerMouseMove"
+                      Width="7"
+                      Height="7"
+                      IsTabStop="False"
+                      AutomationProperties.AutomationId="Resizer" AutomationProperties.Name="Resizer">
+            <ResizeGrip.Template>
+              <ControlTemplate TargetType="{x:Type ResizeGrip}">
+                <Grid Background="Transparent" Margin="2,2,2,6" VerticalAlignment="{TemplateBinding VerticalAlignment}" HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                  <Path Fill="#717171" Data="F1 M 0,1 L 0,0 L 1,0 L 1,1 L 0,1 Z"/>
+                  <Path Fill="#717171" Data="F1 M 3,4 L 3,3 L 4,3 L 4,4 L 3,4 Z"/>
+                  <Path Fill="#717171" Data="F1 M 0,4 L 0,3 L 1,3 L 1,4 L 0,4 Z"/>
+                  <Path Fill="#717171" Data="F1 M 3,7 L 3,6 L 4,6 L 4,7 L 3,7 Z"/>
+                  <Path Fill="#717171" Data="F1 M 0,7 L 0,6 L 1,6 L 1,7 L 0,7 Z"/>
+                  <Path Fill="#717171" Data="F1 M 6,7 L 6,6 L 7,6 L 7,7 L 6,7 Z"/>
+                </Grid>
+              </ControlTemplate>
+            </ResizeGrip.Template>
+          </ResizeGrip>
+
+          <Border Grid.Column="1"
+                  Name="FindControlGroup"
+                  HorizontalAlignment="Stretch">
+            <Border Name="InvalidSearchBorder"
+                    BorderThickness="1"
+                    BorderBrush="Transparent">
+              <TextBox x:Name="SearchControl"
+                       Padding="3"
+                       FontSize="12"
+                       MinHeight="23"
+                       HorizontalContentAlignment="Stretch"
+                       KeyboardNavigation.TabIndex="0"
+                       AutomationProperties.Name="SearchControl"
+                       AutomationProperties.AutomationId="SearchControl"/>
+            </Border>
+          </Border>
+
+          <Border Grid.Column="1"
+                  Grid.Row="1"
+                  Name="ReplaceControlGroup"
+                  Padding="1,3,1,0"
+                  HorizontalAlignment="Stretch"
+                  BorderThickness="0">
+            <TextBox x:Name="ReplaceControl"
+                     MinHeight="23"
+                     Padding="3"
+                     FontSize="12"
+                     KeyboardNavigation.TabIndex="1"
+                     HorizontalAlignment="Stretch"
+                     HorizontalContentAlignment="Stretch"
+                     AutomationProperties.Name="ReplaceControl"
+                     AutomationProperties.AutomationId="ReplaceControl"/>
+          </Border>
+
+          <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
+            <ToggleButton x:Name="MatchCaseToggleButton"
+                        Margin="2,0,2,0"
+                        Style="{StaticResource SearchOptionToggleButtonStyle}"
+                        ToolTip="Match case (Alt+C)"
+                        KeyboardNavigation.TabIndex="5"
+                        KeyboardNavigation.TabNavigation="Local"
+                        AutomationProperties.Name="MatchCaseToggleButton"
+                        AutomationProperties.AutomationId="MatchCaseToggleButton">
+                <ToggleButton.Content>
+                    <Image Margin="0" Stretch="None" Width="17" Height="17">
+                    <Image.Source>
+                        <DrawingImage>
+                        <DrawingImage.Drawing>
+                            <DrawingGroup>
+                            <DrawingGroup.Children>
+                                <GeometryDrawing Brush="Transparent" Geometry="F1 M 15.80,5.97 C 15.66,5.55 15.44,5.19 15.15,4.88 C 14.85,4.58 14.48,4.35 14.05,4.20 C 13.66,4.07 13.20,4.00 12.69,4.00 C 12.44,4.00 12.18,4.02 11.91,4.06 C 11.67,4.10 11.43,4.15 11.21,4.20 C 10.98,4.26 10.77,4.33 10.57,4.40 C 10.35,4.49 10.17,4.58 10.04,4.66 L 9.58,4.95 L 9.58,7.53 C 9.40,7.75 9.26,8.01 9.16,8.29 C 9.16,8.29 9.16,8.30 9.15,8.31 L 6.38,0.00 L 3.61,0.00 L 0.00,10.83 L 0.00,12.00 L 3.22,12.00 L 3.88,10.00 L 6.11,10.00 L 6.77,12.00 L 10.38,12.00 L 10.24,11.58 C 10.40,11.67 10.57,11.75 10.75,11.81 C 11.09,11.93 11.47,12.00 11.89,12.00 C 12.16,12.00 12.42,11.97 12.67,11.91 L 12.67,12.00 L 16.00,12.00 L 16.00,7.23 C 16.00,6.76 15.93,6.34 15.80,5.97 Z"/>
+                                <DrawingGroup>
+                                <DrawingGroup.Children>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 3.66,7.50 L 5.00,3.50 L 6.33,7.50 L 3.66,7.50 Z M 4.33,1.00 L 1.00,11.00 L 2.50,11.00 L 3.16,9.00 L 6.83,9.00 L 7.50,11.00 L 9.00,11.00 L 5.66,1.00 L 4.33,1.00 Z"/>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 13.68,8.59 C 13.68,8.78 13.65,8.96 13.58,9.13 C 13.52,9.30 13.42,9.44 13.30,9.57 C 13.18,9.69 13.04,9.79 12.87,9.86 C 12.70,9.94 12.51,9.97 12.30,9.97 C 12.15,9.97 12.02,9.95 11.89,9.91 C 11.77,9.87 11.67,9.81 11.58,9.74 C 11.50,9.67 11.43,9.59 11.39,9.49 C 11.34,9.39 11.32,9.28 11.32,9.16 C 11.32,9.03 11.33,8.92 11.36,8.82 C 11.39,8.72 11.45,8.63 11.53,8.55 C 11.61,8.47 11.72,8.41 11.85,8.35 C 12.00,8.30 12.18,8.26 12.40,8.24 L 13.68,8.07 L 13.68,8.59 Z M 14.85,6.29 C 14.76,6.01 14.62,5.78 14.43,5.59 C 14.25,5.39 14.01,5.25 13.72,5.15 C 13.43,5.05 13.09,5.00 12.69,5.00 C 12.49,5.00 12.28,5.01 12.07,5.05 C 11.86,5.08 11.65,5.12 11.46,5.17 C 11.27,5.22 11.09,5.28 10.94,5.34 C 10.78,5.40 10.66,5.45 10.58,5.50 L 10.58,6.64 C 10.85,6.45 11.15,6.30 11.50,6.18 C 11.84,6.06 12.19,6.01 12.55,6.01 C 12.91,6.01 13.19,6.10 13.39,6.28 C 13.58,6.47 13.68,6.77 13.68,7.17 L 11.94,7.40 C 11.60,7.44 11.30,7.52 11.06,7.63 C 10.81,7.74 10.61,7.88 10.45,8.04 C 10.29,8.21 10.18,8.40 10.10,8.61 C 10.03,8.82 10.00,9.05 10.00,9.30 C 10.00,9.55 10.04,9.78 10.12,9.98 C 10.20,10.19 10.33,10.37 10.48,10.52 C 10.64,10.67 10.84,10.79 11.08,10.87 C 11.31,10.95 11.58,11.00 11.89,11.00 C 12.27,11.00 12.61,10.92 12.91,10.76 C 13.20,10.60 13.45,10.37 13.65,10.07 L 13.67,10.07 L 13.67,11.00 L 15.00,11.00 L 15.00,7.23 C 15.00,6.88 14.95,6.56 14.85,6.29 Z"/>
+                                </DrawingGroup.Children>
+                                </DrawingGroup>
+                            </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingImage.Drawing>
+                        </DrawingImage>
+                    </Image.Source>
+                    </Image>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton x:Name="MatchWholeWordToggleButton"
+                        Margin="2,0,2,0"
+                        Style="{StaticResource ResourceKey=SearchOptionToggleButtonStyle}"
+                        ToolTip="Match whole word (Alt+W)"
+                        KeyboardNavigation.TabIndex="6"
+                        KeyboardNavigation.TabNavigation="Local"
+                        AutomationProperties.Name="MatchWholeWordToggleButton"
+                        AutomationProperties.AutomationId="MatchWholeWordToggleButton">
+                <ToggleButton.Content>
+                    <Image Margin="0" Stretch="None" Width="17" Height="17">
+                    <Image.Source>
+                        <DrawingImage>
+                        <DrawingImage.Drawing>
+                            <DrawingGroup>
+                            <DrawingGroup.Children>
+                                <GeometryDrawing Brush="Transparent" Geometry="F1 M 12.03,5.00 L 10.00,5.00 L 10.00,3.00 L 12.04,3.00 L 12.03,5.00 Z M 7.00,6.83 L 5.72,3.00 L 7.00,3.00 L 7.00,6.83 Z M 3.05,10.00 L 3.38,9.00 L 4.61,9.00 L 4.94,10.00 L 3.05,10.00 Z M 15.00,0.01 L 0.00,0.00 L 0.00,3.00 L 2.28,3.00 L 0.00,9.83 L 0.00,11.00 L 0.00,12.00 L 0.00,13.00 L 15.00,12.98 L 15.00,0.01 Z"/>
+                                <DrawingGroup>
+                                <DrawingGroup.Children>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 11.00,7.00 L 11.00,9.00 L 9.00,9.00 L 9.00,7.00 L 11.00,7.00 Z M 8.00,3.00 L 8.00,10.00 L 12.00,10.00 L 12.00,6.00 L 9.00,6.00 L 9.00,3.00 L 8.00,3.00 Z"/>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 13.00,10.00 L 14.00,10.00 L 14.00,3.00 L 13.04,3.00 L 13.00,10.00 Z"/>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 4.00,4.00 L 5.00,7.00 L 3.00,7.00 L 4.00,4.00 Z M 5.33,8.00 L 6.00,10.00 L 7.00,10.00 L 4.66,3.00 L 3.33,3.00 L 1.00,10.00 L 2.00,10.00 L 2.66,8.00 L 5.33,8.00 Z"/>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 1.00,1.00 L 1.00,2.00 L 14.00,2.00 L 14.00,1.00 L 1.00,1.00 Z"/>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 1.00,12.00 L 14.00,12.00 L 14.00,11.00 L 1.00,11.00 L 1.00,12.00 Z"/>
+                                </DrawingGroup.Children>
+                                </DrawingGroup>
+                            </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingImage.Drawing>
+                        </DrawingImage>
+                    </Image.Source>
+                    </Image>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton x:Name="RegularExpressionToggleButton"
+                        Margin="2,0,2,0"
+                        Style="{StaticResource ResourceKey=SearchOptionToggleButtonStyle}"
+                        ToolTip="Use Regular Expressions"
+                        KeyboardNavigation.TabIndex="7"
+                        KeyboardNavigation.TabNavigation="Local"
+                        AutomationProperties.Name="RegularExpressionToggleButton"
+                        AutomationProperties.AutomationId="RegularExpressionToggleButton">
+                <ToggleButton.Content>
+                    <Image Margin="0" Stretch="None" Width="17" Height="17">
+                    <Image.Source>
+                        <DrawingImage>
+                        <DrawingImage.Drawing>
+                            <DrawingGroup>
+                            <DrawingGroup.Children>
+                                <GeometryDrawing Brush="Transparent" Geometry="F1 M 14.34,5.70 L 12.94,1.79 L 10.81,2.68 L 11.09,0.00 L 6.90,0.00 L 7.18,2.68 L 5.05,1.79 L 3.65,5.70 L 6.06,6.11 L 5.33,6.99 L 0.00,6.99 L 0.00,12.99 L 6.00,12.99 L 6.00,9.22 L 7.78,10.45 L 9.00,8.22 L 10.24,10.45 L 13.58,8.11 L 11.95,6.11 L 14.34,5.70 Z"/>
+                                <DrawingGroup>
+                                <DrawingGroup.Children>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 13.00,4.91 L 12.35,3.11 L 9.64,4.25 L 9.98,1.00 L 8.01,1.00 L 8.35,4.25 L 5.64,3.11 L 5.00,4.91 L 7.93,5.41 L 5.86,7.91 L 7.44,9.00 L 8.99,6.16 L 10.58,9.00 L 12.13,7.91 L 10.09,5.41 L 13.00,4.91 Z"/>
+                                    <GeometryDrawing Brush="#424242" Geometry="F1 M 1.00,11.99 L 5.00,11.99 L 5.00,7.99 L 1.00,7.99 L 1.00,11.99 Z"/>
+                                </DrawingGroup.Children>
+                                </DrawingGroup>
+                            </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingImage.Drawing>
+                        </DrawingImage>
+                    </Image.Source>
+                    </Image>
+                </ToggleButton.Content>
+            </ToggleButton>
+
+            <TextBlock x:Name="ResultIndexAndCount"
+                       MinWidth="60"
+                       FontSize="12"
+                       VerticalAlignment="Center"
+                       Margin="8,0,8,0" />
+
+            <Button x:Name="FindPreviousButton"
+                    Margin="4,0,2,0"
+                    ToolTip="Find Previous (Shift+F3)"
+                    Click="OnFindPreviousClick"
+                    Style="{StaticResource ButtonStyle}">
+                <Path Data="M5,1 L1,5 L5,9" Stroke="#717171" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+            <Button x:Name="FindNextButton"
+                    Margin="4,0,2,0"
+                    ToolTip="Find Next (F3)"
+                    Click="OnFindNextClick"
+                    Style="{StaticResource ButtonStyle}">
+                <Path Data="M3,1 L7,5 L3,9" Stroke="#717171" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+
+            <Button Name="CloseButton"
+                    Style="{StaticResource ButtonStyle}"
+                    Margin="12,0,0,0"
+                    Padding="2"
+                    Click="OnHide"
+                    Content="{StaticResource ResourceKey=XShapePath}"
+                    KeyboardNavigation.TabIndex="10"
+                    ToolTip="Close"
+                    TextElement.Foreground="#717171"
+                    AutomationProperties.Name="CloseButton"
+                    AutomationProperties.AutomationId="CloseButton">
+            </Button>
+            
+          </StackPanel>
+
+          <StackPanel Name="ReplaceButtons"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Grid.Column="2"
+                      Grid.Row="1">
+             <Button Name="ReplaceNextButton"
+                     Click="OnReplaceNext"
+                     Margin="2,0,2,0"
+                     Style="{StaticResource ButtonStyle}"
+                     ToolTip="Replace next (Alt+R)"
+                     KeyboardNavigation.TabIndex="3"
+                     AutomationProperties.Name="ReplaceNextButton"
+                     AutomationProperties.AutomationId="ReplaceNextButton">
+                <Button.Content>
+                  <Image Margin="0"
+                         Stretch="None"
+                         AutomationProperties.Name="ReplaceNextImage"
+                         AutomationProperties.AutomationId="ReplaceNextImage"
+                         Width="17"
+                         Height="17">
+                    <Image.Source>
+                      <DrawingImage>
+                        <DrawingImage.Drawing>
+                          <DrawingGroup>
+                            <GeometryDrawing Brush="Transparent"
+                                             Geometry="F1 M 6.00,5.00 L 6.00,4.00 L 8.00,4.00 L 8.00,8.00 L 4.91,8.00 L 6.00,6.91 L 6.00,5.00 M 11.00,2.00 L 11.00,0.00 L 8.00,0.00 L 8.00,1.00 L 4.47,1.00 C 3.10,1.00 1.97,2.12 1.97,3.50 L 1.97,3.56 L 1.00,2.58 L 1.00,6.91 L 2.08,8.00 L 0.00,8.00 L 0.00,16.00 L 9.00,16.00 L 9.00,8.00 L 14.00,8.00 L 14.00,2.00 L 11.00,2.00 Z"/>
+                            <GeometryDrawing Brush="#424242"
+                                             Geometry="F1 M 12.00,6.00 L 10.00,6.00 L 10.00,4.00 L 12.00,4.00 L 12.00,6.00 Z M 10.00,3.00 L 10.00,1.00 L 9.00,1.00 L 9.00,6.00 L 9.00,7.00 L 10.00,7.00 L 12.00,7.00 L 13.00,7.00 L 13.00,4.00 L 13.00,3.00 L 10.00,3.00 Z"/>
+                            <GeometryDrawing Brush="#424242"
+                                             Geometry="F1 M 3.00,10.00 L 6.00,10.00 L 6.00,11.00 L 4.00,11.00 L 4.00,13.00 L 6.00,13.00 L 6.00,14.00 L 3.00,14.00 L 3.00,10.00 Z M 1.00,15.00 L 8.00,15.00 L 8.00,9.00 L 1.00,9.00 L 1.00,15.00 Z"/>
+                            <GeometryDrawing Brush="#424242"
+                                             Geometry="F1 M 2.97,3.50 L 3.00,6.00 L 2.00,5.00 L 2.00,6.50 L 3.50,8.00 L 5.00,6.50 L 5.00,5.00 L 4.00,6.00 L 3.97,3.50 C 3.97,3.22 4.20,3.00 4.47,3.00 L 8.00,3.00 L 8.00,2.00 L 4.47,2.00 C 3.65,2.00 2.97,2.67 2.97,3.50 Z"/>
+                          </DrawingGroup>
+                        </DrawingImage.Drawing>
+                      </DrawingImage>
+                    </Image.Source>
+                  </Image>
+                </Button.Content>
+              </Button>
+             <Button Name="ReplaceAllButton"
+                     Click="OnReplaceAll"
+                     Margin="2,0,2,0"
+                     Style="{StaticResource ButtonStyle}"
+                     ToolTip="Replace all (Alt+A)"
+                     KeyboardNavigation.TabIndex="4"
+                     AutomationProperties.Name="ReplaceAllButton"
+                     AutomationProperties.AutomationId="ReplaceAllButton">
+                <Button.Content>
+                  <Image Margin="0"
+                         Stretch="None" 
+                         AutomationProperties.Name="ReplaceAllImage"
+                         AutomationProperties.AutomationId="ReplaceAllImage"
+                         Width="17"
+                         Height="17">
+                    <Image.Source>
+                      <DrawingImage>
+                        <DrawingImage.Drawing>
+                          <DrawingGroup>
+                            <DrawingGroup.Children>
+                              <DrawingGroup>
+                                <DrawingGroup.Children>
+                                  <GeometryDrawing Brush="Transparent"  Geometry="F1 M 6.97,4.00 L 6.97,6.00 L 5.00,6.00 L 5.00,4.00 L 6.97,4.00 Z M 15.97,1.00 L 13.97,1.00 L 13.97,0.00 L 10.97,0.00 L 10.97,1.00 L 8.00,1.00 L 6.97,1.00 L 3.50,1.00 C 2.12,1.00 1.00,2.12 1.00,3.50 L 1.00,3.58 L 0.00,2.58 L 0.00,6.91 L 1.08,8.00 L 0.00,8.00 L 0.00,16.00 L 12.00,16.00 L 12.00,14.00 L 13.97,14.00 L 13.97,7.00 L 15.97,7.00 L 15.97,1.00 Z"/>
+                                  <GeometryDrawing Brush="#424242" Geometry="F1 M 13.97,5.00 L 12.97,5.00 L 12.97,3.00 L 13.97,3.00 L 13.97,5.00 Z M 12.97,2.00 L 12.97,1.00 L 11.97,1.00 L 11.97,6.00 L 14.97,6.00 L 14.97,2.00 L 12.97,2.00 Z"/>
+                                  <GeometryDrawing Brush="#424242" Geometry="F1 M 10.97,2.00 L 7.97,2.00 L 7.97,3.00 L 8.97,3.00 L 8.97,4.00 L 9.97,4.00 L 9.97,5.00 L 8.97,5.00 L 8.97,4.00 L 7.97,4.00 L 7.97,6.00 L 10.97,6.00 L 10.97,2.00 Z"/>
+                                  <GeometryDrawing Brush="#424242" Geometry="F1 M 4.97,8.00 L 11.97,8.00 L 11.97,13.00 L 12.97,13.00 L 12.97,8.00 L 12.97,7.00 L 4.97,7.00 L 4.97,8.00 Z"/>
+                                  <DrawingGroup>
+                                    <DrawingGroup.Children>
+                                      <GeometryDrawing Brush="#424242"  Geometry="F1 M 3.97,13.00 L 3.97,12.00 L 2.97,12.00 L 2.97,13.00 L 3.97,13.00 Z"/>
+                                      <GeometryDrawing Brush="#424242"  Geometry="F1 M 9.97,11.00 L 7.97,11.00 L 7.97,13.00 L 9.97,13.00 L 9.97,14.00 L 6.97,14.00 L 6.97,10.00 L 9.97,10.00 L 9.97,11.00 Z M 4.97,14.00 L 1.97,14.00 L 1.97,12.00 L 2.97,12.00 L 2.97,11.00 L 1.97,11.00 L 1.97,10.00 L 4.97,10.00 L 4.97,14.00 Z M 1.00,9.00 L 1.00,15.00 L 11.00,15.00 L 11.00,9.00 L 1.00,9.00 Z"/>
+                                    </DrawingGroup.Children>
+                                  </DrawingGroup>
+                                  <GeometryDrawing Brush="#00529B" Geometry="F1 M 4.00,6.50 L 4.00,5.00 L 3.00,6.00 L 3.00,3.50 C 3.00,3.22 3.22,3.00 3.50,3.00 L 7.00,3.00 L 7.00,2.00 L 3.50,2.00 C 2.67,2.00 2.00,2.67 2.00,3.50 L 2.00,6.00 L 1.00,5.00 L 1.00,6.50 L 2.50,8.00 L 4.00,6.50 Z"/>
+                                </DrawingGroup.Children>
+                              </DrawingGroup>
+                            </DrawingGroup.Children>
+                          </DrawingGroup>
+                        </DrawingImage.Drawing>
+                      </DrawingImage>
+                    </Image.Source>
+                  </Image>
+                </Button.Content>
+              </Button>
+          </StackPanel>
+
+          <Rectangle Margin="0,4,0,0" Grid.ColumnSpan="3" Grid.Row="2" Name="Find_Focus_Border">
+            <Rectangle.Style>
+              <Style TargetType="{x:Type Rectangle}">
+                <Style.Setters>
+                  <Setter Property="Fill" Value="#007ACC"/>
+                </Style.Setters>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Path=IsKeyboardFocusWithin, ElementName=FindControl}" Value="False">
+                    <Setter Property="Fill" Value="#CCCEDB"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Rectangle.Style>
+          </Rectangle>
+        </Grid.Children>
+      </Grid>
+  </UserControl.Content>
+
+</UserControl>

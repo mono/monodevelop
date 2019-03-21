@@ -13,6 +13,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
+    <IncludeCopyLocal Include="Xwt.Gtk.Mac.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -21,10 +24,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="Xamarin.Mac">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
@@ -52,6 +51,7 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt.Gtk.Mac\Xwt.Gtk.Mac.csproj">
       <Project>{E95833C9-90AA-4366-9262-0A1BED148249}</Project>
       <Name>Xwt.Gtk.Mac</Name>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
       <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
@@ -116,9 +116,6 @@
     <Compile Include="MacHttpMessageHandlerProvider.cs" />
     <Compile Include="NSUrlSessionCredentialsHandler.cs" />
     <Compile Include="BasicAuthenticationHandler.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MacPlatform.addin.xml" />

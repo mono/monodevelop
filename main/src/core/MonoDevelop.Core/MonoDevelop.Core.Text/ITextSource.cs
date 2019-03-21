@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextSource.cs
 //
 // Author:
@@ -33,6 +33,7 @@ namespace MonoDevelop.Core.Text
 	/// A read-only view on a (potentially mutable) text source.
 	/// The IDocument interface derives from this interface.
 	/// </summary>
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public interface ITextSource
 	{
 		/// <summary>
@@ -130,6 +131,7 @@ namespace MonoDevelop.Core.Text
 		ITextSource CreateSnapshot (int offset, int length);
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class TextSourceExtension
 	{
 		/// <summary>

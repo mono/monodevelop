@@ -39,6 +39,8 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -311,7 +313,16 @@ namespace MonoDevelop.Ide.Editor
 		{
 			foreach (var r in base.OnGetContents (type))
 				yield return r;
-			if (textEditorImpl != null) {
+
+			if (textEditorImpl != null) {
+				if (type == typeof(ITextBuffer)) {
+					yield return textEditor.TextView.TextBuffer;
+					yield break;
+				}
+				if (type == typeof (ITextView)) {
+					yield return textEditor.TextView;
+					yield break;
+				}
 				if (type.IsAssignableFrom (typeof (TextEditor))) {
 					yield return textEditor;
 					yield break;
@@ -385,6 +396,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			// TOTEST
 			textEditor.GrabFocus ();
+			DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
 		}
 	}
 }

@@ -517,19 +517,58 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
 				int endOffset = template.InsertPosition + template.Code.Length;
 				var oldVersion = data.Version;
-				prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (template.InsertPosition, editor.CaretOffset));
-				if (editor.CaretOffset < endOffset)
-					prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (editor.CaretOffset, endOffset));
-				
+
+				try {
+					prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (template.InsertPosition, editor.CaretOffset));
+					endOffset = oldVersion.MoveOffsetTo (data.Version, endOffset);
+					if (editor.CaretOffset < endOffset)
+						prettyPrinter.OnTheFlyFormat (editor, context, TextSegment.FromBounds (editor.CaretOffset, endOffset));
+				} catch (Exception e) {
+					LoggingService.LogInternalError (e);
+				}
 				foreach (var textLink in template.TextLinks) {
 					for (int i = 0; i < textLink.Links.Count; i++) {
 						var segment = textLink.Links [i];
-						var translatedOffset = oldVersion.MoveOffsetTo (data.Version, template.InsertPosition + segment.Offset) - template.InsertPosition;
+						var translatedOffset = segment.Offset;
+						foreach (var args in oldVersion.GetChangesTo (data.Version)) {
+							foreach (var change in args.TextChanges) {
+								if (change.Offset > template.InsertPosition + segment.Offset)
+									break;
+								if (change.Offset + change.RemovalLength < template.InsertPosition + segment.Offset) {
+									translatedOffset += change.InsertionLength - change.RemovalLength;
+								} else {
+									translatedOffset += GetDeltaInsideChange (change.InsertedText, change.RemovedText, template.InsertPosition + segment.Offset - change.Offset);
+								}
+							}
+						}
 						textLink.Links [i] = new TextSegment (translatedOffset, segment.Length);
 					}
 				}
 			}
 			return template;
+		}
+
+		static int GetDeltaInsideChange (ITextSource insertedText, ITextSource removedText, int offset)
+		{
+			int i = 0;
+			int j = 0;
+			while (i < offset) {
+				if (insertedText [i] == removedText [j]) {
+					i++;
+					j++;
+					continue;
+				}
+				if (char.IsWhiteSpace (removedText [j])) {
+					j++;
+					continue;
+				}
+				if (char.IsWhiteSpace (insertedText [i])) {
+					i++;
+					continue;
+				}
+				break;
+			}
+			return i - j;
 		}
 
 		public TemplateResult InsertTemplateContents (Document document)

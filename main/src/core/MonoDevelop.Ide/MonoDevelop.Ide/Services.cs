@@ -80,6 +80,9 @@ namespace MonoDevelop.Ide
 			public static Counter ProjectsLoaded = InstrumentationService.CreateTimerCounter ("Projects loaded", "Parser Service");
 		}
 
+		public static Counter NewEditorEnabled = InstrumentationService.CreateCounter ("New Editor Enabled", "Text Editor", id: "NewTextEditor.Enabled");
+		public static Counter NewEditorDisabled = InstrumentationService.CreateCounter ("New Editor Disabled", "Text Editor", id: "NewTextEditor.Disabled");
+
 		public static string[] CounterReport ()
 		{
 			string[] reports = new string[15];

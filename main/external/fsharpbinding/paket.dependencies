@@ -1,4 +1,4 @@
-framework: net461
+framework: net472
 source https://nuget.org/api/v2/
 
 nuget ExtCore framework: >= net40

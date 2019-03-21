@@ -13,26 +13,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.engine">
-      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit.engine.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.engine.api">
-      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit.engine.api.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit-agent">
-      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit-agent.exe</HintPath>
-    </Reference>
-    <Reference Include="nunit-agent-x86">
-      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit-agent-x86.exe</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <PackageReference Include="NUnit.Engine" Version="$(NuGetVersionNUnit3)" PrivateAssets="runtime" />
+    <IncludeCopyLocal Include="Mono.Cecil.dll" />
+    <IncludeCopyLocal Include="nunit-agent-x86.exe" />
+    <IncludeCopyLocal Include="nunit-agent.exe" />
+    <IncludeCopyLocal Include="nunit.engine.api.dll" />
+    <IncludeCopyLocal Include="nunit.engine.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -47,9 +34,6 @@
     </Compile>
     <Compile Include="NUnitTestRunner.cs" />
     <Compile Include="EventListenerWrapper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,6 +12,7 @@ using System.Reflection.Emit;
 
 namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 
+	[Obsolete ("Old editor")]
     internal sealed class CompiledRegexRunner : RegexRunner {
         NoParamDelegate goMethod;
         FindFirstCharDelegate findFirstCharMethod;
@@ -38,8 +39,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         }
     }
 
-    internal delegate void NoParamDelegate(RegexRunner r);
-    internal delegate bool FindFirstCharDelegate(RegexRunner r);
+	[Obsolete ("Old editor")]
+    internal delegate void NoParamDelegate (RegexRunner r);
+
+	[Obsolete ("Old editor")]
+    internal delegate bool FindFirstCharDelegate (RegexRunner r);
     
 }
 

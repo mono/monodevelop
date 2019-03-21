@@ -1,28 +1,30 @@
-//
-// NavigationHistoryManager.cs
-//
+// 
 // Author:
-//       Lluis Sanchez <llsan@microsoft.com>
+//   Mikayla Hutchinson <m.j.hutchinson@gmail.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2019 Microsoft
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// Copyright (C) Microsoft. All rights reserved.
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -42,7 +44,6 @@ namespace MonoDevelop.Ide.Navigation
 		List<Tuple<NavigationPoint, int>> closedHistory = new List<Tuple<NavigationPoint, int>> ();
 		DocumentManager documentManager;
 		RootWorkspace workspace;
-		TextEditorService textEditorService;
 
 		//used to prevent re-logging the current point during a switch
 		bool switching;
@@ -65,9 +66,6 @@ namespace MonoDevelop.Ide.Navigation
 			documentManager.DocumentClosing -= DocumentManager_DocumentClosing;
 			documentManager.ActiveDocumentChanged -= ActiveDocChanged;
 
-			textEditorService.LineCountChanged -= LineCountChanged;
-			textEditorService.LineCountChangesCommitted -= CommitCountChanges;
-			textEditorService.LineCountChangesReset -= ResetCountChanges;
 			return Task.CompletedTask;
 		}
 
@@ -83,58 +81,29 @@ namespace MonoDevelop.Ide.Navigation
 			documentManager.ActiveDocumentChanged += ActiveDocChanged;
 
 			//keep nav points up to date
-			textEditorService = await serviceProvider.GetService<TextEditorService> ();
-			textEditorService.LineCountChanged += LineCountChanged;
-			textEditorService.LineCountChangesCommitted += CommitCountChanges;
-			textEditorService.LineCountChangesReset += ResetCountChanges;
+			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
+			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
 		}
 
-		void Workspace_LastWorkspaceItemClosed (object sender, EventArgs e)
-		{
-			Reset ();
-		}
-
-		void DocumentManager_DocumentOpened (object sender, DocumentEventArgs e)
-		{
-			closedHistory.RemoveAll (np => (np.Item1 as DocumentNavigationPoint)?.FileName == e.Document.FileName);
-			OnClosedHistoryChanged ();
-		}
-
-		Task DocumentManager_DocumentClosing (object sender, DocumentCloseEventArgs e)
-		{
-			NavigationPoint point = GetNavPointForDoc (e.Document, true) as DocumentNavigationPoint;
-			if (point == null)
-				return Task.CompletedTask;
-
-			closedHistory.Add (new Tuple<NavigationPoint, int> (point, documentManager.Documents.IndexOf (e.Document)));
-			OnClosedHistoryChanged ();
-			return Task.CompletedTask;
-		}
-
-		public void LogActiveDocument ()
-		{
-			LogActiveDocument (false);
-		}
-
-		public void Reset ()
-		{
-			history.Clear ();
-			OnHistoryChanged ();
-			closedHistory.Clear ();
-			OnClosedHistoryChanged ();
-		}
-
-		public void LogActiveDocument (bool transient)
+		public static void LogActiveDocument (bool transient = false)
 		{
 			if (switching)
 				return;
 
-			var point = GetNavPointForActiveDoc (false);
-			if (point == null)
-				return;
+			var point = GetNavPointForActiveDoc ();
+			if (point != null) {
+				LogNavigationPoint (point, transient);
+			}
+		}
+
+		public static void LogNavigationPoint (NavigationPoint point, bool transient = false)
+		{
+			if (point == null) {
+				throw new ArgumentNullException (nameof (point));
+			}
 
 			var item = new NavigationHistoryItem (point);
-
+			
 			//if the current node's transient but has been around for a while, consider making it permanent
 			if (Current == null ||
 				(currentIsTransient && DateTime.Now.Subtract (Current.Created).TotalMilliseconds > TRANSIENT_TIMEOUT)) {
@@ -142,9 +111,10 @@ namespace MonoDevelop.Ide.Navigation
 			}
 
 			//if the current point's transient, always replace it
-			if (currentIsTransient) {
+			if (currentIsTransient)
+			{
 				//collapse down possible extra point in history
-				var backOne = history [-1];
+				var backOne = history[-1];
 				if (backOne != null && point.ShouldReplace (backOne.NavigationPoint)) {
 					// The new node is the same as the last permanent, so we can discard it
 					history.RemoveCurrent ();
@@ -173,10 +143,10 @@ namespace MonoDevelop.Ide.Navigation
 
 			OnHistoryChanged ();
 		}
-
-		NavigationPoint GetNavPointForActiveDoc (bool forClosedHistory)
+		
+		static NavigationPoint GetNavPointForActiveDoc ()
 		{
-			return GetNavPointForDoc (documentManager.ActiveDocument, forClosedHistory);
+			return GetNavPointForDoc (documentManager.ActiveDocument, false);
 		}
 
 		NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)
@@ -193,6 +163,7 @@ namespace MonoDevelop.Ide.Navigation
 					return point;
 			}
 
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			var editBuf = doc.Editor;
 			if (editBuf != null) {
 				if (forClosedHistory) {
@@ -203,6 +174,7 @@ namespace MonoDevelop.Ide.Navigation
 				if (point != null)
 					return point;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 
 			return new DocumentNavigationPoint (doc);
 		}
@@ -330,11 +302,13 @@ namespace MonoDevelop.Ide.Navigation
 			currentDoc = document;
 
 			currentDoc.Closed += HandleCurrentDocClosed;
-
+			
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (currentDoc.Editor != null) {
 				currentDoc.Editor.TextChanged += BufferTextChanged;
 				currentDoc.Editor.CaretPositionChanged += BufferCaretPositionChanged;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 		}
 
 		void HandleCurrentDocClosed (object sender, EventArgs e)
@@ -346,12 +320,14 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			if (currentDoc == null)
 				return;
-
-			currentDoc.Closed -= HandleCurrentDocClosed;
+			
+			currentDoc.Closed -= HandleCurrentDocClosed;
+			#pragma warning disable CS0618, CS0612 // Type or member is obsolete
 			if (currentDoc.Editor != null) {
 				currentDoc.Editor.TextChanged -= BufferTextChanged;
 				currentDoc.Editor.CaretPositionChanged -= BufferCaretPositionChanged;
 			}
+			#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 			currentDoc = null;
 		}
 
@@ -368,23 +344,8 @@ namespace MonoDevelop.Ide.Navigation
 		#endregion
 
 		#region Text file line number and snippet updating
-
-		void LineCountChanged (object sender, LineCountEventArgs args)
-		{
-			//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-
-		void CommitCountChanges (object sender, TextFileEventArgs args)
-		{
-			//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-
-		void ResetCountChanges (object sender, TextFileEventArgs args)
-		{
-			//			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
-		}
-
-		void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
+		
+		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
 			bool historyChanged = false, closedHistoryChanged = false;
 

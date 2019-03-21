@@ -148,19 +148,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		void RenderPreview (Cairo.Context context, Gdk.Point position, double opacity)
 		{
 			if (brandedIcon != null) {
-				/*				if (previewSurface == null) {
-					previewSurface = new SurfaceWrapper (context, brandedIcon);
-				}
-				double scale = PreviewSize / previewSurface.Width;
-
-				context.Save ();
-				context.Translate (position.X, position.Y);
-				context.Scale (scale * IconScale, scale * IconScale);
-				context.SetSourceSurface (previewSurface.Surface, -previewSurface.Width / 2, -previewSurface.Height / 2);
-				context.PaintWithAlpha (opacity);
-				context.Restore ();
-				*/
-
 				double scale = PreviewSize / brandedIcon.Width;
 				context.Save ();
 				context.Translate (position.X, position.Y);
@@ -258,7 +245,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		SurfaceWrapper titleSurface;
 		SurfaceWrapper textSurface;
 		SurfaceWrapper buttonSurface;
-		SurfaceWrapper previewSurface;
 
 		protected override void OnDestroyed ()
 		{
@@ -271,8 +257,6 @@ namespace MonoDevelop.Ide.WelcomePage
 				textSurface.Dispose ();
 			if (buttonSurface != null)
 				buttonSurface.Dispose ();
-			if (previewSurface != null)
-				previewSurface.Dispose ();
 			base.OnDestroyed ();
 		}
 

@@ -12,22 +12,22 @@
 		<Import assembly="Microsoft.VisualStudio.Threading.dll" />
 		<Import assembly="Microsoft.VisualStudio.Validation.dll" />
 	</Runtime>
-	
+
 	<!-- Extension ponts -->
-	
+
 	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
 	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
 	<ConditionType id="activelanguage" type="MonoDevelop.Ide.Codons.LanguageActiveCondition" />
-	
+
 	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection">
 		<ExtensionNode name="Section" type="MonoDevelop.Ide.Extensions.OptionsDialogSection" />
 	</ExtensionNodeSet>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Core/PlatformService" name = "Platform Service">
 		<Description>Implementations of platform-dependent code wrapped in a platform-agnostic API. Specified classes must inherit from MonoDevelop.Ide.Desktop.PlatformService.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Core/WebBrowsers" name = "Web Browsers">
 		<Description>Used optionally to provides a web browser widget. Must implement MonoDevelop.Ide.WebBrowser.IWebBrowserLoader</Description>
 		<ExtensionNode name="Class" />
@@ -37,11 +37,11 @@
 		<Description>A class implementing IGettingStartedProvider.</Description>
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme">
 		<ExtensionNode name="Scheme" type="MonoDevelop.Components.Commands.ExtensionNodes.SchemeExtensionNode" />
 	</ExtensionNodeSet>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Components/DialogHandlers" name = "Dialog Handlers">
 		<Description>Allows providing platform-specific implementations for common dialogs</Description>
 		<ExtensionNode name="Class" />
@@ -72,14 +72,14 @@
 			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/InitCompleteHandlers" name = "Post inialization handlers">
 		<Description>Commands to be automatically executed when the IDE finishes initalization.</Description>
 		<ExtensionNode name="Class">
 			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/KeyBindingSchemes" name = "Key binding schemes">
 		<Description>Key binding schemes.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme"/>
@@ -89,24 +89,24 @@
 		<Description>Task list views to be shown in the task list pad.</Description>
 		<ExtensionNode name="TaskListView" type="MonoDevelop.Ide.Codons.TaskListViewCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchContexts" name = "Workbench contexts">
 		<Description>Workbench contexts.</Description>
 		<ExtensionNode name="WorkbenchContext" type="MonoDevelop.Ide.Codons.WorkbenchContextCodon">
 			<ExtensionNode name ="ContextPad" type="MonoDevelop.Ide.Codons.ContextPadCodon" />
 		</ExtensionNode>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFileFilters" name = "Combine file filters">
 		<Description>File filters to be shown in the Project Open dialog.</Description>
 		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/FileFilters" name = "File filters">
 		<Description>File filters to be shown in the File Open dialog.</Description>
 		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions" defaultInsertAfter = "MidStep">
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode" objectType="MonoDevelop.Ide.Editor.Extension.TextEditorExtension" />
@@ -117,77 +117,77 @@
 		<ExtensionNode name="Complete" type="MonoDevelop.Ide.CodeCompletion.CompletionCharacterCodon"/>
 	</ExtensionPoint>
 
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/DocumentTab" name = "View Context Menu">
 		<Description>The context menu for all open files.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/ExecutionCommandEditors" name = "View Context Menu">
 		<Description>Widgets which allow editing the configuration of execution commands.</Description>
 		<ExtensionNode name="Customizer" type="MonoDevelop.Ide.Execution.ExecutionCommandCustomizer" objectType="MonoDevelop.Ide.Execution.IExecutionCommandCustomizer"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/RunConfigurationEditors" name = "Run Configuration Editors">
 		<Description>Widgets which allow editing run configurations.</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.RunConfigurationEditorExtensionNode" objectType="MonoDevelop.Ide.Execution.RunConfigurationEditor"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeTemplates" name = "Code Templates">
 		<Description>Custom code templates.</Description>
 		<ExtensionNode name="CodeTemplate" type="MonoDevelop.Ide.CodeTemplates.CodeTemplateCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorResolver" name = "Text Editor Resolver">
 		<Description>Text editor resolvers are responsible for getting resolve results inside text editor locations.</Description>
 		<ExtensionNode name="Resolver" type="MonoDevelop.Ide.Gui.Content.TextEditorResolverProviderCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchLayouts" name = "Workbench Layouts">
 		<Description>This extension point allows registering layouts and pads to be shown in each layout</Description>
 		<ExtensionNode name="Layout" type="MonoDevelop.Ide.Extensions.LayoutExtensionNode"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/CustomTools" name = "Custom code generation tools">
 		<Description>Custom code generation tools. Classes must be a subclass of SingleProjectFileCustomTool or ISingleFileCustomTool.</Description>
 		<ExtensionNode name="Tool" type="MonoDevelop.Ide.Extensions.CustomToolExtensionNode"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/Fonts" name = "IDE Fonts">
 		<Description>Addins can register own fonts to be configured.</Description>
 		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">
 		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/ReferenceFinder" name = "Reference finders">
 		<Description>Reference finder.</Description>
 		<ExtensionNode name="ReferenceFinder" type="MonoDevelop.Ide.FindInFiles.ReferenceFinderCodon"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/Updater/UpdateHandlers" name = "Update handlers">
 		<ExtensionNode name="Type" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Parser" name = "TypeSystemParser">
 		<ExtensionNode name="Parser" type="MonoDevelop.Ide.TypeSystem.TypeSystemParserNode"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/OutputTracking" name = "TypeSystemOutputTracker">
 		<ExtensionNode name="Track" type="MonoDevelop.Ide.TypeSystem.TypeSystemOutputTrackingNode"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">
 		<ExtensionNode name="Parser" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
-	</ExtensionPoint>	
+	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/AmbienceTooltipProviders" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
 		<ExtensionNode name="Provider" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/CodeGenerators">
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
@@ -234,7 +234,7 @@
 		<Description>Setting what languages are supported for user selection.</Description>
 		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path="/MonoDevelop/Ide/TypeService/MefHostServices">
 		<ExtensionNode name = "Assembly" type = "MonoDevelop.Core.AddIns.AssemblyExtensionNode" />
 	</ExtensionPoint>
@@ -252,13 +252,13 @@
 	</ExtensionPoint>
 
   <!-- Extensions -->
-	
+
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"
 		       description = "Graphical extension setup utility"
 		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/SystemInformation">
 		<Class class = "MonoDevelop.Ide.IdeVersionInfo" />
 		<Class class = "MonoDevelop.Ide.RuntimeVersionInfo" />
@@ -276,7 +276,7 @@
 		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
 		<Class class = "MonoDevelop.Ide.LogReportingStartup"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
 		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
 		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
@@ -288,16 +288,16 @@
 		<Scheme id="VSCodeMAC" _name = "Visual Studio Code" resource="KeyBindingSchemeVSCode-mac.xml" forMac="true"/>
 		<Scheme id="RiderMAC" _name = "ReSharper / Rider" resource="KeyBindingSchemeRider-mac.xml" forMac="true"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TaskList/View">
 		<TaskListView _label = "Comments" class = "MonoDevelop.Ide.Tasks.CommentTasksView" />
 		<TaskListView _label = "User Tasks" class = "MonoDevelop.Ide.Tasks.UserTasksView" />
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
 		<Layout id="Solution" _name="Solution" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "Assemblies"
 		            _label = "Assemblies"
@@ -309,7 +309,7 @@
 		            _label = ".NET Resource Files"
 		            extensions = "*.resources,*.resx"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "SlnCombine"
 		            _label = "Solution Files"
@@ -321,7 +321,7 @@
 					_label = "MD Workbench"
 					extensions = "*.mdw"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 		<Class id="MidStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
@@ -340,7 +340,7 @@
 		<Class class = "MonoDevelop.Ide.Editor.Extension.LineSeparatorTextEditorExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll" />
@@ -357,21 +357,21 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NextNotebook" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">
 		<Customizer id="MonoDevelop.Ide.Execution.CustomArgsCustomizer" _name="Arguments" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
 		<Class class="MonoDevelop.Ide.Projects.OptionPanels.AssemblyRunConfigurationEditor" runConfigurationType="MonoDevelop.Projects.AssemblyRunConfiguration" />
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/Fonts">
 		<Font name="Editor" _displayName="Text Editor" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 12" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 10" -->
 		<Font name="Pad" _displayName="General Pad Text" default="_DEFAULT_SANS" defaultMac="Lucida Grande 11" defaultMacYosemite="Helvetica Neue 11" /><!-- TODO: VV: "_DEFAULT_SANS" => "Segoe UI 9" -->
 		<Font name="OutputPad" _displayName="Output Pad Contents" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 11" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 9" -->
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="KeyBindings.xml" targetPath="KeyBindings/Custom.kb.xml" />
@@ -399,11 +399,11 @@
 		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
 		<Tool name="PublicResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.PublicResXFileCodeGenerator" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
 		<Class id="Ide" class = "MonoDevelop.Ide.Projects.IdeFileSystemExtensionExtension" insertafter = "FinalStep"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
@@ -414,22 +414,20 @@
 
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll"/>
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.dll"/>
 		<Assembly file="Microsoft.CodeAnalysis.EditorFeatures.Text.dll"/>
 		<Assembly file="Microsoft.CodeAnalysis.Features.dll" />
-		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
-		<Assembly file="Microsoft.CodeAnalysis.Workspaces.Desktop.dll" />
-		<Assembly file="Microsoft.CodeAnalysis.CSharp.Features.dll" />
-		<Assembly file="Microsoft.CodeAnalysis.CSharp.Workspaces.dll" />
+		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll"/>
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
-		<Assembly file="MonoDevelop.Ide.dll"/>
-		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll"/>
-		<Assembly file="Microsoft.VisualStudio.Text.Implementation.dll"/>
+		<Assembly file="Microsoft.CodeAnalysis.Workspaces.dll" />
+		<Assembly file="Microsoft.VisualStudio.CodingConventions.dll" />
+		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>
-		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
-		<Assembly file="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
+		<Assembly file="MonoDevelop.Ide.dll"/>
 	</Extension>
 
 </ExtensionModel>

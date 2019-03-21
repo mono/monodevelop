@@ -44,9 +44,12 @@ using Xwt;
 using System.Collections.Immutable;
 using MonoDevelop.Components.Commands;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Composition;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
@@ -1054,7 +1057,7 @@ namespace MonoDevelop.Ide.Editor
 
 			TextEditor_MimeTypeChanged (null, null);
 
-			this.TextView = Microsoft.VisualStudio.Platform.PlatformCatalog.Instance.TextEditorFactoryService.CreateTextView(this);
+			this.TextView = CompositionManager.GetExportedValue<ITextEditorInitializationService> ().CreateTextView (this);
 		}
 
 		void TextEditor_ZoomLevelChanged (object sender, EventArgs e)
@@ -1082,8 +1085,16 @@ namespace MonoDevelop.Ide.Editor
 		{
 			textEditorImpl.ClearTooltipProviders ();
 			foreach (var extensionNode in allProviders) {
-				if (extensionNode.IsValidFor (MimeType))
-					textEditorImpl.AddTooltipProvider ((TooltipProvider)extensionNode.CreateInstance ());
+				if (extensionNode.IsValidFor (MimeType)) {
+					TooltipProvider provider;
+					try {
+						provider = (TooltipProvider)extensionNode.CreateInstance ();
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Error while creating tooltip provider " + extensionNode.Id, ex);
+						continue;
+					}
+					textEditorImpl.AddTooltipProvider (provider);
+				}
 			}
 		}
 

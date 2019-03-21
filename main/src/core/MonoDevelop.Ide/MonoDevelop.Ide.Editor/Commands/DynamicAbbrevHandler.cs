@@ -29,9 +29,11 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
+using System;
 
 namespace MonoDevelop.Ide.Editor
 {
+	[Obsolete]
 	class DynamicAbbrevHandler : CommandHandler
 	{
 		enum AbbrevState {

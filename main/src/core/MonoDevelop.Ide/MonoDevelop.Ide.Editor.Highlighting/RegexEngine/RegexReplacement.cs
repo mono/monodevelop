@@ -16,7 +16,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
 	using System.Collections.Generic;
 	using MonoDevelop.Core.Text;
 
-	internal sealed class RegexReplacement {
+	[Obsolete ("Old editor")]
+	internal sealed class RegexReplacement
+	{
         /*
          * Since RegexReplacement shares the same parser as Regex,
          * the constructor takes a RegexNode which is a concatenation

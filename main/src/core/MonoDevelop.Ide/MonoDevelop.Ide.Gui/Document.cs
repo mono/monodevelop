@@ -1,4 +1,4 @@
-﻿//
+//
 // Document.cs
 //
 // Author:
@@ -45,6 +45,8 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using Roslyn.Utilities;
+using Microsoft.VisualStudio.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -282,7 +284,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			window?.SelectWindow ();
 		}
-		
+
+		[Obsolete("Use GetContent<ITextBuffer>()")]
 		public TextEditor Editor {
 			get {
 				return GetContent <TextEditor> ();
@@ -380,7 +383,6 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				// Send all file change notifications
 				FileService.ThawEvents ();
-
 			}
 		}
 
@@ -400,6 +402,7 @@ namespace MonoDevelop.Ide.Gui
 			if (fileController == null || controller.IsViewOnly || !fileController.SupportsSaveAs)
 				return false;
 
+			// TOTEST: that the default encoding is UTF8
 			Encoding encoding = fileController.SupportsEncoding ? fileController.Encoding : null;
 			
 			if (filename == null) {
@@ -574,6 +577,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <param name='action'>
 		/// The action to run.
 		/// </param>
+		[Obsolete("This only works for the old editor")]
 		public void RunWhenLoaded (System.Action action)
 		{
 			var e = Editor;
@@ -652,7 +656,6 @@ namespace MonoDevelop.Ide.Gui
 			view.UpdateContentVisibility (window.ContentVisible);
 		}
 	}
-
 
 	[Serializable]
 	public sealed class DocumentEventArgs : EventArgs

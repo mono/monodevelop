@@ -76,7 +76,9 @@ type FSharpFormatter()  =
         | Document, Some projectOptions  ->
             let output =
                 try
-                    let formatted = CodeFormatter.FormatDocumentAsync(filename, input, config, projectOptions, languageService.Checker)
+                    let checker = SourceCodeServices.FSharpChecker.Create()
+                    let parsingOptions, _errors = checker.GetParsingOptionsFromProjectOptions(projectOptions)
+                    let formatted = CodeFormatter.FormatDocumentAsync(filename, input, config, parsingOptions, languageService.Checker)
                                     |> Async.RunSynchronously
 
                     let result = trimIfNeeded input formatted
@@ -111,7 +113,9 @@ type FSharpFormatter()  =
                     let! result =
                         try
                             let selection = input.Substring(fromOffset, toOffset - fromOffset)
-                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, input, config, projectOptions, languageService.Checker)
+                            let checker = SourceCodeServices.FSharpChecker.Create()
+                            let parsingOptions, _errors = checker.GetParsingOptionsFromProjectOptions(projectOptions)
+                            let formatted = CodeFormatter.FormatSelectionAsync(filename, range, input, config, parsingOptions, languageService.Checker)
                                             |> Async.RunSynchronously
                             let result = trimIfNeeded input formatted
                             match editor with

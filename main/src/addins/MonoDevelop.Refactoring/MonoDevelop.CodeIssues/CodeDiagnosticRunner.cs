@@ -46,6 +46,7 @@ using System.Globalization;
 
 namespace MonoDevelop.CodeIssues
 {
+	[Obsolete ("Old editor")]
 	static class CodeDiagnosticRunner
 	{
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken, ImmutableArray<DiagnosticData> results)

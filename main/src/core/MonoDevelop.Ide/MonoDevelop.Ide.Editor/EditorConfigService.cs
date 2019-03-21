@@ -1,4 +1,4 @@
-﻿//
+//
 // EditorConfigService.cs
 //
 // Author:
@@ -83,16 +83,18 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public static async Task RemoveEditConfigContext (string fileName)
+		public static Task RemoveEditConfigContext (string fileName)
 		{
-			ICodingConventionContext ctx;
-			lock (contextCacheLock) {
-				if (!contextCache.TryGetValue (fileName, out ctx))
-					return;
-				contextCache = contextCache.Remove(fileName);
-			}
-			if (ctx != null)
-				ctx.Dispose ();
+			return Task.Run (() => {
+				ICodingConventionContext ctx;
+				lock (contextCacheLock) {
+					if (!contextCache.TryGetValue (fileName, out ctx))
+						return;
+					contextCache = contextCache.Remove (fileName);
+				}
+				if (ctx != null)
+					ctx.Dispose ();
+			});
 		}
 
 		class ConventionsFileManager : IFileWatcher

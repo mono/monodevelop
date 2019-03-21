@@ -13,14 +13,14 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text.Utilities;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(ISmartIndentationService))]
+    //[Export(typeof(ISmartIndentationService))]
     internal sealed class SmartIndentationService : ISmartIndentationService, ISmartIndent
     {
         [ImportMany]
         internal List<Lazy<ISmartIndentProvider, IContentTypeMetadata>> SmartIndentProviders { get; set; }
 
         [Import]
-        internal GuardedOperations GuardedOperations { get; set; }
+        internal IGuardedOperations GuardedOperations { get; set; }
 
         [Import]
         internal IContentTypeRegistryService ContentTypeRegistryService { get; set; }

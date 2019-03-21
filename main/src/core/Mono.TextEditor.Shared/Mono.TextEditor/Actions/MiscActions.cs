@@ -31,7 +31,6 @@ using System.Diagnostics;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
-using Microsoft.VisualStudio.Text.Implementation;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Mono.TextEditor
@@ -244,14 +243,22 @@ namespace Mono.TextEditor
 				data.EnsureCaretIsNotVirtual ();
 
 				var oldCaretLine = data.Caret.Location.Line;
-
-				string indentString = data.GetIndentationString (data.Caret.Location);
+				var indentString = data.IndentationTracker.GetIndentationString (data.Caret.Line);
 				data.InsertAtCaret (data.EolMarker);
 
-				// Don't insert the indent string if the EOL insertion modified the caret location in an unexpected fashion
-				//  (This likely means someone has custom logic regarding insertion of the EOL)
-				if (data.Caret.Location.Line == oldCaretLine + 1 && data.Caret.Location.Column == 1)
-					data.InsertAtCaret (indentString);
+				if (data.HasIndentationTracker) {
+					// Don't insert the indent string if the EOL insertion modified the caret location in an unexpected fashion
+					//  (This likely means someone has custom logic regarding insertion of the EOL)
+					if (data.Caret.Location.Line == oldCaretLine + 1 && data.Caret.Location.Column == 1) {
+						var line = data.GetLine (data.Caret.Line);
+						var currentIndent = line.GetIndentation (data.Document);
+						var currentCalculatedIndent = data.IndentationTracker.GetIndentationString (data.Caret.Line);
+						if (!string.IsNullOrEmpty (currentCalculatedIndent))
+							indentString = currentCalculatedIndent;
+						if (indentString != currentIndent)
+							data.InsertAtCaret (indentString);
+					}
+				}
 			}
 		}
 		

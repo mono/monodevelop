@@ -35,6 +35,7 @@ using System;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete]
 	class MonoDevelopTextLoader : TextLoader
 	{
 		readonly string fileName;

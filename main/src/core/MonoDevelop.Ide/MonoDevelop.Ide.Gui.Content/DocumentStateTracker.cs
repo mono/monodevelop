@@ -35,7 +35,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	
+	[Obsolete ("Use the Microsoft.VisualStudio.Text APIs")]
 	public class DocumentStateTracker<T> : IDisposable where T : IDocumentStateEngine
 	{
 		T currentEngine;

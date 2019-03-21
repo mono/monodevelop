@@ -23,18 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Notification;
-using Microsoft.CodeAnalysis.LanguageServices;
 using System.Collections.Generic;
-using Xwt;
-using MonoDevelop.Ide;
-using MonoDevelop.Components;
 using System.Linq;
-using MonoDevelop.Core;
-using Xwt.Drawing;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.LanguageServices;
+using Microsoft.CodeAnalysis.Notification;
 using MonoDevelop.Components.AtkCocoaHelper;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using Xwt;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Refactoring.ExtractInterface
 {
@@ -83,9 +83,16 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			}
 		}
 
+		public bool UseSameFile {
+			get {
+				return sameFileRadio.Active;
+			}
+		}
+
 		TextEntry entryFileName = new TextEntry ();
 		TextEntry entryName = new TextEntry ();
 		ListView listViewPublicMembers = new ListView ();
+		RadioButton sameFileRadio, newFileRadio; 
 
 		public ExtractInterfaceDialog ()
 		{
@@ -144,14 +151,34 @@ namespace MonoDevelop.Refactoring.ExtractInterface
 			entryName.Changed += delegate {
 				UpdateOkButton ();
 			};
-			box.PackStart (new Label {
-				Markup = GettextCatalog.GetString ("File name:")
-			});
 
-			box.PackStart (entryFileName);
+			sameFileRadio = new RadioButton (GettextCatalog.GetString ("Add to current file")) {
+				Name = "sameFileRadio.Name"
+			};
+			sameFileRadio.Accessible.Description = GettextCatalog.GetString ("Add the new interface to the current file");
+
+			newFileRadio = new RadioButton (GettextCatalog.GetString ("File name:")) {
+				Group = sameFileRadio.Group,
+				Name = "newFileRadio.Name"
+			};
+			newFileRadio.Accessible.Description = GettextCatalog.GetString ("Add the new interface to a new file");
+			newFileRadio.Active = true;
+			newFileRadio.ActiveChanged += (sender, e) => entryFileName.Sensitive = newFileRadio.Active;
+
+			var fileNameBox = new HBox ();
+			fileNameBox.PackStart (newFileRadio);
+			fileNameBox.PackStart (entryFileName, true, true);
+
+			box.PackStart (new Label { Markup = GettextCatalog.GetString ("Select destination") });
+			var radioBox = new VBox { Margin = new WidgetSpacing (12, 4, 4, 4) };
+			radioBox.PackStart (sameFileRadio);
+			radioBox.PackStart (fileNameBox);
+
 			entryFileName.Name = "entryFileName.Name";
-			entryFileName.SetCommonAccessibilityAttributes (entryFileName.Name, GettextCatalog.GetString ("Name of the new file"),
-			                                                GettextCatalog.GetString ("The name of the file for the new interface"));
+			entryFileName.SetCommonAccessibilityAttributes (
+				entryFileName.Name,
+				GettextCatalog.GetString ("Name of the new file"),
+				GettextCatalog.GetString ("The name of the file for the new interface"));
 
 			entryFileName.Changed += delegate {
 				UpdateOkButton ();

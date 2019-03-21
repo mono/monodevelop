@@ -1,4 +1,4 @@
-﻿//
+//
 // ProjectedSemanticHighlighting.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
+	[Obsolete]
 	sealed class ProjectedSemanticHighlighting : SemanticHighlighting
 	{
 		List<Projection> projections;

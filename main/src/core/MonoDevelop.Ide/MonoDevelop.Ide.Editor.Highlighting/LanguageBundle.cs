@@ -1,4 +1,4 @@
-﻿//
+//
 // LanguageBundle.cs
 //
 // Author:
@@ -30,6 +30,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	class LanguageBundle
 	{
+		[Obsolete]
 		List<ISyntaxHighlightingDefinitionProvider> highlightings = new List<ISyntaxHighlightingDefinitionProvider> ();
 		List<TmSetting> settings = new List<TmSetting> ();
 		List<TmSnippet> snippets = new List<TmSnippet> ();
@@ -41,6 +42,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		[Obsolete ("Old editor")]
 		public IReadOnlyList<ISyntaxHighlightingDefinitionProvider> Highlightings {
 			get {
 				return highlightings;
@@ -96,6 +98,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			snippets.Add (snippet);
 		}
 
+		[Obsolete ("Old editor")]
 		public void Add (ISyntaxHighlightingDefinitionProvider highlighting)
 		{
 			highlightings.Add (highlighting);

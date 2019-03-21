@@ -1,4 +1,4 @@
-﻿<ExtensionModel>
+<ExtensionModel>
 	<Runtime>
 		<Import assembly="RefactoringEssentials.dll" />
 	</Runtime>
@@ -52,6 +52,16 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 
 		<Category _name = "Code Navigation" id = "CodeNavigation">
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
+						_label = "_Go to Declaration"
+						shortcut = "F12"
+						macShortcut = "Meta|D F12"/>
+			
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation"
+						_label = "Go to Implementation"
+				 		shortcut="Ctrl|F12"
+				 		macShortcut=""/>
+			
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
 					_label = "_Find References" 
 					shortcut = "Shift|F12"
@@ -171,4 +181,32 @@
 		<Assembly file="Microsoft.CodeAnalysis.VisualBasic.Features" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/TextEditor/CommandMapping">
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.GoToDefinitionCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.FindReferencesCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.GotoImplementation" argsType="@MonoDevelop.Refactoring.CommandArgsFactories.CreateGoToImplementationCommandArgs" />
+		
+		<!-- These mappings exist to ensure the new editor calls the new commands -->
+		<Map id="MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindReferencesOfOverloadsCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.Navigation.FindBaseSymbols" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindBaseSymbolsCommandArgs" />
+		<Map id="MonoDevelop.Refactoring.Navigation.FindDerivedSymbols" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindDerivedSymbolsCommandArgs" />
+		
+		<Map id="MonoDevelop.CSharp.Navigation.FindExtensionMethods" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindExtensionMethodsCommandArgs" />
+		<Map id="MonoDevelop.CSharp.Navigation.FindMemberOverloads" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindMemberOverloadsCommandArgs" />
+		<Map id="MonoDevelop.CSharp.Navigation.FindImplementingMembers" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.Navigation.FindImplementingMembersCommandArgs" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/TextEditor/ContextMenu/Editor">
+		<Condition id="FileType" mimeTypes="text/x-csharp">
+			<ItemSet id="Navigate" _label="Navigate" insertbefore="Separator1">
+				<CommandItem id="MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences" />
+				<CommandItem id="MonoDevelop.Refactoring.Navigation.FindBaseSymbols" />
+				<CommandItem id="MonoDevelop.Refactoring.Navigation.FindDerivedSymbols" />
+				<SeparatorItem id="SeparatorNavigate1" />
+				<CommandItem id="MonoDevelop.CSharp.Navigation.FindExtensionMethods" />
+				<CommandItem id="MonoDevelop.CSharp.Navigation.FindMemberOverloads" />
+				<CommandItem id="MonoDevelop.CSharp.Navigation.FindImplementingMembers" />
+			</ItemSet>
+		</Condition>
+	</Extension>
 </ExtensionModel>

@@ -31,21 +31,25 @@ using System.Linq;
 using Mono.Addins;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
+using System;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public interface ITextEditorResolver
 	{
 		ISymbol GetLanguageItem (int offset);
 		ISymbol GetLanguageItem (int offset, string expression);
 	}
 	
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public interface ITextEditorResolverProvider
 	{
 		ISymbol GetLanguageItem (Document document, int offset, out DocumentRegion expressionRegion);
 		ISymbol GetLanguageItem (Document document, int offset, string identifier);
 	}
 
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public static class TextEditorResolverService
 	{
 		static List<TextEditorResolverProviderCodon> providers = new List<TextEditorResolverProviderCodon> ();
@@ -87,6 +91,7 @@ namespace MonoDevelop.Ide.Gui.Content
 	}
 	
 	[ExtensionNode (Description="A codon for text editor providers.")]
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public class TextEditorResolverProviderCodon : ExtensionNode
 	{
 		[NodeAttribute("mimeType", "Mime type for this text editor provider")]

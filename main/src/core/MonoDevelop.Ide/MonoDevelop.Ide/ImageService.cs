@@ -27,19 +27,18 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.Addins;
 using System.IO;
-using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Core;
-using MonoDevelop.Components;
-using System.Text;
 using System.Linq;
-using MonoDevelop.Ide.Gui.Components;
-using System.Threading.Tasks;
-using System.Net;
-using Xwt.Backends;
-using Gtk;
+using System.Text;
 using Gdk;
+using Gtk;
+using Microsoft.VisualStudio.Core.Imaging;
+using Mono.Addins;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Gui.Components;
+using Xwt.Backends;
 
 namespace MonoDevelop.Ide
 {
@@ -64,6 +63,7 @@ namespace MonoDevelop.Ide
 
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
+		static Dictionary<ImageId, string> imageIdToStockId = new Dictionary<ImageId, string> ();
 
 		static Gtk.Requisition[] iconSizes = new Gtk.Requisition[7];
 
@@ -75,8 +75,13 @@ namespace MonoDevelop.Ide
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					if (!iconStock.ContainsKey (iconCodon.StockId))
-						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
+					if (!iconStock.ContainsKey (iconCodon.StockId)) {
+						iconStock [iconCodon.StockId] = new List<StockIconCodon> ();
+
+						foreach (var imageId in iconCodon.GetImageIds ()) {
+							imageIdToStockId[imageId] = iconCodon.StockId;
+						}
+					}
 					iconStock[iconCodon.StockId].Add (iconCodon);
 					break;
 				}
@@ -169,6 +174,36 @@ namespace MonoDevelop.Ide
 			return GetIcon (name).WithSize (size);
 		}
 
+		public static bool TryGetImage (ImageId imageId, out Xwt.Drawing.Image image) => TryGetImage (imageId, true, out image, out _);
+
+		public static bool TryGetImage (ImageId imageId, bool generateDefaultIcon, out Xwt.Drawing.Image image) => TryGetImage (imageId, generateDefaultIcon, out image, out _);
+
+		public static bool TryGetImage (ImageId imageId, bool generateDefaultIcon, out Xwt.Drawing.Image image, out string name)
+		{
+			var success = true;
+			if (!imageIdToStockId.TryGetValue (imageId, out name)) {
+				success = false;
+				if (!generateDefaultIcon) {
+					image = null;
+					return success;
+				}
+				name = "gtk-missing-image";
+			}
+			image = GetIcon (name);
+			return success;
+		}
+
+		public static void AddImage (ImageId imageId, Xwt.Drawing.Image icon)
+		{
+			if (Guid.Empty == imageId.Guid)
+				throw new ArgumentException (nameof (imageId));
+			if (icon == null)
+				throw new ArgumentNullException (nameof (icon));
+			var iconId = $"{imageId.Guid};{imageId.Id}";
+			imageIdToStockId.Add (imageId, iconId);
+			AddIcon (iconId, icon);
+		}
+
 		public static void AddIcon (string iconId, Xwt.Drawing.Image icon)
 		{
 			if (iconId == null)
@@ -181,6 +216,11 @@ namespace MonoDevelop.Ide
 		public static bool HasIcon (string iconId)
 		{
 			return icons.ContainsKey (iconId);
+		}
+
+		public static bool HasImage (ImageId imageId)
+		{
+			return imageIdToStockId.TryGetValue (imageId, out var iconId) && HasIcon (iconId);
 		}
 
 

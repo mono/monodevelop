@@ -1,5 +1,6 @@
 MAC_APP_DIR=MonoDevelop.app
 APP_NAME=MonoDevelop
+APP_DISPLAY_NAME=MonoDevelop
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 LIB_DIR=$(MAC_APP_DIR)/Contents/Resources/lib
 MAC_APP_LIB_DIR=$(LIB_DIR)/monodevelop
@@ -25,7 +26,7 @@ CLEANFILES = render.exe monostub monostub-test
 #DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
-MONOSTUB_EXTRA_SOURCES = monostub-utils.h
+MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
 
 all: monostub monostub-nogui monostub-test
 
@@ -35,21 +36,23 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
+monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
-monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCES)
+monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
 	g++ -g $(EXTERN_C_XM_REGISTRAR_DEFINE) $(MONOSTUB_DEFINES) $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
 	clang++ -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup
+	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
-monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCES)
+monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCEFILES)
 	gcc -g -Wall -mmacosx-version-min=10.10 -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
 	./monostub-test
 
@@ -86,18 +89,8 @@ app: monostub monostub-test
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
 
-	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
+	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s/@APP_DISPLAY_NAME@/$(APP_DISPLAY_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
-
-# copy monodevelop.pc and monodevelop-core-addins.pc to Contents/Resources/lib/pkgconfig
-	mkdir -p $(LIB_DIR)/pkgconfig
-	cp ../../*.pc $(LIB_DIR)/pkgconfig
-
-# Copy main/monodevelop.xml to MonoDevelop.app/Contents/MacOS/share/mime/packages
-	mkdir -p $(MACOS)/share/{applications,mime,icons,locale,man}
-	mkdir -p $(MACOS)/share/mime/packages
-	cp ../../monodevelop.xml $(MACOS)/share/mime/packages
-	cp ../../monodevelop.desktop $(MACOS)/share/applications
 
 # Native launch scripts
 	@echo ""
@@ -126,19 +119,6 @@ app: monostub monostub-test
 	  $(MAC_APP_LIB_DIR)/bin/repository-cache* \
 	  $(MAC_APP_LIB_DIR)/bin/addins-setup.config \
 	  $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
-
-# add extras known to work on Mac, if they exist
-	@echo ""
-	@echo "Copying supported extras into app bundle"
-	@echo ""
-
-	@for ADDIN in MonoDevelop.Database; do \
-		(ls $(EXTRAS)/$${ADDIN}/build/* > /dev/null 2>&1 && \
-			echo "Copying $${ADDIN}" && \
-			mkdir -p $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN} && \
-			cp -pR $(EXTRAS)/$${ADDIN}/build/* $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN}/ ) \
-		|| (echo "Skipping $${ADDIN}" && echo "$${ADDIN}" >> missing-stuff)  ; \
-	done
 
 # add the binary artifacts if they exist
 	@echo ""

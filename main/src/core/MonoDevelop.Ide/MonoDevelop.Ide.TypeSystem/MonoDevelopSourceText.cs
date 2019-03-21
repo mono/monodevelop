@@ -42,6 +42,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Obsolete]
 	abstract class SnapshotSourceText : SourceText
 	{
 		protected abstract ITextSnapshot Snapshot { get; }
@@ -104,6 +105,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 	}
 
+	[Obsolete]
 	sealed class MonoDevelopSourceText : SourceText
 	{
 		readonly ITextSource doc;

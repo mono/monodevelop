@@ -38,8 +38,8 @@ namespace MonoDevelop.VersionControl.Git
 	public static class GitService
 	{
 		public static ConfigurationProperty<bool> UseRebaseOptionWhenPulling = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", true);
-		public static ConfigurationProperty<bool> StashUnstashWhenUpdating = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", true);
-		public static ConfigurationProperty<bool> StashUnstashWhenSwitchingBranches = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", true);
+		public static ConfigurationProperty<bool> StashUnstashWhenUpdating = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", false);
+		public static ConfigurationProperty<bool> StashUnstashWhenSwitchingBranches = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", false);
 
 		public static void Push (GitRepository repo)
 		{

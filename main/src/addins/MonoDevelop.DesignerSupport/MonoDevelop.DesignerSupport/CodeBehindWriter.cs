@@ -37,7 +37,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport
 {
-
+	[Obsolete("Use Roslyn")]
 	public class CodeBehindWriter
 	{
 		List<string> openFiles;

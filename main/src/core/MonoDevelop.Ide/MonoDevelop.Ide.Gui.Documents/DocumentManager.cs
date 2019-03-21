@@ -1,4 +1,4 @@
-﻿//
+//
 // DocumentManager.cs
 //
 // Author:
@@ -49,6 +49,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 		NavigationHistoryService navigationHistoryManager;
 		IShell workbench;
 		DesktopService desktopService;
+
+		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.GetExportedValue<IEditorOperationsFactoryService> ();
 
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		Document activeDocument;
@@ -596,20 +598,42 @@ namespace MonoDevelop.Ide.Gui.Documents
 			metadata.ResultString = result ? "Success" : "Failure";
 		}
 
-		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
+		void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
 		{
+			if (info.Line < 1 && info.Offset < 0)
+				return;
 			var ipos = doc.Editor;
-			if ((info.Line >= 1 || info.Offset >= 0) && ipos != null) {
+			var textView = doc.GetContent<ITextView> ();
+			if (ipos != null || textView != null) {
 				FileSettingsStore.Remove (doc.FileName);
 				doc.DisableAutoScroll ();
 				doc.RunWhenLoaded (() => {
-					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
-					if (info.Offset >= 0) {
-						loc = ipos.OffsetToLocation (info.Offset);
+					if (ipos != null) {
+						var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
+						if (info.Offset >= 0) {
+							loc = ipos.OffsetToLocation (info.Offset);
+						}
+						if (loc.IsEmpty)
+							return;
+						ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+					} else {
+						var offset = info.Offset;
+						if (offset < 0) {
+							var line = textView.TextSnapshot.GetLineFromLineNumber (info.Line - 1);
+							if (info.Column >= 1)
+								offset = line.Start + info.Column - 1;
+							else
+								offset = line.Start;
+						}
+
+						if (operationsFactory != null) {
+							var editorOperations = operationsFactory.GetEditorOperations (textView);
+							var point = new VirtualSnapshotPoint (textView.TextSnapshot, offset);
+							editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+						} else {
+							LoggingService.LogError ("Missing editor operations");
+						}
 					}
-					if (loc.IsEmpty)
-						return;
-					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 				});
 			}
 
@@ -754,17 +778,36 @@ namespace MonoDevelop.Ide.Gui.Documents
 		void CheckRemovedFile (object sender, FileEventArgs args)
 		{
 			foreach (var e in args) {
-				foreach (var doc in documents) {
-					if (!doc.IsFile || doc.IsNewDocument)
-						continue;
-					if (MatchesEvent (doc.FilePath, e)) {
-						if (doc.IsDirty) {
-							doc.ConvertToUnsavedFile ();
-						} else {
-							doc.Close ().Ignore ();
+				if (e.IsDirectory) {
+					CheckRemovedDirectory (e.FileName);
+				} else {
+					foreach (var doc in documents) {
+						if (doc.IsFile && !doc.IsNewDocument && doc.FilePath == e.FileName) {
+							CloseViewForRemovedFile (doc);
+							return;
 						}
 					}
+					CheckRemovedDirectory (e.FileName);
 				}
+			}
+		}
+
+		void CheckRemovedDirectory (FilePath fileName)
+		{
+			foreach (var content in documents) {
+				if (doc.IsFile && !doc.IsNewDocument && doc.FilePath.IsChildPathOf (fileName)) {
+					CloseViewForRemovedFile (content);
+				}
+			}
+		}
+
+		static void CloseViewForRemovedFile (Document doc)
+		{
+			if (doc.IsDirty) {
+				// TOTEST
+				doc.ConvertToUnsavedFile ();
+			} else {
+				doc.Close ().Ignore ();
 			}
 		}
 

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 
+using System;
+
 namespace MonoDevelop.Ide.TypeSystem
 {
 	/// <summary>
@@ -34,6 +36,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// This is useful for opening a document the first time to have some folding regions as start that are folded by default.
 	/// Otherwise an irritating screen update will occur.
 	/// </summary>
+	[Obsolete("Use Visual Studio Editor APIs")]
 	public interface IFoldingParser
 	{
 		ParsedDocument Parse (string fileName, string content);

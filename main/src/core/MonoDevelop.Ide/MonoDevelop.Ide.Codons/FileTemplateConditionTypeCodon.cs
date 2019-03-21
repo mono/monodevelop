@@ -1,9 +1,6 @@
 //
 // FileTemplateConditionTypeCodon.cs
 //
-// Author:
-//   Michael Hutchinson <mhutchinson@novell.com>
-//
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -26,11 +23,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.ComponentModel;
-
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
@@ -38,11 +30,7 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A condition that limits when a file template is shown. The specified class must be a subclass of MonoDevelop.Ide.Templates.FileTemplateCondition")]
 	internal class FileTemplateConditionTypeCodon : TypeExtensionNode
 	{
-		[NodeAttribute("name", true, "Name to use to reference this condition type in a file template.")]
-		string name;
-		
-		public string ElementName {
-			get { return name; }
-		}
+		[NodeAttribute ("name", true, "Name to use to reference this condition type in a file template.")]
+		public string ElementName { get; private set; }
 	}
 }

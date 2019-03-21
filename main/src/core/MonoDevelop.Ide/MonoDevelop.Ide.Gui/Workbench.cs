@@ -59,6 +59,10 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Gui.Shell;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Operations;
+using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -226,15 +230,16 @@ namespace MonoDevelop.Ide.Gui
 
 		internal TextReader[] GetDocumentReaders (List<string> filenames)
 		{
+			// TOTEST
 			TextReader [] results = new TextReader [filenames.Count];
 
 			int idx = 0;
 			foreach (var f in filenames) {
 				var fullPath = (FilePath)FileService.GetFullPath (f);
 
-				Document doc = documentManager.Documents.Find (d => d.Editor != null && (fullPath == FileService.GetFullPath (d.Name)));
+				var doc = documentManager.Documents.Find (d => d.GetContent<ITextBuffer>() != null && (fullPath == FileService.GetFullPath (d.Name)));
 				if (doc != null) {
-					results [idx] = doc.Editor.CreateReader ();
+					results [idx] = new Microsoft.VisualStudio.Platform.NewTextSnapshotToTextReader (doc.GetContent<ITextBuffer> ().CurrentSnapshot);
 				} else {
 					results [idx] = null;
 				}
@@ -820,9 +825,11 @@ namespace MonoDevelop.Ide.Gui
 
 			var dp = new DocumentUserPrefs ();
 			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, path);
-			if (document.Editor != null) {
-				dp.Line = document.Editor.CaretLine;
-				dp.Column = document.Editor.CaretColumn;
+			if (document.GetContent<ITextView> () is ITextView view) {
+				var pos = view.Caret.Position.BufferPosition;
+				var line = pos.Snapshot.GetLineFromPosition (pos.Position);
+				dp.Line = line.LineNumber + 1;
+				dp.Column = pos.Position - line.Start + 1;
 			}
 			return dp;
 		}

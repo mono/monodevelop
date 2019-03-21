@@ -1,4 +1,4 @@
-﻿//
+//
 // TagCommentsTextEditorExtension.cs
 //
 // Author:
@@ -34,6 +34,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	[Obsolete]
 	class TagCommentsTextEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		ITodoListProvider todoListProvider = CompositionManager.Instance.GetExportedValue<ITodoListProvider> ();

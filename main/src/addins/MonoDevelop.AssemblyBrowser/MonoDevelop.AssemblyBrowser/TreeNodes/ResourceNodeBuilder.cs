@@ -27,28 +27,28 @@
 //
 
 using System;
-using Mono.Cecil;
 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
-
+using ICSharpCode.Decompiler.Metadata;
+	
 namespace MonoDevelop.AssemblyBrowser
 {
 	class ResourceNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(Mono.Cecil.Resource); }
+			get { return typeof(Resource); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			Mono.Cecil.Resource resource = (Mono.Cecil.Resource)dataObject;
+			var resource = (Resource)dataObject;
 			return resource.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			Mono.Cecil.Resource resource = (Mono.Cecil.Resource)dataObject;
+			var resource = (Resource)dataObject;
 			nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (resource.Name);
 			nodeInfo.Icon = Context.GetIcon (Stock.ResourceFileIcon);
 		}

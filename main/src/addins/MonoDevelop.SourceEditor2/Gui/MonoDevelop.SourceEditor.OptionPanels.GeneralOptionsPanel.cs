@@ -4,6 +4,33 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	internal partial class GeneralOptionsPanel
 	{
+		/*
+
+vbox1
+  GtkLabel13 "Coding"
+  alignment2
+      vbox4
+          hbox3
+              fixed2
+          hbox1
+              label1 Line ending conversion
+              comboboxLineEndings
+  GtkLabel14 "Code Folding"
+  alignment3
+      vbox5
+          foldingCheckbutton
+          foldregionsCheckbutton
+          foldCommentsCheckbutton
+  GtkLabel15 "Appearance"
+  alignment4
+      vbox6
+          wordWrapCheckbutton
+          antiAliasingCheckbutton
+  GtkLabel16 "Experimental"
+  alignment5
+      experimentalSection
+
+		*/
 		private global::Gtk.VBox vbox1;
 
 		private global::Gtk.Label GtkLabel13;
@@ -40,9 +67,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.VBox vbox6;
 
-		private global::Gtk.CheckButton wordWrapCheckbutton;
-
 		private global::Gtk.CheckButton antiAliasingCheckbutton;
+
+		private global::Gtk.Label GtkLabel16;
+
+		private global::Gtk.Alignment alignment5;
+
+		private global::Gtk.VBox experimentalSection;
 
 		protected virtual void Build()
 		{
@@ -205,18 +236,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox6.Name = "vbox6";
 			this.vbox6.Spacing = 6;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.wordWrapCheckbutton = new global::Gtk.CheckButton();
-			this.wordWrapCheckbutton.CanFocus = true;
-			this.wordWrapCheckbutton.Name = "wordWrapCheckbutton";
-			this.wordWrapCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Word wrap");
-			this.wordWrapCheckbutton.DrawIndicator = true;
-			this.wordWrapCheckbutton.UseUnderline = true;
-			this.vbox6.Add(this.wordWrapCheckbutton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.wordWrapCheckbutton]));
-			w16.Position = 0;
-			w16.Expand = false;
-			w16.Fill = false;
-			// Container child vbox6.Gtk.Box+BoxChild
 			this.antiAliasingCheckbutton = new global::Gtk.CheckButton();
 			this.antiAliasingCheckbutton.CanFocus = true;
 			this.antiAliasingCheckbutton.Name = "antiAliasingCheckbutton";
@@ -234,6 +253,36 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w19.Position = 5;
 			w19.Expand = false;
 			w19.Fill = false;
+
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.GtkLabel16 = new global::Gtk.Label ();
+			this.GtkLabel16.Name = "GtkLabel16";
+			this.GtkLabel16.Xalign = 0F;
+			this.GtkLabel16.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>New Editor Preview</b>");
+			this.GtkLabel16.UseMarkup = true;
+			this.vbox1.Add (this.GtkLabel16);
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel16]));
+			w20.Position = 6;
+			w20.Expand = false;
+			w20.Fill = false;
+
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.alignment5 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
+			this.alignment5.Name = "alignment5";
+			this.alignment5.LeftPadding = ((uint)(12));
+
+			// Container child alignment3.Gtk.Container+ContainerChild
+			this.experimentalSection = new global::Gtk.VBox ();
+			this.experimentalSection.Name = "experimentalSection";
+			this.experimentalSection.Spacing = 6;
+
+			this.alignment5.Add (this.experimentalSection);
+			this.vbox1.Add (this.alignment5);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment5]));
+			w22.Position = 7;
+			w22.Expand = false;
+			w22.Fill = false;
+
 			this.Add(this.vbox1);
 			if ((this.Child != null))
 			{

@@ -1,9 +1,0 @@
-prefix=${pcfiledir}/../..
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib/monodevelop
-GacPackage=false
-
-Name: MonoDevelop Core Add-ins
-Description: MonoDevelop Core Add-ins
-Version: @VERSION@
-Libs: -r:${libdir}/AddIns/VersionControl/MonoDevelop.VersionControl.dll -r:${libdir}/AddIns/NUnit/MonoDevelop.NUnit.dll -r:${libdir}/AddIns/Xml/MonoDevelop.Xml.dll -r:${libdir}/AddIns/AspNet/MonoDevelop.AspNet.dll -r:${libdir}/AddIns/DisplayBindings/Gettext/MonoDevelop.Gettext.dll -r:${libdir}/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll -r:${libdir}/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll -r:${libdir}/AddIns/MonoDevelop.GtkCore/MonoDevelop.GtkCore.dll -r:${libdir}/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll -r:${libdir}/AddIns/BackendBindings/MonoDevelop.VBNetBinding.dll -r:${libdir}/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll -r:${libdir}/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll -r:${libdir}/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll -r:${libdir}/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll -r:${libdir}/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll  -r:${libdir}/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft.dll -r:${libdir}/AddIns/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.dll -r:${libdir}/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll -r:${libdir}/AddIns/BackendBindings/FSharpBinding.dll -r:${libdir}/AddIns/MonoDevelop.ConnectedServices/MonoDevelop.ConnectedServices.dll

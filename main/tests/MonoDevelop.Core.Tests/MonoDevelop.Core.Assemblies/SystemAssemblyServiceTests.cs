@@ -1,4 +1,4 @@
-﻿//
+//
 // SystemAssemblyServiceTests.cs
 //
 // Author:
@@ -36,12 +36,18 @@ namespace MonoDevelop.Core.Assemblies
 	[TestFixture]
 	public class SystemAssemblyServiceTests
 	{
+		static string GetDllPath(string dllName)
+		{
+			var directory = Path.GetDirectoryName (typeof(Runtime).Assembly.Location);
+			return Path.Combine (directory, dllName);
+		}
+
 		[TestCase (true, "System.Collections.Immutable.dll")]
 		[TestCase (false, "MonoDevelop.Core.dll")]
 		[TestCase (false, "NonExistingDll.dll")]
 		public async Task RequiresFacadeAssembliesAsync (bool addFacades, string relativeDllPath)
 		{
-			var result = await SystemAssemblyService.RequiresFacadeAssembliesAsync (relativeDllPath);
+			var result = await SystemAssemblyService.RequiresFacadeAssembliesAsync (GetDllPath (relativeDllPath));
 			Assert.That (result, Is.EqualTo (addFacades));
 		}
 
@@ -54,14 +60,16 @@ namespace MonoDevelop.Core.Assemblies
 				"System"
 			};
 
-			var references = SystemAssemblyService.GetAssemblyReferences(Path.Combine(Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Cecil.dll"));
+			var cecilPath = GetDllPath ("Mono.Cecil.dll");
+			var references = SystemAssemblyService.GetAssemblyReferences(cecilPath);
 			Assert.That(references, Is.EquivalentTo(names));
 		}
 
 		[Test]
 		public void CheckAssemblyReferences ()
 		{
-			var result = SystemAssemblyService.GetAssemblyReferences ("Mono.Addins.dll");
+			var monoAddinsPath = GetDllPath ("Mono.Addins.dll");
+			var result = SystemAssemblyService.GetAssemblyReferences (monoAddinsPath);
 
 			Assert.AreEqual (4, result.Length);
 			Assert.That (result, Contains.Item ("mscorlib"));
@@ -73,7 +81,8 @@ namespace MonoDevelop.Core.Assemblies
 		[Test]
 		public void GetManifestResources ()
 		{
-			var result = SystemAssemblyService.GetAssemblyManifestResources ("MonoDevelop.Core.dll").ToArray ();
+			var mdCorePath = GetDllPath ("MonoDevelop.Core.dll");
+			var result = SystemAssemblyService.GetAssemblyManifestResources (mdCorePath).ToArray ();
 
 			Assert.That (result.Length, Is.GreaterThanOrEqualTo (1));
 
@@ -95,7 +104,8 @@ namespace MonoDevelop.Core.Assemblies
 		[Test]
 		public void TestFrameworkVersion ()
 		{
-			var result = new SystemAssemblyService ().GetTargetFrameworkForAssembly (null, "Xwt.dll");
+			var xwtPath = GetDllPath ("Xwt.dll");
+			var result = new SystemAssemblyService ().GetTargetFrameworkForAssembly (null, xwtPath);
 
 			Assert.AreEqual (TargetFrameworkMoniker.ID_NET_FRAMEWORK, result.Identifier);
 			Assert.AreEqual ("4.6.1", result.Version);

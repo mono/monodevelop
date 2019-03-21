@@ -1,4 +1,4 @@
-﻿//
+//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -2399,7 +2399,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			ExtensibleTreeView parent;
 			Gdk.Rectangle buttonScreenRect;
-			Gdk.Rectangle buttonAllocation;
 			string markup;
 			string secondarymarkup;
 
@@ -2614,10 +2613,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 
 			public Gdk.Point PointerPosition { get; set; }
-
-			public Gdk.Rectangle PopupAllocation {
-				get { return buttonAllocation; }
-			}
 
 			protected override void OnDestroyed ()
 			{

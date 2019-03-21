@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Formatter.cs
 //  
 // Author:
@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	[Obsolete ("Use the Microsoft.VisualStudio.Text.Editor APIs")]
 	public sealed class CodeFormatter
 	{
 		readonly AbstractCodeFormatter formatter;

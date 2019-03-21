@@ -448,6 +448,33 @@ namespace MonoDevelop.Components.Commands
 
 		internal bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
+			// Handle the GDK key via MD commanding
+			if (ProcessKeyEventCore (ev))
+				return true;
+
+#if MAC
+			// Otherwise if we have a native first responder that is not the GdkQuartzView
+			// that contains the entire GTK shell, dispatch the key directly to the native
+			// NSResponder and tell GTK to get out of our way.
+
+			var currentEvent = AppKit.NSApplication.SharedApplication?.CurrentEvent;
+			var window = currentEvent?.Window;
+			var firstResponder = window?.FirstResponder;
+
+			if (currentEvent != null &&
+				currentEvent.Type == AppKit.NSEventType.KeyDown &&
+				firstResponder != null &&
+				firstResponder != window.ContentView) {
+				firstResponder.KeyDown (currentEvent);
+				return true;
+			}
+#endif
+
+			return false;
+		}
+
+		bool ProcessKeyEventCore (Gdk.EventKey ev)
+		{
 			if (!IsEnabled)
 				return true;
 
@@ -1467,13 +1494,12 @@ namespace MonoDevelop.Components.Commands
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
 
-				while (cmdTarget != null)
-				{
-					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
-					
+				while (cmdTarget != null) {
+					ICustomCommandTarget typeInfo = GetTypeHandlerInfo (cmdTarget);
+
 					bool bypass = false;
-					
-					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
+
+					ICommandUpdater cui = typeInfo.GetCommandUpdater (commandId);
 					if (cui != null) {
 						if (sourceUpdateInfo != null && cmdTarget == sourceUpdateInfo.SourceTarget && sourceUpdateInfo.IsUpdatingAsynchronously) {
 							// If the source update info was provided and it was part of an asynchronous command update, reuse it to avoid
@@ -1502,7 +1528,7 @@ namespace MonoDevelop.Components.Commands
 					}
 					
 					if (!bypass) {
-						CommandHandlerInfo chi = typeInfo.GetCommandHandler (commandId);
+						ICommandHandler chi = typeInfo.GetCommandHandler (commandId);
 						if (chi != null) {
 							object localTarget = cmdTarget;
 							if (cmd.CommandArray) {
@@ -1672,11 +1698,9 @@ namespace MonoDevelop.Components.Commands
 
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 
-				while (cmdTarget != null)
-				{
-					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
-					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
-					
+				while (cmdTarget != null) {
+					ICustomCommandTarget typeInfo = GetTypeHandlerInfo (cmdTarget);
+					ICommandUpdater cui = typeInfo.GetCommandUpdater (commandId);
 					bool bypass = false;
 					bool handlerFound = false;
 					
@@ -1685,7 +1709,7 @@ namespace MonoDevelop.Components.Commands
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
 							if (!info.ArrayInfo.Bypass) {
-								if (guiLock > 0)
+								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1694,7 +1718,7 @@ namespace MonoDevelop.Components.Commands
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
 							if (!info.Bypass) {
-								if (guiLock > 0)
+								if (info.DisableOnShellLock && guiLock > 0)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1722,7 +1746,7 @@ namespace MonoDevelop.Components.Commands
 						continue;
 					}
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
-						info.Enabled = guiLock == 0;
+						info.Enabled = !info.DisableOnShellLock || guiLock == 0;
 						info.Visible = true;
 						
 						return info;
@@ -1746,7 +1770,7 @@ namespace MonoDevelop.Components.Commands
 				CurrentCommand = null;
 			}
 
-			if (guiLock > 0)
+			if (info.DisableOnShellLock && guiLock > 0)
 				info.Enabled = false;
 			return info;
 		}
@@ -1912,11 +1936,14 @@ namespace MonoDevelop.Components.Commands
 				CommandDeselected (this, EventArgs.Empty);
 		}
 		
-		HandlerTypeInfo GetTypeHandlerInfo (object cmdTarget)
+		ICustomCommandTarget GetTypeHandlerInfo (object cmdTarget)
 		{
-			HandlerTypeInfo typeInfo = (HandlerTypeInfo) handlerInfo [cmdTarget.GetType ()];
+			if (cmdTarget is ICustomCommandTarget customtarget) {
+				return customtarget;
+			}
+
+			HandlerTypeInfo typeInfo = (HandlerTypeInfo)handlerInfo[cmdTarget.GetType ()];
 			if (typeInfo != null) return typeInfo;
-			
 			Type type = cmdTarget.GetType ();
 			typeInfo = new HandlerTypeInfo ();
 			
@@ -2203,6 +2230,13 @@ namespace MonoDevelop.Components.Commands
 				}
 				#endif
 
+				#if WINDOWS
+				var wpfWidget = GetFocusedWpfWidget();
+				if (wpfWidget != null) {
+					return wpfWidget;
+				}
+				#endif
+
 				widget = GetFocusedChild (widget);
 			}
 			if (widget != lastActiveWidget) {
@@ -2212,6 +2246,32 @@ namespace MonoDevelop.Components.Commands
 			}
 			return widget;
 		}
+
+#if WINDOWS
+
+		// Can't simply use Keyboard.FocusedElement because the focused element is the MenuItem
+		// when filling out the File menu.
+		// Also can't use FocusManager.GetFocusedElement() because it's not clear what to pass as
+		// the focus scope, as there isn't a single WPF "window", but rather isolated WPF "islands"
+		// and which one is the focused one?
+		// We remember the last focused element before the menu acquired focus and use that.
+		public static System.Windows.FrameworkElement LastFocusedWpfElement { get; set; }
+
+		Windows.GtkWPFWidget GetFocusedWpfWidget ()
+		{
+			var focusedElement = System.Windows.Input.Keyboard.FocusedElement as System.Windows.FrameworkElement;
+			if (focusedElement == null) {
+				return null;
+			}
+
+			if (focusedElement is System.Windows.Controls.MenuItem && LastFocusedWpfElement != null) {
+				return LastFocusedWpfElement.Tag as Windows.GtkWPFWidget;
+			}
+
+			var widget = focusedElement.Tag as Windows.GtkWPFWidget;
+			return widget;
+		}
+#endif
 
 		Gtk.Widget GetFocusedChild (Gtk.Widget widget)
 		{
@@ -2541,12 +2601,12 @@ namespace MonoDevelop.Components.Commands
 		public Control NewActiveWidget { get; internal set; }
 	}
 
-	internal class HandlerTypeInfo
+	internal class HandlerTypeInfo : ICustomCommandTarget
 	{
 		public CommandHandlerInfo[] CommandHandlers;
 		public CommandUpdaterInfo[] CommandUpdaters;
 		
-		public CommandHandlerInfo GetCommandHandler (object commandId)
+		public ICommandHandler GetCommandHandler (object commandId)
 		{
 			if (CommandHandlers == null) return null;
 			foreach (CommandHandlerInfo cui in CommandHandlers)
@@ -2555,7 +2615,7 @@ namespace MonoDevelop.Components.Commands
 			return null;
 		}
 		
-		public CommandUpdaterInfo GetCommandUpdater (object commandId)
+		public ICommandUpdater GetCommandUpdater (object commandId)
 		{
 			if (CommandUpdaters == null) return null;
 			foreach (CommandUpdaterInfo cui in CommandUpdaters)
@@ -2591,7 +2651,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 	
-	internal class CommandHandlerInfo: CommandMethodInfo
+	internal class CommandHandlerInfo: CommandMethodInfo, ICommandHandler
 	{
 		ICommandTargetHandler  customHandlerChain;
 		ICommandArrayTargetHandler  customArrayHandlerChain;
@@ -2630,7 +2690,7 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 		
-	internal class CommandUpdaterInfo: CommandMethodInfo
+	internal class CommandUpdaterInfo: CommandMethodInfo, ICommandUpdater
 	{
 		ICommandUpdateHandler customHandlerChain;
 		ICommandArrayUpdateHandler customArrayHandlerChain;

@@ -25,21 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
-using Microsoft.VisualStudio.Text.Editor;
 using Roslyn.Utilities;
-using Microsoft.VisualStudio.Text;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
@@ -82,8 +74,8 @@ namespace MonoDevelop.Ide.RoslynServices
 
 		void OnActiveDocumentChanged (object sender, Gui.DocumentEventArgs e)
 		{
+			ActiveDocumentChanged?.Invoke (this, TryGetActiveDocument ());
 			activeDocument = e.Document;
-			ActiveDocumentChanged?.Invoke (this, GetActiveDocument ());
 		}
 
 		public event EventHandler<DocumentId> ActiveDocumentChanged;
@@ -94,7 +86,7 @@ namespace MonoDevelop.Ide.RoslynServices
 		/// workspace.
 		/// </summary>
 		/// <returns>The ID of the active document (if any)</returns>
-		public DocumentId GetActiveDocument ()
+		public DocumentId TryGetActiveDocument ()
 		{
 			return activeDocument?.DocumentContext?.AnalysisDocument?.Id;
 		}

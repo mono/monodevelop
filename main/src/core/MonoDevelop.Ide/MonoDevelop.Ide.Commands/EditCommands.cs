@@ -33,6 +33,7 @@ using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -357,13 +358,13 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Owner as SolutionFolderItem, doc.Name, false);
-			doc.Editor.InsertText (0, header + "\n");
+			doc.GetContent<ITextView> ().TextBuffer.Insert (0, header + "\n");
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.Editor != null) {
+			if (doc?.GetContent<ITextView> () is ITextView) {
 				info.Enabled = doc.CommentTags != null;
 			} else
 				info.Enabled = false;

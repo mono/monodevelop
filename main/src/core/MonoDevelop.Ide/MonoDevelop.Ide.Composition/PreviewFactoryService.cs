@@ -10,7 +10,9 @@ using Microsoft.CodeAnalysis.Editor;
 
 namespace MonoDevelop.Ide.Composition
 {
+#if MAC
 	[Export(typeof(IPreviewFactoryService))]
+#endif
 	class PreviewFactoryService : IPreviewFactoryService
 	{
 		public Task<object> CreateAddedDocumentPreviewViewAsync (Document document, CancellationToken cancellationToken)

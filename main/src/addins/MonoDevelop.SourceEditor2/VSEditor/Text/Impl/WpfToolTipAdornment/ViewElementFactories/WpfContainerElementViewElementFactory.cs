@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.Text.AdornmentLibrary.ToolTip.Implementation
     using Microsoft.VisualStudio.Utilities;
     using Xwt;
 
-    [Export(typeof(IViewElementFactory))]
+    //[Export(typeof(IViewElementFactory))]
     [Name("default ContainerElement to UIElement")]
     [TypeConversion(from: typeof(ContainerElement), to: typeof(UIElement))]
     [Order]

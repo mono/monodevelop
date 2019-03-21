@@ -61,7 +61,10 @@ namespace MonoDevelop.CSharp.Completion.Provider
 			if (syntaxTree.IsInNonUserCode (position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext (position, cancellationToken))
 				return;
-			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken))
+			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon (
+				position,
+				syntaxTree.FindTokenOnLeftOfPosition(position, cancellationToken).GetPreviousTokenIfTouchingWord(position),
+				cancellationToken))
 				return;
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)

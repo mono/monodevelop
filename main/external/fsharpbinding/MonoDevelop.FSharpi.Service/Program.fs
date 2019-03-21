@@ -22,8 +22,7 @@ module CompletionServer =
         // Make System.ValueTuple available to FSI
         let executingFolder = Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName
         let valueTuplePath = Path.Combine(executingFolder, "System.ValueTuple.dll")
-        let valueTupleArg = sprintf "-r:%s" valueTuplePath
-        let argv = [| "--readline-"; fsiServerArg; valueTupleArg |]
+        let argv = [| "--readline-"; fsiServerArg |]
 
         let serializer = JsonSerializer.Create()
 

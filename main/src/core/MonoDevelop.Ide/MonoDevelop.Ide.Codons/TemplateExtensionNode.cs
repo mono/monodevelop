@@ -23,25 +23,62 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[ExtensionNode (Description = "Template informations.")]
-	internal class TemplateExtensionNode : ExtensionNode
+	class TemplateExtensionNode : ExtensionNode
 	{
-		[NodeAttribute ("category", "Category used to place template into correct category inside new project dialog.")]
-		string category;
-
-		public string Category {
-			get {
-				return category;
-			}
-		}
+		//these fields are assigned by reflection, suppress "never assigned" warning
+		#pragma warning disable 649
 
 		[NodeAttribute ("path", "Either .nupkg file or folder.")]
 		string path;
+
+		[NodeAttribute ("icon", "Icon to display in new project dialog.")]
+		string icon;
+
+		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
+		string templateId;
+
+		#pragma warning restore 649
+
+		[NodeAttribute ("category", "Category used to place template into correct category inside new project dialog.")]
+		public string Category { get; private set; }
+
+		[NodeAttribute ("imageId", "ImageId of image showed in new project dialog description of project.")]
+		public string ImageId { get; private set; }
+
+		[NodeAttribute ("_overrideName", "If template.json is outside AddIn creator control use this to change name.", Localizable = true)]
+		public string OverrideName { get; private set; }
+
+		[NodeAttribute ("_overrideDescription", "If template.json is outside AddIn creator control use this to change description.", Localizable = true)]
+		public string OverrideDescription { get; private set; }
+
+		[NodeAttribute ("overrideLanguage", "If template.json is outside AddIn creator control use this to change language", Localizable = false)]
+		public string OverrideLanguage { get; private set; }
+
+		[NodeAttribute ("defaultParameters", "Default parameters for project template.")]
+		public string DefaultParameters { get; private set; }
+
+		[NodeAttribute ("supportedParameters", "Parameters supported by the project template.")]
+		public string SupportedParameters { get; private set; }
+
+		[NodeAttribute ("groupId", "Overrides the group id defined in the template. Allows the same template to be grouped differently.")]
+		public string GroupId { get; private set; }
+
+		[NodeAttribute ("wizard", "Wizard identifier for this template.")]
+		public string Wizard { get; private set; }
+
+		[NodeAttribute ("condition", "Allows a template to be conditionally selected.")]
+		public string Condition { get; private set; }
+
+		[NodeAttribute ("formatExclude", "Project files that should not be formatted. For example: readme.txt|*.xml")]
+		public string FileFormatExclude { get; private set; }
+
 
 		public string ScanPath {
 			get {
@@ -56,110 +93,7 @@ namespace MonoDevelop.Ide.Codons
 			}
 		}
 
-		
-		[NodeAttribute ("icon", "Icon to display in new project dialog.")]
-		string icon;
-
-		public string Icon {
-			get {
-				return ImageService.GetStockId (Addin, icon, Gtk.IconSize.Dnd);
-			}
-		}
-
-
-		[NodeAttribute ("imageId", "ImageId of image showed in new project dialog description of project.")]
-		string imageId;
-
-		public string ImageId {
-			get {
-				return imageId;
-			}
-		}
-
-		[NodeAttribute ("_overrideName", "If template.json is outside AddIn creator control use this to change name.", Localizable = true)]
-		string overrideName;
-		public string OverrideName {
-			get {
-				return overrideName;
-			}
-		}
-		
-
-		[NodeAttribute ("_overrideDescription", "If template.json is outside AddIn creator control use this to change description.", Localizable = true)]
-		string overrideDescription;
-		public string OverrideDescription {
-			get {
-				return overrideDescription;
-			}
-		}
-
-		[NodeAttribute ("overrideLanguage", "If template.json is outside AddIn creator control use this to change language", Localizable = false)]
-		string overrideLanguage;
-		public string OverrideLanguage {
-			get => overrideLanguage;
-		}
-
-		[NodeAttribute ("defaultParameters", "Default parameters for project template.")]
-		string defaultParameters;
-
-		public string DefaultParameters {
-			get {
-				return defaultParameters;
-			}
-		}
-
-		[NodeAttribute ("supportedParameters", "Parameters supported by the project template.")]
-		string supportedParameters;
-
-		public string SupportedParameters {
-			get {
-				return supportedParameters;
-			}
-		}
-
-		[NodeAttribute ("templateId", "Overrides the template id from the extension node id. Allows the same template to be used with different parameters.")]
-		string templateId;
-
-		public string TemplateId {
-			get {
-				return templateId ?? Id;
-			}
-		}
-
-		[NodeAttribute ("groupId", "Overrides the group id defined in the template. Allows the same template to be grouped differently.")]
-		string groupId;
-
-		public string GroupId {
-			get {
-				return groupId;
-			}
-		}
-
-		[NodeAttribute ("wizard", "Wizard identifier for this template.")]
-		string wizard;
-
-		public string Wizard {
-			get {
-				return wizard;
-			}
-		}
-
-		[NodeAttribute ("condition", "Allows a template to be conditionally selected.")]
-		string condition;
-
-		public string Condition {
-			get {
-				return condition;
-			}
-		}
-
-		[NodeAttribute ("formatExclude", "Project files that should not be formatted. For example: readme.txt|*.xml")]
-		string fileFormatExclude;
-
-		public string FileFormatExclude {
-			get {
-				return fileFormatExclude;
-			}
-		}
+		public string Icon => ImageService.GetStockId (Addin, icon, Gtk.IconSize.Dnd);
+		public string TemplateId => templateId ?? Id;
 	}
 }

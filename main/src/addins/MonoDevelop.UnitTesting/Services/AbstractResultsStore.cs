@@ -403,11 +403,11 @@ namespace MonoDevelop.UnitTesting
 	[Serializable]
 	public class TestRecordCollection: CollectionBase
 	{
-		public new TestRecord this [int n] {
+		public TestRecord this [int n] {
 			get { return (TestRecord) ((IList)this) [n]; }
 		}
 		
-		public new TestRecord this [string name] {
+		public TestRecord this [string name] {
 			get {
 				for (int n=0; n<List.Count; n++)
 					if (((TestRecord)List [n]).Name == name)
@@ -425,7 +425,7 @@ namespace MonoDevelop.UnitTesting
 	[Serializable]
 	public class UnitTestResultCollection: CollectionBase
 	{
-		public new UnitTestResult this [int n] {
+		public UnitTestResult this [int n] {
 			get { return (UnitTestResult) ((IList)this) [n]; }
 		}
 		

@@ -1,4 +1,4 @@
-﻿//
+//
 // AbstractOptionPreviewViewModel.cs
 //
 // Author:
@@ -49,7 +49,7 @@ namespace MonoDevelop.Refactoring.Options
 {
 	internal abstract class AbstractOptionPreviewViewModel : AbstractNotifyPropertyChanged, IDisposable
 	{
-		private TextEditor _textViewHost;
+		private Ide.Editor.TextEditor _textViewHost;
 		private PreviewWorkspace curWorkspace;
 		private Microsoft.CodeAnalysis.Project project;
 
@@ -100,7 +100,7 @@ namespace MonoDevelop.Refactoring.Options
 			UpdateDocument (preview);
 		}
 
-		public TextEditor TextViewHost {
+		public Ide.Editor.TextEditor TextViewHost {
 			get {
 				return _textViewHost;
 			}
@@ -179,8 +179,10 @@ namespace MonoDevelop.Refactoring.Options
 
 			public override MonoDevelop.Projects.Project Project => null;
 
+			[Obsolete]
 			public override Document AnalysisDocument => document;
 
+			[Obsolete]
 			public override ParsedDocument ParsedDocument => null;
 
 			public override void AttachToProject (MonoDevelop.Projects.Project project)
@@ -192,10 +194,12 @@ namespace MonoDevelop.Refactoring.Options
 				return null;
 			}
 
+			[Obsolete]
 			public override void ReparseDocument ()
 			{
 			}
 
+			[Obsolete]
 			public override Task<ParsedDocument> UpdateParseDocument ()
 			{
 				return new Task<ParsedDocument> (null);

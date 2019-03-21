@@ -2407,7 +2407,7 @@ namespace MonoDevelop.SourceEditor
 				return TextEditor.GetTextEditorData ();
 			if (type.Equals (typeof (IDocumentReloadPresenter)))
 				return widget;
-			if (type.Equals (typeof (Microsoft.VisualStudio.Text.ITextDocument)))
+			if (type.Equals (typeof (ITextDocument)))
 				return Document.VsTextDocument;
 			return null;
 		}
@@ -3157,6 +3157,10 @@ namespace MonoDevelop.SourceEditor
 			public override void DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 			{
 				try {
+					foreach (var fold in editor.Document.GetFoldingsFromOffset (Offset)) {
+						if (fold.IsCollapsed)
+							return;
+					}
 					double fromX, toX;
 					GetLineDrawingPosition (metrics, startOffset, out fromX, out toX);
 

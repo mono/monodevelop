@@ -4,6 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}</ProjectGuid>
+    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <RootNamespace>Microsoft.WindowsAPICodePack.Shell</RootNamespace>
     <AssemblyName>Microsoft.WindowsAPICodePack.Shell</AssemblyName>
     <OutputPath>..\..\..\..\..\build\AddIns\WindowsPlatform</OutputPath>
@@ -26,6 +27,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="System.Xaml" />
+    <SuppressCopyLocal Include="Microsoft.WindowsAPICodePack.dll" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.WindowsAPICodePack.ShellExtensions" />

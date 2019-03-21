@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components;
 using System.Linq;
-using Mono.TextEditor;
 
 namespace Mono.Instrumentation.Monitor
 {

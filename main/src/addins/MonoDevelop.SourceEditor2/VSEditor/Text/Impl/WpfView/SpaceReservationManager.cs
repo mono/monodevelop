@@ -5,7 +5,8 @@
 // This file contain implementations details that are subject to change without notice.
 // Use at your own risk.
 //
-namespace Microsoft.VisualStudio.Text.Editor.Implementation
+
+namespace MonoDevelop.SourceEditor
 {
     using System;
     using System.Collections.Generic;
@@ -17,13 +18,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
     using Microsoft.VisualStudio.Text.Editor;
     using MonoDevelop.Components;
 
-    internal class SpaceReservationManager : ISpaceReservationManager
+    internal class SpaceReservationManager : IMDSpaceReservationManager
     {
-        public readonly string Name;
-        public readonly int Rank;
-		private readonly Mono.TextEditor.MonoTextEditor _view;
+        public string Name { get; }
+        public int Rank { get; }
+        private readonly Mono.TextEditor.MonoTextEditor _view;
         private bool _hasAggregateFocus;
-        internal IList<ISpaceReservationAgent> _agents = new List<ISpaceReservationAgent>();
+        internal IList<IMDSpaceReservationAgent> _agents = new List<IMDSpaceReservationAgent>();
 
 		public SpaceReservationManager(string name, int rank, Mono.TextEditor.MonoTextEditor view)
         {
@@ -34,12 +35,13 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         }
 
         #region ISpaceReservationManager Members
-        public ISpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, Xwt.Widget content)
+
+        public IMDSpaceReservationAgent CreatePopupAgent(ITrackingSpan visualSpan, PopupStyles styles, Xwt.Widget content)
         {
             return new PopupAgent(_view, this, visualSpan, styles, content);
         }
 
-        public void UpdatePopupAgent(ISpaceReservationAgent agent, ITrackingSpan visualSpan, PopupStyles styles)
+        public void UpdatePopupAgent(IMDSpaceReservationAgent agent, ITrackingSpan visualSpan, PopupStyles styles)
         {
             if (agent == null)
                 throw new ArgumentNullException("agent");
@@ -56,12 +58,12 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _view.QueueSpaceReservationStackRefresh();
         }
 
-        public ReadOnlyCollection<ISpaceReservationAgent> Agents
+        public ReadOnlyCollection<IMDSpaceReservationAgent> Agents
         {
-            get { return new ReadOnlyCollection<ISpaceReservationAgent>(_agents); }
+            get { return new ReadOnlyCollection<IMDSpaceReservationAgent>(_agents); }
         }
 
-        public void AddAgent(ISpaceReservationAgent agent)
+        public void AddAgent(IMDSpaceReservationAgent agent)
         {
             if (agent == null)
                 throw new ArgumentNullException("agent");
@@ -72,7 +74,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _view.QueueSpaceReservationStackRefresh();
         }
 
-        public bool RemoveAgent(ISpaceReservationAgent agent)
+        public bool RemoveAgent(IMDSpaceReservationAgent agent)
         {
             if (agent == null)
                 throw new ArgumentNullException("agent");
@@ -89,7 +91,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             return false;
         }
 
-        public event EventHandler<SpaceReservationAgentChangedEventArgs> AgentChanged;
+        public event EventHandler<MDSpaceReservationAgentChangedEventArgs> AgentChanged;
 
         public bool IsMouseOver
         {
@@ -122,9 +124,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
 
         public event EventHandler LostAggregateFocus;
         public event EventHandler GotAggregateFocus;
-        #endregion
+#endregion
 
-        internal void ChangeAgents(ISpaceReservationAgent oldAgent, ISpaceReservationAgent newAgent)
+        internal void ChangeAgents(IMDSpaceReservationAgent oldAgent, IMDSpaceReservationAgent newAgent)
         {
             if (oldAgent != null)
             {
@@ -133,9 +135,9 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                 oldAgent.Hide();
             }
 
-            EventHandler<SpaceReservationAgentChangedEventArgs> agentChanged = this.AgentChanged;
+            EventHandler<MDSpaceReservationAgentChangedEventArgs> agentChanged = this.AgentChanged;
             if (agentChanged != null)
-                agentChanged(this, new SpaceReservationAgentChangedEventArgs(oldAgent, newAgent));
+                agentChanged(this, new MDSpaceReservationAgentChangedEventArgs(oldAgent, newAgent));
 
             if (newAgent != null)
             {
@@ -179,10 +181,10 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
         /// </summary>
         void OnViewClosed(object sender, EventArgs e)
         {
-            List<ISpaceReservationAgent> agentsToRemove = new List<ISpaceReservationAgent>();
+            List<IMDSpaceReservationAgent> agentsToRemove = new List<IMDSpaceReservationAgent>();
             agentsToRemove.AddRange (_agents);
 
-            foreach (ISpaceReservationAgent agent in agentsToRemove)
+            foreach (IMDSpaceReservationAgent agent in agentsToRemove)
             {
                 this.RemoveAgent (agent);
             }
@@ -190,7 +192,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
             _view.Closed -= this.OnViewClosed;
         }
 
-        internal void PositionAndDisplay(GeometryGroup reservedGeometry)
+        public void PositionAndDisplay(GeometryGroup reservedGeometry)
         {
             _view.GuardedOperations.CallExtensionPoint(this,
                () =>
@@ -201,7 +203,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                        {
                            for (int i = _agents.Count - 1; (i >= 0); --i)
                            {
-                               ISpaceReservationAgent agent = _agents[i];
+                               IMDSpaceReservationAgent agent = _agents[i];
 
                                Geometry requestedGeometry = agent.PositionAndDisplay(reservedGeometry);
                                if (requestedGeometry == null)
@@ -217,7 +219,7 @@ namespace Microsoft.VisualStudio.Text.Editor.Implementation
                        {
                            for (int i = _agents.Count - 1; (i >= 0); --i)
                            {
-                               ISpaceReservationAgent agent = _agents[i];
+                               IMDSpaceReservationAgent agent = _agents[i];
                                _agents.RemoveAt(i);
                                this.ChangeAgents(agent, null);
                            }
