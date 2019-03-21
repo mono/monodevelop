@@ -532,13 +532,17 @@ namespace MonoDevelop.Ide
 
 			IdeApp.Workbench.LockGui ();
 			metadata = GetOpenWorkspaceItemMetadata (metadata);
-			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
+			var timer = Counters.OpenWorkspaceItemTimer.BeginTiming (metadata);
+
+			var loadMetadata = new WorkspaceLoadMetadata ();
+			var loadTimer = Counters.OpenWorkspaceWithIntellisenseItemTimer.BeginTiming (loadMetadata);
 
 			try {
-				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, metadata, timer);
+				var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading, timer, loadTimer);
 				return await oper;
 			} finally {
 				timer.End ();
+				loadTimer.Metadata.SolutionLoadDuration = timer.Duration.TotalMilliseconds;
 
 				monitor.Dispose ();
 				IdeApp.Workbench.UnlockGui ();
@@ -561,7 +565,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, OpenWorkspaceItemMetadata metadata, ITimeTracker timer)
+		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading, ITimeTracker<OpenWorkspaceItemMetadata> timer, ITimeTracker<WorkspaceLoadMetadata> loadTimer)
 		{
 			WorkspaceItem item = null;
 
@@ -583,9 +587,9 @@ namespace MonoDevelop.Ide
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
 
 					if (File.Exists (Path.ChangeExtension (file, ".sln"))) {
-						metadata.Reason = OpenWorkspaceItemMetadata.OpenReason.OpenProject;
+						timer.Metadata.Reason = OpenWorkspaceItemMetadata.OpenReason.OpenProject;
 					} else {
-						metadata.Reason = OpenWorkspaceItemMetadata.OpenReason.CreateSolution;
+						timer.Metadata.Reason = OpenWorkspaceItemMetadata.OpenReason.CreateSolution;
 					}
 
 					timer.Trace ("Getting wrapper solution");
@@ -615,6 +619,23 @@ namespace MonoDevelop.Ide
 			}
 
 			using (monitor) {
+				if (item is Solution sol) {
+					var watch = System.Diagnostics.Stopwatch.StartNew ();
+					EventHandler handler = null;
+
+					handler = (sender, args) => {
+						var workspace = TypeSystem.TypeSystemService.GetWorkspace (sol);
+						if (workspace != null) {
+							loadTimer.Metadata.WorkspaceLoadDuration = watch.ElapsedMilliseconds;
+							loadTimer.End ();
+
+							TypeSystem.MonoDevelopWorkspace.LoadingFinished -= handler;
+						}
+					};
+
+					TypeSystem.MonoDevelopWorkspace.LoadingFinished += handler;
+				}
+
 				// Add the item in the GUI thread. It is not safe to do it in the background thread.
 				if (!monitor.CancellationToken.IsCancellationRequested) {
 
@@ -648,7 +669,7 @@ namespace MonoDevelop.Ide
 					ReattachDocumentProjects (null);
 					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 
-					UpdateOpenWorkspaceItemMetadata (metadata, item);
+					UpdateOpenWorkspaceItemMetadata (timer.Metadata, item);
 				} finally {
 					Document.IsInProjectSettingLoadingProcess = false;
 				}
@@ -1547,6 +1568,19 @@ namespace MonoDevelop.Ide
 		public void Dispose ()
 		{
 			NotifyChanges ();
+		}
+	}
+
+	class WorkspaceLoadMetadata : CounterMetadata
+	{
+		public double SolutionLoadDuration {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
+		}
+
+		public double WorkspaceLoadDuration {
+			get => GetProperty<long> ();
+			set => SetProperty (value);
 		}
 	}
 

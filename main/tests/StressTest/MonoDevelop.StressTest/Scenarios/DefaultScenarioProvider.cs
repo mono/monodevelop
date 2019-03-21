@@ -1,10 +1,10 @@
 ﻿//
-// TestService.cs
+// TestScenarioProvider.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Matt Ward <matt.ward@microsoft.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2017 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,34 +25,31 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.AutoTest;
-using System.Collections.Generic;
+using System.IO;
+using System.Diagnostics;
 
-namespace UserInterfaceTests
+namespace MonoDevelop.StressTest
 {
-	public static class TestService
+	public class DefaultScenarioProvider : ITestScenarioProvider
 	{
-		public static AutoTestClientSession Session { get; private set; }
-
-		public static void StartSession (string file = null, string profilePath = null, string logFile = null, string args = null)
+		public ITestScenario GetTestScenario ()
 		{
-			Session = new AutoTestClientSession ();
+            string testProjectPath = Path.Combine(Path.GetDirectoryName(typeof(DefaultScenarioProvider).Assembly.Location), "TestProject");
+            var monoAddinsPath = Path.Combine(testProjectPath, "mono-addins", "Mono.Addins");
 
-			profilePath = profilePath ?? Util.CreateTmpDir ("profile");
-			Session.StartApplication (file: file, args: args, environment: new Dictionary<string, string> {
-				{ "MONODEVELOP_PROFILE", profilePath },
-				{ "VISUALSTUDIO_PROFILE", profilePath },
-				{ "MONODEVELOP_LOG_FILE", logFile },
-				{ "MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo" },
-			});
+			var scenario = new DefaultScenario (
+                Path.Combine (testProjectPath, "TestProject.sln"),
+				new [] {
+					Path.Combine (monoAddinsPath, "Mono.Addins/Addin.cs"),
+					Path.Combine (monoAddinsPath, "Mono.Addins.Localization/StringResourceLocalizer.cs"),
+					Path.Combine (monoAddinsPath, "Mono.Addins.Description/AddinDescription.cs"),
+					"Program.cs"
+				}
+			);
 
-			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
-		}
+			scenario.TextToEnter = new [] { "using S", "yst", "em;" };
 
-		public static void EndSession ()
-		{
-			Session.Stop ();
+			return scenario;
 		}
 	}
 }

@@ -32,6 +32,7 @@ using MonoDevelop.Components.AutoTest.Results;
 using System.Linq;
 using System.Xml;
 using MonoDevelop.Core;
+using System.Runtime.Remoting;
 
 #if MAC
 using AppKit;
@@ -41,6 +42,7 @@ namespace MonoDevelop.Components.AutoTest
 {
 	public class AppQuery : MarshalByRefObject, IDisposable
 	{
+		List<AppResult> toDispose = new List<AppResult> ();
 		AppResult rootNode;
 		List<Operation> operations = new List<Operation> ();
 
@@ -123,6 +125,7 @@ namespace MonoDevelop.Components.AutoTest
 
 			// null for AppResult signifies root node
 			rootNode = new GtkWidgetResult (null) { SourceQuery = ToString () };
+			toDispose.Add (rootNode);
 			List<AppResult> fullResultSet = new List<AppResult> ();
 
 			// Build the tree and full result set recursively
@@ -372,9 +375,17 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void Dispose ()
 		{
-			rootNode?.Dispose ();
+			RemotingServices.Disconnect (this);
+
+			foreach (var node in toDispose) {
+				node.Dispose ();
+			}
+			toDispose = null;
+			// Already disposed as it's in the list.
 			rootNode = null;
 		}
+
+		public override object InitializeLifetimeService () => null;
 	}
 }
 
