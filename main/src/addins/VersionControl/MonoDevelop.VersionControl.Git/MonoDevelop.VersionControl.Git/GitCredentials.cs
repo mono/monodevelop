@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types, GitCredentialsType type)
 		{
-			bool result = true;
+			bool result = false;
 			Uri uri = null;
 
 			GitCredentialsState state;
