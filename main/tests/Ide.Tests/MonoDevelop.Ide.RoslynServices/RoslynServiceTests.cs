@@ -32,19 +32,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
+using UnitTests;
 
 namespace MonoDevelop.Ide.RoslynServices
 {
 	[TestFixture]
+	[RequireService (typeof (CompositionManager))]
 	public class RoslynServiceTests : IdeTestBase
 	{
 		[TestCase (true)]
 		[TestCase (false)]
 		public async Task TestForegroundThread (bool inBg)
 		{
-			await CompositionManager.InitializeAsync ();
-
-			var context = CompositionManager.GetExportedValue<IThreadingContext> ();
+			var context = CompositionManager.Instance.GetExportedValue<IThreadingContext> ();
 			var obj = new ForegroundThreadAffinitizedObject (context, false);
 
 			var roslynContext = obj.ThreadingContext.JoinableTaskContext;

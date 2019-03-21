@@ -29,10 +29,12 @@ using Microsoft.VisualStudio.Text.Editor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Composition;
 using NUnit.Framework;
+using UnitTests;
 
 namespace MonoDevelop.Ide.Editor
 {
 	[TestFixture]
+	[RequireService (typeof (CompositionManager))]
 	public class EditorPreferencesTests : IdeTestBase
 	{
 		const string mdPropertyKey = "MD_EDITOR_FAKE_KEY";
@@ -41,14 +43,12 @@ namespace MonoDevelop.Ide.Editor
 
 		static async Task<(EditorPreferences, IEditorOptions, ConfigurationProperty<bool>)> GetEditorPreferences (bool unset = true)
 		{
-			await CompositionManager.InitializeAsync ();
-
 			if (unset)
 				PropertyService.Set (mdPropertyKey, null);
 
 			var preferences = new EditorPreferences ();
 
-			var factoryService = CompositionManager.GetExportedValue<IEditorOptionsFactoryService2> ();
+			var factoryService = CompositionManager.Instance.GetExportedValue<IEditorOptionsFactoryService2> ();
 			var preference = preferences.Wrap (mdPropertyKey, editorOptionKey, false);
 			return (preferences, factoryService.GlobalOptions, preference);
 		}

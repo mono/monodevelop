@@ -485,7 +485,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		bool ICommandHandler<ProvideEditorFeedbackCommandArgs>.ExecuteCommand (ProvideEditorFeedbackCommandArgs args, CommandExecutionContext executionContext)
 		{
-			DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/report-problem");
+			IdeServices.DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/report-problem");
 			return true;
 		}
 
@@ -494,7 +494,7 @@ namespace MonoDevelop.TextEditor.Cocoa
 
 		bool ICommandHandler<LearnAboutTheEditorCommandArgs>.ExecuteCommand (LearnAboutTheEditorCommandArgs args, CommandExecutionContext executionContext)
 		{
-			DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/learn-more");
+			IdeServices.DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/learn-more");
 			return true;
 		}
 

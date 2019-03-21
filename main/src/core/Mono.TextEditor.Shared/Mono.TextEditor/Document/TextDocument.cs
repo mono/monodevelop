@@ -363,7 +363,7 @@ namespace Mono.TextEditor
 
 		IContentType GetContentTypeFromMimeType (string fileName, string mimeType)
 			=> MimeTypeCatalog.Instance.GetContentTypeForMimeType (mimeType)
-				?? (fileName != null ? MonoDevelop.Ide.Composition.CompositionManager.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
+				?? (fileName != null ? MonoDevelop.Ide.Composition.CompositionManager.Instance.GetExportedValue<IFileToContentTypeService> ().GetContentTypeForFilePath (fileName) : null)
 				?? PlatformCatalog.Instance.ContentTypeRegistryService.UnknownContentType;
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)

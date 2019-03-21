@@ -224,7 +224,7 @@ namespace MonoDevelop.CSharp
 				if (tag is DotNetProject) {
 					var proj = ext.ownerProjects [n];
 					foreach (var doc in ext.textContainer.GetRelatedDocuments ())
-						if (TypeSystemService.GetMonoProject (doc.Project) is DotNetProject dnp && dnp == proj)
+						if (IdeServices.TypeSystemService.GetMonoProject (doc.Project) is DotNetProject dnp && dnp == proj)
 							ext.registration.Workspace.SetDocumentContext (doc.Id);
 					ext.WorkspaceChanged (null, null);
 					return;
@@ -244,7 +244,9 @@ namespace MonoDevelop.CSharp
 				//FIXME: use the snapshot that the nodes came from
 				var point = new VirtualSnapshotPoint (editor.TextBuffer.CurrentSnapshot, offset);
 				EditorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
-				editor.Properties.GetProperty<ViewContent> (typeof (ViewContent)).GrabFocus ();
+
+				// TOTEST
+				// editor.Properties.GetProperty<DocumentController> (typeof (DocumentController)).GrabFocus ();
 			}
 
 			public int IconCount {

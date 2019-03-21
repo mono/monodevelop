@@ -77,10 +77,10 @@ namespace MonoDevelop.CSharp
 			var activeDocument = textContainer.GetOpenDocumentInCurrentContext ();
 			if (activeDocument == null)
 				return;
-			var activeProj = (DotNetProject)TypeSystemService.GetMonoProject (activeDocument.Project);
+			var activeProj = (DotNetProject)IdeServices.TypeSystemService.GetMonoProject (activeDocument.Project);
 			ownerProjects.Add (activeProj);
 			foreach (var document in textContainer.GetRelatedDocuments ())
-				if (TypeSystemService.GetMonoProject (document.Project) is DotNetProject dotnetProj && dotnetProj != activeProj)
+				if (IdeServices.TypeSystemService.GetMonoProject (document.Project) is DotNetProject dotnetProj && dotnetProj != activeProj)
 					ownerProjects.Add (dotnetProj);
 			Update (activeDocument, textView.Caret.Position.BufferPosition);
 		}
@@ -476,7 +476,7 @@ namespace MonoDevelop.CSharp
 				if (root == null || cancellationToken.IsCancellationRequested)
 					return;
 
-				amb = new AstAmbience (TypeSystemService.Workspace.Options);
+				amb = new AstAmbience (IdeServices.TypeSystemService.Workspace.Options);
 
 				SyntaxNode node;
 				try {
