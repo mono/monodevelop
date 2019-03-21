@@ -151,7 +151,19 @@ namespace MonoDevelop.TextEditor
 			// Set up this static event handling just once
 			if (globalOptions == null) {
 				globalOptions = imports.EditorOptionsFactoryService.GlobalOptions;
+
+				// From Mono.TextEditor.TextEditorOptions
+				const double ZOOM_FACTOR = 1.1f;
+				const int ZOOM_MIN_POW = -4;
+				const int ZOOM_MAX_POW = 8;
+				var ZOOM_MIN = Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
+				var ZOOM_MAX = Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
+
+				globalOptions.SetMinZoomLevel (ZOOM_MIN * 100);
+				globalOptions.SetMaxZoomLevel (ZOOM_MAX * 100);
+
 				OnConfigurationZoomLevelChanged (null, EventArgs.Empty);
+
 				globalOptions.OptionChanged += OnGlobalOptionsChanged;
 				// Check for option changing in old editor
 				TextEditorFactory.ZoomLevel.Changed += OnConfigurationZoomLevelChanged;
@@ -162,9 +174,7 @@ namespace MonoDevelop.TextEditor
 		{
 			if (settingZoomLevel)
 				return;
-			globalOptions.SetOptionValue (
-				DefaultTextViewOptions.ZoomLevelId,
-				TextEditorFactory.ZoomLevel * 100);
+			globalOptions.SetZoomLevel (TextEditorFactory.ZoomLevel * 100);
 		}
 
 		static void OnGlobalOptionsChanged (object sender, EditorOptionChangedEventArgs e)
