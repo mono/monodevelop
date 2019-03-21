@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 		IShell workbench;
 		DesktopService desktopService;
 
-		readonly IEditorOperationsFactoryService editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
+		IEditorOperationsFactoryService editorOperationsFactoryService;
 
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		Document activeDocument;
@@ -241,6 +241,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			if (navigationHistoryManager == null)
 				navigationHistoryManager = await ServiceProvider.GetService<NavigationHistoryService> ();
+
+			// Make sure composition manager is ready since ScrollToRequestedCaretLocation will use it
+			await Runtime.GetService<CompositionManager> ();
 
 			var metadata = CreateOpenDocumentTimerMetadata ();
 			var fileDescriptor = new FileDescriptor (info.FileName, null, info.Owner);
@@ -451,6 +454,9 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		async Task<Document> LoadFile (FilePath fileName, ProgressMonitor monitor, DocumentControllerDescription binding, WorkspaceObject project, FileOpenInformation fileInfo)
 		{
+			// Make sure composition manager is ready since ScrollToRequestedCaretLocation will use it
+			await Runtime.GetService<CompositionManager> ();
+
 			string mimeType = desktopService.GetMimeTypeForUri (fileName);
 			var fileDescriptor = new FileDescriptor (fileName, mimeType, project);
 
@@ -606,6 +612,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (info.Line < 1 && info.Offset < 0)
 				return;
+
+			if (editorOperationsFactoryService == null)
+				editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
+
 			var ipos = doc.Editor;
 			var textView = doc.GetContent<ITextView> ();
 			if (ipos != null || textView != null) {

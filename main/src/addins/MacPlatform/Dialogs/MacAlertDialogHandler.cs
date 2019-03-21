@@ -182,7 +182,7 @@ namespace MonoDevelop.MacIntegration
 
 				int response = -1000;
 
-				var parent = data.TransientFor ?? IdeApp.Workbench.RootWindow;
+				var parent = data.TransientFor ?? IdeApp.Workbench?.RootWindow;
 				NSWindow nativeParent;
 				try {
 					nativeParent = parent;

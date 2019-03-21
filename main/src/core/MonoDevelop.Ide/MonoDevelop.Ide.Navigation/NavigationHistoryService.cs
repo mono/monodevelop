@@ -59,30 +59,36 @@ namespace MonoDevelop.Ide.Navigation
 
 		Task IService.Dispose ()
 		{
-			workspace.LastWorkspaceItemClosed -= Workspace_LastWorkspaceItemClosed;
-			workspace.FileRenamedInProject -= FileRenamed;
+			if (workspace != null) {
+				workspace.LastWorkspaceItemClosed -= Workspace_LastWorkspaceItemClosed;
+				workspace.FileRenamedInProject -= FileRenamed;
+			}
 
-			documentManager.DocumentOpened -= DocumentManager_DocumentOpened;
-			documentManager.DocumentClosing -= DocumentManager_DocumentClosing;
-			documentManager.ActiveDocumentChanged -= ActiveDocChanged;
+			if (documentManager != null) {
+				documentManager.DocumentOpened -= DocumentManager_DocumentOpened;
+				documentManager.DocumentClosing -= DocumentManager_DocumentClosing;
+				documentManager.ActiveDocumentChanged -= ActiveDocChanged;
+			}
 
 			return Task.CompletedTask;
 		}
 
-		async Task IService.Initialize (ServiceProvider serviceProvider)
+		Task IService.Initialize (ServiceProvider serviceProvider)
 		{
-			workspace = await serviceProvider.GetService<RootWorkspace> ();
-			workspace.LastWorkspaceItemClosed += Workspace_LastWorkspaceItemClosed;
-			workspace.FileRenamedInProject += FileRenamed;
-
-			documentManager = await serviceProvider.GetService<DocumentManager> ();
-			documentManager.DocumentOpened += DocumentManager_DocumentOpened;
-			documentManager.DocumentClosing += DocumentManager_DocumentClosing;
-			documentManager.ActiveDocumentChanged += ActiveDocChanged;
-
 			//keep nav points up to date
-			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
-			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;
+			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
+				workspace = s;
+				workspace.LastWorkspaceItemClosed += Workspace_LastWorkspaceItemClosed;
+				workspace.FileRenamedInProject += FileRenamed;
+			});
+
+			serviceProvider.WhenServiceInitialized<DocumentManager> (s => {
+				documentManager = s;
+				documentManager.DocumentOpened += DocumentManager_DocumentOpened;
+				documentManager.DocumentClosing += DocumentManager_DocumentClosing;
+				documentManager.ActiveDocumentChanged += ActiveDocChanged;
+			});
+			return Task.CompletedTask;
 		}
 
 		void Workspace_LastWorkspaceItemClosed (object sender, EventArgs e)
@@ -176,7 +182,7 @@ namespace MonoDevelop.Ide.Navigation
 		
 		NavigationPoint GetNavPointForActiveDoc ()
 		{
-			return GetNavPointForDoc (documentManager.ActiveDocument, false);
+			return GetNavPointForDoc (documentManager?.ActiveDocument, false);
 		}
 
 		NavigationPoint GetNavPointForDoc (Document doc, bool forClosedHistory)

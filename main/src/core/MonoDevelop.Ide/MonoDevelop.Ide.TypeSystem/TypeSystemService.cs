@@ -82,11 +82,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			IntitializeTrackedProjectHandling ();
 
-			serviceProvider.WhenServiceInitialized<DocumentManager> (s => {
-				documentManager = s;
+			serviceProvider.WhenServiceInitialized<CompositionManager> (s => {
 				miscellaneousFilesWorkspace = CompositionManager.Instance.GetExportedValue<MiscellaneousFilesWorkspace> ();
-				documentManager.DocumentOpened += OnDocumentOpened;
-				documentManager.DocumentClosed += OnDocumentClosed;
+				serviceProvider.WhenServiceInitialized<DocumentManager> (dm => {
+					documentManager = dm;
+					documentManager.DocumentOpened += OnDocumentOpened;
+					documentManager.DocumentClosed += OnDocumentClosed;
+				});
 			});
 			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
 				rootWorkspace = s;
