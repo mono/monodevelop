@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Editor
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var document = testCase.Document;
-				var editor = TextEditorFactory.CreateNewEditor (document.DocumentContext);
+				var editor = content.Editor;
 				editor.MimeType = "text/xml";
 				const string originalText = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Editor
 
 			using (var testCase = await TextEditorExtensionTestCase.Create (content, null, false)) {
 				var document = testCase.Document;
-				var editor = TextEditorFactory.CreateNewEditor (document.DocumentContext);
+				var editor = content.Editor;
 				editor.MimeType = "text/xml";
 				const string originalText = @"";
 				editor.Text = originalText;

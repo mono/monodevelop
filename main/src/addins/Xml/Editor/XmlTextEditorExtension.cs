@@ -90,12 +90,13 @@ namespace MonoDevelop.Xml.Editor
 		public override void Dispose()
 		{
 			if (!disposed) {
-				disposed = false;
+				disposed = true;
 				XmlEditorOptions.XmlFileAssociationChanged -= HandleXmlFileAssociationChanged;
 				XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
 
 				XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
-				IdeServices.TaskService.Errors.ClearByOwner (this);
+				if (IdeApp.IsInitialized)
+					IdeServices.TaskService.Errors.ClearByOwner (this);
 				base.Dispose ();
 			}
 		}

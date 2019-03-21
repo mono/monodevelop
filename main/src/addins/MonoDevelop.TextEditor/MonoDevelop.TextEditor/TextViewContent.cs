@@ -344,10 +344,12 @@ namespace MonoDevelop.TextEditor
 
 		protected override object OnGetContent (Type type)
 		{
-			foreach (var provider in contentProviders) {
-				var content = provider.GetContent (TextView, type);
-				if (content != null) {
-					return content;
+			if (contentProviders != null) {
+				foreach (var provider in contentProviders) {
+					var content = provider.GetContent (TextView, type);
+					if (content != null) {
+						return content;
+					}
 				}
 			}
 			return GetIntrinsicType (type);
@@ -355,11 +357,13 @@ namespace MonoDevelop.TextEditor
 
 		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			foreach (var provider in contentProviders) {
-				var contents = provider.GetContents (TextView, type);
-				if (contents != null) {
-					foreach (var content in contents)
-						yield return content;
+			if (contentProviders != null) {
+				foreach (var provider in contentProviders) {
+					var contents = provider.GetContents (TextView, type);
+					if (contents != null) {
+						foreach (var content in contents)
+							yield return content;
+					}
 				}
 			}
 

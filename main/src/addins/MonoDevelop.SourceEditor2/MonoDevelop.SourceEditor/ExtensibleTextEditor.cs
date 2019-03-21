@@ -585,7 +585,8 @@ namespace MonoDevelop.SourceEditor
 					tle.StartMode ();
 					CurrentMode = tle;
 					GLib.Timeout.Add (10, delegate {
-						tle.UpdateTextLinks ();
+						if (!IsDestroyed)
+							tle.UpdateTextLinks ();
 						return false;
 					}); 
 				}

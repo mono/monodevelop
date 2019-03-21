@@ -70,6 +70,12 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnInitialize (modelDescriptor, status);
 		}
 
+		protected override void OnDispose ()
+		{
+			base.OnDispose ();
+			data.Dispose ();
+		}
+
 		FilePath name;
 		public FilePath Name { 
 			get { return name; }

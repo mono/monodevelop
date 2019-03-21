@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		public override void Dispose ()
 		{
+			src.Cancel ();
 			Editor.TextChanged -= UpdateFoldings;
 			base.Dispose ();
 		}
