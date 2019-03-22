@@ -504,7 +504,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly || DebuggingService.IsDebugging;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 
@@ -524,7 +524,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly || DebuggingService.IsDebugging;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 
@@ -544,7 +544,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly || DebuggingService.IsDebugging;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 
