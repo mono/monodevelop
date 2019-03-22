@@ -1,4 +1,4 @@
-// DebugCommands.cs
+﻿// DebugCommands.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -504,7 +504,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && IdeApp.Workspace.IsOpen;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && (IdeApp.Workspace.IsOpen || DebuggingService.IsDebugging);
 		}
 	}
 
@@ -524,7 +524,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && IdeApp.Workspace.IsOpen;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && (IdeApp.Workspace.IsOpen || DebuggingService.IsDebugging);
 		}
 	}
 
@@ -544,7 +544,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && IdeApp.Workspace.IsOpen;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && (IdeApp.Workspace.IsOpen || DebuggingService.IsDebugging);
 		}
 	}
 
@@ -560,7 +560,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workspace.IsOpen;
+			info.Enabled = IdeApp.Workspace.IsOpen || DebuggingService.IsDebugging;
 		}
 	}
 
