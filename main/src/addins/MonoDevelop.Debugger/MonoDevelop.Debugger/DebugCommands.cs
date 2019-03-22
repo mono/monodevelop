@@ -552,6 +552,9 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
+			if (!IdeApp.Workbench.RootWindow.Visible) {
+				IdeApp.Workbench.RootWindow.Show ();
+			}
 			var breakpointsPad = IdeApp.Workbench.Pads.FirstOrDefault (p => p.Id == "MonoDevelop.Debugger.BreakpointPad");
 			if (breakpointsPad != null) {
 				breakpointsPad.BringToFront ();
@@ -560,7 +563,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workspace.IsOpen || DebuggingService.IsDebugging;
+			info.Enabled = true;
 		}
 	}
 
