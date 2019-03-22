@@ -53,16 +53,16 @@ namespace MonoDevelop.Ide
 		}
 
 		[TearDown]
-		async Task CloseWorkspace ()
+		public async Task CloseWorkspace ()
 		{
-			var ws = Runtime.PeekService<RootWorkspace> ();
-			if (ws != null)
-				await ws.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
 			var dm = Runtime.PeekService<DocumentManager> ();
 			if (dm != null) {
 				while (dm.Documents.Count > 0)
 					await dm.Documents [0].Close (true);
 			}
+			var ws = Runtime.PeekService<RootWorkspace> ();
+			if (ws != null)
+				await ws.Close (saveWorkspacePreferencies: false, closeProjectFiles: false, force: true);
 		}
 
 		public override void TearDown ()

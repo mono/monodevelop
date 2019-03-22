@@ -64,6 +64,8 @@ namespace MonoDevelop.Ide.Gui
 		DocumentContext documentContext;
 		bool checkedDocumentContext;
 		IDisposable callbackRegistration;
+		bool closed;
+		AsyncCriticalSection asyncCriticalSection = new AsyncCriticalSection ();
 
 		internal IWorkbenchWindow Window {
 			get { return window; }
@@ -462,36 +464,43 @@ namespace MonoDevelop.Ide.Gui
 
 		public async Task<bool> Close (bool force = false)
 		{
-			bool wasActive = documentManager.ActiveDocument == this;
+			using (await asyncCriticalSection.EnterAsync ()) {
+				if (closed)
+					return true;
 
-			// Raise the closing event. Handlers have a chance to cancel the save operation
+				bool wasActive = documentManager.ActiveDocument == this;
 
-			var args = new DocumentCloseEventArgs (this, force, wasActive);
-			args.Cancel = false;
-			await OnClosing (args);
-			if (!force && args.Cancel)
-				return false;
+				// Raise the closing event. Handlers have a chance to cancel the save operation
 
-			// Show the File not Saved UI
+				var args = new DocumentCloseEventArgs (this, force, wasActive);
+				args.Cancel = false;
+				await OnClosing (args);
+				if (!force && args.Cancel)
+					return false;
 
-			if (!await ShowSaveUI (force))
-				return false;
+				// Show the File not Saved UI
 
-			ClearTasks ();
+				if (!await ShowSaveUI (force))
+					return false;
 
-			try {
-				Closed?.Invoke (this, args);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Exception while calling Closed event.", ex);
+				closed = true;
+
+				ClearTasks ();
+
+				try {
+					Closed?.Invoke (this, args);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception while calling Closed event.", ex);
+				}
+
+				shell.CloseView (window, true);
+
+				Counters.OpenDocuments--;
+
+				Dispose ();
+
+				return true;
 			}
-
-			shell.CloseView (window, true);
-
-			Counters.OpenDocuments--;
-
-			Dispose ();
-
-			return true;
 		}
 
 		async Task OnClosing (DocumentCloseEventArgs e)

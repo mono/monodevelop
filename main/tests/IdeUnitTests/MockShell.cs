@@ -78,6 +78,31 @@ namespace IdeUnitTests
 		IWorkbenchWindow IShell.ActiveWorkbenchWindow => activeWindow;
 
 		public event EventHandler ActiveWorkbenchWindowChanged;
+
+		public void Close ()
+		{
+			foreach (var v in windows.ToArray ())
+				CloseView (v);
+		}
+
+		public void CloseView (MockShellWindow window)
+		{
+			int i = windows.IndexOf (window);
+			if (i != -1) {
+				windows.RemoveAt (i);
+				if (activeWindow == window) {
+					if (windows.Count == 0) {
+						activeWindow = null;
+					} else {
+						if (i >= windows.Count)
+							i--;
+						activeWindow = (MockShellWindow)windows [i];
+					}
+					OnActiveWindowChanged ();
+				}
+			}
+		}
+
 		public event EventHandler PresentCalled;
 
 		void OnActiveWindowChanged ()
@@ -97,20 +122,7 @@ namespace IdeUnitTests
 
 		void IShell.CloseView (IWorkbenchWindow window, bool animate)
 		{
-			int i = windows.IndexOf (window);
-			if (i != -1) {
-				windows.RemoveAt (i);
-				if (activeWindow == window) {
-					if (windows.Count == 0) {
-						activeWindow = null;
-					} else {
-						if (i >= windows.Count)
-							i--;
-						activeWindow = (MockShellWindow) windows [i];
-					}
-					OnActiveWindowChanged ();
-				}
-			}
+			CloseView ((MockShellWindow)window);
 		}
 
 		public void Present ()
