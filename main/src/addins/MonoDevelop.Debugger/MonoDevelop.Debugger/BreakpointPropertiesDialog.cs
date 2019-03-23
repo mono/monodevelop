@@ -864,14 +864,6 @@ namespace MonoDevelop.Debugger
 
 			Content = vbox;
 
-			if (IdeApp.Workbench != null) {
-				Gtk.Widget parent = ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (vbox)).Parent;
-				while (parent != null && !(parent is Gtk.Window))
-					parent = parent.Parent;
-				if (parent is Gtk.Window)
-					((Gtk.Window)parent).TransientFor = IdeApp.Workbench.RootWindow;
-			}
-
 			OnUpdateControls (null, null);
 		}
 		protected override void Dispose (bool disposing)
