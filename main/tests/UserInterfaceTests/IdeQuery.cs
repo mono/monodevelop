@@ -52,6 +52,7 @@ namespace UserInterfaceTests
 
 		public static Func<AppQuery, AppQuery> EditBranchDialog { get; } = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog");
 
+		// TODO: Implement this for the cocoa editor, as we aren't going through a TextArea.
 		public static Func<AppQuery, AppQuery> TextArea { get; } = c => c.Window ().Children ().Marked ("Mono.TextEditor.TextArea");
 
 		public static Func<AppQuery, AppQuery> XamarinUpdate { get; } = c => c.Marked ("Visual Studio Update");
