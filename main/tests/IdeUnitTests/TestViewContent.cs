@@ -221,6 +221,9 @@ namespace MonoDevelop.Ide.Gui
 				yield break;
 			}
 
+			foreach (var c in data.GetContents (type))
+				yield return c;
+
 			foreach (var content in base.OnGetContents (type))
 				yield return content;
 
