@@ -177,7 +177,7 @@ namespace UserInterfaceTests
 			timeoutMessage: () => "GetStatusMessage=" + Workbench.GetStatusMessage ());
 		}
 
-		static readonly List<string> ignoreStatusMessgaes = new List<string> {
+		static readonly List<string> globalIgnoreStatusMessages = new List<string> {
 			"Saving...",
 			"Restoring packages for solution...",
 			"Restoring packages before update...",
@@ -190,8 +190,10 @@ namespace UserInterfaceTests
 		{
 			uint retriesLeft = (uint)Math.Ceiling ((double)totalTimeoutInSecs/(double)idlePeriodInSecs);
 			ManualResetEvent resetEvent = new ManualResetEvent (false);
+
+			var ignoreStatusMessages = globalIgnoreStatusMessages.ToList ();
 			if (ignoreMessages != null)
-				ignoreStatusMessgaes.AddRange (ignoreMessages);
+				ignoreStatusMessages.AddRange (ignoreMessages);
 
 			var timer = new System.Timers.Timer {
 				Interval = idlePeriodInSecs * 1000,
@@ -207,7 +209,7 @@ namespace UserInterfaceTests
 				}
 
 				var finalStatusMessage = Workbench.GetStatusMessage (waitForNonEmpty: false);
-				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage) && !ignoreStatusMessgaes.Contains (finalStatusMessage);
+				var isIdle = string.Equals (initialStatusMessage, finalStatusMessage) && !ignoreStatusMessages.Contains (finalStatusMessage);
 
 				if (!isIdle) {
 					retriesLeft--;
