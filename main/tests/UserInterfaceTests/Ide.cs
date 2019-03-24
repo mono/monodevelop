@@ -186,7 +186,7 @@ namespace UserInterfaceTests
 			"Updating packages in project..."
 		};
 
-		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 10, string[] ignoreMessages = null)
+		public static void WaitForIdeIdle (uint totalTimeoutInSecs = 100, uint idlePeriodInSecs = 1, string[] ignoreMessages = null)
 		{
 			uint retriesLeft = (uint)Math.Ceiling ((double)totalTimeoutInSecs/(double)idlePeriodInSecs);
 			ManualResetEvent resetEvent = new ManualResetEvent (false);
