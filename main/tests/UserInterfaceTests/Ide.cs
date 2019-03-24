@@ -117,7 +117,7 @@ namespace UserInterfaceTests
 
 		public readonly static Action EmptyAction = delegate { };
 
-		static string[] waitForNuGetMessages = {
+		static readonly string[] waitForNuGetMessages = {
 			"Package updates are available.",
 			"Packages are up to date.",
 			"No updates found but warnings were reported.",

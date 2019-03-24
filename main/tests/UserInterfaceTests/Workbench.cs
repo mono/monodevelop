@@ -87,7 +87,7 @@ namespace UserInterfaceTests
 				);
 			}
 
-			// TODO:
+			throw new NotImplementedException ("Gtk backend not implemented");
 		}
 
 		public static bool IsBuildSuccessful (int timeoutInSecs)
