@@ -68,8 +68,8 @@ namespace MonoDevelop.Ide.WelcomePage
 				HideWelcomePageOrWindow ();
 			};
 			IdeApp.Workbench.DocumentClosed += delegate {
-				if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen) {
-					ShowWelcomePageOrWindow ();
+				if (!IdeApp.IsExiting && IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen && !HasWindowImplementation) {
+					ShowWelcomePage ();
 				}
 			};
 		}
