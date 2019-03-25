@@ -353,9 +353,27 @@ namespace MonoDevelop.Ide
 			Counters.TimeToCode.Inc ("SolutionLoaded", ttcMetadata);
 
 			timeToCodeSolutionTimer = null;
+			timeToCodeWorkspaceTimer = Stopwatch.StartNew ();
+
+			MonoDevelopWorkspace.LoadingFinished += CompleteTimeToIntellisense;
 		}
 
+		static void CompleteTimeToIntellisense (object sender, EventArgs e)
+		{
+			// Reuse ttcMetadata, as it already has other information set.
+			MonoDevelopWorkspace.LoadingFinished -= CompleteTimeToIntellisense;
+
+			timeToCodeWorkspaceTimer.Stop ();
+
+			ttcMetadata.IntellisenseLoadTime = timeToCodeWorkspaceTimer.ElapsedMilliseconds;
+			ttcMetadata.CorrectedDuration += timeToCodeWorkspaceTimer.ElapsedMilliseconds;
+
+			Counters.TimeToIntellisense.Inc ("IntellisenseLoaded", ttcMetadata);
+		}
+
+
 		static Stopwatch timeToCodeSolutionTimer = new Stopwatch ();
+		static Stopwatch timeToCodeWorkspaceTimer = null;
 		internal static bool StartTimeToCodeLoadTimer ()
 		{
 			if (ttcStopwatch.ElapsedTicks - startupCompletedTicks > ttcDuration) {

@@ -410,7 +410,7 @@ namespace MonoDevelop.Core.Execution
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
-			operation.Task.ContinueWith (t => OnOperationCompleted ());
+			operation.Task.ContinueWith (t => OnOperationCompleted (), console.CancellationToken);
 			cancelRegistration = console.CancellationToken.Register (operation.Cancel);
 		}
 		

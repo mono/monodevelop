@@ -127,7 +127,10 @@ namespace MonoDevelop.Components
 				HideTooltip ();
 				tooltipWindow = TooltipPopoverWindow.Create ();
 				tooltipWindow.ShowArrow = true;
-				tooltipWindow.Text = tip;
+				if (UseMarkup)
+					tooltipWindow.Markup = tip;
+				else
+					tooltipWindow.Text = tip;
 				tooltipWindow.Severity = Severity;
 				var rect = new Gdk.Rectangle (0, 0, eventBox.Allocation.Width, eventBox.Allocation.Height + 5);
 				tooltipWindow.ShowPopup (eventBox, rect, Position);
@@ -157,9 +160,12 @@ namespace MonoDevelop.Components
 			set {
 				tip = value;
 				if (tooltipWindow != null) {
-					if (!string.IsNullOrEmpty (tip))
-						tooltipWindow.Text = value;
-					else
+					if (!string.IsNullOrEmpty (tip)) {
+						if (UseMarkup)
+							tooltipWindow.Markup = value;
+						else
+							tooltipWindow.Text = value;
+					} else
 						HideTooltip ();
 				} else if (!string.IsNullOrEmpty (tip) && mouseOver)
 					ShowTooltip ();
@@ -169,6 +175,7 @@ namespace MonoDevelop.Components
 
 		public TaskSeverity? Severity { get; set; }
 		public PopupPosition Position { get; set; }
+		public bool UseMarkup { get; set; }
 	}
 }
 

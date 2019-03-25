@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Microsoft Corp. (https://www.microsoft.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,7 +21,11 @@
 
 using System;
 using System.Windows;
+
+using AppKit;
+
 using Gdk;
+
 using Microsoft.VisualStudio.Text.Classification;
 
 using MonoDevelop.Core;
@@ -64,8 +68,64 @@ namespace MonoDevelop.TextEditor
 
 			protected override void AddFontToDictionary (ResourceDictionary resourceDictionary, string fontName, double fontSize)
 			{
-				resourceDictionary [ClassificationFormatDefinition.TypefaceId] = fontName;
+				if (fontSize <= 0)
+					fontSize = NSFont.SystemFontSize;
+
+				var pangoFontDescription = $"{fontName} {fontSize}";
+
+				NSFont nsFont;
+
+				try {
+					nsFont = GetNSFontFromPangoFontDescription (pangoFontDescription);
+				} catch (Exception e) {
+					nsFont = null;
+					LoggingService.LogInternalError (
+						$"Exception attempting to map Pango font description '{pangoFontDescription}' to an NSFont",
+						e);
+				}
+
+				if (nsFont == null) {
+					LoggingService.LogWarning (
+						$"Unable to map Pango font description '{pangoFontDescription}' " +
+						$"to NSFont; falling back to system default at {fontSize} pt");
+					nsFont = NSFontWorkarounds.UserFixedPitchFontOfSize ((nfloat)fontSize);
+				}
+
+				fontSize = nsFont.PointSize;
+
+				LoggingService.LogInfo ($"Mapped Pango font description '{pangoFontDescription}' to NSFont '{nsFont}'");
+
+				resourceDictionary [ClassificationFormatDefinition.TypefaceId] = nsFont;
 				resourceDictionary [ClassificationFormatDefinition.FontRenderingSizeId] = fontSize;
+			}
+
+			static NSFont GetNSFontFromPangoFontDescription (string fontDescription)
+				=> GetNSFontFromPangoFontDescription (Pango.FontDescription.FromString (fontDescription));
+
+			static NSFont GetNSFontFromPangoFontDescription (Pango.FontDescription fontDescription)
+			{
+				if (fontDescription == null)
+					return null;
+
+				return NSFontManager.SharedFontManager.FontWithFamilyWorkaround (
+					fontDescription.Family,
+					fontDescription.Style == Pango.Style.Italic || fontDescription.Style == Pango.Style.Oblique
+						? NSFontTraitMask.Italic
+						: 0,
+					NormalizeWeight (fontDescription.Weight),
+					fontDescription.Size / (nfloat)Pango.Scale.PangoScale);
+
+				/// <summary>
+				/// Normalizes a Pango font weight (100-1000 scale) to a weight
+				/// suitable for NSFontDescription.FontWithFamily (0-15 scale).
+				/// </summary>
+				int NormalizeWeight (Pango.Weight pangoWeight)
+				{
+					double Normalize (double value, double inMin, double inMax, double outMin, double outMax)
+						=> (outMax - outMin) / (inMax - inMin) * (value - inMax) + outMax;
+
+					return (int)Math.Round (Normalize ((int)pangoWeight, 100, 1000, 0, 15));
+				}
 			}
 		}
 	}

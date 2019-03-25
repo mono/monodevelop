@@ -1,4 +1,4 @@
-﻿//
+//
 // CommentTasksProvider.Legacy.cs
 //
 // Author:
@@ -140,8 +140,8 @@ namespace MonoDevelop.Ide.Tasks
 
 			if (controller is FileDocumentController file) {
 				// C# uses the roslyn-provided todo comments system.
-				//if (file.MimeType == "text/x-csharp")
-				//	return false;
+				if (file.MimeType == "text/x-csharp")
+					return false;
 			}
 			var s = controller.GetContent<DocumentContext> () != null;
 			return s;

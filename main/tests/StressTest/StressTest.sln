@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StressTest", "StressTest.csproj", "{A1F9B020-6573-4BB2-A887-7F26561A9D18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultParser", "ResultParser\ResultParser.csproj", "{BE9B739B-3844-45A0-9673-19712FB2A644}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,5 +15,9 @@ Global
 		{A1F9B020-6573-4BB2-A887-7F26561A9D18}.Debug|x86.Build.0 = Debug|x86
 		{A1F9B020-6573-4BB2-A887-7F26561A9D18}.Release|x86.ActiveCfg = Release|x86
 		{A1F9B020-6573-4BB2-A887-7F26561A9D18}.Release|x86.Build.0 = Release|x86
+		{BE9B739B-3844-45A0-9673-19712FB2A644}.Debug|x86.ActiveCfg = Debug|x86
+		{BE9B739B-3844-45A0-9673-19712FB2A644}.Debug|x86.Build.0 = Debug|x86
+		{BE9B739B-3844-45A0-9673-19712FB2A644}.Release|x86.ActiveCfg = Release|x86
+		{BE9B739B-3844-45A0-9673-19712FB2A644}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal
