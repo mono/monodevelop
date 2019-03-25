@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
+using System;
 using System.Linq;
 
 namespace MonoDevelop.DotNetCore
@@ -32,6 +33,15 @@ namespace MonoDevelop.DotNetCore
 	public class DotNetCoreRunConfiguration : AssemblyRunConfiguration
 	{
 		bool webProject;
+
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
+		public bool LaunchBrowser { get; set; } = true;
+
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
+		public string LaunchUrl { get; set; } = null;
+
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
+		public string ApplicationURL { get; set; } = "http://localhost:5000/";
 
 		public DotNetCoreRunConfiguration (string name)
 			: base (name)

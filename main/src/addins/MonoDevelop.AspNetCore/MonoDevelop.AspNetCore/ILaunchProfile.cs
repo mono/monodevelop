@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.AspNetCore
 {
-	public interface ILaunchProfile
+	interface ILaunchProfile
 	{
 		string Name { get; }
 		string CommandName { get; }

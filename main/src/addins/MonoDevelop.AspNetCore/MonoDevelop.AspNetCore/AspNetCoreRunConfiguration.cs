@@ -44,6 +44,13 @@ namespace MonoDevelop.AspNetCore
 		internal string ActiveProfile { get; set; }
 		internal LaunchProfileData CurrentProfile => Profiles [ActiveProfile];
 
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
+		public bool LaunchBrowser { get; set; } = true;
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
+		public string LaunchUrl { get; set; } = null;
+		[Obsolete ("Use MonoDevelop.AspNetCore.AspNetCoreRunConfiguration.CurrentProfile property")]
+		public string ApplicationURL { get; set; } = "http://localhost:5000/";
+
 		public AspNetCoreRunConfiguration (string name)
 			: base (name)
 		{
@@ -76,7 +83,7 @@ namespace MonoDevelop.AspNetCore
 				CurrentProfile.EnvironmentVariables = new Dictionary<string, string> (StringComparer.Ordinal);
 		}
 
-		public void RefreshLaunchSettings ()
+		internal void RefreshLaunchSettings ()
 		{
 			if (launchProfileProvider == null)
 				return;
