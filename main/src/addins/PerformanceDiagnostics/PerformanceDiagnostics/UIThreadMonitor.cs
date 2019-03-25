@@ -210,7 +210,16 @@ namespace PerformanceDiagnosticsAddIn
 
 		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
 		{
+			// pmip output:
+			// MonoDevelop.Startup.MonoDevelopMain:Main (string[]) [{0x7faef5700948} + 0x93] [/Users/therzok/Work/md/monodevelop/main/src/core/MonoDevelop.Startup/MonoDevelop.Startup/MonoDevelopMain.cs :: 39u] (0x10e7609c0 0x10e760aa8) [0x7faef7002d80 - MonoDevelop.exe]
+			var pmipRegex = new Regex ("", RegexOptions.Compiled);
+
+			// sample line to replace:
+			// ???  (in <unknown binary>)  [0x103648455]
 			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
+
+			// sample symbolified line:
+			// 3998 thread_start  (in libsystem_pthread.dylib) + 13  [0x7fff79e70415]
 			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
 				Directory.CreateDirectory (Options.OutputPath);
 				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
@@ -219,14 +228,16 @@ namespace PerformanceDiagnosticsAddIn
 				using (var sw = new StreamWriter (outputFilename)) {
 					string line;
 					while ((line = sr.ReadLine ()) != null) {
-						if (rx.IsMatch (line)) {
-							var match = rx.Match (line);
+
+						var match = rx.Match (line);
+						if (match.Success) {
 							var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
-							string pmipMethodName;
-							if (!methodsCache.TryGetValue (offset, out pmipMethodName)) {
+
+							if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
 								pmipMethodName = mono_pmip (offset)?.TrimStart ();
 								methodsCache.Add (offset, pmipMethodName);
 							}
+
 							if (pmipMethodName != null) {
 								line = line.Remove (match.Index, match.Length);
 								line = line.Insert (match.Index, pmipMethodName);
