@@ -132,9 +132,7 @@ namespace MonoDevelop.AspNetCore
 			if (launchSettings == null)
 				return;
 
-			//after removing the file, we don't want to process it
-			if (Project.IsFileInProject (launchSettings.FileName.FileName))
-				aspNetCoreRunConf.RefreshLaunchSettings (Project.DefaultNamespace);
+			aspNetCoreRunConf.RefreshLaunchSettings (Project.DefaultNamespace);
 		}
 	}
 }
