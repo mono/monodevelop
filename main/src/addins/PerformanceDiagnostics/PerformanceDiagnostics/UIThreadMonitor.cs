@@ -261,19 +261,26 @@ namespace PerformanceDiagnosticsAddIn
 				string filename = null;
 
 				// Cut off wrapper part.
-				if (input.StartsWith ("(wrapper".AsSpan ()))
+				if (input.StartsWith ("(wrapper".AsSpan ())) {
 					input = input.Slice (input.IndexOf (')') + 1).TrimStart ();
+				}
 
-				if (input.StartsWith ("<Module>:".AsSpan ()))
+				// If it starts with <Module>:, trim it.
+				if (input.StartsWith ("<Module>:".AsSpan ())) {
 					input = input.Slice ("<Module>:".Length);
+				}
 
+				// Usually a generic trampoline marker, don't bother parsing.
 				if (input[0] == '<')
 					return input.ToString ();
 
+				// Decode method signature
+				// Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]
 				var endMethodSignature = input.IndexOf ('{');
 				var methodSignature = input.Slice (0, endMethodSignature - 2); // " ["
 				input = input.Slice (endMethodSignature + 1).TrimStart ();
 
+				// Append chars, escaping what might be unreadable by instruments.
 				for (int i = 0; i < methodSignature.Length; ++i) {
 					var ch = methodSignature [i];
 					if (ch == ' ')
@@ -298,11 +305,12 @@ namespace PerformanceDiagnosticsAddIn
 					sb.Append (ch);
 				}
 
+				// Add some data to match format, + 0 is because it doesn't matter, we're not looking at native code.
 				sb.Append ("  (in MonoDevelop.exe) + 0  [");
 				sb.AppendFormat ("0x{0:x}", offset);
 				sb.Append ("]");
 
-				// skip whole block [{0x7f968e48d1e8} + 0xdf]
+				// Skip the rest of the block(s) after the method signature until we get a path.
 				input = input.Slice (input.IndexOf ('[') + 1).TrimStart ();
 
 				if (input[0] == '/') {
