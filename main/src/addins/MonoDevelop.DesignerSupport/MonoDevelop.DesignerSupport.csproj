@@ -31,6 +31,8 @@
         <Project>{A0B6FE73-D046-4E1C-BA9D-F20683889C5A}</Project>
         <Name>Xamarin.PropertyEditing</Name>
       </ProjectReference>
+      <IncludeCopyLocal Include="Xamarin.PropertyEditing.Mac.dll"/>
+      <IncludeCopyLocal Include="Xamarin.PropertyEditing.dll"/>
   </ItemGroup>
    <ItemGroup>
     <Reference Include="System" />
@@ -40,10 +42,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
-    <IncludeCopyLocal Include="Xamarin.PropertyEditing.Mac.dll"/>
-    <IncludeCopyLocal Include="Xamarin.PropertyEditing.dll"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
