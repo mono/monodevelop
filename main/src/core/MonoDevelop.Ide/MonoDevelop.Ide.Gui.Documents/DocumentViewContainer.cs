@@ -298,5 +298,16 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			view.UpdateContentVisibility (ContentVisible && (view == activeView || CurrentMode == DocumentViewContainerMode.HorizontalSplit || CurrentMode == DocumentViewContainerMode.VerticalSplit));
 		}
+
+		internal override bool DefaultGrabFocus ()
+		{
+			if (base.DefaultGrabFocus () || Views.Count == 0)
+				return true;
+			if (CurrentMode == DocumentViewContainerMode.Tabs) {
+				ActiveView?.GrabFocus ();
+			} else
+				Views [0].GrabFocus ();
+			return true;
+		}
 	}
 }

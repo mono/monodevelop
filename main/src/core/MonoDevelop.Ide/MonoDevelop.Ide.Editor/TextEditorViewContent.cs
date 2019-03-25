@@ -392,9 +392,8 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		protected void OnGrabFocus ()
+		protected override void OnGrabFocus (DocumentView view)
 		{
-			// TOTEST
 			textEditor.GrabFocus ();
 			DefaultSourceEditorOptions.SetUseAsyncCompletion (false);
 		}

@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		#region IAttachableViewContent implementation
-		protected override void OnSelected ()
+		protected override void OnFocused ()
 		{
 			info.Start ();
 			widget.Reset ();
@@ -72,7 +72,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected override void OnDeselected ()
+		protected override void OnUnfocused ()
 		{
 			var buffer = info.Controller.GetContent<MonoDevelop.Ide.Editor.TextEditor> () ;
 			if (buffer != null) {

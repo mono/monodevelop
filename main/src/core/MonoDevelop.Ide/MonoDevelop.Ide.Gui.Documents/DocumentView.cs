@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Shell;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -48,6 +49,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		bool contentVisible;
 		DocumentView parent;
 
+		bool hasFocus;
+		bool shown;
+		bool contentInserted;
+
 		internal IWorkbenchWindow window;
 
 		/// <summary>
@@ -59,6 +64,21 @@ namespace MonoDevelop.Ide.Gui.Documents
 		/// Raised when the ContentVisible property changes
 		/// </summary>
 		public EventHandler ContentVisibleChanged;
+
+		/// <summary>
+		/// Raised when this view gets the focus
+		/// </summary>
+		public event EventHandler Focused;
+
+		/// <summary>
+		/// Raised when the content of this view is shown. It implies that the view control has been created and inserted in the view.
+		/// </summary>
+		public event EventHandler ContentShown;
+
+		/// <summary>
+		/// Raised when the content of this view is hidden.
+		/// </summary>
+		public event EventHandler ContentHidden;
 
 		public DocumentView ()
 		{
@@ -133,11 +153,54 @@ namespace MonoDevelop.Ide.Gui.Documents
 					contentVisible = value;
 					ContentVisibleChanged?.Invoke (this, EventArgs.Empty);
 					if (contentVisible)
-						SourceController?.NotifyShown ();
+						OnShown ();
 					else
-						SourceController?.NotifyHidden ();
+						OnHidden ();
 				}
 			}
+		}
+
+		internal virtual void OnShown ()
+		{
+			// Don't notify the Shown event if the content is not yet visible
+			if (contentInserted) {
+				shown = true;
+
+				if (lastFocusGrabRequest.TryGetTarget (out var target) && target == this) {
+					lastFocusGrabRequest.SetTarget (null);
+					GrabFocus ();
+				}
+
+				try {
+					ContentShown?.Invoke (this, EventArgs.Empty);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+				}
+				SourceController?.NotifyShown ();
+			}
+		}
+
+		internal virtual void OnHidden ()
+		{
+			if (shown) {
+				shown = false;
+				try {
+					ContentHidden?.Invoke (this, EventArgs.Empty);
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (ex);
+				}
+				SourceController?.NotifyHidden ();
+			}
+		}
+
+		internal virtual void OnContentInserted ()
+		{
+			var wasInserted = contentInserted;
+			contentInserted = true;
+
+			// The content has been inserted. Notify the shown event if it is currently visible.
+			if (!wasInserted && ContentVisible)
+				OnShown ();
 		}
 
 		internal void UpdateActiveViewInHierarchy ()
@@ -170,6 +233,37 @@ namespace MonoDevelop.Ide.Gui.Documents
 		}
 
 		object ICommandDelegator.GetDelegatedCommandTarget () => SourceController;
+
+		static WeakReference<DocumentView> lastFocusGrabRequest = new WeakReference<DocumentView> (null);
+
+		public void GrabFocus ()
+		{
+			// If the view already has the focus, don't do anything
+			//	if (hasFocus) this is disabled because native views don't always correctly report that they have the focus
+			//		return;
+
+			// The view is not visible, probably because the content is still being loaded. Can't get the focus
+			// now but will do once the view is shown.
+			if (!shown) {
+				lastFocusGrabRequest.SetTarget (this);
+				return;
+			}
+
+			if (SourceController != null)
+				SourceController.GrabFocusForView (this);
+			else
+				DefaultGrabFocus ();
+		}
+
+		internal virtual bool DefaultGrabFocus ()
+		{
+			if (activeAttachedView != this && attachmentsContainer != null) {
+				attachmentsContainer.GrabViewFocus ();
+				return true;
+			}
+			return false;
+
+		}
 
 		public void SetActive ()
 		{
@@ -229,6 +323,8 @@ namespace MonoDevelop.Ide.Gui.Documents
 			this.window = window;
 			mainShellView = OnCreateShellView (window);
 			mainShellView.Item = this;
+			mainShellView.GotFocus += ShellContentView_GotFocus;
+			mainShellView.LostFocus += ShellContentView_LostFocus;
 			if (IsRoot && AttachedViews.Count > 0) {
 				attachmentsContainer = window.CreateViewContainer ();
 				attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
@@ -245,6 +341,28 @@ namespace MonoDevelop.Ide.Gui.Documents
 			UpdateTitle ();
 			shellView.SetDelegatedCommandTarget (this);
 			return shellView;
+		}
+
+		private void ShellContentView_GotFocus (object sender, EventArgs e)
+		{
+			hasFocus = true;
+			try {
+				Focused?.Invoke (this, EventArgs.Empty);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+			SourceController?.NotifyFocused ();
+		}
+
+		private void ShellContentView_LostFocus (object sender, EventArgs e)
+		{
+			hasFocus = false;
+			try {
+				Focused?.Invoke (this, EventArgs.Empty);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+			SourceController?.NotifyUnfocused ();
 		}
 
 		internal void ReplaceViewInParent ()
@@ -313,6 +431,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		internal virtual void DetachFromView ()
 		{
+			if (mainShellView != null) {
+				mainShellView.GotFocus -= ShellContentView_GotFocus;
+				mainShellView.LostFocus -= ShellContentView_LostFocus;
+			}
 			IsRoot = false;
 			window = null;
 			shellView = null;

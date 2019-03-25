@@ -754,14 +754,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		}
 
-		internal void NotifySelected ()
+		internal void NotifyFocused ()
 		{
-			OnSelected ();
+			OnFocused ();
 		}
 
-		internal void NotifyUnselected ()
+		internal void NotifyUnfocused ()
 		{
-			OnSelected ();
+			OnUnfocused ();
+		}
+
+		internal void GrabFocusForView (DocumentView view)
+		{
+			OnGrabFocus (view);
 		}
 
 		internal void NotifyShown ()
@@ -1022,12 +1027,29 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 		}
 
-		protected virtual void OnSelected ()
+		/// <summary>
+		/// Called when the view of this controller got the mouse and keyboard focus
+		/// </summary>
+		protected virtual void OnFocused ()
 		{
 		}
 
-		protected virtual void OnDeselected ()
+		/// <summary>
+		/// Called when the view of this controller lost the mouse and keyboard focus
+		/// </summary>
+		protected virtual void OnUnfocused ()
 		{
+		}
+
+		/// <summary>
+		/// Called when the view of this controller needs to grab the focus (usually because it has
+		/// become the active document).
+		/// </summary>
+		/// <param name="view">View.</param>
+		protected virtual void OnGrabFocus (DocumentView view)
+		{
+			// Use the default GrabFocus implementation in DocumentView.
+			view.DefaultGrabFocus ();
 		}
 
 		protected bool CheckInitialized ()

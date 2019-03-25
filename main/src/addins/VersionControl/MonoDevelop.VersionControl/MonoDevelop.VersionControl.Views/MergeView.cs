@@ -110,8 +110,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		void ClearContainer () => widgetContainer.Clear ();
 
-		protected override void OnDeselected () => ClearContainer ();
-
 		protected override void OnDispose ()
 		{
 			if (widgetContainer != null) {

@@ -86,5 +86,12 @@ namespace IdeUnitTests
 				sb.Append (name).Append (" = ").AppendLine (value);
 			}
 		}
+
+		public void GrabViewFocus ()
+		{
+		}
+
+		public event EventHandler GotFocus;
+		public event EventHandler LostFocus;
 	}
 }

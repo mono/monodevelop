@@ -81,5 +81,7 @@ namespace IdeUnitTests
 		{
 			base.Render (sb, indent);
 		}
+
+		public event EventHandler ContentInserted;
 	}
 }

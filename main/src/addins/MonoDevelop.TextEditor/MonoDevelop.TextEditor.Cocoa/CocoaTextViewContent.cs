@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Documents;
 
 namespace MonoDevelop.TextEditor
 {
@@ -210,13 +211,11 @@ namespace MonoDevelop.TextEditor
 			return embeddedControl;
 		}
 
-		public void GrabFocus()
+		protected override void OnGrabFocus (DocumentView view)
 		{
-			// TOTEST
-			embeddedControl.GrabFocus();
-			base.GrabFocus();
+			embeddedControl.GrabFocus ();
+			base.OnGrabFocus (view);
 		}
-
 
 		protected override void OnDispose ()
 		{

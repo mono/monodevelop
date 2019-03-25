@@ -158,11 +158,10 @@ namespace MonoDevelop.TextEditor
 				IsNewDocument = Model.IsNew;
 		}
 
-		public void GrabFocus ()
+		protected override void OnGrabFocus (DocumentView view)
 		{
-			// TOTEST
 			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
-			//base.GrabFocus ();
+			base.OnGrabFocus (view);
 		}
 
 		protected override void OnFileNameChanged ()

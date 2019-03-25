@@ -27,6 +27,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Documents;
+using System;
 
 namespace MonoDevelop.Ide.Gui.Shell
 {
@@ -36,5 +37,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 		void SetTitle (string label, Xwt.Drawing.Image icon, string accessibilityDescription);
 		void SetDelegatedCommandTarget (object target);
 		void Dispose ();
+		void GrabViewFocus ();
+		event EventHandler GotFocus;
+		event EventHandler LostFocus;
 	}
 }

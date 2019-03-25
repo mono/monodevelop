@@ -44,6 +44,8 @@ namespace MonoDevelop.Ide.Gui.Shell
 		IPathedDocument pathDocPending;
 		Gtk.Widget viewControl;
 
+		public event EventHandler ContentInserted;
+
 		public IShellDocumentToolbar GetToolbar ()
 		{
 			if (toolbar == null) {
@@ -84,6 +86,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 				ShowPathBar (pathDocPending);
 				pathDocPending = null;
 			}
+			ContentInserted?.Invoke (this, EventArgs.Empty);
 		}
 
 		/*		public void OnDeactivated ()

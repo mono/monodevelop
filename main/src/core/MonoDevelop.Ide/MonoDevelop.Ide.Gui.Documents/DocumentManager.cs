@@ -769,8 +769,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			ActiveDocumentChanged?.Invoke (s, new DocumentEventArgs (activeDocument));
 
-			if (activeDocument != null)
+			if (activeDocument != null) {
 				activeDocument.LastTimeActive = DateTime.Now;
+				activeDocument.GrabFocus ();
+			}
 		}
 
 		void Workbench_WindowReordered (object sender, WindowReorderedEventArgs e)

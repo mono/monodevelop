@@ -311,12 +311,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (newEditorOnly && openDocument.Editor != null) {
 						continue;
 					}
+					var buffer = openDocument.TextBuffer;
+					if (buffer == null)
+						continue;
 					var filePath = openDocument.FileName;
 					var solution = workspace.CurrentSolution;
 					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
 					foreach (var documentId in documentIds) {
 						if (!workspace.IsDocumentOpen (documentId)) {
-							workspace.InformDocumentOpen (documentId, openDocument.TextBuffer.AsTextContainer (), openDocument.DocumentContext);
+							workspace.InformDocumentOpen (documentId, buffer.AsTextContainer (), openDocument.DocumentContext);
 						}
 					}
 				}

@@ -40,5 +40,7 @@ namespace MonoDevelop.Ide.Gui.Shell
 
 		void ShowPathBar (IPathedDocument pathedDocument);
 		void HidePathBar ();
+
+		event EventHandler ContentInserted;
 	}
 }

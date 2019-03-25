@@ -174,7 +174,6 @@ namespace MonoDevelop.Ide.Gui
 
 			SubscribeControllerEvents ();
 			DocumentRegistry.Add (this);
-			UpdateSelectedController ();
 		}
 
 		void SubscribeControllerEvents ()
@@ -211,7 +210,6 @@ namespace MonoDevelop.Ide.Gui
 		void ActiveViewInHierarchyChanged (object sender, EventArgs e)
 		{
 			OnContentChanged ();
-			UpdateSelectedController ();
 		}
 
 		void HandleOwnerChanged (object sender, EventArgs e)
@@ -226,22 +224,6 @@ namespace MonoDevelop.Ide.Gui
 		void OnContentNameChanged (object sender, EventArgs e)
 		{
 			OnFileNameChanged ();
-		}
-
-		DocumentController currentySelectedController;
-
-		void UpdateSelectedController ()
-		{
-			DocumentView currentView = view.ActiveViewInHierarchy;
-			while (currentView != null && currentView.SourceController == null)
-				currentView = currentView.Parent;
-
-			if (currentySelectedController != currentView?.SourceController) {
-				var oldController = currentySelectedController;
-				currentySelectedController = currentView?.SourceController;
-				oldController?.NotifyUnselected ();
-				currentySelectedController?.NotifySelected ();
-			}
 		}
 
 		public FilePath FileName {
@@ -661,6 +643,11 @@ namespace MonoDevelop.Ide.Gui
 		internal void UpdateContentVisibility ()
 		{
 			view.UpdateContentVisibility (window.ContentVisible);
+		}
+
+		internal void GrabFocus ()
+		{
+			view.GrabFocus ();
 		}
 	}
 

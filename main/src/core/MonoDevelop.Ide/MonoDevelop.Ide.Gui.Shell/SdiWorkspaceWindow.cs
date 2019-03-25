@@ -197,10 +197,9 @@ namespace MonoDevelop.Ide.Gui.Shell
 			tabControl.CurrentTabIndex = tab.Index;
 
 			// Focus the tab in the next iteration since presenting the window may take some time
-			Application.Invoke (async (o, args) => {
+			Application.Invoke ((o, args) => {
 				DockNotebook.ActiveNotebook = tabControl;
-				await view.Load ();
-				DeepGrabFocus (view);
+				view.Load ().Ignore ();
 			});
 		}
 
@@ -252,60 +251,6 @@ namespace MonoDevelop.Ide.Gui.Shell
 			newTab.Content = this;
 			SetDockNotebook (nextNotebook, newTab);
 			SelectWindow ();
-		}
-
-		static void DeepGrabFocus (Gtk.Widget widget)
-		{
-			Widget first = null;
-
-			foreach (var f in GetFocusableWidgets (widget)) {
-				if (f.HasFocus)
-					return;
-
-				if (first == null)
-					first = f;
-			}
-			if (first != null) {
-				first.GrabFocus ();
-			}
-		}
-
-		static IEnumerable<Gtk.Widget> GetFocusableWidgets (Gtk.Widget widget)
-		{
-			if (widget.CanFocus) {
-				yield return widget;
-			}
-
-			if (widget is Container c) {
-				foreach (var f in c.FocusChain.SelectMany (x => GetFocusableWidgets (x))) {
-					yield return f;
-				}
-
-				if (c.Children is var children) {
-					foreach (var f in children) {
-						if (f is Container container) {
-							foreach (var child in GetFocusableChildren (container)) {
-								yield return child;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		static IEnumerable<Gtk.Widget> GetFocusableChildren (Gtk.Container container)
-		{
-			if (container.CanFocus) {
-				yield return container;
-			}
-
-			foreach (var f in container.Children) {
-				if (f is Container c) {
-					foreach (var child in GetFocusableChildren (c)) {
-						yield return child;
-					}
-				}
-			}
 		}
 
 		public object ViewCommandHandler { get; set; }

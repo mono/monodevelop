@@ -62,11 +62,14 @@ namespace MonoDevelop.Ide.Gui.Documents
 			shellContentView.SetContentLoader (LoadControl);
 			if (pathDoc != null)
 				shellContentView.ShowPathBar (pathDoc);
+			shellContentView.ContentInserted += ShellContentView_ContentInserted;
 			return shellContentView;
 		}
 
-		void AttachToView (IShellDocumentViewItem shellView)
+		internal override void DetachFromView ()
 		{
+			shellContentView.ContentInserted -= ShellContentView_ContentInserted;
+			base.DetachFromView ();
 		}
 
 		/// <summary>
@@ -150,6 +153,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			base.OnActivated ();
 			if (Parent != null)
 				Parent.ActiveViewInHierarchy = this;
+		}
+
+		void ShellContentView_ContentInserted (object sender, EventArgs e)
+		{
+			OnContentInserted ();
 		}
 	}
 }
