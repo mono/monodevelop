@@ -256,23 +256,16 @@ namespace MonoDevelop.VersionControl
 
 			bestMatch = bestMatch.CanonicalPath;
 
-			try {
-				return repositoryCache.GetOrAdd (bestMatch, p => {
-					var result = detectedVCS?.GetRepositoryReference (p, id);
-					if (result != null) {
-						Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
-						result.RepositoryPath = p.CanonicalPath;
-						return result;
-					}
-					// never add null values
-					throw new ArgumentNullException ("result");
-				});
-			} catch (Exception e) {
-				// ArgumentNullException for "result" is expected when GetRepositoryReference returns null, no need to log
-				if (!(e is ArgumentNullException ne) || ne.ParamName != "result")
-					LoggingService.LogInternalError ($"Could not query {detectedVCS.Name} repository reference", e);
+			return repositoryCache.GetOrAdd (bestMatch, p => {
+				var result = detectedVCS?.GetRepositoryReference (p, id);
+				if (result != null) {
+					Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
+					result.RepositoryPath = p.CanonicalPath;
+					return result;
+				}
+				LoggingService.LogInternalError ($"Could not query {detectedVCS?.Name} repository reference", null);
 				return null;
-			}
+			});
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
