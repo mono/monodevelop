@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNetCore
 				EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
 				PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
 				ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
-				LaunchBrowser = (bool) aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser,
+				LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
 				LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
 				ApplicationURL = aspnetCoreRunConfiguration.CurrentProfile.TryGetOtherSettings<string> ("applicationUrl"),
 				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
