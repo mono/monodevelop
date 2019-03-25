@@ -739,13 +739,12 @@ namespace Mono.TextEditor
 		}
 
 		DocumentLine cachedLine;
-		int cachedLineNumber = -1;
 		DocumentLine cachedLineFromLineNumber;
 
 		void ClearLineCache ()
 		{
 			cachedLine = null;
-			cachedLineNumber = -1;
+			cachedLineFromLineNumber = null;
 		}
 
 		public DocumentLine GetLineByOffset (int offset)
@@ -2168,13 +2167,13 @@ namespace Mono.TextEditor
 
 		private DocumentLine Get(int number)
 		{
-			if (cachedLineNumber == number)
-				return cachedLineFromLineNumber;
+			var lineFromLineNumber = cachedLineFromLineNumber;
+			if (lineFromLineNumber != null && lineFromLineNumber.LineNumber == number)
+				return lineFromLineNumber;
 			var snapshot = this.currentSnapshot;
 			int snapshotLineNumber = number - 1;
 			if (snapshotLineNumber < 0 || snapshotLineNumber >= snapshot.LineCount)
 				return null;
-			cachedLineNumber = number;
 			return cachedLineFromLineNumber = new DocumentLineFromTextSnapshotLine(snapshot.GetLineFromLineNumber(snapshotLineNumber));
 		}
 
