@@ -106,8 +106,12 @@ namespace MonoDevelop.Ide
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
-				Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
+				try {
+					var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+					Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
 			}
 		}
 
@@ -118,35 +122,39 @@ namespace MonoDevelop.Ide
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
-				var storageLocation = System.IO.Path.Combine (
-					storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
-					"sqlite3",
-					"storage.ide");
+				try {
+					var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
+					var storageLocation = System.IO.Path.Combine (
+						storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
+						"sqlite3",
+						"storage.ide");
 
-				if (System.IO.File.Exists (storageLocation))
-					System.IO.File.Delete (storageLocation);
-				
-				var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+					if (System.IO.File.Exists (storageLocation))
+						System.IO.File.Delete (storageLocation);
 
-				// This will return the tracker, since it's a singleton.
-				var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+					var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
 
-				// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
-				await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+					// This will return the tracker, since it's a singleton.
+					var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
 
-				foreach (var projectFile in sol.GetAllProjects ().SelectMany (x => x.Files.Where (file => file.BuildAction == BuildAction.Compile))) {
-					var projectId = ws.GetProjectId (projectFile.Project);
-					var docId = ws.GetDocumentId (projectId, projectFile.FilePath);
-					var doc = ws.GetDocument (docId);
-					if (!doc.SupportsSyntaxTree)
-						continue;
+					// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+					await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
 
-					await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
+					foreach (var projectFile in sol.GetAllProjects ().SelectMany (x => x.Files.Where (file => file.BuildAction == BuildAction.Compile))) {
+						var projectId = ws.GetProjectId (projectFile.Project);
+						var docId = ws.GetDocumentId (projectId, projectFile.FilePath);
+						var doc = ws.GetDocument (docId);
+						if (!doc.SupportsSyntaxTree)
+							continue;
+
+						await Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeIndex.PrecalculateAsync (doc, CancellationToken.None);
+					}
+
+					var fi = new System.IO.FileInfo (storageLocation);
+					Assert.That (fi.Length, Is.GreaterThan (0));
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
-
-				var fi = new System.IO.FileInfo (storageLocation);
-				Assert.That (fi.Length, Is.GreaterThan (0));
 			}
 		}
 
@@ -292,9 +300,9 @@ namespace MonoDevelop.Ide
 				newParsers.Add (projectionParser);
 				TypeSystemService.Parsers = newParsers;
 
-				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
-					using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-
+				using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+					try {
 						var source1 = new CancellationTokenSource ();
 						var source2 = new CancellationTokenSource ();
 
@@ -314,6 +322,8 @@ namespace MonoDevelop.Ide
 
 						Assert.IsNotNull (result2);
 						Assert.IsNull (result1);
+					} finally {
+						TypeSystemServiceTestExtensions.UnloadSolution (sol);
 					}
 				}
 			} finally {

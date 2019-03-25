@@ -41,7 +41,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				Assert.IsNotNull (ws.MetadataReferenceManager);
+				try {
+					Assert.IsNotNull (ws.MetadataReferenceManager);
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
 			}
 		}
 	}

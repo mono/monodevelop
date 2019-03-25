@@ -19,36 +19,40 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			using (var sol = (MonoDevelop.Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-				var manager = ws.MetadataReferenceManager;
-				var cache = new MonoDevelopMetadataReferenceManager.MetadataReferenceCache ();
+				try {
+					var manager = ws.MetadataReferenceManager;
+					var cache = new MonoDevelopMetadataReferenceManager.MetadataReferenceCache ();
 
-				// Create one with default assembly properties
-				var asm = typeof (MonoDevelopMetadataReferenceManagerMetadataReferenceCacheTests).Assembly.Location;
-				var item = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly);
-				Assert.IsNotNull (item);
+					// Create one with default assembly properties
+					var asm = typeof (MonoDevelopMetadataReferenceManagerMetadataReferenceCacheTests).Assembly.Location;
+					var item = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly);
+					Assert.IsNotNull (item);
 
-				var item2 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly);
-				Assert.AreSame (item, item2, "Item that is in cache should be returned");
+					var item2 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly);
+					Assert.AreSame (item, item2, "Item that is in cache should be returned");
 
-				// Create one with custom properties
-				var item3 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
-				Assert.IsNotNull (item3);
+					// Create one with custom properties
+					var item3 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
+					Assert.IsNotNull (item3);
 
-				var item4 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
-				Assert.AreSame (item3, item4, "Item that is in cache should be returned");
+					var item4 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
+					Assert.AreSame (item3, item4, "Item that is in cache should be returned");
 
-				// Clear the cache, new items should be returned from now on.
-				cache.ClearCache ();
+					// Clear the cache, new items should be returned from now on.
+					cache.ClearCache ();
 
-				var item5 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly);
-				Assert.IsNotNull (item5);
+					var item5 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly);
+					Assert.IsNotNull (item5);
 
-				Assert.AreNotSame (item, item5, "Cache was cleared, so new item should be returned");
+					Assert.AreNotSame (item, item5, "Cache was cleared, so new item should be returned");
 
-				var item6 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
-				Assert.AreNotSame (item3, item6, "Cache was cleared, so new item should be returned");
+					var item6 = cache.GetOrCreate (manager, asm, MetadataReferenceProperties.Assembly.WithAliases (new [] { "a" }));
+					Assert.AreNotSame (item3, item6, "Cache was cleared, so new item should be returned");
 
-				cache.ClearCache ();
+					cache.ClearCache ();
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
 			}
 		}
 
@@ -64,38 +68,42 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				using (var sol = (MonoDevelop.Projects.Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
-					var manager = ws.MetadataReferenceManager;
-					var item = manager.GetOrCreateMetadataReference (tempPath, MetadataReferenceProperties.Assembly);
-					Assert.IsNotNull (item);
+					try {
+						var manager = ws.MetadataReferenceManager;
+						var item = manager.GetOrCreateMetadataReference (tempPath, MetadataReferenceProperties.Assembly);
+						Assert.IsNotNull (item);
 
-					await FileWatcherService.Update ();
+						await FileWatcherService.Update ();
 
-					var initialId = item.CurrentSnapshot.GetMetadataId ();
+						var initialId = item.CurrentSnapshot.GetMetadataId ();
 
-					var taskForNewAsm = WaitForSnapshotChange (item);
+						var taskForNewAsm = WaitForSnapshotChange (item);
 
-					// Replace the assembly with another one.
-					var newAsm = typeof (MonoDevelopMetadataReference).Assembly.Location;
-					File.Copy (newAsm, tempPath, true);
+						// Replace the assembly with another one.
+						var newAsm = typeof (MonoDevelopMetadataReference).Assembly.Location;
+						File.Copy (newAsm, tempPath, true);
 
-					var argsForNewAsm = await taskForNewAsm;
+						var argsForNewAsm = await taskForNewAsm;
 
-					Assert.AreSame (item.CurrentSnapshot, argsForNewAsm.OldSnapshot);
+						Assert.AreSame (item.CurrentSnapshot, argsForNewAsm.OldSnapshot);
 
-					Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
-					// item.CurrentSnapshot is now updated
-					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
+						Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
+						// item.CurrentSnapshot is now updated
+						Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
 
-					var taskForOldAsm = WaitForSnapshotChange (item);
-					File.Copy (oldAsm, tempPath, true);
+						var taskForOldAsm = WaitForSnapshotChange (item);
+						File.Copy (oldAsm, tempPath, true);
 
-					var argsForOldAsm = await taskForOldAsm;
+						var argsForOldAsm = await taskForOldAsm;
 
-					Assert.AreSame (item.CurrentSnapshot, argsForOldAsm.OldSnapshot);
+						Assert.AreSame (item.CurrentSnapshot, argsForOldAsm.OldSnapshot);
 
-					Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
-					// Even though the old assembly was put back, it has a new id this time.
-					Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
+						Assert.AreNotSame (argsForNewAsm.OldSnapshot, argsForNewAsm.NewSnapshot.Value);
+						// Even though the old assembly was put back, it has a new id this time.
+						Assert.AreNotEqual (initialId, item.CurrentSnapshot.GetMetadataId ());
+					} finally {
+						TypeSystemServiceTestExtensions.UnloadSolution (sol);
+					}
 				}
 
 				await FileWatcherService.Update ();
