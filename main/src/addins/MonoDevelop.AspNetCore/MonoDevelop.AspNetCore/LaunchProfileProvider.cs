@@ -51,11 +51,12 @@ namespace MonoDevelop.AspNetCore
 
 		public void LoadLaunchSettings ()
 		{
-			var launchSettingsJson = File.Exists (launchSettingsJsonPath) ? JObject.Parse (File.ReadAllText (launchSettingsJsonPath)) : null;
-			if (launchSettingsJson == null) {
+			if (!File.Exists (launchSettingsJsonPath)) {
 				CreateAndAddDefaultLaunchSettings ();
 				return; 
 			}
+
+			var launchSettingsJson = TryParse ();
 
 			GlobalSettings.Clear ();
 			foreach (var token in launchSettingsJson) {
@@ -67,14 +68,23 @@ namespace MonoDevelop.AspNetCore
 			}
 		}
 
-		public void SaveLaunchSettings (IDictionary<string, Dictionary<string, object>> profilesData)
+		JObject TryParse ()
+		{
+			try {
+				return JObject.Parse (File.ReadAllText (launchSettingsJsonPath));
+			}
+			catch {
+				return new JObject ();
+			}
+		}
+
+		public void SaveLaunchSettings (IDictionary<string, Dictionary<string, object>> profilesData, bool addToProject = false)
 		{
 			var doc = new JObject ();
 			var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 
 			if (profilesData == null)
 				return;
-			
 
 			ProfilesObject = JObject.Parse (JsonConvert.SerializeObject (profilesData, Formatting.Indented, settings));
 
@@ -85,9 +95,12 @@ namespace MonoDevelop.AspNetCore
 			doc.Add ("profiles", ProfilesObject);
 
 			string jsonDocString = doc.ToString (Formatting.Indented);
-
-			//FIXME: better way?
 			File.WriteAllText (launchSettingsJsonPath, jsonDocString);
+
+			if (!addToProject)
+				return;
+
+			project.AddFile (launchSettingsJsonPath);
 		}
 
 		public LaunchProfileData CreateDefaultProfile ()
@@ -111,8 +124,7 @@ namespace MonoDevelop.AspNetCore
 			GlobalSettings.Add ("iisSettings", JToken.Parse (DefaultGlobalSettings));
 			var profilesData = new Dictionary<string, LaunchProfileData> ();
 			profilesData.Add (project.DefaultNamespace, CreateDefaultProfile ());
-			SaveLaunchSettings (profilesData.ToSerializableForm ());
-			project.AddFile (launchSettingsJsonPath);
+			SaveLaunchSettings (profilesData.ToSerializableForm (), addToProject: true);
 		}
 	}
 }

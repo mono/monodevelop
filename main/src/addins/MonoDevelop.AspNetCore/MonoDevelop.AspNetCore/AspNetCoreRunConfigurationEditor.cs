@@ -120,7 +120,7 @@ namespace MonoDevelop.AspNetCore
 
 			Add (mainBox, GettextCatalog.GetString ("ASP.NET Core"));
 
-			launchBrowser.Active = (bool)config.CurrentProfile.LaunchBrowser;
+			launchBrowser.Active = config.CurrentProfile.LaunchBrowser ?? false;
 			launchUrl.Text = config.CurrentProfile.LaunchUrl;
 			applicationUrl.Text = config.GetApplicationUrl ();
 

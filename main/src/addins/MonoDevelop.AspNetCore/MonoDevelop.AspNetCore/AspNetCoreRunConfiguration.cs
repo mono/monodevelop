@@ -61,10 +61,15 @@ namespace MonoDevelop.AspNetCore
 			launchProfileProvider = new LaunchProfileProvider (project);
 			launchProfileProvider.LoadLaunchSettings ();
 
+			InitializeLaunchSettings (project.DefaultNamespace);
+		}
+
+		void InitializeLaunchSettings (string name)
+		{
 			Profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
 
 			//we assume that the project.Name is the default profile
-			ActiveProfile = Profiles.FirstOrDefault (x => x.Key == project.DefaultNamespace).Key;
+			ActiveProfile = Profiles.FirstOrDefault (x => x.Key == name).Key;
 
 			if (ActiveProfile == null) //otherwise the first "Project" one 
 				ActiveProfile = Profiles.FirstOrDefault (p => p.Value.CommandName == "Project").Key;
@@ -72,7 +77,7 @@ namespace MonoDevelop.AspNetCore
 			//if it does not exist, we create a new one
 			if (string.IsNullOrEmpty (ActiveProfile)) {
 				var newProfile = launchProfileProvider.CreateDefaultProfile ();
-				Profiles.Add (project.DefaultNamespace, newProfile);
+				Profiles.Add (name, newProfile);
 				ActiveProfile = newProfile.Name;
 			}
 
@@ -81,17 +86,18 @@ namespace MonoDevelop.AspNetCore
 
 			if (CurrentProfile.EnvironmentVariables == null)
 				CurrentProfile.EnvironmentVariables = new Dictionary<string, string> (StringComparer.Ordinal);
+
+			EnvironmentVariables.Clear ();
+			LoadEnvVariables ();
 		}
 
-		internal void RefreshLaunchSettings ()
+		internal void RefreshLaunchSettings (string name)
 		{
 			if (launchProfileProvider == null)
 				return;
 
 			launchProfileProvider.LoadLaunchSettings ();
-			Profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
-			EnvironmentVariables.Clear ();
-			LoadEnvVariables ();
+			InitializeLaunchSettings (name);
 		}
 
 		public string GetApplicationUrl ()
@@ -138,14 +144,12 @@ namespace MonoDevelop.AspNetCore
 				return;
 			}
 
+			Profiles [ActiveProfile].EnvironmentVariables.Clear ();
 			foreach (var pair in EnvironmentVariables) {
-				if (!Profiles [ActiveProfile].EnvironmentVariables.ContainsKey (pair.Key))
-					Profiles [ActiveProfile].EnvironmentVariables.Add (pair.Key, pair.Value);
-				else
 					Profiles [ActiveProfile].EnvironmentVariables [pair.Key] = pair.Value;
 			}
 
-			launchProfileProvider.SaveLaunchSettings (Profiles.ToSerializableForm());
+			launchProfileProvider.SaveLaunchSettings (Profiles.ToSerializableForm ());
 		}
 
 		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
