@@ -13,6 +13,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -447,29 +448,50 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
 
-			ThreadPool.QueueUserWorkItem (delegate {
-				lock (updateLock) {
-					if (fileList != null) {
-						var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
-						foreach (var item in group) {
-							// Is directory.
-							if (item.Key) {
-								foreach (var directory in item)
-									changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
-							} else
-								changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
-						}
-						changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
-						fileList = null;
+			lock (updateLock) {
+				if (!cancelUpdate.IsCancellationRequested)
+					cancelUpdate.Cancel ();
+				cancelUpdate = new CancellationTokenSource ();
+				var token = cancelUpdate.Token;
+				updateTask = updateTask.ContinueWith (t => RunUpdate (token), token, TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
+			}
+		}
+
+		CancellationTokenSource cancelUpdate = new CancellationTokenSource ();
+		Task updateTask = Task.FromResult (true);
+
+		void RunUpdate (CancellationToken cancel)
+		{
+			try {
+				cancel.ThrowIfCancellationRequested ();
+				if (fileList != null) {
+					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionFolderItem);
+					foreach (var item in group) {
+						// Is directory.
+						if (item.Key) {
+							foreach (var directory in item)
+								changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+						} else
+							changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
 					}
-					List<VersionInfo> newList = new List<VersionInfo> ();
-					newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
-					Runtime.RunInMainThread (delegate {
-						if (!disposed)
-							LoadStatus (newList);
-					});
+					fileList = null;
 				}
-			});
+
+				cancel.ThrowIfCancellationRequested ();
+				var newList = new List<VersionInfo> ();
+				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
+
+				cancel.ThrowIfCancellationRequested ();
+				Runtime.RunInMainThread (delegate {
+					// skip status reloading if another update is queued
+					if (!cancel.IsCancellationRequested && !disposed)
+						LoadStatus (newList);
+				}).Ignore ();
+			} catch (Exception ex) {
+				if (!(ex is OperationCanceledException))
+					LoggingService.LogError ("VCS StatusView update failed", ex);
+				throw;
+			}
 		}
 
 		void LoadStatus (List<VersionInfo> newList)
