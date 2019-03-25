@@ -691,9 +691,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		object directoryWatchId = new object ();
 		void WatchDirectories ()
 		{
+			// TOTEST
 			HashSet<FilePath> directories = null;
 			foreach (Document doc in documents) {
-				if (doc.IsFile) {
+				if (doc.IsFile && !doc.IsNewDocument && doc.FilePath.IsAbsolute && File.Exists (doc.FilePath)) {
 					if (directories == null)
 						directories = new HashSet<FilePath> ();
 					directories.Add (doc.FileName.ParentDirectory);

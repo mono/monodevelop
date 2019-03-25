@@ -37,6 +37,7 @@ using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Gui.Documents;
 using Microsoft.VisualStudio.Text;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -73,6 +74,8 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnDispose ()
 		{
 			base.OnDispose ();
+			foreach (var c in contents.OfType<TextEditorExtension> ())
+				c.Dispose ();
 			data.Dispose ();
 		}
 
