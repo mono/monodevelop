@@ -30,10 +30,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
 using Gtk;
 using MonoDevelop.Core;
- 
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using MonoDevelop.Ide;
@@ -41,6 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -112,24 +111,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			HandleAllowCommitChanged (null, null);
 
-			foreach (ChangeSetItem info in changeSet.Items) {
-				Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus (info.Status);
-				string lstatus = VersionControlService.GetStatusLabel (info.Status);
-				string localpath;
-
-				if (info.IsDirectory)
-					localpath = (!info.LocalPath.IsChildPathOf (changeSet.BaseLocalPath)?
-									".":
-									(string) info.LocalPath.ToRelative (changeSet.BaseLocalPath));
-				else
-					localpath = System.IO.Path.GetFileName((string) info.LocalPath);
-
-				if (localpath.Length > 0 && localpath[0] == System.IO.Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
-				if (localpath == "") { localpath = "."; } // not sure if this happens
-				
-				store.AppendValues (statusicon, lstatus, localpath, true, info);
-				selected.Add (info.LocalPath);
-			}
+			LoadChangeset (changeSet.Items);
 
 			if (string.IsNullOrEmpty (changeSet.GlobalComment)) {
 				AuthorInformation aInfo;
@@ -150,6 +132,15 @@ namespace MonoDevelop.VersionControl.Dialogs
 			textview.Buffer.MarkSet += OnMarkSet;
 
 			SetResponseSensitive (ResponseType.Ok, responseSensitive);
+
+			Shown += OnCommitDialogShown;
+		}
+
+		async void OnCommitDialogShown (object sender, EventArgs e)
+		{
+			Shown -= OnCommitDialogShown;
+
+			await VerifyUnsavedChangesAsync ();
 		}
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)
@@ -159,7 +150,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				allowCommit &= ext.AllowCommit;
 			SetResponseSensitive (Gtk.ResponseType.Ok, allowCommit);
 		}
-		
+
 		protected override void OnResponse (Gtk.ResponseType type)
 		{
 			if (type != Gtk.ResponseType.Ok) {
@@ -180,60 +171,88 @@ namespace MonoDevelop.VersionControl.Dialogs
 			base.OnDestroyed ();
 		}
 
-		bool ButtonCommitClicked ()
+		void LoadChangeset (IEnumerable<ChangeSetItem> items)
+		{
+			store.Clear ();
+			foreach (ChangeSetItem info in items) {
+				Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus (info.Status);
+				string lstatus = VersionControlService.GetStatusLabel (info.Status);
+				string localpath;
+
+				if (info.IsDirectory)
+					localpath = (!info.LocalPath.IsChildPathOf (changeSet.BaseLocalPath) ?
+									"." :
+									(string)info.LocalPath.ToRelative (changeSet.BaseLocalPath));
+				else
+					localpath = System.IO.Path.GetFileName ((string)info.LocalPath);
+
+				if (localpath.Length > 0 && localpath [0] == System.IO.Path.DirectorySeparatorChar) localpath = localpath.Substring (1);
+				if (localpath == "") { localpath = "."; } // not sure if this happens
+
+				store.AppendValues (statusicon, lstatus, localpath, true, info);
+				selected.Add (info.LocalPath);
+			}
+		}
+
+		async Task VerifyUnsavedChangesAsync ()
 		{
 			// In case we have local unsaved files with changes, throw a dialog for the user.
-			System.Collections.Generic.List<Document> docList = new System.Collections.Generic.List<Document> ();
+			List<Document> docList = new List<Document> ();
 			foreach (var item in IdeApp.Workbench.Documents) {
-				if (!item.IsDirty || !selected.Contains (item.FileName))
-					continue;
-				docList.Add (item);
+				if (item.IsDirty && !selected.Contains (item.FileName))
+					docList.Add (item);
 			}
 
 			if (docList.Count != 0) {
 				AlertButton response = MessageService.GenericAlert (
-					MonoDevelop.Ide.Gui.Stock.Question,
+					Ide.Gui.Stock.Question,
 					GettextCatalog.GetString ("You are trying to commit files which have unsaved changes."),
 					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
-					new AlertButton[] {
+					new AlertButton [] {
 						AlertButton.Cancel,
 						new AlertButton (GettextCatalog.GetString ("Don't Save")),
 						AlertButton.Save
 					}
 				);
 
-				if (response == AlertButton.Cancel)
-					return false;
+				if (response == AlertButton.Cancel) {
+					Gtk.Application.Invoke ((o, args) => {
+						Respond (Gtk.ResponseType.Cancel);
+					});
+					return;
+				}
 
 				if (response == AlertButton.Save) {
 					// Go through all the items and save them.
 					foreach (var item in docList)
-						item.Save ();
+						await item.Save ();
 
-					// Check if save failed on any item and abort.
+					// Check if save failed on any item.
 					foreach (var item in docList)
 						if (item.IsDirty) {
 							MessageService.ShowMessage (GettextCatalog.GetString (
-								"Some files could not be saved. Commit operation aborted"));
-							return false;
+								"Some files could not be saved."));
+							return;
 						}
+
+					// Update the change set
+					if (docList.Any ()) {
+						foreach (var item in docList)
+							changeSet.AddFile (item.FileName);
+						// Refresh the UI
+						LoadChangeset (changeSet.Items);
+					}
 				}
 
 				docList.Clear ();
 			}
+		}
 
-			// Update the change set
-			List<FilePath> todel = new List<FilePath> ();
-			foreach (ChangeSetItem it in changeSet.Items) {
-				if (!selected.Contains (it.LocalPath))
-					todel.Add (it.LocalPath);
-			}
-			foreach (string file in todel)
-				changeSet.RemoveFile (file);
+		bool ButtonCommitClicked ()
+		{
 			changeSet.GlobalComment = Message;
 			
 			// Perform the commit
-			
 			int n;
 			for (n=0; n<extensions.Count; n++) {
 				CommitDialogExtension ext = extensions [n];
@@ -250,7 +269,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 						ext = extensions [m];
 						try {
 							ext.OnEndCommit (changeSet, false);
-						} catch {}
+						} catch (Exception ex) {
+							LoggingService.LogInternalError ("Commit operation failed.", ex);
+						}
 					}
 					return false;
 				}
