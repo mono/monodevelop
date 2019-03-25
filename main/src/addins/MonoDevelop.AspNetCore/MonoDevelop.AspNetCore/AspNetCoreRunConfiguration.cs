@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.DotNetCore;
@@ -36,81 +35,110 @@ namespace MonoDevelop.AspNetCore
 {
 	public class AspNetCoreRunConfiguration : AssemblyRunConfiguration
 	{
+		readonly IDictionary<string, JToken> globalSettings = new Dictionary<string, JToken> ();
+		LaunchProfileProvider launchProfileProvider;
+
+		[ItemProperty (DefaultValue = null)]
+		public PipeTransportSettings PipeTransport { get; set; }
+		internal Dictionary<string, LaunchProfileData> Profiles { get; set; }
+		internal string ActiveProfile { get; set; }
+		internal LaunchProfileData CurrentProfile => Profiles [ActiveProfile];
+
 		public AspNetCoreRunConfiguration (string name)
 			: base (name)
 		{
 		}
 
-		public bool LaunchBrowser { get; set; } = true;
-
-		public string LaunchUrl { get; set; } = null;
-
-		public string ApplicationURL { get; set; } = "http://localhost:5000/";
-
-		[ItemProperty (DefaultValue = null)]
-		public PipeTransportSettings PipeTransport { get; set; }
-
-		protected override void Initialize (Project project)
+		public void LoadLaunchSettings (DotNetProject project)
 		{
-			base.Initialize (project);
-			ExternalConsole = false;
-			// Pick up/import default values from "launchSettings.json"
-			var launchSettingsJsonPath = Path.Combine (project.BaseDirectory, "Properties", "launchSettings.json");
-			var launchSettingsJson = File.Exists (launchSettingsJsonPath) ? JObject.Parse (File.ReadAllText (launchSettingsJsonPath)) : null;
-			var settings = (launchSettingsJson?.GetValue ("profiles") as JObject)?.GetValue (project.Name) as JObject;
+			launchProfileProvider = new LaunchProfileProvider (project);
+			launchProfileProvider.LoadLaunchSettings ();
 
-			LaunchBrowser = settings?.GetValue ("launchBrowser")?.Value<bool?> () ?? true;
-			LaunchUrl = settings?.GetValue ("launchUrl")?.Value<string> () ?? null;
-			foreach (var pair in (settings?.GetValue ("environmentVariables") as JObject)?.Properties () ?? Enumerable.Empty<JProperty> ()) {
-				if (!EnvironmentVariables.ContainsKey (pair.Name))
-					EnvironmentVariables.Add (pair.Name, pair.Value.Value<string> ());
+			Profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
+
+			//we assume that the project.Name is the default profile
+			ActiveProfile = Profiles.FirstOrDefault (x => x.Key == project.DefaultNamespace).Key;
+
+			if (ActiveProfile == null) //otherwise the first "Project" one 
+				ActiveProfile = Profiles.FirstOrDefault (p => p.Value.CommandName == "Project").Key;
+
+			//if it does not exist, we create a new one
+			if (string.IsNullOrEmpty (ActiveProfile)) {
+				var newProfile = launchProfileProvider.CreateDefaultProfile ();
+				Profiles.Add (project.DefaultNamespace, newProfile);
+				ActiveProfile = newProfile.Name;
 			}
-			ApplicationURL = GetApplicationUrl (settings, EnvironmentVariables);
+
+			if (CurrentProfile.OtherSettings == null)
+				CurrentProfile.OtherSettings = new Dictionary<string, object> (StringComparer.Ordinal);
+
+			if (CurrentProfile.EnvironmentVariables == null)
+				CurrentProfile.EnvironmentVariables = new Dictionary<string, string> (StringComparer.Ordinal);
 		}
 
-		static string GetApplicationUrl (JObject settings, IDictionary<string, string> environmentVariables)
+		public void RefreshLaunchSettings ()
 		{
-			var applicationUrl = settings?.GetValue ("applicationUrl")?.Value<string> ();
-			if (applicationUrl != null)
-				return GetFirstUrl (applicationUrl);
+			if (launchProfileProvider == null)
+				return;
 
-			if (environmentVariables.TryGetValue ("ASPNETCORE_URLS", out string applicationUrls)) {
-				applicationUrl = GetFirstUrl (applicationUrls);
-				if (applicationUrl != null)
-					return applicationUrl;
+			launchProfileProvider.LoadLaunchSettings ();
+			Profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
+			EnvironmentVariables.Clear ();
+			LoadEnvVariables ();
+		}
+
+		public string GetApplicationUrl ()
+		{
+			var applicationUrl = CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
+			if (applicationUrl != null)
+				return applicationUrl;
+				
+			if (EnvironmentVariables.ContainsKey ("ASPNETCORE_URLS")) {
+					return EnvironmentVariables ["ASPNETCORE_URLS"];
 			}
 
 			return "http://localhost:5000";
 		}
 
-		static string GetFirstUrl (string url)
-		{
-			if (string.IsNullOrEmpty (url) || !url.Contains (';'))
-				return url;
-
-			return url.Split (';').FirstOrDefault ();
-		}
-
 		protected override void Read (IPropertySet pset)
 		{
 			base.Read (pset);
+
+			LoadEnvVariables ();
+
 			ExternalConsole = pset.GetValue (nameof (ExternalConsole), false);
-			if (!pset.HasProperty (nameof (EnvironmentVariables)))
-				EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
-			LaunchBrowser = pset.GetValue (nameof (LaunchBrowser), true);
-			ApplicationURL = pset.GetValue (nameof (ApplicationURL), "http://localhost:5000/");
-			LaunchUrl = pset.GetValue (nameof (LaunchUrl), null);
+		}
+
+		void LoadEnvVariables ()
+		{
+			foreach (var pair in Profiles [ActiveProfile].EnvironmentVariables) {
+				if (!EnvironmentVariables.ContainsKey (pair.Key))
+					EnvironmentVariables.Add (pair.Key, pair.Value);
+				else
+					EnvironmentVariables [pair.Key] = pair.Value;
+			}
 		}
 
 		protected override void Write (IPropertySet pset)
 		{
 			base.Write (pset);
+
 			pset.SetValue (nameof (ExternalConsole), ExternalConsole, false);
-			pset.SetValue (nameof (LaunchBrowser), LaunchBrowser, true);
-			pset.SetValue (nameof (LaunchUrl), string.IsNullOrWhiteSpace (LaunchUrl) ? null : LaunchUrl, null);
-			pset.SetValue (nameof (ApplicationURL), ApplicationURL, "http://localhost:5000/");
 			if (EnvironmentVariables.Count == 1 && EnvironmentVariables.ContainsKey ("ASPNETCORE_ENVIRONMENT") && EnvironmentVariables ["ASPNETCORE_ENVIRONMENT"] == "Development")
 				pset.RemoveProperty (nameof (EnvironmentVariables));
+
+			if (ActiveProfile == null) {
+				return;
+			}
+
+			foreach (var pair in EnvironmentVariables) {
+				if (!Profiles [ActiveProfile].EnvironmentVariables.ContainsKey (pair.Key))
+					Profiles [ActiveProfile].EnvironmentVariables.Add (pair.Key, pair.Value);
+				else
+					Profiles [ActiveProfile].EnvironmentVariables [pair.Key] = pair.Value;
+			}
+
+			launchProfileProvider.SaveLaunchSettings (Profiles.ToSerializableForm());
 		}
 
 		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
@@ -119,9 +147,12 @@ namespace MonoDevelop.AspNetCore
 
 			var other = (AspNetCoreRunConfiguration)config;
 
-			LaunchBrowser = other.LaunchBrowser;
-			LaunchUrl = other.LaunchUrl;
-			ApplicationURL = other.ApplicationURL;
+			CurrentProfile.LaunchBrowser = other.CurrentProfile.LaunchBrowser;
+			CurrentProfile.LaunchUrl = other.CurrentProfile.LaunchUrl;
+			var applicationUrl = other.CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
+			if (!string.IsNullOrEmpty ("applicationUrl"))
+				CurrentProfile.OtherSettings ["applicationUrl"] = applicationUrl;
+
 			if (other.PipeTransport == null)
 				PipeTransport = null;
 			else
@@ -130,10 +161,10 @@ namespace MonoDevelop.AspNetCore
 
 		internal bool UsingHttps ()
 		{
-			if (ApplicationURL != null) {
-				if (ApplicationURL.StartsWith ("https://", StringComparison.OrdinalIgnoreCase)) {
-					return true;
-				}
+			var applicationUrl = CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
+
+			if (!string.IsNullOrEmpty (applicationUrl)) {
+				return applicationUrl.IndexOf ("https://", StringComparison.OrdinalIgnoreCase) >= 0;
 			}
 
 			var environmentVariables = (IDictionary<string, string>)EnvironmentVariables;

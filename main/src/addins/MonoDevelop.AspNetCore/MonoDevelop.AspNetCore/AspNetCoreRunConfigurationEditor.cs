@@ -120,9 +120,9 @@ namespace MonoDevelop.AspNetCore
 
 			Add (mainBox, GettextCatalog.GetString ("ASP.NET Core"));
 
-			launchBrowser.Active = config.LaunchBrowser;
-			launchUrl.Text = config.LaunchUrl;
-			applicationUrl.Text = config.ApplicationURL;
+			launchBrowser.Active = (bool)config.CurrentProfile.LaunchBrowser;
+			launchUrl.Text = config.CurrentProfile.LaunchUrl;
+			applicationUrl.Text = config.GetApplicationUrl ();
 
 			UpdateUI ();
 
@@ -140,15 +140,28 @@ namespace MonoDevelop.AspNetCore
 		bool IsValidUrl (string url)
 		{
 			Uri dummy;
+
+			if (url.Contains (";")) {
+				var urls = url.Split (';');
+				for (var i = 0;i < urls.Length; i++) {
+					if (Uri.TryCreate (urls [i], UriKind.Absolute, out dummy))
+						continue;
+
+					return false;
+				}
+				return true;
+			}
+			
 			return Uri.TryCreate (url, UriKind.Absolute, out dummy);
 		}
 
 		public void SaveCore ()
 		{
 			base.Save ();
-			config.LaunchBrowser = launchBrowser.Active;
-			config.LaunchUrl = launchUrl.Text;
-			config.ApplicationURL = applicationUrl.Text;
+			config.CurrentProfile.LaunchBrowser = launchBrowser.Active;
+			config.CurrentProfile.LaunchUrl = launchUrl.Text;
+			if (!string.IsNullOrEmpty (applicationUrl.Text))
+				config.CurrentProfile.OtherSettings ["applicationUrl"] = applicationUrl.Text;
 		}
 
 		public bool ValidateCore ()

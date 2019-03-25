@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
 
@@ -50,5 +51,13 @@ namespace MonoDevelop.AspNetCore
 		public string LaunchURL { get; set; }
 		public string ApplicationURL { get; set; }
 		public PipeTransportSettings PipeTransport { get; set; }
+
+		public string GetFirstApplicationURL ()
+		{
+			if (string.IsNullOrEmpty (ApplicationURL) || !ApplicationURL.Contains (';'))
+				return ApplicationURL;
+
+			return ApplicationURL.Split (';').FirstOrDefault ();
+		}
 	}
 }
