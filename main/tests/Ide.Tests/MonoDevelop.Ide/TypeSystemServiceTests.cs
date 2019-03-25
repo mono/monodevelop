@@ -159,6 +159,51 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
+		public async Task TestWorkspacePersistentStorageImplementation ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var persistentStorageService = ws.Services.GetService<IPersistentStorageService> ();
+					Assert.That (persistentStorageService, Is.TypeOf (typeof (Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService)));
+
+					if (!(persistentStorageService is Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService sqlitePersistentStorageService))
+						return;
+
+					var solutionSizeTracker = (IIncrementalAnalyzerProvider)Composition.CompositionManager.GetExportedValue<ISolutionSizeTracker> ();
+					// This will return the tracker, since it's a singleton.
+					var analyzer = solutionSizeTracker.CreateIncrementalAnalyzer (ws);
+
+					// We need this hack because we can't guess when the work coordinator will run the incremental analyzers.
+					await analyzer.NewSolutionSnapshotAsync (ws.CurrentSolution, CancellationToken.None);
+
+					// Due to the nature of roslyn returning a new wrapper every time we request the storage, do a reflection check.
+					const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+					var fieldInfo = sqlitePersistentStorageService.GetType ().BaseType.GetField ("_currentPersistentStorage", flags);
+
+					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
+						Assert.That (persistentStorage, Is.Not.TypeOf (typeof (NoOpPersistentStorage)));
+					}
+
+					var initialFieldValue = fieldInfo.GetValue (sqlitePersistentStorageService);
+
+					using (var persistentStorage = sqlitePersistentStorageService.GetStorage (ws.CurrentSolution, checkBranchId: false)) {
+						Assert.That (persistentStorage, Is.Not.TypeOf (typeof (NoOpPersistentStorage)));
+					}
+
+					var secondFieldValue = fieldInfo.GetValue (sqlitePersistentStorageService);
+
+					Assert.AreSame (initialFieldValue, secondFieldValue);
+
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
+		[Test]
 		public async Task TestWorkspaceImmediatelyAvailable ()
 		{
 			//Initialize IdeApp so IdeApp.Workspace is not null
