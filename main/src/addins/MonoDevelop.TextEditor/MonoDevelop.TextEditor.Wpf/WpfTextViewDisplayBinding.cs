@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	[ExportDocumentControllerFactory (FileExtension = "*")]
+	[ExportDocumentControllerFactory (FileExtension = "*", InsertBefore = "TextEditor")]
 	class WpfTextViewDisplayBinding : TextViewDisplayBinding<WpfTextViewImports>
 	{
 		static WpfTextViewDisplayBinding ()

@@ -37,7 +37,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
-	[ExportDocumentControllerFactory (MimeType = "*")]
+	[ExportDocumentControllerFactory (Id = "TextEditor", MimeType = " * ")]
 	public class TextEditorDisplayBinding : FileDocumentControllerFactory
 	{
 		protected override async Task<IEnumerable<DocumentControllerDescription>> GetSupportedControllersAsync (FileDescriptor file)

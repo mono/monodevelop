@@ -42,9 +42,6 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
 		<Assembly file="../../../bin/Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id="TextViewCocoa" insertbefore="TextEditor" class="MonoDevelop.TextEditor.CocoaTextViewDisplayBinding" />
-	</Extension>
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="vs-find-replace-search" resource="vs-find-replace-search-16.png" size="Menu" imageid="{6114fe54-2a4a-4354-aabb-d2b8fad160a5}#1" />
 		<StockIcon stockid="vs-find-replace-close" resource="vs-find-replace-close-16.png" size="Menu" imageid="{6114fe54-2a4a-4354-aabb-d2b8fad160a5}#2" />

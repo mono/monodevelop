@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextEditor
 {
-	[ExportDocumentControllerFactory (FileExtension = "*")]
+	[ExportDocumentControllerFactory (FileExtension = "*", InsertBefore = "TextEditor")]
 	class CocoaTextViewDisplayBinding : TextViewDisplayBinding<CocoaTextViewImports>
 	{
 		static CocoaTextViewDisplayBinding ()
