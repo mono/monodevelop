@@ -35,6 +35,7 @@ using MonoDevelop.Debugger.PreviewVisualizers;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Commands;
+using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger
 {
@@ -100,12 +101,21 @@ namespace MonoDevelop.Debugger
 			Control widget = null;
 			try {
 				widget = previewVisualizer?.GetVisualizerWidget (val);
+			} catch (EvaluatorException ex) {
+				widget = CreateErrorPreview (ex.Message);
 			} catch (Exception e) {
-				DebuggingService.DebuggerSession.LogWriter (true, "Exception during preview widget creation: " + e.Message);
+				LoggingService.LogInternalError ("Exception during preview widget creation", e);
 			}
 			if (widget == null) {
-				genericPreview = new GenericPreviewVisualizer ();
-				widget = genericPreview.GetVisualizerWidget (val);
+				try {
+					genericPreview = new GenericPreviewVisualizer ();
+					widget = genericPreview.GetVisualizerWidget (val);
+				} catch (EvaluatorException ex) {
+					widget = CreateErrorPreview (ex.Message);
+				} catch (Exception ex) {
+					widget = CreateErrorPreview (GettextCatalog.GetString ("There was an error retrieving the value"));
+					LoggingService.LogInternalError (ex);
+				}
 			}
 			var alignment = new Alignment (0, 0, 1, 1);
 			alignment.SetPadding (3, 5, 5, 5);
@@ -113,6 +123,15 @@ namespace MonoDevelop.Debugger
 			alignment.Add (widget);
 			mainBox.PackStart (alignment);
 			ContentBox.Add (mainBox);
+		}
+
+		Gtk.Widget CreateErrorPreview (string message)
+		{
+			var box = new HBox (false, 3);
+			box.PackStart (new ImageView (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), false, false, 0);
+			box.PackStart (new Gtk.Label (message), false, false, 0);
+			box.ShowAll ();
+			return box;
 		}
 
 		[CommandUpdateHandler (EditCommands.Copy)]

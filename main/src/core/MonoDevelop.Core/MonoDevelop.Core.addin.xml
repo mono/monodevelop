@@ -2,6 +2,7 @@
 
 	<Runtime>
 		<Import assembly="Newtonsoft.Json.dll" />
+		<Import assembly="StreamJsonRpc.dll" />
 		<Import assembly="System.Collections.Immutable.dll" />
 		<Import assembly="System.Reflection.Metadata.dll" />
 		<Import assembly="System.Memory.dll" />

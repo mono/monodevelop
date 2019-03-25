@@ -1,4 +1,4 @@
-﻿//
+//
 // CommentTasksProvider.Legacy.cs
 //
 // Author:

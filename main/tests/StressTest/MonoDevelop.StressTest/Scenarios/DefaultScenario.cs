@@ -28,21 +28,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.StressTest.Attributes;
 using UserInterfaceTests;
 
 namespace MonoDevelop.StressTest
 {
-	public class TestScenario : ITestScenario
+	[NoLeak(typeof (Projects.Solution))]
+	public class DefaultScenario : ITestScenario
 	{
 		List<FilePath> filesToOpen;
 
-		public TestScenario (FilePath solutionFileName)
+		public DefaultScenario (FilePath solutionFileName)
 			: this (solutionFileName, Enumerable.Empty<string> ())
 		{
 			SolutionFileName = solutionFileName;
 		}
 
-		public TestScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen)
+		public DefaultScenario (FilePath solutionFileName, IEnumerable<string> filesToOpen)
 		{
 			SolutionFileName = solutionFileName;
 
@@ -61,6 +63,7 @@ namespace MonoDevelop.StressTest
 
 		bool firstRun = true;
 
+		[NoLeak ("MonoDevelop.SourceEditor.ExtensibleTextEditor")]
 		public void Run ()
 		{
 			if (firstRun) {
@@ -69,7 +72,6 @@ namespace MonoDevelop.StressTest
 			}
 
 			// Open files.
-			WorkbenchExtensions.CloseAllOpenFiles ();
 			WorkbenchExtensions.OpenFiles (FilesToOpen);
 			UserInterfaceTests.Ide.WaitForIdeIdle ();
 
@@ -103,6 +105,9 @@ namespace MonoDevelop.StressTest
 			// AutoTestClientSession.EnterText works without needing to
 			// focus the workbench.
 			WorkbenchExtensions.GrabDesktopFocus ();
+
+			// Close all documents.
+			WorkbenchExtensions.CloseAllOpenFiles ();
 		}
 	}
 }

@@ -51,6 +51,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Gui;
 using Document = Microsoft.CodeAnalysis.Document;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -1187,8 +1188,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 		readonly object projectModifyLock = new object ();
 		bool freezeProjectModify;
-		Dictionary<MonoDevelop.Projects.DotNetProject, CancellationTokenSource> projectModifiedCts = new Dictionary<MonoDevelop.Projects.DotNetProject, CancellationTokenSource> ();
-
+		ConditionalWeakTable<MonoDevelop.Projects.DotNetProject, CancellationTokenSource> projectModifiedCts = new ConditionalWeakTable<MonoDevelop.Projects.DotNetProject, CancellationTokenSource> ();
 		void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
 			lock (projectModifyLock) {
@@ -1201,10 +1201,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (project == null)
 						return;
 					var projectId = GetProjectId (project);
-					if (projectModifiedCts.TryGetValue (project, out var cts))
+					if (projectModifiedCts.TryGetValue (project, out var cts)) {
 						cts.Cancel ();
+						projectModifiedCts.Remove (project);
+					}
 					cts = new CancellationTokenSource ();
-					projectModifiedCts [project] = cts;
+					projectModifiedCts.Add (project, cts);
 					if (CurrentSolution.ContainsProject (projectId)) {
 						var projectInfo = ProjectHandler.LoadProject (project, cts.Token, null).ContinueWith (t => {
 							if (t.IsCanceled)

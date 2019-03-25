@@ -1,5 +1,5 @@
 ﻿//
-// TestScenarioProvider.cs
+// StressTestOptions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -25,31 +25,33 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace MonoDevelop.StressTest
 {
-	public static class TestScenarioProvider
+	public class ProfilerOptions
 	{
-		public static ITestScenario GetTestScenario ()
+		public enum ProfilerType
 		{
-            string testProjectPath = Path.Combine(Path.GetDirectoryName(typeof(TestScenarioProvider).Assembly.Location), "TestProject");
-            var monoAddinsPath = Path.Combine(testProjectPath, "mono-addins", "Mono.Addins");
-
-			var scenario = new TestScenario (
-                Path.Combine (testProjectPath, "TestProject.sln"),
-				new [] {
-					Path.Combine (monoAddinsPath, "Mono.Addins/Addin.cs"),
-					Path.Combine (monoAddinsPath, "Mono.Addins.Localization/StringResourceLocalizer.cs"),
-					Path.Combine (monoAddinsPath, "Mono.Addins.Description/AddinDescription.cs"),
-					"Program.cs"
-				}
-			);
-
-			scenario.TextToEnter = new [] { "using S", "yst", "em;" };
-
-			return scenario;
+			Disabled,
+			HeapOnly,
+			All,
+			Custom
 		}
+
+		[Flags]
+		public enum PrintReport
+		{
+			ObjectsDiff = 1 << 0,
+			ObjectsTotal = 1 << 1,
+			// OnlyOnLast
+		}
+
+		public ProfilerType Type { get; set; } = ProfilerType.Disabled;
+		public PrintReport PrintReportTypes { get; set; }
+		public int MaxFrames { get; set; }
+		public string MlpdOutputPath { get; set; }
+		public string CustomProfilerArguments { get; set; }
+		public HashSet<string> PrintReportObjectNames { get; } = new HashSet<string>(StringComparer.Ordinal);
 	}
 }
