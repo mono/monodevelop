@@ -474,7 +474,6 @@ namespace MonoDevelop.VersionControl.Views
 						} else
 							changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
 					}
-					changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
 					fileList = null;
 				}
 
