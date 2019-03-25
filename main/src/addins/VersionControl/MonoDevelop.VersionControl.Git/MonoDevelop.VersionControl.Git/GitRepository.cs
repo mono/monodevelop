@@ -1779,7 +1779,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public string GetCurrentBranch ()
 		{
-			return RunOperation (() => RootRepository.Head.FriendlyName);
+			return RunSafeOperation (() => RootRepository.Head.FriendlyName);
 		}
 
 		void SwitchBranchInternal (ProgressMonitor monitor, string branch)
