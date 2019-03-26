@@ -6,7 +6,7 @@ namespace MonoDevelop.StressTest
 		Legacy,
 		VSEditor,
 		Both,
-		Default = Both,
+		Default = Legacy,
 	}
 
 	public interface IEditorTestScenario : ITestScenario
