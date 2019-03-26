@@ -52,12 +52,12 @@ namespace MonoDevelop.AspNetCore
 		public string ApplicationURL { get; set; }
 		public PipeTransportSettings PipeTransport { get; set; }
 
-		public string GetFirstApplicationURL ()
+		public static string GetFirstApplicationURL (string urls)
 		{
-			if (string.IsNullOrEmpty (ApplicationURL) || !ApplicationURL.Contains (';'))
-				return ApplicationURL;
+			if (string.IsNullOrEmpty (urls) || !urls.Contains (';'))
+				return urls;
 
-			return ApplicationURL.Split (';').FirstOrDefault ();
+			return urls.Split (';').FirstOrDefault ();
 		}
 	}
 }

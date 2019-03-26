@@ -105,10 +105,6 @@ namespace MonoDevelop.AspNetCore
 			var applicationUrl = CurrentProfile.TryGetOtherSettings<string> ("applicationUrl");
 			if (applicationUrl != null)
 				return applicationUrl;
-				
-			if (EnvironmentVariables.ContainsKey ("ASPNETCORE_URLS")) {
-					return EnvironmentVariables ["ASPNETCORE_URLS"];
-			}
 
 			return "http://localhost:5000";
 		}
