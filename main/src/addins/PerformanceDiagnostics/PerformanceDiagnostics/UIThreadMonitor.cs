@@ -231,7 +231,7 @@ namespace PerformanceDiagnosticsAddIn
 							if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
 								pmipMethodName = mono_pmip (offset)?.TrimStart ();
 								if (pmipMethodName != null)
-									pmipMethodName = PmipParser.ToSample (pmipMethodName.AsSpan (), offset);
+									pmipMethodName = PmipParser.ToSample (pmipMethodName, offset);
 								methodsCache.Add (offset, pmipMethodName);
 							}
 
@@ -255,77 +255,83 @@ namespace PerformanceDiagnosticsAddIn
 			// sample symbolified line:
 			// start  (in libdyld.dylib) + 1  [0x7fff79c7ded9]
 			// mono_hit_runtime_invoke  (in mono64) + 1619  [0x102f90083]  mini-runtime.c:3148
-			public static string ToSample (ReadOnlySpan<char> input, long offset)
+			public static string ToSample (string initialInput, long offset)
 			{
-				var sb = new StringBuilder ();
-				string filename = null;
+				try {
+					var input = initialInput.AsSpan ();
+					var sb = new StringBuilder ();
+					string filename = null;
 
-				// Cut off wrapper part.
-				if (input.StartsWith ("(wrapper".AsSpan ())) {
-					input = input.Slice (input.IndexOf (')') + 1).TrimStart ();
-				}
-
-				// If it starts with <Module>:, trim it.
-				if (input.StartsWith ("<Module>:".AsSpan ())) {
-					input = input.Slice ("<Module>:".Length);
-				}
-
-				// Usually a generic trampoline marker, don't bother parsing.
-				if (input[0] == '<')
-					return input.ToString ();
-
-				// Decode method signature
-				// Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]
-				var endMethodSignature = input.IndexOf ('{');
-				var methodSignature = input.Slice (0, endMethodSignature - 2); // " ["
-				input = input.Slice (endMethodSignature + 1).TrimStart ();
-
-				// Append chars, escaping what might be unreadable by instruments.
-				for (int i = 0; i < methodSignature.Length; ++i) {
-					var ch = methodSignature [i];
-					if (ch == ' ')
-						continue;
-
-					if (ch == ':') {
-						sb.Append ("::");
-						continue;
+					// Cut off wrapper part.
+					if (input.StartsWith ("(wrapper".AsSpan ())) {
+						input = input.Slice (input.IndexOf (')') + 1).TrimStart ();
 					}
 
-					if (ch == '.') {
-						sb.Append ("_");
-						continue;
+					// If it starts with <Module>:, trim it.
+					if (input.StartsWith ("<Module>:".AsSpan ())) {
+						input = input.Slice ("<Module>:".Length);
 					}
 
-					if (ch == '[' && methodSignature [i + 1] == ']') {
-						sb.Append ("*");
-						i++;
-						continue;
+					// Usually a generic trampoline marker, don't bother parsing.
+					if (input[0] == '<')
+						return input.ToString ();
+
+					// Decode method signature
+					// Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]
+					var endMethodSignature = input.IndexOf ('{');
+					var methodSignature = input.Slice (0, endMethodSignature - 2); // " ["
+					input = input.Slice (endMethodSignature + 1).TrimStart ();
+
+					// Append chars, escaping what might be unreadable by instruments.
+					for (int i = 0; i < methodSignature.Length; ++i) {
+						var ch = methodSignature [i];
+						if (ch == ' ')
+							continue;
+
+						if (ch == ':') {
+							sb.Append ("::");
+							continue;
+						}
+
+						if (ch == '.') {
+							sb.Append ("_");
+							continue;
+						}
+
+						if (ch == '[' && methodSignature [i + 1] == ']') {
+							sb.Append ("*");
+							i++;
+							continue;
+						}
+
+						sb.Append (ch);
 					}
 
-					sb.Append (ch);
+					// Add some data to match format, + 0 is because it doesn't matter, we're not looking at native code.
+					sb.Append ("  (in MonoDevelop.exe) + 0  [");
+					sb.AppendFormat ("0x{0:x}", offset);
+					sb.Append ("]");
+
+					// Skip the rest of the block(s) after the method signature until we get a path.
+					input = input.Slice (input.IndexOf ('[') + 1).TrimStart ();
+
+					if (input[0] == '/') {
+						// We have a filename
+						var end = input.IndexOf (']');
+						var filepath = input.Slice (0, end - 1).Trim (); // trim u
+						filename = filepath.ToString ();
+					}
+
+					if (filename != null) {
+						sb.Append ("  ");
+						sb.Append (filename);
+					}
+
+					return sb.ToString ();
+				} catch (Exception e) {
+					LoggingService.LogInternalError ($"Failed to parse line '{initialInput}'", e);
+					return initialInput;
 				}
-
-				// Add some data to match format, + 0 is because it doesn't matter, we're not looking at native code.
-				sb.Append ("  (in MonoDevelop.exe) + 0  [");
-				sb.AppendFormat ("0x{0:x}", offset);
-				sb.Append ("]");
-
-				// Skip the rest of the block(s) after the method signature until we get a path.
-				input = input.Slice (input.IndexOf ('[') + 1).TrimStart ();
-
-				if (input[0] == '/') {
-					// We have a filename
-					var end = input.IndexOf (']');
-					var filepath = input.Slice (0, end - 1).Trim (); // trim u
-					filename = filepath.ToString ();
-				}
-
-				if (filename != null) {
-					sb.Append ("  ");
-					sb.Append (filename);
-				}
-
-				return sb.ToString ();
 			}
 		}
 
