@@ -27,6 +27,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.AutoTest.Operations;
+using MonoDevelop.Components.AutoTest.Results;
+
+#if MAC
+using AppKit;
+#endif
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -44,7 +49,199 @@ namespace MonoDevelop.Components.AutoTest
 
 		public (AppResult RootNode, AppResult[] AllResults) Execute ()
 		{
-			return (null, null);
+			var (rootNode, resultSet) = ResultSetFromWindows ();
+
+			foreach (var subquery in operations) {
+				// Some subqueries can select different results
+				resultSet = subquery.Execute (resultSet);
+
+				if (resultSet == null || resultSet.Count == 0) {
+					return (rootNode, Array.Empty<AppResult> ());
+				}
+			}
+
+			AppResult [] results = new AppResult [resultSet.Count];
+			resultSet.CopyTo (results);
+
+			return (rootNode, results);
+		}
+
+
+		AppResult GenerateChildrenForContainer (Gtk.Container container, List<AppResult> resultSet)
+		{
+			AppResult firstChild = null, lastChild = null;
+
+			foreach (var child in container.Children) {
+				AppResult node = new GtkWidgetResult (child) { SourceQuery = ToString () };
+				resultSet.Add (node);
+
+				// FIXME: Do we need to recreate the tree structure of the AppResults?
+				if (firstChild == null) {
+					firstChild = node;
+					lastChild = node;
+				} else {
+					lastChild.NextSibling = node;
+					node.PreviousSibling = lastChild;
+					lastChild = node;
+				}
+
+				if (child is Gtk.Container) {
+					AppResult children = GenerateChildrenForContainer ((Gtk.Container)child, resultSet);
+					node.FirstChild = children;
+				}
+			}
+
+			return firstChild;
+		}
+
+#if MAC
+		AppResult GenerateChildrenForNSView (NSView view, List<AppResult> resultSet)
+		{
+			AppResult firstChild = null, lastChild = null;
+
+			foreach (var child in view.Subviews) {
+				AppResult node = new NSObjectResult (child) { SourceQuery = ToString () };
+				resultSet.Add (node);
+
+				if (firstChild == null) {
+					firstChild = node;
+					lastChild = node;
+				} else {
+					lastChild.NextSibling = node;
+					node.PreviousSibling = lastChild;
+					lastChild = node;
+				}
+
+				if (child.Subviews != null) {
+					AppResult children = GenerateChildrenForNSView (child, resultSet);
+					node.FirstChild = children;
+				}
+			}
+
+			if (view is NSSegmentedControl || view.GetType ().IsSubclassOf (typeof (NSSegmentedControl))) {
+				var segmentedControl = (NSSegmentedControl)view;
+				for (int i = 0; i < segmentedControl.SegmentCount; i++) {
+					var node = new NSObjectResult (view, i);
+					resultSet.Add (node);
+					if (firstChild == null) {
+						firstChild = node;
+						lastChild = node;
+					} else {
+						lastChild.NextSibling = node;
+						node.PreviousSibling = lastChild;
+						lastChild = node;
+					}
+				}
+			}
+
+			return firstChild;
+		}
+#endif
+
+		(AppResult, List<AppResult>) ResultSetFromWindows ()
+		{
+			Gtk.Window [] windows = Gtk.Window.ListToplevels ();
+
+			// null for AppResult signifies root node
+			var rootNode = new GtkWidgetResult (null) { SourceQuery = ToString () };
+			List<AppResult> fullResultSet = new List<AppResult> ();
+
+			// Build the tree and full result set recursively
+			AppResult lastChild = null;
+			foreach (var window in windows) {
+				AppResult node = new GtkWidgetResult (window) { SourceQuery = ToString () };
+				fullResultSet.Add (node);
+
+				if (rootNode.FirstChild == null) {
+					rootNode.FirstChild = node;
+					lastChild = node;
+				} else {
+					// Add the new node into the chain
+					lastChild.NextSibling = node;
+					node.PreviousSibling = lastChild;
+					lastChild = node;
+				}
+
+				// Create the children list and link them onto the node
+				AppResult children = GenerateChildrenForContainer ((Gtk.Container)window, fullResultSet);
+				node.FirstChild = children;
+			}
+
+#if MAC
+			NSWindow [] nswindows = NSApplication.SharedApplication.Windows;
+			if (nswindows != null) {
+				foreach (var window in nswindows) {
+					AppResult node = new NSObjectResult (window) { SourceQuery = ToString () };
+					AppResult nsWindowLastNode = null;
+					fullResultSet.Add (node);
+
+					if (rootNode.FirstChild == null) {
+						rootNode.FirstChild = node;
+						lastChild = node;
+					} else {
+						lastChild.NextSibling = node;
+						node.PreviousSibling = lastChild;
+						lastChild = node;
+					}
+
+					foreach (var child in window.ContentView.Subviews) {
+						AppResult childNode = new NSObjectResult (child) { SourceQuery = ToString () };
+						fullResultSet.Add (childNode);
+
+						if (node.FirstChild == null) {
+							node.FirstChild = childNode;
+							nsWindowLastNode = childNode;
+						} else {
+							nsWindowLastNode.NextSibling = childNode;
+							childNode.PreviousSibling = nsWindowLastNode;
+							nsWindowLastNode = childNode;
+						}
+
+						if (child.Subviews != null) {
+							AppResult children = GenerateChildrenForNSView (child, fullResultSet);
+							childNode.FirstChild = children;
+						}
+					}
+
+					NSToolbar toolbar = window.Toolbar;
+					AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = ToString () };
+
+					if (node.FirstChild == null) {
+						node.FirstChild = toolbarNode;
+						nsWindowLastNode = toolbarNode;
+					} else {
+						nsWindowLastNode.NextSibling = toolbarNode;
+						toolbarNode.PreviousSibling = nsWindowLastNode;
+						nsWindowLastNode = toolbarNode;
+					}
+
+					if (toolbar != null) {
+						AppResult lastItemNode = null;
+						foreach (var item in toolbar.Items) {
+							if (item.View != null) {
+								AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = ToString () };
+								fullResultSet.Add (itemNode);
+
+								if (toolbarNode.FirstChild == null) {
+									toolbarNode.FirstChild = itemNode;
+									lastItemNode = itemNode;
+								} else {
+									lastItemNode.NextSibling = itemNode;
+									itemNode.PreviousSibling = lastItemNode;
+									lastItemNode = itemNode;
+								}
+
+								if (item.View.Subviews != null) {
+									AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
+									itemNode.FirstChild = children;
+								}
+							}
+						}
+					}
+				}
+			}
+#endif
+			return (rootNode, fullResultSet);
 		}
 
 		public static string GetQueryString (List<Operation> operations)
