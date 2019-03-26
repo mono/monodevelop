@@ -76,6 +76,18 @@ namespace MonoDevelop.Components.AutoTest
 			return (rootNode, fullResultSet);
 		}
 
+		void AddChild (AppResult parent, AppResult node, ref AppResult lastChild)
+		{
+			if (parent.FirstChild == null) {
+				parent.FirstChild = node;
+			} else {
+				// Add the new node into the chain
+				lastChild.NextSibling = node;
+				node.PreviousSibling = lastChild;
+			}
+			lastChild = node;
+		}
+
 		public static string GetQueryString (List<Operation> operations)
 		{
 			var strings = operations.Select (x => x.ToString ()).ToArray ();

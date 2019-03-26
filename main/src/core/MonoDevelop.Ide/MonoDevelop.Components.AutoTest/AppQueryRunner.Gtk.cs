@@ -45,46 +45,26 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult node = new GtkWidgetResult (window) { SourceQuery = sourceQuery };
 			fullResultSet.Add (node);
 
-			if (rootNode.FirstChild == null) {
-				rootNode.FirstChild = node;
-				lastChild = node;
-			} else {
-				// Add the new node into the chain
-				lastChild.NextSibling = node;
-				node.PreviousSibling = lastChild;
-				lastChild = node;
-			}
+			AddChild (rootNode, node, ref lastChild);
 
 			// Create the children list and link them onto the node
-			var children = GenerateChildrenForContainer (window, fullResultSet);
-			node.FirstChild = children;
+			GenerateChildrenForContainer (node, window);
 		}
 
-		AppResult GenerateChildrenForContainer (Gtk.Container container, List<AppResult> resultSet)
+		void GenerateChildrenForContainer (AppResult parent, Gtk.Container container)
 		{
-			AppResult firstChild = null, lastChild = null;
+			AppResult lastChild = null;
 
 			foreach (var child in container.Children) {
 				AppResult node = new GtkWidgetResult (child) { SourceQuery = sourceQuery };
-				resultSet.Add (node);
+				fullResultSet.Add (node);
 
-				// FIXME: Do we need to recreate the tree structure of the AppResults?
-				if (firstChild == null) {
-					firstChild = node;
-					lastChild = node;
-				} else {
-					lastChild.NextSibling = node;
-					node.PreviousSibling = lastChild;
-					lastChild = node;
-				}
+				AddChild (parent, node, ref lastChild);
 
-				if (child is Gtk.Container) {
-					AppResult children = GenerateChildrenForContainer ((Gtk.Container)child, resultSet);
-					node.FirstChild = children;
+				if (child is Gtk.Container childContainer) {
+					GenerateChildrenForContainer (node, childContainer);
 				}
 			}
-
-			return firstChild;
 		}
 	}
 }
