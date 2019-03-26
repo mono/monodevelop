@@ -34,7 +34,7 @@ using UserInterfaceTests;
 namespace MonoDevelop.StressTest
 {
 	[NoLeak(typeof (Projects.Solution))]
-	public class DefaultScenario : ITestScenario
+	public class DefaultScenario : IEditorTestScenario
 	{
 		List<FilePath> filesToOpen;
 
@@ -111,5 +111,7 @@ namespace MonoDevelop.StressTest
 			// Close all documents.
 			WorkbenchExtensions.CloseAllOpenFiles ();
 		}
+
+		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
 	}
 }
