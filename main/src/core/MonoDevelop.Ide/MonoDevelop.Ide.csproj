@@ -4193,6 +4193,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFolderDialog.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\IPropertyGrid.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Gtk.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppQueryRunner.Cocoa.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
