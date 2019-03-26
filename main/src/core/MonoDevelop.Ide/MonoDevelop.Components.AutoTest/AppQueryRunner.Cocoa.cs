@@ -53,27 +53,13 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult nsWindowLastNode = null;
 			fullResultSet.Add (node);
 
-			if (rootNode.FirstChild == null) {
-				rootNode.FirstChild = node;
-				lastChild = node;
-			} else {
-				lastChild.NextSibling = node;
-				node.PreviousSibling = lastChild;
-				lastChild = node;
-			}
+			AddChild (rootNode, node, ref lastChild);
 
 			foreach (var child in window.ContentView.Subviews) {
 				AppResult childNode = new NSObjectResult (child) { SourceQuery = sourceQuery };
 				fullResultSet.Add (childNode);
 
-				if (node.FirstChild == null) {
-					node.FirstChild = childNode;
-					nsWindowLastNode = childNode;
-				} else {
-					nsWindowLastNode.NextSibling = childNode;
-					childNode.PreviousSibling = nsWindowLastNode;
-					nsWindowLastNode = childNode;
-				}
+				AddChild (node, childNode, ref nsWindowLastNode);
 
 				if (child.Subviews != null) {
 					AppResult children = GenerateChildrenForNSView (child, fullResultSet);
@@ -84,14 +70,7 @@ namespace MonoDevelop.Components.AutoTest
 			NSToolbar toolbar = window.Toolbar;
 			AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = sourceQuery };
 
-			if (node.FirstChild == null) {
-				node.FirstChild = toolbarNode;
-				nsWindowLastNode = toolbarNode;
-			} else {
-				nsWindowLastNode.NextSibling = toolbarNode;
-				toolbarNode.PreviousSibling = nsWindowLastNode;
-				nsWindowLastNode = toolbarNode;
-			}
+			AddChild (node, toolbarNode, ref nsWindowLastNode);
 
 			if (toolbar != null) {
 				AppResult lastItemNode = null;
@@ -100,14 +79,7 @@ namespace MonoDevelop.Components.AutoTest
 						AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
 						fullResultSet.Add (itemNode);
 
-						if (toolbarNode.FirstChild == null) {
-							toolbarNode.FirstChild = itemNode;
-							lastItemNode = itemNode;
-						} else {
-							lastItemNode.NextSibling = itemNode;
-							itemNode.PreviousSibling = lastItemNode;
-							lastItemNode = itemNode;
-						}
+						AddChild (itemNode, toolbarNode, ref lastItemNode);
 
 						if (item.View.Subviews != null) {
 							AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
