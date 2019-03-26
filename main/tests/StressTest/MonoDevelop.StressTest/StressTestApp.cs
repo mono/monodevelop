@@ -85,13 +85,42 @@ namespace MonoDevelop.StressTest
 			leakProcessor = new LeakProcessor (scenario, ProfilerOptions);
 
 			ReportMemoryUsage (setupIteration);
+			RunTestScenario ();
+
+			UserInterfaceTests.Ide.CloseAll (exit: false);
+			ReportMemoryUsage (cleanupIteration);
+		}
+
+		void RunTestScenario ()
+		{
+			if (scenario is IEditorTestScenario editorTestScenario) {
+				var configuration = editorTestScenario.EditorRunConfiguration;
+				switch (configuration) {
+				case EditorTestRun.Legacy:
+					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", false);
+					break;
+				case EditorTestRun.VSEditor:
+					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", true);
+					break;
+				case EditorTestRun.Both:
+					// Run once with legacy
+					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", false);
+					RunScenarioIterations ();
+
+					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", true);
+					break;
+				}
+			}
+
+			RunScenarioIterations ();
+		}
+
+		void RunScenarioIterations()
+		{
 			for (int i = 0; i < Iterations; ++i) {
 				scenario.Run ();
 				ReportMemoryUsage (i);
 			}
-
-			UserInterfaceTests.Ide.CloseAll (exit: false);
-			ReportMemoryUsage (cleanupIteration);
 		}
 
 		bool StartWithProfiler (string profilePath, string logFile)
