@@ -112,6 +112,6 @@ namespace MonoDevelop.StressTest
 			WorkbenchExtensions.CloseAllOpenFiles ();
 		}
 
-		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Both;
+		public EditorTestRun EditorRunConfiguration { get; } = EditorTestRun.Default;
 	}
 }
