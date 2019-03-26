@@ -234,13 +234,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 								"Some files could not be saved."));
 							return;
 						}
-
+							
 					// Update the change set
 					if (docList.Any ()) {
 						foreach (var item in docList)
 							changeSet.AddFile (item.FileName);
-						// Refresh the UI
-						LoadChangeset (changeSet.Items);
 					}
 				}
 
