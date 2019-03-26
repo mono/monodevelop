@@ -60,11 +60,7 @@ namespace MonoDevelop.Components.AutoTest
 				fullResultSet.Add (childNode);
 
 				AddChild (node, childNode, ref nsWindowLastNode);
-
-				if (child.Subviews != null) {
-					AppResult children = GenerateChildrenForNSView (child, fullResultSet);
-					childNode.FirstChild = children;
-				}
+				GenerateChildrenForNSView (childNode, child);
 			}
 
 			NSToolbar toolbar = window.Toolbar;
@@ -72,64 +68,49 @@ namespace MonoDevelop.Components.AutoTest
 
 			AddChild (node, toolbarNode, ref nsWindowLastNode);
 
-			if (toolbar != null) {
-				AppResult lastItemNode = null;
-				foreach (var item in toolbar.Items) {
-					if (item.View != null) {
-						AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
-						fullResultSet.Add (itemNode);
+			if (toolbar == null) {
+				return;
+			}
 
-						AddChild (itemNode, toolbarNode, ref lastItemNode);
+			AppResult lastItemNode = null;
+			foreach (var item in toolbar.Items) {
+				if (item.View == null)
+					continue;
 
-						if (item.View.Subviews != null) {
-							AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
-							itemNode.FirstChild = children;
-						}
-					}
-				}
+				AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
+				fullResultSet.Add (itemNode);
+
+				AddChild (itemNode, toolbarNode, ref lastItemNode);
+
+				GenerateChildrenForNSView (itemNode, item.View);
 			}
 		}
 
-		AppResult GenerateChildrenForNSView (NSView view, List<AppResult> resultSet)
+		void GenerateChildrenForNSView (AppResult parent, NSView view)
 		{
-			AppResult firstChild = null, lastChild = null;
+			var subviews = view.Subviews;
+			if (subviews == null)
+				return;
+
+			AppResult lastChild = null;
 
 			foreach (var child in view.Subviews) {
 				AppResult node = new NSObjectResult (child) { SourceQuery = sourceQuery };
-				resultSet.Add (node);
+				fullResultSet.Add (node);
 
-				if (firstChild == null) {
-					firstChild = node;
-					lastChild = node;
-				} else {
-					lastChild.NextSibling = node;
-					node.PreviousSibling = lastChild;
-					lastChild = node;
-				}
+				AddChild (parent, node, ref lastChild);
 
-				if (child.Subviews != null) {
-					AppResult children = GenerateChildrenForNSView (child, resultSet);
-					node.FirstChild = children;
-				}
+				GenerateChildrenForNSView (node, child);
 			}
 
-			if (view is NSSegmentedControl || view.GetType ().IsSubclassOf (typeof (NSSegmentedControl))) {
-				var segmentedControl = (NSSegmentedControl)view;
+			if (view is NSSegmentedControl segmentedControl) {
 				for (int i = 0; i < segmentedControl.SegmentCount; i++) {
 					var node = new NSObjectResult (view, i);
-					resultSet.Add (node);
-					if (firstChild == null) {
-						firstChild = node;
-						lastChild = node;
-					} else {
-						lastChild.NextSibling = node;
-						node.PreviousSibling = lastChild;
-						lastChild = node;
-					}
+					fullResultSet.Add (node);
+
+					AddChild (parent, node, ref lastChild);
 				}
 			}
-
-			return firstChild;
 		}
 #endif
 	}

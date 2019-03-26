@@ -51,8 +51,11 @@ namespace MonoDevelop.Components.AutoTest
 			GenerateChildrenForContainer (node, window);
 		}
 
-		void GenerateChildrenForContainer (AppResult parent, Gtk.Container container)
+		void GenerateChildrenForContainer (AppResult parent, Gtk.Widget widget)
 		{
+			if (!(widget is Gtk.Container container))
+				return;
+
 			AppResult lastChild = null;
 
 			foreach (var child in container.Children) {
@@ -60,10 +63,7 @@ namespace MonoDevelop.Components.AutoTest
 				fullResultSet.Add (node);
 
 				AddChild (parent, node, ref lastChild);
-
-				if (child is Gtk.Container childContainer) {
-					GenerateChildrenForContainer (node, childContainer);
-				}
+				GenerateChildrenForContainer (node, child);
 			}
 		}
 	}
