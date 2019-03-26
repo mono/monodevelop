@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl
 
 		public ChangeSetItem AddFile (FilePath file)
 		{			
-			return AddFile (repo.GetVersionInfo (file, VersionInfoQueryFlags.IgnoreCache));
+			return AddFile (repo.GetVersionInfo (file));
 		}
 		
 		public ChangeSetItem AddFile (VersionInfo fileVersionInfo)
