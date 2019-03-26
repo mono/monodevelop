@@ -210,7 +210,11 @@ namespace PerformanceDiagnosticsAddIn
 
 		internal static void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
 		{
+			// sample line to replace:
+			// ???  (in <unknown binary>)  [0x103648455]
 			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
+
+
 			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
 				Directory.CreateDirectory (Options.OutputPath);
 				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
@@ -219,14 +223,18 @@ namespace PerformanceDiagnosticsAddIn
 				using (var sw = new StreamWriter (outputFilename)) {
 					string line;
 					while ((line = sr.ReadLine ()) != null) {
-						if (rx.IsMatch (line)) {
-							var match = rx.Match (line);
+
+						var match = rx.Match (line);
+						if (match.Success) {
 							var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
-							string pmipMethodName;
-							if (!methodsCache.TryGetValue (offset, out pmipMethodName)) {
+
+							if (!methodsCache.TryGetValue (offset, out var pmipMethodName)) {
 								pmipMethodName = mono_pmip (offset)?.TrimStart ();
+								if (pmipMethodName != null)
+									pmipMethodName = PmipParser.ToSample (pmipMethodName.AsSpan (), offset);
 								methodsCache.Add (offset, pmipMethodName);
 							}
+
 							if (pmipMethodName != null) {
 								line = line.Remove (match.Index, match.Length);
 								line = line.Insert (match.Index, pmipMethodName);
@@ -235,6 +243,89 @@ namespace PerformanceDiagnosticsAddIn
 						sw.WriteLine (line);
 					}
 				}
+			}
+		}
+
+		static class PmipParser
+		{
+			// pmip output:
+			// (wrapper managed-to-native) Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]  (0x122577d50 0x122577f28) [0x7f9682702c90 - MonoDevelop.exe]
+			// MonoDevelop.Startup.MonoDevelopMain:Main (string[]) [{0x7faef5700948} + 0x93] [/Users/therzok/Work/md/monodevelop/main/src/core/MonoDevelop.Startup/MonoDevelop.Startup/MonoDevelopMain.cs :: 39u] (0x10e7609c0 0x10e760aa8) [0x7faef7002d80 - MonoDevelop.exe]
+
+			// sample symbolified line:
+			// start  (in libdyld.dylib) + 1  [0x7fff79c7ded9]
+			// mono_hit_runtime_invoke  (in mono64) + 1619  [0x102f90083]  mini-runtime.c:3148
+			public static string ToSample (ReadOnlySpan<char> input, long offset)
+			{
+				var sb = new StringBuilder ();
+				string filename = null;
+
+				// Cut off wrapper part.
+				if (input.StartsWith ("(wrapper".AsSpan ())) {
+					input = input.Slice (input.IndexOf (')') + 1).TrimStart ();
+				}
+
+				// If it starts with <Module>:, trim it.
+				if (input.StartsWith ("<Module>:".AsSpan ())) {
+					input = input.Slice ("<Module>:".Length);
+				}
+
+				// Usually a generic trampoline marker, don't bother parsing.
+				if (input[0] == '<')
+					return input.ToString ();
+
+				// Decode method signature
+				// Gtk.Application:gtk_main () [{0x7f968e48d1e8} + 0xdf]
+				var endMethodSignature = input.IndexOf ('{');
+				var methodSignature = input.Slice (0, endMethodSignature - 2); // " ["
+				input = input.Slice (endMethodSignature + 1).TrimStart ();
+
+				// Append chars, escaping what might be unreadable by instruments.
+				for (int i = 0; i < methodSignature.Length; ++i) {
+					var ch = methodSignature [i];
+					if (ch == ' ')
+						continue;
+
+					if (ch == ':') {
+						sb.Append ("::");
+						continue;
+					}
+
+					if (ch == '.') {
+						sb.Append ("_");
+						continue;
+					}
+
+					if (ch == '[' && methodSignature [i + 1] == ']') {
+						sb.Append ("*");
+						i++;
+						continue;
+					}
+
+					sb.Append (ch);
+				}
+
+				// Add some data to match format, + 0 is because it doesn't matter, we're not looking at native code.
+				sb.Append ("  (in MonoDevelop.exe) + 0  [");
+				sb.AppendFormat ("0x{0:x}", offset);
+				sb.Append ("]");
+
+				// Skip the rest of the block(s) after the method signature until we get a path.
+				input = input.Slice (input.IndexOf ('[') + 1).TrimStart ();
+
+				if (input[0] == '/') {
+					// We have a filename
+					var end = input.IndexOf (']');
+					var filepath = input.Slice (0, end - 1).Trim (); // trim u
+					filename = filepath.ToString ();
+				}
+
+				if (filename != null) {
+					sb.Append ("  ");
+					sb.Append (filename);
+				}
+
+				return sb.ToString ();
 			}
 		}
 
