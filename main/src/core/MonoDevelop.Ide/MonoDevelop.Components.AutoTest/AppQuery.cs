@@ -369,8 +369,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public override string ToString ()
 		{
-			var operationChain = string.Join (".", operations.Select (x => x.ToString ()));
-			return string.Format ("c => c.{0};", operationChain);
+			return AppQueryRunner.GetQueryString (operations);
 		}
 
 		public void Dispose ()
