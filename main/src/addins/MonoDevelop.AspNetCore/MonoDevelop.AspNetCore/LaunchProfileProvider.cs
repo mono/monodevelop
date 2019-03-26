@@ -78,7 +78,7 @@ namespace MonoDevelop.AspNetCore
 			}
 		}
 
-		public void SaveLaunchSettings (IDictionary<string, Dictionary<string, object>> profilesData, bool addToProject = false)
+		public void SaveLaunchSettings (IDictionary<string, Dictionary<string, object>> profilesData)
 		{
 			var doc = new JObject ();
 			var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
@@ -95,12 +95,13 @@ namespace MonoDevelop.AspNetCore
 			doc.Add ("profiles", ProfilesObject);
 
 			string jsonDocString = doc.ToString (Formatting.Indented);
+
+			string propertiesDirectory = Path.GetDirectoryName (launchSettingsJsonPath);
+			if (!Directory.Exists (propertiesDirectory)) {
+				Directory.CreateDirectory (propertiesDirectory);
+			}
+
 			File.WriteAllText (launchSettingsJsonPath, jsonDocString);
-
-			if (!addToProject)
-				return;
-
-			project.AddFile (launchSettingsJsonPath);
 		}
 
 		public LaunchProfileData CreateDefaultProfile ()
@@ -124,7 +125,7 @@ namespace MonoDevelop.AspNetCore
 			GlobalSettings.Add ("iisSettings", JToken.Parse (DefaultGlobalSettings));
 			var profilesData = new Dictionary<string, LaunchProfileData> ();
 			profilesData.Add (project.DefaultNamespace, CreateDefaultProfile ());
-			SaveLaunchSettings (profilesData.ToSerializableForm (), addToProject: true);
+			SaveLaunchSettings (profilesData.ToSerializableForm ());
 		}
 	}
 }
