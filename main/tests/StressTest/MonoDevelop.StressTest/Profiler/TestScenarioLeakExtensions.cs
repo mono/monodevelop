@@ -37,7 +37,7 @@ namespace MonoDevelop.StressTest
 
 			var attributes = member.GetCustomAttributes<NoLeakAttribute> (true).ToDictionary (x => x.TypeName, x => x);
 
-			// TODO: Ensure that we don't leak, so add GtkWidgetResult results, as they can cause retention of UI widgets.
+			// Ensure that we don't leak, so add GtkWidgetResult results, as they can cause retention of UI widgets.
 			attributes.Add (autoTest, new NoLeakAttribute (autoTest));
 
 			return attributes;

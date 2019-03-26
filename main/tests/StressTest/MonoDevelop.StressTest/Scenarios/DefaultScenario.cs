@@ -64,6 +64,8 @@ namespace MonoDevelop.StressTest
 		bool firstRun = true;
 
 		[NoLeak ("MonoDevelop.SourceEditor.ExtensibleTextEditor")]
+		[NoLeak ("Microsoft.VisualStudio.Text.Editor.Implementation.CocoaTextViewControl")] // vs-editor-core part of the chain
+		[NoLeak ("MonoDevelop.TextEditor.CocoaTextViewContent")] // MD part of the chain.
 		public void Run ()
 		{
 			if (firstRun) {

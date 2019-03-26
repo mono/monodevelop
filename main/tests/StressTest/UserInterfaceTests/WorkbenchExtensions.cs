@@ -69,7 +69,7 @@ namespace UserInterfaceTests
 			return isPass == Workbench.IsBuildSuccessful (timeoutInSecs);
 		}
 
-		public static bool Debug (int timeoutSeconds = 20, int pollStepSecs = 5)
+		public static bool Debug (int timeoutSeconds = 20, int pollStepSecs = 1)
 		{
 			Session.ExecuteCommand ("MonoDevelop.Debugger.DebugCommands.Debug");
 			try {
