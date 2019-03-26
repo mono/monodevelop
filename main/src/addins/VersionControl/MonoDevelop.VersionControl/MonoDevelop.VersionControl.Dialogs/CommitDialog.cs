@@ -32,14 +32,11 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using Mono.Addins;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -133,14 +130,58 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 			SetResponseSensitive (ResponseType.Ok, responseSensitive);
 
-			Shown += OnCommitDialogShown;
+			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 
-		async void OnCommitDialogShown (object sender, EventArgs e)
+		void OnFileStatusChanged (object sender, FileUpdateEventArgs args)
 		{
-			Shown -= OnCommitDialogShown;
+			foreach (FileUpdateEventInfo f in args) {
+				OnFileStatusChanged (f);
+			}
+		}
 
-			await VerifyUnsavedChangesAsync ();
+		void OnFileStatusChanged (FileUpdateEventInfo args)
+		{
+			VersionInfo newInfo = null;
+			try {
+				// Reuse remote status from old version info
+				newInfo = changeSet.Repository.GetVersionInfo (args.FilePath);
+			} catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+			}
+
+			if (AddFile (newInfo)) {
+				changeSet.AddFile (newInfo.LocalPath);
+				selected.Add (newInfo.LocalPath);
+				AppendFileInfo (newInfo);
+				
+			}
+		}
+
+		bool AddFile (VersionInfo vinfo)
+		{
+			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges) && !selected.Contains (vinfo.LocalPath);
+		}
+
+		TreeIter AppendFileInfo (VersionInfo info)
+		{
+			Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus (info.Status);
+			string lstatus = VersionControlService.GetStatusLabel (info.Status);
+			string localpath;
+
+			if (info.IsDirectory)
+				localpath = (!info.LocalPath.IsChildPathOf (changeSet.BaseLocalPath) ?
+								"." :
+								(string)info.LocalPath.ToRelative (changeSet.BaseLocalPath));
+			else
+				localpath = System.IO.Path.GetFileName ((string)info.LocalPath);
+
+			if (localpath.Length > 0 && localpath [0] == System.IO.Path.DirectorySeparatorChar) localpath = localpath.Substring (1);
+			if (localpath == "") { localpath = "."; } 
+
+			TreeIter it = store.AppendValues (statusicon, lstatus, localpath, true, info);
+
+			return it;
 		}
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)
@@ -159,6 +200,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 				return;
 
 			base.OnResponse (type);
+		}
+
+		public override void Dispose ()
+		{
+			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
+
+			base.Dispose ();
 		}
 
 		protected override void OnDestroyed ()
@@ -191,58 +239,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 				store.AppendValues (statusicon, lstatus, localpath, true, info);
 				selected.Add (info.LocalPath);
-			}
-		}
-
-		async Task VerifyUnsavedChangesAsync ()
-		{
-			// In case we have local unsaved files with changes, throw a dialog for the user.
-			List<Document> docList = new List<Document> ();
-			foreach (var item in IdeApp.Workbench.Documents) {
-				if (item.IsDirty && !selected.Contains (item.FileName))
-					docList.Add (item);
-			}
-
-			if (docList.Count != 0) {
-				AlertButton response = MessageService.GenericAlert (
-					Ide.Gui.Stock.Question,
-					GettextCatalog.GetString ("You are trying to commit files which have unsaved changes."),
-					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
-					new AlertButton [] {
-						AlertButton.Cancel,
-						new AlertButton (GettextCatalog.GetString ("Don't Save")),
-						AlertButton.Save
-					}
-				);
-
-				if (response == AlertButton.Cancel) {
-					Gtk.Application.Invoke ((o, args) => {
-						Respond (Gtk.ResponseType.Cancel);
-					});
-					return;
-				}
-
-				if (response == AlertButton.Save) {
-					// Go through all the items and save them.
-					foreach (var item in docList)
-						await item.Save ();
-
-					// Check if save failed on any item.
-					foreach (var item in docList)
-						if (item.IsDirty) {
-							MessageService.ShowMessage (GettextCatalog.GetString (
-								"Some files could not be saved."));
-							return;
-						}
-							
-					// Update the change set
-					if (docList.Any ()) {
-						foreach (var item in docList)
-							changeSet.AddFile (item.FileName);
-					}
-				}
-
-				docList.Clear ();
 			}
 		}
 

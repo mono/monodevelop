@@ -1,19 +1,23 @@
 
 using System;
-using System.Collections;
-using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.VersionControl.Dialogs;
 
 namespace MonoDevelop.VersionControl
 {
 	class CommitCommand
 	{
-		public static void Commit (Repository vc, ChangeSet changeSet)
+		public static async Task CommitAsync (Repository vc, ChangeSet changeSet)
 		{
 			try {
 				VersionControlService.NotifyPrepareCommit (vc, changeSet);
-
+				if (!await VerifyUnsavedChangesAsync (changeSet))
+					return;
 				CommitDialog dlg = new CommitDialog (changeSet);
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
@@ -31,6 +35,51 @@ namespace MonoDevelop.VersionControl
 			catch (Exception ex) {
 				MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
 			}
+		}
+
+		static async Task<bool> VerifyUnsavedChangesAsync (ChangeSet changeSet)
+		{
+			// In case we have local unsaved files with changes, throw a dialog for the user.
+			List<Document> docList = new List<Document> ();
+			foreach (var item in IdeApp.Workbench.Documents) {
+				if (item.IsDirty && !changeSet.Items.Any (csi => csi.LocalPath == item.FileName))
+					docList.Add (item);
+			}
+
+			if (docList.Count != 0) {
+				AlertButton response = MessageService.GenericAlert (
+					Stock.Question,
+					GettextCatalog.GetString ("You are trying to commit files which have unsaved changes."),
+					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
+					new AlertButton [] {
+						AlertButton.Cancel,
+						new AlertButton (GettextCatalog.GetString ("Don't Save")),
+						AlertButton.Save
+					}
+				);
+
+				if (response == AlertButton.Cancel) {
+					return false;
+				}
+
+				if (response == AlertButton.Save) {
+					// Go through all the items and save them.
+					foreach (var item in docList) {
+						await item.Save ();
+					}
+
+					// Check if save failed on any item.
+					foreach (var item in docList)
+						if (item.IsDirty) {
+							MessageService.ShowMessage (GettextCatalog.GetString (
+								"Some files could not be saved."));
+						}
+				}
+
+				docList.Clear ();
+			}
+
+			return true;
 		}
 
 		private class CommitWorker : VersionControlTask
