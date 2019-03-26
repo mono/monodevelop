@@ -97,17 +97,17 @@ namespace MonoDevelop.StressTest
 				var configuration = editorTestScenario.EditorRunConfiguration;
 				switch (configuration) {
 				case EditorTestRun.Legacy:
-					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", false);
+					Properties.UseNewEditor = false;
 					break;
 				case EditorTestRun.VSEditor:
-					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", true);
+					Properties.UseNewEditor = true;
 					break;
 				case EditorTestRun.Both:
 					// Run once with legacy
-					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", false);
+					Properties.UseNewEditor = false;
 					RunScenarioIterations ();
 
-					TestService.Session.SetGlobalValue ("DefaultSourceEditorOptions.Instance.EnableNewEditor.Value", true);
+					Properties.UseNewEditor = true;
 					break;
 				}
 			}
