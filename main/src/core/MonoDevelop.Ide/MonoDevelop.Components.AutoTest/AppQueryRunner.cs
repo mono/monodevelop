@@ -60,12 +60,8 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			}
 
-			AppResult [] results = new AppResult [resultSet.Count];
-			resultSet.CopyTo (results);
-
-			return (rootNode, results);
+			return (rootNode, resultSet.ToArray ());
 		}
-
 
 		AppResult GenerateChildrenForContainer (Gtk.Container container, List<AppResult> resultSet)
 		{
