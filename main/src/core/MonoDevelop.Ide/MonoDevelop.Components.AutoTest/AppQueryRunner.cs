@@ -72,7 +72,7 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult firstChild = null, lastChild = null;
 
 			foreach (var child in container.Children) {
-				AppResult node = new GtkWidgetResult (child) { SourceQuery = ToString () };
+				AppResult node = new GtkWidgetResult (child) { SourceQuery = sourceQuery };
 				resultSet.Add (node);
 
 				// FIXME: Do we need to recreate the tree structure of the AppResults?
@@ -100,7 +100,7 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult firstChild = null, lastChild = null;
 
 			foreach (var child in view.Subviews) {
-				AppResult node = new NSObjectResult (child) { SourceQuery = ToString () };
+				AppResult node = new NSObjectResult (child) { SourceQuery = sourceQuery };
 				resultSet.Add (node);
 
 				if (firstChild == null) {
@@ -143,13 +143,13 @@ namespace MonoDevelop.Components.AutoTest
 			Gtk.Window [] windows = Gtk.Window.ListToplevels ();
 
 			// null for AppResult signifies root node
-			var rootNode = new GtkWidgetResult (null) { SourceQuery = ToString () };
+			var rootNode = new GtkWidgetResult (null) { SourceQuery = sourceQuery };
 			List<AppResult> fullResultSet = new List<AppResult> ();
 
 			// Build the tree and full result set recursively
 			AppResult lastChild = null;
 			foreach (var window in windows) {
-				AppResult node = new GtkWidgetResult (window) { SourceQuery = ToString () };
+				AppResult node = new GtkWidgetResult (window) { SourceQuery = sourceQuery };
 				fullResultSet.Add (node);
 
 				if (rootNode.FirstChild == null) {
@@ -171,7 +171,7 @@ namespace MonoDevelop.Components.AutoTest
 			NSWindow [] nswindows = NSApplication.SharedApplication.Windows;
 			if (nswindows != null) {
 				foreach (var window in nswindows) {
-					AppResult node = new NSObjectResult (window) { SourceQuery = ToString () };
+					AppResult node = new NSObjectResult (window) { SourceQuery = sourceQuery };
 					AppResult nsWindowLastNode = null;
 					fullResultSet.Add (node);
 
@@ -185,7 +185,7 @@ namespace MonoDevelop.Components.AutoTest
 					}
 
 					foreach (var child in window.ContentView.Subviews) {
-						AppResult childNode = new NSObjectResult (child) { SourceQuery = ToString () };
+						AppResult childNode = new NSObjectResult (child) { SourceQuery = sourceQuery };
 						fullResultSet.Add (childNode);
 
 						if (node.FirstChild == null) {
@@ -204,7 +204,7 @@ namespace MonoDevelop.Components.AutoTest
 					}
 
 					NSToolbar toolbar = window.Toolbar;
-					AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = ToString () };
+					AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = sourceQuery };
 
 					if (node.FirstChild == null) {
 						node.FirstChild = toolbarNode;
@@ -219,7 +219,7 @@ namespace MonoDevelop.Components.AutoTest
 						AppResult lastItemNode = null;
 						foreach (var item in toolbar.Items) {
 							if (item.View != null) {
-								AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = ToString () };
+								AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
 								fullResultSet.Add (itemNode);
 
 								if (toolbarNode.FirstChild == null) {
