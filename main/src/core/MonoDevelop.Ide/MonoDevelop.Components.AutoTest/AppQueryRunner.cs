@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
+using System.Diagnostics;
 
 #if MAC
 using AppKit;
@@ -39,6 +40,7 @@ namespace MonoDevelop.Components.AutoTest
 	{
 		readonly List<Operation> operations;
 		readonly string sourceQuery;
+		readonly List<AppResult> fullResultSet = new List<AppResult> ();
 
 		public AppQueryRunner (List<Operation> operations)
 		{
@@ -69,106 +71,120 @@ namespace MonoDevelop.Components.AutoTest
 
 			// null for AppResult signifies root node
 			var rootNode = new GtkWidgetResult (null) { SourceQuery = sourceQuery };
-			List<AppResult> fullResultSet = new List<AppResult> ();
 
 			// Build the tree and full result set recursively
 			AppResult lastChild = null;
 			foreach (var window in windows) {
-				AppResult node = new GtkWidgetResult (window) { SourceQuery = sourceQuery };
-				fullResultSet.Add (node);
-
-				if (rootNode.FirstChild == null) {
-					rootNode.FirstChild = node;
-					lastChild = node;
-				} else {
-					// Add the new node into the chain
-					lastChild.NextSibling = node;
-					node.PreviousSibling = lastChild;
-					lastChild = node;
-				}
-
-				// Create the children list and link them onto the node
-				AppResult children = GenerateChildrenForContainer ((Gtk.Container)window, fullResultSet);
-				node.FirstChild = children;
+				ProcessGtkWindow (window, rootNode, ref lastChild);
 			}
 
-#if MAC
-			NSWindow [] nswindows = NSApplication.SharedApplication.Windows;
-			if (nswindows != null) {
-				foreach (var window in nswindows) {
-					AppResult node = new NSObjectResult (window) { SourceQuery = sourceQuery };
-					AppResult nsWindowLastNode = null;
-					fullResultSet.Add (node);
+			ProcessNSWindows (rootNode, ref lastChild);
 
-					if (rootNode.FirstChild == null) {
-						rootNode.FirstChild = node;
-						lastChild = node;
-					} else {
-						lastChild.NextSibling = node;
-						node.PreviousSibling = lastChild;
-						lastChild = node;
-					}
-
-					foreach (var child in window.ContentView.Subviews) {
-						AppResult childNode = new NSObjectResult (child) { SourceQuery = sourceQuery };
-						fullResultSet.Add (childNode);
-
-						if (node.FirstChild == null) {
-							node.FirstChild = childNode;
-							nsWindowLastNode = childNode;
-						} else {
-							nsWindowLastNode.NextSibling = childNode;
-							childNode.PreviousSibling = nsWindowLastNode;
-							nsWindowLastNode = childNode;
-						}
-
-						if (child.Subviews != null) {
-							AppResult children = GenerateChildrenForNSView (child, fullResultSet);
-							childNode.FirstChild = children;
-						}
-					}
-
-					NSToolbar toolbar = window.Toolbar;
-					AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = sourceQuery };
-
-					if (node.FirstChild == null) {
-						node.FirstChild = toolbarNode;
-						nsWindowLastNode = toolbarNode;
-					} else {
-						nsWindowLastNode.NextSibling = toolbarNode;
-						toolbarNode.PreviousSibling = nsWindowLastNode;
-						nsWindowLastNode = toolbarNode;
-					}
-
-					if (toolbar != null) {
-						AppResult lastItemNode = null;
-						foreach (var item in toolbar.Items) {
-							if (item.View != null) {
-								AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
-								fullResultSet.Add (itemNode);
-
-								if (toolbarNode.FirstChild == null) {
-									toolbarNode.FirstChild = itemNode;
-									lastItemNode = itemNode;
-								} else {
-									lastItemNode.NextSibling = itemNode;
-									itemNode.PreviousSibling = lastItemNode;
-									lastItemNode = itemNode;
-								}
-
-								if (item.View.Subviews != null) {
-									AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
-									itemNode.FirstChild = children;
-								}
-							}
-						}
-					}
-				}
-			}
-#endif
 			return (rootNode, fullResultSet);
 		}
 
+		void ProcessGtkWindow (Gtk.Window window, AppResult rootNode, ref AppResult lastChild)
+		{
+			AppResult node = new GtkWidgetResult (window) { SourceQuery = sourceQuery };
+			fullResultSet.Add (node);
+
+			if (rootNode.FirstChild == null) {
+				rootNode.FirstChild = node;
+				lastChild = node;
+			} else {
+				// Add the new node into the chain
+				lastChild.NextSibling = node;
+				node.PreviousSibling = lastChild;
+				lastChild = node;
+			}
+
+			// Create the children list and link them onto the node
+			var children = GenerateChildrenForContainer (window, fullResultSet);
+			node.FirstChild = children;
+		}
+
+		[Conditional("MAC")]
+		void ProcessNSWindows (AppResult rootNode, ref AppResult lastChild)
+		{
+			NSWindow [] nswindows = NSApplication.SharedApplication.Windows;
+			if (nswindows != null) {
+				foreach (var window in nswindows) {
+					ProcessNSWindow (window, ref lastChild);
+				}
+			}
+		}
+
+		[Conditional ("MAC")]
+		void ProcessNSWindow (NSWindow window, AppResult rootNode, ref AppResult lastChild)
+		{
+			AppResult node = new NSObjectResult (window) { SourceQuery = sourceQuery };
+			AppResult nsWindowLastNode = null;
+			fullResultSet.Add (node);
+
+			if (rootNode.FirstChild == null) {
+				rootNode.FirstChild = node;
+				lastChild = node;
+			} else {
+				lastChild.NextSibling = node;
+				node.PreviousSibling = lastChild;
+				lastChild = node;
+			}
+
+			foreach (var child in window.ContentView.Subviews) {
+				AppResult childNode = new NSObjectResult (child) { SourceQuery = sourceQuery };
+				fullResultSet.Add (childNode);
+
+				if (node.FirstChild == null) {
+					node.FirstChild = childNode;
+					nsWindowLastNode = childNode;
+				} else {
+					nsWindowLastNode.NextSibling = childNode;
+					childNode.PreviousSibling = nsWindowLastNode;
+					nsWindowLastNode = childNode;
+				}
+
+				if (child.Subviews != null) {
+					AppResult children = GenerateChildrenForNSView (child, fullResultSet);
+					childNode.FirstChild = children;
+				}
+			}
+
+			NSToolbar toolbar = window.Toolbar;
+			AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = sourceQuery };
+
+			if (node.FirstChild == null) {
+				node.FirstChild = toolbarNode;
+				nsWindowLastNode = toolbarNode;
+			} else {
+				nsWindowLastNode.NextSibling = toolbarNode;
+				toolbarNode.PreviousSibling = nsWindowLastNode;
+				nsWindowLastNode = toolbarNode;
+			}
+
+			if (toolbar != null) {
+				AppResult lastItemNode = null;
+				foreach (var item in toolbar.Items) {
+					if (item.View != null) {
+						AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
+						fullResultSet.Add (itemNode);
+
+						if (toolbarNode.FirstChild == null) {
+							toolbarNode.FirstChild = itemNode;
+							lastItemNode = itemNode;
+						} else {
+							lastItemNode.NextSibling = itemNode;
+							itemNode.PreviousSibling = lastItemNode;
+							lastItemNode = itemNode;
+						}
+
+						if (item.View.Subviews != null) {
+							AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
+							itemNode.FirstChild = children;
+						}
+					}
+				}
+			}
+		}
 
 		AppResult GenerateChildrenForContainer (Gtk.Container container, List<AppResult> resultSet)
 		{
