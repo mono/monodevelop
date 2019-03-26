@@ -146,7 +146,7 @@ namespace MonoDevelop.VersionControl.Views
 				infoGC.RgbFgColor = widget.Style.Text (StateType.Normal).AddLight (0.2);
 				
 				Cairo.Context ctx = CairoHelper.Create (window);
-				
+
 				// Rendering is done in two steps:
 				// 1) Get a list of blocks to render
 				// 2) render the blocks
@@ -155,22 +155,22 @@ namespace MonoDevelop.VersionControl.Views
 				
 				// cline keeps track of the current source code line (the one to jump to when double clicking)
 				int cline = 1;
-				bool inHeader = true;
+
 				BlockInfo currentBlock = null;
-				
-				List<BlockInfo> blocks = new List<BlockInfo> ();
-				
-				for (int n=0; n<lines.Length; n++, y += lineHeight) {
-					
+
+				var blocks = new List<BlockInfo> ();
+				int removedLines = 0;
+				for (int n = 0; n < lines.Length; n++, y += lineHeight) {
+
 					string line = lines [n];
 					if (line.Length == 0) {
 						currentBlock = null;
 						y -= lineHeight;
 						continue;
 					}
-					
+
 					char tag = line [0];
-	
+
 					if (line.StartsWith ("---", StringComparison.Ordinal) ||
 						line.StartsWith ("+++", StringComparison.Ordinal)) {
 						// Ignore this part of the header.
@@ -181,32 +181,39 @@ namespace MonoDevelop.VersionControl.Views
 					if (tag == '@') {
 						int l = ParseCurrentLine (line);
 						if (l != -1) cline = l - 1;
-						inHeader = false;
-					} else if (tag == '+' && !inHeader)
+					} else
 						cline++;
 
 					BlockType type;
 					switch (tag) {
-						case '-': type = BlockType.Removed; break;
-						case '+': type = BlockType.Added; break;
-						case '@': type = BlockType.Info; break;
-						default: type = BlockType.Unchanged; break;
+					case '-':
+						type = BlockType.Removed;
+						removedLines++;
+						break;
+					case '+': type = BlockType.Added; break;
+					case '@': type = BlockType.Info; break;
+					default: type = BlockType.Unchanged; break;
+					}
+
+					if (type != BlockType.Removed && removedLines > 0) {
+						cline -= removedLines;
+						removedLines = 0;
 					}
 
 					if (currentBlock == null || type != currentBlock.Type) {
 						if (y > maxy)
 							break;
-					
+
 						// Starting a new block. Mark section ends between a change block and a normal code block
 						if (currentBlock != null && IsChangeBlock (currentBlock.Type) && !IsChangeBlock (type))
 							currentBlock.SectionEnd = true;
-						
-						currentBlock = new BlockInfo () {
+
+						currentBlock = new BlockInfo {
 							YStart = y,
 							FirstLine = n,
 							Type = type,
 							SourceLineStart = cline,
-							SectionStart = (blocks.Count == 0 || !IsChangeBlock (blocks[blocks.Count - 1].Type)) && IsChangeBlock (type)
+							SectionStart = (blocks.Count == 0 || !IsChangeBlock (blocks [blocks.Count - 1].Type)) && IsChangeBlock (type)
 						};
 						blocks.Add (currentBlock);
 					}
@@ -315,7 +322,7 @@ namespace MonoDevelop.VersionControl.Views
 				window.DrawLayout (widget.Style.TextGC (GetState(widget, flags)), cell_area.X, y, layout);
 			}
 		}
-		
+
 		static bool IsChangeBlock (BlockType t)
 		{
 			return t == BlockType.Added || t == BlockType.Removed;
