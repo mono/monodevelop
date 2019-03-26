@@ -233,7 +233,7 @@ type ``Template tests``() =
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin Mac FSharp ClassLibrary``()= test "Xamarin.Mac.FSharp.ClassLibrary"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``Xamarin tvOS FSharp SingleViewApp``()= test "Xamarin.tvOS.FSharp.SingleViewApp"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp ConsoleProject``()= test "MonoDevelop.FSharp.ConsoleProject"
-    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpGtkProject``()= test "FSharpGtkProject"
+    [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpGtk2Project``()= test "FSharpGtk2Project"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``MonoDevelop FSharp LibraryProject``()= test "MonoDevelop.FSharp.LibraryProject"
     [<Test;AsyncStateMachine(typeof<Task>)>]member x.``FSharpNUnitLibraryProject``()= test "FSharpNUnitLibraryProject"
     [<Ignore("Currently not testable");AsyncStateMachine(typeof<Task>)>]

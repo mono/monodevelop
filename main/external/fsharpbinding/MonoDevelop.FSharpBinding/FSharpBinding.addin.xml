@@ -16,7 +16,7 @@
     <Import file = "Templates/FSharpConsoleProject.xpt.xml" />
     <Import file = "Templates/FSharpLibraryProject.xpt.xml" />
     <Import file = "Templates/FSharpTutorialProject.xpt.xml" />
-    <Import file = "Templates/FSharpGtkProject.xpt.xml" />
+    <Import file = "Templates/FSharpGtk2Project.xpt.xml" />
     <Import file = "Templates/AssemblyInfo.xft.xml" />
     <Import file = "Templates/FSharpNUnitLibraryProject.xpt.xml" />
     <Import file = "Templates/FSharpNUnitTestType.xft.xml" />
@@ -375,7 +375,7 @@
 			<Addin id="GtkCore" version="$(Version)" />
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		    <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
+		    <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtk2Project.xpt.xml"/>
 		</Extension>
 	</Module>
 </ExtensionModel>
