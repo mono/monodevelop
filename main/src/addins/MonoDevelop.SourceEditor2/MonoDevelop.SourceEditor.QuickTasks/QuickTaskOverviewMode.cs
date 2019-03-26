@@ -1014,8 +1014,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void RemoveIndicatorIdleHandler ()
 		{
+			src?.Cancel ();
 			if (indicatorIdleTimout > 0) {
-				src?.Cancel ();
 				GLib.Source.Remove (indicatorIdleTimout);
 				indicatorIdleTimout = 0;
 			}
