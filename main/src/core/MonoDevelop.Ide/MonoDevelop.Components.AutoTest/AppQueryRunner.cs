@@ -48,6 +48,8 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			var (rootNode, resultSet) = ResultSetFromWindows ();
 
+			// TODO: Add a start mechanism, so we only process nodes coming in from a part of the IDE.
+
 			foreach (var subquery in operations) {
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
