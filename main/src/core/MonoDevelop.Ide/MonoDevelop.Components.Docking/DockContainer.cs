@@ -403,50 +403,51 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool UpdatePlaceholder (DockItem item, Gdk.Size size, bool allowDocking)
 		{
-			if (!Runtime.IsMainThread) {
-				var msg = "UpdatePlaceholder called from background thread.";
-				LoggingService.LogInternalError ($"{msg}\n{Environment.StackTrace}", new InvalidOperationException (msg));
-			}
+			try {
+				Runtime.AssertMainThread ();
 
-			var placeholderWindow = this.placeholderWindow;
-			var padTitleWindow = this.padTitleWindow;
+				var placeholderWindow = this.placeholderWindow;
+				var padTitleWindow = this.padTitleWindow;
 
-			if (placeholderWindow == null || padTitleWindow == null)
-				return false;
-			
-			int px, py;
-			GetPointer (out px, out py);
-			
-			placeholderWindow.AllowDocking = allowDocking;
-			
-			int ox, oy;
-			GdkWindow.GetOrigin (out ox, out oy);
+				if (placeholderWindow == null || padTitleWindow == null || !IsRealized)
+					return false;
 
-			int tw, th;
-			padTitleWindow.GetSize (out tw, out th);
-			padTitleWindow.Move (ox + px - tw/2, oy + py - th/2);
-			padTitleWindow.GdkWindow.KeepAbove = true;
+				int px, py;
+				GetPointer (out px, out py);
 
-			DockDelegate dockDelegate;
-			Gdk.Rectangle rect;
-			if (allowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
-				placeholderWindow.Relocate (ox + rect.X, oy + rect.Y, rect.Width, rect.Height, true);
-				placeholderWindow.Show ();
-				placeholderWindow.SetDockInfo (dockDelegate, rect);
-				return true;
-			} else {
-				int w,h;
-				var gi = layout.FindDockGroupItem (item.Id);
-				if (gi != null) {
-					w = gi.Allocation.Width;
-					h = gi.Allocation.Height;
+				placeholderWindow.AllowDocking = allowDocking;
+
+				int ox, oy;
+				GdkWindow.GetOrigin (out ox, out oy);
+
+				int tw, th;
+				padTitleWindow.GetSize (out tw, out th);
+				padTitleWindow.Move (ox + px - tw / 2, oy + py - th / 2);
+				padTitleWindow.GdkWindow.KeepAbove = true;
+
+				DockDelegate dockDelegate;
+				Gdk.Rectangle rect;
+				if (allowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
+					placeholderWindow.Relocate (ox + rect.X, oy + rect.Y, rect.Width, rect.Height, true);
+					placeholderWindow.Show ();
+					placeholderWindow.SetDockInfo (dockDelegate, rect);
+					return true;
 				} else {
-					w = item.DefaultWidth;
-					h = item.DefaultHeight;
+					int w, h;
+					var gi = layout.FindDockGroupItem (item.Id);
+					if (gi != null) {
+						w = gi.Allocation.Width;
+						h = gi.Allocation.Height;
+					} else {
+						w = item.DefaultWidth;
+						h = item.DefaultHeight;
+					}
+					placeholderWindow.Relocate (ox + px - w / 2, oy + py - h / 2, w, h, false);
+					placeholderWindow.Show ();
+					placeholderWindow.AllowDocking = false;
 				}
-				placeholderWindow.Relocate (ox + px - w / 2, oy + py - h / 2, w, h, false);
-				placeholderWindow.Show ();
-				placeholderWindow.AllowDocking = false;
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Updating the dock container placeholder failed", ex);
 			}
 
 			return false;
