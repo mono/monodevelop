@@ -118,10 +118,10 @@ namespace MonoDevelop.DesignerSupport
 			}
 
 			if (propertyDescriptor.PropertyType.IsAssignableFrom (typeof (Core.FilePath))) {
-				var isDirectoryPropertyDescriptor = GetPropertyDescriptor (propertyDescriptor.GetChildProperties (), nameof (Core.FilePath.IsDirectory));
-				if (isDirectoryPropertyDescriptor != null && (bool)isDirectoryPropertyDescriptor.GetValue (propertyItem)) {
-					return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
-				}
+				//var isDirectoryPropertyDescriptor = GetPropertyDescriptor (propertyDescriptor.GetChildProperties (), nameof (Core.FilePath.IsDirectory));
+				//if (isDirectoryPropertyDescriptor != null && (bool)isDirectoryPropertyDescriptor.GetValue (propertyItem)) {
+				//	return new DirectoryPathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
+				//}
 				return new FilePathPropertyInfo (propertyDescriptor, PropertyProvider, valueSources);
 			}
 

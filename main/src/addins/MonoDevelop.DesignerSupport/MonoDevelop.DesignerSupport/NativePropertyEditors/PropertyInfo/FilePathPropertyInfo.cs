@@ -40,11 +40,11 @@ namespace MonoDevelop.DesignerSupport
 		{
 		}
 
-		public override Type Type => typeof (FilePath);
+		public override Type Type => typeof (Xamarin.PropertyEditing.Common.FilePath);
 
 		internal override void SetValue<T> (object target, T value)
 		{
-			if (value is FilePath filePath) {
+			if (value is Xamarin.PropertyEditing.Common.FilePath filePath) {
 				PropertyDescriptor.SetValue (PropertyProvider, new MonoDevelop.Core.FilePath (filePath.Source));
 			} else {
 				throw new Exception (string.Format ("Value: {0} of type {1} is not a DirectoryPath", value, value.GetType ()));
@@ -53,8 +53,8 @@ namespace MonoDevelop.DesignerSupport
 
 		internal override Task<T> GetValueAsync<T> (object target)
 		{
-			if (target is Core.FilePath directoryPath) {
-				T result = (T)(object)new FilePath (directoryPath.FullPath);
+			if (target is MonoDevelop.Core.FilePath directoryPath) {
+				T result = (T)(object)new Xamarin.PropertyEditing.Common.FilePath (directoryPath.FullPath);
 				return Task.FromResult (result);
 			}
 			Core.LoggingService.LogWarning ("Value: {0} of type {1} is not a DirectoryPath", target, target.GetType ());
