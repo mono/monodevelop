@@ -27,7 +27,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class PropertyOperation : Operation
+	public class PropertyOperation : Operation, IFilterOperation
 	{
 		string PropertyName;
 		object DesiredValue;

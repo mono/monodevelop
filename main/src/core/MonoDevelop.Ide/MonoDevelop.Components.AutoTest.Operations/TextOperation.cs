@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class TextOperation : Operation
+	public class TextOperation : Operation, IFilterOperation
 	{
 		string Text;
 		bool Exact;

@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class MarkedOperation : Operation
+	public class MarkedOperation : Operation, IFilterOperation
 	{
 		public string Mark;
 

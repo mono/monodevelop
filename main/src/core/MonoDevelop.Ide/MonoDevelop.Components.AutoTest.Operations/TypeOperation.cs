@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class TypeOperation : Operation
+	public class TypeOperation : Operation, IFilterOperation
 	{
 		Type DesiredType;
 		string Name;
