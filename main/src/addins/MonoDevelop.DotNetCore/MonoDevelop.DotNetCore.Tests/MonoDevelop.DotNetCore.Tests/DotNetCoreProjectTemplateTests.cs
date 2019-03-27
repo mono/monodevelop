@@ -269,6 +269,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore21=true")]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore21=true")]
+		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore21=true")]
 		public async Task AspNetCore21 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk21Installed ()) {
@@ -285,6 +286,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore22=true")]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore22=true")]
+		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore22=true")]
 		public async Task AspNetCore22 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk22Installed ()) {
@@ -302,6 +304,7 @@ namespace MonoDevelop.DotNetCore.Tests
 		[TestCase ("Microsoft.Web.RazorPages.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.WebApi.CSharp", "UseNetCore30=true")]
 		[TestCase ("Microsoft.Web.WebApi.FSharp", "UseNetCore30=true")]
+		[TestCase ("Microsoft.Web.Razor.Library.CSharp", "UseNetCore30=true")]
 		public async Task AspNetCore30 (string templateId, string parameters)
 		{
 			if (!IsDotNetCoreSdk30Installed ()) {
