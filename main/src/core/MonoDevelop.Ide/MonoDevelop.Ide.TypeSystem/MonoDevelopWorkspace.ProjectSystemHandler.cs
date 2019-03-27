@@ -298,41 +298,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
 				service.SetupSolution (workspace);
 
-				AssignOpenDocumentsToWorkspace (workspace);
-				OpenGeneratedFiles (workspace);
-			}
-
-			internal static void AssignOpenDocumentsToWorkspace (MonoDevelopWorkspace workspace, bool newEditorOnly = false)
-			{
-				if (!IdeApp.IsInitialized)
-					return;
-
-				foreach (var openDocument in IdeApp.Workbench.Documents) {
-					if (newEditorOnly && openDocument.Editor != null) {
-						continue;
-					}
-					var buffer = openDocument.TextBuffer;
-					if (buffer == null)
-						continue;
-					var filePath = openDocument.FileName;
-					var solution = workspace.CurrentSolution;
-					var documentIds = solution.GetDocumentIdsWithFilePath (filePath);
-					foreach (var documentId in documentIds) {
-						if (!workspace.IsDocumentOpen (documentId)) {
-							workspace.InformDocumentOpen (documentId, buffer.AsTextContainer (), openDocument.DocumentContext);
-						}
-					}
-				}
-			}
-
-			static void OpenGeneratedFiles (MonoDevelopWorkspace workspace)
-			{
-				lock (workspace.generatedFiles) {
-					foreach (var generatedFile in workspace.generatedFiles) {
-						if (!workspace.IsDocumentOpen (generatedFile.Key.Id))
-							workspace.OnDocumentOpened (generatedFile.Key.Id, generatedFile.Value);
-					}
-				}
+				Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
 			}
 
 			static bool CanGenerateAnalysisContextForNonCompileable (MonoDevelop.Projects.Project p, MonoDevelop.Projects.ProjectFile f)
@@ -374,12 +340,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				var projectId = projectMap.GetId (p);
-				lock (workspace.generatedFiles) {
-					foreach (var generatedFile in workspace.generatedFiles) {
-						if (generatedFile.Key.Id.ProjectId == projectId)
-							documents.Add (generatedFile.Key);
-					}
-				}
 				return Tuple.Create (documents, additionalDocuments);
 			}
 

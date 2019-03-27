@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		WorkspaceId workspaceId = WorkspaceId.Empty;
+		Microsoft.CodeAnalysis.Workspace workspace;
 
 		public virtual T GetPolicy<T> (IEnumerable<string> types) where T : class, IEquatable<T>, new ()
 		{
@@ -92,8 +92,8 @@ namespace MonoDevelop.Ide.Editor
 		[Obsolete ("Use Roslyn directly")]
 		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace
 		{
-			get { return IdeApp.TypeSystemService.GetWorkspace (workspaceId); }
-			protected set { workspaceId = ((MonoDevelopWorkspace)value).Id; }
+			get { return workspace ?? IdeApp.TypeSystemService.emptyWorkspace; }
+			protected set { workspace = value; }
 		}
 
 		/// <summary>

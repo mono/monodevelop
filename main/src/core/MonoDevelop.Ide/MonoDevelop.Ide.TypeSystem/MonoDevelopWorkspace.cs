@@ -416,38 +416,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		readonly Dictionary<DocumentInfo, SourceTextContainer> generatedFiles = new Dictionary<DocumentInfo, SourceTextContainer> ();
-		internal void AddAndOpenDocumentInternal (DocumentInfo documentInfo, SourceTextContainer textContainer)
+		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer)
 		{
-			lock (generatedFiles) {
-				generatedFiles[documentInfo] = textContainer;
-				OnDocumentAdded (documentInfo);
-				OnDocumentOpened (documentInfo.Id, textContainer);
-			}
-		}
-
-		internal void CloseAndRemoveDocumentInternal (DocumentId documentId, TextLoader reloader)
-		{
-			lock (generatedFiles) {
-				var documentInfo = generatedFiles.FirstOrDefault (kvp => kvp.Key.Id == documentId).Key;
-				if (documentInfo != null && generatedFiles.Remove(documentInfo) && CurrentSolution.ContainsDocument(documentId)) {
-					OnDocumentClosed (documentId, reloader);
-					OnDocumentRemoved (documentId);
+			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, true);
+			if (document is Document doc) {
+				foreach (var linkedDoc in doc.GetLinkedDocumentIds ()) {
+					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, false);
 				}
 			}
 		}
 
-		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context)
-		{
-			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, context, true);
-			if (document as Document != null) {
-				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
-					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, context, false);
-				}
-			}
-		}
-
-		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, DocumentContext context, bool isCurrentContext)
+		TextDocument InternalInformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer, bool isCurrentContext)
 		{
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
@@ -456,7 +435,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
-			OpenDocuments.Add (documentId, sourceTextContainer, context);
+			OpenDocuments.Add (documentId, sourceTextContainer);
 			if (document is Document) {
 				OnDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			} else {
@@ -1217,10 +1196,8 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 							try {
 								lock (projectModifyLock) {
-									// correct openDocument ids - they may change due to project reload.
-									OpenDocuments.CorrectDocumentIds (project, t.Result);
 									OnProjectReloaded (t.Result);
-									ProjectSystemHandler.AssignOpenDocumentsToWorkspace (this, newEditorOnly: true);
+									IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ();
 								}
 							} catch (Exception e) {
 								LoggingService.LogError ("Error while reloading project " + project.Name, e);

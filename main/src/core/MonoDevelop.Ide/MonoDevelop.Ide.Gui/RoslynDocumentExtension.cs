@@ -1,4 +1,4 @@
-//
+﻿//
 // RoslynDocumentExtension.cs
 //
 // Author:
@@ -118,6 +118,8 @@ namespace MonoDevelop.Ide.Gui
 		FileDocumentController controller;
 		bool wasEdited;
 		bool editorInitialized;
+		IDisposable textBufferRegistration;
+		object analysisDocumentLock = new object ();
 
 		TypeSystemService typeSystemService;
 		RootWorkspace rootWorkspace;
@@ -133,6 +135,7 @@ namespace MonoDevelop.Ide.Gui
 			MonoDevelopWorkspace.LoadingFinished += ReloadAnalysisDocumentHandler;
 
 			TryEditorInitialization ();
+			UpdateTextBufferRegistration ();
 		}
 
 		public void TryEditorInitialization ()
@@ -189,28 +192,17 @@ namespace MonoDevelop.Ide.Gui
 			return controller.GetContents<T> ();
 		}
 
-		public override T GetPolicy<T> (IEnumerable<string> types)
-		{
-			if (adhocProject != null)
-				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<T> (types);
-			return base.GetPolicy<T> (types);
-		}
-
 		public override OptionSet GetOptionSet ()
 		{
 			return typeSystemService.Workspace.Options;
 		}
 
-		FilePath adHocFile;
-		Project adhocProject;
-		Solution adhocSolution;
-
 		public override Project Project {
-			get { return controller.Owner as Project ?? adhocProject; }
+			get { return controller.Owner as Project; }
 		}
 
 		internal override bool IsAdHocProject {
-			get { return adhocProject != null; }
+			get { return false; }
 		}
 
 		public override bool IsCompileableInProject {
@@ -270,39 +262,32 @@ namespace MonoDevelop.Ide.Gui
 		{
 			UnsubscribeControllerEvents ();
 
-			if (newProject == project || (IsAdHocProject && newProject == adhocProject))
+			if (newProject == project)
 				return;
 
 			project = newProject;
 
-			bool usingAdHocProject = IsAdHocProject;
-			UnloadAdhocProject ();
-			if (adhocProject == null)
-				UnsubscribeAnalysisDocument ();
-
+			UnsubscribeAnalysisDocument ();
+			UpdateTextBufferRegistration ();
 			SubscribeControllerEvents ();
 
 			Editor.InitializeExtensionChain (this);
 
-			// Do not start the parser when the project is set to null and an adHocProject is not being used. This
-			// would result in a new adHocProject being created and then RootWorkspace would not update the Document's
-			// project since it is non-null.
-
-			if (project != null || (project == null && usingAdHocProject))
+			if (project != null)
 				ListenToProjectLoad();
 		}
 
 		void SubscribeControllerEvents ()
 		{
 			UnsubscribeControllerEvents ();
-			controller.DocumentTitleChanged += OnContentNameChanged;
+			controller.FilePathChanged += OnContentNameChanged;
 			if (project != null)
 				project.Modified += HandleProjectModified;
 		}
 
 		void UnsubscribeControllerEvents ()
 		{
-			controller.DocumentTitleChanged -= OnContentNameChanged;
+			controller.FilePathChanged -= OnContentNameChanged;
 			if (project != null)
 				project.Modified -= HandleProjectModified;
 		}
@@ -310,6 +295,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnContentNameChanged (object sender, EventArgs e)
 		{
 			ReloadAnalysisDocumentHandler (sender, e);
+			UpdateTextBufferRegistration ();
 		}
 
 		void ListenToProjectLoad ()
@@ -345,7 +331,7 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing ();
-				var project = adhocProject ?? Project;
+				var project = Project;
 
 				var options = new ParseOptions {
 					Project = project,
@@ -353,7 +339,7 @@ namespace MonoDevelop.Ide.Gui
 					FileName = currentParseFile,
 					OldParsedDocument = parsedDocument,
 					RoslynDocument = AnalysisDocument,
-					IsAdhocProject = IsAdHocProject
+					IsAdhocProject = false
 				};
 
 				if (project != null && typeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
@@ -390,7 +376,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var project = typeSystemService.GetCodeAnalysisProject (adhocProject ?? Project);
+			var project = typeSystemService.GetCodeAnalysisProject (Project);
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
@@ -427,10 +413,12 @@ namespace MonoDevelop.Ide.Gui
 			if (IsDisposed)
 				return;
 
+			textBufferRegistration?.Dispose ();
+			textBufferRegistration = null;
+
 			CancelParseTimeout ();
 			UnsubscribeAnalysisDocument ();
 			UnsubscribeRoslynWorkspace ();
-			UnloadAdhocProject ();
 
 			MonoDevelopWorkspace.LoadingFinished -= ReloadAnalysisDocumentHandler;
 
@@ -441,7 +429,6 @@ namespace MonoDevelop.Ide.Gui
 		void ReloadAnalysisDocumentHandler (object sender, EventArgs e)
 		{
 			UnsubscribeAnalysisDocument ();
-			UnloadAdhocProject ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -485,66 +472,19 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (Editor == null) {
 				UnsubscribeAnalysisDocument ();
+				UpdateTextBufferRegistration ();
 				return Task.CompletedTask;
 			}
-			if (Project != null && !IsUnreferencedSharedProject (Project)) {
-				lock (analysisDocumentLock) {
-					UnsubscribeRoslynWorkspace ();
-					RoslynWorkspace = typeSystemService.GetWorkspace (this.Project.ParentSolution);
-					if (RoslynWorkspace == null) // Solution not loaded yet
-						return Task.CompletedTask;
-					SubscribeRoslynWorkspace ();
-					var newAnalysisDocument = FileName != null ? typeSystemService.GetDocumentId (this.Project, this.FileName) : null;
-					var changedAnalysisDocument = newAnalysisDocument != analysisDocument;
-					analysisDocument = newAnalysisDocument;
-					if (analysisDocument != null && !RoslynWorkspace.CurrentSolution.ContainsAdditionalDocument (analysisDocument) && !RoslynWorkspace.IsDocumentOpen (analysisDocument)) {
-						typeSystemService.InformDocumentOpen (analysisDocument, TextBuffer.AsTextContainer(), this);
-					}
-					if (changedAnalysisDocument)
-						OnAnalysisDocumentChanged (EventArgs.Empty);
-					return Task.CompletedTask;
-				}
-			}
-			lock (adhocProjectLock) {
-				var token = analysisDocumentSrc.Token;
-				if (adhocProject != null || IsInProjectSettingLoadingProcess) {
-					return Task.CompletedTask;
-				}
 
-				if (TextBuffer.ContentType.TypeName == "CSharp") {
-					var newProject = Services.ProjectService.CreateDotNetProject ("C#");
-
-					this.adhocProject = newProject;
-
-					newProject.Name = "InvisibleProject";
-					newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
-					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-					newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
-
-					// Use a different name for each project, otherwise the msbuild builder will complain about duplicate projects.
-					newProject.FileName = "adhoc_" + (++adhocProjectCount) + ".csproj";
-					if (!controller.IsNewDocument) {
-						adHocFile = FileName;
-					} else {
-						adHocFile = (Platform.IsWindows ? "C:\\" : "/") + FileName + ".cs";
-					}
-
-					newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
-
-					adhocSolution = new Solution ();
-					adhocSolution.AddConfiguration ("", true);
-					adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-					return typeSystemService.Load (adhocSolution, new ProgressMonitor (), token, false).ContinueWith (task => {
-						if (token.IsCancellationRequested)
-							return;
-						UnsubscribeRoslynWorkspace ();
-						RoslynWorkspace = task.Result.FirstOrDefault (); // 1 solution loaded ->1 workspace as result
-						SubscribeRoslynWorkspace ();
-						analysisDocument = RoslynWorkspace.CurrentSolution.Projects.First ().DocumentIds.First ();
-						typeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, TextBuffer.AsTextContainer (), this);
-						OnAnalysisDocumentChanged (EventArgs.Empty);
-					});
-				}
+			lock (analysisDocumentLock) {
+				UnsubscribeRoslynWorkspace ();
+				RoslynWorkspace = typeSystemService.GetWorkspaceInternal (Project?.ParentSolution);
+				SubscribeRoslynWorkspace ();
+				var newAnalysisDocument = FileName != null ? typeSystemService.GetDocumentId (Project, FileName) : null;
+				var changedAnalysisDocument = newAnalysisDocument != analysisDocument;
+				analysisDocument = newAnalysisDocument;
+				if (changedAnalysisDocument)
+					OnAnalysisDocumentChanged (EventArgs.Empty);
 			}
 			return Task.CompletedTask;
 		}
@@ -578,6 +518,12 @@ namespace MonoDevelop.Ide.Gui
 
 		void HandleRoslynProjectChange (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
 		{
+			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectReloaded && analysisDocument?.ProjectId == e.ProjectId) {
+				var doc = e.NewSolution.GetProject (e.ProjectId)?.Documents.FirstOrDefault (d => d.FilePath == FileName);
+				if (doc?.Id != analysisDocument)
+					UpdateDocumentId (doc?.Id);
+			}
+
 			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectChanged ||
 				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectAdded ||
 				e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.ProjectRemoved ||
@@ -588,30 +534,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnsubscribeAnalysisDocument ()
 		{
-			lock (analysisDocumentLock) {
-				if (analysisDocument != null) {
-					typeSystemService.InformDocumentClose (analysisDocument, FileName);
-					analysisDocument = null;
-				}
-			}
-		}
-
-		static int adhocProjectCount = 0;
-		object adhocProjectLock = new object ();
-		object analysisDocumentLock = new object ();
-		void UnloadAdhocProject ()
-		{
-			CancelEnsureAnalysisDocumentIsOpen ();
-			lock (adhocProjectLock) {
-				if (adhocProject == null)
-					return;
-				if (adhocSolution != null) {
-					typeSystemService.Unload (adhocSolution);
-					adhocSolution.Dispose ();
-					adhocSolution = null;
-				}
-				adhocProject = null;
-			}
+			analysisDocument = null;
 		}
 
 		CancellationTokenSource parseTokenSource = new CancellationTokenSource ();
@@ -656,9 +579,7 @@ namespace MonoDevelop.Ide.Gui
 
 		string GetCurrentParseFileName ()
 		{
-			var editor = Editor;
-			string result = adhocProject != null ? adHocFile : editor?.FileName;
-			return result ?? FileName;
+			return Editor?.FileName ?? FileName;
 		}
 
 		async void StartReparseThreadDelayed (FilePath currentParseFile)
@@ -675,7 +596,7 @@ namespace MonoDevelop.Ide.Gui
 			string mimeType = editor.MimeType;
 			CancelOldParsing ();
 			var token = parseTokenSource.Token;
-			var currentProject = adhocProject ?? Project;
+			var currentProject = Project;
 			var projectsContainingFile = currentProject?.ParentSolution?.GetProjectsContainingFile (currentParseFile);
 			if (projectsContainingFile == null || !projectsContainingFile.Any ())
 				projectsContainingFile = new Project [] { currentProject };
@@ -689,7 +610,7 @@ namespace MonoDevelop.Ide.Gui
 						FileName = currentParseFile,
 						OldParsedDocument = parsedDocument,
 						RoslynDocument = AnalysisDocument,
-						IsAdhocProject = IsAdHocProject
+						IsAdhocProject = false
 					};
 					if (projectFile != null)
 						options.BuildAction = projectFile.BuildAction;
@@ -753,6 +674,7 @@ namespace MonoDevelop.Ide.Gui
 			};
 
 			Editor.InitializeExtensionChain (this);
+			UpdateTextBufferRegistration ();
 		}
 
 		internal void NotifySaved ()
@@ -774,6 +696,17 @@ namespace MonoDevelop.Ide.Gui
 			OnSaved (EventArgs.Empty);
 
 			UpdateParseDocument ().Ignore ();
+		}
+
+		void UpdateTextBufferRegistration ()
+		{
+			Runtime.RunInMainThread (() => {
+				textBufferRegistration?.Dispose ();
+				textBufferRegistration = null;
+
+				if (TextBuffer != null)
+					textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Project, FileName, TextBuffer);
+			});
 		}
 	}
 }

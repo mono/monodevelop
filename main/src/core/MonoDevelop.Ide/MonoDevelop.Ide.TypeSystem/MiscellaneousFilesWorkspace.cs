@@ -89,6 +89,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			public string FilePath;
 		}
 
+		public ProjectId DefaultProjectId => defaultProjectId;
+
+		public DocumentId GetDocumentId (string fileName)
+		{
+			foreach (var entry in openDocuments) {
+				if (entry.Value.FilePath == fileName) {
+					if (entry.Key.Workspace == this)
+						return entry.Value.DocumentId;
+					return null;
+				}
+			}
+			return null;
+		}
+
 		/// <summary>
 		/// This should be called when a new document is opened in the IDE.
 		/// </summary>
@@ -100,6 +114,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var workspaceRegistration = GetWorkspaceRegistration (textContainer);
+
+			// Check if the document is already registered as open
+			if (openDocuments.ContainsKey (workspaceRegistration))
+				return;
+
 			workspaceRegistration.WorkspaceChanged += Registration_WorkspaceChanged;
 
 			var openDocumentInfo = new OpenDocumentInfo {
@@ -125,7 +144,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			openDocuments.TryGetValue (workspaceRegistration, out var openDocumentInfo);
 
-			if (workspaceRegistration.Workspace == null) {
+			if (workspaceRegistration.Workspace == null && openDocumentInfo != null) {
 				// The workspace was taken from us and released and we have only asynchronously found out now.
 				// We already have the file open in our workspace, but the global mapping of source text container
 				// to the workspace that owns it needs to be updated once more.

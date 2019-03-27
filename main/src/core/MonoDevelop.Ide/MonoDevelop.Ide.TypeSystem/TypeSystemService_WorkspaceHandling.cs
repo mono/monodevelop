@@ -60,7 +60,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		public MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
-				throw new ArgumentNullException (nameof(solution));
+				throw new ArgumentNullException (nameof (solution));
+			return (MonoDevelopWorkspace) GetWorkspaceInternal (solution);
+		}
+
+		public Microsoft.CodeAnalysis.Workspace GetWorkspaceInternal (MonoDevelop.Projects.Solution solution)
+		{
+			if (solution == null)
+				return miscellaneousFilesWorkspace;
 			foreach (var ws in workspaces) {
 				if (ws.MonoDevelopSolution == solution)
 					return ws;
@@ -202,11 +209,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public DocumentId GetDocumentId (MonoDevelop.Projects.Project project, string fileName)
 		{
-			if (project == null)
-				throw new ArgumentNullException (nameof(project));
 			if (fileName == null)
-				throw new ArgumentNullException (nameof(fileName));
+				throw new ArgumentNullException (nameof (fileName));
+
 			fileName = FileService.GetFullPath (fileName);
+
+			if (project == null)
+				return miscellaneousFilesWorkspace.GetDocumentId (fileName);
+
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)
@@ -259,36 +269,76 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		void OnDocumentOpened (object sender, Gui.DocumentEventArgs e)
+		Dictionary<FilePath, OpenDocumentReference> openDocuments = new Dictionary<FilePath, OpenDocumentReference> ();
+
+		class OpenDocumentReference
 		{
-			var filePath = e.Document.FileName;
-			var textBuffer = e.Document.GetContent<ITextBuffer> ();
-			if (textBuffer == null || filePath == null) {
-				return;
-			}
+			public int ReferenceCount { get; set; }
+			public FilePath FilePath { get; set; }
+			public ITextBuffer TextBuffer { get; set; }
+			public WorkspaceObject Owner { get; set; }
+			public bool HandleMiscNamespace { get; set; }
+		}
 
-			// First offer the document to the primary workspace and see if it's owned by it.
-			// This is the common case, so avoid adding the document to the miscellaneous workspace
-			// unnecessarily, as it will be immediately removed anyway.
-			TryOpenDocumentInWorkspace (e, filePath, textBuffer);
+		class DocumentRegistration : IDisposable
+		{
+			public OpenDocumentReference OpenDocument { get; set; }
 
-			// Only use misc workspace with the new editor; old editor has its own
-			if (e.Document.Editor == null) {
-				// If the primary workspace didn't claim the document notify the miscellaneous workspace
-				miscellaneousFilesWorkspace.OnDocumentOpened (filePath, textBuffer);
+			public void Dispose ()
+			{
+				IdeServices.TypeSystemService.UnregisterOpenDocument (OpenDocument);
 			}
 		}
 
-		private void TryOpenDocumentInWorkspace (Gui.DocumentEventArgs e, FilePath filePath, ITextBuffer textBuffer)
+		public IDisposable RegisterOpenDocument (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer, bool handleMiscNamespace = true)
 		{
-			var project = e.Document.Owner as MonoDevelop.Projects.Project;
+			Runtime.AssertMainThread ();
+
+			var path = filePath.IsAbsolute ? filePath.CanonicalPath : filePath;
+			if (openDocuments.TryGetValue (path, out var reference)) {
+				reference.ReferenceCount++;
+				if (reference.Owner == null)
+					reference.Owner = owner;
+				return new DocumentRegistration { OpenDocument = reference };
+			}
+			reference = new OpenDocumentReference {
+				ReferenceCount = 1,
+				FilePath = path,
+				TextBuffer = textBuffer,
+				Owner = owner,
+				HandleMiscNamespace = handleMiscNamespace
+			};
+			openDocuments.Add (path, reference);
+
+			TryRegisterOpenDocument (reference);
+
+			return new DocumentRegistration { OpenDocument = reference };
+		}
+
+		void TryRegisterOpenDocument (OpenDocumentReference reference)
+		{
+			// First offer the document to the primary workspace and see if it's owned by it.
+			// This is the common case, so avoid adding the document to the miscellaneous workspace
+			// unnecessarily, as it will be immediately removed anyway.
+			TryOpenDocumentInWorkspace (reference.Owner, reference.FilePath, reference.TextBuffer);
+
+			// Only use misc workspace with the new editor; old editor has its own
+			if (reference.HandleMiscNamespace) {
+				// If the primary workspace didn't claim the document notify the miscellaneous workspace
+				miscellaneousFilesWorkspace.OnDocumentOpened (reference.FilePath, reference.TextBuffer);
+			}
+		}
+
+		bool TryOpenDocumentInWorkspace (WorkspaceObject owner, FilePath filePath, ITextBuffer textBuffer)
+		{
+			var project = owner as MonoDevelop.Projects.Project;
 			if (project == null || !project.IsCompileable (filePath)) {
-				return;
+				return false;
 			}
 
 			var workspace = GetWorkspace (project.ParentSolution);
 			if (workspace == emptyWorkspace) {
-				return;
+				return false;
 			}
 
 			var projectId = workspace.GetProjectId (project);
@@ -306,49 +356,49 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (solConf == null || !solConf.BuildEnabledForItem (p))
 							continue;
 						if (p == p.ParentSolution.StartupItem) {
-							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document.DocumentContext);
-							return;
+							workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+							return true;
 						}
 						bestDoc = documentId;
 					} else if (documentId.ProjectId == projectId) {
-						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer (), e.Document.DocumentContext);
-						return;
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+						return true;
 					}
 				}
 			}
 
 			if (bestDoc != null) {
-				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer (), e.Document.DocumentContext);
+				workspace.InformDocumentOpen (bestDoc, textBuffer.AsTextContainer ());
+				return true;
 			}
+			return false;
 		}
 
-		void OnDocumentClosed (object sender, Gui.DocumentEventArgs e)
+		void UnregisterOpenDocument (OpenDocumentReference reference)
 		{
-			var filePath = e.Document.FileName;
-			var project = e.Document.Owner as MonoDevelop.Projects.Project;
-			if (project == null || filePath == null || !project.IsCompileable (filePath)) {
-				return;
-			}
+			Runtime.AssertMainThread ();
 
-			var textBuffer = e.Document.GetContent<ITextBuffer> ();
-			if (textBuffer == null) {
+			if (--reference.ReferenceCount > 0)
 				return;
-			}
+
+			openDocuments.Remove (reference.FilePath);
 
 			// Only use misc workspace with the new editor; old editor has its own
-			if (e.Document.Editor == null) {
+			if (reference.HandleMiscNamespace) {
 				// In the common case the primary workspace will own the document, so shut down
 				// miscellaneous workspace first to avoid adding and then immediately removing
 				// the document to the miscellaneous workspace
-				miscellaneousFilesWorkspace.OnDocumentClosed (filePath, textBuffer);
+				miscellaneousFilesWorkspace.OnDocumentClosed (reference.FilePath, reference.TextBuffer);
 			}
 
-			TryCloseDocumentInWorkspace (filePath, project);
+			var solution = (reference.Owner as SolutionItem)?.ParentSolution;
+			if (solution != null)
+				TryCloseDocumentInWorkspace (reference.FilePath, solution);
 		}
 
-		private void TryCloseDocumentInWorkspace (FilePath filePath, MonoDevelop.Projects.Project project)
+		private void TryCloseDocumentInWorkspace (FilePath filePath, MonoDevelop.Projects.Solution solution)
 		{
-			var workspace = GetWorkspace (project.ParentSolution);
+			var workspace = GetWorkspace (solution);
 			if (workspace == emptyWorkspace) {
 				return;
 			}
@@ -359,10 +409,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal void UpdateRegisteredOpenDocuments ()
+		{
+			Runtime.AssertMainThread ();
+
+			// Try to register open documents in the loaded workspaces
+
+			foreach (var reference in openDocuments.Values)
+				TryRegisterOpenDocument (reference);
+		}
+
 		public Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
 		{
+			// If there is no project, the file is in the miscellaneous namespace
 			if (project == null)
-				throw new ArgumentNullException (nameof(project));
+				return miscellaneousFilesWorkspace.CurrentSolution.GetProject (miscellaneousFilesWorkspace.DefaultProjectId);
+
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)
