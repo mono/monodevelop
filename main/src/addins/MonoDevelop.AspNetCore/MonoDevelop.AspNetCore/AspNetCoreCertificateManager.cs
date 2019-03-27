@@ -37,7 +37,8 @@ namespace MonoDevelop.AspNetCore
 	static class AspNetCoreCertificateManager
 	{
 		public static bool IsDevelopmentCertificateTrusted { get; private set; }
-
+		static readonly DotNetCoreVersion MinimumCoreRuntime = DotNetCoreVersion.Parse ("2.1");
+		static readonly DotNetCoreVersion MinimumCoreSDK = DotNetCoreVersion.Parse ("2.1.300");
 		/// <summary>
 		/// Only supported projects should be checked. If the development certificate
 		/// was found to be trusted then do not check again for the current IDE session.
@@ -63,7 +64,7 @@ namespace MonoDevelop.AspNetCore
 				return false;
 			}
 
-			return project.TargetFramework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("2.1")) &&
+			return project.TargetFramework.IsNetCoreAppOrHigher (MinimumCoreRuntime) &&
 				IsNetCoreSdk21OrHigherInstalled () &&
 				UsingHttps (runConfiguration);
 		}
@@ -82,7 +83,7 @@ namespace MonoDevelop.AspNetCore
 		/// SDK that supports .NET Core App 2.1. Not the .NET Core 2.1 SDK that
 		/// supports .NET Core App 2.0 only.
 		/// </summary>
-		static bool IsNetCoreSdk21OrHigher (DotNetCoreVersion version) => version >= DotNetCoreVersion.Parse ("2.1.300");
+		static bool IsNetCoreSdk21OrHigher (DotNetCoreVersion version) => version >= MinimumCoreSDK;
 
 		public static async Task TrustDevelopmentCertificate (ProgressMonitor monitor)
 		{
