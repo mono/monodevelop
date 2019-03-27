@@ -419,8 +419,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void InformDocumentOpen (DocumentId documentId, SourceTextContainer sourceTextContainer)
 		{
 			var document = InternalInformDocumentOpen (documentId, sourceTextContainer, true);
-			if (document as Document != null) {
-				foreach (var linkedDoc in ((Document)document).GetLinkedDocumentIds ()) {
+			if (document is Document doc) {
+				foreach (var linkedDoc in doc.GetLinkedDocumentIds ()) {
 					InternalInformDocumentOpen (linkedDoc, sourceTextContainer, false);
 				}
 			}

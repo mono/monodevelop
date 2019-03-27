@@ -164,6 +164,7 @@ namespace MonoDevelop.TextEditor
 		void UpdateTextBufferRegistration ()
 		{
 			textBufferRegistration?.Dispose ();
+			textBufferRegistration = null;
 
 			if (TextBuffer != null)
 				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
@@ -236,6 +237,7 @@ namespace MonoDevelop.TextEditor
 			isDisposed = true;
 
 			textBufferRegistration?.Dispose ();
+			textBufferRegistration = null;
 
 			UnsubscribeFromEvents ();
 			TextDocument.Dispose ();

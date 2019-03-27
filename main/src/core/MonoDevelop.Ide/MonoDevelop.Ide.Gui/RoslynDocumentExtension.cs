@@ -414,6 +414,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			textBufferRegistration?.Dispose ();
+			textBufferRegistration = null;
 
 			CancelParseTimeout ();
 			UnsubscribeAnalysisDocument ();
@@ -701,6 +702,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Runtime.RunInMainThread (() => {
 				textBufferRegistration?.Dispose ();
+				textBufferRegistration = null;
+
 				if (TextBuffer != null)
 					textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Project, FileName, TextBuffer);
 			});
