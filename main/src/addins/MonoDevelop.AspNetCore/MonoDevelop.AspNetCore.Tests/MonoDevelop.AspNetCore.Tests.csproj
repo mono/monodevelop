@@ -18,10 +18,16 @@
     <Reference Include="NuGet.Versioning">
       <HintPath>..\..\..\..\packages\NuGet.Versioning.4.8.0\lib\net46\NuGet.Versioning.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.AspNetCore.Tests\PublishProfileTests.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Tests\LaunchSettingsTests.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Tests\AspNetCoreExecutionCommandTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
@@ -55,6 +61,11 @@
     <ProjectReference Include="..\..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
       <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
       <Name>MonoDevelop.DotNetCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\tests\IdeUnitTests\IdeUnitTests.csproj">
+      <Project>{F7B2B155-7CF4-42C4-B5AF-63C0667D2E4F}</Project>
+      <Name>IdeUnitTests</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

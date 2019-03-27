@@ -37,7 +37,7 @@ namespace MonoDevelop.AspNetCore
 		DotNetProject project;
 		public IDictionary<string, JToken> GlobalSettings { get; private set; }
 		internal JObject ProfilesObject { get; private set; }
-		string launchSettingsJsonPath => Path.Combine (project.BaseDirectory, "Properties", "launchSettings.json");
+		internal string launchSettingsJsonPath => Path.Combine (project.BaseDirectory, "Properties", "launchSettings.json");
 		const string DefaultGlobalSettings = @"{
     						""windowsAuthentication"": false,
     						""anonymousAuthentication"": true

@@ -64,7 +64,7 @@ namespace MonoDevelop.AspNetCore
 			InitializeLaunchSettings (project.DefaultNamespace);
 		}
 
-		void InitializeLaunchSettings (string name)
+		internal void InitializeLaunchSettings (string name)
 		{
 			Profiles = LaunchProfileData.DeserializeProfiles (launchProfileProvider.ProfilesObject);
 
