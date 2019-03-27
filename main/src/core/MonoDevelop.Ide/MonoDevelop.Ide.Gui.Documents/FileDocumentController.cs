@@ -43,6 +43,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 		DesktopService desktopService;
 		private Encoding encoding;
 
+		/// <summary>
+		/// Raised when the FilePath property changes
+		/// </summary>
+		public event EventHandler FilePathChanged;
+
 		public FileModel FileModel { get => Model as FileModel; set => Model = value; }
 
 		public FilePath FilePath {
@@ -140,7 +145,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 			// If name changed and the file model is linked to a file, relink it
 			if (FileModelType != null && FileModel != null && FileModel.IsLinked && FileModel.FilePath != filePath)
 				FileModel.LinkToFile (FilePath);
+
 			UpdateIcon ();
+
+			try {
+				FilePathChanged?.Invoke (this, EventArgs.Empty);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
+
 			if (DocumentTitle == null || DocumentTitle == originalFileTitle)
 				DocumentTitle = originalFileTitle = FilePath.FileName;
 		}

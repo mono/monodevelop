@@ -83,6 +83,7 @@ namespace MonoDevelop.TextEditor
 		PolicyContainer policyContainer;
 		ICodingConventionContext editorConfigContext;
 		bool warnOverwrite;
+		IDisposable textBufferRegistration;
 
 		public TImports Imports { get; }
 		public TView TextView { get; private set; }
@@ -116,6 +117,8 @@ namespace MonoDevelop.TextEditor
 
 			TextDocument = fileModel.TextDocument;
 			TextBuffer = TextDocument.TextBuffer;
+
+			UpdateTextBufferRegistration ();
 
 			var roles = GetAllPredefinedRoles ();
 			//we have multiple copies of VacuousTextDataModel for back-compat reasons
@@ -158,6 +161,14 @@ namespace MonoDevelop.TextEditor
 				IsNewDocument = Model.IsNew;
 		}
 
+		void UpdateTextBufferRegistration ()
+		{
+			textBufferRegistration?.Dispose ();
+
+			if (TextBuffer != null)
+				textBufferRegistration = IdeServices.TypeSystemService.RegisterOpenDocument (Owner, FilePath, TextBuffer);
+		}
+
 		protected override void OnGrabFocus (DocumentView view)
 		{
 			DefaultSourceEditorOptions.SetUseAsyncCompletion (true);
@@ -170,6 +181,8 @@ namespace MonoDevelop.TextEditor
 
 			if (TextDocument == null)
 				return;
+
+			UpdateTextBufferRegistration ();
 
 			warnOverwrite = false;
 
@@ -198,8 +211,10 @@ namespace MonoDevelop.TextEditor
 		{
 			base.OnOwnerChanged ();
 
-			if (TextDocument != null)
+			if (TextDocument != null) {
 				UpdateTextEditorOptions (null, null);
+				UpdateTextBufferRegistration ();
+			}
 		}
 
 		protected abstract TView CreateTextView (ITextViewModel viewModel, ITextViewRoleSet roles);
@@ -219,6 +234,8 @@ namespace MonoDevelop.TextEditor
 				return;
 
 			isDisposed = true;
+
+			textBufferRegistration?.Dispose ();
 
 			UnsubscribeFromEvents ();
 			TextDocument.Dispose ();

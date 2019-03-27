@@ -53,6 +53,7 @@ namespace MonoDevelop.HexEditor
 		protected override async Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
 			hexEditor = new Mono.MHex.HexEditor ();
+			await Model.Load ();
 			hexEditor.HexEditorData.ByteBuffer = ((ByteBufferModel)Model).ByteBuffer;
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();

@@ -86,8 +86,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				miscellaneousFilesWorkspace = CompositionManager.Instance.GetExportedValue<MiscellaneousFilesWorkspace> ();
 				serviceProvider.WhenServiceInitialized<DocumentManager> (dm => {
 					documentManager = dm;
-					documentManager.DocumentOpened += OnDocumentOpened;
-					documentManager.DocumentClosed += OnDocumentClosed;
 				});
 			});
 			serviceProvider.WhenServiceInitialized<RootWorkspace> (s => {
@@ -129,10 +127,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			FileService.FileChanged -= FileService_FileChanged;
 			if (rootWorkspace != null)
 				rootWorkspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
-			if (documentManager != null) {
-				documentManager.DocumentOpened -= OnDocumentOpened;
-				documentManager.DocumentClosed -= OnDocumentClosed;
-			}
 			FinalizeTrackedProjectHandling ();
 			return Task.CompletedTask;
 		}
@@ -720,33 +714,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			}
 		}
-
-		internal void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer sourceTextContainer, DocumentContext context)
-		{
-			foreach (var w in workspaces) {
-				if (w.Contains (analysisDocument.ProjectId)) {
-					w.InformDocumentOpen (analysisDocument, sourceTextContainer, context); 
-					return;
-				}
-			}
-			if (!gotDocumentRequestError) {
-				gotDocumentRequestError = true;
-				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument);
-			}
-		}
-
-		internal void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, SourceTextContainer sourceTextContainer, DocumentContext context)
-		{
-			if (ws == null)
-				throw new ArgumentNullException (nameof (ws));
-			if (analysisDocument == null)
-				throw new ArgumentNullException (nameof (analysisDocument));
-			if (sourceTextContainer == null)
-				throw new ArgumentNullException (nameof (sourceTextContainer));
-			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, sourceTextContainer, context); 
-		}
-
-		static bool gotDocumentRequestError = false;
 
 		public Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 		{
