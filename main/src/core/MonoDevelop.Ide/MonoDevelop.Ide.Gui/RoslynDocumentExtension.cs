@@ -1,4 +1,4 @@
-//
+﻿//
 // RoslynDocumentExtension.cs
 //
 // Author:
@@ -376,7 +376,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			// TODO
 			var project = typeSystemService.GetCodeAnalysisProject (Project);
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);

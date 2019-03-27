@@ -421,8 +421,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
 		{
+			// If there is no project, the file is in the miscellaneous namespace
 			if (project == null)
-				throw new ArgumentNullException (nameof(project));
+				return miscellaneousFilesWorkspace.CurrentSolution.GetProject (miscellaneousFilesWorkspace.DefaultProjectId);
+
 			foreach (var w in workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)
