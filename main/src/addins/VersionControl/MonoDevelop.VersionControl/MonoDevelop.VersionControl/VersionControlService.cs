@@ -211,7 +211,8 @@ namespace MonoDevelop.VersionControl
 			return String.Empty;
 		}
 
-		internal static ConcurrentDictionary<Repository, InternalRepositoryReference> referenceCache = new ConcurrentDictionary<Repository, InternalRepositoryReference> ();
+		internal static readonly object referenceCacheLock = new object ();
+		internal static Dictionary<Repository, InternalRepositoryReference> referenceCache = new Dictionary<Repository, InternalRepositoryReference> ();
 		public static Repository GetRepository (WorkspaceObject entry)
 		{
 			if (IsGloballyDisabled)
@@ -225,14 +226,20 @@ namespace MonoDevelop.VersionControl
 			InternalRepositoryReference rref = null;
 			if (repo != null) {
 				repo.AddRef ();
-				rref = referenceCache.GetOrAdd (repo, r => new InternalRepositoryReference (r));
+				lock (referenceCacheLock) {
+					if (!referenceCache.TryGetValue (repo, out rref)) {
+						rref = new InternalRepositoryReference (repo);
+						referenceCache [repo] = rref;
+					}
+				}
 			}
 			entry.ExtendedProperties [typeof(InternalRepositoryReference)] = rref;
 			
 			return repo;
 		}
 
-		internal static readonly ConcurrentDictionary<FilePath,Repository> repositoryCache = new ConcurrentDictionary<FilePath,Repository> ();
+		internal static readonly object repositoryCacheLock = new object ();
+		internal static readonly Dictionary<FilePath,Repository> repositoryCache = new Dictionary<FilePath,Repository> ();
 		public static Repository GetRepositoryReference (string path, string id)
 		{
 			VersionControlSystem detectedVCS = null;
@@ -256,16 +263,25 @@ namespace MonoDevelop.VersionControl
 
 			bestMatch = bestMatch.CanonicalPath;
 
-			return repositoryCache.GetOrAdd (bestMatch, p => {
-				var result = detectedVCS?.GetRepositoryReference (p, id);
-				if (result != null) {
-					Instrumentation.Repositories.Inc (new RepositoryMetadata (detectedVCS));
-					result.RepositoryPath = p.CanonicalPath;
-					return result;
+			lock (repositoryCacheLock) {
+				if (repositoryCache.TryGetValue (bestMatch, out var repository))
+					return repository;
+
+				try {
+					var repo = detectedVCS?.GetRepositoryReference (bestMatch, id);
+					if (repo != null) {
+						repositoryCache.Add (bestMatch, repo);
+						Instrumentation.Repositories.Inc (new RepositoryMetadata {
+							Type = detectedVCS.Name,
+							Version = detectedVCS.Version,
+						});
+					}
+					return repo;
+				} catch (Exception e) {
+					LoggingService.LogError ($"Could not query {detectedVCS.Name} repository reference", e);
+					return null;
 				}
-				LoggingService.LogInternalError ($"Could not query {detectedVCS?.Name} repository reference", null);
-				return null;
-			});
+			}
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
@@ -832,7 +848,9 @@ namespace MonoDevelop.VersionControl
 		
 		public void Dispose ()
 		{
-			VersionControlService.referenceCache.TryRemove (repo, out _);
+			lock (VersionControlService.referenceCacheLock) {
+				VersionControlService.referenceCache.Remove (repo);
+			}
 			repo.Unref ();
 		}
 	}
