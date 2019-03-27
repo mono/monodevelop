@@ -976,8 +976,8 @@ namespace MonoDevelop.Ide
 			}
 			
 			AlertButton delete = new AlertButton (GettextCatalog.GetString ("Delete from Disk"));
-			AlertButton result = MessageService.AskQuestion (question, secondaryText,
-			                                                 delete, AlertButton.Cancel, AlertButton.Remove);
+			AlertButton result = MessageService.GenericAlert (MessageService.RootWindow, Gui.Stock.Question, question, secondaryText,
+			                                                  delete, AlertButton.Cancel, AlertButton.Remove);
 			if (result == delete) {
 				if (!IdeApp.Workspace.RequestItemUnload (prj))
 					return;
