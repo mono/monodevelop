@@ -1264,10 +1264,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				LockUpdates ();
 				var node = (TreeNodeNavigator) GetSelectedNode ();
 
-				if (!TryHandlePaste(node, copyObjects, currentTransferOperation, false)) {
+				if (!TryHandlePaste(node, copyObjects, currentTransferOperation, false, false)) {
 					// if the current node can't handle the data, try to paste it into the parent node
 					if (node.MoveToParent ())
-						TryHandlePaste (node, copyObjects, currentTransferOperation, false);
+						TryHandlePaste (node, copyObjects, currentTransferOperation, false, true);
 				}
 				if (currentTransferOperation == DragOperation.Move)
 					CancelTransfer ();
@@ -1284,32 +1284,32 @@ namespace MonoDevelop.Ide.Gui.Components
 				return;
 			}
 			var node = (TreeNodeNavigator)GetSelectedNode ();
-			info.Enabled = TryHandlePaste (node, copyObjects, currentTransferOperation, true);
+			info.Enabled = TryHandlePaste (node, copyObjects, currentTransferOperation, true, false);
 			// if the current node can't handle the data, see if the parent can
-			if (!info.Enabled && node.MoveToParent ())
-				info.Enabled = TryHandlePaste (node, copyObjects, currentTransferOperation, true);
+			if (!info.Enabled && node.MoveToParent ()) 
+				info.Enabled = TryHandlePaste (node, copyObjects, currentTransferOperation, true, true);
 		}
 
-		static bool TryHandlePaste (TreeNodeNavigator node, object[] copyObjects, DragOperation currentTransferOperation, bool test)
+		static bool TryHandlePaste (TreeNodeNavigator node, object[] copyObjects, DragOperation currentTransferOperation, bool simulatePaste, bool parentDrop)
 		{
-			bool result = false;
-			if (node != null && copyObjects?.Length > 0) {
-				NodeBuilder [] chain = node.NodeBuilderChain;
-				NodePosition pos = node.CurrentPosition;
-				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (node);
-					if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation, DropPosition.Into)) {
-						if (test)
-							return true;
+			if (node == null || copyObjects?.Length <= 0)
+				return false;
+			var pos = node.CurrentPosition;
+			foreach (var b in node.NodeBuilderChain) {
+				var handler = b.CommandHandler;
+				handler.SetCurrentNode (node);
+				if (parentDrop && !handler.CanHandleDropFromChild (copyObjects, currentTransferOperation, DropPosition.Into))
+					return false;
+				if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation, DropPosition.Into)) {
+					if (!simulatePaste) {
 						node.MoveToPosition (pos);
 						handler.OnMultipleNodeDrop (copyObjects, currentTransferOperation, DropPosition.Into);
-						result = true;
 					}
-					node.MoveToPosition (pos);
+					return true;
 				}
+				node.MoveToPosition (pos);
 			}
-			return result;
+			return false;
 		}
 
 		void CancelTransfer ()

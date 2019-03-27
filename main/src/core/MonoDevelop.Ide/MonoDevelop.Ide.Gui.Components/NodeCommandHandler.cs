@@ -251,8 +251,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		DropPosition cachedPosition;
-		
-		public virtual bool CanDropMultipleNodes (object[] dataObjects, DragOperation operation, DropPosition position)
+
+		public virtual bool CanHandleDropFromChild (object [] dataObjects, DragOperation operation, DropPosition position) => false;
+
+		public virtual bool CanDropMultipleNodes (object [] dataObjects, DragOperation operation, DropPosition position)
 		{
 			cachedPosition = position;
 			return CanDropMultipleNodes (dataObjects, operation);

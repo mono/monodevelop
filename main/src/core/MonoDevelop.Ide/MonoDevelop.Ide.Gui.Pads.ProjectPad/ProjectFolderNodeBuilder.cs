@@ -344,7 +344,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			return base.CanDropNode (dataObject, operation);
 		}
-		
+
+		public override bool CanHandleDropFromChild (object [] dataObjects, DragOperation operation, DropPosition position)
+		{
+			return position == DropPosition.Into;
+		}
+
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			base.OnNodeDrop (dataObject, operation);
