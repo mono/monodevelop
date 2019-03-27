@@ -503,7 +503,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						var rect = text_render.GetStatusIconArea (tree, cellArea);
 						if (cx >= rect.X && cx <= rect.Right) {
 							tree.ConvertBinWindowToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
-							ShowStatusMessage (it, rect, info);
+							ShowStatusMessage (path, rect, info);
 							popupShown = true;
 						}
 					}
@@ -514,17 +514,17 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		bool statusMessageVisible;
-		Gtk.TreeIter statusIconIter;
+		Gtk.TreePath statusIconPath;
 		TooltipPopoverWindow statusPopover;
 
-		void ShowStatusMessage (Gtk.TreeIter it, Gdk.Rectangle rect, NodeInfo info)
+		void ShowStatusMessage (Gtk.TreePath path, Gdk.Rectangle rect, NodeInfo info)
 		{
-			if (statusMessageVisible && store.GetPath (it).Equals (store.GetPath (statusIconIter)))
+			if (statusMessageVisible && path.Equals (statusIconPath))
 				return;
 			if (statusPopover != null)
 				statusPopover.Destroy ();
 			statusMessageVisible = true;
-			statusIconIter = it;
+			statusIconPath = path;
 
 			statusPopover = TooltipPopoverWindow.Create ();
 			statusPopover.ShowArrow = true;
