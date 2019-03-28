@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide
 
 		public static ProjectOperations ProjectOperations => IdeServices.ProjectOperations;
 
-		public static RootWorkspace Workspace => IdeServices.Workspace;
+		public static RootWorkspace Workspace => Runtime.PeekService<RootWorkspace> ();
 
 		public static CommandManager CommandService {
 			get { return commandService; }
