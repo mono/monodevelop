@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// for a model or controller.
 	/// </summary>
 	[TypeExtensionPoint (Path = DocumentController.DocumentControllerExtensionsPath, ExtensionAttributeType = typeof (ExportDocumentControllerExtensionAttribute), Name = "Document controller extensions")]
-	public class DocumentControllerExtension : ChainedExtension, IDisposable
+	public class DocumentControllerExtension : ChainedExtension, IDisposable, ICommandRouter
 	{
 		DocumentControllerExtension next;
 
@@ -200,6 +201,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 		protected virtual void OnOwnerChanged ()
 		{
+		}
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return next;
 		}
 	}
 }

@@ -35,6 +35,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
 using System.Threading;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 	/// A controller is a class that implements the logic for loading,
 	/// displaying and interacting with the contents of a document.
 	/// </summary>
-	public abstract class DocumentController : IDisposable
+	public abstract class DocumentController : IDisposable, ICommandDelegator
 	{
 		internal const string DocumentControllerExtensionsPath = "/MonoDevelop/Ide/DocumentControllerExtensions";
 
@@ -1057,6 +1058,11 @@ namespace MonoDevelop.Ide.Gui.Documents
 			if (!initialized)
 				throw new InvalidOperationException ("Document model not initialized");
 			return true;
+		}
+
+		object ICommandDelegator.GetDelegatedCommandTarget ()
+		{
+			return itemExtension;
 		}
 
 		class DefaultControllerExtension : DocumentControllerExtension

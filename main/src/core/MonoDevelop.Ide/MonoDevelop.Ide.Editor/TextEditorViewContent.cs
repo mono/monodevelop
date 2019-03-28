@@ -306,7 +306,7 @@ namespace MonoDevelop.Ide.Editor
 
 		internal protected override ProjectReloadCapability OnGetProjectReloadCapability ()
 		{
-			return textEditorImpl.ProjectReloadCapability;
+			return textEditorImpl != null ? textEditorImpl.ProjectReloadCapability : ProjectReloadCapability.Full;
 		}
 
 		protected override IEnumerable<object> OnGetContents (Type type)
