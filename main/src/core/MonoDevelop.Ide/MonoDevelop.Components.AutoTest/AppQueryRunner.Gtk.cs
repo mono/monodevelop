@@ -42,8 +42,9 @@ namespace MonoDevelop.Components.AutoTest
 
 		void ProcessGtkWindow (Gtk.Window window, AppResult rootNode, ref AppResult lastChild)
 		{
-			AppResult node = new GtkWidgetResult (window) { SourceQuery = sourceQuery };
-			fullResultSet.Add (node);
+			AppResult node = AddGtkResult (window);
+			if (node == null)
+				return;
 
 			AddChild (rootNode, node, ref lastChild);
 
@@ -59,12 +60,24 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult lastChild = null;
 
 			foreach (var child in container.Children) {
-				AppResult node = new GtkWidgetResult (child) { SourceQuery = sourceQuery };
-				fullResultSet.Add (node);
+				AppResult node = AddGtkResult (child);
+				if (child == null)
+					continue;
 
 				AddChild (parent, node, ref lastChild);
 				GenerateChildrenForContainer (node, child);
 			}
+		}
+
+		AppResult AddGtkResult (Gtk.Widget widget)
+		{
+			if (!includeHidden && widget.Visible == false) {
+				return null;
+			}
+
+			AppResult node = new GtkWidgetResult (widget) { SourceQuery = sourceQuery };
+			fullResultSet.Add (node);
+			return node;
 		}
 	}
 }

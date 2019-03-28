@@ -49,6 +49,10 @@ namespace MonoDevelop.Components.AutoTest
 
 		void ProcessNSWindow (NSWindow window, AppResult rootNode, ref AppResult lastChild)
 		{
+			// Don't process hidden windows.
+			if (!includeHidden && !window.IsVisible)
+				return;
+
 			AppResult node = new NSObjectResult (window) { SourceQuery = sourceQuery };
 			AppResult nsWindowLastNode = null;
 			fullResultSet.Add (node);
@@ -56,8 +60,9 @@ namespace MonoDevelop.Components.AutoTest
 			AddChild (rootNode, node, ref lastChild);
 
 			foreach (var child in window.ContentView.Subviews) {
-				AppResult childNode = new NSObjectResult (child) { SourceQuery = sourceQuery };
-				fullResultSet.Add (childNode);
+				AppResult childNode = AddNSObjectResult (child);
+				if (childNode == null)
+					continue;
 
 				AddChild (node, childNode, ref nsWindowLastNode);
 				GenerateChildrenForNSView (childNode, child);
@@ -74,14 +79,11 @@ namespace MonoDevelop.Components.AutoTest
 
 			AppResult lastItemNode = null;
 			foreach (var item in toolbar.Items) {
-				if (item.View == null)
+				AppResult itemNode = AddNSObjectResult (item.View);
+				if (itemNode == null)
 					continue;
 
-				AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = sourceQuery };
-				fullResultSet.Add (itemNode);
-
 				AddChild (itemNode, toolbarNode, ref lastItemNode);
-
 				GenerateChildrenForNSView (itemNode, item.View);
 			}
 		}
@@ -95,22 +97,35 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult lastChild = null;
 
 			foreach (var child in view.Subviews) {
-				AppResult node = new NSObjectResult (child) { SourceQuery = sourceQuery };
-				fullResultSet.Add (node);
+				AppResult node = AddNSObjectResult (child);
+				if (node == null)
+					continue;
 
 				AddChild (parent, node, ref lastChild);
-
 				GenerateChildrenForNSView (node, child);
 			}
 
 			if (view is NSSegmentedControl segmentedControl) {
 				for (int i = 0; i < segmentedControl.SegmentCount; i++) {
-					var node = new NSObjectResult (view, i);
-					fullResultSet.Add (node);
+					AppResult node = AddNSObjectResult (view, i);
+					if (node == null)
+						continue;
 
 					AddChild (parent, node, ref lastChild);
 				}
 			}
+		}
+
+		AppResult AddNSObjectResult (NSView view, int index = -1)
+		{
+			// If the view is hidden and we don't include hidden, don't add it.
+			if (view == null || (!includeHidden && view.Hidden)) {
+				return null;
+			}
+
+			AppResult node = new NSObjectResult (view, index) { SourceQuery = sourceQuery };
+			fullResultSet.Add (node);
+			return node;
 		}
 #endif
 	}

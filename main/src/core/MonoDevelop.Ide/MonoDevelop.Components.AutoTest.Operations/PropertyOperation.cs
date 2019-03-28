@@ -29,7 +29,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 {
 	public class PropertyOperation : Operation, IFilterOperation
 	{
-		string PropertyName;
+		internal string PropertyName;
 		object DesiredValue;
 
 		public PropertyOperation (string propertyName, object desiredValue)

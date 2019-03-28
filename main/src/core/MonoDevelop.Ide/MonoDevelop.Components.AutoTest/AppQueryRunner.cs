@@ -35,12 +35,15 @@ namespace MonoDevelop.Components.AutoTest
 	{
 		readonly List<Operation> operations;
 		readonly string sourceQuery;
+		readonly bool includeHidden;
+
 		readonly List<AppResult> fullResultSet = new List<AppResult> ();
 
 		public AppQueryRunner (List<Operation> operations)
 		{
 			this.operations = operations;
 
+			includeHidden = operations.Any (x => x is PropertyOperation propertyOperation && propertyOperation.PropertyName == "Visible");
 			sourceQuery = GetQueryString (operations);
 		}
 
