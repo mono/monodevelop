@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					using (var sr = File.OpenText (cacheFilePath)) {
 						var value = (ProjectCache)serializer.Deserialize (sr, typeof (ProjectCache));
 
-						if (format != value.Format || value.TimeStamp != File.GetLastWriteTimeUtc (projectFilePath))
+						if (format != value.Format)
 							continue;
 
 						cachedItems [projectFilePath] = value;
@@ -185,9 +185,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			cachedItems.Remove (p.FileName);
-
-			if (cachedData.TimeStamp != File.GetLastWriteTimeUtc (p.FileName))
-				return false;
 
 			var filesBuilder = ImmutableArray.CreateBuilder<ProjectFile> (cachedData.Files.Length);
 			for (int i = 0; i < cachedData.Files.Length; ++i) {
