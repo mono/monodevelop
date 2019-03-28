@@ -606,7 +606,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
-					TransientFor = parent ?? DesktopService.GetParentForModalWindow ()
+					TransientFor = parent ?? DesktopService.GetFocusedTopLevelWindow ()
 				};
 				return dialog.Run ();
 			}
