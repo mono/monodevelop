@@ -40,10 +40,11 @@ namespace MonoDevelop.Components.AutoTest
 		void ProcessNSWindows (AppResult rootNode, ref AppResult lastChild)
 		{
 			NSWindow [] nswindows = NSApplication.SharedApplication.Windows;
-			if (nswindows != null) {
-				foreach (var window in nswindows) {
-					ProcessNSWindow (window, rootNode, ref lastChild);
-				}
+			if (nswindows == null)
+				return;
+
+			foreach (var window in nswindows) {
+				ProcessNSWindow (window, rootNode, ref lastChild);
 			}
 		}
 
@@ -54,10 +55,10 @@ namespace MonoDevelop.Components.AutoTest
 				return;
 
 			AppResult node = new NSObjectResult (window) { SourceQuery = sourceQuery };
-			AppResult nsWindowLastNode = null;
-			fullResultSet.Add (node);
-
+			AddToResultSet (node);
 			AddChild (rootNode, node, ref lastChild);
+
+			AppResult nsWindowLastNode = null;
 
 			foreach (var child in window.ContentView.Subviews) {
 				AppResult childNode = AddNSObjectResult (child);
@@ -69,7 +70,12 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			NSToolbar toolbar = window.Toolbar;
+			if (toolbar == null) {
+				return;
+			}
+
 			AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = sourceQuery };
+			// Was missing before too, maybe should be added to fullResultSet?
 
 			AddChild (node, toolbarNode, ref nsWindowLastNode);
 
@@ -83,20 +89,20 @@ namespace MonoDevelop.Components.AutoTest
 				if (itemNode == null)
 					continue;
 
-				AddChild (itemNode, toolbarNode, ref lastItemNode);
+				AddChild (toolbarNode, itemNode, ref lastItemNode);
 				GenerateChildrenForNSView (itemNode, item.View);
 			}
 		}
 
 		void GenerateChildrenForNSView (AppResult parent, NSView view)
 		{
-			var subviews = view.Subviews;
+			var subviews = view?.Subviews;
 			if (subviews == null)
 				return;
 
 			AppResult lastChild = null;
 
-			foreach (var child in view.Subviews) {
+			foreach (var child in subviews) {
 				AppResult node = AddNSObjectResult (child);
 				if (node == null)
 					continue;
@@ -124,8 +130,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			AppResult node = new NSObjectResult (view, index) { SourceQuery = sourceQuery };
-			fullResultSet.Add (node);
-			return node;
+			return AddToResultSet (node);
 		}
 #endif
 	}

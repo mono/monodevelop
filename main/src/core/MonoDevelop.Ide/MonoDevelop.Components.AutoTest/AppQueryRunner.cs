@@ -33,27 +33,37 @@ namespace MonoDevelop.Components.AutoTest
 {
 	partial class AppQueryRunner
 	{
-		readonly List<Operation> operations;
 		readonly string sourceQuery;
 		readonly bool includeHidden;
+		readonly CompositeFilter preFilter;
 
+		readonly List<Operation> remainingOperations = new List<Operation> ();
 		readonly List<AppResult> fullResultSet = new List<AppResult> ();
 
 		public AppQueryRunner (List<Operation> operations)
 		{
-			this.operations = operations;
+			includeHidden = operations.Any (x => {
+				return x is IndexOperation || // this is to preserve backwards compat on Index operations
+					x is PropertyOperation propertyOperation && propertyOperation.PropertyName == "Visible";
+			});
 
-			includeHidden = operations.Any (x => x is PropertyOperation propertyOperation && propertyOperation.PropertyName == "Visible");
 			sourceQuery = GetQueryString (operations);
+
+			var initialFilterOperations = operations.TakeWhile (x => x is IFilterOperation).Cast<IFilterOperation> ().ToArray ();
+			preFilter = new CompositeFilter (initialFilterOperations);
+
+			for (int i = initialFilterOperations.Length; i < operations.Count; ++i)
+				remainingOperations.Add (operations [i]);
 		}
 
 		public (AppResult RootNode, AppResult[] AllResults) Execute ()
 		{
-			var (rootNode, resultSet) = ResultSetFromWindows ();
+			var rootNode = ResultSetFromWindows ();
 
-			// TODO: Add a start mechanism, so we only process nodes coming in from a part of the IDE.
+			var resultSet = fullResultSet;
 
-			foreach (var subquery in operations) {
+			for (int i = 0; i < remainingOperations.Count; ++i) {
+				var subquery = remainingOperations [i];
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
 
@@ -65,7 +75,7 @@ namespace MonoDevelop.Components.AutoTest
 			return (rootNode, resultSet.ToArray ());
 		}
 
-		(AppResult, List<AppResult>) ResultSetFromWindows ()
+		AppResult ResultSetFromWindows ()
 		{
 			// null for AppResult signifies root node
 			var rootNode = new GtkWidgetResult (null) { SourceQuery = sourceQuery };
@@ -78,7 +88,7 @@ namespace MonoDevelop.Components.AutoTest
 			ProcessNSWindows (rootNode, ref lastChild);
 #endif
 
-			return (rootNode, fullResultSet);
+			return rootNode;
 		}
 
 		void AddChild (AppResult parent, AppResult node, ref AppResult lastChild)
@@ -93,12 +103,41 @@ namespace MonoDevelop.Components.AutoTest
 			lastChild = node;
 		}
 
+		AppResult AddToResultSet (AppResult result)
+		{
+			// filtered is the same as result.
+			var filtered = preFilter.Filter (result);
+			if (filtered != null)
+				fullResultSet.Add (filtered);
+			return result;
+		}
+
 		public static string GetQueryString (List<Operation> operations)
 		{
 			var strings = operations.Select (x => x.ToString ()).ToArray ();
 			var operationChain = string.Join (".", strings);
 
 			return string.Format ("c => c.{0};", operationChain);
+		}
+
+		class CompositeFilter : IFilterOperation
+		{
+			readonly IFilterOperation [] filters;
+			public CompositeFilter (IFilterOperation[] filters)
+			{
+				this.filters = filters;
+			}
+
+			public AppResult Filter (AppResult result)
+			{
+				foreach (var subFilter in filters) {
+					if (subFilter.Filter (result) == null) {
+						result = null;
+						break;
+					}
+				}
+				return result;
+			}
 		}
 	}
 }

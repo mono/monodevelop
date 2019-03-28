@@ -53,6 +53,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			return newResultSet;
 		}
 
+		public AppResult Filter (AppResult result)
+		{
+			return result.CheckType (DesiredType);
+		}
+
 		public override string ToString ()
 		{
 			return Name != null ? string.Format ("{0} ()", Name) : string.Format ("CheckType (\"{0}\")", DesiredType.FullName);

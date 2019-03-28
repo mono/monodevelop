@@ -44,6 +44,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			return newResultSet;
 		}
 
+		public AppResult Filter (AppResult result)
+		{
+			return result.Selected ();
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("Selected ()");

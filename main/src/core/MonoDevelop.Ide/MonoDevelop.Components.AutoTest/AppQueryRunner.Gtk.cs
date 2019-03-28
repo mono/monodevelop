@@ -61,7 +61,7 @@ namespace MonoDevelop.Components.AutoTest
 
 			foreach (var child in container.Children) {
 				AppResult node = AddGtkResult (child);
-				if (child == null)
+				if (node == null)
 					continue;
 
 				AddChild (parent, node, ref lastChild);
@@ -76,8 +76,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			AppResult node = new GtkWidgetResult (widget) { SourceQuery = sourceQuery };
-			fullResultSet.Add (node);
-			return node;
+			return AddToResultSet (node);
 		}
 	}
 }

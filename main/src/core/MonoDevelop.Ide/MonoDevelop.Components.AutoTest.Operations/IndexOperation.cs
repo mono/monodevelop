@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class IndexOperation : Operation, IFilterOperation
+	public class IndexOperation : Operation
 	{
 		int Index;
 

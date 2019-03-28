@@ -38,6 +38,12 @@ namespace MonoDevelop.Components.AutoTest.Operations
 	/// </summary>
 	interface IFilterOperation
 	{
+		/// <summary>
+		/// Filter the specified result.
+		/// </summary>
+		/// <returns>Null if the item should be ignored, result if it's not filtered.</returns>
+		/// <param name="result">The result to filter.</param>
+		AppResult Filter (AppResult result);
 	}
 }
 

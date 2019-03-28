@@ -54,6 +54,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			return newResultSet;
 		}
 
+		public AppResult Filter (AppResult result)
+		{
+			return result.Text (Text, Exact);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("Text (\"{0}\", {1})", Text, Exact);

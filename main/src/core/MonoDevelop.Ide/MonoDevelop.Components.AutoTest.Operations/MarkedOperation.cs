@@ -51,6 +51,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			return newResultSet;
 		}
 
+		public AppResult Filter (AppResult result)
+		{
+			return result.Marked (Mark);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("Marked (\"{0}\")", Mark);
