@@ -180,11 +180,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			metadataReferences = ImmutableArray<MonoDevelopMetadataReference>.Empty;
 			projectReferences = ImmutableArray<Microsoft.CodeAnalysis.ProjectReference>.Empty;
 
-			if (!cachedItems.TryGetValue (p.FileName, out var cachedData)) {
-				return false;
-			}
+			ProjectCache cachedData;
+			lock (cachedItems) {
+				if (!cachedItems.TryGetValue (p.FileName, out cachedData)) {
+					return false;
+				}
 
-			cachedItems.Remove (p.FileName);
+				cachedItems.Remove (p.FileName);
+			}
 
 			var filesBuilder = ImmutableArray.CreateBuilder<ProjectFile> (cachedData.Files.Length);
 			for (int i = 0; i < cachedData.Files.Length; ++i) {
