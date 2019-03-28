@@ -202,15 +202,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 			base.OnResponse (type);
 		}
 
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 
-			base.Dispose ();
-		}
-
-		protected override void OnDestroyed ()
-		{
 			foreach (var ob in extensions) {
 				var ext = ob as CommitDialogExtension;
 				if (ext != null)

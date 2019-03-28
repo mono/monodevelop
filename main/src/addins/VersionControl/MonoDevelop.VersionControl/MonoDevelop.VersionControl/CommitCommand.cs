@@ -73,6 +73,7 @@ namespace MonoDevelop.VersionControl
 						if (item.IsDirty) {
 							MessageService.ShowMessage (GettextCatalog.GetString (
 								"Some files could not be saved."));
+							return false;
 						}
 				}
 
