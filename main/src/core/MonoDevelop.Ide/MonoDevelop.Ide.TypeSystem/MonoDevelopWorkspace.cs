@@ -282,6 +282,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.ClearSolutionData ();
 		}
 
+		/// <summary>
+		/// Used by WebTools to add a C# buffer from .cshtml as a "file"
+		/// to the workspace while .cshtml is open
+		/// </summary>
+		internal void AddDocument(DocumentInfo documentInfo)
+		{
+			OnDocumentAdded (documentInfo);
+		}
+
+		/// <summary>
+		/// Used by WebTools to remove a C# document from the workspace
+		/// when the .cshtml file is closed
+		/// </summary>
+		internal void RemoveDocument(DocumentId documentId)
+		{
+			OnDocumentRemoved (documentId);
+		}
+
 		// This is called by OnProjectRemoved.
 		protected override void ClearProjectData (ProjectId projectId)
 		{
